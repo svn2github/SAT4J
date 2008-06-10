@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-SymbolicName: org.sat4j.maxsat
+Bundle-Version: 9.9.9.token
+Export-Package: org.sat4j.maxsat,
+ org.sat4j.maxsat.reader
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Require-Bundle: org.sat4j.core,
+ org.sat4j.pb,
+ org.apache.commons.cli;bundle-version="1.0.0"
+Built-By: Daniel Le Berre
+Main-Class: org.sat4j.maxsat.GenericOptLauncher
+Specification-Title: SAT4J
+Specification-Version: NA
+Specification-Vendor: Daniel Le Berre
+Implementation-Title: SAT4J
+Implementation-Version: 2.0 
+Implementation-Vendor: CRIL CNRS UMR 8188 - Universite d'Artois
+Class-Path: org.sat4j.pb.jar lib/commons-cli.jar
