@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Multicore
+Bundle-SymbolicName: org.sat4j.multicore
+Bundle-Version: 9.9.9.token
+Require-Bundle: org.sat4j.core;bundle-version="9.9.9"
+Main-Class: org.sat4j.multicore.MultiCoreLauncher
+Class-Path: org.sat4j.core.jar
