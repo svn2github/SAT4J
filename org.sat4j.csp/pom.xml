@@ -5,8 +5,8 @@
     <artifactId>org.sat4j.pom</artifactId>
     <version>2.0.0</version>
   </parent>
-  <artifactId>org.sat4j.core</artifactId>
-  <name>SAT4J core</name>
+  <artifactId>org.sat4j.csp</artifactId>
+  <name>SAT4J csp</name>
   <dependencies>
     <dependency>
       <groupId>org.sat4j</groupId>
