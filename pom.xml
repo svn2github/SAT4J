@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.sat4j</groupId>
+  <artifactId>org.sat4j.pom</artifactId>
+  <packaging>pom</packaging>
+  <version>2.0.0</version>
+  <name>SAT4J</name>
+  <url>http://www.sat4j.org</url>
+  <description>
+The aim of the SAT4J library is to provide an efficient library of SAT solvers in Java. Compared to the OpenSAT project, the SAT4J library targets first users of SAT "black boxes", willing to embed  SAT technologies into their application without worrying about the details. Since we use the library for our own research, it is also possible for SAT researchers to use it as a basis for their work.
+  </description>
+  <licenses>
+  <license>
+    <name>Eclipse Public License 1.0</name>
+    <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
+    <distribution>Manual</distribution>
+  </license>
+  <license>
+    <name>GNU Lesser GPL 2.1</name>
+    <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+    <distribution>manual</distribution>
+  </license>
+</licenses>
+  <organization>
+    <name>Centre de Recherche en Informatique de Lens (CRIL)</name>
+    <url>http://www.cril.univ-artois.fr/</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>leberre</id>
+      <name>Daniel Le Berre</name>
+      <email>leberre@cril.univ-artois.fr</email>
+      <url>http://www.cril.univ-artois.fr/~leberre/</url>
+      <organization>CRIL</organization>
+      <organizationUrl>http://www.cril.univ-artois.fr/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>parrain</id>
+      <name>Anne Parrain</name>
+      <email>parrain@cril.univ-artois.fr</email>
+      <url>http://www.cril.univ-artois.fr/~parrain/</url>
+      <organization>CRIL</organization>
+      <organizationUrl>http://www.cril.univ-artois.fr/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <contributors>
+    <contributor>
+      <name>Ivor Spence</name>
+      <email>i.spence@qub.ac.uk</email>
+      <url>http://www.cs.qub.ac.uk/~i.spence/</url>
+     </contributor>
+    <contributor>
+      <name>Dieter von Holten</name>
+     </contributor>
+  </contributors>
+  <issueManagement>
+    <system>ObjectWeb Forge</system>
+    <url>http://forge.objectweb.org/tracker/?group_id=228</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>Developer List</name>
+      <subscribe>sat4j-dev-subscribe@ow2.org</subscribe>
+      <unsubscribe>sat4j-dev-unsubscribe@ow2.org</unsubscribe>
+      <post>sat4j-dev@ow2.org</post>
+      <archive>http://mail-archive.ow2.org/sat4j-dev/index.html</archive>
+    </mailingList>
+    <mailingList>
+      <name>Commits List</name>
+      <subscribe>sat4j-commits-subscribe@ow2.org</subscribe>
+      <unsubscribe>sat4j-commits-unsubscribe@ow2.org</unsubscribe>
+      <post>sat4j-commits@ow2.org</post>
+      <archive>http://mail-archive.ow2.org/sat4j-commits/index.html</archive>
+    </mailingList>
+  </mailingLists>
+  <properties>
+    <!-- compiler params -->
+    <javaSource>1.5</javaSource>
+    <javaTarget>jsr14</javaTarget>
+		
+    <!-- common distribution locations -->
+    <distributionRepositoryId>releases</distributionRepositoryId>
+    <distributionRepositoryUrl>
+      dav:http://nexus:8081/nexus/content/repositories/releases
+    </distributionRepositoryUrl>
+    <siteRepositoryId></siteRepositoryId>
+    <siteRepositoryUrl></siteRepositoryUrl>
+  </properties>
+
+  <modules>
+    <module>org.sat4j.core</module>
+    <!--
+    <module>pb</module>
+    <module>sat</module>
+    <module>multicore</module>
+    <module>maxsat</module>
+    -->
+  </modules>
+
+ <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.1</version>
+      <scope>test</scope>
+    </dependency>
+ </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <property>
+              <name>test.prefix</name>
+              <value>/libre/benchs-sat4j/</value>
+            </property>
+            <property>
+              <name>test.pbprefix</name>
+              <value>/libre/benchs-sat4j/</value>
+            </property>
+          </systemProperties>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin
+        </artifactId>
+        <configuration>
+          <source>${javaSource}</source>
+          <target>${javaTarget}</target>
+        </configuration>
+      </plugin>
+
+			
+      <plugin>
+      	<groupId>org.codehaus.mojo</groupId>
+      	<artifactId>cobertura-maven-plugin</artifactId>
+      	<version>2.0</version>
+      	<executions>
+      		<execution>
+      			<id>clean</id>
+      			<goals>
+      				<goal>clean</goal>
+      			</goals>
+      		</execution>
+      	</executions>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-javadoc-plugin</artifactId>
+      	<version>2.2</version>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-source-plugin</artifactId>
+      	<executions>
+      		<execution>
+      			<id>attach-sources</id>
+      			<goals>
+      				<goal>jar</goal>
+      			</goals>
+      		</execution>
+      	</executions>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-javadoc-plugin</artifactId>
+      	<executions>
+      		<execution>
+      			<id>attach-javadocs</id>
+      			<goals>
+      				<goal>jar</goal>
+      			</goals>
+      		</execution>
+      	</executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+
+	<distributionManagement>
+		<repository>
+			<id>${distributionRepositoryId}</id>
+			<name>${distributionRepositoryId}</name>
+			<url>${distributionRepositoryUrl}</url>
+		</repository>
+	    <site>
+			<id>${sitesRepositoryId}</id>
+			<name>${sitesRepositoryId}</name>
+			<url>${sitesRepositoryUrl}</url>
+	    </site>
+    </distributionManagement>
+ 
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.0</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.0.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.4.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<targetJdk>1.5</targetJdk>
+				</configuration>
+			</plugin>
+
+                        <plugin>
+                               <groupId>org.apache.maven.plugins</groupId>
+                               <artifactId>maven-checkstyle-plugin</artifactId>
+                        </plugin>
+
+                        <plugin>
+                               <groupId>org.apache.maven.plugins</groupId>
+                               <artifactId>maven-changelog-plugin</artifactId>
+                               <configuration>
+                                  <basedir>target/checkout</basedir>
+                               </configuration>
+                        </plugin>
+    <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jdepend-maven-plugin</artifactId>
+          </plugin>
+    <!--
+    <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+       <artifactId>findbugs-maven-plugin</artifactId>
+    </plugin>
+    -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<tags>
+						<tag>TODO</tag>
+						<tag>@todo</tag>
+						<tag>FIXME</tag>
+						<tag>XXX</tag>
+					</tags>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+  
+</project>
