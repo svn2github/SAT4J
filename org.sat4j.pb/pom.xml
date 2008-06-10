@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.sat4j</groupId>
+    <artifactId>org.sat4j.pom</artifactId>
+    <version>2.0.0</version>
+  </parent>
+
+  <artifactId>org.sat4j.pb</artifactId>
+  <name>SAT4J pseudo</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.sat4j</groupId>
+      <artifactId>org.sat4j.core</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+  </dependencies>
+</project>
