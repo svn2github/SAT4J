@@ -1312,12 +1312,10 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		return null;
 	}
 
-	@Override
 	public boolean isDBSimplificationAllowed() {
 		return isDBSimplificationAllowed;
 	}
 
-	@Override
 	public void setDBSimplificationAllowed(boolean status) {
 		isDBSimplificationAllowed = status;
 	}

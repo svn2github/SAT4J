@@ -274,12 +274,10 @@ public class DimacsStringSolver implements ISolver {
         
     }
 
-	@Override
 	public boolean isDBSimplificationAllowed() {
 		return false;
 	}
 
-	@Override
 	public void setDBSimplificationAllowed(boolean status) {
 		
 	}
