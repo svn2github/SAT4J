@@ -101,6 +101,8 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <module>org.sat4j.multicore</module>
     <module>org.sat4j.maxsat</module>
     <module>org.sat4j.sat</module>
+    <module>org.sat4j.csp</module>
+    <module>org.sat4j.csp.xmlparser</module>
   </modules>
 
  <dependencies>
