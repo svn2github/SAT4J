@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.sat4j</groupId>
+    <artifactId>org.sat4j.pom</artifactId>
+    <version>2.0.0</version>
+  </parent>
+  <artifactId>org.sat4j.core</artifactId>
+  <name>SAT4J core</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.sat4j</groupId>
+      <artifactId>org.sat4j.core</artifactId>
+      <version>2.0.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.7R1</version>
+    </dependency>
+  </dependencies>
+  <scm>
+    <connection>scm:cvs:pserver:anonymous:@cvs.forge.objectweb.org:/cvsroot/sat4j:core</connection>
+    <developerConnection>scm:cvs:pserver:leberre:bzh4oweb@cvs.forge.objectweb.org:/cvsroot/sat4j:core</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://cvs.forge.objectweb.org/cgi-bin/viewcvs.cgi/sat4j/core</url>
+  </scm>
+</project>
