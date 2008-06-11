@@ -11,7 +11,8 @@ Export-Package: org.sat4j.csp,
  org.sat4j.reader
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Require-Bundle: org.mozilla.javascript;bundle-version="1.6.2"
+Require-Bundle: org.mozilla.javascript;bundle-version="1.6.2",
+ org.sat4j.csp.xmlparser;bundle-version="1.0.1"
 Built-By: Daniel Le Berre
 Main-Class: org.sat4j.csp.CSPLauncher
 Specification-Title: SAT4J
