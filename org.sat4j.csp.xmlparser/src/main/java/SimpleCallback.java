@@ -5,7 +5,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * signal the beginning of parsing
 	 * 
-	 * @param name:
+	 * @param name
 	 *            name of the instance
 	 */
 	public void beginInstance(String name) {
@@ -17,7 +17,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the domains declarations
 	 * 
-	 * @param nbDomains:
+	 * @param nbDomains
 	 *            number of domains that will be declared
 	 */
 	public void beginDomainsSection(int nbDomains) {
@@ -28,9 +28,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the declaration of one domain
 	 * 
-	 * @param name:
+	 * @param name
 	 *            identifier of the domain
-	 * @param nbValue:
+	 * @param nbValue
 	 *            number of values in the domain
 	 */
 	public void beginDomain(String name, int nbValue) {
@@ -41,7 +41,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * add a single value to the current domain
 	 * 
-	 * @param v:
+	 * @param v
 	 *            value to add to the domain
 	 */
 	public void addDomainValue(int v) {
@@ -51,9 +51,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * add the range of values [first..last] to the current domain
 	 * 
-	 * @param first:
+	 * @param first
 	 *            first value to add to the domain
-	 * @param last:
+	 * @param last
 	 *            last value to add to the domain
 	 */
 	public void addDomainValue(int first, int last) {
@@ -79,7 +79,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the variables declarations
 	 * 
-	 * @param nbVariables:
+	 * @param nbVariables
 	 *            number of variables that will be declared
 	 */
 	public void beginVariablesSection(int nbVariables) {
@@ -90,9 +90,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called to define a new variable
 	 * 
-	 * @param name:
+	 * @param name
 	 *            identifier of the variable
-	 * @param domain:
+	 * @param domain
 	 *            identifier of the variable domain
 	 */
 	public void addVariable(String name, String domain) {
@@ -111,7 +111,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the relations declarations
 	 * 
-	 * @param nbRelations:
+	 * @param nbRelations
 	 *            number of relations that will be declared
 	 */
 	public void beginRelationsSection(int nbRelations) {
@@ -122,13 +122,13 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the declaration of one relation
 	 * 
-	 * @param name:
+	 * @param name
 	 *            identifier of the relation
-	 * @param arity:
+	 * @param arity
 	 *            arity of the relation
-	 * @param nbTuples:
+	 * @param nbTuples
 	 *            number of tuples in the relation
-	 * @param isSupport:
+	 * @param isSupport
 	 *            true if tuples represent support, false if tuples represent
 	 *            conflicts
 	 */
@@ -142,7 +142,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * add a single tuple to the current relation
 	 * 
-	 * @param tuple:
+	 * @param tuple
 	 *            tuple to add to the relation (contains arity elements)
 	 */
 	public void addRelationTuple(int tuple[]) {
@@ -171,7 +171,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the predicates declarations
 	 * 
-	 * @param nbPredicates:
+	 * @param nbPredicates
 	 *            number of predicates that will be declared
 	 */
 	public void beginPredicatesSection(int nbPredicates) {
@@ -182,9 +182,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the declaration of one predicate
 	 * 
-	 * @param name:
+	 * @param name
 	 *            identifier of the predicate
-	 * @param arity:
+	 * @param arity
 	 *            arity of the predicate
 	 */
 	public void beginPredicate(String name) {
@@ -194,9 +194,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * add a formal parameter to the current predicate
 	 * 
-	 * @param name:
+	 * @param name
 	 *            name of the parameter
-	 * @param type:
+	 * @param type
 	 *            type of the parameter
 	 */
 	public void addFormalParameter(String name, String type) {
@@ -206,7 +206,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * provide the expression of the current predicate
 	 * 
-	 * @param tree:
+	 * @param tree
 	 *            the abstract syntax tree representing the expression
 	 */
 	public void predicateExpression(String expression) {
@@ -232,7 +232,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the constraints declarations
 	 * 
-	 * @param nbConstraints:
+	 * @param nbConstraints
 	 *            number of constraints that will be declared
 	 */
 	public void beginConstraintsSection(int nbConstraints) {
@@ -244,9 +244,9 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * callback called at the beginning of the declaration of one constraint
 	 * 
-	 * @param name:
+	 * @param name
 	 *            identifier of the constraint
-	 * @param arity:
+	 * @param arity
 	 *            arity of the constraint
 	 */
 	public void beginConstraint(String name, int arity) {
@@ -268,7 +268,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * declares that a variable is in the constraint scope
 	 * 
-	 * @param name:
+	 * @param name
 	 *            name of the variable
 	 */
 	public void addVariableToConstraint(String name) {
@@ -280,7 +280,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * parameter is described as an expression in a syntax chosen by the solver
 	 * (C,Java,prefix,postfix,...)
 	 * 
-	 * @param expr:
+	 * @param expr
 	 *            the expression
 	 */
 	// public void addEffectiveParameter(String expr){
@@ -290,7 +290,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * add an effective parameter to the current constraint. The effective
 	 * parameter is described as an abstract syntax tree
 	 * 
-	 * @param tree:
+	 * @param tree
 	 *            expression that computes the value of the effective parameter
 	 */
 	// public void addEffectiveParameter(AST *tree){}
@@ -298,7 +298,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * add an effective parameter which is a simple variable to the current
 	 * constraint
 	 * 
-	 * @param name:
+	 * @param name
 	 *            name of the variable passed as parameter
 	 */
 	public void addEffectiveParameter(String name) {
@@ -309,7 +309,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * add an effective parameter which is a simple variable to the current
 	 * constraint
 	 * 
-	 * @param name:
+	 * @param name
 	 *            name of the variable passed as parameter
 	 */
 	public void addEffectiveParameter(int value) {
@@ -320,7 +320,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * provide the expression of the current constraint as an abstract syntax
 	 * tree
 	 * 
-	 * @param tree:
+	 * @param tree
 	 *            the abstract syntax tree representing the expression
 	 */
 	// public void constraintExpression(AST *tree){}
@@ -356,14 +356,14 @@ public class SimpleCallback implements ICSPCallback {
 	
 	/**
 	 * provides an integer value in a parameter list of a constraint
-	 * @param value:
+	 * @param value
 	 * 			value of current list item
 	 */
 	public void addIntegerItem(int value){}
 	
 	/**
 	 * provides the name of a variable in a parameter list of a constraint
-	 * @param name:
+	 * @param name
 	 * 			name of the current list item
 	 */
 	public void addVariableItem(String name){}
