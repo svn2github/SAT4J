@@ -170,7 +170,7 @@ public final class Vec<T> implements IVec<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final void ensure(final int nsize) {
+	public void ensure(final int nsize) {
 		if (nsize >= myarray.length) {
 			T[] narray = (T[]) new Object[Math.max(nsize, nbelem * 2)];
 			System.arraycopy(myarray, 0, narray, 0, nbelem);
