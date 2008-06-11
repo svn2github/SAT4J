@@ -1,3 +1,4 @@
+package org.sat4j.csp.main;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;

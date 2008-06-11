@@ -1,3 +1,4 @@
+package org.sat4j.csp.main;
 import org.sat4j.csp.xml.ICSPCallback;
 
 public class SimpleCallback implements ICSPCallback {
