@@ -276,25 +276,6 @@ public class SimpleCallback implements ICSPCallback {
 	}
 
 	/**
-	 * add an effective parameter to the current constraint. The effective
-	 * parameter is described as an expression in a syntax chosen by the solver
-	 * (C,Java,prefix,postfix,...)
-	 * 
-	 * @param expr
-	 *            the expression
-	 */
-	// public void addEffectiveParameter(String expr){
-	// System.out.println("param : "+expr);
-	// }
-	/**
-	 * add an effective parameter to the current constraint. The effective
-	 * parameter is described as an abstract syntax tree
-	 * 
-	 * @param tree
-	 *            expression that computes the value of the effective parameter
-	 */
-	// public void addEffectiveParameter(AST *tree){}
-	/**
 	 * add an effective parameter which is a simple variable to the current
 	 * constraint
 	 * 
@@ -309,7 +290,7 @@ public class SimpleCallback implements ICSPCallback {
 	 * add an effective parameter which is a simple variable to the current
 	 * constraint
 	 * 
-	 * @param name
+	 * @param value
 	 *            name of the variable passed as parameter
 	 */
 	public void addEffectiveParameter(int value) {
@@ -317,18 +298,10 @@ public class SimpleCallback implements ICSPCallback {
 	}
 
 	/**
-	 * provide the expression of the current constraint as an abstract syntax
-	 * tree
-	 * 
-	 * @param tree
-	 *            the abstract syntax tree representing the expression
-	 */
-	// public void constraintExpression(AST *tree){}
-	/**
 	 * provide the expression of the current constraint as an expression in a
 	 * syntac chosen by the solver
 	 * 
-	 * @param expr:
+	 * @param expr
 	 *            the expression
 	 */
 	public void constraintExpression(String expr) {

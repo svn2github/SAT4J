@@ -140,8 +140,6 @@ public interface ICSPCallback {
 	 * 
 	 * @param name
 	 *            identifier of the predicate
-	 * @param arity
-	 *            arity of the predicate
 	 */
 	void beginPredicate(String name);
 
@@ -158,7 +156,7 @@ public interface ICSPCallback {
 	/**
 	 * provide the expression of the current predicate
 	 * 
-	 * @param tree
+	 * @param expr
 	 *            the abstract syntax tree representing the expression
 	 */
 	void predicateExpression(String expr);
@@ -178,7 +176,7 @@ public interface ICSPCallback {
 	/**
 	 * callback called at the beginning of the constraints declarations
 	 * 
-	 * @param nbConstraints:
+	 * @param nbConstraints
 	 *            number of constraints that will be declared
 	 */
 	void beginConstraintsSection(int nbConstraints);
