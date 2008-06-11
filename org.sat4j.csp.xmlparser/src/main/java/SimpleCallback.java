@@ -206,7 +206,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * provide the expression of the current predicate
 	 * 
-	 * @param tree
+	 * @param expression
 	 *            the abstract syntax tree representing the expression
 	 */
 	public void predicateExpression(String expression) {
@@ -257,7 +257,7 @@ public class SimpleCallback implements ICSPCallback {
 	/**
 	 * provide the definition of the current constraint
 	 * 
-	 * @param name:
+	 * @param name
 	 *            the refererence to the definition of this constraint. May be a
 	 *            relation, a predicate or the name of a global constraint
 	 */
