@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %bundleName
+Bundle-SymbolicName: org.sat4j.csp.xmlparser
+Bundle-Version: 1.0.1
+Export-Package: .,
+ org.sat4j.csp.xml
+Bundle-Vendor: %providerName
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
