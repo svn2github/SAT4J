@@ -184,8 +184,6 @@ public class SimpleCallback implements ICSPCallback {
 	 * 
 	 * @param name
 	 *            identifier of the predicate
-	 * @param arity
-	 *            arity of the predicate
 	 */
 	public void beginPredicate(String name) {
 		System.out.println("predicate - name : " + name);
