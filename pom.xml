@@ -10,6 +10,10 @@
   <description>
 The aim of the SAT4J library is to provide an efficient library of SAT solvers in Java. Compared to the OpenSAT project, the SAT4J library targets first users of SAT "black boxes", willing to embed  SAT technologies into their application without worrying about the details. Since we use the library for our own research, it is also possible for SAT researchers to use it as a basis for their work.
   </description>
+  <scm>
+    <connection>scm:svn:svn://svn.forge.objectweb.org/svnroot/sat4j/maven/trunk</connection>
+    <url>http://svn.forge.objectweb.org/cgi-bin/viewcvs.cgi/sat4j/maven/trunk/</url>
+  </scm>
   <licenses>
   <license>
     <name>Eclipse Public License 1.0</name>
@@ -234,6 +238,19 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>2.0.1</version>
+                                <reportSets>
+                                  <reportSet>
+                                     <reports>
+                                       <report>index</report>
+                                       <report>scm</report>
+                                       <report>license</report>
+                                       <report>issue-tracking</report>
+                                       <report>mailing-list</report>
+                                       <report>project-team</report>
+                                       <report>dependencies</report>
+                                     </reports>
+                               </reportSet>
+                  </reportSets>
 			</plugin>
 
 			<plugin>
@@ -246,6 +263,11 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.1</version>
+                                <!--
+                                <configuration>
+                                   <stylesheet>${basedir}/../stylesheet.css</stylesheet>
+                                </configuration>
+                                -->
 			</plugin>
 
 			<plugin>
@@ -265,24 +287,36 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
                         <plugin>
                                <groupId>org.apache.maven.plugins</groupId>
                                <artifactId>maven-changelog-plugin</artifactId>
-                               <configuration>
-                                  <basedir>target/checkout</basedir>
-                               </configuration>
                         </plugin>
     <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jdepend-maven-plugin</artifactId>
           </plugin>
-    <!--
     <plugin>
        <groupId>org.codehaus.mojo</groupId>
        <artifactId>findbugs-maven-plugin</artifactId>
+       <configuration>
+          <threshold>Low</threshold>
+          <onlyAnalyze>org.sat4j.-</onlyAnalyze>
+       </configuration>
     </plugin>
-    -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.2</version>
+                                <configuration>
+                                <stylesheetfile>${basedir}/../stylesheet.css</stylesheetfile>
+                                <groups>
+                                  <group>
+                                     <title>User level: stable public API</title>
+                                     <packages>org.sat4j:org.sat4j.*</packages>
+                                  </group>
+				  <group>
+                                     <title>Developer level: internal API, subject to change</title>
+                                     <packages>org.sat4j.minisat.*:org.sat4j.reader.csp:org.sat4j.pb.*</packages>
+                                  </group>
+                                </groups>
+                                </configuration>
 			</plugin>
 
 			<plugin>
