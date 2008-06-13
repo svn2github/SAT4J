@@ -54,7 +54,7 @@ public class Predicate implements Clausifiable {
     private static Scriptable scope;
 
     static {
-        cx = ContextFactory.getGlobal().enterContext();
+        cx = Context.enter(); //ContextFactory.getGlobal().enterContext();
         // cx.setOptimizationLevel(1);
         scope = cx.initStandardObjects();
         // System.out.println("scope "+vscope);

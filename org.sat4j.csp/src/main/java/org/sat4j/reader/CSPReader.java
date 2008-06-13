@@ -424,6 +424,9 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
         } else {
             currentclausifiable = relations[id];
         }
+        if (currentclausifiable ==null) {
+        	throw new IllegalArgumentException("Reference not supported:  "+ref);
+        }
     }
 
     public void addVariableToConstraint(String arg0) {
