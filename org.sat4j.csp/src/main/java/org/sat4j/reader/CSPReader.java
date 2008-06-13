@@ -106,7 +106,9 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
 
     public CSPReader(ISolver solver) {
         this.solver = solver;
-        predmapping.put("global:allDifferent", new AllDiff());
+        Clausifiable allDiff = new AllDiff(); 
+        predmapping.put("global:allDifferent",allDiff); // XCSP 2.0 compatibility
+        predmapping.put("global:alldifferent",allDiff);
     }
 
     @Override
