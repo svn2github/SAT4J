@@ -221,7 +221,7 @@ public abstract class AbstractLauncher implements Serializable {
      * 
      * @param message
      */
-    protected void log(String message) {
+    public void log(String message) {
         if (!silent)
             out.println(COMMENT_PREFIX + message);
     }

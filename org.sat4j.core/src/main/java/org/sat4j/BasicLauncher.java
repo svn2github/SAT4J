@@ -62,6 +62,10 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 	public static void main(final String[] args) {
 		BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
 				SolverFactory.instance());
+		if (args.length!=1) {
+			lanceur.usage();
+			return;
+		}
 		lanceur.run(args);
 		System.exit(lanceur.getExitCode().value());
 	}
@@ -81,7 +85,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 
 	@Override
 	public void usage() {
-		log("java -jar sat4j-core.jar <cnffile>");
+		log("java -jar org.sat4j.core.jar <cnffile>");
 	}
 
 	@Override
