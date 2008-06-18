@@ -305,7 +305,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	public boolean removeConstr(IConstr co) {
 		if (co == null) {
-			throw new UnsupportedOperationException(
+			throw new IllegalArgumentException(
 					"Reference to the constraint to remove needed!"); //$NON-NLS-1$
 		}
 		Constr c = (Constr) co;
