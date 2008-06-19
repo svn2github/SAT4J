@@ -4,7 +4,7 @@
   <groupId>org.sat4j</groupId>
   <artifactId>org.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.0.0</version>
+  <version>2.0.1</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org</url>
   <description>
@@ -30,41 +30,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <name>Centre de Recherche en Informatique de Lens (CRIL)</name>
     <url>http://www.cril.univ-artois.fr/</url>
   </organization>
-  <developers>
-    <developer>
-      <id>leberre</id>
-      <name>Daniel Le Berre</name>
-      <email>leberre@cril.univ-artois.fr</email>
-      <url>http://www.cril.univ-artois.fr/~leberre/</url>
-      <organization>CRIL</organization>
-      <organizationUrl>http://www.cril.univ-artois.fr/</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>parrain</id>
-      <name>Anne Parrain</name>
-      <email>parrain@cril.univ-artois.fr</email>
-      <url>http://www.cril.univ-artois.fr/~parrain/</url>
-      <organization>CRIL</organization>
-      <organizationUrl>http://www.cril.univ-artois.fr/</organizationUrl>
-      <roles>
-        <role>developer</role>
-      </roles>
-    </developer>
-  </developers>
-  <contributors>
-    <contributor>
-      <name>Ivor Spence</name>
-      <email>i.spence@qub.ac.uk</email>
-      <url>http://www.cs.qub.ac.uk/~i.spence/</url>
-     </contributor>
-    <contributor>
-      <name>Dieter von Holten</name>
-     </contributor>
-  </contributors>
   <issueManagement>
     <system>ObjectWeb Forge</system>
     <url>http://forge.objectweb.org/tracker/?group_id=228</url>
