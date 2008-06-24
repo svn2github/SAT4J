@@ -29,6 +29,12 @@ package org.sat4j.minisat.core;
 
 import java.io.Serializable;
 
+/**
+ * Abstraction allowing to choose various restarts strategies.
+ * 
+ * @author leberre
+ *
+ */
 public interface RestartStrategy extends Serializable {
 
     /**
