@@ -55,8 +55,7 @@ public class NoRestarts implements RestartStrategy {
 
 	@Override
 	public void onRestart() {
-		// should never happen
-		assert false;
+		// do nothing
 	}
 
 }
