@@ -40,7 +40,7 @@ public class LubyRestarts implements RestartStrategy {
      */
     private static final long serialVersionUID = 1L;
 
-    private static int[] cachedValues = new int[] { 1, 1, 2 };
+    private static int[] cachedValues = new int[] { 0, 1, 1, 2 };
     
     public static final int luby(int i) {
         if (i>=Integer.MAX_VALUE/2) {
