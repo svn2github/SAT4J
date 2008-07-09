@@ -26,7 +26,7 @@ public class MarkableLitsTest extends TestCase {
      * 'org.sat4j.minisat.constraints.cnf.MarkableLits.init(int)'
      */
     public void testInit() {
-        assertEquals(10, lits.nVars());
+        assertEquals(0, lits.nVars());
     }
 
     /*
