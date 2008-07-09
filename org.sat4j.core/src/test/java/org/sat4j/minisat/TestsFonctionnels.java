@@ -148,8 +148,7 @@ public class TestsFonctionnels extends TestCase {
         } catch (ContradictionException e) {
             // OK
         } catch (Exception e) {
-            e.printStackTrace();
-            fail();
+            fail(e.getMessage());
         }
     }
 
