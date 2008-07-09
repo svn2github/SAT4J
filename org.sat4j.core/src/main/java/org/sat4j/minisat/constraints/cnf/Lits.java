@@ -69,6 +69,8 @@ public class Lits implements Serializable, ILits {
 
 	@SuppressWarnings( { "unchecked" })
 	public void init(int nvar) {
+		if (nvar<pool.length) return;
+		
 		assert nvar >= 0;
 		// let some space for unused 0 indexer.
 		int nvars = nvar + 1;
