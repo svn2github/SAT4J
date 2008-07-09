@@ -11,7 +11,7 @@ public class TestLubyFunction {
     public void testSomeKnownValues() {
         int[] knowvalues = { 1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8 };
         for (int i = 0; i < knowvalues.length; i++) {
-            assertEquals(knowvalues[i], LubyRestarts.luby(i + 1));
+            assertEquals("Wrong value for "+i,knowvalues[i], LubyRestarts.luby(i + 1));
         }
     }
 
