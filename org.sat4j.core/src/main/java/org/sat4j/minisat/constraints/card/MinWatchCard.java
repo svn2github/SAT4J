@@ -551,7 +551,8 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
         return voc;
     }
     
-    public boolean equals(Object card){
+    @Override
+	public boolean equals(Object card){
         if (card==null) {
             return false;
         }

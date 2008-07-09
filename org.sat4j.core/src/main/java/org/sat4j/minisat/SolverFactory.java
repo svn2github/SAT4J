@@ -18,8 +18,6 @@
 *******************************************************************************/
 package org.sat4j.minisat;
 
-import java.io.Serializable;
-
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.constraints.CardinalityDataStructure;
 import org.sat4j.minisat.constraints.ClausalDataStructureCB;
@@ -61,7 +59,7 @@ import org.sat4j.tools.OptToSatAdapter;
  * 
  * @author leberre
  */
-public class SolverFactory extends ASolverFactory<ISolver> implements Serializable {
+public class SolverFactory extends ASolverFactory<ISolver> {
 
     /**
      * 

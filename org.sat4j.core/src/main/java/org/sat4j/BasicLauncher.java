@@ -70,6 +70,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 		System.exit(lanceur.getExitCode().value());
 	}
 
+	@Override
 	protected ISolver configureSolver(String[] args) {
 		ISolver asolver = factory.defaultSolver();
 		asolver.setTimeout(Integer.MAX_VALUE);
