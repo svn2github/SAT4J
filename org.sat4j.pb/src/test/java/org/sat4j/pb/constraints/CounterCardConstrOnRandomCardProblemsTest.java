@@ -8,9 +8,8 @@ package org.sat4j.pb.constraints;
 
 import junit.framework.TestCase;
 
-import org.sat4j.minisat.SolverFactory;
-import org.sat4j.minisat.constraints.CardinalityDataStructureYanMax;
-import org.sat4j.specs.ISolver;
+import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.SolverFactory;
 
 /**
  * @author leberre
@@ -19,7 +18,7 @@ import org.sat4j.specs.ISolver;
  * Preferences - Java - Code Generation - Code and Comments
  */
 public class CounterCardConstrOnRandomCardProblemsTest extends
-        AbstractRandomCardProblemsTest<ISolver> {
+        AbstractPBRandomCardProblemsTest {
 
     /**
      * @param arg0
@@ -28,13 +27,13 @@ public class CounterCardConstrOnRandomCardProblemsTest extends
         super(arg0);
     }
 
+    
     /**
      * @see TestCase#setUp()
      */
     @Override
-    protected ISolver createSolver() {
-        return SolverFactory
-                .newMiniLearning(new CardinalityDataStructureYanMax());
+    protected IPBSolver createSolver() {
+        return SolverFactory.newMiniOPBCounterBasedClauseCardConstrMax();
     }
 
 }
