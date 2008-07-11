@@ -52,7 +52,7 @@ public class Lits23 extends Lits2 implements ILits23 {
         assert r > 1;
 
         if (ternclauses == null) {
-            ternclauses = new TernaryClauses[2 * nVars() + 2];
+            ternclauses = new TernaryClauses[2 * capacity() + 2];
         } else {
 			int maxid = Math.max(p, q);
 			if (ternclauses.length <= maxid) {

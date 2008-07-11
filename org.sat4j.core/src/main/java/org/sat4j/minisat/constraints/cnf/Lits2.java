@@ -72,7 +72,7 @@ public class Lits2 extends Lits implements ILits2 {
 
 	private void register(int p, int q) {
 		if (binclauses == null) {
-			binclauses = new BinaryClauses[2 * nVars() + 2];
+			binclauses = new BinaryClauses[2 * capacity() + 2];
 		} else {
 			int maxid = Math.max(p, q);
 			if (binclauses.length <= maxid) {
