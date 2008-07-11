@@ -4,7 +4,7 @@
   <groupId>org.sat4j</groupId>
   <artifactId>org.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org</url>
   <description>
@@ -109,14 +109,20 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.4.3</version>
         <configuration>
+          <forkMode>pertest</forkMode>
+          <argLine>-enableassertions -Xmx512m</argLine>
+          <excludes>
+            <exclude>**/TestLubyFunction.java</exclude>
+            <exclude>**/TestConstrGroup.java</exclude>
+          </excludes>
           <systemProperties>
             <property>
               <name>test.prefix</name>
-              <value>/libre/benchs-sat4j/</value>
+              <value>${basedir}/src/test/testfiles/</value>
             </property>
             <property>
               <name>test.pbprefix</name>
-              <value>/libre/benchs-sat4j/</value>
+              <value>${basedir}/src/test/testfiles/</value>
             </property>
           </systemProperties>
         </configuration>

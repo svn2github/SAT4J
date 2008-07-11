@@ -1,0 +1,317 @@
+<project name="sat4j" default="default">
+        <property name="testreport.dir" value="tests"/>
+	<property name="build" value="bin" />
+	<property name="doc" value="api" />
+	<property name="target" value="jsr14"/>
+        <property name="dist" value="dist"/>
+        <property name="release" value="CUSTOM"/>
+        <property name="tag" value="HEAD"/>
+        <property name="lib" value="lib"/>
+	<target name="pseudo" depends="core" description="Build a jar file suitable for the PB evaluations from CVS">
+		<echo>Building Pseudo Boolean Solver</echo>
+		<antcall target="build">
+		   <param name="package" value="pb"/>
+		   <param name="src" value="org.sat4j.pb/src/main/java" />
+                   <param name="jarname" value="org.sat4j.pb"/>
+		   <param name="mainclass" value="org.sat4j.pb.LanceurPseudo2007"/>
+                </antcall>
+                <antcall target="source-package">
+                   <param name="package" value="pb"/>
+		   <param name="src" value="org.sat4j.pb/src/main/java" />
+                   <param name="jarname" value="org.sat4j.pb"/>
+                </antcall>
+                <antcall target="zip-bundle">
+		   <param name="package" value="pb"/>
+                </antcall>
+	</target>
+
+        <target name="maxsat" depends="pseudo" description="Build a jar file suitable for the MaxSAT evaluations from CVS">
+		<echo>Building MAXSAT Solver</echo>
+                <antcall target="build">
+		   <param name="package" value="maxsat"/>
+		   <param name="src" value="org.sat4j.maxsat/src/main/java" />
+		   <param name="jarname" value="org.sat4j.maxsat"/>
+		   <param name="mainclass" value="org.sat4j.maxsat.GenericOptLauncher"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="maxsat"/>
+		   <param name="src" value="org.sat4j.maxsat/src/main/java" />
+                   <param name="jarname" value="org.sat4j.maxsat"/>
+                </antcall>
+	</target>
+
+	<target name="csp" depends="core" description="Build a jar file suitable for the CSP competitions from CVS">
+		<echo>Building CSP Solver</echo>
+                <antcall target="build">
+		   <param name="package" value="csp"/>
+		   <param name="src" value="org.sat4j.csp/src/main/java" />
+                   <param name="jarname" value="org.sat4j.csp"/>
+		   <param name="mainclass" value="org.sat4j.csp.CSPLauncher"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="csp"/>
+		   <param name="src" value="org.sat4j.csp/src/main/java" />
+                   <param name="jarname" value="org.sat4j.csp"/>
+                </antcall>
+	</target>
+
+	<target name="sat" depends="core" description="Build a jar file suitable for experimenting with SAT solvers from CVS">
+		<echo>Building the Java SAT Solvers toolkit</echo>
+                <antcall target="build">
+		   <param name="package" value="sat"/>
+		   <param name="src" value="org.sat4j.sat/src/main/java" />
+                   <param name="jarname" value="org.sat4j.sat"/>
+		   <param name="mainclass" value="org.sat4j.Lanceur"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="sat"/>
+		   <param name="src" value="org.sat4j.sat/src/main/java" />
+                   <param name="jarname" value="org.sat4j.sat"/>
+                </antcall>
+	</target>
+
+	<target name="core" depends="clean" description="Build a jar file suitable for embedding SAT technology into a Java application from CVS">
+		<echo>Building core library to be embedded into Java applications</echo>
+                <antcall target="build">
+		   <param name="package" value="core"/>
+		   <param name="src" value="org.sat4j.core/src/main/java" />
+                   <param name="jarname" value="org.sat4j.core"/>
+		   <param name="mainclass" value="org.sat4j.BasicLauncher"/>
+		</antcall>
+                <antcall target="source-package">
+		   <param name="package" value="core"/>
+		   <param name="src" value="org.sat4j.core/src/main/java" />
+                   <param name="jarname" value="org.sat4j.core"/>
+		</antcall>
+                <antcall target="zip-bundle">
+		   <param name="package" value="core"/>
+                </antcall>
+	</target>
+
+	<target name="sudoku" depends="core" description="Build the sudoku demo from CVS">
+		<echo>Building Sudoku app ${java.home}</echo>
+		<antcall target="build">
+			<param name="package" value="sudoku"/>
+			<param name="src" value="sudoku/src"/>
+                        <param name="lib" value="sudoku/lib"/>
+                        <param name="jarname" value="org.sat4j.sudoku"/>
+			<param name="mainclass" value="org.sat4j.apps.sudoku.SDApplication"/>
+		</antcall>
+	</target>
+
+	<target name="prepare" depends="clean">
+		<!-- Create the time stamp -->
+                <tstamp>
+                   <format property="BUILD_DATE" pattern="yyyyMMdd"/>
+                </tstamp>
+		<echo>Creating build and doc directories</echo>
+		<mkdir dir="${build}" />
+                <mkdir dir="${testreport.dir}" />
+                <mkdir dir="${dist}" />
+		<mkdir dir="${dist}/${release}" />
+		<mkdir dir="${dist}/${release}/lib" />
+		<mkdir dir="${doc}" />
+		<mkdir dir="${doc}/core" />
+		<mkdir dir="${doc}/sat" />
+		<mkdir dir="${doc}/pb" />
+		<mkdir dir="${doc}/maxsat" />
+		<mkdir dir="${doc}/csp" />
+	</target>
+
+	<path id="somePath">
+		<pathelement location="${build}"/>
+		<fileset dir="${lib}">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="${dist}/${release}">
+			<include name="*.jar"/>
+		</fileset>
+		<pathelement location="${java.home}/lib/javaws.jar"/> 
+	</path>
+
+	<target name="javadoc">
+		<echo>Generating Javodoc</echo>
+		<javadoc destdir="${doc}/${module}" 
+				 access="public" 
+				 source="1.5" 
+				 use="true" 
+				 notree="false" 
+				 nonavbar="false" 
+				 noindex="false" 
+				 splitindex="true" 
+				 author="true" 
+				 version="true" 
+				 nodeprecatedlist="false" 
+				 nodeprecated="false" 
+				 packagenames="org.sat4j.*,org.sat4j.spec.*,org.sat4j.core.*,org.sat4j.minisat.*,org.sat4j.minisat.core.*,org.sat4j.minisat.constraints.*,org.sat4j.minisat.constraints.cnf.*"
+				 sourcepath="${module}/src" 
+				 stylesheetfile="core/lib/stylesheet.css"
+				 overview="${module}/src/overview.html" 
+				 doctitle="SAT4J: a SATisfiability library for Java">
+				 <classpath refid="somePath"/>
+				<group title="User level: stable public API." packages="org.sat4j:org.sat4j.*"/>
+				<group title="Developer level: internal API, subject to change." packages="org.sat4j.minisat.*:org.sat4j.reader.csp:org.sat4j.pb.*"/>
+
+		</javadoc>
+	</target>
+
+	<target name="build" depends="prepare">
+		<echo>Compiling source code ${src} using target ${target}</echo>
+		<javac
+		srcdir="${src}"
+		destdir="${build}"
+		source="1.5"
+		target="${target}"
+	>
+			<classpath refid="somePath"/>
+		</javac>
+		<copy todir="${build}" failonerror="false">
+			<fileset dir="${src}">
+				<include name="**/*.properties"/>
+				<include name="**/*.png"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/> 
+				<include name="**/*.js"/>
+				<include name="**/*.html"/>
+				<include name="**/*.version"/>
+				<exclude name="**/package.html"/>
+				<exclude name="**/*.jpage"/>
+			</fileset>
+			<fileset dir="${src}/../resources">
+				<include name="about.html"/>
+			</fileset>
+			<fileset dir="${src}/../../../">
+				<include name="plugin.properties"/>
+				<include name="**/*.MF"/>
+			</fileset>
+		</copy>
+		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/><include name="**/*.MF"/></replace>
+		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">
+			<!--
+			<manifest>
+				<attribute name="Built-By" value="Daniel Le Berre"/>
+				<attribute name="Main-Class" value="${mainclass}"/>
+                                <attribute name="SplashScreen-Image" value="sat4j.png"/>
+				<attribute name="Specification-Title" value="SAT4J"/>
+				<attribute name="Specification-Version" value="1.5+"/>
+				<attribute name="Specification-Vendor"
+						   value="Daniel Le Berre"
+				 />
+				<attribute name="Implementation-Title" value="SAT4J"/>
+				<attribute name="Implementation-Version" value="NA "/>
+				<attribute name="Implementation-Vendor"
+						   value="CRIL-CNRS FRE 2499"
+				 />
+		 </manifest>
+		 
+			<zipgroupfileset dir="${lib}">
+                           <include name="commons*.jar"/>
+			   <include name="jlf*.jar"/>
+			   <include name="csp*.jar"/>
+			   <include name="js.jar"/>
+		   </zipgroupfileset>
+		   -->
+		</jar>
+		<copy todir="${dist}/${release}/lib" failonerror="false">
+			<fileset dir="${lib}">
+				<include name="commons*.jar"/>
+				<include name="jlf*.jar"/>
+				<include name="csp*.jar"/>
+				<include name="js.jar"/>
+		    </fileset>
+	       </copy>
+	</target>
+
+	<target name="source-package">
+                <jar destfile="${dist}/${release}/${jarname}-src.jar" manifest="${build}/META-INF/MANIFEST.MF">
+			<fileset dir="${src}">
+                                <include name="**/*.java"/>
+				<include name="**/*.properties"/>
+				<include name="**/*.png"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/> 
+				<include name="**/*.js"/>
+				<include name="**/*.html"/>
+				<include name="**/*.version"/>
+				<exclude name="**/package.html"/>
+				<exclude name="**/*.jpage"/>
+			</fileset>
+			<fileset dir="${src}/../resources">
+				<include name="about.html"/>
+			</fileset>
+                        <fileset dir="${src}/../../../">
+				<include name="plugin.properties"/>
+                                <include name="build.properties"/>
+                                <include name="**/*.MF"/>
+			</fileset>
+		</jar>	
+        </target>
+
+        <target name="zip-bundle" depends="prepare">
+            <zip destfile="${dist}/${release}/sat4j-${package}-v${BUILD_DATE}.zip">
+                     <fileset dir="${dist}/${release}/">
+				<include name="*${package}*.jar"/>
+		    </fileset>
+            </zip>
+        </target>
+	  <target name="javadocs" description="Build all the Javadocs">
+	        <antcall target="javadoc">
+			<param name="module" value="core"/>
+			<param name="lib" value="core/lib"/>
+		</antcall>
+	        <antcall target="javadoc">
+			<param name="module" value="sat"/>
+			<param name="lib" value="sat/lib"/>
+		</antcall>
+	        <antcall target="javadoc">
+			<param name="module" value="pb"/>
+			<param name="lib" value="pb/lib"/>
+		</antcall>
+	        <antcall target="javadoc">
+			<param name="module" value="maxsat"/>
+			<param name="lib" value="maxsat/lib"/>
+		</antcall>
+	        <antcall target="javadoc">
+			<param name="module" value="csp"/>
+			<param name="lib" value="csp/lib"/>
+		</antcall>
+	  </target>
+	<target name="default"
+				depends="sat" description="Build the SAT4J library and the associated Javadoc from CVS"
+			>
+                        <antcall target="javadoc">
+                           <param name="src" value="core/src"/>
+                           <param name="lib" value="core/lib"/>
+                        </antcall>
+			<echo>
+	You just built SAT4J from CVS. 
+	The code might not be in a very good shape.
+	You should take a look at http://www.sat4j.org/junit/ 
+	to check that the functional tests are ok. 
+	Use that snapshot at your own risk! :-=)
+	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+	Please fill bug reports and feature requests at 
+	http://forge.objectweb.org/tracker/?group_id=228
+					</echo>
+		</target>
+
+	<target name="p2" depends="cleanrelease,core,pseudo" description="Build a full release of SAT4J project">
+                 <echo>Built full release ${release}</echo>
+	</target>
+
+	<target name="all" depends="cleanrelease,core,pseudo,maxsat,csp,sat,sudoku" description="Build a full release of SAT4J project">
+                 <echo>Built full release ${release}</echo>
+	</target>
+
+	<target name="cleanrelease">
+                 <delete dir="${dist}/${release}" />
+	</target>
+
+	<target name="clean" description="Delete build and doc directories">
+		<!-- Delete the ${build} and ${doc} directory trees -->
+		<delete dir="${build}" />
+                <delete dir="$testreport.dir}"/>
+		<delete dir="${doc}" />
+	</target>
+
+</project>
