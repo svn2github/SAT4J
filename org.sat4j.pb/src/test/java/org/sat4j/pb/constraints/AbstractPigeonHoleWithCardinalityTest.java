@@ -9,8 +9,6 @@ package org.sat4j.pb.constraints;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import junit.swingui.TestRunner;
-
 import org.sat4j.minisat.AbstractAcceptanceTestCase;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.specs.ISolver;
@@ -34,15 +32,6 @@ public abstract class AbstractPigeonHoleWithCardinalityTest<T extends ISolver> e
      */
     public AbstractPigeonHoleWithCardinalityTest(String arg) {
         super(arg);
-    }
-
-    /**
-     * Lancement du test
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        TestRunner.run(AbstractPigeonHoleWithCardinalityTest.class);
     }
 
     public void testPN34() throws FileNotFoundException, IOException,

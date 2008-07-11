@@ -7,8 +7,6 @@ package org.sat4j.pb.constraints;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import junit.swingui.TestRunner;
-
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
@@ -40,15 +38,6 @@ public abstract class AbstractPseudoBooleanAndPigeonHoleTest extends
     	return new PBInstanceReader(solver);
     }
     
-    /**
-     * Lancement du test
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        TestRunner.run(AbstractPseudoBooleanAndPigeonHoleTest.class);
-    }
-
     @Override
     protected void tearDown() {
         super.tearDown();
