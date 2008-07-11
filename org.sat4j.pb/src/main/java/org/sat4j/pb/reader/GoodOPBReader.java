@@ -183,9 +183,9 @@ public class GoodOPBReader extends Reader implements Serializable {
                 }
                 Integer id = map.get(token);
                 if (id == null) {
-                    map.put(token, id = solver.newVar());
+                	id = decode.size()+1;
+                    map.put(token, id);
                     decode.push(token);
-                    assert decode.size() == id.intValue();
                 }
                 coeffs.push(coef);
                 int lid = (negative ? -1 : 1) * id.intValue();
