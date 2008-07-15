@@ -282,11 +282,6 @@ public abstract class AbstractM2Test<T extends ISolver> extends AbstractAcceptan
         assertTrue(solveInstance(PREFIX + "ii/ii16e1.cnf"));
     }
 
-    public void testIi24() throws FileNotFoundException, IOException,
-            ParseFormatException {
-        assertTrue(solveInstance(PREFIX + "ii/ii16e2.cnf"));
-    }
-
     public void testJNH1() throws FileNotFoundException, IOException,
             ParseFormatException {
         assertTrue(solveInstance(PREFIX + "jnh/jnh1.cnf"));
