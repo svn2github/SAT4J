@@ -69,8 +69,9 @@ public class Lits implements Serializable, ILits {
 
 	@SuppressWarnings( { "unchecked" })
 	public void init(int nvar) {
-		if (nvar<pool.length) return;
-		
+		if (nvar < pool.length)
+			return;
+
 		assert nvar >= 0;
 		// let some space for unused 0 indexer.
 		int nvars = nvar + 1;
@@ -233,20 +234,20 @@ public class Lits implements Serializable, ILits {
 		assert reason[var] == null || falsified[lit] || falsified[lit ^ 1];
 		// a literal is implied if it is a unit clause, ie
 		// propagated without reason at decision level 0.
-		return reason[var] != null || level[var] == 0;
+		return pool[var] && (reason[var] != null || level[var] == 0);
 	}
 
 	public int realnVars() {
 		return realnVars;
 	}
-	
+
 	/**
 	 * To get the capacity of the current vocabulary.
 	 * 
 	 * @return the total number of variables that can be managed by the
-	 * vocabulary.
+	 *         vocabulary.
 	 */
 	protected int capacity() {
-		return pool.length-1;
+		return pool.length - 1;
 	}
 }
