@@ -6,8 +6,11 @@
  */
 package org.sat4j.minisat;
 
+import java.util.Iterator;
+
 import junit.framework.TestSuite;
 
+import org.sat4j.core.Vec;
 import org.sat4j.specs.ISolver;
 
 /**
@@ -43,8 +46,11 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
     public static TestSuite suite() {
         TestSuite suite = new TestSuite();
         String[] names = factory.solverNames();
-        for (int i = 0; i < names.length; i++) {
-            suite.addTest(new GenericM2Test(names[i]));
+        Vec<String> vnames = new Vec<String>(names);
+        vnames.remove("Mini3SAT");
+        vnames.remove("DimacsOutput");
+        for (Iterator<String> it = vnames.iterator() ; it.hasNext();) {
+            suite.addTest(new GenericM2Test(it.next()));
         }
         return suite;
     }
