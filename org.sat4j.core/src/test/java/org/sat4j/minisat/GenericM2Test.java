@@ -51,6 +51,6 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
 
     @Override
     protected void runTest() throws Throwable {
-        assertFalse(solveInstance(PREFIX + "pigeons/hole7.cnf"));
+        assertFalse(solveInstance(PREFIX + "pigeons/hole5.cnf"));
     }
 }
