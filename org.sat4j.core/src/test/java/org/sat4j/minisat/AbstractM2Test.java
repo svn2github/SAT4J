@@ -546,19 +546,4 @@ public abstract class AbstractM2Test<T extends ISolver> extends AbstractAcceptan
             ParseFormatException {
         assertFalse(solveInstance(PREFIX + "pigeons/hole7.cnf"));
     }
-
-    public void testHole8() throws FileNotFoundException, IOException,
-            ParseFormatException {
-        assertFalse(solveInstance(PREFIX + "pigeons/hole8.cnf"));
-    }
-
-    // public void testHole9() throws FileNotFoundException, IOException,
-    //        ParseFormatException {
-    //    assertFalse(solveInstance(PREFIX + "pigeons/hole9.cnf"));
-    // }
-
-    // public void testHole10() throws FileNotFoundException, IOException,
-    // ParseFormatException {
-    // assertFalse(solveInstance(PREFIX + "pigeons/hole10.cnf"));
-    // }
 }
