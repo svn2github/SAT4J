@@ -143,7 +143,7 @@ public class TestsFonctionnels extends TestCase {
     public void testCommentsInInstance() {
         solver.reset();
         try {
-            reader.parseInstance(PREFIX + "testcomments.cnf");
+            reader.parseInstance("EZCNF:"+PREFIX + "testcomments.cnf");
             assertFalse(solver.isSatisfiable());
         } catch (ContradictionException e) {
             // OK
@@ -238,14 +238,11 @@ public class TestsFonctionnels extends TestCase {
         assertTrue("isFalsified(1)", solver.getVocabulary().isFalsified(2));
     }
 
-    public void testErrorMessageWhenNewVarNotCalled() {
+    public void testWhenNewVarNotCalled() {
         IVecInt c1 = new VecInt().push(-1);
         try {
             solver.addClause(c1);
             solver.propagate();
-            fail();
-        } catch (RuntimeException e) {
-            System.err.append(e.getMessage());
         } catch (ContradictionException e) {
             fail();
         }
