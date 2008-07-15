@@ -192,23 +192,23 @@ public class ModelIteratorTest extends TestCase {
             IVecInt cube = new VecInt();
             cube.push(1);
             assertTrue(solver.isSatisfiable(cube));
-            printModel(solver.model());
+            // printModel(solver.model());
             cube.push(2);
             assertEquals(2, cube.size());
             assertTrue(solver.isSatisfiable(cube));
-            printModel(solver.model());
+            // printModel(solver.model());
             cube.push(-3);
             assertEquals(3, cube.size());
             assertTrue(solver.isSatisfiable(cube));
-            printModel(solver.model());
+            // printModel(solver.model());
             cube.pop();
             cube.push(3);
             assertEquals(3, cube.size());
-            System.out.println(" cube " + cube);
+            // System.out.println(" cube " + cube);
             boolean sat = solver.isSatisfiable(cube);
-            if (sat) {
-                printModel(solver.model());
-            }
+            // if (sat) {
+            //    printModel(solver.model());
+            // }
             assertFalse(sat);
         } catch (ContradictionException e) {
             fail();
@@ -217,10 +217,10 @@ public class ModelIteratorTest extends TestCase {
         }
     }
 
-    private void printModel(int[] model) {
-        for (int i = 0; i < model.length; i++) {
-            System.out.print(model[i] + " ");
-        }
-        System.out.println();
-    }
+//    private void printModel(int[] model) {
+//        for (int i = 0; i < model.length; i++) {
+//            System.out.print(model[i] + " ");
+//        }
+//        System.out.println();
+//    }
 }
