@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
-import org.sat4j.reader.InstanceReader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
@@ -12,11 +11,7 @@ import org.sat4j.specs.TimeoutException;
 
 public class TestAtMost extends TestCase {
 
-    private static final String PREFIX = System.getProperty("test.prefix");
-
     private ISolver solver;
-
-    private InstanceReader reader;
 
     public TestAtMost(String s) {
         super(s);
@@ -25,7 +20,6 @@ public class TestAtMost extends TestCase {
     @Override
     protected void setUp() {
         solver = SolverFactory.newMiniSAT();
-        reader = new InstanceReader(solver);
     }
 
     public void testUnEssaiSat() throws TimeoutException {
@@ -179,35 +173,4 @@ public class TestAtMost extends TestCase {
             assertTrue(false);
         }
     }
-
-    // public void testRadar1() throws TimeoutException {
-    // solver.reset();
-    // try {
-    // URL url = DimacsReader.class
-    // .getResource("benchs/10_10_4.5_0.95_100.dimacs");
-    // System.out.println(url);
-    //
-    // solver.parseInstance(url.getFile());
-    // } catch (Exception e) {
-    // System.out.println(e.getMessage());
-    // e.printStackTrace();
-    // fail();
-    // }
-    // System.out.println("fin Radar 1");
-    // assertTrue(solver.isSatisfiable());
-    // }
-
-    public void testDimacs1() throws TimeoutException {
-        solver.reset();
-        try {
-            reader.parseInstance(PREFIX + "test1bis.dimacs");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-            fail();
-        }
-        System.out.println("fin Dimacs 1");
-        assertTrue(solver.isSatisfiable());
-    }
-
 } // TestAtMost
