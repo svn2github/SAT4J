@@ -18,7 +18,7 @@ import org.sat4j.pb.SolverFactory;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class CounterPBConstrWithClauseLearningTest extends
-        AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractEZPseudoBooleanAndPigeonHoleTest {
 
     /**
      * Cr?ation d'un test
