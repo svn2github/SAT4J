@@ -69,10 +69,9 @@ public class PBSolverCP<L extends ILits> extends PBSolver<L> {
         super(acg, learner, dsf, params, order,new MiniSATRestarts());
     }
 
+     
     @Override
     public void analyze(Constr myconfl, Pair results) {
-
-        // first literal implied in the conflict
         int litImplied = trail.last();
         int currentLevel = voc.getLevel(litImplied);
         IConflict confl = chooseConflict((PBConstr)myconfl, currentLevel);
@@ -89,7 +88,9 @@ public class PBSolverCP<L extends ILits> extends PBSolver<L> {
             if (trail.size() == 1)
                 break;
             undoOne();
-            assert decisionLevel() > 0;
+            //assert decisionLevel() >= 0;
+            if (decisionLevel() == 0)
+            	break;
             litImplied = trail.last();
             if (voc.getLevel(litImplied) != currentLevel) {
                 trailLim.pop();
@@ -101,28 +102,32 @@ public class PBSolverCP<L extends ILits> extends PBSolver<L> {
             assert currentLevel == decisionLevel();
             assert litImplied > 1;
         }
+    	assert confl.isAssertive(currentLevel) || trail.size() == 1 || decisionLevel() == 0;
 
         assert currentLevel == decisionLevel();
         undoOne();
 
         // necessary informations to build a PB-constraint
         // are kept from the conflict
-        if (confl.size()==0){
-          results.reason = null;
-          results.backtrackLevel= -1;
-          return;
+        if ((confl.size()==0) || ((decisionLevel() == 0 || trail.size() == 0) && confl.slackConflict().signum() < 0)){ 
+        	results.reason = null;
+        	results.backtrackLevel= -1;
+        	return;
         }
         
         // assertive PB-constraint is build and referenced
-        PBConstr resConstr = (PBConstr)dsfactory
+        PBConstr resConstr = (PBConstr) dsfactory
               .createUnregisteredPseudoBooleanConstraint(confl);
         
         results.reason = resConstr;
         
         // the conflict give the highest decision level for the backtrack 
         // (which is less than current level) 
-    	assert confl.isAssertive(currentLevel);
-    	results.backtrackLevel =  confl.getBacktrackLevel(currentLevel);
+    	// assert confl.isAssertive(currentLevel);
+        if (decisionLevel() == 0 || trail.size() == 0) 
+        	results.backtrackLevel = -1;
+        else
+        	results.backtrackLevel =  confl.getBacktrackLevel(currentLevel);
     }
 
     @Override
