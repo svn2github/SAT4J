@@ -7,7 +7,7 @@
         <property name="release" value="CUSTOM"/>
         <property name="tag" value="HEAD"/>
         <property name="lib" value="lib"/>
-	<target name="pseudo" depends="core" description="Build a jar file suitable for the PB evaluations from CVS">
+	<target name="pseudo" depends="core" description="Build a jar file suitable for the PB evaluations from current source tree">
 		<echo>Building Pseudo Boolean Solver</echo>
 		<antcall target="build">
 		   <param name="package" value="pb"/>
@@ -25,7 +25,7 @@
                 </antcall>
 	</target>
 
-        <target name="maxsat" depends="pseudo" description="Build a jar file suitable for the MaxSAT evaluations from CVS">
+        <target name="maxsat" depends="pseudo" description="Build a jar file suitable for the MaxSAT evaluations from  current source tree">
 		<echo>Building MAXSAT Solver</echo>
                 <antcall target="build">
 		   <param name="package" value="maxsat"/>
@@ -38,9 +38,19 @@
 		   <param name="src" value="org.sat4j.maxsat/src/main/java" />
                    <param name="jarname" value="org.sat4j.maxsat"/>
                 </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-maxsat.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+			<zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.pb.jar"/>
+		   </zipgroupfileset>
+                   <zipgroupfileset dir="${lib}">
+                           <include name="commons-cli.jar"/>
+		   </zipgroupfileset>
+               </jar>
 	</target>
 
-	<target name="csp" depends="core" description="Build a jar file suitable for the CSP competitions from CVS">
+	<target name="csp" depends="core" description="Build a jar file suitable for the CSP competitions from  current source tree">
 		<echo>Building CSP Solver</echo>
                 <antcall target="build">
 		   <param name="package" value="csp"/>
@@ -55,7 +65,7 @@
                 </antcall>
 	</target>
 
-	<target name="sat" depends="core" description="Build a jar file suitable for experimenting with SAT solvers from CVS">
+	<target name="sat" depends="core" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
 		<echo>Building the Java SAT Solvers toolkit</echo>
                 <antcall target="build">
 		   <param name="package" value="sat"/>
@@ -70,7 +80,7 @@
                 </antcall>
 	</target>
 
-	<target name="core" depends="clean" description="Build a jar file suitable for embedding SAT technology into a Java application from CVS">
+	<target name="core" depends="clean" description="Build a jar file suitable for embedding SAT technology into a Java application from current source tree">
 		<echo>Building core library to be embedded into Java applications</echo>
                 <antcall target="build">
 		   <param name="package" value="core"/>

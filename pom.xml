@@ -98,6 +98,13 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
        <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+	    <execution>
+	      <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+        </executions>
         <configuration>
           <archive>
             <manifestFile>${basedir}/META-INF/MANIFEST.MF</manifestFile>
@@ -112,8 +119,9 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <forkMode>pertest</forkMode>
           <argLine>-enableassertions -Xmx512m</argLine>
           <excludes>
-            <exclude>**/TestLubyFunction.java</exclude>
-            <exclude>**/TestConstrGroup.java</exclude>
+            <exclude>**/TestLubyFunction</exclude>
+            <exclude>**/TestConstrGroup</exclude>
+            <exclude>**/GoodOPBReaderTest*</exclude>
           </excludes>
           <systemProperties>
             <property>
@@ -154,6 +162,14 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       	<groupId>org.apache.maven.plugins</groupId>
       	<artifactId>maven-javadoc-plugin</artifactId>
       	<version>2.2</version>
+        <executions>
+      		<execution>
+      			<id>attach-javadocs</id>
+      			<goals>
+      				<goal>jar</goal>
+      			</goals>
+      		</execution>
+      	</executions>
       </plugin>
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
@@ -167,19 +183,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       		</execution>
       	</executions>
       </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-javadoc-plugin</artifactId>
-      	<executions>
-      		<execution>
-      			<id>attach-javadocs</id>
-      			<goals>
-      				<goal>jar</goal>
-      			</goals>
-      		</execution>
-      	</executions>
-      </plugin>
-
     </plugins>
   </build>
 
@@ -299,7 +302,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 						<tag>TODO</tag>
 						<tag>@todo</tag>
 						<tag>FIXME</tag>
-						<tag>XXX</tag>
+						<tag>DLB</tag>
 					</tags>
 				</configuration>
 			</plugin>
