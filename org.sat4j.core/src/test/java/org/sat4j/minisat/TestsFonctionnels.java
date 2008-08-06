@@ -155,18 +155,22 @@ public class TestsFonctionnels extends TestCase {
     public void testRemoveConstraints() throws TimeoutException {
         try {
             solver.newVar(3);
+            assertEquals(0, solver.nConstraints());
             IVecInt vec = new VecInt();
             vec.push(1).push(-2);
             IConstr c = solver.addClause(vec);
             assertNotNull(c);
+            assertEquals(1, solver.nConstraints());
             vec.clear();
             vec.push(-1).push(-2);
             c = solver.addClause(vec);
             assertNotNull(c);
+            assertEquals(2, solver.nConstraints());
             vec.clear();
             vec.push(-1).push(2);
             solver.addClause(vec);
             // assertNotNull(c);
+            assertEquals(3, solver.nConstraints());
             vec.clear();
             vec.push(1).push(2);
             solver.addClause(vec);
