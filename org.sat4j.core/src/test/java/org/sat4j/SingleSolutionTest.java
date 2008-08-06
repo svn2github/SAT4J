@@ -37,6 +37,21 @@ public class SingleSolutionTest extends TestCase {
         detector.addClause(clause);
         assertTrue(detector.isSatisfiable());
         assertFalse(detector.hasASingleSolution());
+    }
+
+    /*
+     * Test method for
+     * 'org.sat4j.tools.SingleSolutionDetector.hasASingleSolution()'
+     */
+    public void testHasNoSingleSolution() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2);
+        detector.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(-2);
+        detector.addClause(clause);
+        assertTrue(detector.isSatisfiable());
         clause.clear();
         clause.push(-1).push(2);
         detector.addClause(clause);
@@ -53,7 +68,35 @@ public class SingleSolutionTest extends TestCase {
             // OK
         }
     }
-
+    
+    /*
+     * Test method for
+     * 'org.sat4j.tools.SingleSolutionDetector.hasASingleSolution()'
+     */
+    public void testHasNoSingleSolutionUNSAT() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2);
+        detector.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(-2);
+        detector.addClause(clause);
+        assertTrue(detector.isSatisfiable());
+        clause.clear();
+        clause.push(-1).push(2);
+        detector.addClause(clause);
+        assertTrue(detector.isSatisfiable());
+        clause.clear();
+        clause.push(1).push(-2);
+        detector.addClause(clause);
+        assertFalse(detector.isSatisfiable());
+        try {
+            assertFalse(detector.hasASingleSolution());
+            fail();
+        } catch (UnsupportedOperationException e) {
+            // OK
+        }
+    }
     /*
      * Test method for
      * 'org.sat4j.tools.SingleSolutionDetector.hasASingleSolution(IVecInt)'
