@@ -74,9 +74,15 @@ public class SingleSolutionDetector extends SolverDecorator<ISolver> {
      * Please use that method only after a positive answer from isSatisfiable()
      * (else a runtime exception will be launched).
      * 
+     * NOTE THAT THIS FUNCTION SHOULD NOT ONLY BE USED ONCE THE FINAL SOLUTION IS FOUND,
+     * SINCE THE METHOD ADDS CONSTRAINTS INTO THE SOLVER THAT MAY NOT BE REMOVED UNDER 
+     * CERTAIN CONDITIONS (UNIT CONSTRAINTS LEARNT FOR INSTANCE).
+     * THAT ISSUE WILL BE RESOLVED ONCE REMOVECONSTR WILL WORK PROPERLY.
+     * 
      * @return true iff there is only one way to satisfy all the constraints in
      *         the solver.
      * @throws TimeoutException
+     * @see {@link ISolver#removeConstr(IConstr)}
      */
     public boolean hasASingleSolution() throws TimeoutException {
         return hasASingleSolution(new VecInt());

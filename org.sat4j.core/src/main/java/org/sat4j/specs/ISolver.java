@@ -98,6 +98,8 @@ public interface ISolver extends IProblem, Serializable {
      * Remove a constraint returned by one of the add method from the solver.
      * All learned clauses will be cleared.
      * 
+     * Current implementation does not handle properly the case of unit clauses.
+     * 
      * @param c
      *            a constraint returned by one of the add method.
      * @return true if the constraint was successfully removed.
