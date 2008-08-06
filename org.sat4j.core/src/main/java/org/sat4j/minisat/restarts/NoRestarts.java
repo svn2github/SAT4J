@@ -48,7 +48,6 @@ public class NoRestarts implements RestartStrategy {
 		return Long.MAX_VALUE;
 	}
 
-	@Override
 	public void onRestart() {
 		// do nothing
 	}
