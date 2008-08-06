@@ -48,7 +48,6 @@ public class ManyCore implements ISolver, OutcomeListener {
 		}
 	}
 
-	@Override
 	public void addAllClauses(IVec<IVecInt> clauses)
 			throws ContradictionException {
 		for (int i = 0; i < numberOfSolvers; i++) {
@@ -56,7 +55,6 @@ public class ManyCore implements ISolver, OutcomeListener {
 		}
 	}
 
-	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
 		for (int i = 0; i < numberOfSolvers; i++) {
@@ -65,7 +63,6 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return null;
 	}
 
-	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
 		for (int i = 0; i < numberOfSolvers; i++) {
@@ -74,7 +71,6 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return null;
 	}
 
-	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].addClause(literals);
@@ -82,36 +78,30 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return null;
 	}
 
-	@Override
 	public void clearLearntClauses() {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].clearLearntClauses();
 		}
 	}
 
-	@Override
 	public void expireTimeout() {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].expireTimeout();
 		}
 	}
 
-	@Override
 	public Map<String, Number> getStat() {
 		return solvers[winnerId].getStat();
 	}
 
-	@Override
 	public int getTimeout() {
 		return solvers[0].getTimeout();
 	}
 
-	@Override
 	public int newVar() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public int newVar(int howmany) {
 		int result = 0;
 		for (int i = 0; i < numberOfSolvers; i++) {
@@ -120,58 +110,49 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return result;
 	}
 
-	@Override
 	@Deprecated
 	public void printStat(PrintStream out, String prefix) {
 		solvers[winnerId].printStat(out, prefix);
 	}
 
-	@Override
 	public void printStat(PrintWriter out, String prefix) {
 		solvers[winnerId].printStat(out, prefix);
 	}
 
-	@Override
 	public boolean removeConstr(IConstr c) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public void reset() {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].reset();
 		}
 	}
 
-	@Override
 	public void setExpectedNumberOfClauses(int nb) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setExpectedNumberOfClauses(nb);
 		}
 	}
 
-	@Override
 	public void setTimeout(int t) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setTimeout(t);
 		}
 	}
 
-	@Override
 	public void setTimeoutMs(long t) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setTimeoutMs(t);
 		}
 	}
 
-	@Override
 	public void setTimeoutOnConflicts(int count) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setTimeoutOnConflicts(count);
 		}
 	}
 
-	@Override
 	public String toString(String prefix) {
 		StringBuffer res = new StringBuffer();
 		res.append("ManyCore solver with ");
@@ -185,17 +166,14 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return res.toString();
 	}
 
-	@Override
 	public int[] findModel() throws TimeoutException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public int[] findModel(IVecInt assumps) throws TimeoutException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public boolean isSatisfiable() throws TimeoutException {
 		remainingSolvers = numberOfSolvers;
 		needToWait = true;
@@ -215,50 +193,41 @@ public class ManyCore implements ISolver, OutcomeListener {
 		return resultFound;
 	}
 
-	@Override
 	public boolean isSatisfiable(IVecInt assumps, boolean globalTimeout)
 			throws TimeoutException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public int[] model() {
 		return solvers[winnerId].model();
 	}
 
-	@Override
 	public boolean model(int var) {
 		return solvers[winnerId].model(var);
 	}
 
-	@Override
 	public int nConstraints() {
 		return solvers[0].nConstraints();
 	}
 
-	@Override
 	public int nVars() {
 		return solvers[0].nVars();
 	}
 
-	@Override
 	public void printInfos(PrintWriter out, String prefix) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].printInfos(out, prefix);
 		}
 	}
 
-	@Override
 	public synchronized void onFinishWithAnswer(boolean finished,
 			boolean result, int index) {
 		if (finished) {
@@ -275,12 +244,10 @@ public class ManyCore implements ISolver, OutcomeListener {
 		}
 	}
 
-	@Override
 	public boolean isDBSimplificationAllowed() {
 		return solvers[0].isDBSimplificationAllowed();
 	}
 
-	@Override
 	public void setDBSimplificationAllowed(boolean status) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setDBSimplificationAllowed(status);
@@ -305,7 +272,6 @@ class RunnableSolver implements Runnable {
 		this.ol = ol;
 	}
 
-	@Override
 	public void run() {
 		try {
 			boolean result = solver.isSatisfiable();
