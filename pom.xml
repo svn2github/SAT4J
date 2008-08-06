@@ -119,8 +119,8 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <forkMode>pertest</forkMode>
           <argLine>-enableassertions -Xmx512m</argLine>
           <excludes>
-            <exclude>**/TestLubyFunction</exclude>
-            <exclude>**/TestConstrGroup</exclude>
+            <exclude>**/TestLubyFunction*</exclude>
+            <exclude>**/TestConstrGroup*</exclude>
             <exclude>**/GoodOPBReaderTest*</exclude>
           </excludes>
           <systemProperties>
