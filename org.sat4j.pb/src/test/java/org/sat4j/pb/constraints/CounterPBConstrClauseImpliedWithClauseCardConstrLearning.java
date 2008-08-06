@@ -4,7 +4,7 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class CounterPBConstrClauseImpliedWithClauseCardConstrLearning extends
-        AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractEZPseudoBooleanAndPigeonHoleTest {
 
     public CounterPBConstrClauseImpliedWithClauseCardConstrLearning(String arg) {
         super(arg);
