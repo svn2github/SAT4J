@@ -262,7 +262,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	}
 
 	public int nConstraints() {
-		return constrs.size()+trail.size();
+		return constrs.size()+trail.size()-learnedLiterals;
 	}
 
 	public void learn(Constr c) {
