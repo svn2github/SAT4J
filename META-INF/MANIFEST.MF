@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Specification-Title: SAT4J
+Specification-Version: NA
+Specification-Vendor: Daniel Le Berre
+Implementation-Title: SAT4J
+Implementation-Version: 2.0 
+Implementation-Vendor: CRIL CNRS UMR 8188 - Universite d'Artois
