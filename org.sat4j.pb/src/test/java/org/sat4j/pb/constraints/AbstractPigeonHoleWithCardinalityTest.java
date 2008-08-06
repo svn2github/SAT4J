@@ -98,9 +98,4 @@ public abstract class AbstractPigeonHoleWithCardinalityTest<T extends ISolver> e
             ParseFormatException {
         assertTrue(solveInstance(PREFIX + "pigeons/PN-9-10.opb"));
     }
-
-    public void testPN10() throws FileNotFoundException, IOException,
-            ParseFormatException {
-        assertFalse(solveInstance(PREFIX + "pigeons/PN-10-9.opb"));
-    }
 }

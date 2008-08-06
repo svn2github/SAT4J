@@ -63,11 +63,6 @@ public abstract class AbstractEZPseudoBooleanAndPigeonHoleTest extends
                 + "normalized-opb/submitted/manquinho/ttp/normalized-circ8_3.opb"));
     }
 
-    public void testncirc103() throws FileNotFoundException, IOException,
-            ParseFormatException {
-        assertTrue(solveInstance(PREFIX
-                + "normalized-opb/submitted/manquinho/ttp/normalized-circ10_3.opb"));
-    }
 
     public void testndata43() throws FileNotFoundException, IOException,
             ParseFormatException {
@@ -87,11 +82,6 @@ public abstract class AbstractEZPseudoBooleanAndPigeonHoleTest extends
                 + "normalized-opb/submitted/manquinho/ttp/normalized-data8_3.opb"));
     }
 
-    public void testndata103() throws FileNotFoundException, IOException,
-            ParseFormatException {
-        assertTrue(solveInstance(PREFIX
-                + "normalized-opb/submitted/manquinho/ttp/normalized-data10_3.opb"));
-    }
 
     public void testn9symml() throws FileNotFoundException, IOException,
             ParseFormatException {
