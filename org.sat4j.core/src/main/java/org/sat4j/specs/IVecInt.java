@@ -30,7 +30,7 @@ package org.sat4j.specs;
 import java.io.Serializable;
 
 /**
- * An abstraction for the vector of int used on the library.
+ * An abstraction for the vector of int's in the library.
  * 
  * @author leberre
  */

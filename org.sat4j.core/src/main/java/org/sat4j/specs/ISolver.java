@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * That interface contains all the services available on a SAT solver.
+ * This interface contains all services provided by a SAT solver.
  * 
  * @author leberre
  */
