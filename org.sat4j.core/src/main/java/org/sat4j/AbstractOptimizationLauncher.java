@@ -73,7 +73,7 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
             out.println();
             IOptimizationProblem optproblem = (IOptimizationProblem) solver;
             if (!optproblem.hasNoObjectiveFunction()) {
-                log("objective function=" + optproblem.calculateObjective()); //$NON-NLS-1$
+                log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
             }
         }
     }
@@ -102,8 +102,8 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
                         / 1000.0);
                 getLogWriter().println(
                         CURRENT_OPTIMUM_VALUE_PREFIX
-                                + optproblem.calculateObjective());
-                optproblem.discard();
+                                + optproblem.getObjectiveValue());
+                optproblem.discardCurrentSolution();
             }
             if (isSatisfiable) {
                 setExitCode(ExitCode.OPTIMUM_FOUND);

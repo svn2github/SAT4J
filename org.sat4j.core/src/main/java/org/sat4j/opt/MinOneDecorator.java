@@ -60,6 +60,7 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
         boolean result = isSatisfiable(true);
         if (result) {
             prevmodel = super.model();
+            calculateObjectiveValue();
         }
         return result;
     }
@@ -75,18 +76,22 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
     private int counter;
 
     public Number calculateObjective() {
-        counter = 0;
+        calculateObjectiveValue();
+        return counter;
+    }
+
+	private void calculateObjectiveValue() {
+		counter = 0;
         for (int p : prevmodel) {
             if (p > 0) {
                 counter++;
             }
         }
-        return new Integer(counter);
-    }
+	}
 
     private final IVecInt literals = new VecInt();
 
-    public void discard() throws ContradictionException {
+    public void discardCurrentSolution() throws ContradictionException {
         if (literals.isEmpty()) {
             for (int i = 1; i <= nVars(); i++) {
                 literals.push(i);
@@ -107,4 +112,11 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
         super.reset();
     }
 
+	public Number getObjectiveValue() {
+		return counter;
+	}
+
+	public void discard() throws ContradictionException {
+		discardCurrentSolution();
+	}
 }

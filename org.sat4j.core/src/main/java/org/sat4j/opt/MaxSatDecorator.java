@@ -30,7 +30,6 @@ package org.sat4j.opt;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
@@ -40,8 +39,7 @@ import org.sat4j.specs.IVecInt;
  * @author daniel
  *
  */
-public class MaxSatDecorator extends AbstractSelectorVariablesDecorator
-        implements IOptimizationProblem {
+public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
     /**
      * 
@@ -85,12 +83,7 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator
     }
 
     public Number calculateObjective() {
-        counter = 0;
-        for (int q : prevfullmodel) {
-            if (q > nborigvars) {
-                counter++;
-            }
-        }
+        calculateObjective();
         return counter;
     }
 
@@ -101,5 +94,20 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator
     public void discard() throws ContradictionException {
          super.addAtMost(lits, counter - 1);
     }
+
+	public Number getObjectiveValue() {
+		return counter;
+	}
+
+
+	@Override
+	void calculateObjectiveValue() {
+		counter = 0;
+        for (int q : prevfullmodel) {
+            if (q > nborigvars) {
+                counter++;
+            }
+        }
+	}
 
 }

@@ -109,15 +109,38 @@ public interface IOptimizationProblem extends IProblem {
      * Compute the value of the objective function for the current solution.
      * A call to that method only makes sense if hasNoObjectiveFunction()==false.
      * 
+     * DO NOT CALL THAT METHOD THAT WILL BE CALLED AUTOMATICALLY.
+     * USE getObjectiveValue() instead!
      * @return the value of the objective function.
+     * @see #getObjectiveValue()
      */
+    @Deprecated
     Number calculateObjective();
 
+    /**
+     * Read only access to the value of the objective function for the current
+     * solution.
+     * @return the value of the objective function for the current solution. 
+     */
+    Number getObjectiveValue();
+    
+    /**
+     * Discard the current solution in the optimization problem.
+     * 
+     * THE NAME WAS NOT NICE. STILL AVAILABLE TO AVOID BREAKING THE API.
+     * PLEASE USE THE LONGER discardCurrentSolution() instead.
+     * 
+     * @throws ContradictionException if a trivial inconsistency is detected.
+     * @see #discardCurrentSolution()
+     */
+    @Deprecated
+    void discard() throws ContradictionException;
+
+    
     /**
      * Discard the current solution in the optimization problem.
      * 
      * @throws ContradictionException if a trivial inconsistency is detected.
      */
-    void discard() throws ContradictionException;
-
+    void discardCurrentSolution() throws ContradictionException;
 }
