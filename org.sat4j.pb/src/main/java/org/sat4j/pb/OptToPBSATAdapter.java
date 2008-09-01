@@ -82,7 +82,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
             }
             do {
                 problem.calculateObjective();
-                problem.discard();
+                problem.discardCurrentSolution();
             } while (problem.admitABetterSolution());
         } catch (TimeoutException e) {
             // solver timeout

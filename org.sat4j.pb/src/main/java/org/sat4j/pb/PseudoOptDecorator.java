@@ -49,6 +49,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private ObjectiveFunction objfct;
     
+    private BigInteger objectiveValue;
+    
     private int[] prevmodel;
     private boolean[] prevfullmodel;
     
@@ -70,6 +72,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             for (int i=0;i<nVars();i++) {
             	prevfullmodel[i]=decorated().model(i+1);
             }
+            calculateObjective();
         }
         return result;
     }
@@ -83,12 +86,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     }
 
     public Number calculateObjective() {
-        return objfct.calculateDegree(prevmodel);
+        objectiveValue = objfct.calculateDegree(prevmodel);
+        return objectiveValue;
     }
 
-    public void discard() throws ContradictionException {
+    public void discardCurrentSolution() throws ContradictionException {
         super.addPseudoBoolean(objfct.getVars(), objfct.getCoeffs(), false,
-                objfct.calculateDegree(prevmodel).subtract(BigInteger.ONE));
+                objectiveValue.subtract(BigInteger.ONE));
     }
 
     @Override
@@ -106,7 +110,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     public String toString(String prefix) {        
         return prefix+"Pseudo Boolean Optimization\n"+super.toString(prefix);
     }
+
+	public Number getObjectiveValue() {
+		return objectiveValue;
+	}
     
-    
+	public void discard() throws ContradictionException {
+		discardCurrentSolution();
+	}
 
 }
