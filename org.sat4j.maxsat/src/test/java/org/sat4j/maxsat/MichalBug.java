@@ -41,8 +41,7 @@ public class MichalBug {
 		try {
 			while (problem.admitABetterSolution()) {
 				isSatisfiable = true;
-				problem.calculateObjective();
-				problem.discard();
+				problem.discardCurrentSolution();
 			}
 			if (isSatisfiable) {
 				exitCode = OPTIMUM_FOUND;

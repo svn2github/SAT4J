@@ -54,6 +54,8 @@ public class MinCostDecorator extends PBSolverDecorator implements
 
     private final IVec<BigInteger> coeffs = new Vec<BigInteger>();
 
+    private int objectivevalue;
+    
     public MinCostDecorator(IPBSolver solver) {
         super(solver);
     }
@@ -118,8 +120,10 @@ public class MinCostDecorator extends PBSolverDecorator implements
 
     public boolean admitABetterSolution() throws TimeoutException {
         boolean result = super.isSatisfiable(true);
-        if (result)
+        if (result) {
             prevmodel = super.model();
+            calculateObjective();
+        }
         return result;
     }
 
@@ -132,7 +136,8 @@ public class MinCostDecorator extends PBSolverDecorator implements
     }
 
     public Number calculateObjective() {
-        return new Integer(calculateDegree(prevmodel));
+    	objectivevalue = calculateDegree(prevmodel);
+        return new Integer(objectivevalue);
     }
 
     private int calculateDegree(int[] prevmodel2) {
@@ -145,9 +150,9 @@ public class MinCostDecorator extends PBSolverDecorator implements
         return tmpcost;
     }
 
-    public void discard() throws ContradictionException {
+    public void discardCurrentSolution() throws ContradictionException {
         super.addPseudoBoolean(vars, coeffs, false, BigInteger
-                .valueOf(calculateDegree(prevmodel) - 1));
+                .valueOf(objectivevalue - 1));
     }
 
     @Override
@@ -155,5 +160,13 @@ public class MinCostDecorator extends PBSolverDecorator implements
         // DLB findbugs ok
         return prevmodel;
     }
+
+	public Number getObjectiveValue() {
+		return objectivevalue;
+	}
+
+	public void discard() throws ContradictionException {
+		discardCurrentSolution();
+	}
 
 }

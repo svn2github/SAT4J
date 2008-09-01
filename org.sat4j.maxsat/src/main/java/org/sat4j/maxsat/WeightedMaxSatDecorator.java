@@ -164,6 +164,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
             for (int i = 1; i <= nbtotalvars; i++) {
                 prevfullmodel[i - 1] = super.model(i) ? i : -i;
             }
+            calculateObjective();
         }
         return result;
     }
@@ -203,10 +204,17 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     private final ObjectiveFunction obj = new ObjectiveFunction(lits, coefs);
 
-    public void discard() throws ContradictionException {
+    public void discardCurrentSolution() throws ContradictionException {
         assert lits.size() == coefs.size();
         super.addPseudoBoolean(lits, coefs, false, BigInteger
                 .valueOf(counter - 1));
     }
 
+	public Number getObjectiveValue() {
+		return falsifiedWeight+counter;
+	}
+
+	public void discard() throws ContradictionException {
+		discardCurrentSolution();
+	}
 }
