@@ -96,7 +96,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         return shortmodel;
     }
 
-    protected int top = -1;
+    protected int top = Integer.MAX_VALUE;
 
     public void setTopWeight(int top) {
         this.top = top;
