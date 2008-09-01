@@ -79,7 +79,6 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
         try {
             assert problem.admitABetterSolution();
             do {
-                problem.calculateObjective();
                 problem.discardCurrentSolution();
             } while (problem.admitABetterSolution());
         } catch (TimeoutException e) {
