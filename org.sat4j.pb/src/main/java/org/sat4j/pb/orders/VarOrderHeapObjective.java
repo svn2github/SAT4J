@@ -69,7 +69,7 @@ public class VarOrderHeapObjective extends VarOrderHeap<ILits> {
 			IVec<BigInteger> coefs = obj.getCoeffs();
 			for (int i = 0; i < vars.size(); i++) {
 				int dimacsvar = vars.get(i);
-				if (lits.belongsToPool(dimacsvar)) {
+				if (lits.belongsToPool(Math.abs(dimacsvar))) {
 					int p = lits.getFromPool(dimacsvar);
 					BigInteger c = coefs.get(i);
 					if (c.signum() < 0) {
