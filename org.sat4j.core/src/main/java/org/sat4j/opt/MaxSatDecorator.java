@@ -91,10 +91,14 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
     private int counter;
 
-    public void discard() throws ContradictionException {
+    public void discardCurrentSolution() throws ContradictionException {
          super.addAtMost(lits, counter - 1);
     }
 
+    public void discard() throws ContradictionException {
+    	discardCurrentSolution();
+   }
+    
 	public Number getObjectiveValue() {
 		return counter;
 	}

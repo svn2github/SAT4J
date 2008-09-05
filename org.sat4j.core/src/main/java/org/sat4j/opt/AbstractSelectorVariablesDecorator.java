@@ -43,7 +43,7 @@ import org.sat4j.tools.SolverDecorator;
  *
  */
 public abstract class AbstractSelectorVariablesDecorator extends
-        SolverDecorator<ISolver> {
+        SolverDecorator<ISolver> implements IOptimizationProblem {
 
     /**
 	 * 

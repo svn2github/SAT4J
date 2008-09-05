@@ -57,8 +57,8 @@ package org.sat4j.specs;
                         / 1000.0);
                 getLogWriter().println(
                         CURRENT_OPTIMUM_VALUE_PREFIX
-                                + optproblem.calculateObjective());
-                optproblem.discard();
+                                + optproblem.getObjectiveValue());
+                optproblem.discardCurrentSolution();
             }
             if (isSatisfiable) {
                 setExitCode(ExitCode.OPTIMUM_FOUND);
