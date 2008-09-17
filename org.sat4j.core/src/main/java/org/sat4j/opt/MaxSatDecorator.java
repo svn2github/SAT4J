@@ -83,7 +83,7 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
     }
 
     public Number calculateObjective() {
-        calculateObjective();
+        calculateObjectiveValue();
         return counter;
     }
 
