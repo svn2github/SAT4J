@@ -77,7 +77,7 @@ public class P2DimacsReader extends DimacsReader {
         if ("p2cnf".equals(formatString)) {
             // next line should contain the optimization function`
             String optLine = in.readLine();
-            if (!optLine.startsWith("min: ")) {
+            if (optLine==null||!optLine.startsWith("min: ")) {
                 throw new ParseFormatException("p2 file does not contain the function to minimize!");
             }
             String optfunction = optLine.substring(5);
