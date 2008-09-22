@@ -155,13 +155,13 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 
     abstract protected PBConstr constructClause(IVecInt v);
 
-    abstract protected PBConstr constructCard(IVecInt lits, int degree)
+    abstract protected PBConstr constructCard(IVecInt theLits, int degree)
             throws ContradictionException;
 
     abstract protected PBConstr constructPB(IDataStructurePB mpb)
             throws ContradictionException;
 
-    abstract protected PBConstr constructPB(int[] lits, BigInteger[] coefs, BigInteger degree)
+    abstract protected PBConstr constructPB(int[] theLits, BigInteger[] coefs, BigInteger degree)
     throws ContradictionException;
 
     abstract protected PBConstr constructLearntClause(IVecInt literals);
