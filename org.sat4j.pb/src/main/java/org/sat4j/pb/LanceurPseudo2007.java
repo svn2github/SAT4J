@@ -58,7 +58,7 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
      */
     public static void main(final String[] args) {
         final AbstractLauncher lanceur = new LanceurPseudo2007();
-        if (args.length==0||args.length>2) {
+        if (args.length==0||args.length>3) {
             lanceur.usage();
             return;
         }

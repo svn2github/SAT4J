@@ -87,20 +87,22 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
             solver = SolverFactory.newDefault();
         }
         solver = new PseudoOptDecorator(solver);
-        // solver.setTimeout(Integer.MAX_VALUE);
+        if (args.length==3) {
+           solver.setTimeout(Integer.valueOf(args[1]));
+        }
         out.println(solver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
         return solver;
     }
 
     @Override
     public void usage() {
-        out.println("java -jar sat4j-pb.jar [solvername] instancename.opb"); //$NON-NLS-1$
+        out.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
         showAvailableSolvers(SolverFactory.instance());
     }
 
     @Override
     protected String getInstanceName(String[] args) {
-        assert args.length == 1 || args.length == 2;
+        assert args.length == 1 || args.length == 2 || args.length == 3;
         return args[args.length - 1];
     }
 }
