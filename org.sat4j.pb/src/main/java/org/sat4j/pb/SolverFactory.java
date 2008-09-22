@@ -27,8 +27,6 @@
 *******************************************************************************/
 package org.sat4j.pb;
 
-import java.io.Serializable;
-
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
@@ -66,8 +64,7 @@ import org.sat4j.tools.DimacsOutputSolver;
  * 
  * @author leberre
  */
-public class SolverFactory extends ASolverFactory<IPBSolver> implements
-        Serializable {
+public class SolverFactory extends ASolverFactory<IPBSolver> {
 
     /**
      * 

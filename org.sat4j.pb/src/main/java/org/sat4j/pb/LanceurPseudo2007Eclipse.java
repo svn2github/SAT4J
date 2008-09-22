@@ -60,8 +60,8 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
     }
 
     @Override
-    protected Reader createReader(ISolver solver, String problemname) {
-        return new OPBEclipseReader2007((IPBSolver)solver);
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        return new OPBEclipseReader2007((IPBSolver)theSolver);
     }
     /**
      * Lance le prouveur sur un fichier Dimacs

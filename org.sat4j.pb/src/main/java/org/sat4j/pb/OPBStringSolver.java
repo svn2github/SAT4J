@@ -59,7 +59,6 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	 * 
 	 */
 	public OPBStringSolver() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -67,7 +66,6 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	 */
 	public OPBStringSolver(int initSize) {
 		super(initSize);
-		// TODO Auto-generated constructor stub
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
@@ -101,6 +99,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		out.insert(indxConstrObj,tmp);
 	}
 
+	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
 		StringBuffer out = getOut();
@@ -111,6 +110,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
         return null;        
 	}
 
+	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
 		StringBuffer out = getOut();
@@ -121,6 +121,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
         return null;        
 	}
 
+	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
 		StringBuffer out = getOut();
 		nbOfConstraints++;
@@ -146,15 +147,18 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	}
 	
+	@Override
 	public String toString(){
 		return getOut().toString();
 	}
 
+	@Override
 	public String toString(String prefix) {
         return "OPB output solver";
 	}
 
-    public int newVar(int howmany) {
+    @Override
+	public int newVar(int howmany) {
 		StringBuffer out = getOut();
         out.append("* #variable= " + howmany);
         setNbVars(howmany);
@@ -163,7 +167,8 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
         return 0;
     }
     
-    public void setExpectedNumberOfClauses(int nb) {
+    @Override
+	public void setExpectedNumberOfClauses(int nb) {
     }
 
 

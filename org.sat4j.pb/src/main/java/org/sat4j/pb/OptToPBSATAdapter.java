@@ -54,25 +54,30 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
         this.problem = problem;
     }
 
-    public boolean isSatisfiable() throws TimeoutException {
+    @Override
+	public boolean isSatisfiable() throws TimeoutException {
         modelComputed = false;
         return problem.admitABetterSolution();
     }
 
-   public boolean isSatisfiable(boolean global) throws TimeoutException {
+   @Override
+public boolean isSatisfiable(boolean global) throws TimeoutException {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isSatisfiable(IVecInt assumps, boolean global)
+    @Override
+	public boolean isSatisfiable(IVecInt assumps, boolean global)
             throws TimeoutException {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+    @Override
+	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
         throw new UnsupportedOperationException();
     }
 
-    public int[] model() {
+    @Override
+	public int[] model() {
     	if (modelComputed) 
     		return problem.model();
         try {
@@ -81,7 +86,6 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
             	return problem.model();
             }
             do {
-                problem.calculateObjective();
                 problem.discardCurrentSolution();
             } while (problem.admitABetterSolution());
         } catch (TimeoutException e) {
@@ -93,12 +97,14 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
         return problem.model();
     }
 
-    public boolean model(int var) {
+    @Override
+	public boolean model(int var) {
     	if (!modelComputed) model();
         return problem.model(var);
     }
 
-    public String toString(String prefix) {        
+    @Override
+	public String toString(String prefix) {        
         return prefix+"Optimization to Pseudo Boolean adapter\n"+super.toString(prefix);
     }
 }

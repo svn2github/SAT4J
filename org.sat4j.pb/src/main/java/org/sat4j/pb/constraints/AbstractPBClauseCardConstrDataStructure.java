@@ -91,11 +91,11 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         if (mpb == null)
             return null;
         int size = mpb.size();
-        int[] lits = new int[size];
+        int[] theLists = new int[size];
         BigInteger[] normCoefs = new BigInteger[size];
-        mpb.buildConstraintFromMapPb(lits, normCoefs);
+        mpb.buildConstraintFromMapPb(theLists, normCoefs);
         if (mpb.getDegree().equals(BigInteger.ONE)) {
-            IVecInt v = WLClause.sanityCheck(new VecInt(lits), getVocabulary(),
+            IVecInt v = WLClause.sanityCheck(new VecInt(theLists), getVocabulary(),
                     solver);
             if (v == null)
                 return null;
@@ -103,10 +103,10 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         }
         if (coefficientsEqualToOne(new Vec<BigInteger>(normCoefs))) {
             assert mpb.getDegree().compareTo(MAX_INT_VALUE) < 0;
-            return constructCard(new VecInt(lits), mpb.getDegree().intValue());
+            return constructCard(new VecInt(theLists), mpb.getDegree().intValue());
         }
         //return constructPB(mpb);
-        return constructPB(lits,normCoefs,mpb.getDegree());
+        return constructPB(theLists,normCoefs,mpb.getDegree());
     }
 
     /*
