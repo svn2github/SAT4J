@@ -51,9 +51,9 @@ public class PBMaxClauseCardConstrDataStructure extends
     }
 
     @Override
-    protected PBConstr constructPB(int[] lits, BigInteger[] coefs, BigInteger degree)
+    protected PBConstr constructPB(int[] theLits, BigInteger[] coefs, BigInteger degree)
             throws ContradictionException {
-        return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(), lits, coefs, degree);
+        return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(), theLits, coefs, degree);
     }
 
     @Override

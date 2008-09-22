@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.ParseFormatException;
-import org.sat4j.specs.ContradictionException;
 
 /**
  * Reader complying to the PB06 input format.
@@ -62,7 +61,7 @@ public class OPBReader2006 extends OPBReader2005 {
      */
     @Override
     protected void readTerm(StringBuffer coeff, StringBuffer var)
-            throws IOException, ParseFormatException, ContradictionException {
+            throws IOException, ParseFormatException {
         readInteger(coeff);
 
         skipSpaces();

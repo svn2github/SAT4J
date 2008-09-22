@@ -297,14 +297,14 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
      * compute the slack of a described constraint slack = poss - degree of the
      * constraint
      * 
-     * @param coefs
+     * @param theCoefs
      *                coefficients of the constraint
-     * @param degree
+     * @param theDegree
      *                degree of the constraint
      * @return slack of the constraint
      */
-    public BigInteger slackConstraint(BigInteger[] coefs, BigInteger degree) {
-        return recalcLeftSide(coefs).subtract(degree);
+    public BigInteger slackConstraint(BigInteger[] theCoefs, BigInteger theDegree) {
+        return recalcLeftSide(theCoefs).subtract(theDegree);
     }
 
     /**
@@ -315,7 +315,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
      *                coefficients of the constraint
      * @return poss
      */
-    public BigInteger recalcLeftSide(BigInteger[] coefs) {
+    public BigInteger recalcLeftSide(BigInteger[] theCoefs) {
         BigInteger poss = BigInteger.ZERO;
         // Pour chaque litteral
         for (int i = 0; i < lits.length; i++)
@@ -614,11 +614,12 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
         return false;
     }
 
-    public boolean equals(Object pb) {
+    @Override
+	public boolean equals(Object pb) {
         if (pb==null) {
             return false;
         }
-        // this method should be simplified since now to constraints should have
+        // this method should be simplified since now two constraints should have
         // always
         // their literals in the same order
         try {

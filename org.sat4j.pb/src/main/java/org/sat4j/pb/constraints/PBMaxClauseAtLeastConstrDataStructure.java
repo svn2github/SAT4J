@@ -41,9 +41,9 @@ public class PBMaxClauseAtLeastConstrDataStructure extends
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected PBConstr constructCard(IVecInt lits, int degree)
+    protected PBConstr constructCard(IVecInt theLits, int degree)
             throws ContradictionException {
-        return AtLeastPB.atLeastNew(solver, getVocabulary(), lits, degree);
+        return AtLeastPB.atLeastNew(solver, getVocabulary(), theLits, degree);
     }
 
     @Override

@@ -51,21 +51,24 @@ public abstract class AbstractPBDataStructureFactoryPB extends
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public PBConstr createUnregisteredPseudoBooleanConstraint(IVecInt literals,
             IVec<BigInteger> coefs, BigInteger degree) {
         return constraintFactory(literals, coefs, degree);
     }
 
 
-    public PBConstr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt lits = WLClausePB.sanityCheck(literals,getVocabulary(), solver);
-        if (lits==null) {
+    @Override
+	public PBConstr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt theLits = WLClausePB.sanityCheck(literals,getVocabulary(), solver);
+        if (theLits==null) {
             return null;
         }
-        return WLClausePB.brandNewClause(solver, getVocabulary(),lits);
+        return WLClausePB.brandNewClause(solver, getVocabulary(),theLits);
     }
 
-    public PBConstr createUnregisteredClause(IVecInt literals) {
+    @Override
+	public PBConstr createUnregisteredClause(IVecInt literals) {
         return WLClausePB.brandNewClause(solver, getVocabulary(),literals);
     }
 

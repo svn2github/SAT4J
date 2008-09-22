@@ -51,9 +51,9 @@ public class PBMinClauseCardConstrDataStructure extends
     }
 
     @Override
-    protected PBConstr constructPB(int[] lits, BigInteger[] coefs, BigInteger degree)
+    protected PBConstr constructPB(int[] theLits, BigInteger[] coefs, BigInteger degree)
             throws ContradictionException {
-        return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(), lits, coefs, degree);
+        return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(), theLits, coefs, degree);
     }
 
     @Override

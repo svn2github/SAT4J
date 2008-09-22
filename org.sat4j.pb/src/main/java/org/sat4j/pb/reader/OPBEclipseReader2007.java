@@ -73,7 +73,8 @@ public class OPBEclipseReader2007 extends OPBReader2007 {
      * @throws IOException
      * @throws ParseException
      */
-    protected void readVariablesExplanation()  throws IOException, ParseFormatException{
+    @Override
+	protected void readVariablesExplanation()  throws IOException, ParseFormatException{
         char c;
         StringBuffer var = new StringBuffer();
 
@@ -111,7 +112,8 @@ public class OPBEclipseReader2007 extends OPBReader2007 {
 
 	}
 
-    public IVecInt getListOfVariables() {
+    @Override
+	public IVecInt getListOfVariables() {
         if (hasVariablesExplanation){
         	IVecInt tmp = new VecInt();
             varExplain.moveTo(tmp);

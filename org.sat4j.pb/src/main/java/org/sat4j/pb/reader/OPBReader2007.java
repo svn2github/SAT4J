@@ -122,7 +122,7 @@ public class OPBReader2007 extends OPBReader2006 {
 
     @Override
     protected void readTerm(StringBuffer coeff, StringBuffer var)
-            throws IOException, ParseFormatException, ContradictionException {
+            throws IOException, ParseFormatException {
         readInteger(coeff);
 
         skipSpaces();
@@ -142,7 +142,11 @@ public class OPBReader2007 extends OPBReader2006 {
             tmpLit.pop();
         } else {
             // it is a product term
-            var.append(linearizeProduct(tmpLit));
+            try {
+				var.append(linearizeProduct(tmpLit));
+			} catch (ContradictionException e) {
+				throw new ParseFormatException(e);
+			}
         }
     }
 

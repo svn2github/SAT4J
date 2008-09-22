@@ -171,7 +171,8 @@ public class PBSolverCP<L extends ILits> extends PBSolver<L> {
     	}
     }
 
-    public String getExplanation(){
+    @Override
+	public String getExplanation(){
     	if (!conflictVariables.isEmpty()){
     		assert conflictVariables.size() == conflictConstraints.size();
     		StringBuffer sb = new StringBuffer();

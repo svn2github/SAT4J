@@ -60,17 +60,17 @@ public class CompetPBMaxClauseCardConstrDataStructure
     protected PBConstr constraintFactory(IVecInt literals,
             IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
             throws ContradictionException {
-        int[] lits = new int[literals.size()];
-        literals.copyTo(lits);
+        int[] theLits = new int[literals.size()];
+        literals.copyTo(theLits);
         BigInteger[] normCoefs = new BigInteger[coefs.size()];
         coefs.copyTo(normCoefs);
 
-        BigInteger bigDegree = WatchPb.niceParametersForCompetition(lits, normCoefs,
+        BigInteger bigDegree = WatchPb.niceParametersForCompetition(theLits, normCoefs,
                 moreThan, degree);
         if (bigDegree == null)
             return null;
         if (bigDegree.equals(BigInteger.ONE)) {
-            IVecInt v = WLClause.sanityCheck(new VecInt(lits), getVocabulary(),
+            IVecInt v = WLClause.sanityCheck(new VecInt(theLits), getVocabulary(),
                     solver);
             if (v == null)
                 return null;
@@ -78,10 +78,10 @@ public class CompetPBMaxClauseCardConstrDataStructure
         }
         if (coefficientsEqualToOne(new Vec<BigInteger>(normCoefs))) {
             assert bigDegree.compareTo(MAX_INT_VALUE) < 0;
-            return constructCard(new VecInt(lits), bigDegree.intValue());
+            return constructCard(new VecInt(theLits), bigDegree.intValue());
         }
         //return constructPB(mpb);
-        return constructPB(lits,normCoefs,bigDegree);
+        return constructPB(theLits,normCoefs,bigDegree);
     }
 
 }

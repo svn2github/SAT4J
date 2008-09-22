@@ -55,10 +55,10 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
     }
 
     @Override
-    protected PBConstr constructCard(IVecInt lits, int degree)
+    protected PBConstr constructCard(IVecInt theLits, int degree)
             throws ContradictionException {
         return MinWatchCardPB.normalizedMinWatchCardPBNew(solver,
-                getVocabulary(), lits, degree);
+                getVocabulary(), theLits, degree);
     }
 
     @Override
@@ -68,9 +68,9 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
     }
 
     @Override
-    protected PBConstr constructPB(int[] lits, BigInteger[] coefs, BigInteger degree)
+    protected PBConstr constructPB(int[] theLits, BigInteger[] coefs, BigInteger degree)
             throws ContradictionException {
-        return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(), lits, coefs, degree);
+        return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(), theLits, coefs, degree);
     }
 
     @Override
