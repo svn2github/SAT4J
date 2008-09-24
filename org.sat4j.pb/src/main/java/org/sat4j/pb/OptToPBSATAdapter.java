@@ -62,18 +62,19 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
    @Override
 public boolean isSatisfiable(boolean global) throws TimeoutException {
-        throw new UnsupportedOperationException();
+	  return isSatisfiable();
     }
 
     @Override
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
             throws TimeoutException {
-        throw new UnsupportedOperationException();
+        return isSatisfiable(assumps);
     }
 
     @Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-        throw new UnsupportedOperationException();
+    	modelComputed = false;
+        return problem.admitABetterSolution(assumps);
     }
 
     @Override
