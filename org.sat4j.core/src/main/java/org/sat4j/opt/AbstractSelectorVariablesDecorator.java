@@ -27,8 +27,10 @@
 *******************************************************************************/
 package org.sat4j.opt;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolverDecorator;
 
@@ -98,13 +100,17 @@ public abstract class AbstractSelectorVariablesDecorator extends
     }
 
     public boolean admitABetterSolution() throws TimeoutException {
-        boolean result = super.isSatisfiable(true);
+    	return admitABetterSolution(VecInt.EMPTY);
+    }
+
+    public boolean admitABetterSolution(IVecInt assumps) throws TimeoutException {
+        boolean result = super.isSatisfiable(assumps,true);
         if (result) {
             prevfullmodel = super.model();
             calculateObjectiveValue();
         }
         return result;
     }
-
+    
     abstract void calculateObjectiveValue();
 }

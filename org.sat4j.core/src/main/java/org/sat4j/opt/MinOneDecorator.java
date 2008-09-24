@@ -57,14 +57,18 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
     }
 
     public boolean admitABetterSolution() throws TimeoutException {
-        boolean result = isSatisfiable(true);
+    	return admitABetterSolution(VecInt.EMPTY);
+    }
+
+    public boolean admitABetterSolution(IVecInt assumps) throws TimeoutException {
+        boolean result = isSatisfiable(assumps,true);
         if (result) {
             prevmodel = super.model();
             calculateObjectiveValue();
         }
         return result;
     }
-
+    
     public boolean hasNoObjectiveFunction() {
         return false;
     }

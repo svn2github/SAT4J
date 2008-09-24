@@ -86,6 +86,16 @@ public interface IOptimizationProblem extends IProblem {
     boolean admitABetterSolution() throws TimeoutException;
 
     /**
+     * Look for a solution of the optimization problem when some literals are satisfied.
+     * 
+     * @param assumps a set of literals in Dimacs format.
+     * @return true if a better solution than current one can be found. 
+     * @throws TimeoutException if the solver cannot answer in reasonable time.
+     * @see ISolver#setTimeout(int)
+     */
+    boolean admitABetterSolution(IVecInt assumps) throws TimeoutException;
+    
+    /**
      * If the optimization problem has no objective function, then it is a simple
      * decision problem.
      * 
