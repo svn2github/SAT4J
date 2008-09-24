@@ -156,7 +156,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     }
 
     public boolean admitABetterSolution() throws TimeoutException {
-        boolean result = super.isSatisfiable(true);
+    	return admitABetterSolution(VecInt.EMPTY);
+    }
+    
+    public boolean admitABetterSolution(IVecInt assumps)
+		throws TimeoutException {
+        boolean result = super.isSatisfiable(assumps,true);
         if (result) {
             int nbtotalvars = nborigvars + nbnewvar;
             if (prevfullmodel == null)
