@@ -320,8 +320,8 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
         // Pour chaque litteral
         for (int i = 0; i < lits.length; i++)
             if (!voc.isFalsified(lits[i])) {
-                assert coefs[i].signum() >= 0;
-                poss = poss.add(coefs[i]);
+                assert theCoefs[i].signum() >= 0;
+                poss = poss.add(theCoefs[i]);
             }
         return poss;
     }
