@@ -55,7 +55,7 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
     protected void displayResult() {
     	displayAnswer();
 
-        log("Total wall clock time (ms): " //$NON-NLS-1$
+        log("Total wall clock time (in seconds): " //$NON-NLS-1$
                 + (System.currentTimeMillis() - getBeginTime()) / 1000.0);
     }
     
