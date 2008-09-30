@@ -29,6 +29,8 @@ import org.sat4j.specs.TimeoutException;
  *                 where we can afford to add a selector variable to each clause
  *                 to enable or disable each constraint.
  * 
+ * Note that for the moment, QuickXplain does not work properly in an optimization setting.
+ * 
  * @author daniel
  * 
  * @param <T>
