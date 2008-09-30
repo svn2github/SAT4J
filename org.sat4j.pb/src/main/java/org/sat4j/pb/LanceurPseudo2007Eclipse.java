@@ -46,18 +46,18 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 	@Override
 	protected ISolver configureSolver(String[] args) {
 		IPBSolver theSolver;
-        if (args.length > 1) {
-            theSolver = SolverFactory.instance().createSolverByName(args[0]);
-        } else {
-            theSolver = SolverFactory.newDefault();
-        }
-        quickxplain = new QuickXplainPB(theSolver);
-        theSolver = new PseudoOptDecorator(quickxplain);
-        if (args.length==3) {
-           theSolver.setTimeout(Integer.valueOf(args[1]));
-        }
-        out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-        return theSolver;
+		if (args.length > 1) {
+			theSolver = SolverFactory.instance().createSolverByName(args[0]);
+		} else {
+			theSolver = SolverFactory.newDefault();
+		}
+		quickxplain = new QuickXplainPB(theSolver);
+		theSolver = new PseudoOptDecorator(quickxplain);
+		if (args.length == 3) {
+			theSolver.setTimeout(Integer.valueOf(args[1]));
+		}
+		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+		return theSolver;
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 		if (exitCode == ExitCode.UNSATISFIABLE) {
 			// getLogWriter().println(((IPBSolver)solver).getExplanation());
 			try {
-				getLogWriter().println(quickxplain.explain());
+				log("Explanation for inconsistency: " + quickxplain.explain());
 			} catch (TimeoutException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

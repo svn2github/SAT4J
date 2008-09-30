@@ -20,7 +20,6 @@ public class QuickXplainPB extends QuickXplain<IPBSolver> implements IPBSolver {
 
 	public QuickXplainPB(IPBSolver solver) {
 		super(solver);
-		// TODO Auto-generated constructor stub
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
@@ -37,7 +36,10 @@ public class QuickXplainPB extends QuickXplain<IPBSolver> implements IPBSolver {
 			coeffs.push(sum);
 			// throw new UnsupportedOperationException();
 		}
-		return decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
+		IConstr constr =  decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
+		constrs.push(constr);
+		assert constrs.size() == nbnewvar;
+		return constr;
 	}
 
 	public String getExplanation() {
