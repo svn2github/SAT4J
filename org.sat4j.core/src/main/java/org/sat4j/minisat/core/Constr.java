@@ -80,13 +80,6 @@ public interface Constr extends Propagatable, IConstr {
     void incActivity(double claInc);
 
     /**
-     * To obtain the activity of the constraint.
-     * 
-     * @return the activity of the clause.
-     */
-    double getActivity();
-
-    /**
      * Indicate wether a constraint is responsible from an assignment.
      * 
      * @return true if a constraint is a "reason" for an assignment.

@@ -417,6 +417,9 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
+		if (from!=null) {
+			from.incActivity(claInc);
+		}
 		return true;
 	}
 

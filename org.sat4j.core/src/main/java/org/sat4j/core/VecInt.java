@@ -136,7 +136,6 @@ public class VecInt implements IVecInt {
 
         @Override
         public void copyTo(IVecInt copy) {
-            throw new UnsupportedOperationException();
         }
 
         @Override

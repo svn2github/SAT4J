@@ -87,7 +87,6 @@ public class TestQuickExplain {
 		assertFalse(solver.isSatisfiable());
 		IVecInt explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertEquals(4,explanation.size());
 		assertTrue(explanation.contains(1));
 		assertTrue(explanation.contains(2));
 		assertTrue(explanation.contains(4));

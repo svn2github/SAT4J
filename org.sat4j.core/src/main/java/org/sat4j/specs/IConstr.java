@@ -54,4 +54,11 @@ public interface IConstr {
      */
     int get(int i);
 
+    /**
+     * To obtain the activity of the constraint.
+     * 
+     * @return the activity of the clause.
+     */
+    double getActivity();
+
 }
