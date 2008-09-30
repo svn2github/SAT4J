@@ -92,7 +92,7 @@ public class QuickXplain<T extends ISolver> extends SolverDecorator<T> {
 
 	public IVecInt explain() throws TimeoutException {
 		assert !isSatisfiable();
-		List<Pair> pairs = new ArrayList<Pair>();
+		List<Pair> pairs = new ArrayList<Pair>(nbnewvar);
 		IConstr constr;
 		for (int i = 0; i < nbnewvar; i++) {
 			constr = constrs.get(i);
@@ -103,7 +103,7 @@ public class QuickXplain<T extends ISolver> extends SolverDecorator<T> {
 			}
 		}
 		Collections.sort(pairs);
-		IVecInt extraVariables = new VecInt();
+		IVecInt extraVariables = new VecInt(nbnewvar);
 		// for (int p = 1; p <=nbnewvar; p++) {
 		// extraVariables.push(p + nborigvars);
 		// }
@@ -140,7 +140,7 @@ public class QuickXplain<T extends ISolver> extends SolverDecorator<T> {
 				}
 			}
 		} while (shouldContinue);
-		IVecInt clauseNumbers = new VecInt();
+		IVecInt clauseNumbers = new VecInt(startingPoint);
 		for (int i = 0; i < startingPoint; i++) {
 			clauseNumbers.push(-extraVariables.get(i) - nborigvars);
 		}
