@@ -91,5 +91,16 @@ public final class LiteralsUtils {
     public static int negLit(int var) {
         return (var << 1)^1;
     }
+
+	/**
+	 * decode the internal representation of a literal into Dimacs format.
+	 * 
+	 * @param p
+	 * 		the literal in internal representation
+	 * @return the literal in dimacs representation
+	 */
+	public static int toDimacs(int p) {
+		return ((p & 1) == 0 ? 1 : -1) * (p >> 1);
+	}
     
 }
