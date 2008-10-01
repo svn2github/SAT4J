@@ -92,4 +92,34 @@ public class TestQuickExplain {
 		assertTrue(explanation.contains(4));
 		assertTrue(explanation.contains(5));
 	}
+	
+	@Test
+	public void testTheCaseOfTwoMUSes() throws ContradictionException, TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(4);
+		IVecInt clause = new VecInt();
+		clause.push(1).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(1).push(-2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(-3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(4);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(-4);
+		solver.addClause(clause);
+		clause.clear();
+		assertFalse(solver.isSatisfiable());
+		IVecInt explanation = solver.explain();
+		assertEquals(4,explanation.size());
+		assertTrue(explanation.contains(1));
+		assertTrue(explanation.contains(2));
+	}
 }
