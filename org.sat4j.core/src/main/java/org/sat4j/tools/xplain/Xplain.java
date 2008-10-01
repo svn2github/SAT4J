@@ -63,6 +63,18 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return constr;
 	}
 
+	@Override
+	public IConstr addAtLeast(IVecInt literals, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public IConstr addAtMost(IVecInt literals, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
 	/**
 	 * 
 	 */
