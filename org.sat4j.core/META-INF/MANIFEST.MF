@@ -17,7 +17,8 @@ Export-Package: org.sat4j,
  org.sat4j.opt,
  org.sat4j.reader,
  org.sat4j.specs,
- org.sat4j.tools
+ org.sat4j.tools,
+ org.sat4j.tools.xplain
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Built-By: Daniel Le Berre

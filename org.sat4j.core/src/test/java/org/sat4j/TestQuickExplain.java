@@ -9,13 +9,13 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
-import org.sat4j.tools.QuickXplain;
+import org.sat4j.tools.xplain.Xplain;
 
 public class TestQuickExplain {
 
 	@Test
 	public void testGlobalInconsistency() throws ContradictionException, TimeoutException {
-		QuickXplain<ISolver> solver = new QuickXplain<ISolver>(SolverFactory.newDefault());
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -37,7 +37,7 @@ public class TestQuickExplain {
 	
 	@Test
 	public void testAlmostGlobalInconsistency() throws ContradictionException, TimeoutException {
-		QuickXplain<ISolver> solver = new QuickXplain<ISolver>(SolverFactory.newDefault());
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -66,7 +66,7 @@ public class TestQuickExplain {
 	
 	@Test
 	public void testAlmostGlobalInconsistencyII() throws ContradictionException, TimeoutException {
-		QuickXplain<ISolver> solver = new QuickXplain<ISolver>(SolverFactory.newDefault());
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
