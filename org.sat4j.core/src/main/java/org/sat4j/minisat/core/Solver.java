@@ -50,6 +50,7 @@
 package org.sat4j.minisat.core;
 
 import static org.sat4j.core.LiteralsUtils.var;
+import static org.sat4j.core.LiteralsUtils.toDimacs;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -417,9 +418,6 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
-		if (from!=null) {
-			from.incActivity(claInc);
-		}
 		return true;
 	}
 
@@ -521,8 +519,8 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
          */
 		private static final long serialVersionUID = 1L;
 
-		public void simplify(IVecInt outLearnt) {
-			simpleSimplification(outLearnt);
+		public void simplify(IVecInt conflictToReduce) {
+			simpleSimplification(conflictToReduce);
 		}
 
 		@Override
@@ -538,8 +536,8 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
          */
 		private static final long serialVersionUID = 1L;
 
-		public void simplify(IVecInt outLearnt) {
-			expensiveSimplification(outLearnt);
+		public void simplify(IVecInt conflictToReduce) {
+			expensiveSimplification(conflictToReduce);
 		}
 
 		@Override
@@ -605,23 +603,23 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 	// Taken from MiniSAT 1.14: Simplify conflict clause (a little):
-	private void simpleSimplification(IVecInt outLearnt) {
+	private void simpleSimplification(IVecInt conflictToReduce) {
 		int i, j;
 		final boolean[] seen = mseen;
-		for (i = j = 1; i < outLearnt.size(); i++) {
-			IConstr r = voc.getReason(outLearnt.get(i));
+		for (i = j = 1; i < conflictToReduce.size(); i++) {
+			IConstr r = voc.getReason(conflictToReduce.get(i));
 			if (r == null) {
-				outLearnt.moveTo(j++, i);
+				conflictToReduce.moveTo(j++, i);
 			} else {
 				for (int k = 0; k < r.size(); k++)
 					if (voc.isFalsified(r.get(k)) && !seen[r.get(k) >> 1]
 							&& (voc.getLevel(r.get(k)) != 0)) {
-						outLearnt.moveTo(j++, i);
+						conflictToReduce.moveTo(j++, i);
 						break;
 					}
 			}
 		}
-		outLearnt.shrink(i - j);
+		conflictToReduce.shrink(i - j);
 		stats.reducedliterals += (i - j);
 	}
 
@@ -630,18 +628,18 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	private final IVecInt analyzestack = new VecInt();
 
 	// Taken from MiniSAT 1.14
-	private void expensiveSimplification(IVecInt outLearnt) {
+	private void expensiveSimplification(IVecInt conflictToReduce) {
 		// Simplify conflict clause (a lot):
 		//
 		int i, j;
 		// (maintain an abstraction of levels involved in conflict)
 		analyzetoclear.clear();
-		outLearnt.copyTo(analyzetoclear);
-		for (i = 1, j = 1; i < outLearnt.size(); i++)
-			if (voc.getReason(outLearnt.get(i)) == null
-					|| !analyzeRemovable(outLearnt.get(i)))
-				outLearnt.moveTo(j++, i);
-		outLearnt.shrink(i - j);
+		conflictToReduce.copyTo(analyzetoclear);
+		for (i = 1, j = 1; i < conflictToReduce.size(); i++)
+			if (voc.getReason(conflictToReduce.get(i)) == null
+					|| !analyzeRemovable(conflictToReduce.get(i)))
+				conflictToReduce.moveTo(j++, i);
+		conflictToReduce.shrink(i - j);
 		stats.reducedliterals += (i - j);
 	}
 
@@ -679,17 +677,6 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	}
 
 	// END Minisat 1.14 cut and paste
-
-	/**
-	 * decode the internal representation of a literal into Dimacs format.
-	 * 
-	 * @param p
-	 * 		the literal in internal representation
-	 * @return the literal in dimacs representation
-	 */
-	public static int decode2dimacs(int p) {
-		return ((p & 1) == 0 ? 1 : -1) * (p >> 1);
-	}
 
 	/**
      * 
@@ -752,25 +739,25 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		while (qhead < trail.size()) {
 			stats.propagations++;
 			int p = trail.get(qhead++);
-			slistener.propagating(decode2dimacs(p));
+			slistener.propagating(toDimacs(p));
 			order.assignLiteral(p);
 			// p is the literal to propagate
 			// Moved original MiniSAT code to dsfactory to avoid
 			// watches manipulation in counter Based clauses for instance.
 			assert p > 1;
-			IVec<Propagatable> constrs = dsfactory.getWatchesFor(p);
+			IVec<Propagatable> watched = dsfactory.getWatchesFor(p);
 
-			final int size = constrs.size();
+			final int size = watched.size();
 			for (int i = 0; i < size; i++) {
 				stats.inspects++;
-				if (!constrs.get(i).propagate(this, p)) {
+				if (!watched.get(i).propagate(this, p)) {
 					// Constraint is conflicting: copy remaining watches to
 					// watches[p]
 					// and return constraint
 					dsfactory.conflictDetectedInWatchesFor(p, i);
 					qhead = trail.size(); // propQ.clear();
 					// FIXME enlever le transtypage
-					return (Constr) constrs.get(i);
+					return (Constr) watched.get(i);
 				}
 			}
 		}
@@ -779,7 +766,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	void record(Constr constr) {
 		constr.assertConstraint(this);
-		slistener.adding(decode2dimacs(constr.get(0)));
+		slistener.adding(toDimacs(constr.get(0)));
 		if (constr.size() == 1) {
 			stats.learnedliterals++;
 			learnedLiterals++;
@@ -804,7 +791,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	private void cancel() {
 		// assert trail.size() == qhead || !undertimeout;
 		int decisionvar = trail.unsafeGet(trailLim.last());
-		slistener.backtracking(decode2dimacs(decisionvar));
+		slistener.backtracking(toDimacs(decisionvar));
 		for (int c = trail.size() - trailLim.last(); c > 0; c--) {
 			undoOne();
 		}
@@ -887,7 +874,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 				stats.decisions++;
 				int p = order.select();
 				assert p > 1;
-				slistener.assuming(decode2dimacs(p));
+				slistener.assuming(toDimacs(p));
 				boolean ret = assume(p);
 				assert ret;
 			} else {
