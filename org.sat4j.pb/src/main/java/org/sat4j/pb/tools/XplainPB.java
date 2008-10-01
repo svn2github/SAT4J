@@ -26,21 +26,20 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 			boolean moreThan, BigInteger d) throws ContradictionException {
 		int newvar = nborigvars + ++nbnewvar;
 		lits.push(newvar);
-		if (moreThan) {
+		if (moreThan) {		
 			coeffs.push(d);
 		} else {
 			BigInteger sum = BigInteger.ZERO;
 			for (Iterator<BigInteger> ite = coeffs.iterator() ; ite.hasNext();)
-				sum = sum.add(ite.next().abs());
-			sum = sum.subtract(d.abs());
-			coeffs.push(sum);
-			// throw new UnsupportedOperationException();
+				sum = sum.add(ite.next());
+			sum = sum.subtract(d);
+			coeffs.push(sum.negate());
 		}
 		IConstr constr =  decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
 		if (constr==null) {
 			// constraint trivially satisfied
 			nbnewvar--;
-			System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
 		} else {
 			constrs.push(constr);
 		}
