@@ -9,16 +9,16 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.tools.QuickXplain;
+import org.sat4j.tools.xplain.Xplain;
 
-public class QuickXplainPB extends QuickXplain<IPBSolver> implements IPBSolver {
+public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public QuickXplainPB(IPBSolver solver) {
+	public XplainPB(IPBSolver solver) {
 		super(solver);
 	}
 
@@ -37,7 +37,13 @@ public class QuickXplainPB extends QuickXplain<IPBSolver> implements IPBSolver {
 			// throw new UnsupportedOperationException();
 		}
 		IConstr constr =  decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
-		constrs.push(constr);
+		if (constr==null) {
+			// constraint trivially satisfied
+			nbnewvar--;
+			System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+		} else {
+			constrs.push(constr);
+		}
 		assert constrs.size() == nbnewvar;
 		return constr;
 	}

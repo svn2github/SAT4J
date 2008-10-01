@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.SolverFactory;
-import org.sat4j.pb.tools.QuickXplainPB;
+import org.sat4j.pb.tools.XplainPB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -20,7 +20,7 @@ public class TestQuickExplainPB {
 
 	@Test
 	public void testGlobalInconsistency() throws ContradictionException, TimeoutException {
-		QuickXplainPB solver = new QuickXplainPB(SolverFactory.newDefault());
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
@@ -51,7 +51,7 @@ public class TestQuickExplainPB {
 	
 	@Test
 	public void testGlobalInconsistencyPB() throws ContradictionException, TimeoutException {
-		QuickXplainPB solver = new QuickXplainPB(SolverFactory.newDefault());
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);
@@ -74,7 +74,7 @@ public class TestQuickExplainPB {
 	
 	@Test
 	public void testAlmostGlobalInconsistency() throws ContradictionException, TimeoutException {
-		QuickXplainPB solver = new QuickXplainPB(SolverFactory.newDefault());
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
@@ -114,7 +114,7 @@ public class TestQuickExplainPB {
 	
 	@Test
 	public void testAlmostGlobalInconsistencyII() throws ContradictionException, TimeoutException {
-		QuickXplainPB solver = new QuickXplainPB(SolverFactory.newDefault());
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
@@ -154,7 +154,7 @@ public class TestQuickExplainPB {
 	
 	@Test
 	public void testAlmostGlobalInconsistencyPB() throws ContradictionException, TimeoutException {
-		QuickXplainPB solver = new QuickXplainPB(SolverFactory.newDefault());
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);

@@ -31,17 +31,21 @@ import static java.lang.System.out;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.pb.reader.OPBEclipseReader2007;
-import org.sat4j.pb.tools.QuickXplainPB;
+import org.sat4j.pb.tools.XplainPB;
 import org.sat4j.reader.Reader;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 
-	QuickXplainPB quickxplain;
+	XplainPB quickxplain;
 
 	@Override
 	protected ISolver configureSolver(String[] args) {
@@ -51,7 +55,7 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 		} else {
 			theSolver = SolverFactory.newDefault();
 		}
-		quickxplain = new QuickXplainPB(theSolver);
+		quickxplain = new XplainPB(theSolver);
 		theSolver = new PseudoOptDecorator(quickxplain);
 		if (args.length == 3) {
 			theSolver.setTimeout(Integer.valueOf(args[1]));
@@ -110,7 +114,25 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 		if (exitCode == ExitCode.UNSATISFIABLE) {
 			// getLogWriter().println(((IPBSolver)solver).getExplanation());
 			try {
-				log("Explanation for inconsistency: " + quickxplain.explain());
+				
+				IVecInt explanation = quickxplain.explain();
+				IVec<IConstr> constrs = quickxplain.getConstraints();
+				log("Explanation for inconsistency: " + explanation);
+				int maxvarid = quickxplain.getMaxOriginalVarId();
+				IConstr constr;
+				StringBuffer stb;
+				for (IteratorInt it = explanation.iterator(); it.hasNext();) {
+					constr = constrs.get(it.next()-1);
+					stb = new StringBuffer();
+					for (int k=0;k<constr.size();k++) {
+						int p = constr.get(k);
+						if (Math.abs(p)<=maxvarid) {
+							stb.append(LiteralsUtils.toDimacs(p));
+							stb.append(' ');
+						}
+					}
+					log(stb.toString());
+				}
 			} catch (TimeoutException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
