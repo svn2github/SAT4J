@@ -126,8 +126,9 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 					stb = new StringBuffer();
 					for (int k=0;k<constr.size();k++) {
 						int p = constr.get(k);
-						if (Math.abs(p)<=maxvarid) {
-							stb.append(LiteralsUtils.toDimacs(p));
+						int dimacsp = LiteralsUtils.toDimacs(p);
+						if (Math.abs(dimacsp)<=maxvarid) {
+							stb.append(dimacsp);
 							stb.append(' ');
 						}
 					}

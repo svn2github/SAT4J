@@ -24,9 +24,9 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
-		int newvar = nborigvars + ++nbnewvar;
+		int newvar = nborigvars + ++nbnewvar;		
 		lits.push(newvar);
-		if (moreThan) {		
+		if (moreThan && d.signum()>=0) {		
 			coeffs.push(d);
 		} else {
 			BigInteger sum = BigInteger.ZERO;
