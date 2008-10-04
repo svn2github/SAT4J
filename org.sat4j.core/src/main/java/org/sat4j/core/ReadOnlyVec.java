@@ -155,4 +155,7 @@ public class ReadOnlyVec<T> implements IVec<T> {
         throw new UnsupportedOperationException();
     }
 
+	public boolean contains(T element) {
+		return vec.contains(element);
+	}
 }

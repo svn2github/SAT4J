@@ -78,10 +78,18 @@ public interface SearchListener extends Serializable {
 
     /**
      * a conflict has been found.
+     * @param confl TODO
      * 
      */
-    void conflictFound();
+    void conflictFound(Constr confl);
 
+    /**
+     * a conflict has been found while propagating values.
+     * 
+     * @param p the conflicting value.
+     */
+	void conflictFound(int p);
+	
     /**
      * a solution is found.
      * 
@@ -106,4 +114,5 @@ public interface SearchListener extends Serializable {
      *            the result of the search.
      */
     void end(Lbool result);
+
 }

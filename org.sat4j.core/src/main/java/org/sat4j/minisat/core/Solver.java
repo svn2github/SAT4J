@@ -884,7 +884,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 				// un conflit apparait
 				stats.conflicts++;
 				conflictC++;
-				slistener.conflictFound();
+				slistener.conflictFound(confl);
 				conflictCount.newConflict();
 				if (decisionLevel() == rootLevel) {
 					// on est a la racine, la formule est inconsistante
@@ -1051,6 +1051,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		Constr confl = propagate();
 		if (confl != null) {
 			analyzeAtRootLevel(confl);
+			slistener.conflictFound(confl);
 			slistener.end(Lbool.FALSE);
 			cancelUntil(0);
 			return false;
@@ -1058,8 +1059,14 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 		// push incremental assumptions
 		for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
-			if (!assume(voc.getFromPool(iterator.next()))
-					|| (propagate() != null)) {
+			int p = voc.getFromPool(iterator.next());
+			if (!assume(p)
+					|| ((confl = propagate()) != null)) {
+				if (confl==null) {
+					slistener.conflictFound(p);
+				} else {
+					slistener.conflictFound(confl);
+				}
 				slistener.end(Lbool.FALSE);
 				cancelUntil(0);
 				return false;

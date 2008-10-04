@@ -127,11 +127,16 @@ public class DotSearchListener implements SearchListener {
     public final void delete(final int[] clause) {
     }
 
-    public final void conflictFound() {
+    public final void conflictFound(Constr confl) {
         saveLine(lineTab("\"" + currentNodeName
                 + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
     }
 
+    public final void conflictFound(int p) {
+        saveLine(lineTab("\"" + currentNodeName
+                + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
+    }
+    
     public final void solutionFound() {
         saveLine(lineTab("\"" + currentNodeName
                 + "\" [label=\"\", shape=box, color=\"green\", style=filled]"));

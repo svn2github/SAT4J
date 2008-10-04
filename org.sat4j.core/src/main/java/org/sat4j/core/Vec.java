@@ -80,7 +80,7 @@ public final class Vec<T> implements IVec<T> {
 	 * is the length of the array.
 	 * 
 	 * @param elts
-	 * 		a filled array of T.
+	 *            a filled array of T.
 	 */
 	public Vec(T[] elts) {
 		// DLB findbugs ok
@@ -92,7 +92,7 @@ public final class Vec<T> implements IVec<T> {
 	 * Create a Vector with a given capacity.
 	 * 
 	 * @param size
-	 * 		the capacity of the vector.
+	 *            the capacity of the vector.
 	 */
 	@SuppressWarnings("unchecked")
 	public Vec(int size) {
@@ -104,9 +104,9 @@ public final class Vec<T> implements IVec<T> {
 	 * pad.
 	 * 
 	 * @param size
-	 * 		la taille du vecteur
+	 *            la taille du vecteur
 	 * @param pad
-	 * 		l'objet servant a remplir le vecteur
+	 *            l'objet servant a remplir le vecteur
 	 */
 	@SuppressWarnings("unchecked")
 	public Vec(int size, T pad) {
@@ -127,7 +127,7 @@ public final class Vec<T> implements IVec<T> {
 	 * in the vector
 	 * 
 	 * @param nofelems
-	 * 		the number of elements to remove.
+	 *            the number of elements to remove.
 	 */
 	public void shrink(int nofelems) {
 		// assert nofelems <= nbelem;
@@ -140,7 +140,7 @@ public final class Vec<T> implements IVec<T> {
 	 * reduce the Vector to exactly newsize elements
 	 * 
 	 * @param newsize
-	 * 		the new size of the vector.
+	 *            the new size of the vector.
 	 */
 	public void shrinkTo(final int newsize) {
 		// assert newsize <= size();
@@ -194,7 +194,7 @@ public final class Vec<T> implements IVec<T> {
 	 * time operation.
 	 * 
 	 * @param elem
-	 * 		the element to put first in the vector.
+	 *            the element to put first in the vector.
 	 */
 	public void insertFirst(final T elem) {
 		if (nbelem > 0) {
@@ -247,7 +247,7 @@ public final class Vec<T> implements IVec<T> {
 	 * the element does not belong to the vector.
 	 * 
 	 * @param elem
-	 * 		an element from the vector.
+	 *            an element from the vector.
 	 */
 	public void remove(T elem) {
 		// assert size() > 0;
@@ -265,9 +265,9 @@ public final class Vec<T> implements IVec<T> {
 	 * replaces the removed element at the ith indexer.
 	 * 
 	 * @param index
-	 * 		the indexer of the element in the vector
+	 *            the indexer of the element in the vector
 	 * @return the former ith element of the vector that is now removed from the
-	 * 	vector
+	 *         vector
 	 */
 	public T delete(int index) {
 		// assert index >= 0 && index < nbelem;
@@ -474,5 +474,13 @@ public final class Vec<T> implements IVec<T> {
 
 	public boolean isEmpty() {
 		return nbelem == 0;
+	}
+
+	public boolean contains(T e) {
+		for (int i = 0; i < nbelem; i++) {
+			if (myarray[i].equals(e))
+				return true;
+		}
+		return false;
 	}
 }

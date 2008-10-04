@@ -61,10 +61,14 @@ public class TextOutputListener implements SearchListener {
 
     }
 
-    public void conflictFound() {
+    public void conflictFound(Constr confl) {
         System.out.println("conflict ");
     }
 
+    public void conflictFound(int p) {
+        System.out.println("conflict during propagation");
+    }
+    
     public void solutionFound() {
         System.out.println("solution found ");
     }

@@ -180,4 +180,11 @@ public interface IVec<T> extends Serializable {
     boolean isEmpty();
     
     Iterator<T> iterator();
+    
+    /**
+     * 
+     * @param element an object
+     * @return true iff element is found in the vector.
+     */
+    boolean contains(T element);
 }

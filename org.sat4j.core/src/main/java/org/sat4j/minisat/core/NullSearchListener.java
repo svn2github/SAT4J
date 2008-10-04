@@ -48,7 +48,10 @@ final class NullSearchListener implements SearchListener {
     public void delete(int[] clause) {
     }
 
-    public void conflictFound() {
+    public void conflictFound(Constr confl) {
+    }
+    
+    public void conflictFound(int p) {
     }
 
     public void solutionFound() {
