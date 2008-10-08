@@ -8,5 +8,5 @@ import org.sat4j.specs.TimeoutException;
 
 public interface XplainStrategy {
 
-	public IVecInt explain(ISolver solver, int nbnewvar, int nborigvars,IVec<IConstr> constrs) throws TimeoutException;
+	public IVecInt explain(ISolver solver, int nbnewvar, int nborigvars,IVec<IConstr> constrs, IVecInt assumps) throws TimeoutException;
 }

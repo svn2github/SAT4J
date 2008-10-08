@@ -14,7 +14,7 @@ import org.sat4j.specs.TimeoutException;
 public class ReplayXplainStrategy implements XplainStrategy {
 
 	public IVecInt explain(ISolver solver, int nbnewvar, int nborigvars,
-			IVec<IConstr> constrs) throws TimeoutException {
+			IVec<IConstr> constrs, IVecInt assumps) throws TimeoutException {
 		List<Pair> pairs = new ArrayList<Pair>(nbnewvar);
 		IConstr constr;
 		for (int i = 0; i < nbnewvar; i++) {
@@ -26,7 +26,8 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			}
 		}
 		Collections.sort(pairs);
-		IVecInt extraVariables = new VecInt(nbnewvar);
+		IVecInt extraVariables = new VecInt(nbnewvar+assumps.size());
+		assumps.copyTo(extraVariables);
 		// for (int p = 1; p <=nbnewvar; p++) {
 		// extraVariables.push(p + nborigvars);
 		// }
@@ -34,7 +35,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			extraVariables.push(p.id + nborigvars);
 		}
 		boolean shouldContinue;
-		int startingPoint = 0;
+		int startingPoint = assumps.size();
 		do {
 			shouldContinue = false;
 			int i = startingPoint;
@@ -59,7 +60,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			startingPoint++;
 		} while (shouldContinue);
 		IVecInt clauseNumbers = new VecInt(startingPoint);
-		for (int i = 0; i < startingPoint; i++) {
+		for (int i = assumps.size(); i < startingPoint; i++) {
 			clauseNumbers.push(-extraVariables.get(i) - nborigvars);
 		}
 		return clauseNumbers;

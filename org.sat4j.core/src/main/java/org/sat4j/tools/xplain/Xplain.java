@@ -40,6 +40,8 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	protected IVec<IConstr> constrs = new Vec<IConstr>();
 
+	protected IVecInt assump;
+	
 	private static final XplainStrategy xplainStrategy = new ReplayXplainStrategy();
 	
 	public Xplain(T solver) {
@@ -81,7 +83,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	public IVecInt explain() throws TimeoutException {
 		assert !isSatisfiable();
-		return xplainStrategy.explain(decorated(),nbnewvar,nborigvars,constrs);
+		return xplainStrategy.explain(decorated(),nbnewvar,nborigvars,constrs, assump);
 	}
 
 	public IVec<IConstr> getConstraints() {
@@ -100,6 +102,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public int[] findModel() throws TimeoutException {
+		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
 		for (int p = 0; p < nbnewvar; p++) {
 			extraVariables.push(-(p + nborigvars + 1));
@@ -109,6 +112,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public int[] findModel(IVecInt assumps) throws TimeoutException {
+		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
 		for (int p = 0; p < nbnewvar; p++) {
@@ -119,6 +123,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public boolean isSatisfiable() throws TimeoutException {
+		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
 		for (int p = 0; p < nbnewvar; p++) {
 			extraVariables.push(-(p + nborigvars + 1));
@@ -128,6 +133,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public boolean isSatisfiable(boolean global) throws TimeoutException {
+		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
 		for (int p = 0; p < nbnewvar; p++) {
 			extraVariables.push(-(p + nborigvars + 1));
@@ -137,6 +143,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
 		for (int p = 0; p < nbnewvar; p++) {
@@ -148,6 +155,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	@Override
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
+		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
 		for (int p = 0; p < nbnewvar; p++) {
