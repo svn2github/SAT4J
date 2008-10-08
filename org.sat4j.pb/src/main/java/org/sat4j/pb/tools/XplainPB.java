@@ -3,6 +3,7 @@ package org.sat4j.pb.tools;
 import java.math.BigInteger;
 import java.util.Iterator;
 
+import org.sat4j.core.Vec;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
@@ -21,6 +22,20 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	public XplainPB(IPBSolver solver) {
 		super(solver);
 	}
+
+
+	@Override
+	public IConstr addAtMost(IVecInt literals, int degree)
+			throws ContradictionException {
+		IVec<BigInteger> coeffs = new Vec<BigInteger>();
+		coeffs.growTo(literals.size(), BigInteger.ONE);
+		int newvar = nborigvars + ++nbnewvar;
+		literals.push(newvar);
+		BigInteger coef = BigInteger.valueOf(degree-coeffs.size());
+		coeffs.push(coef);
+		return decorated().addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(degree));
+	}
+
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {

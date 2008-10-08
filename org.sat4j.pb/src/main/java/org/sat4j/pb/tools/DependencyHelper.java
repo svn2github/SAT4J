@@ -84,6 +84,21 @@ public class DependencyHelper<T> implements SearchListener {
 		return ezexplain.toArray(text);
 	}
 	
+	public String [] why(T thing) throws TimeoutException {
+		IVecInt assumps = new VecInt();
+		assumps.push(-getIntValue(thing));
+		if (xplain.isSatisfiable(assumps)) {
+			return new String[0];
+		}
+		IVecInt explanation = xplain.explain();
+		Set<String> ezexplain= new TreeSet<String>();
+		for (IteratorInt it = explanation.iterator(); it.hasNext();) {
+			ezexplain.add(descs.get(it.next()-1));
+		}
+		String [] text = new String[ezexplain.size()];
+		return ezexplain.toArray(text);
+	}
+	
 	public void setTrue(T thing, String name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(getIntValue(thing));
@@ -126,6 +141,21 @@ public class DependencyHelper<T> implements SearchListener {
 			}
 		}
 	}
+	
+	public class ImplicationNamer {
+		private IVec<IConstr> toName = new Vec<IConstr>();
+		
+		public ImplicationNamer(IVec<IConstr> toName) {
+			this.toName = toName;
+		}
+		
+		public void named(String name) {
+			for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
+				constrs.push(it.next());
+				descs.push(name);
+			}
+		}
+	}
 
 	public class ImplicationRHS {
 		private IVecInt clause;
@@ -142,11 +172,12 @@ public class DependencyHelper<T> implements SearchListener {
 			return and;
 		}
 
-		public void implies(T ... things) throws ContradictionException {
+		public ImplicationNamer implies(T ... things) throws ContradictionException {
 			for (T t : things) {
 				clause.push(getIntValue(t));
 			}
 			toName.push(xplain.addClause(clause));
+			return new ImplicationNamer(toName);
 		}
 		
 		public ImplicationAnd impliesNot(T thing) throws ContradictionException {
@@ -155,12 +186,6 @@ public class DependencyHelper<T> implements SearchListener {
 			return and;
 		}
 		
-		public void named(String name) {
-			for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
-				constrs.push(it.next());
-				descs.push(name);
-			}
-		}
 	}
 
 	public ImplicationRHS implication(T... lhs) {
@@ -171,46 +196,16 @@ public class DependencyHelper<T> implements SearchListener {
 		return new ImplicationRHS(clause);
 	}
 
-	public class RangeOr {
-		private IVecInt clause;
-		private T abstraction;
-		
-		RangeOr(T abs,IVecInt clause) {
-			abstraction = abs;
-			this.clause = clause;
+	public ImplicationNamer atMost(int i, T ... things) throws ContradictionException {
+		IVec<IConstr> toName = new Vec<IConstr>();
+		IVecInt literals = new VecInt();
+		for (T t : things) {
+			literals.push(getIntValue(t));
 		}
-		
-		public RangeOr or(T thing) {
-			
-			return this;
-		}
-		
-		public void values() throws ContradictionException {
-			IVecInt tmpClause = new VecInt(clause.size());
-			clause.copyTo(tmpClause);
-			clause.push(-getIntValue(abstraction));
-			xplain.addClause(clause);
-			xplain.addAtMost(tmpClause, 1);
-		}
+		toName.push(xplain.addAtMost(literals, i));
+		return new ImplicationNamer(toName);
 	}
 	
-	public class Range {
-		private T abstraction;
-		
-		Range(T abs) {
-			abstraction = abs;
-		}
-		
-		public RangeOr either(T thing) {
-			IVecInt clause = new VecInt();
-			clause.push(getIntValue(thing));
-			return new RangeOr(abstraction,clause);
-		}
-	}
-	public Range range(T thing) {
-		return new Range(thing);
-	}
-
 	public void adding(int p) {
 		// TODO Auto-generated method stub
 		
