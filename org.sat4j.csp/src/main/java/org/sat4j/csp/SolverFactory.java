@@ -18,8 +18,6 @@
 *******************************************************************************/
 package org.sat4j.csp;
 
-import java.io.Serializable;
-
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.constraints.MixedDataStructureDaniel;
 import org.sat4j.minisat.constraints.MixedDataStructureWithBinary;
@@ -38,7 +36,7 @@ import org.sat4j.tools.DimacsOutputSolver;
  * 
  * @author leberre
  */
-public class SolverFactory extends ASolverFactory<ISolver> implements Serializable {
+public class SolverFactory extends ASolverFactory<ISolver> {
 
     /**
      * 

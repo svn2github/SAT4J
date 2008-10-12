@@ -82,19 +82,19 @@ public class GeneralizedSupportEncoding implements Encoding {
     }
 
     private void fill(int n, IVec<Var> scope, int[] acc,
-            Map<Set<Integer>, IVecInt> supports) {
+            Map<Set<Integer>, IVecInt> theSupports) {
         if (n == scope.size()) {
             for (int j = 0; j < acc.length; j++) {
                 Set<Integer> set = new TreeSet<Integer>();
                 for (int i = 0; i < acc.length; i++)
                     if (i != j)
                         set.add(scope.get(i).translate(acc[i]));
-                supports.put(set, new VecInt());
+                theSupports.put(set, new VecInt());
             }
         } else
             for (IteratorInt iterator = scope.get(n).domain().iterator() ; iterator.hasNext();) {
                 acc[n] = iterator.next();
-                fill(n + 1, scope, acc, supports);
+                fill(n + 1, scope, acc, theSupports);
             }
 
     }

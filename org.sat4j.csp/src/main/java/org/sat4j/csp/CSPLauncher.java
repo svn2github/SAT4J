@@ -49,19 +49,19 @@ public class CSPLauncher extends AbstractLauncher {
 	 * @see org.sat4j.Lanceur#createReader(org.sat4j.specs.ISolver)
 	 */
 	@Override
-	protected Reader createReader(final ISolver solver, final String problemname) {
-		Reader reader;
+	protected Reader createReader(final ISolver aSolver, final String problemname) {
+		Reader aReader;
 		if (problemname.endsWith(".txt")) {
-			reader = new CSPExtSupportReader(solver);
+			aReader = new CSPExtSupportReader(aSolver);
 		} else {
 			assert problemname.endsWith(".xml");
-			reader = new XMLCSPReader(solver);
+			aReader = new XMLCSPReader(aSolver);
 		}
 		if (System.getProperty("verbose") != null) {
 			log("verbose mode on");
-			reader.setVerbosity(true);
+			aReader.setVerbosity(true);
 		}
-		return reader;
+		return aReader;
 	}
 
 	public static void main(String[] args) {

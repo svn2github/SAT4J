@@ -62,8 +62,8 @@ public class SingletonDomain implements Domain {
         };
     }
 
-    public int pos(int value) {
-        if (value != this.value) {
+    public int pos(int theValue) {
+        if (theValue != this.value) {
             throw new IllegalArgumentException();
         }
         return 0;

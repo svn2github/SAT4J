@@ -114,9 +114,9 @@ public class Predicate implements Clausifiable {
 
     private Script myscript;
 
-    private void find(int[] tuple, int n, IVec<Var> scope,
+    private void find(int[] tuple, int n, IVec<Var> theScope,
             IVec<Evaluable> vars, ISolver solver) throws ContradictionException {
-        if (valuemapping.size() == scope.size()) {
+        if (valuemapping.size() == theScope.size()) {
             for (int i = 0; i < tuple.length; i++) {
                 Evaluable ev = vars.get(i);
                 Integer value = valuemapping.get(ev);
@@ -127,16 +127,16 @@ public class Predicate implements Clausifiable {
                 }
             }
             if (evaluate(tuple)) {
-                encoding.onSupport(solver, scope, valuemapping);
+                encoding.onSupport(solver, theScope, valuemapping);
             } else {
-                encoding.onNogood(solver, scope, valuemapping);
+                encoding.onNogood(solver, theScope, valuemapping);
             }
         } else {
-            Var var = scope.get(n);
+            Var var = theScope.get(n);
             Domain domain = var.domain();
             for (int i = 0; i < domain.size(); i++) {
                 valuemapping.put(var, domain.get(i));
-                find(tuple, n + 1, scope, vars, solver);
+                find(tuple, n + 1, theScope, vars, solver);
             }
             valuemapping.remove(var);
         }

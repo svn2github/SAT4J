@@ -119,7 +119,7 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
     }
 
     private IProblem parseInstance(LineNumberReader in)
-            throws ParseFormatException, ContradictionException {
+            throws ParseFormatException {
         solver.reset();
         try {
             readProblem(in);
@@ -150,7 +150,7 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
         return stb.toString();
     }
 
-    private void readProblem(LineNumberReader in) throws ContradictionException {
+    private void readProblem(LineNumberReader in) {
         Scanner input = new Scanner(in);
         // discard problem name
         beginInstance(input.nextLine());
@@ -214,12 +214,12 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
         beginConstraintsSection(nbconstr);
         // constraint definition
         for (int i = 0; i < nbconstr; i++) {
-            int[] variables = readArrayOfInt(input);
-            beginConstraint("" + i, variables.length);
+            int[] theVariables = readArrayOfInt(input);
+            beginConstraint("" + i, theVariables.length);
             int relnum = input.nextInt();
             // manage constraint
             constraintReference("" + relnum);
-            for (int v : variables) {
+            for (int v : theVariables) {
                 addEffectiveParameter("" + v);
             }
             endConstraint();
@@ -304,10 +304,10 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
         System.out.println(" done.");
     }
 
-    public void beginVariablesSection(int nbvars) {
+    public void beginVariablesSection(int expectedNumberOfVariables) {
         System.out.print("c reading variables");
         nbvarstocreate = 0;
-        this.nbvars = nbvars;
+        this.nbvars = expectedNumberOfVariables;
     }
 
     public void addVariable(String idvar, String iddomain) {
