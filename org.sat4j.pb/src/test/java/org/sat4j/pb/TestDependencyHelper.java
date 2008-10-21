@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.pb.tools.DependencyHelper;
@@ -13,11 +16,11 @@ import org.sat4j.specs.TimeoutException;
 
 public class TestDependencyHelper {
 
-	private DependencyHelper<String> helper;
+	private DependencyHelper<String,String> helper;
 	
 	@Before
 	public void setUp() {
-		helper = new DependencyHelper<String>(SolverFactory.newDefault(),10);
+		helper = new DependencyHelper<String,String>(SolverFactory.newDefault(),10);
 	}
 	
 	@Test
@@ -27,11 +30,14 @@ public class TestDependencyHelper {
 		helper.setTrue("A","User selection");
 		assertFalse(helper.hasASolution());		
 		assertEquals("C",helper.getConflictingElement());
-		String [] cause = helper.why();
-		assertEquals(3,cause.length);
-		assertEquals("I1",cause[0]);
-		assertEquals("I2",cause[1]);
-		assertEquals("User selection",cause[2]);
+		Set<String> cause = helper.why();
+		assertEquals(3,cause.size());
+		Iterator<String> it = cause.iterator(); 
+		assertEquals("I1",it.next());
+		assertTrue(it.hasNext());
+		assertEquals("I2",it.next());
+		assertTrue(it.hasNext());
+		assertEquals("User selection",it.next());
 	}
 	
 	@Test
@@ -43,12 +49,13 @@ public class TestDependencyHelper {
 		helper.setTrue("A","User selection");
 		assertFalse(helper.hasASolution());		
 		assertEquals("C",helper.getConflictingElement());
-		String [] cause = helper.why();
-		assertEquals(4,cause.length);
-		assertEquals("I1b",cause[0]);
-		assertEquals("I1c",cause[1]);
-		assertEquals("I2",cause[2]);
-		assertEquals("User selection",cause[3]);
+		Set<String> cause = helper.why();
+		assertEquals(4,cause.size());
+		Iterator<String> it = cause.iterator(); 
+		assertEquals("I1b",it.next());
+		assertEquals("I1c",it.next());
+		assertEquals("I2",it.next());
+		assertEquals("User selection",it.next());
 	}
 	
 	@Test
@@ -87,13 +94,14 @@ public class TestDependencyHelper {
 		helper.setTrue("A","User selection");
 		assertFalse(helper.hasASolution());
 		assertTrue(helper.getConflictingElement().startsWith("C"));
-		String [] cause = helper.why();
-		assertEquals(5,cause.length);
-		assertEquals("C versions",cause[0]);
-		assertEquals("I1",cause[1]);
-		assertEquals("I2",cause[2]);
-		assertEquals("I3",cause[3]);
-		assertEquals("User selection",cause[4]);
+		Set<String> cause = helper.why();
+		assertEquals(5,cause.size());
+		Iterator<String> it = cause.iterator(); 
+		assertEquals("C versions",it.next());
+		assertEquals("I1",it.next());
+		assertEquals("I2",it.next());
+		assertEquals("I3",it.next());
+		assertEquals("User selection",it.next());
 	}
 	
 	@Test
@@ -108,10 +116,11 @@ public class TestDependencyHelper {
 		assertTrue(solution.contains("B"));
 		assertTrue(solution.contains("C"));
 		assertTrue(solution.contains("D"));
-		String [] cause = helper.why("D");
-		assertEquals(2,cause.length);
-		assertEquals("I1",cause[0]);
-		assertEquals("User selection",cause[1]);
+		Set<String> cause = helper.why("D");
+		assertEquals(2,cause.size());
+		Iterator<String> it = cause.iterator(); 
+		assertEquals("I1",it.next());
+		assertEquals("User selection",it.next());
 	}
 	
 }

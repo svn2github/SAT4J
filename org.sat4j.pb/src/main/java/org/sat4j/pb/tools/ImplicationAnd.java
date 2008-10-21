@@ -12,17 +12,17 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public class ImplicationAnd<T> {
-	private final DependencyHelper<T> helper;
+public class ImplicationAnd<T,C> {
+	private final DependencyHelper<T,C> helper;
 	private final IVecInt clause;
 	private final IVec<IConstr> toName = new Vec<IConstr>();
 
-	public ImplicationAnd(DependencyHelper<T> helper, IVecInt clause) {
+	public ImplicationAnd(DependencyHelper<T,C> helper, IVecInt clause) {
 		this.clause = clause;
 		this.helper = helper;
 	}
 
-	public ImplicationAnd<T> and(T thing) throws ContradictionException {
+	public ImplicationAnd<T,C> and(T thing) throws ContradictionException {
 		IVecInt tmpClause = new VecInt();
 		clause.copyTo(tmpClause);
 		tmpClause.push(helper.getIntValue(thing));
@@ -30,7 +30,7 @@ public class ImplicationAnd<T> {
 		return this;
 	}
 
-	public ImplicationAnd<T> andNot(T thing) throws ContradictionException {
+	public ImplicationAnd<T,C> andNot(T thing) throws ContradictionException {
 		IVecInt tmpClause = new VecInt();
 		clause.copyTo(tmpClause);
 		tmpClause.push(-helper.getIntValue(thing));
@@ -38,7 +38,7 @@ public class ImplicationAnd<T> {
 		return this;
 	}
 
-	public void named(String name) {
+	public void named(C name) {
 		for (Iterator<IConstr> it = toName.iterator(); it.hasNext();) {
 			helper.constrs.push(it.next());
 			helper.descs.push(name);

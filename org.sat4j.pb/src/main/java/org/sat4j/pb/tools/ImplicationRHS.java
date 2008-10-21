@@ -9,35 +9,35 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public class ImplicationRHS<T> {
+public class ImplicationRHS<T,C> {
 
 	private IVecInt clause;
-	private final DependencyHelper<T> helper;
+	private final DependencyHelper<T,C> helper;
 
 	private IVec<IConstr> toName = new Vec<IConstr>();
 
-	public ImplicationRHS(DependencyHelper<T> helper, IVecInt clause) {
+	public ImplicationRHS(DependencyHelper<T,C> helper, IVecInt clause) {
 		this.clause = clause;
 		this.helper = helper;
 	}
 
-	public ImplicationAnd<T> implies(T thing) throws ContradictionException {
-		ImplicationAnd<T> and = new ImplicationAnd<T>(helper, clause);
+	public ImplicationAnd<T,C> implies(T thing) throws ContradictionException {
+		ImplicationAnd<T,C> and = new ImplicationAnd<T,C>(helper, clause);
 		and.and(thing);
 		return and;
 	}
 
-	public ImplicationNamer<T> implies(T... things)
+	public ImplicationNamer<T,C> implies(T... things)
 			throws ContradictionException {
 		for (T t : things) {
 			clause.push(helper.getIntValue(t));
 		}
 		toName.push(helper.xplain.addClause(clause));
-		return new ImplicationNamer<T>(helper, toName);
+		return new ImplicationNamer<T,C>(helper, toName);
 	}
 
-	public ImplicationAnd<T> impliesNot(T thing) throws ContradictionException {
-		ImplicationAnd<T> and = new ImplicationAnd<T>(helper, clause);
+	public ImplicationAnd<T,C> impliesNot(T thing) throws ContradictionException {
+		ImplicationAnd<T,C> and = new ImplicationAnd<T,C>(helper, clause);
 		and.andNot(thing);
 		return and;
 	}

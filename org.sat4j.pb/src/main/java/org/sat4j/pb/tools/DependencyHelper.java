@@ -1,5 +1,6 @@
 package org.sat4j.pb.tools;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,8 +20,16 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
-
-public class DependencyHelper<T> implements SearchListener {
+/**
+ * Helper class intended to make life easier to people to feed a 
+ * sat solver programmatically.
+ * 
+ * @author daniel
+ *
+ * @param <T> The class of the objects to map into boolean variables.
+ * @param <C> The class of the object to map to each constraint.
+ */
+public class DependencyHelper<T,C> implements SearchListener {
 
 	/**
 	 * 
@@ -30,7 +39,7 @@ public class DependencyHelper<T> implements SearchListener {
 	private final Map<T, Integer> mapToDimacs = new HashMap<T, Integer>();
 	private final IVec<T> mapToDomain;
 	final IVec<IConstr> constrs = new Vec<IConstr>();
-	final IVec<String> descs = new Vec<String>();
+	final IVec<C> descs = new Vec<C>();
 
 	private int conflictingVariable;
 
@@ -73,64 +82,62 @@ public class DependencyHelper<T> implements SearchListener {
 		return xplain.isSatisfiable();
 	}
 
-	public String[] why() throws TimeoutException {
+	public Set<C> why() throws TimeoutException {
 		IVecInt explanation = xplain.explain();
-		Set<String> ezexplain = new TreeSet<String>();
+		Set<C> ezexplain = new TreeSet<C>();
 		for (IteratorInt it = explanation.iterator(); it.hasNext();) {
 			ezexplain.add(descs.get(it.next() - 1));
 		}
-		String[] text = new String[ezexplain.size()];
-		return ezexplain.toArray(text);
+		return ezexplain;
 	}
 
-	public String[] why(T thing) throws TimeoutException {
+	public Set<C> why(T thing) throws TimeoutException {
 		IVecInt assumps = new VecInt();
 		assumps.push(-getIntValue(thing));
 		return why(assumps);
 	}
 	
-	public String[] whyNot(T thing) throws TimeoutException {
+	public Set<C> whyNot(T thing) throws TimeoutException {
 		IVecInt assumps = new VecInt();
 		assumps.push(getIntValue(thing));
 		return why(assumps);
 	}
 	
-	private String [] why(IVecInt assumps) throws TimeoutException {
+	private Set<C> why(IVecInt assumps) throws TimeoutException {
 		if (xplain.isSatisfiable(assumps)) {
-			return new String[0];
+			return Collections.emptySet();
 		}
 		IVecInt explanation = xplain.explain();
-		Set<String> ezexplain = new TreeSet<String>();
+		Set<C> ezexplain = new TreeSet<C>();
 		for (IteratorInt it = explanation.iterator(); it.hasNext();) {
 			ezexplain.add(descs.get(it.next() - 1));
 		}
-		String[] text = new String[ezexplain.size()];
-		return ezexplain.toArray(text);
+		return ezexplain;
 	}
 
-	public void setTrue(T thing, String name) throws ContradictionException {
+	public void setTrue(T thing, C name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(getIntValue(thing));
 		constrs.push(xplain.addClause(clause));
 		descs.push(name);
 	}
 
-	public void setFalse(T thing, String name) throws ContradictionException {
+	public void setFalse(T thing, C name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(-getIntValue(thing));
 		constrs.push(xplain.addClause(clause));
 		descs.push(name);
 	}
 
-	public ImplicationRHS<T> implication(T... lhs) {
+	public ImplicationRHS<T,C> implication(T... lhs) {
 		IVecInt clause = new VecInt();
 		for (T t : lhs) {
 			clause.push(-getIntValue(t));
 		}
-		return new ImplicationRHS<T>(this, clause);
+		return new ImplicationRHS<T,C>(this, clause);
 	}
 
-	public ImplicationNamer<T> atMost(int i, T... things)
+	public ImplicationNamer<T,C> atMost(int i, T... things)
 			throws ContradictionException {
 		IVec<IConstr> toName = new Vec<IConstr>();
 		IVecInt literals = new VecInt();
@@ -138,7 +145,7 @@ public class DependencyHelper<T> implements SearchListener {
 			literals.push(getIntValue(t));
 		}
 		toName.push(xplain.addAtMost(literals, i));
-		return new ImplicationNamer<T>(this, toName);
+		return new ImplicationNamer<T,C>(this, toName);
 	}
 
 	public void adding(int p) {
