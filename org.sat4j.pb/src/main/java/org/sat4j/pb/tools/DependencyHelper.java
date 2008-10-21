@@ -1,7 +1,6 @@
 package org.sat4j.pb.tools;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,22 +29,22 @@ public class DependencyHelper<T> implements SearchListener {
 
 	private final Map<T, Integer> mapToDimacs = new HashMap<T, Integer>();
 	private final IVec<T> mapToDomain;
-	private final IVec<IConstr> constrs = new Vec<IConstr>();
-	private final IVec<String> descs = new Vec<String>();
+	final IVec<IConstr> constrs = new Vec<IConstr>();
+	final IVec<String> descs = new Vec<String>();
 
 	private int conflictingVariable;
-	
-	private final XplainPB xplain;
-	
+
+	final XplainPB xplain;
+
 	public DependencyHelper(IPBSolver solver, int maxvarid) {
 		this.xplain = new XplainPB(solver);
 		xplain.newVar(maxvarid);
-		((Solver<?,?>)solver).setSearchListener(this);
+		((Solver<?, ?>) solver).setSearchListener(this);
 		mapToDomain = new Vec<T>();
 		mapToDomain.push(null);
 	}
 
-	private int getIntValue(T thing) {
+	int getIntValue(T thing) {
 		Integer intValue = mapToDimacs.get(thing);
 		if (intValue == null) {
 			intValue = mapToDomain.size();
@@ -56,7 +55,7 @@ public class DependencyHelper<T> implements SearchListener {
 	}
 
 	public IVec<T> getSolution() {
-		int [] model = xplain.model();
+		int[] model = xplain.model();
 		IVec<T> toInstall = new Vec<T>();
 		for (int i : model) {
 			if (i > 0) {
@@ -69,36 +68,46 @@ public class DependencyHelper<T> implements SearchListener {
 	public T getConflictingElement() {
 		return mapToDomain.get(conflictingVariable);
 	}
-	
+
 	public boolean hasASolution() throws TimeoutException {
 		return xplain.isSatisfiable();
 	}
 
-	public String [] why() throws TimeoutException {
+	public String[] why() throws TimeoutException {
 		IVecInt explanation = xplain.explain();
-		Set<String> ezexplain= new TreeSet<String>();
+		Set<String> ezexplain = new TreeSet<String>();
 		for (IteratorInt it = explanation.iterator(); it.hasNext();) {
-			ezexplain.add(descs.get(it.next()-1));
+			ezexplain.add(descs.get(it.next() - 1));
 		}
-		String [] text = new String[ezexplain.size()];
+		String[] text = new String[ezexplain.size()];
 		return ezexplain.toArray(text);
 	}
-	
-	public String [] why(T thing) throws TimeoutException {
+
+	public String[] why(T thing) throws TimeoutException {
 		IVecInt assumps = new VecInt();
 		assumps.push(-getIntValue(thing));
+		return why(assumps);
+	}
+	
+	public String[] whyNot(T thing) throws TimeoutException {
+		IVecInt assumps = new VecInt();
+		assumps.push(getIntValue(thing));
+		return why(assumps);
+	}
+	
+	private String [] why(IVecInt assumps) throws TimeoutException {
 		if (xplain.isSatisfiable(assumps)) {
 			return new String[0];
 		}
 		IVecInt explanation = xplain.explain();
-		Set<String> ezexplain= new TreeSet<String>();
+		Set<String> ezexplain = new TreeSet<String>();
 		for (IteratorInt it = explanation.iterator(); it.hasNext();) {
-			ezexplain.add(descs.get(it.next()-1));
+			ezexplain.add(descs.get(it.next() - 1));
 		}
-		String [] text = new String[ezexplain.size()];
+		String[] text = new String[ezexplain.size()];
 		return ezexplain.toArray(text);
 	}
-	
+
 	public void setTrue(T thing, String name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(getIntValue(thing));
@@ -106,119 +115,45 @@ public class DependencyHelper<T> implements SearchListener {
 		descs.push(name);
 	}
 
-	public void setFalse(T thing,String name) throws ContradictionException {
+	public void setFalse(T thing, String name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(-getIntValue(thing));
 		constrs.push(xplain.addClause(clause));
 		descs.push(name);
 	}
 
-	public class ImplicationAnd {
-		private IVecInt clause;
-		private IVec<IConstr> toName = new Vec<IConstr>();
-		public ImplicationAnd(IVecInt clause) {
-			this.clause = clause;
-		}
-
-		public ImplicationAnd and(T thing) throws ContradictionException {
-			IVecInt tmpClause = new VecInt();
-			clause.copyTo(tmpClause);
-			tmpClause.push(getIntValue(thing));
-			toName.push(xplain.addClause(tmpClause));
-			return this;
-		}
-		public ImplicationAnd andNot(T thing) throws ContradictionException {
-			IVecInt tmpClause = new VecInt();
-			clause.copyTo(tmpClause);
-			tmpClause.push(-getIntValue(thing));
-			toName.push(xplain.addClause(tmpClause));
-			return this;
-		}
-		public void named(String name) {
-			for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
-				constrs.push(it.next());
-				descs.push(name);
-			}
-		}
-	}
-	
-	public class ImplicationNamer {
-		private IVec<IConstr> toName = new Vec<IConstr>();
-		
-		public ImplicationNamer(IVec<IConstr> toName) {
-			this.toName = toName;
-		}
-		
-		public void named(String name) {
-			for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
-				constrs.push(it.next());
-				descs.push(name);
-			}
-		}
-	}
-
-	public class ImplicationRHS {
-		private IVecInt clause;
-		
-		private IVec<IConstr> toName = new Vec<IConstr>();
-		
-		public ImplicationRHS(IVecInt clause) {
-			this.clause = clause;
-		}
-
-		public ImplicationAnd implies(T thing) throws ContradictionException {
-			ImplicationAnd and = new ImplicationAnd(clause);
-			and.and(thing);
-			return and;
-		}
-
-		public ImplicationNamer implies(T ... things) throws ContradictionException {
-			for (T t : things) {
-				clause.push(getIntValue(t));
-			}
-			toName.push(xplain.addClause(clause));
-			return new ImplicationNamer(toName);
-		}
-		
-		public ImplicationAnd impliesNot(T thing) throws ContradictionException {
-			ImplicationAnd and = new ImplicationAnd(clause);
-			and.andNot(thing);
-			return and;
-		}
-		
-	}
-
-	public ImplicationRHS implication(T... lhs) {
+	public ImplicationRHS<T> implication(T... lhs) {
 		IVecInt clause = new VecInt();
 		for (T t : lhs) {
 			clause.push(-getIntValue(t));
 		}
-		return new ImplicationRHS(clause);
+		return new ImplicationRHS<T>(this, clause);
 	}
 
-	public ImplicationNamer atMost(int i, T ... things) throws ContradictionException {
+	public ImplicationNamer<T> atMost(int i, T... things)
+			throws ContradictionException {
 		IVec<IConstr> toName = new Vec<IConstr>();
 		IVecInt literals = new VecInt();
 		for (T t : things) {
 			literals.push(getIntValue(t));
 		}
 		toName.push(xplain.addAtMost(literals, i));
-		return new ImplicationNamer(toName);
+		return new ImplicationNamer<T>(this, toName);
 	}
-	
+
 	public void adding(int p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void assuming(int p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void backtracking(int p) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void beginLoop() {
@@ -231,7 +166,7 @@ public class DependencyHelper<T> implements SearchListener {
 	public void conflictFound(int p) {
 		conflictingVariable = LiteralsUtils.var(p);
 	}
-	
+
 	public void delete(int[] clause) {
 	}
 
