@@ -10,6 +10,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
 public class ManyCore implements ISolver, OutcomeListener {
@@ -252,6 +253,13 @@ public class ManyCore implements ISolver, OutcomeListener {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setDBSimplificationAllowed(status);
 		}		
+	}
+
+	public void setSearchListener(SearchListener sl) {
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers[i].setSearchListener(sl);
+		}	
+		
 	}
 
 }
