@@ -27,13 +27,17 @@
 *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.IConstr;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.SearchListener;
+
 final class NullSearchListener implements SearchListener {
     private static final long serialVersionUID = 1L;
 
     public void assuming(int p) {
     }
 
-    public void propagating(int p) {
+    public void propagating(int p, IConstr reason) {
     }
 
     public void backtracking(int p) {
@@ -42,13 +46,13 @@ final class NullSearchListener implements SearchListener {
     public void adding(int p) {
     }
 
-    public void learn(Constr clause) {
+    public void learn(IConstr clause) {
     }
 
     public void delete(int[] clause) {
     }
 
-    public void conflictFound(Constr confl) {
+    public void conflictFound(IConstr confl) {
     }
     
     public void conflictFound(int p) {

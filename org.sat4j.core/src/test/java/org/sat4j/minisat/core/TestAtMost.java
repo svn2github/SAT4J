@@ -1,4 +1,4 @@
-package org.sat4j.minisat.datatype;
+package org.sat4j.minisat.core;
 
 import junit.framework.TestCase;
 

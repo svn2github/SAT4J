@@ -1,8 +1,8 @@
-package org.sat4j.minisat.datatype;
+package org.sat4j.minisat.core;
 
 import junit.framework.TestCase;
 
-import org.sat4j.minisat.core.Lbool;
+import org.sat4j.specs.Lbool;
 
 /*
  * Created on 2 nov. 2003

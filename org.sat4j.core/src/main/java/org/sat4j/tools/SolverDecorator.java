@@ -37,6 +37,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -335,4 +336,7 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver, Ser
         return solver.getStat();
     }
 
+    public void setSearchListener(SearchListener sl) {
+    	solver.setSearchListener(sl);
+    }
 }

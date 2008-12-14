@@ -71,6 +71,8 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -742,7 +744,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		while (qhead < trail.size()) {
 			stats.propagations++;
 			int p = trail.get(qhead++);
-			slistener.propagating(toDimacs(p));
+			slistener.propagating(toDimacs(p), null);
 			order.assignLiteral(p);
 			// p is the literal to propagate
 			// Moved original MiniSAT code to dsfactory to avoid

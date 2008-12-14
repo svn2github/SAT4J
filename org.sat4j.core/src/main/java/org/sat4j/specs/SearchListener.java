@@ -25,9 +25,10 @@
 * See www.minisat.se for the original solver in C++.
 * 
 *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.specs;
 
 import java.io.Serializable;
+
 
 /**
  * Interface to the solver main steps. Useful for integrating search
@@ -49,8 +50,9 @@ public interface SearchListener extends Serializable {
      * Unit propagation
      * 
      * @param p
+     * @param reason TODO
      */
-    void propagating(int p);
+    void propagating(int p, IConstr reason);
 
     /**
      * backtrack on a decision variable
@@ -69,7 +71,7 @@ public interface SearchListener extends Serializable {
      * 
      * @param c
      */
-    void learn(Constr c);
+    void learn(IConstr c);
 
     /**
      * delete a clause
@@ -81,7 +83,7 @@ public interface SearchListener extends Serializable {
      * @param confl TODO
      * 
      */
-    void conflictFound(Constr confl);
+    void conflictFound(IConstr confl);
 
     /**
      * a conflict has been found while propagating values.

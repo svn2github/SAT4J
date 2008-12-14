@@ -38,6 +38,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -247,6 +248,9 @@ public class DimacsOutputSolver implements ISolver {
 	}
 
 	public void setDBSimplificationAllowed(boolean status) {
+	}
+
+	public void setSearchListener(SearchListener sl) {
 	}
 
 }

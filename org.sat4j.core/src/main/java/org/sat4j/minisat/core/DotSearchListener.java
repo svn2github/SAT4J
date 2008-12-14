@@ -34,6 +34,9 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 import org.sat4j.core.Vec;
+import org.sat4j.specs.IConstr;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.SearchListener;
 
 /**
  * Class allowing to express the search as a tree in the dot language. The
@@ -91,7 +94,7 @@ public class DotSearchListener implements SearchListener {
         currentNodeName = newName;
     }
 
-    public final void propagating(final int p) {
+    public final void propagating(final int p, IConstr reason) {
         String newName = currentNodeName + "." + p;
 
         if (currentNodeName == null) {
@@ -121,13 +124,13 @@ public class DotSearchListener implements SearchListener {
         estOrange = true;
     }
 
-    public final void learn(final Constr clause) {
+    public final void learn(final IConstr clause) {
     }
 
     public final void delete(final int[] clause) {
     }
 
-    public final void conflictFound(Constr confl) {
+    public final void conflictFound(IConstr confl) {
         saveLine(lineTab("\"" + currentNodeName
                 + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
     }

@@ -27,6 +27,10 @@
 *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.IConstr;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.SearchListener;
+
 /**
  * Debugging Search Listener allowing to follow the search in a textual way.
  * 
@@ -41,7 +45,7 @@ public class TextOutputListener implements SearchListener {
         System.out.println("assuming " + p);
     }
 
-    public void propagating(int p) {
+    public void propagating(int p, IConstr reason) {
         System.out.println("implies " + p);
     }
 
@@ -53,7 +57,7 @@ public class TextOutputListener implements SearchListener {
         System.out.println("adding " + p);
     }
 
-    public void learn(Constr clause) {
+    public void learn(IConstr clause) {
 
     }
 
@@ -61,7 +65,7 @@ public class TextOutputListener implements SearchListener {
 
     }
 
-    public void conflictFound(Constr confl) {
+    public void conflictFound(IConstr confl) {
         System.out.println("conflict ");
     }
 

@@ -269,4 +269,12 @@ public interface ISolver extends IProblem, Serializable {
      * when constraint removal is planned.
      */
     boolean isDBSimplificationAllowed();
+    
+    /**
+     * Allow the user to hook a listener to the solver to be notified of the main 
+     * steps of the search process.
+     * 
+     * @param sl a Search Listener.
+     */
+    void setSearchListener(SearchListener sl);
 }

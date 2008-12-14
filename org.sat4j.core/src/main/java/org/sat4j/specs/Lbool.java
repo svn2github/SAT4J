@@ -25,7 +25,7 @@
 * See www.minisat.se for the original solver in C++.
 * 
 *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.specs;
 
 /**
  * That enumeration defines the possible truth value for a variable: satisfied,
