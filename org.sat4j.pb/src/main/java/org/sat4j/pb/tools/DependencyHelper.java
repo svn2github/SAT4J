@@ -9,9 +9,6 @@ import java.util.TreeSet;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.Lbool;
-import org.sat4j.minisat.core.SearchListener;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
@@ -19,6 +16,8 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 /**
  * Helper class intended to make life easier to people to feed a 
@@ -48,7 +47,7 @@ public class DependencyHelper<T,C> implements SearchListener {
 	public DependencyHelper(IPBSolver solver, int maxvarid) {
 		this.xplain = new XplainPB(solver);
 		xplain.newVar(maxvarid);
-		((Solver<?, ?>) solver).setSearchListener(this);
+		solver.setSearchListener(this);
 		mapToDomain = new Vec<T>();
 		mapToDomain.push(null);
 	}
@@ -166,12 +165,12 @@ public class DependencyHelper<T,C> implements SearchListener {
 	public void beginLoop() {
 	}
 
-	public void conflictFound(Constr confl) {
-		conflictingVariable = LiteralsUtils.var(confl.get(0));
+	public void conflictFound(IConstr confl) {
+		conflictingVariable = Math.abs(LiteralsUtils.toDimacs(confl.get(0)));
 	}
 
 	public void conflictFound(int p) {
-		conflictingVariable = LiteralsUtils.var(p);
+		conflictingVariable = Math.abs(LiteralsUtils.toDimacs(p));
 	}
 
 	public void delete(int[] clause) {
@@ -180,10 +179,10 @@ public class DependencyHelper<T,C> implements SearchListener {
 	public void end(Lbool result) {
 	}
 
-	public void learn(Constr c) {
+	public void learn(IConstr c) {
 	}
 
-	public void propagating(int p) {
+	public void propagating(int p, IConstr reason) {
 	}
 
 	public void solutionFound() {
