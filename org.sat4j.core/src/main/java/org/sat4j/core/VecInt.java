@@ -610,4 +610,8 @@ public class VecInt implements IVecInt {
     public boolean isEmpty() {
         return nbelem == 0;
     }
+
+	public int[] toArray() {
+		return myarray;
+	}
 }

@@ -80,8 +80,8 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 	}
 
 	@Override
-	protected Reader createReader(ISolver solver, String problemname) {
-		return new InstanceReader(solver);
+	protected Reader createReader(ISolver theSolver, String problemname) {
+		return new InstanceReader(theSolver);
 	}
 
 	@Override

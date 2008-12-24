@@ -171,4 +171,6 @@ public interface IVecInt extends Serializable {
     boolean isEmpty();
     
     IteratorInt iterator();
+
+	int[] toArray();
 }

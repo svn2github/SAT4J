@@ -165,4 +165,8 @@ public class ReadOnlyVecInt implements IVecInt {
         throw new UnsupportedOperationException();
     }
 
+	public int[] toArray() {
+		throw new UnsupportedOperationException();
+	}
+
 }

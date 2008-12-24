@@ -180,7 +180,7 @@ public abstract class AbstractLauncher implements Serializable {
         return problem;
     }
 
-    protected abstract Reader createReader(ISolver solver, String problemname);
+    protected abstract Reader createReader(ISolver theSolver, String problemname);
 
     public void run(String[] args) {
 
