@@ -1,8 +1,28 @@
+/*******************************************************************************
+* SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le Berre
+*
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Eclipse Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/epl-v10.html
+*
+* Alternatively, the contents of this file may be used under the terms of
+* either the GNU Lesser General Public License Version 2.1 or later (the
+* "LGPL"), in which case the provisions of the LGPL are applicable instead
+* of those above. If you wish to allow use of your version of this file only
+* under the terms of the LGPL, and not to allow others to use your version of
+* this file under the terms of the EPL, indicate your decision by deleting
+* the provisions above and replace them with the notice and other provisions
+* required by the LGPL. If you do not delete the provisions above, a recipient
+* may use your version of this file under the terms of the EPL or the LGPL.
+*******************************************************************************/
+
 package org.sat4j.pb;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.sat4j.pb.tools.WeightedObject.newWO;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -123,4 +143,21 @@ public class TestDependencyHelper {
 		assertEquals("User selection",it.next());
 	}
 	
+	@Test
+	public void testObjectiveFunction() throws ContradictionException, TimeoutException {
+		helper.implication("A").implies("B").and("C").and("D").named("I1");
+		helper.implication("C").implies("C1","C2","C3").named("C versions");
+		helper.atMost(1,"C1","C2","C3").named("Singleton on C");
+		helper.setTrue("A","User selection");
+		helper.setObectiveFunction(newWO("C1",4),newWO("C2",2),newWO("C3",1));
+		assertTrue(helper.hasASolution());
+		IVec<String> solution = helper.getSolution();
+		assertTrue(solution.contains("A"));
+		assertTrue(solution.contains("B"));
+		assertTrue(solution.contains("C"));
+		assertTrue(solution.contains("C3"));
+		assertFalse(solution.contains("C2"));
+		assertFalse(solution.contains("C1"));
+		assertTrue(solution.contains("D"));
+	}
 }
