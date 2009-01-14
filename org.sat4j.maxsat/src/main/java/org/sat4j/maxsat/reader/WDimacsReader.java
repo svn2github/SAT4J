@@ -20,12 +20,14 @@ package org.sat4j.maxsat.reader;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.math.BigInteger;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.sat4j.maxsat.WeightedMaxSatDecorator;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.ParseFormatException;
+import org.sat4j.specs.ContradictionException;
 
 /**
  * Simple reader for the weighted maxsat problem.
@@ -35,17 +37,35 @@ import org.sat4j.reader.ParseFormatException;
  */
 public class WDimacsReader extends DimacsReader {
 
-    /**
+	protected BigInteger weight;
+	protected BigInteger top;
+	
+    @Override
+	protected void flushConstraint() throws ContradictionException {
+    	decorator.addSoftClause(weight, literals);
+	}
+
+	@Override
+	protected boolean handleLine(Scanner scan) throws ContradictionException {
+		weight = scan.nextBigInteger();
+		return super.handleLine(scan);
+	}
+
+	/**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public WDimacsReader(IPBSolver solver) {
+    private final WeightedMaxSatDecorator decorator;
+    
+    public WDimacsReader(WeightedMaxSatDecorator solver) {
         super(solver,"wcnf");
+        decorator = solver;
     }
 
-    public WDimacsReader(IPBSolver solver, String format) {
+    public WDimacsReader(WeightedMaxSatDecorator solver, String format) {
         super(solver, format);
+        decorator = solver;
     }
 
     @Override
@@ -82,8 +102,8 @@ public class WDimacsReader extends DimacsReader {
             // assume we are in weighted MAXSAT mode
             
             if (stk.hasMoreTokens()) {
-            	int top = Integer.parseInt(stk.nextToken());
-            	((WeightedMaxSatDecorator)solver).setTopWeight(top);
+            	top = new BigInteger(stk.nextToken());
+            	decorator.setTopWeight(top);
             }             
         }
     }

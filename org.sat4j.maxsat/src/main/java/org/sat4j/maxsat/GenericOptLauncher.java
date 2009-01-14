@@ -75,7 +75,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
     @Override
     protected Reader createReader(ISolver solver, String problemname) {
         if (problemname.endsWith(".wcnf")) { //$NON-NLS-1$
-            return new WDimacsReader((IPBSolver) solver); //$NON-NLS-1$
+            return new WDimacsReader(( WeightedMaxSatDecorator)solver); //$NON-NLS-1$
         } else if (problemname.endsWith("p2cnf")) {
             return new P2DimacsReader((MinCostDecorator)solver);
         }

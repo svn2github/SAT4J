@@ -34,6 +34,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -57,9 +58,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     private int nbexpectedclauses;
 
-    private long falsifiedWeight;
+    private BigInteger falsifiedWeight = BigInteger.ZERO;
 
     protected int nbnewvar;
+
+	protected int[] prevmodel;
+	protected boolean[] prevboolmodel;
 
     protected int[] prevfullmodel;
 
@@ -82,32 +86,95 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     public void setExpectedNumberOfClauses(int nb) {
         nbexpectedclauses = nb;
         lits.ensure(nb);
-        falsifiedWeight = 0;
+        falsifiedWeight = BigInteger.ZERO;
         super.setExpectedNumberOfClauses(nb);
         super.newVar(nborigvars + nbexpectedclauses);
     }
 
     @Override
     public int[] model() {
-        int[] shortmodel = new int[nborigvars];
-        for (int i = 0; i < nborigvars; i++) {
-            shortmodel[i] = prevfullmodel[i];
-        }
-        return shortmodel;
+		return prevmodel;
     }
 
-    protected int top = Integer.MAX_VALUE;
+	@Override
+	public boolean model(int var) {
+		return prevboolmodel[var - 1];
+    }
 
-    public void setTopWeight(int top) {
+    protected BigInteger top = new BigInteger("100000000000000000000000000000000000000000");
+
+    public void setTopWeight(BigInteger top) {
         this.top = top;
     }
 
+	/**
+	 * Add a set of literals to the solver.
+	 * 
+	 * Here the assumption is that the first literal (literals[0]) is the weight
+	 * of the constraint as found in the MAXSAT evaluation. if the weight is
+	 * greater or equal to the top weight, then the clause is hard, else it is
+	 * soft.
+	 * 
+	 * @param literals
+	 *            a weighted clause, the weight being the first element of the
+	 *            vector.
+	 * @see #setTopWeight(int)
+	 */
     @Override
     public IConstr addClause(IVecInt literals) throws ContradictionException {
         int weight = literals.get(0);
-        if (weight < top) {
+		literals.delete(0);
+		return addSoftClause(weight, literals);
+	}
 
-            BigInteger bigweight = BigInteger.valueOf(weight);
+	/**
+	 * Add a hard clause in the solver, i.e. a clause that must be satisfied.
+	 * 
+	 * @param literals
+	 *            the clause
+	 * @return the constraint is it is not trivially satisfied.
+	 * @throws ContradictionException
+	 */
+	public IConstr addHardClause(IVecInt literals)
+			throws ContradictionException {
+		return super.addClause(literals);
+	}
+
+	/**
+	 * Add a soft clause in the solver, i.e. a clause with a weight of 1.
+	 * 
+	 * @param literals
+	 *            the clause.
+	 * @return the constraint is it is not trivially satisfied.
+	 * @throws ContradictionException
+	 */
+	public IConstr addSoftClause(IVecInt literals)
+			throws ContradictionException {
+		return addSoftClause(1, literals);
+	}
+
+	/**
+	 * Add a soft clause to the solver.
+	 * 
+	 * if the weight of the clause is greater of equal to the top weight, the
+	 * clause will be considered as a hard clause.
+	 * 
+	 * @param weight
+	 *            the weight of the clause
+	 * @param literals
+	 *            the clause
+	 * @return the constraint is it is not trivially satisfied.
+	 * @throws ContradictionException
+	 */
+	public IConstr addSoftClause(int weight, IVecInt literals)
+			throws ContradictionException {
+		return addSoftClause(BigInteger.valueOf(weight),literals);
+	}
+
+	public IConstr addSoftClause(BigInteger weight, IVecInt literals)
+		throws ContradictionException {
+        if (weight.compareTo(top)<0) {
+
             if (literals.size() == 2) {
                 // if there is only a coefficient and a literal, no need to
                 // create
@@ -116,14 +183,14 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                 int lit = -literals.get(1);
                 int index = lits.containsAt(lit);
                 if (index != -1) {
-                    coefs.set(index, coefs.get(index).add(bigweight));
+                    coefs.set(index, coefs.get(index).add(weight));
                 } else {
                     // check if the opposite literal is already there
                     index = lits.containsAt(-lit);
                     if (index != -1) {
-                    	falsifiedWeight += weight;
+                    	falsifiedWeight = falsifiedWeight.add(weight);
                         BigInteger oldw = coefs.get(index);
-                        BigInteger diff = oldw.subtract(bigweight);
+                        BigInteger diff = oldw.subtract(weight);
                         if (diff.signum() > 0) {
                             coefs.set(index, diff);
                         } else if (diff.signum() < 0) {
@@ -132,7 +199,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                             // remove from falsifiedWeight the
                             // part of the weight that will remain 
                             // in the objective function
-                            falsifiedWeight += diff.intValue();
+                            falsifiedWeight = falsifiedWeight.add(diff);
                         } else {
                             assert diff.signum() == 0;                            
                             lits.delete(index);
@@ -140,21 +207,68 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                         }
                     } else {
                         lits.push(lit);
-                        coefs.push(bigweight);
+                        coefs.push(weight);
                     }
                 }
                 return null;
             }
-            coefs.push(bigweight);
+            coefs.push(weight);
             int newvar = nborigvars + ++nbnewvar;
-            literals.set(0, newvar);
+			literals.push(newvar);
             lits.push(newvar);
-        } else {
-            literals.delete(0);
         }
         return super.addClause(literals);
     }
 
+	/**
+	 * Set some literals whose sum must be minimized.
+	 * 
+	 * @param literals
+	 *            the sum of those literals must be minimized.
+	 */
+	public void addLiteralsToMinimize(IVecInt literals) {
+		for (IteratorInt it = literals.iterator(); it.hasNext();) {
+			lits.push(it.next());
+			coefs.push(BigInteger.ONE);
+		}
+	}
+
+	/**
+	 * Set some literals whose sum must be minimized.
+	 * 
+	 * @param literals
+	 *            the sum of those literals must be minimized.
+	 * @param coefficients
+	 *            the weight of the literals.
+	 */
+	public void addWeightedLiteralsToMinimize(IVecInt literals,
+			IVec<BigInteger> coefficients) {
+		if (literals.size() != coefs.size())
+			throw new IllegalArgumentException();
+		for (int i = 0; i < literals.size(); i++) {
+			lits.push(literals.get(i));
+			coefs.push(coefficients.get(i));
+		}
+	}
+
+	/**
+	 * Set some literals whose sum must be minimized.
+	 * 
+	 * @param literals
+	 *            the sum of those literals must be minimized.
+	 * @param coefficients
+	 *            the weight of the literals.
+	 */
+	public void addWeightedLiteralsToMinimize(IVecInt literals,
+			IVecInt coefficients) {
+		if (literals.size() != coefficients.size())
+			throw new IllegalArgumentException();
+		for (int i = 0; i < literals.size(); i++) {
+			lits.push(literals.get(i));
+			coefs.push(BigInteger.valueOf(coefficients.get(i)));
+		}
+    }
+    
     public boolean admitABetterSolution() throws TimeoutException {
     	return admitABetterSolution(VecInt.EMPTY);
     }
@@ -163,13 +277,21 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 		throws TimeoutException {
         boolean result = super.isSatisfiable(assumps,true);
         if (result) {
+			prevboolmodel = new boolean[nVars()];
+			for (int i = 0; i < nVars(); i++) {
+				prevboolmodel[i] = decorated().model(i + 1);
+			}
             int nbtotalvars = nborigvars + nbnewvar;
             if (prevfullmodel == null)
                 prevfullmodel = new int[nbtotalvars];
             for (int i = 1; i <= nbtotalvars; i++) {
                 prevfullmodel[i - 1] = super.model(i) ? i : -i;
             }
-            calculateObjective();
+            prevmodel = new int[nborigvars];
+			for (int i = 0; i < nborigvars; i++) {
+				prevmodel[i] = prevfullmodel[i];
+			}
+			calculateObjective();
         }
         return result;
     }
@@ -190,17 +312,17 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         return false;
     }
 
-    private int counter;
+    private BigInteger counter;
 
     public Number calculateObjective() {
-        counter = 0;
+        counter = BigInteger.ZERO;
         for (int q : prevfullmodel) {
             int index = lits.containsAt(q);
             if (index != -1) {
-                counter += coefs.get(index).intValue();
+                counter = counter.add(coefs.get(index));
             }
         }
-        return falsifiedWeight + counter;
+        return falsifiedWeight.add(counter);
     }
 
     private final IVecInt lits = new VecInt();
@@ -211,12 +333,11 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     public void discardCurrentSolution() throws ContradictionException {
         assert lits.size() == coefs.size();
-        super.addPseudoBoolean(lits, coefs, false, BigInteger
-                .valueOf(counter - 1));
+        super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
     }
 
 	public Number getObjectiveValue() {
-		return falsifiedWeight+counter;
+		return falsifiedWeight.add(counter);
 	}
 
 	public void discard() throws ContradictionException {
