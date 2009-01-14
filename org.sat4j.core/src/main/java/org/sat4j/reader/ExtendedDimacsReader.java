@@ -34,7 +34,6 @@ import java.util.StringTokenizer;
 
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.GateTranslator;
 
 /**
@@ -136,7 +135,7 @@ public class ExtendedDimacsReader extends DimacsReader {
      *      org.sat4j.specs.IVecInt)
      */
     @Override
-    protected boolean handleConstr(String line, IVecInt literals)
+    protected boolean handleConstr(String line)
             throws ContradictionException {
         boolean added = true;
         assert literals.size() == 0;
