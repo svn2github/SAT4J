@@ -39,7 +39,7 @@ package org.sat4j.core;
  * <pre>
  *  int p : a literal (p&gt;1)
  *  p &circ; 1 : the negation of the literal
- *  p &gt;&gt; 1 : the DIMACS number reresenting the variable.
+ *  p &gt;&gt; 1 : the DIMACS number representing the variable.
  *  int v : a DIMACS variable (v&gt;0)
  *  v &lt;&lt; 1 : a positive literal for that variable in the solver.
  *  v &lt;&lt; 1 &circ; 1 : a negative literal for that variable. 
@@ -56,8 +56,8 @@ public final class LiteralsUtils {
 
     /**
      * Returns the variable associated to the literal
-     * @param p a literal
-     * @return the variable associated to that literal.
+     * @param p a literal in internal representation
+     * @return the Dimacs variable associated to that literal.
      */
     public static int var(int p) {
         assert p > 1;
@@ -67,8 +67,8 @@ public final class LiteralsUtils {
     /**
      * Returns the opposite literal.
      * 
-     * @param p a literal
-     * @return the opposite literal
+     * @param p a literal in internal representation
+     * @return the opposite literal in internal representation
      */
     public static int neg(int p) {
         return p ^ 1;
@@ -76,8 +76,8 @@ public final class LiteralsUtils {
     
     /**
      * Returns the positive literal associated with a variable.
-     * @param var a variable
-     * @return the positive literal associated to this variable.
+     * @param var a variable in Dimacs format
+     * @return the positive literal associated with this variable in internal representation
      */
     public static int posLit(int var) {
        return var << 1; 
@@ -85,15 +85,16 @@ public final class LiteralsUtils {
     
     /**
      * Returns the negative literal associated with a variable.
-     * @param var a variable.
-     * @return the negative literal associated with var.
+     * @param var a variable in Dimacs format
+     * @return the negative literal associated  with this variable in internal representation
      */
     public static int negLit(int var) {
         return (var << 1)^1;
     }
 
 	/**
-	 * decode the internal representation of a literal into Dimacs format.
+	 * decode the internal representation of a literal in internal representation
+	 * into Dimacs format.
 	 * 
 	 * @param p
 	 * 		the literal in internal representation
