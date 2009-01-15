@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
@@ -36,8 +35,6 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
-import org.sat4j.specs.Lbool;
-import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 /**
  * Helper class intended to make life easier to people to feed a 
@@ -48,7 +45,7 @@ import org.sat4j.specs.TimeoutException;
  * @param <T> The class of the objects to map into boolean variables.
  * @param <C> The class of the object to map to each constraint.
  */
-public class DependencyHelper<T,C> implements SearchListener {
+public class DependencyHelper<T,C> {
 
 	/**
 	 * 
@@ -60,14 +57,11 @@ public class DependencyHelper<T,C> implements SearchListener {
 	final IVec<IConstr> constrs = new Vec<IConstr>();
 	final IVec<C> descs = new Vec<C>();
 
-	private int conflictingVariable;
-
 	final XplainPB xplain;
 	
 	public DependencyHelper(IPBSolver solver, int maxvarid) {
 		this.xplain = new XplainPB(solver);
 		xplain.newVar(maxvarid);
-		solver.setSearchListener(this);
 		mapToDomain = new Vec<T>();
 		mapToDomain.push(null);
 	}
@@ -91,10 +85,6 @@ public class DependencyHelper<T,C> implements SearchListener {
 			}
 		}
 		return toInstall;
-	}
-
-	public T getConflictingElement() {
-		return mapToDomain.get(conflictingVariable);
 	}
 
 	public boolean hasASolution() throws TimeoutException {
@@ -176,49 +166,5 @@ public class DependencyHelper<T,C> implements SearchListener {
 		}
 		ObjectiveFunction obj = new ObjectiveFunction(literals,coefs);
 		xplain.setObjectiveFunction(obj);
-	}
-	
-	public void adding(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void assuming(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void backtracking(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void beginLoop() {
-	}
-
-	public void conflictFound(IConstr confl) {
-		conflictingVariable = Math.abs(LiteralsUtils.toDimacs(confl.get(0)));
-	}
-
-	public void conflictFound(int p) {
-		conflictingVariable = Math.abs(LiteralsUtils.toDimacs(p));
-	}
-
-	public void delete(int[] clause) {
-	}
-
-	public void end(Lbool result) {
-	}
-
-	public void learn(IConstr c) {
-	}
-
-	public void propagating(int p, IConstr reason) {
-	}
-
-	public void solutionFound() {
-	}
-
-	public void start() {
 	}
 }
