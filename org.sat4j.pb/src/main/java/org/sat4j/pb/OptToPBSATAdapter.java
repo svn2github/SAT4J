@@ -57,9 +57,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable() throws TimeoutException {
 		modelComputed = false;
-		if (problem.hasNoObjectiveFunction()) {
-			return problem.isSatisfiable();
-		}
+        if (problem.hasNoObjectiveFunction()) {
+    		return modelComputed = problem.isSatisfiable();
+    	}
 		return problem.admitABetterSolution();
 	}
 
@@ -77,9 +77,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
 		modelComputed = false;
-		if (problem.hasNoObjectiveFunction()) {
-			return problem.isSatisfiable(assumps);
-		}
+    	if (problem.hasNoObjectiveFunction()) {
+    		return modelComputed = problem.isSatisfiable(assumps);
+    	}
 		return problem.admitABetterSolution(assumps);
 	}
 
@@ -89,10 +89,8 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			return problem.model();
 		try {
 			assert problem.admitABetterSolution();
-			if (problem.hasNoObjectiveFunction()) {
-				return problem.model();
-			}
-			do {
+            assert problem.hasNoObjectiveFunction();
+ 			do {
 				problem.discardCurrentSolution();
 			} while (problem.admitABetterSolution());
 		} catch (TimeoutException e) {

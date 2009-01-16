@@ -60,6 +60,40 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		super(solver);
 	}
 
+	
+	@Override
+	public boolean isSatisfiable() throws TimeoutException {
+		return isSatisfiable(VecInt.EMPTY);
+	}
+
+
+	@Override
+	public boolean isSatisfiable(boolean global) throws TimeoutException {
+		return isSatisfiable(VecInt.EMPTY,global);
+	}
+
+
+	@Override
+	public boolean isSatisfiable(IVecInt assumps, boolean global)
+			throws TimeoutException {
+		boolean result = super.isSatisfiable(assumps,true);
+		if (result) {
+			prevmodel = super.model();
+			prevfullmodel = new boolean[nVars()];
+			for (int i = 0; i < nVars(); i++) {
+				prevfullmodel[i] = decorated().model(i + 1);
+			}
+		}
+		return result;
+	}
+
+
+	@Override
+	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+		return isSatisfiable(assumps,true);
+	}
+
+
 	@Override
 	public void setObjectiveFunction(ObjectiveFunction objf) {
 		objfct = objf;
