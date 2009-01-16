@@ -60,7 +60,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
 		constrs.push(constr);
-		assert constrs.size() == nbnewvar;
+		assert constrs.size() == nbnewvar : ""+constrs.size()+"!="+nbnewvar;
 		return constr;
 	}
 
@@ -82,7 +82,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	private static final long serialVersionUID = 1L;
 
 	public IVecInt explain() throws TimeoutException {
-		assert !isSatisfiable();
+		assert !isSatisfiable(assump);
 		return xplainStrategy.explain(decorated(),nbnewvar,nborigvars,constrs, assump);
 	}
 
