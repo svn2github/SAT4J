@@ -194,10 +194,17 @@ public interface ISolver extends IProblem, Serializable {
     /**
      * Useful to check the internal timeout of the solver.
      * 
-     * @return the internal timeout of the solver (in second)
+     * @return the internal timeout of the solver (in seconds)
      */
     int getTimeout();
 
+    /**
+     *  Useful to check the internal timeout of the solver.
+     *  
+     *  @return the internal timeout of the solver (in milliseconds)
+     */
+    long getTimeoutMs();
+    
     /**
      * Expire the timeout of the solver.
      */

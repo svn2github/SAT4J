@@ -97,7 +97,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
             return false;
         }
         trivialfalsity = false;
-        return super.isSatisfiable();
+        return super.isSatisfiable(true);
     }
 
     /*
@@ -111,7 +111,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
             return false;
         }
         trivialfalsity = false;
-        return super.isSatisfiable(assumps);
+        return super.isSatisfiable(assumps,true);
     }
 
     /*

@@ -47,10 +47,10 @@ public class ArminRestarts implements RestartStrategy {
     private long conflicts;
     private SearchParams params;
     
-    public void init(SearchParams params) {
-        this.params = params;
-        inner = params.getInitConflictBound();
-        outer = params.getInitConflictBound();
+    public void init(SearchParams theParams) {
+        this.params = theParams;
+        inner = theParams.getInitConflictBound();
+        outer = theParams.getInitConflictBound();
         conflicts = Math.round(inner);
     }
 

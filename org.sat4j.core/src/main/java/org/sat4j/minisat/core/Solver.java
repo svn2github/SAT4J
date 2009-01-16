@@ -168,7 +168,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	private RestartStrategy restarter;
 
-	private final Map<String, Integer> constrTypes = new HashMap<String, Integer>();
+	private final Map<String, Counter> constrTypes = new HashMap<String, Counter>();
 
 	private boolean isDBSimplificationAllowed = false;
 
@@ -476,11 +476,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 			// select next reason to look at
 			do {
 				p = trail.last();
-				// System.err.print((Clause.lastid()+1)+"
-				// "+((Clause)confl).getId()+"" );
 				confl = voc.getReason(p);
-				// System.err.println(((Clause)confl).getId());
-				// assert(confl != null) || counter == 1;
 				undoOne();
 			} while (!seen[p >> 1]);
 			// seen[p.var] indique que p se trouve dans outLearnt ou dans
@@ -1146,7 +1142,25 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	public void printInfos(PrintWriter out, String prefix) {
 		out.print(prefix);
 		out.println("constraints type ");
-		for (Map.Entry<String, Integer> entry : constrTypes.entrySet()) {
+		for (Map.Entry<String, Counter> entry : constrTypes.entrySet()) {
+			out.println(prefix + entry.getKey() + " => " + entry.getValue());
+		}
+	}
+
+	public void printLearntClausesInfos(PrintWriter out, String prefix) {
+		Map<String,Counter> learntTypes = new HashMap<String,Counter>();
+		for (Iterator<Constr> it = learnts.iterator(); it.hasNext();) {
+			String type = it.next().getClass().getName();
+			Counter count = learntTypes.get(type);
+			if (count == null) {
+				learntTypes.put(type, new Counter());
+			} else {
+				count.inc();
+			}
+		}
+		out.print(prefix);
+		out.println("learnt constraints type ");
+		for (Map.Entry<String, Counter> entry : learntTypes.entrySet()) {
 			out.println(prefix + entry.getKey() + " => " + entry.getValue());
 		}
 	}
@@ -1191,11 +1205,11 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		if (constr != null) {
 			constrs.push(constr);
 			String type = constr.getClass().getName();
-			Integer count = constrTypes.get(type);
+			Counter count = constrTypes.get(type);
 			if (count == null) {
-				constrTypes.put(type, 1);
+				constrTypes.put(type, new Counter());
 			} else {
-				constrTypes.put(type, count + 1);
+				count.inc();
 			}
 		}
 		return constr;
@@ -1237,6 +1251,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 				+ "speed (assignments/second)\t: " + stats.propagations //$NON-NLS-1$
 				/ cputime);
 		order.printStat(out, prefix);
+		printLearntClausesInfos(out, prefix);
 	}
 
 	/*
@@ -1286,6 +1301,14 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	public int getTimeout() {
 		return (int) (timeBasedTimeout ? timeout / 1000 : timeout);
+	}
+
+	public long getTimeoutMs() {
+		if (!timeBasedTimeout) {
+			throw new UnsupportedOperationException(
+					"The timeout is given in number of conflicts!");
+		}
+		return timeout;
 	}
 
 	public void setExpectedNumberOfClauses(int nb) {

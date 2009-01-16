@@ -140,7 +140,7 @@ public interface IVec<T> extends Serializable {
      * Note that only the content of index 0 to size() should be taken into
      * account. USE WITH CAUTION
      * 
-     * @return the internal represnetation of the Vector as an array.
+     * @return the internal representation of the Vector as an array.
      */
     T[] toArray();
 

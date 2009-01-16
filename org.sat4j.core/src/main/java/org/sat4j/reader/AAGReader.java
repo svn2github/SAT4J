@@ -140,9 +140,9 @@ public class AAGReader extends Reader {
     }
 
 
-    private IVecInt readInput(int nbinputs, Scanner scanner) {
-        IVecInt inputs = new VecInt(nbinputs);
-        for (int i = 0; i < nbinputs; i++) {
+    private IVecInt readInput(int numberOfInputs, Scanner scanner) {
+        IVecInt inputs = new VecInt(numberOfInputs);
+        for (int i = 0; i < numberOfInputs; i++) {
             inputs.push(scanner.nextInt());
         }
         return inputs;

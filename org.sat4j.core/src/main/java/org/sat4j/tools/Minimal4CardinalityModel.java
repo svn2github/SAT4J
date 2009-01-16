@@ -77,12 +77,11 @@ public class Minimal4CardinalityModel extends SolverDecorator<ISolver> {
                     }
                 }
                 addAtMost(vec, counter - 1);
-                System.err.println(counter);
             } while (isSatisfiable());
         } catch (TimeoutException e) {
-            System.err.println("Solver timed out"); //$NON-NLS-1$
+           throw new IllegalStateException("Solver timed out"); //$NON-NLS-1$
         } catch (ContradictionException e) {
-            System.err.println("added trivial unsat clauses?" + vec); //$NON-NLS-1$
+            // added trivial unsat clauses
         }
         // restore();
         return prevmodel;

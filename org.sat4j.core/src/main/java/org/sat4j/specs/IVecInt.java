@@ -30,7 +30,7 @@ package org.sat4j.specs;
 import java.io.Serializable;
 
 /**
- * An abstraction for the vector of int's in the library.
+ * An abstraction for the vector of int used on the library.
  * 
  * @author leberre
  */
@@ -172,5 +172,12 @@ public interface IVecInt extends Serializable {
     
     IteratorInt iterator();
 
+    /**
+     * Allow to access the internal representation of the vector as an array.
+     * Note that only the content of index 0 to size() should be taken into
+     * account. USE WITH CAUTION
+     * 
+     * @return the internal representation of the Vector as an array.
+     */
 	int[] toArray();
 }

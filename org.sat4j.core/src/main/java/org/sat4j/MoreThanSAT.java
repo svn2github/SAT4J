@@ -63,7 +63,7 @@ public class MoreThanSAT {
     }
 
     public static void main(final String[] args) {
-        final ISolver solver = SolverFactory.newMiniLearning();
+        final ISolver solver = SolverFactory.newDefault();
         final SolutionCounter sc = new SolutionCounter(solver);
         solver.setTimeout(3600); // 1 hour timeout
         Reader reader = new InstanceReader(solver);

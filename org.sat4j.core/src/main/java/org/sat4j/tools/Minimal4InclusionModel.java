@@ -63,6 +63,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      * 
      * @see org.sat4j.ISolver#model()
      */
+    @SuppressWarnings("null")
     @Override
     public int[] model() {
         int[] prevmodel = null;
@@ -81,13 +82,12 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
                         cube.push(q);
                     }
                 }
-                // System.out.println("minimizing " + vec + "/" + cube);
                 addClause(vec);
             } while (isSatisfiable(cube));
         } catch (TimeoutException e) {
-            // System.err.println("Solver timed out");
+            throw new IllegalStateException("Solver timed out");
         } catch (ContradictionException e) {
-            // System.out.println("added trivial unsat clauses?" + vec);
+            // added trivial unsat clauses
         }
         // restore();
         int[] newmodel = new int[vec.size()];
