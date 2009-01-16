@@ -60,7 +60,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
 		constrs.push(constr);
-		assert constr.size() == nbnewvar;
+		assert constrs.size() == nbnewvar;
 		return constr;
 	}
 
