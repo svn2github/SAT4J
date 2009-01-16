@@ -4,7 +4,7 @@
   <groupId>org.sat4j</groupId>
   <artifactId>org.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.0.2</version>
+  <version>2.1.0-SNAPSHOT</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org</url>
   <description>
@@ -54,7 +54,8 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <!-- compiler params -->
     <javaSource>1.5</javaSource>
     <javaTarget>jsr14</javaTarget>
-		
+    <testSource>1.5</testSource>
+    <testTarget>1.5</testTarget>	
     <!-- common distribution locations -->
     <distributionRepositoryId>releases</distributionRepositoryId>
     <distributionRepositoryUrl>
@@ -90,7 +91,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-webdav</artifactId>
-        <version>1.0-beta-2</version>
       </extension>
     </extensions>
 
@@ -114,7 +114,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.3</version>
         <configuration>
           <forkMode>pertest</forkMode>
           <argLine>-enableassertions -Xmx512m</argLine>
@@ -136,11 +135,13 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-compiler-plugin
-        </artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.1-SNAPSHOT</version>
         <configuration>
           <source>${javaSource}</source>
           <target>${javaTarget}</target>
+          <testSource>${testSource}</testSource>
+          <testTarget>${testTarget}</testTarget>
         </configuration>
       </plugin>
 
@@ -148,7 +149,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <plugin>
       	<groupId>org.codehaus.mojo</groupId>
       	<artifactId>cobertura-maven-plugin</artifactId>
-      	<version>2.0</version>
       	<executions>
       		<execution>
       			<id>clean</id>
@@ -161,7 +161,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
       	<artifactId>maven-javadoc-plugin</artifactId>
-      	<version>2.2</version>
         <executions>
       		<execution>
       			<id>attach-javadocs</id>
@@ -205,13 +204,11 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.0</version>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.0.1</version>
                                 <reportSets>
                                   <reportSet>
                                      <reports>
@@ -230,13 +227,11 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.4.3</version>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.1</version>
                                 <!--
                                 <configuration>
                                    <stylesheet>${basedir}/../stylesheet.css</stylesheet>
@@ -247,8 +242,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
+ 				<configuration>
 					<targetJdk>1.5</targetJdk>
 				</configuration>
 			</plugin>
@@ -277,7 +271,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.2</version>
                                 <configuration>
                                 <stylesheetfile>${basedir}/../stylesheet.css</stylesheetfile>
                                 <groups>
@@ -296,7 +289,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.1</version>
 				<configuration>
 					<tags>
 						<tag>TODO</tag>

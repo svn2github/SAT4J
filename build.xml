@@ -1,4 +1,4 @@
-<project name="sat4j" default="default">
+<project name="sat4j" default="p2">
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
@@ -48,6 +48,9 @@
                            <include name="commons-cli.jar"/>
 		   </zipgroupfileset>
                </jar>
+               <antcall target="zip-bundle">
+		   <param name="package" value="maxsat"/>
+                </antcall>
 	</target>
 
 	<target name="csp" depends="core" description="Build a jar file suitable for the CSP competitions from  current source tree">
@@ -98,7 +101,7 @@
                 </antcall>
 	</target>
 
-	<target name="sudoku" depends="core" description="Build the sudoku demo from CVS">
+	<target name="sudoku" depends="core" description="Build the sudoku demo  from current source tree">
 		<echo>Building Sudoku app ${java.home}</echo>
 		<antcall target="build">
 			<param name="package" value="sudoku"/>
@@ -196,32 +199,7 @@
 			</fileset>
 		</copy>
 		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/><include name="**/*.MF"/></replace>
-		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">
-			<!--
-			<manifest>
-				<attribute name="Built-By" value="Daniel Le Berre"/>
-				<attribute name="Main-Class" value="${mainclass}"/>
-                                <attribute name="SplashScreen-Image" value="sat4j.png"/>
-				<attribute name="Specification-Title" value="SAT4J"/>
-				<attribute name="Specification-Version" value="1.5+"/>
-				<attribute name="Specification-Vendor"
-						   value="Daniel Le Berre"
-				 />
-				<attribute name="Implementation-Title" value="SAT4J"/>
-				<attribute name="Implementation-Version" value="NA "/>
-				<attribute name="Implementation-Vendor"
-						   value="CRIL-CNRS FRE 2499"
-				 />
-		 </manifest>
-		 
-			<zipgroupfileset dir="${lib}">
-                           <include name="commons*.jar"/>
-			   <include name="jlf*.jar"/>
-			   <include name="csp*.jar"/>
-			   <include name="js.jar"/>
-		   </zipgroupfileset>
-		   -->
-		</jar>
+		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"/>
 		<copy todir="${dist}/${release}/lib" failonerror="false">
 			<fileset dir="${lib}">
 				<include name="commons*.jar"/>
@@ -285,28 +263,39 @@
 			<param name="module" value="csp"/>
 			<param name="lib" value="csp/lib"/>
 		</antcall>
-	  </target>
-	<target name="default"
-				depends="sat" description="Build the SAT4J library and the associated Javadoc from CVS"
-			>
-                        <antcall target="javadoc">
-                           <param name="src" value="core/src"/>
-                           <param name="lib" value="core/lib"/>
-                        </antcall>
-			<echo>
-	You just built SAT4J from CVS. 
-	The code might not be in a very good shape.
-	You should take a look at http://www.sat4j.org/junit/ 
-	to check that the functional tests are ok. 
-	Use that snapshot at your own risk! :-=)
-	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	Please fill bug reports and feature requests at 
-	http://forge.objectweb.org/tracker/?group_id=228
-					</echo>
-		</target>
+	</target>
+        <target name="tests" 
+          description="Launch JUnit tests and generate a report">
+		<echo>Compiling test files</echo>
+		<javac srcdir="${test}" destdir="${build}" source="1.5" debug="true">
+			<classpath refid="somePath"/>
+		</javac>
+		<echo>Running JUNIT tests</echo>
+		<junit printsummary="yes" haltonfailure="no" fork="yes">
+			<classpath refid="somePath"/>
+			<formatter type="plain"/>
+			<jvmarg value="-ea"/>
+			<jvmarg value="-Xms500M"/>
+			<jvmarg value="-Xmx500M"/>
+			<jvmarg value="-Dtest.prefix=${basedir}/org.sat4j.core/src/test/testfiles/"/>
+			<jvmarg value="-Dtest.pbprefix=${basedir}/org.sat4j.pb/src/test/testfiles/"/>
 
-	<target name="p2" depends="cleanrelease,core,pseudo" description="Build a full release of SAT4J project">
-                 <echo>Built full release ${release}</echo>
+			<batchtest fork="yes" todir="${testreport.dir}">
+				<fileset dir="${build}">
+					<exclude name="**/AllTests.class" />
+					<exclude name="**/Abstract*Test.class" />
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	<target name="p2-tests" description="Runs tests for packages that ship with Eclipse">
+		<antcall target="tests">
+		   <param name="test" value="org.sat4j.core/src/test/java:org.sat4j.pb/src/test/java" />
+		</antcall>
+	</target>
+	<target name="p2" depends="cleanrelease,core,pseudo" description="Build a release of SAT4J Core and SAT4J Pseudo to be used in Eclipse p2">
+                 <echo>Built release ${release} of both SAT4J Core and SAT4J Pseudo</echo>
 	</target>
 
 	<target name="all" depends="cleanrelease,core,pseudo,maxsat,csp,sat,sudoku" description="Build a full release of SAT4J project">
