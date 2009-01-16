@@ -100,11 +100,12 @@ public class WDimacsReader extends DimacsReader {
 
         if ("wcnf".equals(formatString)) {
             // assume we are in weighted MAXSAT mode
-            
             if (stk.hasMoreTokens()) {
-            	top = new BigInteger(stk.nextToken());
-            	decorator.setTopWeight(top);
+                top = new BigInteger(stk.nextToken());
+            } else {
+                top = WeightedMaxSatDecorator.SAT4J_MAX_BIG_INTEGER;
             }             
+            decorator.setTopWeight(top);
         }
     }
 

@@ -49,7 +49,9 @@ import org.sat4j.specs.TimeoutException;
 public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         IOptimizationProblem {
 
-    /**
+    public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger("100000000000000000000000000000000000000000");
+
+	/**
      * 
      */
     private static final long serialVersionUID = 1L;
@@ -101,7 +103,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 		return prevboolmodel[var - 1];
     }
 
-    protected BigInteger top = new BigInteger("100000000000000000000000000000000000000000");
+    protected BigInteger top = SAT4J_MAX_BIG_INTEGER;
 
     public void setTopWeight(BigInteger top) {
         this.top = top;
