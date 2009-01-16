@@ -49,7 +49,6 @@ public class Nogoods implements Relation {
             for (int j = 0; j < scope.size(); j++) {
                 clause.push(-scope.get(j).translate(tuples[i][j]));
             }
-            // System.err.println("Adding clause (EZ) :" + clause);
             solver.addClause(clause);
         }
     }
