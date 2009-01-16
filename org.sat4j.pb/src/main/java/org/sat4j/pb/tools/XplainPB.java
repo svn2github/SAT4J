@@ -52,7 +52,16 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 		literals.push(newvar);
 		BigInteger coef = BigInteger.valueOf(degree-coeffs.size());
 		coeffs.push(coef);
-		return decorated().addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(degree));
+		IConstr constr = decorated().addPseudoBoolean(literals, coeffs, false, BigInteger.valueOf(degree));
+		if (constr==null) {
+			// constraint trivially satisfied
+			nbnewvar--;
+			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+		} else {
+			constrs.push(constr);
+		}
+		assert constrs.size() == nbnewvar;
+		return constr;
 	}
 
 
