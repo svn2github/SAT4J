@@ -40,78 +40,80 @@ import org.sat4j.specs.TimeoutException;
  */
 public class OptToPBSATAdapter extends PBSolverDecorator {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    IOptimizationProblem problem;
+	IOptimizationProblem problem;
 
-    boolean modelComputed = false;
+	boolean modelComputed = false;
 
-    public OptToPBSATAdapter(IOptimizationProblem problem) {
-        super((IPBSolver) problem);
-        this.problem = problem;
-    }
+	public OptToPBSATAdapter(IOptimizationProblem problem) {
+		super((IPBSolver) problem);
+		this.problem = problem;
+	}
 
-    @Override
+	@Override
 	public boolean isSatisfiable() throws TimeoutException {
-        modelComputed = false;
-        if (problem.hasNoObjectiveFunction()) {
-    		return problem.isSatisfiable();
-    	}
-        return problem.admitABetterSolution();
-    }
+		modelComputed = false;
+		if (problem.hasNoObjectiveFunction()) {
+			return problem.isSatisfiable();
+		}
+		return problem.admitABetterSolution();
+	}
 
-   @Override
-public boolean isSatisfiable(boolean global) throws TimeoutException {
-	  return isSatisfiable();
-    }
+	@Override
+	public boolean isSatisfiable(boolean global) throws TimeoutException {
+		return isSatisfiable();
+	}
 
-    @Override
+	@Override
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
-            throws TimeoutException {
-        return isSatisfiable(assumps);
-    }
+			throws TimeoutException {
+		return isSatisfiable(assumps);
+	}
 
-    @Override
+	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-    	modelComputed = false;
-    	if (problem.hasNoObjectiveFunction()) {
-    		return problem.isSatisfiable(assumps);
-    	}
-        return problem.admitABetterSolution(assumps);
-    }
+		modelComputed = false;
+		if (problem.hasNoObjectiveFunction()) {
+			return problem.isSatisfiable(assumps);
+		}
+		return problem.admitABetterSolution(assumps);
+	}
 
-    @Override
+	@Override
 	public int[] model() {
-    	if (modelComputed) 
-    		return problem.model();
-        try {
-            assert problem.admitABetterSolution();
-            if (problem.hasNoObjectiveFunction()) {
-            	return problem.model();
-            }
-            do {
-                problem.discardCurrentSolution();
-            } while (problem.admitABetterSolution());
-        } catch (TimeoutException e) {
-            // solver timeout
-        } catch (ContradictionException e) {
-            // OK, optimal model found
-        }
-        modelComputed = true;
-        return problem.model();
-    }
+		if (modelComputed)
+			return problem.model();
+		try {
+			assert problem.admitABetterSolution();
+			if (problem.hasNoObjectiveFunction()) {
+				return problem.model();
+			}
+			do {
+				problem.discardCurrentSolution();
+			} while (problem.admitABetterSolution());
+		} catch (TimeoutException e) {
+			// solver timeout
+		} catch (ContradictionException e) {
+			// OK, optimal model found
+		}
+		modelComputed = true;
+		return problem.model();
+	}
 
-    @Override
+	@Override
 	public boolean model(int var) {
-    	if (!modelComputed) model();
-        return problem.model(var);
-    }
+		if (!modelComputed)
+			model();
+		return problem.model(var);
+	}
 
-    @Override
-	public String toString(String prefix) {        
-        return prefix+"Optimization to Pseudo Boolean adapter\n"+super.toString(prefix);
-    }
+	@Override
+	public String toString(String prefix) {
+		return prefix + "Optimization to Pseudo Boolean adapter\n"
+				+ super.toString(prefix);
+	}
 }

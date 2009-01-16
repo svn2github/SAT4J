@@ -137,9 +137,6 @@ public class GoodOPBReader extends Reader implements Serializable {
                         solver.addPseudoBoolean(lits, coeffs, false, d);
                     }
                 } catch (ContradictionException ce) {
-                    System.out.println("c inconsistent constraint: " + line);
-                    System.out.println("c lits: " + lits);
-                    System.out.println("c coeffs: " + coeffs);
                     throw ce;
                 }
             } else {

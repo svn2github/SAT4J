@@ -68,9 +68,9 @@ public class VarOrderHeapObjective extends VarOrderHeap<ILits> {
 			IVecInt vars = obj.getVars();
 			IVec<BigInteger> coefs = obj.getCoeffs();
 			for (int i = 0; i < vars.size(); i++) {
-				int dimacsvar = vars.get(i);
-				if (lits.belongsToPool(Math.abs(dimacsvar))) {
-					int p = lits.getFromPool(dimacsvar);
+				int dimacsLiteral = vars.get(i);
+				if (lits.belongsToPool(Math.abs(dimacsLiteral))) {
+					int p = lits.getFromPool(dimacsLiteral);
 					BigInteger c = coefs.get(i);
 					if (c.signum() < 0) {
 						p = neg(p);
@@ -84,9 +84,6 @@ public class VarOrderHeapObjective extends VarOrderHeap<ILits> {
 					phaseStrategy.init(var, neg(p));
 				}
 			}
-			// } else {
-			// System.err.println(
-			// "c The heuristics cannot find the objective function!!!!");
 		}
 	}
 
