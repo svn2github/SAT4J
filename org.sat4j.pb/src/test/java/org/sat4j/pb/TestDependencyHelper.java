@@ -48,6 +48,7 @@ public class TestDependencyHelper {
 	@Before
 	public void setUp() {
 		helper = new DependencyHelper<String,String>(SolverFactory.newEclipseP2(),10);
+		// helper = new DependencyHelper<String,String>(SolverFactory.newDefault(),10);
 	}
 	
 	@Test
@@ -156,7 +157,7 @@ public class TestDependencyHelper {
 		helper.implication("C").implies("C1","C2","C3").named("C versions");
 		helper.atMost(1,"C1","C2","C3").named("Singleton on C");
 		helper.setTrue("A","User selection");
-		helper.setObectiveFunction(newWO("C1",4),newWO("C2",2),newWO("C3",1));
+		helper.setObjectiveFunction(newWO("C1",4),newWO("C2",2),newWO("C3",1));
 		assertTrue(helper.hasASolution());
 		IVec<String> solution = helper.getSolution();
 		assertTrue(solution.contains("A"));
@@ -172,7 +173,7 @@ public class TestDependencyHelper {
 	public void testJunitExample() throws ContradictionException, TimeoutException {
 		helper.implication(profile).implies(junit3).named("profile->junit_3");
 		helper.implication(profile).implies(junit4).named("profile->junit_4");
-		helper.setObectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
+		helper.setObjectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
 		helper.setTrue(profile, "profile must exist");
 		assertTrue(helper.hasASolution());
 		List<String> expected = new ArrayList<String>(Arrays.asList(profile, junit3, junit4));
@@ -188,7 +189,7 @@ public class TestDependencyHelper {
 	public void testJunitSingletonObjectiveExample() throws ContradictionException, TimeoutException {
 		helper.implication(profile).implies(junit3, junit4).named("profile->junit");
 		helper.atMost(1, junit4, junit3);
-		helper.setObectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
+		helper.setObjectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
 		helper.setTrue(profile, "profile must exist");
 		assertTrue(helper.hasASolution());
 		List<String> expected = new ArrayList<String>(Arrays.asList(profile, junit4));
