@@ -92,7 +92,7 @@ public class XplainTests {
 		addExtraImplications("b_2");
 
 		// Need some way to weight a_2 > a_1 & b_2 > b_1
-		helper.setObectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
+		helper.setObjectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
 		helper.implication("c_[2,3)").implies("p(c_[2,3))").named("c_[2,3) does not exist");
 		helper.setFalse("p(c_[2,3))", "placeholder(c_[2,3))");
 
@@ -117,7 +117,7 @@ public class XplainTests {
 		addExtraImplications("b_1");
 
 		// Need some way to weight a_2 > a_1 & b_2 > b_1
-		helper.setObectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
+		helper.setObjectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
 		helper.implication("c_[2,3)").implies("p(c_[2,3))").named("c_[2,3) does not exist");
 		helper.setFalse("p(c_[2,3))", "placeholder(c_[2,3))");
 		helper.implication("d").implies("p(d)").named("d does not exist");
@@ -149,7 +149,7 @@ public class XplainTests {
 		addExtraImplications("b_2");
 
 		// Need some way to weight a_2 > a_1 & b_2 > b_1
-		helper.setObectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
+		helper.setObjectiveFunction(newWO("a_1",2),newWO("a_2",1),newWO("b_1",8),newWO("b_2",4));
 		helper.implication("c_[2,3)").implies("p(c_[2,3))").named("c_[2,3) does not exist");
 		helper.setFalse("p(c_[2,3))", "placeholder(c_[2,3))");
 		helper.implication("d").implies("p(d)").named("d does not exist");
