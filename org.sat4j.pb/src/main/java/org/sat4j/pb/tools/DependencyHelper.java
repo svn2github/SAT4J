@@ -157,7 +157,7 @@ public class DependencyHelper<T,C> {
 		return new ImplicationNamer<T,C>(this, toName);
 	}
 
-	public void setObectiveFunction(WeightedObject<T> ... wobj) {
+	public void setObjectiveFunction(WeightedObject<T> ... wobj) {
 		IVecInt literals = new VecInt(wobj.length);
 		IVec<BigInteger> coefs = new Vec<BigInteger>(wobj.length);
 		for (WeightedObject<T> wo : wobj) {
