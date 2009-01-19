@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVecInt;
@@ -49,6 +50,8 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
 	boolean modelComputed = false;
 
+	private IVecInt assumps = new VecInt();
+	
 	public OptToPBSATAdapter(IOptimizationProblem problem) {
 		super((IPBSolver) problem);
 		this.problem = problem;
@@ -57,6 +60,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable() throws TimeoutException {
 		modelComputed = false;
+		assumps.clear();
         if (problem.hasNoObjectiveFunction()) {
     		return modelComputed = problem.isSatisfiable();
     	}
@@ -77,6 +81,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
 		modelComputed = false;
+		assumps.copyTo(this.assumps);
     	if (problem.hasNoObjectiveFunction()) {
     		return modelComputed = problem.isSatisfiable(assumps);
     	}
@@ -88,11 +93,11 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 		if (modelComputed)
 			return problem.model();
 		try {
-			assert problem.admitABetterSolution();
-            assert problem.hasNoObjectiveFunction();
+			assert problem.admitABetterSolution(assumps);
+            assert !problem.hasNoObjectiveFunction();
  			do {
 				problem.discardCurrentSolution();
-			} while (problem.admitABetterSolution());
+			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
 			// solver timeout
 		} catch (ContradictionException e) {
