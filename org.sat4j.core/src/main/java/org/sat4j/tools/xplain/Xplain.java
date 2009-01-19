@@ -163,4 +163,19 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		}
 		return super.isSatisfiable(extraVariables, global);
 	}
+
+	@Override
+	public int[] model() {
+		int [] fullmodel = super.model();
+		int end = Math.min(nborigvars,fullmodel.length)-1;
+        while (Math.abs(fullmodel[end]) > nborigvars)
+            end--;
+        int [] model = new int[end + 1];
+        for (int i = 0; i <= end; i++) {
+            model[i] = fullmodel[i];
+        }
+        return model;
+	}
+	
+	
 }
