@@ -24,23 +24,30 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.sat4j.pb.tools.WeightedObject.newWO;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.pb.tools.DependencyHelper;
+import org.sat4j.pb.tools.WeightedObject;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.TimeoutException;
 
 public class TestDependencyHelper {
-
+	private static final String profile = "profile";
+	private static final String junit3 = "junit_3";
+	private static final String junit4 = "junit_4";
+	
 	private DependencyHelper<String,String> helper;
 	
 	@Before
 	public void setUp() {
-		helper = new DependencyHelper<String,String>(SolverFactory.newDefault(),10);
+		helper = new DependencyHelper<String,String>(SolverFactory.newEclipseP2(),10);
 	}
 	
 	@Test
@@ -159,5 +166,37 @@ public class TestDependencyHelper {
 		assertFalse(solution.contains("C2"));
 		assertFalse(solution.contains("C1"));
 		assertTrue(solution.contains("D"));
+	}
+	
+	@Test
+	public void testJunitExample() throws ContradictionException, TimeoutException {
+		helper.implication(profile).implies(junit3).named("profile->junit_3");
+		helper.implication(profile).implies(junit4).named("profile->junit_4");
+		helper.setObectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
+		helper.setTrue(profile, "profile must exist");
+		assertTrue(helper.hasASolution());
+		List<String> expected = new ArrayList<String>(Arrays.asList(profile, junit3, junit4));
+		IVec<String> solution = helper.getSolution();
+		for (Iterator<String> i = solution.iterator(); i.hasNext();) {
+			String variable = i.next();
+			assertTrue(variable + " was not part of the solution", expected.remove(variable));
+		}
+		assertTrue("solution contained too many variables: " + expected, expected.isEmpty());
+	}
+	
+	@Test
+	public void testJunitSingletonObjectiveExample() throws ContradictionException, TimeoutException {
+		helper.implication(profile).implies(junit3, junit4).named("profile->junit");
+		helper.atMost(1, junit4, junit3);
+		helper.setObectiveFunction(WeightedObject.newWO(junit4, 1),WeightedObject.newWO(junit3, 2));
+		helper.setTrue(profile, "profile must exist");
+		assertTrue(helper.hasASolution());
+		List<String> expected = new ArrayList<String>(Arrays.asList(profile, junit4));
+		IVec<String> solution = helper.getSolution();
+		for (Iterator<String> i = solution.iterator(); i.hasNext();) {
+			String variable = i.next();
+			assertTrue(variable + " was not part of the solution", expected.remove(variable));
+		}
+		assertTrue("solution contained too many variables: " + expected, expected.isEmpty());
 	}
 }
