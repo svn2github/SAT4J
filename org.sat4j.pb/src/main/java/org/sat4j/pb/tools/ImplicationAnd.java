@@ -28,6 +28,14 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * That class is used to represent a conjunction of literals in the RHS of an implication.
+ * 
+ * @author daniel
+ *
+ * @param <T>
+ * @param <C>
+ */
 public class ImplicationAnd<T,C> {
 	private final DependencyHelper<T,C> helper;
 	private final IVecInt clause;
@@ -38,6 +46,12 @@ public class ImplicationAnd<T,C> {
 		this.helper = helper;
 	}
 
+	/**
+	 * Add a new positive literal to the conjunction of literals.
+	 * @param thing a domain object
+	 * @return a RHS conjunction of literals.
+	 * @throws ContradictionException
+	 */
 	public ImplicationAnd<T,C> and(T thing) throws ContradictionException {
 		IVecInt tmpClause = new VecInt();
 		clause.copyTo(tmpClause);
@@ -46,6 +60,12 @@ public class ImplicationAnd<T,C> {
 		return this;
 	}
 
+	/**
+	 * Add a new negative literal to the conjunction of literals.
+	 * @param thing a domain object
+	 * @return a RHS conjunction of literals.
+	 * @throws ContradictionException
+	 */
 	public ImplicationAnd<T,C> andNot(T thing) throws ContradictionException {
 		IVecInt tmpClause = new VecInt();
 		clause.copyTo(tmpClause);
@@ -54,6 +74,13 @@ public class ImplicationAnd<T,C> {
 		return this;
 	}
 
+	/**
+	 * "name" the constraint for the explanation.
+	 * 
+	 * IT IS MANDATORY TO NAME ALL THE CONSTRAINTS!
+	 * 
+	 * @param name an object to link to the constraint.
+	 */
 	public void named(C name) {
 		for (Iterator<IConstr> it = toName.iterator(); it.hasNext();) {
 			helper.constrs.push(it.next());

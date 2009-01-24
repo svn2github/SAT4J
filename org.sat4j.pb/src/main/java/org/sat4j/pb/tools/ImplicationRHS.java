@@ -25,6 +25,14 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * That class represents the RHS of an implication.
+ * 
+ * @author daniel
+ *
+ * @param <T>
+ * @param <C>
+ */
 public class ImplicationRHS<T,C> {
 
 	private IVecInt clause;
@@ -37,12 +45,26 @@ public class ImplicationRHS<T,C> {
 		this.helper = helper;
 	}
 
+	/**
+	 * Build an implication with a conjunction of literals in the RHS.
+	 *  
+	 * @param thing a domain object that will appear positively.
+	 * @return a RHS conjunction of literals.
+	 * @throws ContradictionException
+	 */
 	public ImplicationAnd<T,C> implies(T thing) throws ContradictionException {
 		ImplicationAnd<T,C> and = new ImplicationAnd<T,C>(helper, clause);
 		and.and(thing);
 		return and;
 	}
 
+	/**
+	 * Build an implication with a disjunction of literals in the RHS.
+	 *  
+	 * @param thing a domain object
+	 * @return an object used to name the constraint. The constraint MUST BE NAMED.
+	 * @throws ContradictionException
+	 */
 	public ImplicationNamer<T,C> implies(T... things)
 			throws ContradictionException {
 		for (T t : things) {
@@ -52,6 +74,13 @@ public class ImplicationRHS<T,C> {
 		return new ImplicationNamer<T,C>(helper, toName);
 	}
 
+	/**
+	 * Build an implication with a conjunction of literals in the RHS.
+	 *  
+	 * @param thing a domain object that will appear negatively.
+	 * @return a RHS conjunction of literals.
+	 * @throws ContradictionException
+	 */
 	public ImplicationAnd<T,C> impliesNot(T thing) throws ContradictionException {
 		ImplicationAnd<T,C> and = new ImplicationAnd<T,C>(helper, clause);
 		and.andNot(thing);

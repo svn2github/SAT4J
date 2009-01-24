@@ -25,6 +25,15 @@ import org.sat4j.core.Vec;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 
+/**
+ * That class is used to associate each constraint with another object that
+ * must be used to represent it in an explanation.
+ * 
+ * @author daniel
+ *
+ * @param <T>
+ * @param <C>
+ */
 public class ImplicationNamer<T,C> {
 	
 	private final DependencyHelper<T,C> helper;
@@ -35,6 +44,11 @@ public class ImplicationNamer<T,C> {
 		this.helper = helper;
 	}
 	
+	/**
+	 * Associate the current constraint with a specific object that
+	 * will be used to represent it in an explanation.
+	 * @param name
+	 */
 	public void named(C name) {
 		for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
 			helper.constrs.push(it.next());
