@@ -35,8 +35,8 @@ import org.sat4j.tools.SolverDecorator;
  */
 public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
-	protected int nborigvars;
-	protected int nbnewvar;
+	private int nborigvars;
+	private int nbnewvar;
 
 	protected IVec<IConstr> constrs = new Vec<IConstr>();
 
@@ -50,13 +50,13 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	@Override
 	public int newVar(int howmany) {
-		nborigvars = super.newVar(howmany);
+		nborigvars = super.newVar(howmany);;
 		return nborigvars;
 	}
 
 	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		int newvar = nborigvars + ++nbnewvar;
+		int newvar = createNewVar();
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
 		constrs.push(constr);
@@ -64,6 +64,18 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return constr;
 	}
 
+	protected int createNewVar() {
+		return nborigvars + ++nbnewvar;
+	}
+
+	protected void discardLastestVar() {
+		nbnewvar--;
+	}
+	
+	protected int getNumberOfNewVars() {
+		return nbnewvar;
+	}
+	
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
