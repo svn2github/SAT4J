@@ -270,7 +270,7 @@ public class OPBReader2007 extends OPBReader2006 {
             literalInAProduct(newVar, newLits);
             newCoefs.push(new BigInteger(String.valueOf(-tmpLit.size())));
             solver.addPseudoBoolean(newLits, newCoefs, true, BigInteger.ZERO);
-            nbConstraintsRead += 2;
+            // nbConstraintsRead += 2;
         }
         return newVar;
     }

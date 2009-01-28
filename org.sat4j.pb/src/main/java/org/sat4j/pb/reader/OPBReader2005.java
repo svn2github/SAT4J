@@ -661,7 +661,7 @@ public class OPBReader2005 extends Reader implements Serializable {
 		// Small check on the number of constraints
 		if (nbConstraintsRead != nbConstr) {
 			throw new ParseFormatException(
-					"Number of constraints read is different from metadata.");
+					"Number of constraints read ("+nbConstraintsRead+") is different from metadata ("+nbConstr+")");
 		}
 	}
 
