@@ -106,6 +106,18 @@ public class DependencyHelper<T,C> {
 		}
 		return toInstall;
 	}
+	
+	/**
+	 * Retrieve the boolean value associated with a domain object in the solution found by the solver.
+	 * THAT METHOD IS EXPECTED TO BE CALLED IF hasASolution() RETURNS TRUE.
+	 * 
+	 * @param t a domain object
+	 * @return true iff the domain object has been set to true in the current solution.
+	 */
+	public boolean getBooleanValueFor(T t) {
+		return xplain.model(getIntValue(t));
+	}
+
 
 	/**
 	 * 
