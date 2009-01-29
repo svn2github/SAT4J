@@ -462,6 +462,27 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
     }
 
     /**
+     * Cutting Planes based solver.
+     * The inference during conflict analysis is based on cutting planes instead of resolution
+     * as in a SAT solver.
+     *  
+     * @return the best available cutting planes based solver of the library.
+     */
+    public static IPBSolver newCuttingPlanes() {
+    	return newCompetPBCPMixedConstraintsObjective();
+    }
+    
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic constraints.
+     * No specific inference mechanism.
+     *  
+     * @return the best available resolution based solver of the library.
+     */
+    public static IPBSolver newResolution() {
+    	return newCompetPBCPMixedConstraintsObjective();
+    }
+    
+    /**
      * Default solver of the SolverFactory. This solver is meant to be used on
      * challenging SAT benchmarks.
      * 
@@ -470,8 +491,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      *      instance of ASolverFactory.
      */
     public static IPBSolver newDefault() {
-        return newCompetPBCPMixedConstraintsObjective();
-        //return newCompetPBKillerClassic();
+    	return newCompetPBResMixedConstraintsObjectiveExpSimp();
     }
 
     @Override

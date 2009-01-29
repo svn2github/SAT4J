@@ -221,8 +221,8 @@ public class OPBReader2007 extends OPBReader2006 {
                 String[] splitted = rest.trim().split(" ");
                 if (splitted[0].equals("#product=")) {
                     nbProducts = Integer.parseInt(splitted[1]);
-                    nbVars += nbProducts;
-                    nbConstr += 2 * nbProducts;
+                    // nbVars += nbProducts;
+                    // nbConstr += 2 * nbProducts;
                 }
 
                 // if (splitted[2].equals("sizeproduct="))
