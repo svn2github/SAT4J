@@ -16,7 +16,7 @@
  * required by the LGPL. If you do not delete the provisions above, a recipient
  * may use your version of this file under the terms of the EPL or the LGPL.
  *******************************************************************************/
-package org.sat4j;
+package org.sat4j.sat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,6 +31,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.sat4j.AbstractLauncher;
+import org.sat4j.Messages;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.MixedDataStructureDaniel;
