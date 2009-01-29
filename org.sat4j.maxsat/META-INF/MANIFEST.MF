@@ -3,8 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %bundleName
 Bundle-SymbolicName: org.sat4j.maxsat
 Bundle-Version: 9.9.9.token
-Export-Package: org.sat4j.maxsat,
- org.sat4j.maxsat.reader
+Export-Package: org.sat4j.maxsat;version="9.9.9.token",
+ org.sat4j.maxsat.reader;version="9.9.9.token"
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Require-Bundle: org.sat4j.core,
