@@ -1037,9 +1037,6 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		trail.ensure(howmany);
 		trailLim.ensure(howmany);
 		learnedLiterals = 0;
-		order.init();
-		learner.init();
-		restarter.init(params);
 		timebegin = System.currentTimeMillis();
 		slistener.start();
 		model = null; // forget about previous model
@@ -1071,7 +1068,12 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 			}
 		}
 		rootLevel = decisionLevel();
-
+		
+		// moved initialization here if new literals are added in the assumptions.
+		order.init();
+		learner.init();
+		restarter.init(params);
+		
 		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
 
 		ConflictTimer freeMem = new ConflictTimerAdapter(500) {
