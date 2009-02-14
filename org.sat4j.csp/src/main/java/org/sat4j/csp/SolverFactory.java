@@ -19,8 +19,7 @@
 package org.sat4j.csp;
 
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.minisat.constraints.MixedDataStructureDaniel;
-import org.sat4j.minisat.constraints.MixedDataStructureWithBinary;
+import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Solver;
@@ -78,11 +77,11 @@ public class SolverFactory extends ASolverFactory<ISolver> {
      *                the data structure used for representing clauses and lits
      * @return MiniSAT the data structure dsf.
      */
-    public static <L extends ILits> Solver<L,DataStructureFactory<L>> newMiniSAT(
-            DataStructureFactory<L> dsf) {
-        MiniSATLearning<L,DataStructureFactory<L>> learning = new MiniSATLearning<L,DataStructureFactory<L>>();
-        Solver<L,DataStructureFactory<L>> solver = new Solver<L,DataStructureFactory<L>>(new FirstUIP(), learning, dsf,
-                new VarOrderHeap<L>(), new MiniSATRestarts());
+    public static <L extends ILits> Solver<DataStructureFactory> newMiniSAT(
+            DataStructureFactory dsf) {
+        MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(), learning, dsf,
+                new VarOrderHeap(), new MiniSATRestarts());
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
         return solver;
@@ -99,7 +98,7 @@ public class SolverFactory extends ASolverFactory<ISolver> {
      *      instance of ASolverFactory.
      */
     public static ISolver newDefault() {
-        Solver<ILits,DataStructureFactory<ILits>> solver = newMiniSAT(new MixedDataStructureDaniel());
+        Solver<DataStructureFactory> solver = newMiniSAT(new MixedDataStructureDanielWL());
         solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
         return solver;
     }
@@ -117,7 +116,7 @@ public class SolverFactory extends ASolverFactory<ISolver> {
      *      instance of ASolverFactory.
      */
     public static ISolver newLight() {
-    	return newMiniSAT(new MixedDataStructureWithBinary());
+    	return newMiniSAT(new MixedDataStructureDanielWL());
     }
 
     @Override
