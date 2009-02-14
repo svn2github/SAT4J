@@ -27,13 +27,12 @@
 *******************************************************************************/
 package org.sat4j.minisat.orders;
 
-import org.sat4j.minisat.core.ILits;
 
 /**
  * @author leberre TODO To change the template for this generated type comment
  *         go to Window - Preferences - Java - Code Style - Code Templates
  */
-public class PureOrder extends VarOrder<ILits> {
+public class PureOrder extends VarOrderHeap {
 
     /**
      * Comment for <code>serialVersionUID</code>

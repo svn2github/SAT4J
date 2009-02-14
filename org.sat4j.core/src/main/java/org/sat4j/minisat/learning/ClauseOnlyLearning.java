@@ -40,7 +40,7 @@ import org.sat4j.minisat.core.ILits;
  * @param <L> a data structure for the literals.
  * @param <D> a data structure for the clauses.
  */
-public class ClauseOnlyLearning<L extends ILits,D extends DataStructureFactory<L>> extends LimitedLearning<L,D> {
+public class ClauseOnlyLearning extends LimitedLearning {
 
     /**
      * 

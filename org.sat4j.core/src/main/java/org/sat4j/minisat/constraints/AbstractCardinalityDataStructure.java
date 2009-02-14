@@ -35,7 +35,7 @@ import org.sat4j.minisat.core.ILits;
  *         Window - Preferences - Java - Code Generation - Code and Comments
  */
 public abstract class AbstractCardinalityDataStructure extends
-        AbstractDataStructureFactory<ILits> {
+        AbstractDataStructureFactory {
 
     /**
 	 * 

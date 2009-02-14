@@ -35,7 +35,7 @@ import java.io.Serializable;
  * 
  * @author leberre
  */
-public interface LearningStrategy<L extends ILits,D extends DataStructureFactory<L>> extends Serializable {
+public interface LearningStrategy extends Serializable {
 
     /**
      * hook method called just before the search begins. Useful to compute
@@ -48,5 +48,5 @@ public interface LearningStrategy<L extends ILits,D extends DataStructureFactory
 
     void setVarActivityListener(VarActivityListener s);
 
-    void setSolver(Solver<L,D> s);
+    void setSolver(Solver s);
 }

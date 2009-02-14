@@ -25,34 +25,58 @@
  * See www.minisat.se for the original solver in C++.
  * 
  *******************************************************************************/
+package org.sat4j.minisat.constraints.cnf;
 
-package org.sat4j.minisat;
+import static org.sat4j.core.LiteralsUtils.neg;
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.specs.IVecInt;
 
-import junit.framework.TestCase;
+public class LearntHTClause extends HTClause {
 
-import org.sat4j.specs.ISolver;
+	public LearntHTClause(IVecInt ps, ILits voc) {
+		super(ps, voc);
+	}
 
-/**
- * @author leberre
- * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
- */
-public class M2MiniActiveLearningTest extends AbstractM2Test<ISolver> {
-
-    /**
-     * @param arg0
+	/**
+     * 
      */
-    public M2MiniActiveLearningTest(String arg0) {
-        super(arg0);
-    }
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * @see TestCase#setUp()
-     */
-    @Override
-    protected ISolver createSolver() {
-        return SolverFactory.newMiniLearning2();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
+	 */
+	public void register() {
+		// looking for the literal to put in tail
+		if (middleLits.length > 0) {
+			int maxi = 0;
+			int maxlevel = voc.getLevel(middleLits[0]);
+			for (int i = 1; i < middleLits.length; i++) {
+				int level = voc.getLevel(middleLits[i]);
+				if (level > maxlevel) {
+					maxi = i;
+					maxlevel = level;
+				}
+			}
+			if (maxlevel > voc.getLevel(tail)) {
+				int l = tail;
+				tail = middleLits[maxi];
+				middleLits[maxi] = l;
+			}
+		}
+		// attach both head and tail literals.
+		voc.watch(neg(head), this);
+		voc.watch(neg(tail), this);
+
+	}
+
+	public boolean learnt() {
+		return true;
+	}
+
+	public void setLearnt() {
+		// do nothing
+	}
 
 }

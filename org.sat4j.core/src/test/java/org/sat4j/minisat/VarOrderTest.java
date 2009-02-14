@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 import org.sat4j.minisat.constraints.ClausalDataStructureWL;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
-import org.sat4j.minisat.orders.VarOrder;
+import org.sat4j.minisat.orders.VarOrderHeap;
 
 /**
  * @author leberre
@@ -90,11 +90,11 @@ public class VarOrderTest extends TestCase {
     protected void setUp() throws Exception {
         voc = new ClausalDataStructureWL().getVocabulary();
         voc.ensurePool(5);
-        order = new VarOrder<ILits>();
+        order = new VarOrderHeap();
         order.setLits(voc);
     }
 
     private ILits voc;
 
-    private IOrder<ILits> order;
+    private IOrder order;
 }

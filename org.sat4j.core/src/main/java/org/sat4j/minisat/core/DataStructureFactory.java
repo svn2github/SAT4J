@@ -37,7 +37,7 @@ import org.sat4j.specs.IVecInt;
  * 
  * @author leberre
  */
-public interface DataStructureFactory<L extends ILits> {
+public interface DataStructureFactory {
 
     /**
      * @param literals
@@ -64,7 +64,7 @@ public interface DataStructureFactory<L extends ILits> {
 
     void reset();
 
-    L getVocabulary();
+    ILits getVocabulary();
 
     /**
      * @param p

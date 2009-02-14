@@ -52,7 +52,7 @@ public class M2MiniLearningCBTest extends AbstractM2Test<ISolver> {
      */
     @Override
     protected ISolver createSolver() {
-        return SolverFactory.newMiniLearningCB();
+        return SolverFactory.newMiniLearningCBWLPure();
     }
 
 }

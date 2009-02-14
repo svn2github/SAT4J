@@ -25,52 +25,28 @@
 * See www.minisat.se for the original solver in C++.
 * 
 *******************************************************************************/
-package org.sat4j.minisat.orders;
+package org.sat4j.minisat.constraints.cnf;
 
-import static org.sat4j.core.LiteralsUtils.neg;
-import static org.sat4j.core.LiteralsUtils.var;
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.specs.IVecInt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+public class LearntBinaryClause extends BinaryClause {
 
-import org.sat4j.minisat.core.ILits2;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-/**
- * @author leberre To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
-public class MyOrder extends VarOrder<ILits2> {
+	public LearntBinaryClause(IVecInt ps, ILits voc) {
+		super(ps, voc);
+	}
 
-    private static final long serialVersionUID = 1L;
+	public void setLearnt() {
+		// do nothing
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.sat4j.minisat.IHeuristics#init()
-     */
-    @Override
-    public void init() {
-        super.init();
-        List<ValuedLit> v = new ArrayList<ValuedLit>(order.length);
-        int id;
-        for (int i = 1; i < order.length; i++) {
-            id = order[i];
-            v.add(new ValuedLit(id,lits.nBinaryClauses(id) + lits.nBinaryClauses(neg(id))));
-        }
-        Collections.sort(v);
-        // System.out.println(v);
-        for (int i = 0; i < v.size(); i++) {
-            ValuedLit t = v.get(i);
-            order[i + 1] = t.id;
-            int index = var(t.id);
-            varpos[index] = i + 1;
-        }
-        lastVar = 1;
-    }
+	public boolean learnt() {
+		return true;
+	}
 
-    @Override
-    public String toString() {
-        return "Init VSIDS order with binary clause occurrences."; //$NON-NLS-1$
-    }
 }

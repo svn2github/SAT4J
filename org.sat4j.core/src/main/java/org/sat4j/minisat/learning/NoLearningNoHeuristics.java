@@ -28,8 +28,6 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 
 /**
  * Allows MiniSAT to do backjumping without learning. The literals appearing in
@@ -38,7 +36,7 @@ import org.sat4j.minisat.core.ILits;
  * 
  * @author leberre
  */
-public class NoLearningNoHeuristics<L extends ILits,D extends DataStructureFactory<L>> extends AbstractLearning<L,D> {
+public class NoLearningNoHeuristics extends AbstractLearning {
 
     private static final long serialVersionUID = 1L;
 

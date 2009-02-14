@@ -25,33 +25,58 @@
 * See www.minisat.se for the original solver in C++.
 * 
 *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.minisat.constraints.cnf;
 
-/**
- * Specific vocabulary taking special care of binary clauses.
- * 
- * @author leberre
- */
-public interface ILits2 extends ILits {
+import static org.sat4j.core.LiteralsUtils.neg;
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.UnitPropagationListener;
+import org.sat4j.specs.IVecInt;
 
-    /**
-     * To know the number of binary clauses in which the literal occurs. Please
-     * note that this method should only be used in conjunction with the
-     * BinaryClauses data structure.
-     * 
-     * @param p
-     * @return the number of binary clauses.
-     */
-    int nBinaryClauses(int p);
+public class OriginalHTClause extends HTClause {
+
+    public OriginalHTClause(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
     /**
-     * Method to create a binary clause.
      * 
-     * @param lit1
-     *            the first literal of the clause
-     * @param lit2
-     *            the second literal of the clause
      */
-    void binaryClauses(int lit1, int lit2);
+    private static final long serialVersionUID = 1L;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
+     */
+    public void register() {
+        voc.watch(neg(head), this);
+        voc.watch(neg(tail), this);
+    }
+
+    public boolean learnt() {
+        return false;
+    }
+
+    public void setLearnt() {
+        // do nothing
+    }
+
+    /**
+     * Creates a brand new clause, presumably from external data.
+     * 
+     * @param s
+     *            the object responsible for unit propagation
+     * @param voc
+     *            the vocabulary
+     * @param literals
+     *            the literals to store in the clause
+     * @return the created clause or null if the clause should be ignored
+     *         (tautology for example)
+     */
+    public static OriginalHTClause brandNewClause(UnitPropagationListener s,
+            ILits voc, IVecInt literals) {
+        OriginalHTClause c = new OriginalHTClause(literals, voc);
+        c.register();
+        return c;
+    }
 }

@@ -27,19 +27,19 @@
 *******************************************************************************/
 package org.sat4j.minisat.constraints;
 
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.MixableCBClause;
-import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
-public class MixedDataStructureDanielCBWL extends MixedDataStructureDaniel {
+public class MixedDataStructureDanielCBWL extends MixedDataStructureDanielWL {
 
     private static final long serialVersionUID = 1L;
 
     @Override
      public Constr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt v = WLClause.sanityCheck(literals, getVocabulary(), solver);
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
         if (v == null)
             return null;
         return MixableCBClause.brandNewClause(solver, getVocabulary(), v);

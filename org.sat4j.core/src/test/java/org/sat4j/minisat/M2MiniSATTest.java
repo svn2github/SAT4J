@@ -52,7 +52,7 @@ public class M2MiniSATTest extends AbstractM2Test<ISolver> {
      */
     @Override
     protected ISolver createSolver() {
-        return SolverFactory.newMiniSAT();
+        return SolverFactory.newMiniSATHeap();
     }
 
 }

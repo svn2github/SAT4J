@@ -32,8 +32,6 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -284,11 +282,11 @@ public class TestsFonctionnels extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        solver = SolverFactory.newMiniSAT();
+        solver = SolverFactory.newMiniSATHeap();
         reader = new InstanceReader(solver);
     }
 
-    private Solver<ILits,DataStructureFactory<ILits>> solver;
+    private Solver solver;
 
     private InstanceReader reader;
 }

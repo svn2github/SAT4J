@@ -29,7 +29,6 @@ package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Solver;
 
 /**
@@ -42,17 +41,17 @@ import org.sat4j.minisat.core.Solver;
  * 
  * @author leberre
  */
-public class MiniSATLearning<L extends ILits,D extends DataStructureFactory<L>> extends AbstractLearning<L,D> {
+public class MiniSATLearning extends AbstractLearning {
     private static final long serialVersionUID = 1L;
 
-    private DataStructureFactory<L> dsf;
+    private DataStructureFactory dsf;
 
-    public void setDataStructureFactory(DataStructureFactory<L> dsf) {
+    public void setDataStructureFactory(DataStructureFactory dsf) {
         this.dsf = dsf;
     }
 
     @Override
-    public void setSolver(Solver<L,D> s) {
+    public void setSolver(Solver s) {
         super.setSolver(s);
         this.dsf = s.getDSFactory();
     }

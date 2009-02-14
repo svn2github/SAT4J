@@ -27,63 +27,46 @@
  *******************************************************************************/
 package org.sat4j.minisat.constraints.cnf;
 
+import static org.sat4j.core.LiteralsUtils.neg;
+
 import java.io.Serializable;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
-import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
 /**
- * Lazy data structure for clause using Watched Literals.
+ * Data structure for binary clause.
  * 
  * @author leberre
  */
-public abstract class WLClause implements Constr, Serializable {
+public abstract class BinaryClause implements Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private double activity;
 
-	protected final int[] lits;
+	private final ILits voc;
 
-	protected final ILits voc;
+	private int head;
+
+	private int tail;
 
 	/**
 	 * Creates a new basic clause
 	 * 
 	 * @param voc
-	 * 		the vocabulary of the formula
+	 *            the vocabulary of the formula
 	 * @param ps
-	 * 		A VecInt that WILL BE EMPTY after calling that method.
+	 *            A VecInt that WILL BE EMPTY after calling that method.
 	 */
-	public WLClause(IVecInt ps, ILits voc) {
-		lits = new int[ps.size()];
-		ps.moveTo(lits);
-		assert ps.size() == 0;
+	public BinaryClause(IVecInt ps, ILits voc) {
+		assert ps.size() == 2;
+		head = ps.get(0);
+		tail = ps.get(1);
 		this.voc = voc;
 		activity = 0;
-	}
-
-	/**
-	 * Creates a brand new clause, presumably from external data. Performs all
-	 * sanity checks.
-	 * 
-	 * @param s
-	 * 		the object responsible for unit propagation
-	 * @param voc
-	 * 		the vocabulary
-	 * @param literals
-	 * 		the literals to store in the clause
-	 * @return the created clause or null if the clause should be ignored
-	 * 	(tautology for example)
-	 */
-	public static WLClause brandNewClause(UnitPropagationListener s, ILits voc,
-			IVecInt literals) {
-		WLClause c = new DefaultWLClause(literals, voc);
-		c.register();
-		return c;
 	}
 
 	/*
@@ -92,12 +75,11 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @see Constr#calcReason(Solver, Lit, Vec)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
-		// assert outReason.size() == 0
-		//		&& ((p == ILits.UNDEFINED) || (p == lits[0]));
-		final int[] mylits = lits;
-		for (int i = (p == ILits.UNDEFINED) ? 0 : 1; i < mylits.length; i++) {
-			assert voc.isFalsified(mylits[i]);
-			outReason.push(mylits[i] ^ 1);
+		if (voc.isFalsified(head)) {
+			outReason.push(neg(head));
+		}
+		if (voc.isFalsified(tail)) {
+			outReason.push(neg(tail));
 		}
 	}
 
@@ -107,9 +89,8 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @see Constr#remove(Solver)
 	 */
 	public void remove() {
-		voc.watches(lits[0] ^ 1).remove(this);
-		voc.watches(lits[1] ^ 1).remove(this);
-		// la clause peut etre effacee
+		voc.watches(neg(head)).remove(this);
+		voc.watches(neg(tail)).remove(this);
 	}
 
 	/*
@@ -118,49 +99,26 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @see Constr#simplify(Solver)
 	 */
 	public boolean simplify() {
-		for (int i = 0; i < lits.length; i++) {
-			if (voc.isSatisfied(lits[i])) {
-				return true;
-			}
+		if (voc.isSatisfied(head) || voc.isSatisfied(tail)) {
+			return true;
 		}
 		return false;
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
-		final int[] mylits = lits;
-		// Lits[1] must contain a falsified literal
-		if (mylits[0] == (p ^ 1)) {
-			mylits[0] = mylits[1];
-			mylits[1] = p ^ 1;
-		}
-		// assert mylits[1] == (p ^ 1);
-		// if (voc.isSatisfied(lits[0])) {
-		// // do not need to do anything if clause is satisfied
-		// voc.watch(p, this);
-		// return true;
-		// }
-
-		// look for new literal to watch:
-		for (int i = 2; i < mylits.length; i++) {
-			if (!voc.isFalsified(mylits[i])) {
-				mylits[1] = mylits[i];
-				mylits[i] = p ^ 1;
-				voc.watch(mylits[1] ^ 1, this);
-				return true;
-			}
-		}
-		// assert voc.isFalsified(mylits[1]);
-		// the clause is now either unit or null
 		voc.watch(p, this);
-		// propagates first watched literal
-		return s.enqueue(mylits[0], this);
+		if (head == neg(p)) {
+			return s.enqueue(tail, this);
+		}
+		assert tail == neg(p);
+		return s.enqueue(head, this);
 	}
 
 	/*
 	 * For learnt clauses only @author leberre
 	 */
 	public boolean locked() {
-		return voc.getReason(lits[0]) == this;
+		return voc.getReason(head) == this || voc.getReason(tail) == this;
 	}
 
 	/**
@@ -173,13 +131,15 @@ public abstract class WLClause implements Constr, Serializable {
 	@Override
 	public String toString() {
 		StringBuffer stb = new StringBuffer();
-		for (int i = 0; i < lits.length; i++) {
-			stb.append(Lits.toString(lits[i]));
-			stb.append("["); //$NON-NLS-1$
-			stb.append(voc.valueToString(lits[i]));
-			stb.append("]"); //$NON-NLS-1$
-			stb.append(" "); //$NON-NLS-1$
-		}
+		stb.append(Lits.toString(head));
+		stb.append("["); //$NON-NLS-1$
+		stb.append(voc.valueToString(head));
+		stb.append("]"); //$NON-NLS-1$
+		stb.append(" "); //$NON-NLS-1$
+		stb.append(Lits.toString(tail));
+		stb.append("["); //$NON-NLS-1$
+		stb.append(voc.valueToString(tail));
+		stb.append("]"); //$NON-NLS-1$
 		return stb.toString();
 	}
 
@@ -188,11 +148,14 @@ public abstract class WLClause implements Constr, Serializable {
 	 * la recherche.
 	 * 
 	 * @param i
-	 * 		the index of the literal
+	 *            the index of the literal
 	 * @return the literal
 	 */
 	public int get(int i) {
-		return lits[i];
+		if (i == 0)
+			return head;
+		assert i == 1;
+		return tail;
 	}
 
 	/**
@@ -210,11 +173,17 @@ public abstract class WLClause implements Constr, Serializable {
 	}
 
 	public int size() {
-		return lits.length;
+		return 2;
 	}
 
 	public void assertConstraint(UnitPropagationListener s) {
-		boolean ret = s.enqueue(lits[0], this);
+		boolean ret;
+		if (voc.isUnassigned(head)) {
+			ret = s.enqueue(head, this);
+		} else {
+			assert voc.isUnassigned(tail);
+			ret = s.enqueue(tail, this);
+		}
 		assert ret;
 	}
 
@@ -223,8 +192,9 @@ public abstract class WLClause implements Constr, Serializable {
 	}
 
 	public int[] getLits() {
-		int[] tmp = new int[size()];
-		System.arraycopy(lits, 0, tmp, 0, size());
+		int[] tmp = new int[2];
+		tmp[0] = head;
+		tmp[1] = tail;
 		return tmp;
 	}
 
@@ -233,19 +203,9 @@ public abstract class WLClause implements Constr, Serializable {
 		if (obj == null)
 			return false;
 		try {
-			WLClause wcl = (WLClause) obj;
-			if (lits.length != wcl.lits.length)
+			BinaryClause wcl = (BinaryClause) obj;
+			if (wcl.head != head || wcl.tail != tail) {
 				return false;
-			boolean ok;
-			for (int lit : lits) {
-				ok = false;
-				for (int lit2 : wcl.lits)
-					if (lit == lit2) {
-						ok = true;
-						break;
-					}
-				if (!ok)
-					return false;
 			}
 			return true;
 		} catch (ClassCastException e) {
@@ -255,11 +215,12 @@ public abstract class WLClause implements Constr, Serializable {
 
 	@Override
 	public int hashCode() {
-		long sum = 0;
-		for (int p : lits) {
-			sum += p;
-		}
-		return (int) sum / lits.length;
+		long sum = head + tail;
+		return (int) sum / 2;
 	}
 
+	public void register() {
+		voc.watch(neg(head), this);
+		voc.watch(neg(tail), this);
+	}
 }

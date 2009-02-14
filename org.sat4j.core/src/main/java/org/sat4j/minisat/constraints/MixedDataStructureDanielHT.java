@@ -27,69 +27,67 @@
 *******************************************************************************/
 package org.sat4j.minisat.constraints;
 
-import org.sat4j.minisat.constraints.cnf.LearntWLClause;
-import org.sat4j.minisat.constraints.cnf.Lits23;
-import org.sat4j.minisat.constraints.cnf.WLClause;
+import org.sat4j.minisat.constraints.card.AtLeast;
+import org.sat4j.minisat.constraints.cnf.Clauses;
+import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
+import org.sat4j.minisat.constraints.cnf.LearntHTClause;
+import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
+import org.sat4j.minisat.constraints.cnf.OriginalHTClause;
+import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.ILits23;
+import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
 /**
- * @author leberre To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * Uses specific data structure for cardinality constraints.
+ *
+ * @author leberre
  */
-public class MixedDataStructureWithBinaryAndTernary extends
-        AbstractDataStructureFactory<ILits23> {
+public class MixedDataStructureDanielHT extends AbstractDataStructureFactory {
 
     private static final long serialVersionUID = 1L;
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org.sat4j.datatype.VecInt,
+     *      int)
+     */
+    @Override
+    public Constr createCardinalityConstraint(IVecInt literals, int degree)
+            throws ContradictionException {
+        return AtLeast.atLeastNew(solver, getVocabulary(), literals, degree);
+    }
 
     /*
      * (non-Javadoc)
      * 
      * @see org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype.VecInt)
      */
-     public Constr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt v = WLClause.sanityCheck(literals, lits, solver);
+    public Constr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
         if (v == null)
             return null;
-        if (v.size() == 2) {
-            lits.binaryClauses(v.get(0), v.get(1));
-            return null;
-        }
-        if (v.size() == 3) {
-            lits.ternaryClauses(v.get(0), v.get(1), v.get(2));
-            return null;
-        }
-        return WLClause.brandNewClause(solver, lits, v);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.sat4j.minisat.DataStructureFactory#learnContraint(org.sat4j.minisat.Constr)
-     */
-    @Override
-    public void learnConstraint(Constr constr) {
-        if (constr.size() == 2) {
-            lits.binaryClauses(constr.get(0), constr.get(1));
-            // solver.getStats().learnedbinaryclauses++;
-        } else if (constr.size() == 3) {
-            lits.ternaryClauses(constr.get(0), constr.get(1), constr.get(2));
-            // solver.getStats().learnedternaryclauses++;
-        } else {
-            super.learnConstraint(constr);
-        }
-    }
-
-    @Override
-    protected ILits23 createLits() {
-        return new Lits23();
+    	if (v.size()==2) {
+    		return OriginalBinaryClause.brandNewClause(solver, getVocabulary(), v);
+    	}
+        return OriginalHTClause.brandNewClause(solver, getVocabulary(), v);
     }
 
     public Constr createUnregisteredClause(IVecInt literals) {
-        return new LearntWLClause(literals, getVocabulary());
+    	if (literals.size()==1) {
+    		return new UnitClause(literals.last());
+    	}
+    	if (literals.size()==2) {
+    		return new LearntBinaryClause(literals,getVocabulary());
+    	}
+        return new LearntHTClause(literals, getVocabulary());
     }
 
+    @Override
+    protected ILits createLits() {
+        return new Lits();
+    }
 }

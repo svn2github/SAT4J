@@ -44,8 +44,8 @@ import org.sat4j.specs.IVecInt;
  * @author leberre To change the template for this generated type comment go to
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class AbstractDataStructureFactory<L extends ILits> implements
-        DataStructureFactory<L>, Serializable {
+public abstract class AbstractDataStructureFactory implements
+        DataStructureFactory, Serializable {
 
     /**
 	 * 
@@ -74,13 +74,13 @@ public abstract class AbstractDataStructureFactory<L extends ILits> implements
         return tmp;
     }
 
-    protected L lits;
+    protected ILits lits;
     
     protected AbstractDataStructureFactory() {
         lits = createLits();
     }
 
-    protected abstract L createLits(); 
+    protected abstract ILits createLits(); 
     
     private final IVec<Propagatable> tmp = new Vec<Propagatable>();
 
@@ -89,7 +89,7 @@ public abstract class AbstractDataStructureFactory<L extends ILits> implements
      * 
      * @see org.sat4j.minisat.DataStructureFactory#createVocabulary()
      */
-    public L getVocabulary() {
+    public ILits getVocabulary() {
         return lits;
     }
 

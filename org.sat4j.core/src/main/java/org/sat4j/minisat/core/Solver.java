@@ -49,8 +49,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import static org.sat4j.core.LiteralsUtils.var;
 import static org.sat4j.core.LiteralsUtils.toDimacs;
+import static org.sat4j.core.LiteralsUtils.var;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -81,7 +81,7 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author leberre
  */
-public class Solver<L extends ILits, D extends DataStructureFactory<L>>
+public class Solver
 		implements ISolver, UnitPropagationListener, ActivityListener, Learner {
 
 	private static final long serialVersionUID = 1L;
@@ -140,15 +140,15 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	private int[] model = null;
 
-	protected L voc;
+	protected ILits voc;
 
-	private IOrder<L> order;
+	private IOrder order;
 
 	private final ActivityComparator comparator = new ActivityComparator();
 
 	private final SolverStats stats = new SolverStats();
 
-	private final LearningStrategy<L, D> learner;
+	private final LearningStrategy learner;
 
 	protected final AssertingClauseGenerator analyzer;
 
@@ -158,7 +158,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 
 	private boolean timeBasedTimeout = true;
 
-	protected D dsfactory;
+	protected DataStructureFactory dsfactory;
 
 	private SearchParams params;
 
@@ -198,13 +198,13 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	 * 		an asserting clause generator
 	 */
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy<L, D> learner,
-			D dsf, IOrder<L> order, RestartStrategy restarter) {
+	public Solver(AssertingClauseGenerator acg, LearningStrategy learner,
+			DataStructureFactory dsf, IOrder order, RestartStrategy restarter) {
 		this(acg, learner, dsf, new SearchParams(), order, restarter);
 	}
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy<L, D> learner,
-			D dsf, SearchParams params, IOrder<L> order,
+	public Solver(AssertingClauseGenerator acg, LearningStrategy learner,
+			DataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
 		analyzer = acg;
 		this.learner = learner;
@@ -221,7 +221,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 	 * @param dsf
 	 * 		the internal factory
 	 */
-	public final void setDataStructureFactory(D dsf) {
+	public final void setDataStructureFactory(DataStructureFactory dsf) {
 		dsfactory = dsf;
 		dsfactory.setUnitPropagationListener(this);
 		dsfactory.setLearner(this);
@@ -1171,16 +1171,16 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		return stats;
 	}
 
-	public IOrder<L> getOrder() {
+	public IOrder getOrder() {
 		return order;
 	}
 
-	public void setOrder(IOrder<L> h) {
+	public void setOrder(IOrder h) {
 		order = h;
 		order.setLits(voc);
 	}
 
-	public L getVocabulary() {
+	public ILits getVocabulary() {
 		return voc;
 	}
 
@@ -1217,7 +1217,7 @@ public class Solver<L extends ILits, D extends DataStructureFactory<L>>
 		return constr;
 	}
 
-	public DataStructureFactory<L> getDSFactory() {
+	public DataStructureFactory getDSFactory() {
 		return dsfactory;
 	}
 

@@ -53,7 +53,7 @@ public class M2AtLeastTest extends AbstractM2Test<ISolver> {
      */
     @Override
     protected ISolver createSolver() {
-        return SolverFactory.newMiniLearning(new CardinalityDataStructure());
+        return SolverFactory.newMiniLearningHeap(new CardinalityDataStructure());
     }
 
 }

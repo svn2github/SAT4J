@@ -25,16 +25,75 @@
 * See www.minisat.se for the original solver in C++.
 * 
 *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.minisat.constraints.cnf;
 
-/**
- * Specific vocabulary taking special care of binary and ternary clauses.
- * 
- * @author leberre
- */
-public interface ILits23 extends ILits2 {
+import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.UnitPropagationListener;
+import org.sat4j.specs.IVecInt;
 
-    int nTernaryClauses(int p);
+public class UnitClause implements Constr {
 
-    void ternaryClauses(int lit1, int lit2, int lit3);
+	protected final int literal;
+	
+	public UnitClause(int value) {
+		literal = value;
+	}
+	
+	public void assertConstraint(UnitPropagationListener s) {
+		s.enqueue(literal, this);
+	}
+
+	public void calcReason(int p, IVecInt outReason) {
+		throw new UnsupportedOperationException();
+
+	}
+
+	public double getActivity() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void incActivity(double claInc) {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean locked() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void register() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
+	public void rescaleBy(double d) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void setLearnt() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean simplify() {
+		throw new UnsupportedOperationException();
+	}
+
+	public boolean propagate(UnitPropagationListener s, int p) {
+		throw new UnsupportedOperationException();
+    }
+
+	public int get(int i) {
+		if (i>0) throw new IllegalArgumentException();
+		return literal;
+	}
+
+	public boolean learnt() {
+		throw new UnsupportedOperationException();
+	}
+
+	public int size() {
+		return 1;
+	}
 }

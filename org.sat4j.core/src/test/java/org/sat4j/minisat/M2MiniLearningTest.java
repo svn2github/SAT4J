@@ -52,7 +52,7 @@ public class M2MiniLearningTest extends AbstractM2Test<ISolver> {
      */
     @Override
     protected ISolver createSolver() {
-        return SolverFactory.newMiniLearning();
+        return SolverFactory.newMiniLearningHeap();
     }
 
 }

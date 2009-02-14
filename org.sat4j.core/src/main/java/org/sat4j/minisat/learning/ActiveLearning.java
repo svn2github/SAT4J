@@ -28,8 +28,6 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.Solver;
 
@@ -38,13 +36,13 @@ import org.sat4j.minisat.core.Solver;
  * 
  * @author leberre
  */
-public class ActiveLearning<L extends ILits,D extends DataStructureFactory<L>> extends LimitedLearning<L,D> {
+public class ActiveLearning extends LimitedLearning {
 
     private static final long serialVersionUID = 1L;
 
     private double percent;
 
-    private IOrder<L> order;
+    private IOrder order;
 
     private int maxpercent;
 
@@ -56,12 +54,12 @@ public class ActiveLearning<L extends ILits,D extends DataStructureFactory<L>> e
         this.percent = d;
     }
 
-    public void setOrder(IOrder<L> order) {
+    public void setOrder(IOrder order) {
         this.order = order;
     }
 
     @Override
-    public void setSolver(Solver<L,D> s) {
+    public void setSolver(Solver s) {
         super.setSolver(s);
         this.order = s.getOrder();
     }

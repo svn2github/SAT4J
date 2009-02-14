@@ -43,10 +43,7 @@ public class AllTests {
         TestSuite suite = new TestSuite("Test for org.sat4j.minisat");
         // $JUnit-BEGIN$
         suite.addTestSuite(TestAssertion.class);
-        suite.addTestSuite(M2MiniActiveLearningTest.class);
         suite.addTestSuite(VarOrderTest.class);
-        suite.addTestSuite(M2MiniLearning23Test.class);
-        suite.addTestSuite(M2MiniLearning2Test.class);
         suite.addTestSuite(M2MiniSATTest.class);
         suite.addTestSuite(TestsFonctionnels.class);
         suite.addTestSuite(M2MiniLearningTest.class);

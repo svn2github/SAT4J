@@ -54,7 +54,7 @@ public class M2CardMinYannTest extends AbstractM2Test<ISolver> {
     @Override
     protected ISolver createSolver() {
         return SolverFactory
-                .newMiniLearning(new CardinalityDataStructureYanMin());
+                .newMiniLearningHeap(new CardinalityDataStructureYanMin());
     }
 
 }

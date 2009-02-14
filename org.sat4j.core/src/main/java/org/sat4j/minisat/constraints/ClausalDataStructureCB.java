@@ -28,8 +28,8 @@
 package org.sat4j.minisat.constraints;
 
 import org.sat4j.minisat.constraints.cnf.CBClause;
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.Lits;
-import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Propagatable;
@@ -41,7 +41,7 @@ import org.sat4j.specs.IVecInt;
  * @author parrain To change the template for this generated type comment go to
  *         Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ClausalDataStructureCB extends AbstractDataStructureFactory<ILits> {
+public class ClausalDataStructureCB extends AbstractDataStructureFactory {
 
     private static final long serialVersionUID = 1L;
 
@@ -72,7 +72,7 @@ public class ClausalDataStructureCB extends AbstractDataStructureFactory<ILits> 
      * @see org.sat4j.minisat.core.DataStructureFactory#createClause(org.sat4j.specs.VecInt)
      */
     public Constr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt v = WLClause.sanityCheck(literals, getVocabulary(), solver);
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
         if (v == null)
             return null;
         return CBClause.brandNewClause(solver, getVocabulary(), v);

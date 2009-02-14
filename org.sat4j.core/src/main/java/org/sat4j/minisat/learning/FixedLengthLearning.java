@@ -37,7 +37,7 @@ import org.sat4j.minisat.core.ILits;
  * 
  * @author leberre
  */
-public class FixedLengthLearning<L extends ILits,D extends DataStructureFactory<L>> extends LimitedLearning<L,D> {
+public class FixedLengthLearning extends LimitedLearning {
 
     private static final long serialVersionUID = 1L;
 

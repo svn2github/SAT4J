@@ -37,7 +37,7 @@ import java.io.PrintWriter;
  * @author daniel
  * 
  */
-public interface IOrder<L extends ILits> {
+public interface IOrder {
 
     /**
      * Method used to provide an easy access the the solver vocabulary.
@@ -45,7 +45,7 @@ public interface IOrder<L extends ILits> {
      * @param lits
      *            the vocabulary
      */
-    void setLits(L lits);
+    void setLits(ILits lits);
 
     /**
      * Selects the next "best" unassigned literal.

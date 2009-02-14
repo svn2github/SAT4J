@@ -27,10 +27,10 @@
 *******************************************************************************/
 package org.sat4j.minisat.constraints;
 
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntWLClause;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
-import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
@@ -40,7 +40,7 @@ import org.sat4j.specs.IVecInt;
  * @author leberre To change the template for this generated type comment go to
  *         Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class ClausalDataStructureWL extends AbstractDataStructureFactory<ILits> {
+public class ClausalDataStructureWL extends AbstractDataStructureFactory {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,7 +50,7 @@ public class ClausalDataStructureWL extends AbstractDataStructureFactory<ILits> 
      * @see org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype.VecInt)
      */
     public Constr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt v = WLClause.sanityCheck(literals, getVocabulary(), solver);
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
         if (v == null)
             return null;
         return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);

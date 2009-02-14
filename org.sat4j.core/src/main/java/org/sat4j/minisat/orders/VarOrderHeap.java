@@ -45,7 +45,7 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
  * @author leberre Heuristique du prouveur. Changement par rapport au MiniSAT
  *         original : la gestion activity est faite ici et non plus dans Solver.
  */
-public class VarOrderHeap<L extends ILits> implements IOrder<L>, Serializable {
+public class VarOrderHeap implements IOrder, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,7 +65,7 @@ public class VarOrderHeap<L extends ILits> implements IOrder<L>, Serializable {
      */
     private double varInc = 1.0;
 
-    protected L lits;
+    protected ILits lits;
 
     private long nullchoice = 0;
 
@@ -94,7 +94,7 @@ public class VarOrderHeap<L extends ILits> implements IOrder<L>, Serializable {
         return phaseStrategy;
     }
     
-    public void setLits(L lits) {
+    public void setLits(ILits lits) {
         this.lits = lits;
     }
 
