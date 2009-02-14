@@ -126,8 +126,10 @@ public class SolverFactory extends ASolverFactory<ISolver> {
     }
 
     private static Solver<DataStructureFactory> newBestCurrentSolverConfiguration(DataStructureFactory dsf) {
-    	Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(),new MiniSATLearning<DataStructureFactory>(),dsf,new VarOrderHeap(new RSATPhaseSelectionStrategy()),new ArminRestarts());
+    	MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
+    	Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(),learning,dsf,new VarOrderHeap(new RSATPhaseSelectionStrategy()),new ArminRestarts());
     	solver.setSearchParams(new SearchParams(1.1, 100));
+    	learning.setSolver(solver);
     	return solver;
     }
 
