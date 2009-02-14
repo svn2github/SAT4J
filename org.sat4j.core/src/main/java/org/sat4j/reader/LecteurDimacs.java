@@ -76,10 +76,10 @@ public class LecteurDimacs extends Reader implements Serializable {
     }
 
     @Override
-    public final IProblem parseInstance(final InputStream in)
+    public final IProblem parseInstance(final InputStream input)
             throws ParseFormatException, ContradictionException, IOException {
 
-        this.in = new BufferedInputStream(in, LecteurDimacs.TAILLE_BUF);
+        this.in = new BufferedInputStream(input, LecteurDimacs.TAILLE_BUF);
         s.reset();
         passerCommentaire();
         if (nbVars < 0)
@@ -93,12 +93,12 @@ public class LecteurDimacs extends Reader implements Serializable {
         		throw new ParseFormatException("DIMACS error: the clauses are missing");
         	ajouterClauses(car);
         }        
-        in.close();
+        input.close();
         return s;
     }
 
     @Override
-    public IProblem parseInstance(java.io.Reader in) throws IOException,
+    public IProblem parseInstance(java.io.Reader input) throws IOException,
             ContradictionException {
         throw new UnsupportedOperationException();
     }

@@ -77,8 +77,8 @@ public abstract class AbstractAcceptanceTestCase<T extends ISolver> extends Test
     }
 
     
-    protected InstanceReader createInstanceReader(T solver){
-    	return new InstanceReader(solver);
+    protected InstanceReader createInstanceReader(T aSolver){
+    	return new InstanceReader(aSolver);
     }
     
     @Override

@@ -72,16 +72,16 @@ public class CardDimacsReader extends DimacsReader {
 
         int realNbOfClauses = 0;
 
-        IVecInt literals = new VecInt();
+        IVecInt myLiterals = new VecInt();
 
         while (true) {
             line = in.readLine();
 
             if (line == null) {
                 // end of file
-                if (literals.size() > 0) {
+                if (myLiterals.size() > 0) {
                     // no 0 end the last clause
-                    solver.addClause(literals);
+                    solver.addClause(myLiterals);
                     realNbOfClauses++;
                 }
 
@@ -106,19 +106,19 @@ public class CardDimacsReader extends DimacsReader {
 
                 if ("<=".equals(token) || ">=".equals(token)) {
                     // on est sur une contrainte de cardinalit?
-                    readCardinalityConstr(token, stk, literals);
-                    literals.clear();
+                    readCardinalityConstr(token, stk, myLiterals);
+                    myLiterals.clear();
                     realNbOfClauses++;
                 } else {
                     lit = Integer.parseInt(token);
                     if (lit == 0) {
-                        if (literals.size() > 0) {
-                            solver.addClause(literals);
-                            literals.clear();
+                        if (myLiterals.size() > 0) {
+                            solver.addClause(myLiterals);
+                            myLiterals.clear();
                             realNbOfClauses++;
                         }
                     } else {
-                        literals.push(lit);
+                        myLiterals.push(lit);
                     }
                 }
             }
@@ -130,15 +130,15 @@ public class CardDimacsReader extends DimacsReader {
     }
 
     private void readCardinalityConstr(String token, StringTokenizer stk,
-            IVecInt literals) throws ContradictionException,
+            IVecInt myLiterals) throws ContradictionException,
             ParseFormatException {
         int card = Integer.parseInt(stk.nextToken());
         int lit = Integer.parseInt(stk.nextToken());
         if (lit == 0) {
             if ("<=".equals(token)) {
-                solver.addAtMost(literals, card);
+                solver.addAtMost(myLiterals, card);
             } else if (">=".equals(token)) {
-                solver.addAtLeast(literals, card);
+                solver.addAtLeast(myLiterals, card);
             }
         } else
             throw new ParseFormatException();
