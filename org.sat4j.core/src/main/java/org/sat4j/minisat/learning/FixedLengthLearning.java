@@ -28,6 +28,7 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 
 /**
  * A learning scheme for learning constraints of size smaller than a given
@@ -35,7 +36,7 @@ import org.sat4j.minisat.core.Constr;
  * 
  * @author leberre
  */
-public class FixedLengthLearning extends LimitedLearning {
+public class FixedLengthLearning<D extends DataStructureFactory> extends LimitedLearning<D> {
 
     private static final long serialVersionUID = 1L;
 

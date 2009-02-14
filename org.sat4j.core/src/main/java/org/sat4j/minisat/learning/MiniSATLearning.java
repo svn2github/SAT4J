@@ -41,7 +41,7 @@ import org.sat4j.minisat.core.Solver;
  * 
  * @author leberre
  */
-public class MiniSATLearning extends AbstractLearning {
+public class MiniSATLearning<D extends DataStructureFactory> extends AbstractLearning<D> {
     private static final long serialVersionUID = 1L;
 
     private DataStructureFactory dsf;
@@ -51,7 +51,7 @@ public class MiniSATLearning extends AbstractLearning {
     }
 
     @Override
-    public void setSolver(Solver s) {
+    public void setSolver(Solver<D> s) {
         super.setSolver(s);
         this.dsf = s.getDSFactory();
     }

@@ -81,7 +81,7 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author leberre
  */
-public class Solver
+public class Solver<D extends DataStructureFactory>
 		implements ISolver, UnitPropagationListener, ActivityListener, Learner {
 
 	private static final long serialVersionUID = 1L;
@@ -148,7 +148,7 @@ public class Solver
 
 	private final SolverStats stats = new SolverStats();
 
-	private final LearningStrategy learner;
+	private final LearningStrategy<D> learner;
 
 	protected final AssertingClauseGenerator analyzer;
 
@@ -158,7 +158,7 @@ public class Solver
 
 	private boolean timeBasedTimeout = true;
 
-	protected DataStructureFactory dsfactory;
+	protected D dsfactory;
 
 	private SearchParams params;
 
@@ -198,13 +198,13 @@ public class Solver
 	 * 		an asserting clause generator
 	 */
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy learner,
-			DataStructureFactory dsf, IOrder order, RestartStrategy restarter) {
+	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
+			D dsf, IOrder order, RestartStrategy restarter) {
 		this(acg, learner, dsf, new SearchParams(), order, restarter);
 	}
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy learner,
-			DataStructureFactory dsf, SearchParams params, IOrder order,
+	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
+			D dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
 		analyzer = acg;
 		this.learner = learner;
@@ -221,7 +221,7 @@ public class Solver
 	 * @param dsf
 	 * 		the internal factory
 	 */
-	public final void setDataStructureFactory(DataStructureFactory dsf) {
+	public final void setDataStructureFactory(D dsf) {
 		dsfactory = dsf;
 		dsfactory.setUnitPropagationListener(this);
 		dsfactory.setLearner(this);

@@ -28,6 +28,7 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.Solver;
 
@@ -36,7 +37,7 @@ import org.sat4j.minisat.core.Solver;
  * 
  * @author leberre
  */
-public class ActiveLearning extends LimitedLearning {
+public class ActiveLearning<D extends DataStructureFactory> extends LimitedLearning<D> {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +60,7 @@ public class ActiveLearning extends LimitedLearning {
     }
 
     @Override
-    public void setSolver(Solver s) {
+    public void setSolver(Solver<D> s) {
         super.setSolver(s);
         this.order = s.getOrder();
     }

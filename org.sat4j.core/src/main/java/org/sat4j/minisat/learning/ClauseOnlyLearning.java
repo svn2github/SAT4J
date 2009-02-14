@@ -29,6 +29,7 @@ package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 
 /**
  * The solver only records among all the constraints only the clauses.
@@ -38,7 +39,7 @@ import org.sat4j.minisat.core.Constr;
  * @param <L> a data structure for the literals.
  * @param <D> a data structure for the clauses.
  */
-public class ClauseOnlyLearning extends LimitedLearning {
+public class ClauseOnlyLearning<D extends DataStructureFactory> extends LimitedLearning<D> {
 
     /**
      * 

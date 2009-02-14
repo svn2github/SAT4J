@@ -28,6 +28,7 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 
 /**
  * Selects the constraints to learn according to its length as a percentage of 
@@ -36,7 +37,7 @@ import org.sat4j.minisat.core.Constr;
  * @author daniel
  *
  */
-public class PercentLengthLearning extends LimitedLearning {
+public class PercentLengthLearning<D extends DataStructureFactory> extends LimitedLearning<D> {
 
     /**
      * 

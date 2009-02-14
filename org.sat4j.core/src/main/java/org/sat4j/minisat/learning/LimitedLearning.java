@@ -28,6 +28,7 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.Solver;
@@ -40,24 +41,24 @@ import org.sat4j.minisat.core.VarActivityListener;
  * 
  * @author leberre
  */
-public abstract class LimitedLearning implements LearningStrategy {
+public abstract class LimitedLearning<D extends DataStructureFactory> implements LearningStrategy<D> {
 
     private static final long serialVersionUID = 1L;
 
-    private final NoLearningButHeuristics none;
+    private final NoLearningButHeuristics<D> none;
 
-    private final MiniSATLearning all;
+    private final MiniSATLearning<D> all;
 
     protected ILits lits;
     
     private SolverStats stats;
 
     public LimitedLearning() {
-        none = new NoLearningButHeuristics();
-        all = new MiniSATLearning();
+        none = new NoLearningButHeuristics<D>();
+        all = new MiniSATLearning<D>();
     }
 
-    public void setSolver(Solver s) {
+    public void setSolver(Solver<D> s) {
         this.lits = s.getVocabulary();
         setVarActivityListener(s);
         all.setDataStructureFactory(s.getDSFactory());

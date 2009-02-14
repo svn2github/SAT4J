@@ -32,6 +32,7 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -286,7 +287,7 @@ public class TestsFonctionnels extends TestCase {
         reader = new InstanceReader(solver);
     }
 
-    private Solver solver;
+    private Solver<DataStructureFactory> solver;
 
     private InstanceReader reader;
 }

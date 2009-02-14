@@ -28,6 +28,7 @@
 package org.sat4j.minisat.learning;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.core.VarActivityListener;
@@ -43,7 +44,7 @@ import org.sat4j.minisat.core.VarActivityListener;
  * @author daniel
  *
  */
-abstract class AbstractLearning implements LearningStrategy {
+abstract class AbstractLearning<D extends DataStructureFactory> implements LearningStrategy<D> {
 
     /**
 	 * 
@@ -56,7 +57,7 @@ abstract class AbstractLearning implements LearningStrategy {
         this.val = s;
     }
 
-    public void setSolver(Solver s) {
+    public void setSolver(Solver<D> s) {
         this.val = s;
     }
 
