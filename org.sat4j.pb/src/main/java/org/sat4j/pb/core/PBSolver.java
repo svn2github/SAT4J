@@ -30,7 +30,6 @@ package org.sat4j.pb.core;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.core.AssertingClauseGenerator;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -44,8 +43,8 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public abstract class PBSolver<L extends ILits> extends
-        Solver<L, PBDataStructureFactory<L>> implements IPBSolver {
+public abstract class PBSolver extends
+        Solver<PBDataStructureFactory> implements IPBSolver {
 
     /**
      * 
@@ -53,16 +52,16 @@ public abstract class PBSolver<L extends ILits> extends
     private static final long serialVersionUID = 1L;
 
     public PBSolver(AssertingClauseGenerator acg,
-            LearningStrategy<L, PBDataStructureFactory<L>> learner,
-            PBDataStructureFactory<L> dsf, IOrder<L> order,
+            LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order,
             RestartStrategy restarter) {
         super(acg, learner, dsf, order, restarter);
     }
 
     public PBSolver(AssertingClauseGenerator acg,
-            LearningStrategy<L, PBDataStructureFactory<L>> learner,
-            PBDataStructureFactory<L> dsf, SearchParams params,
-            IOrder<L> order, RestartStrategy restarter) {
+            LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params,
+            IOrder order, RestartStrategy restarter) {
         super(acg, learner, dsf, params, order, restarter);
     }
 
@@ -90,7 +89,7 @@ public abstract class PBSolver<L extends ILits> extends
     }
 
     public void setObjectiveFunction(ObjectiveFunction obj) {
-        IOrder<L> order = getOrder();
+        IOrder order = getOrder();
         if (order instanceof VarOrderHeapObjective) {
             ((VarOrderHeapObjective) order).setObjectiveFunction(obj);
         }

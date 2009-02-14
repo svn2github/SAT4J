@@ -31,13 +31,12 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public interface PBDataStructureFactory<L extends ILits> extends DataStructureFactory<L> {
+public interface PBDataStructureFactory extends DataStructureFactory {
 
     Constr createPseudoBooleanConstraint(IVecInt literals,
             IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)

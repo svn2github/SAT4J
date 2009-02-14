@@ -32,7 +32,6 @@ import static org.sat4j.core.LiteralsUtils.var;
 
 import java.math.BigInteger;
 
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
@@ -40,7 +39,7 @@ import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public class VarOrderHeapObjective extends VarOrderHeap<ILits> {
+public class VarOrderHeapObjective extends VarOrderHeap {
 
 	/**
      * 

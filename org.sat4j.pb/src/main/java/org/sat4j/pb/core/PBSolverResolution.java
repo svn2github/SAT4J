@@ -28,13 +28,12 @@
 package org.sat4j.pb.core;
 
 import org.sat4j.minisat.core.AssertingClauseGenerator;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 
-public class PBSolverResolution extends PBSolver<ILits> {
+public class PBSolverResolution extends PBSolver {
 
     /**
      * 
@@ -43,18 +42,18 @@ public class PBSolverResolution extends PBSolver<ILits> {
 
     public PBSolverResolution(
             AssertingClauseGenerator acg,
-            LearningStrategy<ILits, PBDataStructureFactory<ILits>> learner,
-            PBDataStructureFactory<ILits> dsf,
-            SearchParams params, IOrder<ILits> order,
+            LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf,
+            SearchParams params, IOrder order,
             RestartStrategy restarter) {
         super(acg, learner, dsf, params, order, restarter);
     }
 
     public PBSolverResolution(
             AssertingClauseGenerator acg,
-            LearningStrategy<ILits, PBDataStructureFactory<ILits>> learner,
-            PBDataStructureFactory<ILits> dsf,
-            IOrder<ILits> order, RestartStrategy restarter) {
+            LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf,
+            IOrder order, RestartStrategy restarter) {
         super(acg, learner, dsf, order, restarter);
     }
 

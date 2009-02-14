@@ -28,14 +28,13 @@
 package org.sat4j.pb.core;
 
 import org.sat4j.minisat.core.AssertingClauseGenerator;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.pb.constraints.pb.ConflictMapClause;
 import org.sat4j.pb.constraints.pb.IConflict;
 import org.sat4j.pb.constraints.pb.PBConstr;
 
-public class PBSolverClause extends PBSolverCP<ILits> {
+public class PBSolverClause extends PBSolverCP {
 
     /**
      * 
@@ -43,7 +42,7 @@ public class PBSolverClause extends PBSolverCP<ILits> {
     private static final long serialVersionUID = 1L;
 
     public PBSolverClause(AssertingClauseGenerator acg,
-            LearningStrategy<ILits,PBDataStructureFactory<ILits>> learner, PBDataStructureFactory<ILits> dsf, IOrder<ILits> order) {
+            LearningStrategy<PBDataStructureFactory> learner, PBDataStructureFactory dsf, IOrder order) {
         super(acg, learner, dsf, order);
     }
 

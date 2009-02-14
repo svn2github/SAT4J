@@ -29,6 +29,7 @@ package org.sat4j.pb.constraints;
 
 import java.math.BigInteger;
 
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.pb.constraints.pb.WLClausePB;
 import org.sat4j.specs.ContradictionException;
@@ -60,7 +61,7 @@ public abstract class AbstractPBDataStructureFactoryPB extends
 
     @Override
 	public PBConstr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt theLits = WLClausePB.sanityCheck(literals,getVocabulary(), solver);
+        IVecInt theLits = Clauses.sanityCheck(literals,getVocabulary(), solver);
         if (theLits==null) {
             return null;
         }

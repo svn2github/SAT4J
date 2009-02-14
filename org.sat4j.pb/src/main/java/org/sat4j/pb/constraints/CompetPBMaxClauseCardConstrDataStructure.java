@@ -31,7 +31,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.WLClause;
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.pb.constraints.pb.WatchPb;
 import org.sat4j.specs.ContradictionException;
@@ -70,7 +70,7 @@ public class CompetPBMaxClauseCardConstrDataStructure
         if (bigDegree == null)
             return null;
         if (bigDegree.equals(BigInteger.ONE)) {
-            IVecInt v = WLClause.sanityCheck(new VecInt(theLits), getVocabulary(),
+            IVecInt v = Clauses.sanityCheck(new VecInt(theLits), getVocabulary(),
                     solver);
             if (v == null)
                 return null;

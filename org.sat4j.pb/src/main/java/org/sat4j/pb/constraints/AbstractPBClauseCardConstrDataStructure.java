@@ -31,7 +31,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.WLClause;
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.pb.constraints.pb.WatchPb;
@@ -95,7 +95,7 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         BigInteger[] normCoefs = new BigInteger[size];
         mpb.buildConstraintFromMapPb(theLists, normCoefs);
         if (mpb.getDegree().equals(BigInteger.ONE)) {
-            IVecInt v = WLClause.sanityCheck(new VecInt(theLists), getVocabulary(),
+            IVecInt v = Clauses.sanityCheck(new VecInt(theLists), getVocabulary(),
                     solver);
             if (v == null)
                 return null;

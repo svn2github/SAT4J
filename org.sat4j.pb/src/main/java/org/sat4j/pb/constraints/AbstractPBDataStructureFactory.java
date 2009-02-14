@@ -30,9 +30,9 @@ package org.sat4j.pb.constraints;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.AbstractDataStructureFactory;
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntWLClause;
 import org.sat4j.minisat.constraints.cnf.Lits;
-import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.AtLeastPB;
@@ -51,7 +51,7 @@ import org.sat4j.specs.IVecInt;
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class AbstractPBDataStructureFactory extends
-        AbstractDataStructureFactory<ILits> implements PBDataStructureFactory<ILits>, IInternalPBConstraintCreator {
+        AbstractDataStructureFactory implements PBDataStructureFactory, IInternalPBConstraintCreator {
 
     /**
 	 * 
@@ -59,7 +59,7 @@ public abstract class AbstractPBDataStructureFactory extends
 	private static final long serialVersionUID = 1L;
 
 	public Constr createClause(IVecInt literals) throws ContradictionException {
-        IVecInt v = WLClause.sanityCheck(literals, getVocabulary(), solver);
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
         if (v == null)
             return null;
         return WLClausePB.brandNewClause(solver, getVocabulary(), v);

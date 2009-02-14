@@ -31,7 +31,6 @@ import org.sat4j.core.Vec;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.core.AssertingClauseGenerator;
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.Pair;
@@ -47,7 +46,7 @@ import org.sat4j.specs.IVec;
  * @author parrain To change the template for this generated type comment go to
  *         Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class PBSolverCP<L extends ILits> extends PBSolver<L> {
+public class PBSolverCP extends PBSolver {
 
     private static final long serialVersionUID = 1L;
     
@@ -56,16 +55,16 @@ public class PBSolverCP<L extends ILits> extends PBSolver<L> {
      * @param learner
      * @param dsf
      */
-    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<L,PBDataStructureFactory<L>> learner,
-            PBDataStructureFactory<L> dsf, IOrder<L> order) {
+    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
         super(acg, learner, dsf, new SearchParams(1.5, 100), order,new MiniSATRestarts());
     }
 
-    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<L,PBDataStructureFactory<L>> learner, PBDataStructureFactory<L> dsf, SearchParams params, IOrder<L> order, RestartStrategy restarter) {
+    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<PBDataStructureFactory> learner, PBDataStructureFactory dsf, SearchParams params, IOrder order, RestartStrategy restarter) {
         super(acg, learner, dsf, params, order, restarter);
     }
 
-    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<L,PBDataStructureFactory<L>> learner, PBDataStructureFactory<L> dsf, SearchParams params, IOrder<L> order) {
+    public PBSolverCP(AssertingClauseGenerator acg, LearningStrategy<PBDataStructureFactory> learner, PBDataStructureFactory dsf, SearchParams params, IOrder order) {
         super(acg, learner, dsf, params, order,new MiniSATRestarts());
     }
 
