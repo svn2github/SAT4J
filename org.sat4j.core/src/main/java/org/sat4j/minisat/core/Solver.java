@@ -420,9 +420,9 @@ public class Solver<D extends DataStructureFactory>
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
-		if (from!=null) {
-			from.incActivity(claInc);
-		}
+//		if (from!=null) {
+//			from.incActivity(claInc);
+//		}
 		return true;
 	}
 
