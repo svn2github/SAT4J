@@ -31,7 +31,6 @@ import org.sat4j.maxsat.reader.P2DimacsReader;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.opt.MinOneDecorator;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
@@ -73,13 +72,13 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
     }
 
     @Override
-    protected Reader createReader(ISolver solver, String problemname) {
+    protected Reader createReader(ISolver aSolver, String problemname) {
         if (problemname.endsWith(".wcnf")) { //$NON-NLS-1$
-            return new WDimacsReader(( WeightedMaxSatDecorator)solver); //$NON-NLS-1$
+            return new WDimacsReader(( WeightedMaxSatDecorator)aSolver); //$NON-NLS-1$
         } else if (problemname.endsWith("p2cnf")) {
-            return new P2DimacsReader((MinCostDecorator)solver);
+            return new P2DimacsReader((MinCostDecorator)aSolver);
         }
-        return new DimacsReader(solver);
+        return new DimacsReader(aSolver);
     }
 
     @Override

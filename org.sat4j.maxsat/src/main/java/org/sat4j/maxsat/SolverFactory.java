@@ -19,9 +19,8 @@
 package org.sat4j.maxsat;
 
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.minisat.constraints.MixedDataStructureDaniel;
+import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
@@ -40,11 +39,11 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      * 
      * @return a
      */
-    public static Solver<ILits,DataStructureFactory<ILits>> newMiniMaxSAT() {
-        MiniSATLearning<ILits,DataStructureFactory<ILits>> learning = new MiniSATLearning<ILits,DataStructureFactory<ILits>>();
-        Solver<ILits,DataStructureFactory<ILits>> solver = new Solver<ILits,DataStructureFactory<ILits>>(new FirstUIP(), learning,
-                new MixedDataStructureDaniel(), new SearchParams(1.2,
-                        100000), new VarOrderHeap<ILits>(),
+    public static Solver<DataStructureFactory> newMiniMaxSAT() {
+        MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(), learning,
+                new MixedDataStructureDanielWL(), new SearchParams(1.2,
+                        100000), new VarOrderHeap(),
                 new MiniSATRestarts());
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
