@@ -35,7 +35,7 @@ import org.sat4j.AbstractLauncher;
 import org.sat4j.Messages;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.MixedDataStructureDaniel;
+import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.DotSearchListener;
 import org.sat4j.minisat.core.IOrder;
@@ -209,7 +209,7 @@ public class Lanceur extends AbstractLauncher {
 				if (dotfilename == null) {
 					dotfilename = "sat4j.dot";
 				}
-				((Solver<?, DataStructureFactory<?>>) asolver)
+				((Solver<DataStructureFactory>) asolver)
 						.setSearchListener(new DotSearchListener(dotfilename));
 			}
 
@@ -288,7 +288,7 @@ public class Lanceur extends AbstractLauncher {
 			pf.setProperty(couple[0], couple[1]);
 		}
 		DataStructureFactory dsf = setupObject("DSF", pf,
-				new MixedDataStructureDaniel());
+				new MixedDataStructureDanielWL());
 		LearningStrategy learning = setupObject("LEARNING", pf,
 				new PercentLengthLearning());
 		IOrder order = setupObject("ORDER", pf, new VarOrderHeap());
