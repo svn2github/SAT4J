@@ -1041,7 +1041,8 @@ public class Solver<D extends DataStructureFactory>
 		slistener.start();
 		model = null; // forget about previous model
 		fullmodel = null;
-
+		order.init();
+		
 		// propagate constraints
 		Constr confl = propagate();
 		if (confl != null) {
@@ -1070,7 +1071,7 @@ public class Solver<D extends DataStructureFactory>
 		rootLevel = decisionLevel();
 		
 		// moved initialization here if new literals are added in the assumptions.
-		order.init();
+		order.init(); // duplicated on purpose
 		learner.init();
 		restarter.init(params);
 		
