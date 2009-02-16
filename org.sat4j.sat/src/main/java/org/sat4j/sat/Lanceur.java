@@ -125,11 +125,20 @@ public class Lanceur extends AbstractLauncher {
 		op.setArgName("libname");
 		op = options.getOption("s");
 		op.setArgName("solvername");
+		op = options.getOption("S");
+		op.setArgName("solverStringDefinition");
 		op = options.getOption("t");
-		op.setArgName("delay");
+		op.setArgName("number");
+		op = options.getOption("T");
+		op.setArgName("number");
+		op = options.getOption("C");
+		op.setArgName("number");
 		op = options.getOption("k");
-		op.setArgName("k");
-		options.getOption("d");
+		op.setArgName("number");
+		op = options.getOption("d");
+		op.setArgName("filename");
+		op = options.getOption("f");
+		op.setArgName("filename");
 		return options;
 	}
 
