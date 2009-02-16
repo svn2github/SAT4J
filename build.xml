@@ -81,9 +81,20 @@
 		   <param name="src" value="org.sat4j.sat/src/main/java" />
                    <param name="jarname" value="org.sat4j.sat"/>
                 </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-sat.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+		   <zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.sat.jar"/>
+		   </zipgroupfileset>
+                   <zipgroupfileset dir="${lib}">
+                           <include name="commons-cli.jar"/>
+                           <include name="commons-beanutils.jar"/>
+		   </zipgroupfileset>
+               </jar>
 	</target>
 
-	<target name="core" depends="clean" description="Build a jar file suitable for embedding SAT technology into a Java application from current source tree">
+	<target name="core" depends="prepare" description="Build a jar file suitable for embedding SAT technology into a Java application from current source tree">
 		<echo>Building core library to be embedded into Java applications</echo>
                 <antcall target="build">
 		   <param name="package" value="core"/>
@@ -102,14 +113,25 @@
 	</target>
 
 	<target name="sudoku" depends="core" description="Build the sudoku demo  from current source tree">
-		<echo>Building Sudoku app ${java.home}</echo>
+		<echo>Building Sudoku app demo</echo>
 		<antcall target="build">
-			<param name="package" value="sudoku"/>
-			<param name="src" value="sudoku/src"/>
-                        <param name="lib" value="sudoku/lib"/>
+			<param name="package" value="org.sat4j.sudoku"/>
+			<param name="src" value="org.sat4j.sudoku/src/main/java"/>
+                        <param name="lib" value="org.sat4j.sudoku/lib"/>
                         <param name="jarname" value="org.sat4j.sudoku"/>
 			<param name="mainclass" value="org.sat4j.apps.sudoku.SDApplication"/>
 		</antcall>
+		<echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sudoku-v${BUILD_DATE}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+			<zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.sudoku.jar"/>
+		   </zipgroupfileset>
+		  
+                   <zipgroupfileset dir="org.sat4j.sudoku/lib">
+                           <include name="jlfgr-1_0.jar"/>
+		   </zipgroupfileset>
+               </jar>
 	</target>
 
 	<target name="prepare" depends="clean">
@@ -191,6 +213,14 @@
 				<exclude name="**/*.jpage"/>
 			</fileset>
 			<fileset dir="${src}/../resources">
+				<include name="**/*.properties"/>
+				<include name="**/*.png"/>
+				<include name="**/*.gif"/>
+				<include name="**/*.jpg"/> 
+				<include name="**/*.js"/>
+				<include name="**/*.html"/>
+				<include name="**/*.version"/>
+
 				<include name="about.html"/>
 			</fileset>
 			<fileset dir="${src}/../../../">
