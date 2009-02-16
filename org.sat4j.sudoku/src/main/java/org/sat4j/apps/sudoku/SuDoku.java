@@ -300,7 +300,7 @@ public class SuDoku {
         suDokuResources = new SuDokuResources();
         sdSize = new SDSize();
         gui = new GUIInput(mainProgramWindow, sdSize, this, maxSide);
-        solver = SolverFactory.newMiniLearning(20);
+        solver = SolverFactory.newDefault();
         randomCellChooser = new Random();
     }
 
@@ -553,7 +553,7 @@ public class SuDoku {
         StringBuffer model = new StringBuffer("s SATISFIABLE\n");
         clauses = 0;
 
-        solver = SolverFactory.newMiniLearning();
+        solver = SolverFactory.newDefault();
 
         Sat4jClauseHandler ch = new Sat4jClauseHandler(numOfVariables(), solver);
 
@@ -644,7 +644,7 @@ public class SuDoku {
         StringBuffer model = new StringBuffer("s SATISFIABLE\n");
         clauses = 0;
 
-        solver = SolverFactory.newMiniLearning();
+        solver = SolverFactory.newDefault();
 
         Sat4jClauseHandler ch = new Sat4jClauseHandler(numOfVariables(), solver);
 
@@ -778,7 +778,7 @@ public class SuDoku {
                 * sdSize.getLargeSide() / 2);
         progressbar.setProgress(0);
         while (!success) {
-            csolver = SolverFactory.newMiniLearning2Heap();
+            csolver = SolverFactory.newDefault();
             Sat4jClauseHandler ch = new Sat4jClauseHandler(numOfVariables(),
                     csolver);
 
