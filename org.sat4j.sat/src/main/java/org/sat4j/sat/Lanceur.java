@@ -117,12 +117,6 @@ public class Lanceur extends AbstractLauncher {
 		options
 				.addOption("f", "filename", true,
 						"specifies the file to use (in conjunction with -d for instance)");
-		options.addOption("r", "replay", true, "replay stored results");
-		options.addOption("b", "backup", true,
-				"backup results in specified file");
-		options
-				.addOption("u", "update", false,
-						"update results file if needed");
 		options.addOption("m", "mute", false, "Set launcher in silent mode");
 		options
 				.addOption("k", "kleast", true,
