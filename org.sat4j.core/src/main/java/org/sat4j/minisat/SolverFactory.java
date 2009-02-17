@@ -130,6 +130,7 @@ public class SolverFactory extends ASolverFactory<ISolver> {
     	Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(),learning,dsf,new VarOrderHeap(new RSATPhaseSelectionStrategy()),new ArminRestarts());
     	solver.setSearchParams(new SearchParams(1.1, 100));
     	learning.setSolver(solver);
+    	solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
     	return solver;
     }
 
