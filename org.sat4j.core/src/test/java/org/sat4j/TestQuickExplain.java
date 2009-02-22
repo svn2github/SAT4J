@@ -151,4 +151,26 @@ public class TestQuickExplain {
 		assertTrue(explanation.contains(1));
 		assertTrue(explanation.contains(2));
 	}
+	
+	@Test
+	public void testEclipseTestCase() throws ContradictionException, TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(100000);
+		IVecInt clause = new VecInt();
+		clause.push(-1);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(1);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(2);
+		solver.addClause(clause);
+		clause.clear();
+		assertFalse(solver.isSatisfiable());
+		IVecInt explanation = solver.explain();
+		assertEquals(3,explanation.size());
+	}
 }
