@@ -20,8 +20,10 @@
 package org.sat4j.pb.tools;
 
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -126,6 +128,32 @@ public class DependencyHelper<T,C> {
 	 */
 	public boolean hasASolution() throws TimeoutException {
 		return xplain.isSatisfiable();
+	}
+	
+	/**
+	 * 
+	 * @return true if the set of constraints entered inside the solver can be satisfied.
+	 * @throws TimeoutException
+	 */
+	public boolean hasASolution(IVec<T> assumps) throws TimeoutException {
+		IVecInt assumptions = new VecInt();
+		for (Iterator<T> it = assumps.iterator(); it.hasNext();) {
+			assumptions.push(getIntValue(it.next()));
+		}
+		return xplain.isSatisfiable(assumptions);
+	}
+	
+	/**
+	 * 
+	 * @return true if the set of constraints entered inside the solver can be satisfied.
+	 * @throws TimeoutException
+	 */
+	public boolean hasASolution(Collection<T> assumps) throws TimeoutException {
+		IVecInt assumptions = new VecInt();
+		for (T t : assumps) {
+			assumptions.push(getIntValue(t));
+		}
+		return xplain.isSatisfiable(assumptions);
 	}
 
 	/**

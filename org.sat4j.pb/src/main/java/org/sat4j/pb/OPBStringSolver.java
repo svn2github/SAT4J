@@ -112,7 +112,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		IVec<BigInteger> coeffs = obj.getCoeffs();
 		for (int i = 0; i < lits.size(); i++)
 			tmp.append(coeffs.get(i) + " x" + lits.get(i) + " ");
-		tmp.append(" ;\n");
+		tmp.append(" ;");
 		out.insert(indxConstrObj, tmp);
 	}
 
@@ -194,6 +194,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		setNbVars(howmany);
 		// to add later the number of constraints
 		indxConstrObj = out.length();
+		out.append("\n");
 		return howmany;
 	}
 
