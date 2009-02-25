@@ -173,4 +173,28 @@ public class TestQuickExplain {
 		IVecInt explanation = solver.explain();
 		assertEquals(3,explanation.size());
 	}
+	
+	@Test
+	public void testEclipseTestCase2() throws ContradictionException, TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(100000);
+		IVecInt clause = new VecInt();
+		clause.push(-1).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(-3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-4).push(1);
+		solver.addClause(clause);
+		clause.clear();
+		IVecInt assump = new VecInt();
+		assump.push(4);
+		assertFalse(solver.isSatisfiable(assump));
+		IVecInt explanation = solver.explain();
+		assertEquals(4,explanation.size());
+	}
 }
