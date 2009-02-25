@@ -42,7 +42,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 				shouldContinue = true;
 			}
 			startingPoint++;
-		} while (shouldContinue);
+		} while (shouldContinue&&solver.isSatisfiable(encodingAssumptions));
 		IVecInt clauseNumbers = new VecInt(startingPoint);
 		for (int i = assumps.size(); i < startingPoint; i++) {
 			clauseNumbers.push(-encodingAssumptions.get(i) - nborigvars);
