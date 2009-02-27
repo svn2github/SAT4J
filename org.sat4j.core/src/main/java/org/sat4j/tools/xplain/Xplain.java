@@ -45,6 +45,9 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	protected IVecInt assump;
 
+	private int lastCreatedVar;
+	private boolean pooledVarId = false;
+	
 	private static final XplainStrategy xplainStrategy = new ReplayXplainStrategy();
 
 	public Xplain(T solver) {
@@ -61,11 +64,16 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	}
 
 	protected int createNewVar(IVecInt literals) {
-		return nextFreeVarId(false);
+		if (pooledVarId) {
+			pooledVarId = false;
+			return lastCreatedVar; 
+		}
+		lastCreatedVar = nextFreeVarId(true);
+		return lastCreatedVar;
 	}
 
 	protected void discardLastestVar() {
-		// do nothing
+		pooledVarId = true;
 	}
 
 
