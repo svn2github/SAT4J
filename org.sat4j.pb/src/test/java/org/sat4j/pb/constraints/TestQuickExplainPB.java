@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.sat4j.core.Vec;
@@ -12,6 +13,7 @@ import org.sat4j.core.VecInt;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.pb.tools.XplainPB;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -45,7 +47,7 @@ public class TestQuickExplainPB {
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
 	}
 	
@@ -57,19 +59,19 @@ public class TestQuickExplainPB {
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(2,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
 	}
 	
 	@Test
@@ -80,22 +82,22 @@ public class TestQuickExplainPB {
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(3);
@@ -104,12 +106,12 @@ public class TestQuickExplainPB {
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
-		assertTrue(explanation.contains(3));
-		assertTrue(explanation.contains(4));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
+		assertTrue(explanation.contains(c3));
+		assertTrue(explanation.contains(c4));
 	}
 	
 	@Test
@@ -120,12 +122,12 @@ public class TestQuickExplainPB {
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(3);
@@ -135,21 +137,21 @@ public class TestQuickExplainPB {
 		coeffs.clear();
 		clause.push(-1).push(2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c5 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
-		assertTrue(explanation.contains(4));
-		assertTrue(explanation.contains(5));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
+		assertTrue(explanation.contains(c4));
+		assertTrue(explanation.contains(c5));
 	}
 	
 	@Test
@@ -160,7 +162,7 @@ public class TestQuickExplainPB {
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(2).push(-3).push(4);
@@ -170,13 +172,13 @@ public class TestQuickExplainPB {
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
 		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(BigInteger.ONE);
-		solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(2,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(3));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c3));
 	}
 }

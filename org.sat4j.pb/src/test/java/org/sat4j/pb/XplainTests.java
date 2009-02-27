@@ -22,7 +22,7 @@ public class XplainTests {
 		// TODO: We would like to use SolverFactory.newEclipseP2();
 		// currently this throws a class cast exception in the DependencyHelper
 		// DLB: FIXED
-		helper = new DependencyHelper<String, String>(SolverFactory.newEclipseP2(), 10000);
+		helper = new DependencyHelper<String, String>(SolverFactory.newEclipseP2());
 	}
 
 	@Test(timeout = 10000)

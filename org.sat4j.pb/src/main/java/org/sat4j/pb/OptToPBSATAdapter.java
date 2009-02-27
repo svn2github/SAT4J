@@ -81,6 +81,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
 		modelComputed = false;
+		this.assumps.clear();
 		assumps.copyTo(this.assumps);
     	if (problem.hasNoObjectiveFunction()) {
     		return modelComputed = problem.isSatisfiable(assumps);

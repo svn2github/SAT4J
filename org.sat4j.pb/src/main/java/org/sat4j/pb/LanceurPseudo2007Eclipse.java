@@ -29,6 +29,8 @@ package org.sat4j.pb;
 
 import static java.lang.System.out;
 
+import java.util.Collection;
+
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
 import org.sat4j.core.LiteralsUtils;
@@ -38,7 +40,6 @@ import org.sat4j.reader.Reader;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
@@ -115,25 +116,8 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 			// getLogWriter().println(((IPBSolver)solver).getExplanation());
 			try {
 				
-				IVecInt explanation = quickxplain.explain();
-				IVec<IConstr> constrs = quickxplain.getConstraints();
+				Collection<IConstr> explanation = quickxplain.explain();
 				log("Explanation for inconsistency: " + explanation);
-				int maxvarid = quickxplain.getMaxOriginalVarId();
-				IConstr constr;
-				StringBuffer stb;
-				for (IteratorInt it = explanation.iterator(); it.hasNext();) {
-					constr = constrs.get(it.next()-1);
-					stb = new StringBuffer();
-					for (int k=0;k<constr.size();k++) {
-						int p = constr.get(k);
-						int dimacsp = LiteralsUtils.toDimacs(p);
-						if (Math.abs(dimacsp)<=maxvarid) {
-							stb.append(dimacsp);
-							stb.append(' ');
-						}
-					}
-					log(stb.toString());
-				}
 			} catch (TimeoutException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

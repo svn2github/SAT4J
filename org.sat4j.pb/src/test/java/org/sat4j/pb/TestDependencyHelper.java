@@ -47,7 +47,7 @@ public class TestDependencyHelper {
 	
 	@Before
 	public void setUp() {
-		helper = new DependencyHelper<String,String>(SolverFactory.newEclipseP2(),10);
+		helper = new DependencyHelper<String,String>(SolverFactory.newEclipseP2());
 		// helper = new DependencyHelper<String,String>(SolverFactory.newDefault(),10);
 	}
 	

@@ -48,7 +48,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 			throws ContradictionException {
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.growTo(literals.size(), BigInteger.ONE);
-		int newvar = createNewVar();
+		int newvar = createNewVar(literals);
 		literals.push(newvar);
 		BigInteger coef = BigInteger.valueOf(degree-coeffs.size());
 		coeffs.push(coef);
@@ -58,16 +58,15 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 			discardLastestVar();
 			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
 		} else {
-			constrs.push(constr);
+			constrs.put(newvar,constr);
 		}
-		assert constrs.size() == getNumberOfNewVars();
 		return constr;
 	}
 
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
-		int newvar = createNewVar();		
+		int newvar = createNewVar(lits);		
 		lits.push(newvar);
 		if (moreThan && d.signum()>=0) {		
 			coeffs.push(d);
@@ -84,9 +83,8 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 			discardLastestVar();
 			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
 		} else {
-			constrs.push(constr);
+			constrs.put(newvar,constr);
 		}
-		assert constrs.size() == getNumberOfNewVars();
 		return constr;
 	}
 

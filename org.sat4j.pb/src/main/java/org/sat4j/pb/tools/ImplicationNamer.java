@@ -51,8 +51,7 @@ public class ImplicationNamer<T,C> {
 	 */
 	public void named(C name) {
 		for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
-			helper.constrs.push(it.next());
-			helper.descs.push(name);
+			helper.descs.put(it.next(),name);
 		}
 	}
 }
