@@ -106,13 +106,14 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	public void setObjectiveFunction(ObjectiveFunction obj) {
 		StringBuffer out = getOut();
 		StringBuffer tmp = new StringBuffer();
+		tmp.append("* #variable= "+nVars());
 		tmp.append(" #constraint= " + nbOfConstraints + " \n");
 		tmp.append("min : ");
 		IVecInt lits = obj.getVars();
 		IVec<BigInteger> coeffs = obj.getCoeffs();
 		for (int i = 0; i < lits.size(); i++)
 			tmp.append(coeffs.get(i) + " x" + lits.get(i) + " ");
-		tmp.append(" ;");
+		tmp.append(" ;\n");
 		out.insert(indxConstrObj, tmp);
 	}
 
@@ -190,7 +191,6 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	@Override
 	public int newVar(int howmany) {
 		StringBuffer out = getOut();
-		out.append("* #variable= " + howmany);
 		setNbVars(howmany);
 		// to add later the number of constraints
 		indxConstrObj = out.length();
