@@ -181,4 +181,73 @@ public class TestQuickExplainPB {
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c3));
 	}
+	
+	@Test
+	public void testEclipsePatchEncoding() throws ContradictionException, TimeoutException {
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
+		solver.newVar(12);
+		IVecInt clause = new VecInt();
+		clause.push(-1).push(-2).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(1).push(5);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-7).push(-2).push(8);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(7).push(5);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(3).push(5).push(8);
+		solver.addAtMost(clause, 1);
+		clause.clear();
+		clause.push(-12).push(1);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-12).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-12).push(7);
+		IConstr patch = solver.addClause(clause);
+		IVecInt assump = new VecInt();
+		assump.push(12);
+		assertFalse(solver.isSatisfiable(assump));
+		Collection<IConstr> explanation = solver.explain();
+		assertEquals(6,explanation.size());
+		assertFalse(explanation.contains(patch));
+	}
+	
+	@Test
+	public void testUpdatedEclipsePatchEncoding() throws ContradictionException, TimeoutException {
+		XplainPB solver = new XplainPB(SolverFactory.newDefault());
+		solver.newVar(12);
+		IVecInt clause = new VecInt();
+		clause.push(-1).push(-2).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-7).push(-2).push(8);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-2).push(7).push(5).push(1);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(3).push(5).push(8);
+		solver.addAtMost(clause, 1);
+		clause.clear();
+		clause.push(-12).push(1);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-12).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-12).push(7);
+		IConstr patch = solver.addClause(clause);
+		IVecInt assump = new VecInt();
+		assump.push(12);
+		assertFalse(solver.isSatisfiable(assump));
+		Collection<IConstr> explanation = solver.explain();
+		assertEquals(6,explanation.size());
+		assertTrue(explanation.contains(patch));
+	}
 }
