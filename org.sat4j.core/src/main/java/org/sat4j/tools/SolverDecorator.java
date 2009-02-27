@@ -343,4 +343,8 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver, Ser
     public void setSearchListener(SearchListener sl) {
     	solver.setSearchListener(sl);
     }
+    
+    public int nextFreeVarId(boolean reserve) {
+    	return solver.nextFreeVarId(reserve);
+    }
 }

@@ -1348,6 +1348,10 @@ public class Solver<D extends DataStructureFactory>
 		isDBSimplificationAllowed = status;
 	}
 
+	public int nextFreeVarId(boolean reserve) {
+		return voc.nextFreeVarId(reserve);
+	}
+
 }
 
 class ActivityComparator implements Comparator<Constr>, Serializable {

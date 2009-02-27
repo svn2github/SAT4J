@@ -63,6 +63,19 @@ public interface ISolver extends IProblem, Serializable {
      *         highest variable number)
      */
     int newVar(int howmany);
+    
+    /**
+     * Ask the solver for a free variable identifier, in Dimacs format (i.e. a positive number).
+     * Note that a previous call to newVar(max) will reserve in the solver the variable identifier 
+     * from 1 to max, so nextFreeVarId() would return max+1, even if some variable identifiers
+     * smaller than max are not used. By default, the method will always answer by the maximum
+     * variable identifier used so far + 1.
+     * 
+     * @param reserve if true, the maxVarId is updated in the solver, i.e. successive calls to nextFreeVarId(true)
+     * will return increasing variable id while successive calls to nextFreeVarId(false) will always answer the same.
+     * @return a variable identifier not in use in the constraints already inside the solver.
+     */
+    int nextFreeVarId(boolean reserve);
 
     /**
      * To inform the solver of the expected number of clauses to read. This is

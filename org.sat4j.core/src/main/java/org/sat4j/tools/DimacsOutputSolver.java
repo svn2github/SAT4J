@@ -256,4 +256,7 @@ public class DimacsOutputSolver implements ISolver {
 	public void setSearchListener(SearchListener sl) {
 	}
 
+    public int nextFreeVarId(boolean reserve) {
+    	throw new UnsupportedOperationException();
+    }
 }

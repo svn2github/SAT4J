@@ -105,6 +105,16 @@ public interface ILits {
      */
     int realnVars();
 
+    /**
+     * Ask the solver for a free variable identifier, in Dimacs format (i.e. a positive number).
+     * Note that a previous call to ensurePool(max) will reserve in the solver the variable identifier 
+     * from 1 to max, so nextFreeVarId() would return max+1, even if some variable identifiers
+     * smaller than max are not used.
+     *  
+     * @return a variable identifier not in use in the constraints already inside the solver.
+     */
+    int nextFreeVarId(boolean reserve);
+    
     public abstract int not(int lit);
 
     public abstract void reset(int lit);

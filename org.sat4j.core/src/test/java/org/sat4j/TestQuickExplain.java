@@ -31,10 +31,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+
 import org.junit.Test;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -60,7 +63,7 @@ public class TestQuickExplain {
 		solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
 	}
 	
@@ -70,27 +73,27 @@ public class TestQuickExplain {
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		solver.addClause(clause);
+		IConstr c1 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(-2);
-		solver.addClause(clause);
+		IConstr c2 =  solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(2);
-		solver.addClause(clause);
+		IConstr c3 =  solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(-2);
-		solver.addClause(clause);
+		IConstr c4 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(3);
 		solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
-		assertTrue(explanation.contains(3));
-		assertTrue(explanation.contains(4));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
+		assertTrue(explanation.contains(c3));
+		assertTrue(explanation.contains(c4));
 	}
 	
 	@Test
@@ -99,27 +102,27 @@ public class TestQuickExplain {
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		solver.addClause(clause);
+		IConstr c1 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(-2);
-		solver.addClause(clause);
+		IConstr c2 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(3);
 		solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(2);
-		solver.addClause(clause);
+		IConstr c4 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(-2);
-		solver.addClause(clause);
+		IConstr c5 = solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
-		assertTrue(explanation.contains(4));
-		assertTrue(explanation.contains(5));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
+		assertTrue(explanation.contains(c4));
+		assertTrue(explanation.contains(c5));
 	}
 	
 	@Test
@@ -128,34 +131,34 @@ public class TestQuickExplain {
 		solver.newVar(4);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		solver.addClause(clause);
+		IConstr c1 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(-2);
-		solver.addClause(clause);
+		IConstr c2 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(3);
-		solver.addClause(clause);
+		IConstr c3 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(-3);
-		solver.addClause(clause);
+		IConstr c4 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(4);
-		solver.addClause(clause);
+		IConstr c5 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(-4);
-		solver.addClause(clause);
+		IConstr c6 = solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
-		assertTrue(explanation.contains(1));
-		assertTrue(explanation.contains(2));
+		assertTrue(explanation.contains(c1));
+		assertTrue(explanation.contains(c2));
 	}
 	
 	@Test
 	public void testEclipseTestCase() throws ContradictionException, TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
-		solver.newVar(100000);
+		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(-1);
 		solver.addClause(clause);
@@ -170,14 +173,14 @@ public class TestQuickExplain {
 		solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(3,explanation.size());
 	}
 	
 	@Test
 	public void testEclipseTestCase2() throws ContradictionException, TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
-		solver.newVar(100000);
+		solver.newVar(4);
 		IVecInt clause = new VecInt();
 		clause.push(-1).push(2);
 		solver.addClause(clause);
@@ -194,7 +197,7 @@ public class TestQuickExplain {
 		IVecInt assump = new VecInt();
 		assump.push(4);
 		assertFalse(solver.isSatisfiable(assump));
-		IVecInt explanation = solver.explain();
+		Collection<IConstr> explanation = solver.explain();
 		assertEquals(4,explanation.size());
 	}
 }

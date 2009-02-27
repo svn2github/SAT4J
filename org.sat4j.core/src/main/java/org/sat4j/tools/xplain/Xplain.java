@@ -1,12 +1,16 @@
 package org.sat4j.tools.xplain;
 
-import org.sat4j.core.Vec;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolverDecorator;
 
@@ -26,7 +30,8 @@ import org.sat4j.tools.SolverDecorator;
  *                 where we can afford to add a selector variable to each clause
  *                 to enable or disable each constraint.
  * 
- * Note that for the moment, QuickXplain does not work properly in an optimization setting.
+ *                 Note that for the moment, QuickXplain does not work properly
+ *                 in an optimization setting.
  * 
  * @author daniel
  * 
@@ -35,47 +40,35 @@ import org.sat4j.tools.SolverDecorator;
  */
 public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
-	private int nborigvars;
-	private int nbnewvar;
-
-	protected IVec<IConstr> constrs = new Vec<IConstr>();
+	protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
 
 	protected IVecInt assump;
-	
+
 	private static final XplainStrategy xplainStrategy = new ReplayXplainStrategy();
-	
+
 	public Xplain(T solver) {
 		super(solver);
 	}
 
 	@Override
-	public int newVar(int howmany) {
-		nborigvars = super.newVar(howmany);;
-		return nborigvars;
-	}
-
-	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		int newvar = createNewVar();
+		int newvar = createNewVar(literals);
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
-		constrs.push(constr);
-		assert constrs.size() == nbnewvar : ""+constrs.size()+"!="+nbnewvar;
+		constrs.put(newvar, constr);
 		return constr;
 	}
 
-	protected int createNewVar() {
-		return nborigvars + ++nbnewvar;
+	protected int createNewVar(IVecInt literals) {
+		return nextFreeVarId(false);
 	}
 
 	protected void discardLastestVar() {
-		nbnewvar--;
+		// do nothing
 	}
-	
-	protected int getNumberOfNewVars() {
-		return nbnewvar;
-	}
-	
+
+
+
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
@@ -93,31 +86,26 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public IVecInt explain() throws TimeoutException {
+	public Collection<IConstr> explain() throws TimeoutException {
 		assert !isSatisfiable(assump);
-		return xplainStrategy.explain(decorated(),nbnewvar,nborigvars,constrs, assump);
+		IVecInt keys = xplainStrategy.explain(decorated(), constrs.keySet(), assump);
+		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
+		for (IteratorInt it = keys.iterator(); it.hasNext();) {
+			explanation.add(constrs.get(it.next()));
+		}
+		return explanation;
 	}
 
-	public IVec<IConstr> getConstraints() {
-		return constrs;
-	}
-	
-	public int getMaxOriginalVarId() {
-		return nborigvars;
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-		nbnewvar = 0;
+	public Collection<IConstr> getConstraints() {
+		return constrs.values();
 	}
 
 	@Override
 	public int[] findModel() throws TimeoutException {
 		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.findModel(extraVariables);
 	}
@@ -127,8 +115,8 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.findModel(extraVariables);
 	}
@@ -137,8 +125,8 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	public boolean isSatisfiable() throws TimeoutException {
 		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.isSatisfiable(extraVariables);
 	}
@@ -147,8 +135,8 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	public boolean isSatisfiable(boolean global) throws TimeoutException {
 		assump = VecInt.EMPTY;
 		IVecInt extraVariables = new VecInt();
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.isSatisfiable(extraVariables, global);
 	}
@@ -158,8 +146,8 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.isSatisfiable(extraVariables);
 	}
@@ -170,24 +158,25 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		assump = assumps;
 		IVecInt extraVariables = new VecInt();
 		assumps.copyTo(extraVariables);
-		for (int p = 0; p < nbnewvar; p++) {
-			extraVariables.push(-(p + nborigvars + 1));
+		for (Integer p : constrs.keySet()) {
+			extraVariables.push(-p);
 		}
 		return super.isSatisfiable(extraVariables, global);
 	}
 
 	@Override
 	public int[] model() {
-		int [] fullmodel = super.model();
-		int end = Math.min(nborigvars,fullmodel.length)-1;
-        while (Math.abs(fullmodel[end]) > nborigvars)
-            end--;
-        int [] model = new int[end + 1];
-        for (int i = 0; i <= end; i++) {
-            model[i] = fullmodel[i];
-        }
-        return model;
+		int[] fullmodel = super.model();
+		// int[] model = new int[fullmodel.length - constrs.size()];
+		IVecInt vmodel = new VecInt(fullmodel.length - constrs.size());
+		for (int i = 0; i < fullmodel.length; i++) {
+			if (constrs.get(Math.abs(fullmodel[i])) == null) {
+				vmodel.push(fullmodel[i]);
+			}
+		}
+		int[] model = new int[vmodel.size()];
+		vmodel.copyTo(model);
+		return model;
 	}
-	
-	
+
 }

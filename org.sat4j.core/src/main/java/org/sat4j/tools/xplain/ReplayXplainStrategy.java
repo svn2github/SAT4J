@@ -1,20 +1,19 @@
 package org.sat4j.tools.xplain;
 
+import java.util.Collection;
+
 import org.sat4j.core.VecInt;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 public class ReplayXplainStrategy implements XplainStrategy {
 
-	public IVecInt explain(ISolver solver, int nbnewvar, int nborigvars,
-			IVec<IConstr> constrs, IVecInt assumps) throws TimeoutException {
-		IVecInt encodingAssumptions = new VecInt(nbnewvar + assumps.size());
+	public IVecInt explain(ISolver solver, Collection<Integer> constrsIds, IVecInt assumps) throws TimeoutException {
+		IVecInt encodingAssumptions = new VecInt(constrsIds.size() + assumps.size());
 		assumps.copyTo(encodingAssumptions);
-		for (int p = 1; p <= nbnewvar; p++) {
-			encodingAssumptions.push(p + nborigvars);
+		for (Integer p : constrsIds) {
+			encodingAssumptions.push(p);
 		}
 		boolean shouldContinue;
 		int startingPoint = assumps.size();
@@ -43,11 +42,11 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			}
 			startingPoint++;
 		} while (shouldContinue&&solver.isSatisfiable(encodingAssumptions));
-		IVecInt clauseNumbers = new VecInt(startingPoint);
+		IVecInt constrsKeys = new VecInt(startingPoint);
 		for (int i = assumps.size(); i < startingPoint; i++) {
-			clauseNumbers.push(-encodingAssumptions.get(i) - nborigvars);
+			constrsKeys.push(-encodingAssumptions.get(i));
 		}
-		return clauseNumbers;
+		return constrsKeys;
 	}
 
 }
