@@ -81,8 +81,8 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author leberre
  */
-public class Solver<D extends DataStructureFactory>
-		implements ISolver, UnitPropagationListener, ActivityListener, Learner {
+public class Solver<D extends DataStructureFactory> implements ISolver,
+		UnitPropagationListener, ActivityListener, Learner {
 
 	private static final long serialVersionUID = 1L;
 
@@ -173,7 +173,7 @@ public class Solver<D extends DataStructureFactory>
 	private boolean isDBSimplificationAllowed = false;
 
 	private int learnedLiterals = 0;
-	
+
 	protected IVecInt dimacs2internal(IVecInt in) {
 		// if (voc.nVars() == 0) {
 		// throw new RuntimeException(
@@ -195,7 +195,7 @@ public class Solver<D extends DataStructureFactory>
 	 * must be provided, else it won't work either.
 	 * 
 	 * @param acg
-	 * 		an asserting clause generator
+	 *            an asserting clause generator
 	 */
 
 	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
@@ -204,8 +204,7 @@ public class Solver<D extends DataStructureFactory>
 	}
 
 	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
-			D dsf, SearchParams params, IOrder order,
-			RestartStrategy restarter) {
+			D dsf, SearchParams params, IOrder order, RestartStrategy restarter) {
 		analyzer = acg;
 		this.learner = learner;
 		this.order = order;
@@ -219,7 +218,7 @@ public class Solver<D extends DataStructureFactory>
 	 * heuristics must be changed prior to calling that method.
 	 * 
 	 * @param dsf
-	 * 		the internal factory
+	 *            the internal factory
 	 */
 	public final void setDataStructureFactory(D dsf) {
 		dsfactory = dsf;
@@ -265,7 +264,7 @@ public class Solver<D extends DataStructureFactory>
 	}
 
 	public int nConstraints() {
-		return constrs.size()+trail.size()-learnedLiterals;
+		return constrs.size() + trail.size() - learnedLiterals;
 	}
 
 	public void learn(Constr c) {
@@ -388,7 +387,7 @@ public class Solver<D extends DataStructureFactory>
 	 * Satisfait un litt?ral
 	 * 
 	 * @param p
-	 * 		le litt?ral
+	 *            le litt?ral
 	 * @return true si tout se passe bien, false si un conflit appara?t.
 	 */
 	public boolean enqueue(int p) {
@@ -399,11 +398,11 @@ public class Solver<D extends DataStructureFactory>
 	 * Put the literal on the queue of assignments to be done.
 	 * 
 	 * @param p
-	 * 		the literal.
+	 *            the literal.
 	 * @param from
-	 * 		the reason to propagate that literal, else null
+	 *            the reason to propagate that literal, else null
 	 * @return true if the asignment can be made, false if a conflict is
-	 * 	detected.
+	 *         detected.
 	 */
 	public boolean enqueue(int p, Constr from) {
 		assert p > 1;
@@ -420,9 +419,9 @@ public class Solver<D extends DataStructureFactory>
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
-//		if (from!=null) {
-//			from.incActivity(claInc);
-//		}
+		if (from != null) {
+			from.incActivity(claInc);
+		}
 		return true;
 	}
 
@@ -551,12 +550,12 @@ public class Solver<D extends DataStructureFactory>
 
 	/**
 	 * Setup the reason simplification strategy. By default, there is no reason
-	 * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH 
-	 * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES. 
+	 * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH
+	 * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES.
 	 * 
 	 * @param simp
-	 * 		the name of the simplifier (one of NO_SIMPLIFICATION,
-	 * 		SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION).
+	 *            the name of the simplifier (one of NO_SIMPLIFICATION,
+	 *            SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION).
 	 */
 	public void setSimplifier(String simp) {
 		Field f;
@@ -711,7 +710,7 @@ public class Solver<D extends DataStructureFactory>
 	 * Propagate activity to a constraint
 	 * 
 	 * @param confl
-	 * 		a constraint
+	 *            a constraint
 	 */
 	public void claBumpActivity(Constr confl) {
 		confl.incActivity(claInc);
@@ -1042,7 +1041,7 @@ public class Solver<D extends DataStructureFactory>
 		model = null; // forget about previous model
 		fullmodel = null;
 		order.init();
-		
+
 		// propagate constraints
 		Constr confl = propagate();
 		if (confl != null) {
@@ -1056,9 +1055,8 @@ public class Solver<D extends DataStructureFactory>
 		// push incremental assumptions
 		for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
 			int p = voc.getFromPool(iterator.next());
-			if (!assume(p)
-					|| ((confl = propagate()) != null)) {
-				if (confl==null) {
+			if (!assume(p) || ((confl = propagate()) != null)) {
+				if (confl == null) {
 					slistener.conflictFound(p);
 				} else {
 					slistener.conflictFound(confl);
@@ -1069,12 +1067,13 @@ public class Solver<D extends DataStructureFactory>
 			}
 		}
 		rootLevel = decisionLevel();
-		
-		// moved initialization here if new literals are added in the assumptions.
+
+		// moved initialization here if new literals are added in the
+		// assumptions.
 		order.init(); // duplicated on purpose
 		learner.init();
 		restarter.init(params);
-		
+
 		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
 
 		ConflictTimer freeMem = new ConflictTimerAdapter(500) {
@@ -1151,7 +1150,7 @@ public class Solver<D extends DataStructureFactory>
 	}
 
 	public void printLearntClausesInfos(PrintWriter out, String prefix) {
-		Map<String,Counter> learntTypes = new HashMap<String,Counter>();
+		Map<String, Counter> learntTypes = new HashMap<String, Counter>();
 		for (Iterator<Constr> it = learnts.iterator(); it.hasNext();) {
 			String type = it.next().getClass().getName();
 			Counter count = learntTypes.get(type);
@@ -1201,7 +1200,7 @@ public class Solver<D extends DataStructureFactory>
 
 	/**
 	 * @param constr
-	 * 		a constraint implementing the Constr interface.
+	 *            a constraint implementing the Constr interface.
 	 * @return a reference to the constraint for external use.
 	 */
 	protected IConstr addConstr(Constr constr) {
@@ -1230,7 +1229,7 @@ public class Solver<D extends DataStructureFactory>
 	 * returns the ith constraint in the solver.
 	 * 
 	 * @param i
-	 * 		the constraint number (begins at 0)
+	 *            the constraint number (begins at 0)
 	 * @return the ith constraint
 	 */
 	public IConstr getIthConstr(int i) {
@@ -1286,7 +1285,7 @@ public class Solver<D extends DataStructureFactory>
 		stb.append(prefix);
 		stb.append("DB Simplification allowed=");
 		stb.append(isDBSimplificationAllowed);
-		stb.append("\n"); 
+		stb.append("\n");
 		stb.append(prefix);
 		stb.append("--- End Solver configuration ---"); //$NON-NLS-1$
 		return stb.toString();

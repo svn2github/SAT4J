@@ -47,7 +47,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
-	
+
 	private static final XplainStrategy xplainStrategy = new ReplayXplainStrategy();
 
 	public Xplain(T solver) {
@@ -66,7 +66,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	protected int createNewVar(IVecInt literals) {
 		if (pooledVarId) {
 			pooledVarId = false;
-			return lastCreatedVar; 
+			return lastCreatedVar;
 		}
 		lastCreatedVar = nextFreeVarId(true);
 		return lastCreatedVar;
@@ -75,8 +75,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	protected void discardLastestVar() {
 		pooledVarId = true;
 	}
-
-
 
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
@@ -101,7 +99,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		if (solver instanceof IOptimizationProblem) {
 			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
 		}
-		IVecInt keys = xplainStrategy.explain(solver, constrs.keySet(), assump);
+		IVecInt keys = xplainStrategy.explain(solver, constrs, assump);
 		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
 			explanation.add(constrs.get(it.next()));

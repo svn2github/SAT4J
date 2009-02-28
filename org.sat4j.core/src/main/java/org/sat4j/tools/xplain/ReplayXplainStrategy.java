@@ -1,20 +1,42 @@
 package org.sat4j.tools.xplain;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 public class ReplayXplainStrategy implements XplainStrategy {
 
-	public IVecInt explain(ISolver solver, Collection<Integer> constrsIds, IVecInt assumps) throws TimeoutException {
-		IVecInt encodingAssumptions = new VecInt(constrsIds.size() + assumps.size());
-		assumps.copyTo(encodingAssumptions);
-		for (Integer p : constrsIds) {
-			encodingAssumptions.push(p);
+	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
+			IVecInt assumps) throws TimeoutException {
+		IVecInt encodingAssumptions = new VecInt(constrs.size()
+				+ assumps.size());
+		List<Pair> pairs = new ArrayList<Pair>(constrs.size());
+		IConstr constr;
+		for (Map.Entry<Integer, IConstr> entry : constrs.entrySet()) {
+			constr = entry.getValue();
+			if (constr != null) {
+				pairs.add(new Pair(entry.getKey(), constr.getActivity()));
+			} else {
+				pairs.add(new Pair(entry.getKey(), 0.0));
+			}
 		}
+		Collections.sort(pairs);
+
+		assumps.copyTo(encodingAssumptions);
+		// for (Integer p : constrsIds) {
+		// encodingAssumptions.push(p);
+		// }
+		for (Pair p : pairs) {
+			encodingAssumptions.push(p.key);
+		}
+
 		boolean shouldContinue;
 		int startingPoint = assumps.size();
 		do {
@@ -30,7 +52,8 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			if (i > startingPoint) {
 				assert !solver.isSatisfiable(encodingAssumptions);
 				if (i < encodingAssumptions.size()) {
-					// latest constraint is for sure responsible for the inconsistency.
+					// latest constraint is for sure responsible for the
+					// inconsistency.
 					int tmp = encodingAssumptions.get(i);
 					for (int j = i; j > startingPoint; j--) {
 						encodingAssumptions.set(j, -encodingAssumptions
@@ -41,7 +64,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 				shouldContinue = true;
 			}
 			startingPoint++;
-		} while (shouldContinue&&solver.isSatisfiable(encodingAssumptions));
+		} while (shouldContinue && solver.isSatisfiable(encodingAssumptions));
 		IVecInt constrsKeys = new VecInt(startingPoint);
 		for (int i = assumps.size(); i < startingPoint; i++) {
 			constrsKeys.push(-encodingAssumptions.get(i));
