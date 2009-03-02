@@ -13,7 +13,7 @@ public class Pair implements Comparable<Pair> {
 	}
 
 	public int compareTo(Pair arg0) {
-		if (arg0.constr == constr) {
+		if (arg0.constr == null & constr == null) {
 			return 0;
 		}
 		if (arg0.constr == null) {
@@ -22,15 +22,7 @@ public class Pair implements Comparable<Pair> {
 		if (constr == null) {
 			return 1;
 		}
-		double deltaActivity = constr.getActivity() - arg0.constr.getActivity();
-		if (Math.abs(deltaActivity) < NOTHING) {
-			int deltaSize = constr.size() - arg0.constr.size();
-			if (deltaSize == 0) {
-				return key - arg0.key;
-			}
-			return deltaSize;
-		}
-		return deltaActivity > 0 ? -1 : 1;
+		return Double.compare(arg0.constr.getActivity(), constr.getActivity());
 	}
 
 }
