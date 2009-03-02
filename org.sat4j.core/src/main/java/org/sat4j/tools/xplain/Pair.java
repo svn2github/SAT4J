@@ -13,7 +13,7 @@ public class Pair implements Comparable<Pair> {
 	}
 
 	public int compareTo(Pair arg0) {
-		if (arg0.constr == null & constr == null) {
+		if (arg0.constr == null && constr == null) {
 			return 0;
 		}
 		if (arg0.constr == null) {
