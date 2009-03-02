@@ -11,4 +11,6 @@ public interface XplainStrategy {
 
 	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
 			IVecInt assumps) throws TimeoutException;
+
+	public void cancelExplanationComputation();
 }

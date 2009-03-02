@@ -107,6 +107,10 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return explanation;
 	}
 
+	public void cancelExplanation() {
+		xplainStrategy.cancelExplanationComputation();
+	}
+
 	public Collection<IConstr> getConstraints() {
 		return constrs.values();
 	}

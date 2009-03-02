@@ -13,6 +13,12 @@ import org.sat4j.specs.TimeoutException;
 
 public class ReplayXplainStrategy implements XplainStrategy {
 
+	private boolean computationCanceled = false;
+
+	public void cancelExplanationComputation() {
+		computationCanceled = true;
+	}
+
 	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
 			IVecInt assumps) throws TimeoutException {
 		IVecInt encodingAssumptions = new VecInt(constrs.size()
@@ -21,11 +27,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 		IConstr constr;
 		for (Map.Entry<Integer, IConstr> entry : constrs.entrySet()) {
 			constr = entry.getValue();
-			if (constr != null) {
-				pairs.add(new Pair(entry.getKey(), constr.getActivity()));
-			} else {
-				pairs.add(new Pair(entry.getKey(), 0.0));
-			}
+			pairs.add(new Pair(entry.getKey(), constr));
 		}
 		Collections.sort(pairs);
 
@@ -44,12 +46,13 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			int i = startingPoint;
 			encodingAssumptions.set(i, -encodingAssumptions.get(i));
 			assert encodingAssumptions.get(i) < 0;
-			while (solver.isSatisfiable(encodingAssumptions)) {
+			while (!computationCanceled
+					&& solver.isSatisfiable(encodingAssumptions)) {
 				i++;
 				assert encodingAssumptions.get(i) > 0;
 				encodingAssumptions.set(i, -encodingAssumptions.get(i));
 			}
-			if (i > startingPoint) {
+			if (!computationCanceled && i > startingPoint) {
 				assert !solver.isSatisfiable(encodingAssumptions);
 				if (i < encodingAssumptions.size()) {
 					// latest constraint is for sure responsible for the
@@ -64,12 +67,15 @@ public class ReplayXplainStrategy implements XplainStrategy {
 				shouldContinue = true;
 			}
 			startingPoint++;
-		} while (shouldContinue && solver.isSatisfiable(encodingAssumptions));
+		} while (!computationCanceled && shouldContinue
+				&& solver.isSatisfiable(encodingAssumptions));
+		if (computationCanceled) {
+			throw new TimeoutException();
+		}
 		IVecInt constrsKeys = new VecInt(startingPoint);
 		for (int i = assumps.size(); i < startingPoint; i++) {
 			constrsKeys.push(-encodingAssumptions.get(i));
 		}
 		return constrsKeys;
 	}
-
 }
