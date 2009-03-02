@@ -36,7 +36,6 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -58,8 +57,8 @@ public class DependencyHelper<T, C> {
 	private static final long serialVersionUID = 1L;
 
 	private final Map<T, Integer> mapToDimacs = new HashMap<T, Integer>();
-	private final Map<Integer,T> mapToDomain = new HashMap<Integer, T>();
-	final Map<IConstr,C> descs = new HashMap<IConstr,C>();
+	private final Map<Integer, T> mapToDomain = new HashMap<Integer, T>();
+	final Map<IConstr, C> descs = new HashMap<IConstr, C>();
 
 	final XplainPB xplain;
 
@@ -83,7 +82,7 @@ public class DependencyHelper<T, C> {
 		Integer intValue = mapToDimacs.get(thing);
 		if (intValue == null) {
 			intValue = xplain.nextFreeVarId(true);
-			mapToDomain.put(intValue,thing);
+			mapToDomain.put(intValue, thing);
 			mapToDimacs.put(thing, intValue);
 		}
 		return intValue;
@@ -233,7 +232,7 @@ public class DependencyHelper<T, C> {
 	public void setTrue(T thing, C name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(getIntValue(thing));
-		descs.put(xplain.addClause(clause),name);
+		descs.put(xplain.addClause(clause), name);
 	}
 
 	/**
@@ -251,7 +250,7 @@ public class DependencyHelper<T, C> {
 	public void setFalse(T thing, C name) throws ContradictionException {
 		IVecInt clause = new VecInt();
 		clause.push(-getIntValue(thing));
-		descs.put(xplain.addClause(clause),name);
+		descs.put(xplain.addClause(clause), name);
 	}
 
 	/**
@@ -310,5 +309,21 @@ public class DependencyHelper<T, C> {
 		}
 		ObjectiveFunction obj = new ObjectiveFunction(literals, coefs);
 		xplain.setObjectiveFunction(obj);
+	}
+
+	/**
+	 * Stop the SAT solver that is looking for a solution. The solver will throw
+	 * a TimeoutException.
+	 */
+	public void stopSolver() {
+		xplain.expireTimeout();
+	}
+
+	/**
+	 * Stop the explanation computation. A TimeoutException will be thrown by
+	 * the explanation algorithm.
+	 */
+	public void stopExplanation() {
+		xplain.cancelExplanation();
 	}
 }
