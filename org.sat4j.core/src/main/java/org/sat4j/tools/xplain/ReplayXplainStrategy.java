@@ -13,7 +13,7 @@ import org.sat4j.specs.TimeoutException;
 
 public class ReplayXplainStrategy implements XplainStrategy {
 
-	private boolean computationCanceled = false;
+	private boolean computationCanceled;
 
 	public void cancelExplanationComputation() {
 		computationCanceled = true;
@@ -21,6 +21,7 @@ public class ReplayXplainStrategy implements XplainStrategy {
 
 	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
 			IVecInt assumps) throws TimeoutException {
+		computationCanceled = false;
 		IVecInt encodingAssumptions = new VecInt(constrs.size()
 				+ assumps.size());
 		List<Pair> pairs = new ArrayList<Pair>(constrs.size());
