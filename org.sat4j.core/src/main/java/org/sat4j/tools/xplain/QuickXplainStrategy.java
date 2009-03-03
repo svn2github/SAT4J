@@ -48,9 +48,7 @@ public class QuickXplainStrategy implements XplainStrategy {
 	private void computeExplanation(ISolver solver,
 			IVecInt encodingAssumptions, int start, int end, IVecInt result)
 			throws TimeoutException {
-		if (start == end) {
-			result.push(encodingAssumptions.get(start));
-			encodingAssumptions.set(start, -encodingAssumptions.get(start));
+		if (!solver.isSatisfiable(encodingAssumptions)) {
 			return;
 		}
 		int i = start;
@@ -58,11 +56,20 @@ public class QuickXplainStrategy implements XplainStrategy {
 		assert encodingAssumptions.get(i) < 0;
 		while (!computationCanceled
 				&& solver.isSatisfiable(encodingAssumptions)) {
+			if (i == end) {
+				for (int j = start; j <= end; j++) {
+					encodingAssumptions.set(j, -encodingAssumptions.get(j));
+				}
+				return;
+			}
 			i++;
 			assert encodingAssumptions.get(i) > 0;
 			encodingAssumptions.set(i, -encodingAssumptions.get(i));
 		}
 		result.push(-encodingAssumptions.get(i));
+		if (start == i) {
+			return;
+		}
 		int newend = i - 1;
 		int split = (newend + start) / 2;
 		if (split < newend) {
