@@ -21,7 +21,8 @@ import org.sat4j.specs.TimeoutException;
 public class TestQuickExplainPB {
 
 	@Test
-	public void testGlobalInconsistency() throws ContradictionException, TimeoutException {
+	public void testGlobalInconsistency() throws ContradictionException,
+			TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
@@ -48,56 +49,66 @@ public class TestQuickExplainPB {
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 	}
-	
+
 	@Test
-	public void testGlobalInconsistencyPB() throws ContradictionException, TimeoutException {
+	public void testGlobalInconsistencyPB() throws ContradictionException,
+			TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(
+				BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
+				.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(
+				BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
+				.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(2,explanation.size());
+		assertEquals(2, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 	}
-	
+
 	@Test
-	public void testAlmostGlobalInconsistency() throws ContradictionException, TimeoutException {
+	public void testAlmostGlobalInconsistency() throws ContradictionException,
+			TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(3);
@@ -107,27 +118,30 @@ public class TestQuickExplainPB {
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 		assertTrue(explanation.contains(c3));
 		assertTrue(explanation.contains(c4));
 	}
-	
+
 	@Test
-	public void testAlmostGlobalInconsistencyII() throws ContradictionException, TimeoutException {
+	public void testAlmostGlobalInconsistencyII()
+			throws ContradictionException, TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(1).push(3);
@@ -137,32 +151,37 @@ public class TestQuickExplainPB {
 		coeffs.clear();
 		clause.push(-1).push(2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c4 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(-2);
 		coeffs.push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c5 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.ONE);
+		IConstr c5 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.ONE);
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 		assertTrue(explanation.contains(c4));
 		assertTrue(explanation.contains(c5));
 	}
-	
+
 	@Test
-	public void testAlmostGlobalInconsistencyPB() throws ContradictionException, TimeoutException {
+	public void testAlmostGlobalInconsistencyPB()
+			throws ContradictionException, TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(BigInteger.ONE);
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(
+				BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
+				.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(2).push(-3).push(4);
@@ -171,19 +190,22 @@ public class TestQuickExplainPB {
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(BigInteger.ONE);
-		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger.valueOf(4));
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(
+				BigInteger.ONE);
+		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
+				.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(2,explanation.size());
+		assertEquals(2, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c3));
 	}
-	
+
 	@Test
-	public void testEclipsePatchEncoding() throws ContradictionException, TimeoutException {
+	public void testEclipsePatchEncoding() throws ContradictionException,
+			TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(12);
 		IVecInt clause = new VecInt();
@@ -214,12 +236,13 @@ public class TestQuickExplainPB {
 		assump.push(12);
 		assertFalse(solver.isSatisfiable(assump));
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(6,explanation.size());
-		assertFalse(explanation.contains(patch));
+		assertEquals(6, explanation.size());
+		assertTrue(explanation.contains(patch));
 	}
-	
+
 	@Test
-	public void testUpdatedEclipsePatchEncoding() throws ContradictionException, TimeoutException {
+	public void testUpdatedEclipsePatchEncoding()
+			throws ContradictionException, TimeoutException {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(12);
 		IVecInt clause = new VecInt();
@@ -247,7 +270,7 @@ public class TestQuickExplainPB {
 		assump.push(12);
 		assertFalse(solver.isSatisfiable(assump));
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(6,explanation.size());
+		assertEquals(6, explanation.size());
 		assertTrue(explanation.contains(patch));
 	}
 }
