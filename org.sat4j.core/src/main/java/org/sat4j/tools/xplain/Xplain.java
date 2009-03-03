@@ -48,7 +48,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
 
-	private static final XplainStrategy xplainStrategy = new ReplayXplainStrategy();
+	private static final XplainStrategy xplainStrategy = new QuickXplainStrategy();
 
 	public Xplain(T solver) {
 		super(solver);
