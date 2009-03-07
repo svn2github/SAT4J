@@ -318,6 +318,12 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
+	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
+		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+		return solver;
+	}
+
 	/**
 	 * @return MiniSAT with Counter-based pseudo boolean constraints and
 	 *         constraint learning. Clauses and cardinalities with watched
@@ -496,7 +502,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *      instance of ASolverFactory.
 	 */
 	public static IPBSolver newDefault() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp();
+		return newCompetPBResHTMixedConstraintsObjectiveExpSimp();
 	}
 
 	@Override
