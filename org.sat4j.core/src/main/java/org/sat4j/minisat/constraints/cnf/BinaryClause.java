@@ -49,9 +49,9 @@ public abstract class BinaryClause implements Constr, Serializable {
 
 	private final ILits voc;
 
-	private int head;
+	private final int head;
 
-	private int tail;
+	private final int tail;
 
 	/**
 	 * Creates a new basic clause
@@ -177,13 +177,8 @@ public abstract class BinaryClause implements Constr, Serializable {
 	}
 
 	public void assertConstraint(UnitPropagationListener s) {
-		boolean ret;
-		if (voc.isUnassigned(head)) {
-			ret = s.enqueue(head, this);
-		} else {
-			assert voc.isUnassigned(tail);
-			ret = s.enqueue(tail, this);
-		}
+		assert voc.isUnassigned(head);
+		boolean ret = s.enqueue(head, this);
 		assert ret;
 	}
 

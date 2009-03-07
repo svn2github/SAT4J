@@ -41,9 +41,9 @@ import org.sat4j.specs.IVecInt;
  * The original scheme is improved by avoiding moving pointers to literals but
  * moving the literals themselves.
  * 
- * We suppose here that the clause contains at least 3 literals. 
- * Use the BinaryClause or UnaryClause clause data structures to deal with
- * binary and unit clauses.
+ * We suppose here that the clause contains at least 3 literals. Use the
+ * BinaryClause or UnaryClause clause data structures to deal with binary and
+ * unit clauses.
  * 
  * @author leberre
  * @see BinaryClause
@@ -75,8 +75,8 @@ public abstract class HTClause implements Constr, Serializable {
 		assert ps.size() > 1;
 		head = ps.get(0);
 		tail = ps.last();
-		final int size = ps.size()-2;
-		assert size>0;
+		final int size = ps.size() - 2;
+		assert size > 0;
 		middleLits = new int[size];
 		System.arraycopy(ps.toArray(), 1, middleLits, 0, size);
 		ps.clear();
@@ -91,7 +91,7 @@ public abstract class HTClause implements Constr, Serializable {
 	 * @see Constr#calcReason(Solver, Lit, Vec)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
-		if (voc.isFalsified(head))  {
+		if (voc.isFalsified(head)) {
 			outReason.push(neg(head));
 		}
 		final int[] mylits = middleLits;
@@ -100,7 +100,7 @@ public abstract class HTClause implements Constr, Serializable {
 				outReason.push(neg(mylits[i]));
 			}
 		}
-		if (voc.isFalsified(tail))  {
+		if (voc.isFalsified(tail)) {
 			outReason.push(neg(tail));
 		}
 	}
@@ -121,7 +121,7 @@ public abstract class HTClause implements Constr, Serializable {
 	 * @see Constr#simplify(Solver)
 	 */
 	public boolean simplify() {
-		if (voc.isSatisfied(head)||voc.isSatisfied(tail))  {
+		if (voc.isSatisfied(head) || voc.isSatisfied(tail)) {
 			return true;
 		}
 		for (int i = 0; i < middleLits.length; i++) {
@@ -133,12 +133,13 @@ public abstract class HTClause implements Constr, Serializable {
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
-		
+
 		if (head == neg(p)) {
 			final int[] mylits = middleLits;
 			int temphead = 0;
 			// moving head on the right
-			while (temphead < mylits.length && voc.isFalsified(mylits[temphead])) {
+			while (temphead < mylits.length
+					&& voc.isFalsified(mylits[temphead])) {
 				temphead++;
 			}
 			assert temphead <= mylits.length;
@@ -155,7 +156,7 @@ public abstract class HTClause implements Constr, Serializable {
 		final int[] mylits = middleLits;
 		int temptail = mylits.length - 1;
 		// moving tail on the left
-		while (temptail>=0 && voc.isFalsified(mylits[temptail])) {
+		while (temptail >= 0 && voc.isFalsified(mylits[temptail])) {
 			temptail--;
 		}
 		assert -1 <= temptail;
@@ -173,8 +174,7 @@ public abstract class HTClause implements Constr, Serializable {
 	 * For learnt clauses only @author leberre
 	 */
 	public boolean locked() {
-		return voc.getReason(head) == this
-				|| voc.getReason(tail) == this;
+		return voc.getReason(head) == this || voc.getReason(tail) == this;
 	}
 
 	/**
@@ -207,17 +207,19 @@ public abstract class HTClause implements Constr, Serializable {
 	}
 
 	/**
-	 * Return the ith literal of the clause.
-	 * Note that the order of the literals does change during the search...
+	 * Return the ith literal of the clause. Note that the order of the literals
+	 * does change during the search...
 	 * 
 	 * @param i
 	 *            the index of the literal
 	 * @return the literal
 	 */
 	public int get(int i) {
-		if (i==0) return head;
-		if (i==middleLits.length+1) return tail;
-		return middleLits[i-1];
+		if (i == 0)
+			return head;
+		if (i == middleLits.length + 1)
+			return tail;
+		return middleLits[i - 1];
 	}
 
 	/**
@@ -235,17 +237,12 @@ public abstract class HTClause implements Constr, Serializable {
 	}
 
 	public int size() {
-		return middleLits.length+2;
+		return middleLits.length + 2;
 	}
 
 	public void assertConstraint(UnitPropagationListener s) {
-		boolean ret;
-		if (voc.isUnassigned(head)) {
-			ret = s.enqueue(head, this);
-		} else {
-			assert voc.isUnassigned(tail);
-			ret = s.enqueue(tail, this);
-		}
+		assert voc.isUnassigned(head);
+		boolean ret = s.enqueue(head, this);
 		assert ret;
 	}
 
@@ -256,8 +253,8 @@ public abstract class HTClause implements Constr, Serializable {
 	public int[] getLits() {
 		int[] tmp = new int[size()];
 		System.arraycopy(middleLits, 0, tmp, 1, middleLits.length);
-		tmp[0]=head;
-		tmp[tmp.length-1] = tail;
+		tmp[0] = head;
+		tmp[tmp.length - 1] = tail;
 		return tmp;
 	}
 
@@ -267,7 +264,7 @@ public abstract class HTClause implements Constr, Serializable {
 			return false;
 		try {
 			HTClause wcl = (HTClause) obj;
-			if (wcl.head!= head || wcl.tail!=tail) {
+			if (wcl.head != head || wcl.tail != tail) {
 				return false;
 			}
 			if (middleLits.length != wcl.middleLits.length)
@@ -291,7 +288,8 @@ public abstract class HTClause implements Constr, Serializable {
 
 	@Override
 	public int hashCode() {
-		long sum = head+tail;;
+		long sum = head + tail;
+		;
 		for (int p : middleLits) {
 			sum += p;
 		}
