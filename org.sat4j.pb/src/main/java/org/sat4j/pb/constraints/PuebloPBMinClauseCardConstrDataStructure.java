@@ -31,7 +31,6 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
@@ -41,6 +40,7 @@ import org.sat4j.pb.constraints.pb.MinWatchPb;
 import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
 import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.pb.constraints.pb.PuebloMinWatchPb;
+import org.sat4j.pb.constraints.pb.UnitClausePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -85,7 +85,7 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 	@Override
 	protected Constr constructLearntClause(IVecInt literals) {
 		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
+			return new UnitClausePB(literals.last(), getVocabulary());
 		}
 		if (literals.size() == 2) {
 			return new LearntBinaryClausePB(literals, getVocabulary());
@@ -111,7 +111,7 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
 		dspb.buildConstraintFromConflict(literals, resCoefs);
 		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
+			return new UnitClausePB(literals.last(), getVocabulary());
 		}
 		if (literals.size() == 2) {
 			return new LearntBinaryClausePB(literals, getVocabulary());

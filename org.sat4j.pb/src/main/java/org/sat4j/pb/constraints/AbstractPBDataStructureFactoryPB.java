@@ -30,12 +30,12 @@ package org.sat4j.pb.constraints;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
 import org.sat4j.pb.constraints.pb.LearntHTClausePB;
 import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
 import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
+import org.sat4j.pb.constraints.pb.UnitClausePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -76,7 +76,7 @@ public abstract class AbstractPBDataStructureFactoryPB extends
 	@Override
 	public Constr createUnregisteredClause(IVecInt literals) {
 		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
+			return new UnitClausePB(literals.last(), getVocabulary());
 		}
 		if (literals.size() == 2) {
 			return new LearntBinaryClausePB(literals, getVocabulary());
