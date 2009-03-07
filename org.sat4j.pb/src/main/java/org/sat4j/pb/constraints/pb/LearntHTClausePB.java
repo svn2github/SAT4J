@@ -31,6 +31,7 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.LearntHTClause;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
 public class LearntHTClausePB extends LearntHTClause implements PBConstr {
@@ -39,17 +40,26 @@ public class LearntHTClausePB extends LearntHTClause implements PBConstr {
 
 	public LearntHTClausePB(IVecInt ps, ILits voc) {
 		super(ps, voc);
-		// mettre en bonnes positions head et tail
-		for (int i = 0; i < size(); i++)
-			if (getVocabulary().isUnassigned(get(i))) {
-				head = ps.get(i);
-				break;
-			}
 	}
 
-	// @Override
-	// public void assertConstraint(UnitPropagationListener s) {
-	// }
+	@Override
+	public void assertConstraint(UnitPropagationListener s) {
+		if (getVocabulary().isUnassigned(head)) {
+			s.enqueue(head, this);
+		} else if (getVocabulary().isUnassigned(tail)) {
+			s.enqueue(tail, this);
+		} else {
+			for (int i = 0; i < middleLits.length; i++) {
+				if (getVocabulary().isUnassigned(middleLits[i])) {
+					int temp = middleLits[i];
+					middleLits[i] = head;
+					head = temp;
+					s.enqueue(temp, this);
+					break;
+				}
+			}
+		}
+	}
 
 	public IVecInt computeAnImpliedClause() {
 		return null;
