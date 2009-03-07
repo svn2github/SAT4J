@@ -33,15 +33,11 @@ import java.util.Collection;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
-import org.sat4j.core.LiteralsUtils;
 import org.sat4j.pb.reader.OPBEclipseReader2007;
 import org.sat4j.pb.tools.XplainPB;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
@@ -71,18 +67,6 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 	private static final long serialVersionUID = 1L;
 
 	public LanceurPseudo2007Eclipse() {
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	protected void solve(IProblem problem) throws TimeoutException {
-		IVecInt list = ((OPBEclipseReader2007) getReader())
-				.getListOfVariables();
-		if (list != null && !list.isEmpty()) {
-			((PseudoOptDecorator) problem)
-					.setListOfVariablesForExplanation(list);
-		}
-		super.solve(problem);
 	}
 
 	@Override
@@ -113,14 +97,12 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 		ExitCode exitCode = getExitCode();
 
 		if (exitCode == ExitCode.UNSATISFIABLE) {
-			// getLogWriter().println(((IPBSolver)solver).getExplanation());
 			try {
-				
+
 				Collection<IConstr> explanation = quickxplain.explain();
 				log("Explanation for inconsistency: " + explanation);
 			} catch (TimeoutException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log("Timeout ! Need more time to complete");
 			}
 		}
 

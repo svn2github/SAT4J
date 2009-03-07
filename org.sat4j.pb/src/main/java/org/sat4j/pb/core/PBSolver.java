@@ -43,55 +43,40 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public abstract class PBSolver extends
-        Solver<PBDataStructureFactory> implements IPBSolver {
+public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
+		IPBSolver {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public PBSolver(AssertingClauseGenerator acg,
-            LearningStrategy<PBDataStructureFactory> learner,
-            PBDataStructureFactory dsf, IOrder order,
-            RestartStrategy restarter) {
-        super(acg, learner, dsf, order, restarter);
-    }
+	public PBSolver(AssertingClauseGenerator acg,
+			LearningStrategy<PBDataStructureFactory> learner,
+			PBDataStructureFactory dsf, IOrder order, RestartStrategy restarter) {
+		super(acg, learner, dsf, order, restarter);
+	}
 
-    public PBSolver(AssertingClauseGenerator acg,
-            LearningStrategy<PBDataStructureFactory> learner,
-            PBDataStructureFactory dsf, SearchParams params,
-            IOrder order, RestartStrategy restarter) {
-        super(acg, learner, dsf, params, order, restarter);
-    }
+	public PBSolver(AssertingClauseGenerator acg,
+			LearningStrategy<PBDataStructureFactory> learner,
+			PBDataStructureFactory dsf, SearchParams params, IOrder order,
+			RestartStrategy restarter) {
+		super(acg, learner, dsf, params, order, restarter);
+	}
 
-    public IConstr addPseudoBoolean(IVecInt literals, IVec<BigInteger> coeffs,
-            boolean moreThan, BigInteger degree) throws ContradictionException {
-        IVecInt vlits = dimacs2internal(literals);
-        assert vlits.size() == literals.size();
-        assert literals.size() == coeffs.size();
-        return addConstr(dsfactory.createPseudoBooleanConstraint(vlits, coeffs,
-                moreThan, degree));
-    }
+	public IConstr addPseudoBoolean(IVecInt literals, IVec<BigInteger> coeffs,
+			boolean moreThan, BigInteger degree) throws ContradictionException {
+		IVecInt vlits = dimacs2internal(literals);
+		assert vlits.size() == literals.size();
+		assert literals.size() == coeffs.size();
+		return addConstr(dsfactory.createPseudoBooleanConstraint(vlits, coeffs,
+				moreThan, degree));
+	}
 
-    /**
-     * list of variables for which the solver must provide an explanation for
-     * the unsatisfiability if any
-     */
-    protected IVecInt listOfVariables;
-
-    public void setListOfVariablesForExplanation(IVecInt lv) {
-        listOfVariables = lv;
-    }
-
-    public String getExplanation() {
-        return "";
-    }
-
-    public void setObjectiveFunction(ObjectiveFunction obj) {
-        IOrder order = getOrder();
-        if (order instanceof VarOrderHeapObjective) {
-            ((VarOrderHeapObjective) order).setObjectiveFunction(obj);
-        }
-    }
+	public void setObjectiveFunction(ObjectiveFunction obj) {
+		IOrder order = getOrder();
+		if (order instanceof VarOrderHeapObjective) {
+			((VarOrderHeapObjective) order).setObjectiveFunction(obj);
+		}
+	}
 }
