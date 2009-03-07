@@ -53,9 +53,9 @@ public abstract class WLClause implements Constr, Serializable {
 	 * Creates a new basic clause
 	 * 
 	 * @param voc
-	 * 		the vocabulary of the formula
+	 *            the vocabulary of the formula
 	 * @param ps
-	 * 		A VecInt that WILL BE EMPTY after calling that method.
+	 *            A VecInt that WILL BE EMPTY after calling that method.
 	 */
 	public WLClause(IVecInt ps, ILits voc) {
 		lits = new int[ps.size()];
@@ -65,26 +65,6 @@ public abstract class WLClause implements Constr, Serializable {
 		activity = 0;
 	}
 
-	/**
-	 * Creates a brand new clause, presumably from external data. Performs all
-	 * sanity checks.
-	 * 
-	 * @param s
-	 * 		the object responsible for unit propagation
-	 * @param voc
-	 * 		the vocabulary
-	 * @param literals
-	 * 		the literals to store in the clause
-	 * @return the created clause or null if the clause should be ignored
-	 * 	(tautology for example)
-	 */
-	public static WLClause brandNewClause(UnitPropagationListener s, ILits voc,
-			IVecInt literals) {
-		WLClause c = new DefaultWLClause(literals, voc);
-		c.register();
-		return c;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -92,7 +72,7 @@ public abstract class WLClause implements Constr, Serializable {
 	 */
 	public void calcReason(int p, IVecInt outReason) {
 		// assert outReason.size() == 0
-		//		&& ((p == ILits.UNDEFINED) || (p == lits[0]));
+		// && ((p == ILits.UNDEFINED) || (p == lits[0]));
 		final int[] mylits = lits;
 		for (int i = (p == ILits.UNDEFINED) ? 0 : 1; i < mylits.length; i++) {
 			assert voc.isFalsified(mylits[i]);
@@ -187,7 +167,7 @@ public abstract class WLClause implements Constr, Serializable {
 	 * la recherche.
 	 * 
 	 * @param i
-	 * 		the index of the literal
+	 *            the index of the literal
 	 * @return the literal
 	 */
 	public int get(int i) {
