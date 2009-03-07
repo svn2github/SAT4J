@@ -30,8 +30,12 @@ package org.sat4j.pb.constraints;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.Clauses;
+import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.WLClausePB;
+import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
+import org.sat4j.pb.constraints.pb.LearntHTClausePB;
+import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
+import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -59,17 +63,25 @@ public abstract class AbstractPBDataStructureFactoryPB extends
 
 	@Override
 	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt theLits = Clauses
-				.sanityCheck(literals, getVocabulary(), solver);
-		if (theLits == null) {
+		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
+		if (v == null)
 			return null;
+		if (v.size() == 2) {
+			return OriginalBinaryClausePB.brandNewClause(solver,
+					getVocabulary(), v);
 		}
-		return WLClausePB.brandNewClause(solver, getVocabulary(), theLits);
+		return OriginalHTClausePB.brandNewClause(solver, getVocabulary(), v);
 	}
 
 	@Override
 	public Constr createUnregisteredClause(IVecInt literals) {
-		return WLClausePB.brandNewClause(solver, getVocabulary(), literals);
+		if (literals.size() == 1) {
+			return new UnitClause(literals.last());
+		}
+		if (literals.size() == 2) {
+			return new LearntBinaryClausePB(literals, getVocabulary());
+		}
+		return new LearntHTClausePB(literals, getVocabulary());
 	}
 
 }

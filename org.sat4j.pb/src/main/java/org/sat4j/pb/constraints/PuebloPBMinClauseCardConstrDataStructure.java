@@ -31,12 +31,16 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
+import org.sat4j.pb.constraints.pb.LearntHTClausePB;
 import org.sat4j.pb.constraints.pb.MinWatchCardPB;
 import org.sat4j.pb.constraints.pb.MinWatchPb;
+import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
+import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.pb.constraints.pb.PuebloMinWatchPb;
-import org.sat4j.pb.constraints.pb.WLClausePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -51,7 +55,11 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
-		return WLClausePB.brandNewClause(solver, getVocabulary(), v);
+		if (v.size() == 2) {
+			return OriginalBinaryClausePB.brandNewClause(solver,
+					getVocabulary(), v);
+		}
+		return OriginalHTClausePB.brandNewClause(solver, getVocabulary(), v);
 	}
 
 	@Override
@@ -76,7 +84,13 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 
 	@Override
 	protected Constr constructLearntClause(IVecInt literals) {
-		return new WLClausePB(literals, getVocabulary());
+		if (literals.size() == 1) {
+			return new UnitClause(literals.last());
+		}
+		if (literals.size() == 2) {
+			return new LearntBinaryClausePB(literals, getVocabulary());
+		}
+		return new LearntHTClausePB(literals, getVocabulary());
 	}
 
 	@Override
@@ -93,10 +107,16 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 
 	@Override
 	protected Constr constructLearntClause(IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
+		IVecInt literals = new VecInt();
 		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
-		return new WLClausePB(resLits, getVocabulary());
+		dspb.buildConstraintFromConflict(literals, resCoefs);
+		if (literals.size() == 1) {
+			return new UnitClause(literals.last());
+		}
+		if (literals.size() == 2) {
+			return new LearntBinaryClausePB(literals, getVocabulary());
+		}
+		return new LearntHTClausePB(literals, getVocabulary());
 	}
 
 	@Override
