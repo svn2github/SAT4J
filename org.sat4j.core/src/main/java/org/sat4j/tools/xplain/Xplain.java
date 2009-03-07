@@ -86,7 +86,11 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
-		constrs.put(newvar, constr);
+		if (constr == null) {
+			discardLastestVar();
+		} else {
+			constrs.put(newvar, constr);
+		}
 		return constr;
 	}
 
@@ -209,15 +213,13 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	@Override
 	public int[] model() {
 		int[] fullmodel = super.model();
-		// int[] model = new int[fullmodel.length - constrs.size()];
-		IVecInt vmodel = new VecInt(fullmodel.length - constrs.size());
+		int[] model = new int[fullmodel.length - constrs.size()];
+		int j = 0;
 		for (int i = 0; i < fullmodel.length; i++) {
 			if (constrs.get(Math.abs(fullmodel[i])) == null) {
-				vmodel.push(fullmodel[i]);
+				model[j++] = fullmodel[i];
 			}
 		}
-		int[] model = new int[vmodel.size()];
-		vmodel.copyTo(model);
 		return model;
 	}
 

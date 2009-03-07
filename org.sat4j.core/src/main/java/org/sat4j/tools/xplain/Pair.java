@@ -32,7 +32,6 @@ import org.sat4j.specs.IConstr;
 public class Pair implements Comparable<Pair> {
 	public final Integer key;
 	public final IConstr constr;
-	public static final double NOTHING = 0.0001;
 
 	public Pair(Integer key, IConstr constr) {
 		this.key = key;
@@ -40,10 +39,16 @@ public class Pair implements Comparable<Pair> {
 	}
 
 	public int compareTo(Pair arg0) {
-		double activityThis = constr == null ? 0.0 : constr.getActivity();
-		double activityArg = arg0.constr == null ? 0.0 : arg0.constr
-				.getActivity();
+		double activityThis = constr.getActivity();
+		double activityArg = arg0.constr.getActivity();
+		if (activityThis == activityArg) {
+			return arg0.key - key;
+		}
 		return Double.compare(activityArg, activityThis);
 	}
 
+	@Override
+	public String toString() {
+		return key.toString() + ":" + constr.getActivity();
+	}
 }
