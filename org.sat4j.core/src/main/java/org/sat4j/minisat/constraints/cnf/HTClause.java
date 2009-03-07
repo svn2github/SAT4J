@@ -289,7 +289,6 @@ public abstract class HTClause implements Constr, Serializable {
 	@Override
 	public int hashCode() {
 		long sum = head + tail;
-		;
 		for (int p : middleLits) {
 			sum += p;
 		}

@@ -49,9 +49,9 @@ public abstract class BinaryClause implements Constr, Serializable {
 
 	private final ILits voc;
 
-	private final int head;
+	protected int head;
 
-	private final int tail;
+	protected int tail;
 
 	/**
 	 * Creates a new basic clause
