@@ -118,8 +118,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <forkMode>pertest</forkMode>
           <argLine>-enableassertions -Xmx512m</argLine>
           <excludes>
-            <exclude>**/TestLubyFunction*</exclude>
-            <exclude>**/TestConstrGroup*</exclude>
+            <exclude>**/XplainTests*</exclude>
             <exclude>**/GoodOPBReaderTest*</exclude>
           </excludes>
           <systemProperties>
@@ -181,6 +180,29 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       			</goals>
       		</execution>
       	</executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pdf-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <id>site-pdf</id>
+            <phase>site</phase>
+            <goals>
+              <goal>pdf</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags</tagBase>
+        </configuration>
       </plugin>
     </plugins>
   </build>

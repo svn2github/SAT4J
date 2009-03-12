@@ -312,9 +312,10 @@
 
 			<batchtest fork="yes" todir="${testreport.dir}">
 				<fileset dir="${build}">
+				        <include name="**/*Test*.class" />
 					<exclude name="**/AllTests.class" />
 					<exclude name="**/Abstract*Test.class" />
-					<include name="**/*Test.class" />
+					<exclude name="**/XplainTests*"/>
 				</fileset>
 			</batchtest>
 		</junit>
