@@ -265,6 +265,10 @@ public class ManyCore implements ISolver, OutcomeListener {
 		}	
 		
 	}
+
+	public int nextFreeVarId(boolean reserve) {
+		return solvers[0].nextFreeVarId(reserve);
+	}
 }
 
 interface OutcomeListener {
