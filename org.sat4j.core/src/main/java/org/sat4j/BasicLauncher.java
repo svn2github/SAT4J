@@ -57,12 +57,13 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 	 * Lance le prouveur sur un fichier Dimacs.
 	 * 
 	 * @param args
-	 * 		doit contenir le nom d'un fichier Dimacs, eventuellement compress?.
+	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
+	 *            compress?.
 	 */
 	public static void main(final String[] args) {
 		BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
 				SolverFactory.instance());
-		if (args.length!=1) {
+		if (args.length != 1) {
 			lanceur.usage();
 			return;
 		}
@@ -75,7 +76,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 		ISolver asolver = factory.defaultSolver();
 		asolver.setTimeout(Integer.MAX_VALUE);
 		asolver.setDBSimplificationAllowed(true);
-		log(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+		getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
 		return asolver;
 	}
 
