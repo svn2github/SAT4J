@@ -45,7 +45,7 @@ public abstract class BinaryClause implements Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private double activity;
+	protected double activity;
 
 	private final ILits voc;
 
@@ -156,13 +156,6 @@ public abstract class BinaryClause implements Constr, Serializable {
 			return head;
 		assert i == 1;
 		return tail;
-	}
-
-	/**
-	 * @param claInc
-	 */
-	public void incActivity(double claInc) {
-		activity += claInc;
 	}
 
 	/**

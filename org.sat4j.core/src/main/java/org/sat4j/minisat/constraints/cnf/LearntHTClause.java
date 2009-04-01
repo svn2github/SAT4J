@@ -80,4 +80,14 @@ public class LearntHTClause extends HTClause {
 		// do nothing
 	}
 
+	public void forwardActivity(double claInc) {
+
+	}
+
+	/**
+	 * @param claInc
+	 */
+	public void incActivity(double claInc) {
+		activity += claInc;
+	}
 }

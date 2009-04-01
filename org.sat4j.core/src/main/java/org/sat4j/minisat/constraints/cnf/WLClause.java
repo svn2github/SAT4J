@@ -43,7 +43,7 @@ public abstract class WLClause implements Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private double activity;
+	protected double activity;
 
 	protected final int[] lits;
 
@@ -172,13 +172,6 @@ public abstract class WLClause implements Constr, Serializable {
 	 */
 	public int get(int i) {
 		return lits[i];
-	}
-
-	/**
-	 * @param claInc
-	 */
-	public void incActivity(double claInc) {
-		activity += claInc;
 	}
 
 	/**

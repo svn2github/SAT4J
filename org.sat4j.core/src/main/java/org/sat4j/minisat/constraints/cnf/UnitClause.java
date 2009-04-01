@@ -97,4 +97,8 @@ public class UnitClause implements Constr {
 	public int size() {
 		return 1;
 	}
+
+	public void forwardActivity(double claInc) {
+		// silent to prevent problems with xplain trick.
+	}
 }

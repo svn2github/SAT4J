@@ -53,7 +53,7 @@ public abstract class HTClause implements Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private double activity;
+	protected double activity;
 
 	protected final int[] middleLits;
 
@@ -220,13 +220,6 @@ public abstract class HTClause implements Constr, Serializable {
 		if (i == middleLits.length + 1)
 			return tail;
 		return middleLits[i - 1];
-	}
-
-	/**
-	 * @param claInc
-	 */
-	public void incActivity(double claInc) {
-		activity += claInc;
 	}
 
 	/**
