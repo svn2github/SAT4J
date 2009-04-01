@@ -269,6 +269,14 @@ public class DependencyHelper<T, C> {
 		return new ImplicationRHS<T, C>(this, clause);
 	}
 
+	public DisjunctionRHS<T, C> disjunction(T... lhs) {
+		IVecInt literals = new VecInt();
+		for (T t : lhs) {
+			literals.push(-getIntValue(t));
+		}
+		return new DisjunctionRHS<T, C>(this, literals);
+	}
+
 	/**
 	 * Create a constraint stating that at most i domain object should be set to
 	 * true.
@@ -290,6 +298,28 @@ public class DependencyHelper<T, C> {
 		}
 		toName.push(xplain.addAtMost(literals, i));
 		return new ImplicationNamer<T, C>(this, toName);
+	}
+
+	/**
+	 * Create a constraint stating that two domain object must have the same
+	 * truth value.
+	 * 
+	 * @param thing
+	 *            a domain object
+	 * @param things
+	 *            another domain object.
+	 * @throws ContradictionException
+	 */
+	public void iff(T thing, T anotherThing, C name)
+			throws ContradictionException {
+		IVecInt clause = new VecInt();
+		clause.push(-getIntValue(thing));
+		clause.push(getIntValue(anotherThing));
+		descs.put(xplain.addClause(clause), name);
+		clause.clear();
+		clause.push(getIntValue(thing));
+		clause.push(-getIntValue(anotherThing));
+		descs.put(xplain.addClause(clause), name);
 	}
 
 	/**
