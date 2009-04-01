@@ -204,7 +204,9 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 * @see org.sat4j.minisat.core.Constr#incActivity(double)
 	 */
 	public void incActivity(double claInc) {
-		activity += claInc;
+		if (learnt) {
+			activity += claInc;
+		}
 	}
 
 	/**
@@ -581,4 +583,11 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		}
 		return (int) sum / lits.length;
 	}
+
+	public void forwardActivity(double claInc) {
+		if (!learnt) {
+			activity += claInc;
+		}
+	}
+
 }
