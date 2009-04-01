@@ -64,7 +64,12 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <siteRepositoryId></siteRepositoryId>
     <siteRepositoryUrl></siteRepositoryUrl>
   </properties>
-
+   <pluginRepositories>
+    <pluginRepository>
+      <id>apache.snapshots</id>
+      <url>http://repository.apache.org/snapshots/</url>
+    </pluginRepository>
+  </pluginRepositories>
   <modules>
     <module>org.sat4j.core</module>
     <module>org.sat4j.pb</module>
