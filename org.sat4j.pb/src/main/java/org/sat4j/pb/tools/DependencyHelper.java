@@ -37,6 +37,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.GateTranslator;
 
 /**
  * Helper class intended to make life easier to people to feed a sat solver
@@ -51,6 +52,17 @@ import org.sat4j.specs.TimeoutException;
  */
 public class DependencyHelper<T, C> {
 
+	public final INegator<T> NO_NEGATION = new INegator<T>() {
+
+		public boolean isNegated(T thing) {
+			return false;
+		}
+
+		public T unNegate(T thing) {
+			return thing;
+		}
+	};
+
 	/**
 	 * 
 	 */
@@ -61,6 +73,9 @@ public class DependencyHelper<T, C> {
 	final Map<IConstr, C> descs = new HashMap<IConstr, C>();
 
 	final XplainPB xplain;
+	private final GateTranslator gator;
+
+	private INegator<T> negator = NO_NEGATION;
 
 	/**
 	 * 
@@ -69,6 +84,11 @@ public class DependencyHelper<T, C> {
 	 */
 	public DependencyHelper(IPBSolver solver) {
 		this.xplain = new XplainPB(solver);
+		this.gator = new GateTranslator(xplain);
+	}
+
+	public void setNegator(INegator<T> negator) {
+		this.negator = negator;
 	}
 
 	/**
@@ -79,11 +99,21 @@ public class DependencyHelper<T, C> {
 	 * @return the dimacs variable (an integer) representing that domain object.
 	 */
 	int getIntValue(T thing) {
-		Integer intValue = mapToDimacs.get(thing);
+		T myThing;
+		boolean negated = negator.isNegated(thing);
+		if (negated) {
+			myThing = negator.unNegate(thing);
+		} else {
+			myThing = thing;
+		}
+		Integer intValue = mapToDimacs.get(myThing);
 		if (intValue == null) {
 			intValue = xplain.nextFreeVarId(true);
 			mapToDomain.put(intValue, thing);
 			mapToDimacs.put(thing, intValue);
+		}
+		if (negated) {
+			return -intValue;
 		}
 		return intValue;
 	}
@@ -230,9 +260,7 @@ public class DependencyHelper<T, C> {
 	 *             inconsistent.
 	 */
 	public void setTrue(T thing, C name) throws ContradictionException {
-		IVecInt clause = new VecInt();
-		clause.push(getIntValue(thing));
-		descs.put(xplain.addClause(clause), name);
+		descs.put(gator.gateTrue(getIntValue(thing)), name);
 	}
 
 	/**
@@ -248,9 +276,7 @@ public class DependencyHelper<T, C> {
 	 *             inconsistent.
 	 */
 	public void setFalse(T thing, C name) throws ContradictionException {
-		IVecInt clause = new VecInt();
-		clause.push(-getIntValue(thing));
-		descs.put(xplain.addClause(clause), name);
+		descs.put(gator.gateFalse(getIntValue(thing)), name);
 	}
 
 	/**
@@ -301,25 +327,86 @@ public class DependencyHelper<T, C> {
 	}
 
 	/**
-	 * Create a constraint stating that two domain object must have the same
-	 * truth value.
+	 * Create a constraint using equivalency chains thing <=> (thing1 <=> thing2
+	 * <=> ... <=> thingn)
 	 * 
 	 * @param thing
 	 *            a domain object
 	 * @param things
-	 *            another domain object.
+	 *            other domain objects.
 	 * @throws ContradictionException
 	 */
-	public void iff(T thing, T anotherThing, C name)
+	public void iff(C name, T thing, T... otherThings)
 			throws ContradictionException {
-		IVecInt clause = new VecInt();
-		clause.push(-getIntValue(thing));
-		clause.push(getIntValue(anotherThing));
-		descs.put(xplain.addClause(clause), name);
-		clause.clear();
-		clause.push(getIntValue(thing));
-		clause.push(-getIntValue(anotherThing));
-		descs.put(xplain.addClause(clause), name);
+		IVecInt literals = new VecInt(otherThings.length);
+		for (T t : otherThings) {
+			literals.push(getIntValue(t));
+		}
+		IConstr[] constrs = gator.iff(getIntValue(thing), literals);
+		for (IConstr constr : constrs) {
+			descs.put(constr, name);
+		}
+	}
+
+	/**
+	 * Create a constraint of the form thing <=> (thing1 and thing 2 ... and
+	 * thingn)
+	 * 
+	 * @param name
+	 * @param thing
+	 * @param otherThings
+	 * @throws ContradictionException
+	 */
+	public void and(C name, T thing, T... otherThings)
+			throws ContradictionException {
+		IVecInt literals = new VecInt(otherThings.length);
+		for (T t : otherThings) {
+			literals.push(getIntValue(t));
+		}
+		IConstr[] constrs = gator.and(getIntValue(thing), literals);
+		for (IConstr constr : constrs) {
+			descs.put(constr, name);
+		}
+	}
+
+	/**
+	 * Create a constraint of the form thing <=> (thing1 and thing 2 ... and
+	 * thingn)
+	 * 
+	 * @param name
+	 * @param thing
+	 * @param otherThings
+	 * @throws ContradictionException
+	 */
+	public void or(C name, T thing, T... otherThings)
+			throws ContradictionException {
+		IVecInt literals = new VecInt(otherThings.length);
+		for (T t : otherThings) {
+			literals.push(getIntValue(t));
+		}
+		IConstr[] constrs = gator.or(getIntValue(thing), literals);
+		for (IConstr constr : constrs) {
+			descs.put(constr, name);
+		}
+	}
+
+	/**
+	 * Create a constraint of the form thing <=> (if conditionThing then
+	 * thenThing else elseThing)
+	 * 
+	 * @param name
+	 * @param thing
+	 * @param otherThings
+	 * @throws ContradictionException
+	 */
+	public void ifThenElse(C name, T thing, T conditionThing, T thenThing,
+			T elseThing) throws ContradictionException {
+		IConstr[] constrs = gator.ite(getIntValue(thing),
+				getIntValue(conditionThing), getIntValue(thenThing),
+				getIntValue(elseThing));
+		for (IConstr constr : constrs) {
+			descs.put(constr, name);
+		}
 	}
 
 	/**
