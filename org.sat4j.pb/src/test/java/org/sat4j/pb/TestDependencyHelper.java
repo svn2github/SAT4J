@@ -33,6 +33,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.pb.tools.DependencyHelper;
+import org.sat4j.pb.tools.StringNegator;
 import org.sat4j.pb.tools.WeightedObject;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
@@ -225,7 +226,7 @@ public class TestDependencyHelper {
 	public void testEquivalency() throws ContradictionException,
 			TimeoutException {
 		helper.implication("A").implies("B").named("C1");
-		helper.iff("B", "C", "C2");
+		helper.iff("C2", "B", "C");
 		helper.setTrue("A", "C3");
 		assertTrue(helper.hasASolution());
 		helper.setFalse("C", "C4");
@@ -244,5 +245,21 @@ public class TestDependencyHelper {
 		helper.setFalse("D", "C4");
 		assertFalse(helper.hasASolution());
 
+	}
+
+	@Test
+	public void testCathyExamples() throws ContradictionException,
+			TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		// A <=> B and C and D
+		helper.and("C1", "A", "B", "C", "D");
+		// not A or B implies E
+		helper.implication("-A", "B").implies("E").named("C2");
+		helper.setFalse("D", "InitState");
+		helper.setTrue("B", "InitState");
+		helper.setFalse("E", "InitState");
+		helper.atMost(1, "A", "B", "C", "D", "E").named("C5");
+		assertFalse(helper.hasASolution());
+		assertEquals(3, helper.why().size());
 	}
 }
