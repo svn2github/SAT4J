@@ -962,16 +962,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		int i, j;
 		sortOnActivity();
 		stats.reduceddb++;
-		for (i = j = learnts.size() / 2; i<learnts.size(); i++) {
+		for (i = j = learnts.size() / 2; i < learnts.size(); i++) {
 			Constr c = learnts.get(i);
-			if (c.locked()) {
+			if (c.locked() || c.getActivity() <= 2.0) {
 				learnts.set(j++, learnts.get(i));
 			} else {
 				c.remove();
 			}
-		}
-		for (; i < learnts.size(); i++) {
-			learnts.set(j++, learnts.get(i));
 		}
 		System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
 				+ " clauses out of " + learnts.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
