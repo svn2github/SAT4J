@@ -33,8 +33,6 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MaxWatchPb;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
 public class PBMaxClauseCardConstrDataStructure extends
 		PuebloPBMinClauseCardConstrDataStructure {
@@ -45,23 +43,10 @@ public class PBMaxClauseCardConstrDataStructure extends
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected Constr constructPB(IDataStructurePB mpb)
-			throws ContradictionException {
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(), mpb);
-	}
-
-	@Override
 	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
 		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
 				theLits, coefs, degree);
-	}
-
-	@Override
-	protected Constr constructLearntPB(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree) {
-		return MaxWatchPb.watchPbNew(getVocabulary(), literals, coefs, true,
-				degree);
 	}
 
 	@Override

@@ -16,10 +16,17 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public class CompetResolutionPBMixedHTClauseCardConstrDataStructure extends
-		PBMaxClauseCardConstrDataStructure {
+public class CompetMinHTmixedClauseCardConstrDataStructureFactory extends
+		PBMinClauseCardConstrDataStructure {
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
+
+	public CompetMinHTmixedClauseCardConstrDataStructureFactory() {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	protected Constr constructClause(IVecInt v) {

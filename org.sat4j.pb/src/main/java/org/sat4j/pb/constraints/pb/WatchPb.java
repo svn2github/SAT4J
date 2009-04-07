@@ -490,10 +490,6 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		}
 	}
 
-	public static BigInteger toBigInt(int i) {
-		return BigInteger.valueOf(i);
-	}
-
 	public BigInteger[] getCoefs() {
 		BigInteger[] coefsBis = new BigInteger[coefs.length];
 		System.arraycopy(coefs, 0, coefsBis, 0, coefs.length);

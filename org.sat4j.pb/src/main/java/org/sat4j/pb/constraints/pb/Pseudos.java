@@ -119,4 +119,8 @@ public abstract class Pseudos {
 		return bigVec;
 	}
 
+	public static BigInteger toBigInt(int i) {
+		return BigInteger.valueOf(i);
+	}
+
 }

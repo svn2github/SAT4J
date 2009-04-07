@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.AbstractDataStructureFactory;
@@ -41,10 +42,9 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.AtLeastPB;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.IInternalPBConstraintCreator;
+import org.sat4j.pb.constraints.pb.Pseudos;
 import org.sat4j.pb.core.PBDataStructureFactory;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
@@ -53,8 +53,71 @@ import org.sat4j.specs.IVecInt;
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class AbstractPBDataStructureFactory extends
-		AbstractDataStructureFactory implements PBDataStructureFactory,
-		IInternalPBConstraintCreator {
+		AbstractDataStructureFactory implements PBDataStructureFactory {
+
+	interface INormalizer {
+		PBContainer nice(IVecInt ps, IVec<BigInteger> bigCoefs,
+				boolean moreThan, BigInteger bigDeg, ILits voc)
+				throws ContradictionException;
+	}
+
+	static final INormalizer FOR_COMPETITION = new INormalizer() {
+
+		private static final long serialVersionUID = 1L;
+
+		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
+				boolean moreThan, BigInteger degree, ILits voc)
+				throws ContradictionException {
+			int[] theLits = new int[literals.size()];
+			literals.copyTo(theLits);
+			BigInteger[] normCoefs = new BigInteger[coefs.size()];
+			coefs.copyTo(normCoefs);
+			BigInteger degRes = Pseudos.niceParametersForCompetition(theLits,
+					normCoefs, moreThan, degree);
+			return new PBContainer(theLits, normCoefs, degRes);
+
+		}
+
+	};
+
+	static final INormalizer NO_COMPETITION = new INormalizer() {
+
+		private static final long serialVersionUID = 1L;
+
+		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
+				boolean moreThan, BigInteger degree, ILits voc)
+				throws ContradictionException {
+			IDataStructurePB res = Pseudos.niceParameters(literals, coefs,
+					moreThan, degree, voc);
+			int size = res.size();
+			int[] theLits = new int[size];
+			BigInteger[] theCoefs = new BigInteger[size];
+			res.buildConstraintFromMapPb(theLits, theCoefs);
+			BigInteger theDegree = res.getDegree();
+			return new PBContainer(theLits, theCoefs, theDegree);
+		}
+	};
+
+	private INormalizer norm = FOR_COMPETITION;
+
+	protected INormalizer getNormalizer() {
+		return norm;
+	}
+
+	public void setNormalizer(String simp) {
+		Field f;
+		try {
+			f = AbstractPBDataStructureFactory.class.getDeclaredField(simp);
+			norm = (INormalizer) f.get(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			norm = FOR_COMPETITION;
+		}
+	}
+
+	public void setNormalizer(INormalizer normalizer) {
+		norm = normalizer;
+	}
 
 	/**
 	 * 
@@ -91,56 +154,21 @@ public abstract class AbstractPBDataStructureFactory extends
 	public Constr createPseudoBooleanConstraint(IVecInt literals,
 			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
 			throws ContradictionException {
-		return constraintFactory(literals, coefs, moreThan, degree);
-	}
-
-	/**
-	 * @param literals
-	 *            the literals
-	 * @param coefs
-	 *            the coefficients
-	 * @param moreThan
-	 * @param degree
-	 *            the degree of the constraint
-	 * @return a new PB constraint
-	 */
-	protected abstract Constr constraintFactory(IVecInt literals,
-			IVecInt coefs, boolean moreThan, int degree)
-			throws ContradictionException;
-
-	protected abstract Constr constraintFactory(IDataStructurePB dspb);
-
-	protected abstract Constr constraintFactory(IVecInt literals,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-			throws ContradictionException;
-
-	public Constr createUnregisteredPseudoBooleanConstraint(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree) {
-		return constraintFactory(literals, coefs, degree);
+		PBContainer res = getNormalizer().nice(literals, coefs, moreThan,
+				degree, getVocabulary());
+		return constraintFactory(res.lits, res.coefs, res.degree);
 	}
 
 	public Constr createUnregisteredPseudoBooleanConstraint(
 			IDataStructurePB dspb) {
-		return constraintFactory(dspb);
+		return learntConstraintFactory(dspb);
 	}
 
-	public IConstr createUnregisteredPseudoBooleanConstraint(IVecInt literals,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-			throws ContradictionException {
-		return constraintFactory(literals, coefs, moreThan, degree);
-	}
+	protected abstract Constr constraintFactory(int[] literals,
+			BigInteger[] coefs, BigInteger degree)
+			throws ContradictionException;
 
-	/**
-	 * @param literals
-	 * @param coefs
-	 * @param degree
-	 * @return a new PB constraint
-	 */
-	protected abstract Constr constraintFactory(IVecInt literals,
-			IVecInt coefs, int degree);
-
-	protected abstract Constr constraintFactory(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree);
+	protected abstract Constr learntConstraintFactory(IDataStructurePB dspb);
 
 	@Override
 	protected ILits createLits() {

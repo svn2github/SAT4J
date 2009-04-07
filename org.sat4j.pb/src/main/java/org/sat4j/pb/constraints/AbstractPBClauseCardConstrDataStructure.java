@@ -29,15 +29,11 @@ package org.sat4j.pb.constraints;
 
 import java.math.BigInteger;
 
-import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.Pseudos;
-import org.sat4j.pb.constraints.pb.WatchPb;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public abstract class AbstractPBClauseCardConstrDataStructure extends
@@ -59,58 +55,20 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	 * boolean, int)
 	 */
 	@Override
-	protected Constr constraintFactory(IVecInt literals, IVecInt coefs,
-			boolean moreThan, int degree) throws ContradictionException {
-		return constraintFactory(literals, Pseudos.toVecBigInt(coefs),
-				moreThan, WatchPb.toBigInt(degree));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
-	 */
-	@Override
-	protected Constr constraintFactory(IVecInt literals, IVecInt coefs,
-			int degree) {
-		return constraintFactory(literals, Pseudos.toVecBigInt(coefs), WatchPb
-				.toBigInt(degree));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected Constr constraintFactory(IVecInt literals,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-			throws ContradictionException {
-		IDataStructurePB mpb = Pseudos.niceParameters(literals, coefs,
-				moreThan, degree, getVocabulary());
-		if (mpb == null)
-			return null;
-		int size = mpb.size();
-		int[] theLists = new int[size];
-		BigInteger[] normCoefs = new BigInteger[size];
-		mpb.buildConstraintFromMapPb(theLists, normCoefs);
-		if (mpb.getDegree().equals(BigInteger.ONE)) {
-			IVecInt v = Clauses.sanityCheck(new VecInt(theLists),
+	protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
+			BigInteger degree) throws ContradictionException {
+		if (degree.equals(BigInteger.ONE)) {
+			IVecInt v = Clauses.sanityCheck(new VecInt(literals),
 					getVocabulary(), solver);
 			if (v == null)
 				return null;
 			return constructClause(v);
 		}
-		if (coefficientsEqualToOne(new Vec<BigInteger>(normCoefs))) {
-			assert mpb.getDegree().compareTo(MAX_INT_VALUE) < 0;
-			return constructCard(new VecInt(theLists), mpb.getDegree()
-					.intValue());
+		if (coefficientsEqualToOne(coefs)) {
+			assert degree.compareTo(MAX_INT_VALUE) < 0;
+			return constructCard(new VecInt(literals), degree.intValue());
 		}
-		// return constructPB(mpb);
-		return constructPB(theLists, normCoefs, mpb.getDegree());
+		return constructPB(literals, coefs, degree);
 	}
 
 	/*
@@ -120,7 +78,7 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
 	 */
 	@Override
-	protected Constr constraintFactory(IDataStructurePB dspb) {
+	protected Constr learntConstraintFactory(IDataStructurePB dspb) {
 		if (dspb.getDegree().equals(BigInteger.ONE)) {
 			return constructLearntClause(dspb);
 		}
@@ -130,27 +88,9 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 		return constructLearntPB(dspb);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
-	 */
-	@Override
-	protected Constr constraintFactory(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree) {
-		if (degree.equals(BigInteger.ONE)) {
-			return constructLearntClause(literals);
-		}
-		if (coefficientsEqualToOne(coefs)) {
-			return constructLearntCard(literals, degree.intValue());
-		}
-		return constructLearntPB(literals, coefs, degree);
-	}
-
-	static boolean coefficientsEqualToOne(IVec<BigInteger> coeffs) {
-		for (int i = 0; i < coeffs.size(); i++)
-			if (!coeffs.get(i).equals(BigInteger.ONE))
+	static boolean coefficientsEqualToOne(BigInteger[] coefs) {
+		for (int i = 0; i < coefs.length; i++)
+			if (!coefs[i].equals(BigInteger.ONE))
 				return false;
 		return true;
 	}
@@ -160,18 +100,8 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	abstract protected Constr constructCard(IVecInt theLits, int degree)
 			throws ContradictionException;
 
-	abstract protected Constr constructPB(IDataStructurePB mpb)
-			throws ContradictionException;
-
 	abstract protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException;
-
-	abstract protected Constr constructLearntClause(IVecInt literals);
-
-	abstract protected Constr constructLearntCard(IVecInt literals, int degree);
-
-	abstract protected Constr constructLearntPB(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree);
 
 	abstract protected Constr constructLearntClause(IDataStructurePB dspb);
 

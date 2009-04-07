@@ -36,7 +36,6 @@ import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
 import org.sat4j.pb.constraints.pb.LearntHTClausePB;
 import org.sat4j.pb.constraints.pb.MinWatchCardPB;
-import org.sat4j.pb.constraints.pb.MinWatchPb;
 import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
 import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.pb.constraints.pb.PuebloMinWatchPb;
@@ -70,39 +69,10 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 	}
 
 	@Override
-	protected Constr constructPB(IDataStructurePB mpb)
-			throws ContradictionException {
-		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(), mpb);
-	}
-
-	@Override
 	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
-		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(),
-				theLits, coefs, degree);
-	}
-
-	@Override
-	protected Constr constructLearntClause(IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClausePB(literals.last(), getVocabulary());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClausePB(literals, getVocabulary());
-		}
-		return new LearntHTClausePB(literals, getVocabulary());
-	}
-
-	@Override
-	protected Constr constructLearntCard(IVecInt literals, int degree) {
-		return new MinWatchCardPB(getVocabulary(), literals, true, degree);
-	}
-
-	@Override
-	protected Constr constructLearntPB(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree) {
-		return PuebloMinWatchPb.watchPbNew(getVocabulary(), literals, coefs,
-				true, degree);
+		return PuebloMinWatchPb.normalizedMinWatchPbNew(solver,
+				getVocabulary(), theLits, coefs, degree);
 	}
 
 	@Override

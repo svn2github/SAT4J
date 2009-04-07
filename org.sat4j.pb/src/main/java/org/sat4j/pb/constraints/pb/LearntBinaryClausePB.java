@@ -31,7 +31,6 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
 public class LearntBinaryClausePB extends LearntBinaryClause implements
@@ -65,14 +64,14 @@ public class LearntBinaryClausePB extends LearntBinaryClause implements
 		return BigInteger.ONE;
 	}
 
-	@Override
-	public void assertConstraint(UnitPropagationListener s) {
-		if (getVocabulary().isUnassigned(head)) {
-			s.enqueue(head, this);
-		} else {
-			assert getVocabulary().isUnassigned(tail);
-			s.enqueue(tail, this);
-		}
-	}
+	// @Override
+	// public void assertConstraint(UnitPropagationListener s) {
+	// if (getVocabulary().isUnassigned(head)) {
+	// s.enqueue(head, this);
+	// } else {
+	// assert getVocabulary().isUnassigned(tail);
+	// s.enqueue(tail, this);
+	// }
+	// }
 
 }

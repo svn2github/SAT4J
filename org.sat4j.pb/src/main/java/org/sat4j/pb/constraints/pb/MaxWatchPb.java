@@ -29,13 +29,9 @@ package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
 
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
 public class MaxWatchPb extends WatchPb {
 
@@ -121,68 +117,6 @@ public class MaxWatchPb extends WatchPb {
 	}
 
 	/**
-	 * @param s
-	 *            outil pour la propagation des litt?raux
-	 * @param ps
-	 *            liste des litt?raux de la nouvelle contrainte
-	 * @param coefs
-	 *            liste des coefficients des litt?raux de la contrainte
-	 * @param moreThan
-	 *            d?termine si c'est une sup?rieure ou ?gal ? l'origine
-	 * @param degree
-	 *            fournit le degr? de la contrainte
-	 * @return une nouvelle clause si tout va bien, ou null si un conflit est
-	 *         d?tect?
-	 */
-	public static MaxWatchPb maxWatchPbNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, IVecInt coefs, boolean moreThan, int degree)
-			throws ContradictionException {
-		return maxWatchPbNew(s, voc, ps, Pseudos.toVecBigInt(coefs), moreThan,
-				toBigInt(degree));
-	}
-
-	/**
-	 * @param s
-	 *            outil pour la propagation des litt?raux
-	 * @param ps
-	 *            liste des litt?raux de la nouvelle contrainte
-	 * @param coefs
-	 *            liste des coefficients des litt?raux de la contrainte
-	 * @param moreThan
-	 *            d?termine si c'est une sup?rieure ou ?gal ? l'origine
-	 * @param degree
-	 *            fournit le degr? de la contrainte
-	 * @return une nouvelle clause si tout va bien, ou null si un conflit est
-	 *         d?tect?
-	 */
-	public static MaxWatchPb maxWatchPbNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, IVec<BigInteger> coefs, boolean moreThan,
-			BigInteger degree) throws ContradictionException {
-
-		// Il ne faut pas modifier les param?tres
-		VecInt litsVec = new VecInt();
-		IVec<BigInteger> coefsVec = new Vec<BigInteger>();
-		ps.copyTo(litsVec);
-		coefs.copyTo(coefsVec);
-
-		IDataStructurePB mpb = Pseudos.niceParameters(litsVec, coefsVec,
-				moreThan, degree, voc);
-
-		if (mpb == null) {
-			return null;
-		}
-		MaxWatchPb outclause = new MaxWatchPb(voc, mpb);
-
-		if (outclause.degree.signum() <= 0)
-			return null;
-		outclause.computeWatches();
-		outclause.computePropagation(s);
-
-		return outclause;
-
-	}
-
-	/**
 	 * Propagation de la valeur de v?rit? d'un litt?ral falsifi?
 	 * 
 	 * @param s
@@ -256,52 +190,6 @@ public class MaxWatchPb extends WatchPb {
 		assert coefs[indiceP].signum() > 0;
 
 		watchCumul = watchCumul.add(coefs[indiceP]);
-	}
-
-	/**
-     * 
-     */
-	public static WatchPb watchPbNew(ILits voc, IVecInt lits, IVecInt coefs,
-			boolean moreThan, int degree) {
-		return watchPbNew(voc, lits, Pseudos.toVecBigInt(coefs), moreThan,
-				toBigInt(degree));
-	}
-
-	/**
-     * 
-     */
-	public static WatchPb watchPbNew(ILits voc, IVecInt lits,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree) {
-		IDataStructurePB mpb = null;
-		mpb = Pseudos.niceCheckedParameters(lits, coefs, moreThan, degree, voc);
-		return new MaxWatchPb(voc, mpb);
-	}
-
-	/**
-	 * @param s
-	 *            a unit propagation listener
-	 * @param voc
-	 *            the vocabulary
-	 * @param mpb
-	 *            the PB constraint to normalize.
-	 * @return a new PB contraint or null if a trivial inconsistency is
-	 *         detected.
-	 */
-	public static MaxWatchPb normalizedMaxWatchPbNew(UnitPropagationListener s,
-			ILits voc, IDataStructurePB mpb) throws ContradictionException {
-		// Il ne faut pas modifier les param?tres
-		MaxWatchPb outclause = new MaxWatchPb(voc, mpb);
-
-		if (outclause.degree.signum() <= 0) {
-			return null;
-		}
-
-		outclause.computeWatches();
-
-		outclause.computePropagation(s);
-
-		return outclause;
-
 	}
 
 	/**

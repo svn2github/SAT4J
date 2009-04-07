@@ -42,7 +42,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class CompetPBMaxMixedHTClauseCardConstrDataStructure extends
-		CompetPBMaxClauseCardConstrDataStructure {
+		PBMaxClauseCardConstrDataStructure {
 
 	/**
      * 
@@ -51,7 +51,6 @@ public class CompetPBMaxMixedHTClauseCardConstrDataStructure extends
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
-		// return WLClausePB.brandNewClause(solver, getVocabulary(), v);
 		if (v == null)
 			return null;
 		if (v.size() == 2) {

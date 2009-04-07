@@ -29,60 +29,14 @@ package org.sat4j.pb.constraints;
 
 import java.math.BigInteger;
 
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.Pseudos;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
+final class PBContainer {
+	final int[] lits;
+	final BigInteger[] coefs;
+	final BigInteger degree;
 
-/**
- * 
- * @author anne
- */
-public class CompetPBMaxClauseCardConstrDataStructure extends
-		PBMaxClauseCardConstrDataStructure {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected Constr constraintFactory(IVecInt literals,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-			throws ContradictionException {
-		int[] theLits = new int[literals.size()];
-		literals.copyTo(theLits);
-		BigInteger[] normCoefs = new BigInteger[coefs.size()];
-		coefs.copyTo(normCoefs);
-
-		BigInteger bigDegree = Pseudos.niceParametersForCompetition(theLits,
-				normCoefs, moreThan, degree);
-		if (bigDegree == null)
-			return null;
-		if (bigDegree.equals(BigInteger.ONE)) {
-			IVecInt v = Clauses.sanityCheck(new VecInt(theLits),
-					getVocabulary(), solver);
-			if (v == null)
-				return null;
-			return constructClause(v);
-		}
-		if (coefficientsEqualToOne(new Vec<BigInteger>(normCoefs))) {
-			assert bigDegree.compareTo(MAX_INT_VALUE) < 0;
-			return constructCard(new VecInt(theLits), bigDegree.intValue());
-		}
-		// return constructPB(mpb);
-		return constructPB(theLits, normCoefs, bigDegree);
+	PBContainer(int[] lits, BigInteger[] coefs, BigInteger degree) {
+		this.lits = lits;
+		this.coefs = coefs;
+		this.degree = degree;
 	}
-
 }

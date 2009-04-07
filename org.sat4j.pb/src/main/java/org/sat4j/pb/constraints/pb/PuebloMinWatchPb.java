@@ -29,13 +29,9 @@ package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
 
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
 public class PuebloMinWatchPb extends MinWatchPb {
 
@@ -55,6 +51,11 @@ public class PuebloMinWatchPb extends MinWatchPb {
 	 * @param degree
 	 *            Stockage du degr??? de la contrainte
 	 */
+	private PuebloMinWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
+			BigInteger degree) {
+		super(voc, lits, coefs, degree);
+	}
+
 	private PuebloMinWatchPb(ILits voc, IDataStructurePB mpb) {
 
 		super(voc, mpb);
@@ -62,52 +63,25 @@ public class PuebloMinWatchPb extends MinWatchPb {
 
 	/**
 	 * @param s
-	 *            outil pour la propagation des litt???raux
-	 * @param ps
-	 *            liste des litt???raux de la nouvelle contrainte
+	 *            a unit propagation listener
+	 * @param voc
+	 *            the vocabulary
+	 * @param lits
+	 *            the literals
 	 * @param coefs
-	 *            liste des coefficients des litt???raux de la contrainte
-	 * @param moreThan
-	 *            d???termine si c'est une sup???rieure ou ???gal ??? l'origine
+	 *            the coefficients
 	 * @param degree
-	 *            fournit le degr??? de la contrainte
-	 * @return une nouvelle clause si tout va bien, ou null si un conflit est
-	 *         d???tect???
+	 *            the degree of the constraint to normalize.
+	 * @return a new PB constraint or null if a trivial inconsistency is
+	 *         detected.
 	 */
-	public static PuebloMinWatchPb minWatchPbNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, IVecInt coefs, boolean moreThan, int degree)
+	public static PuebloMinWatchPb normalizedMinWatchPbNew(
+			UnitPropagationListener s, ILits voc, int[] lits,
+			BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
-		return minWatchPbNew(s, voc, ps, Pseudos.toVecBigInt(coefs), moreThan,
-				toBigInt(degree));
-	}
-
-	/**
-	 * @param s
-	 *            outil pour la propagation des litt???raux
-	 * @param ps
-	 *            liste des litt???raux de la nouvelle contrainte
-	 * @param coefs
-	 *            liste des coefficients des litt???raux de la contrainte
-	 * @param moreThan
-	 *            d???termine si c'est une sup???rieure ou ???gal ??? l'origine
-	 * @param degree
-	 *            fournit le degr??? de la contrainte
-	 * @return une nouvelle clause si tout va bien, ou null si un conflit est
-	 *         d???tect???
-	 */
-	public static PuebloMinWatchPb minWatchPbNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, IVec<BigInteger> coefs, boolean moreThan,
-			BigInteger degree) throws ContradictionException {
 		// Il ne faut pas modifier les param?tres
-		VecInt litsVec = new VecInt(ps.size());
-		IVec<BigInteger> coefsVec = new Vec<BigInteger>(coefs.size());
-		ps.copyTo(litsVec);
-		coefs.copyTo(coefsVec);
-
-		// Ajouter les simplifications quand la structure sera d???finitive
-		IDataStructurePB mpb = Pseudos.niceParameters(litsVec, coefsVec,
-				moreThan, degree, voc);
-		PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, mpb);
+		PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, lits, coefs,
+				degree);
 
 		if (outclause.degree.signum() <= 0) {
 			return null;
@@ -119,41 +93,6 @@ public class PuebloMinWatchPb extends MinWatchPb {
 
 		return outclause;
 
-	}
-
-	public static PuebloMinWatchPb minWatchPbNew(UnitPropagationListener s,
-			ILits voc, IDataStructurePB mpb) throws ContradictionException {
-		PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, mpb);
-
-		if (outclause.degree.signum() <= 0) {
-			return null;
-		}
-
-		outclause.computeWatches();
-
-		outclause.computePropagation(s);
-
-		return outclause;
-
-	}
-
-	/**
-     * 
-     */
-	public static WatchPb watchPbNew(ILits voc, IVecInt lits, IVecInt coefs,
-			boolean moreThan, int degree) {
-		return watchPbNew(voc, lits, Pseudos.toVecBigInt(coefs), moreThan,
-				toBigInt(degree));
-	}
-
-	/**
-     * 
-     */
-	public static WatchPb watchPbNew(ILits voc, IVecInt lits,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree) {
-		IDataStructurePB mpb = null;
-		mpb = Pseudos.niceCheckedParameters(lits, coefs, moreThan, degree, voc);
-		return new PuebloMinWatchPb(voc, mpb);
 	}
 
 	public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {

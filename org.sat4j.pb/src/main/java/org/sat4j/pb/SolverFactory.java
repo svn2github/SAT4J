@@ -39,7 +39,7 @@ import org.sat4j.minisat.orders.UserFixedPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
-import org.sat4j.pb.constraints.CompetPBMaxClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxCBClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseAtLeastConstrDataStructure;
@@ -133,10 +133,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return newPBCP(new PBMaxClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverCP newCompetPBCPMixedConstraints() {
-		return newPBCP(new CompetPBMaxClauseCardConstrDataStructure());
-	}
-
 	/**
 	 * @return MiniSAT with Counter-based pseudo boolean constraints and
 	 *         constraint learning. Clauses and cardinalities with watched
@@ -144,12 +140,12 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *         taking into account the objective value is used.
 	 */
 	public static PBSolverCP newPBCPMixedConstraintsObjective() {
-		return newPBCP(new CompetPBMaxClauseCardConstrDataStructure(),
+		return newPBCP(new PBMaxClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective());
 	}
 
 	public static PBSolverCP newCompetPBCPMixedConstraintsObjective() {
-		return newPBCP(new CompetPBMaxClauseCardConstrDataStructure(),
+		return newPBCP(new PBMaxClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective());
 	}
 
@@ -173,7 +169,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	public static PBSolverCP newCompetPBCPMixedConstraintsObjectiveLearnJustClauses() {
 		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
 		PBSolverCP solver = new PBSolverCP(new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
+				new PBMaxClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective());
 		learning.setSolver(solver);
 		return solver;
@@ -203,7 +199,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	private static PBSolverCP newCompetPBKiller(IPhaseSelectionStrategy phase) {
 		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
 		PBSolverCP solver = new PBSolverCP(new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
+				new PBMaxClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective(phase));
 		learning.setSolver(solver);
 		return solver;
@@ -240,18 +236,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverCP newCompetMiniLearningOPBClauseCardConstrMaxSpecificOrderIncrementalReductionToClause() {
-		// LimitedLearning learning = new LimitedLearning(10);
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		// LearningStrategy learning = new NoLearningButHeuristics();
-		PBSolverCP solver = new PBSolverClause(new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
 	/**
 	 * @return MiniLearning with Counter-based pseudo boolean constraints and
 	 *         constraint learning. Clauses and cardinalities with watched
@@ -270,31 +254,10 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverCP newCompetPBCPMixedConstraintsObjectiveNoLearning() {
-		NoLearningButHeuristics<PBDataStructureFactory> learning = new NoLearningButHeuristics<PBDataStructureFactory>();
-		// SearchParams params = new SearchParams(1.1,100);
-		PBSolverCP solver = new PBSolverCP(new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setSolver(solver);
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
 	public static PBSolverResolution newPBResMixedConstraintsObjective() {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
 				learning, new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResMixedConstraintsObjective() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
-				learning, new CompetPBMaxClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective(), new MiniSATRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
@@ -312,14 +275,31 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
+	public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjective() {
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
+				learning,
+				new CompetMinHTmixedClauseCardConstrDataStructureFactory(),
+				new VarOrderHeapObjective(), new MiniSATRestarts());
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
+		return solver;
+	}
+
 	public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newCompetPBResMixedConstraintsObjective();
+		PBSolverResolution solver = newPBResMixedConstraintsObjective();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
 
 	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
 		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+		return solver;
+	}
+
+	public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjectiveExpSimp() {
+		PBSolverResolution solver = newCompetPBResMinHTMixedConstraintsObjective();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
@@ -340,16 +320,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverClause newCompetPBCPMixedConstraintsReduceToClause() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverClause solver = new PBSolverClause(new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeap());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
 	/**
 	 * @return MiniSAT with Counter-based pseudo boolean constraints and
 	 *         constraint learning. Clauses and cardinalities with watched
@@ -361,17 +331,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		PBSolverWithImpliedClause solver = new PBSolverWithImpliedClause(
 				new FirstUIP(), learning,
 				new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverWithImpliedClause newCompetPBCPMixedConstrainsImplied() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverWithImpliedClause solver = new PBSolverWithImpliedClause(
-				new FirstUIP(), learning,
-				new CompetPBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeap());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
