@@ -102,15 +102,15 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
                     kind = "maxsat";
                 }
                 if ("minone".equalsIgnoreCase(kind)) {
-                    asolver = new MinOneDecorator(SolverFactory.newLight());
+                    asolver = new MinOneDecorator(SolverFactory.newDefault());
                 } else if ("mincost".equalsIgnoreCase(kind)||args[problemindex].endsWith(".p2cnf")) {
-                    asolver = new MinCostDecorator(SolverFactory.newLight());
+                    asolver = new MinCostDecorator(SolverFactory.newDefault());
                 } else {
                     assert "maxsat".equalsIgnoreCase(kind);
 
                     if (args[problemindex].endsWith(".wcnf")) { //$NON-NLS-1$
                         asolver = new WeightedMaxSatDecorator(SolverFactory
-                                .newLight());
+                                .newDefault());
                     } else {
                         asolver = new MaxSatDecorator(SolverFactory
                                 .newMiniMaxSAT());
