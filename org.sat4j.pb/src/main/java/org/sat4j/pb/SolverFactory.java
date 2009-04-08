@@ -461,7 +461,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *      instance of ASolverFactory.
 	 */
 	public static IPBSolver newDefault() {
-		return newCompetPBResHTMixedConstraintsObjectiveExpSimp();
+		return newCompetPBResMinHTMixedConstraintsObjectiveExpSimp();
 	}
 
 	@Override
