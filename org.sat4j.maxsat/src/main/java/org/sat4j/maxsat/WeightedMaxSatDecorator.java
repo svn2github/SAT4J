@@ -303,6 +303,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         coefs.clear();
         lits.clear();
         nbnewvar = 0;
+        previousPBConstr = null;
         super.reset();
     }
 
