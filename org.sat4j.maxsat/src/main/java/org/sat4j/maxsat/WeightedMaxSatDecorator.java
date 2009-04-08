@@ -67,6 +67,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 	protected boolean[] prevboolmodel;
 
     protected int[] prevfullmodel;
+    
+    private IConstr previousPBConstr;
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
         super(solver);
@@ -333,7 +335,10 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     public void discardCurrentSolution() throws ContradictionException {
         assert lits.size() == coefs.size();
-        super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
+        if (previousPBConstr!=null) {
+        	removeConstr(previousPBConstr);
+        }
+        previousPBConstr = super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
     }
 
 	public Number getObjectiveValue() {
