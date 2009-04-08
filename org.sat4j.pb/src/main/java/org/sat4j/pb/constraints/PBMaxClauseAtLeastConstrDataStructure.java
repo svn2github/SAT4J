@@ -27,9 +27,16 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
+import java.math.BigInteger;
+
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
+import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.AtLeastPB;
+import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class PBMaxClauseAtLeastConstrDataStructure extends
@@ -46,10 +53,13 @@ public class PBMaxClauseAtLeastConstrDataStructure extends
 		return AtLeastPB.atLeastNew(solver, getVocabulary(), theLits, degree);
 	}
 
-	// @Override
-	// protected PBConstr constructLearntCard(IVecInt literals, int degree) {
-	// // return new MinWatchCardPB(getVocabulary(),literals,true,degree);
-	// return AtLeastPB.atLeastNew(getVocabulary(), literals, degree);
-	// }
+	@Override
+	protected Constr constructLearntCard(IDataStructurePB dspb) {
+		IVecInt resLits = new VecInt();
+		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+		dspb.buildConstraintFromConflict(resLits, resCoefs);
+		return AtLeastPB.atLeastNew(getVocabulary(), resLits, dspb.getDegree()
+				.intValue());
+	}
 
 }

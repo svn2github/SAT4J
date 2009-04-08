@@ -60,9 +60,13 @@ public class CompetMinHTmixedClauseCardConstrDataStructureFactory extends
 				MinWatchCard.ATLEAST, degree);
 	}
 
-	// @Override
-	// protected Constr constructLearntCard(IVecInt literals, int degree) {
-	// return new MinWatchCard(getVocabulary(), literals, true, degree);
-	// }
+	@Override
+	protected Constr constructLearntCard(IDataStructurePB dspb) {
+		IVecInt resLits = new VecInt();
+		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+		dspb.buildConstraintFromConflict(resLits, resCoefs);
+		return new MinWatchCard(getVocabulary(), resLits, true, dspb
+				.getDegree().intValue());
+	}
 
 }
