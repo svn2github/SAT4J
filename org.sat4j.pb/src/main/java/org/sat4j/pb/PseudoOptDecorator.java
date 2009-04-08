@@ -31,6 +31,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -56,27 +57,26 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	private int[] prevmodel;
 	private boolean[] prevfullmodel;
 
+	private IConstr previousPBConstr;
+
 	public PseudoOptDecorator(IPBSolver solver) {
 		super(solver);
 	}
 
-	
 	@Override
 	public boolean isSatisfiable() throws TimeoutException {
 		return isSatisfiable(VecInt.EMPTY);
 	}
 
-
 	@Override
 	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY,global);
+		return isSatisfiable(VecInt.EMPTY, global);
 	}
-
 
 	@Override
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps,true);
+		boolean result = super.isSatisfiable(assumps, true);
 		if (result) {
 			prevmodel = super.model();
 			prevfullmodel = new boolean[nVars()];
@@ -87,12 +87,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		return result;
 	}
 
-
 	@Override
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		return isSatisfiable(assumps,true);
+		return isSatisfiable(assumps, true);
 	}
-
 
 	@Override
 	public void setObjectiveFunction(ObjectiveFunction objf) {
@@ -106,7 +104,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps,true);
+		boolean result = super.isSatisfiable(assumps, true);
 		if (result) {
 			prevmodel = super.model();
 			prevfullmodel = new boolean[nVars()];
@@ -132,8 +130,17 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	}
 
 	public void discardCurrentSolution() throws ContradictionException {
-		super.addPseudoBoolean(objfct.getVars(), objfct.getCoeffs(), false,
-				objectiveValue.subtract(BigInteger.ONE));
+		if (previousPBConstr != null) {
+			super.removeConstr(previousPBConstr);
+		}
+		previousPBConstr = super.addPseudoBoolean(objfct.getVars(), objfct
+				.getCoeffs(), false, objectiveValue.subtract(BigInteger.ONE));
+	}
+
+	@Override
+	public void reset() {
+		previousPBConstr = null;
+		super.reset();
 	}
 
 	@Override
