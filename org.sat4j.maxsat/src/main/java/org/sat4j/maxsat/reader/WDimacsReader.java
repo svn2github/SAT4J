@@ -46,9 +46,9 @@ public class WDimacsReader extends DimacsReader {
 	}
 
 	@Override
-	protected boolean handleLine(Scanner scan) throws ContradictionException {
-		weight = scan.nextBigInteger();
-		return super.handleLine(scan);
+	protected boolean handleLine() throws ContradictionException, IOException, ParseFormatException {
+		weight = scanner.nextBigInteger();
+		return super.handleLine();
 	}
 
 	/**
@@ -69,39 +69,35 @@ public class WDimacsReader extends DimacsReader {
     }
 
     @Override
-    protected void readProblemLine(LineNumberReader in) throws IOException,
+    protected void readProblemLine() throws IOException,
             ParseFormatException {
-        String line = in.readLine();
+    	String line = scanner.nextLine().trim();
 
-        if (line == null) {
-            throw new ParseFormatException(
-                    "premature end of file: <p cnf ...> expected  on line "
-                            + in.getLineNumber());
-        }
-        StringTokenizer stk = new StringTokenizer(line);
+		if (line == null) {
+			throw new ParseFormatException(
+					"premature end of file: <p cnf ...> expected");
+		}
+		String[] tokens = line.split(" ");
+		if (tokens.length < 4 || !"p".equals(tokens[0])
+				|| !formatString.equals(tokens[1])) {
+			throw new ParseFormatException("problem line expected (p cnf ...)");
+		}
 
-        if (!(stk.hasMoreTokens() && stk.nextToken().equals("p")
-                && stk.hasMoreTokens() && stk.nextToken().equals(formatString))) {
-            throw new ParseFormatException(
-                    "problem line expected (p cnf ...) on line "
-                            + in.getLineNumber());
-        }
+		int vars;
 
-        int vars;
-
-        // reads the max var id
-        vars = Integer.parseInt(stk.nextToken());
-        assert vars > 0;
-        solver.newVar(vars);
-        // reads the number of clauses
-        expectedNbOfConstr = Integer.parseInt(stk.nextToken());
-        assert expectedNbOfConstr > 0;
-        solver.setExpectedNumberOfClauses(expectedNbOfConstr);
-
+		// reads the max var id
+		vars = Integer.parseInt(tokens[2]);
+		assert vars > 0;
+		solver.newVar(vars);
+		// reads the number of clauses
+		expectedNbOfConstr = Integer.parseInt(tokens[3]);
+		assert expectedNbOfConstr > 0;
+		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
+		
         if ("wcnf".equals(formatString)) {
             // assume we are in weighted MAXSAT mode
-            if (stk.hasMoreTokens()) {
-                top = new BigInteger(stk.nextToken());
+            if (tokens.length==5) {
+                top = new BigInteger(tokens[4]);
             } else {
                 top = WeightedMaxSatDecorator.SAT4J_MAX_BIG_INTEGER;
             }             

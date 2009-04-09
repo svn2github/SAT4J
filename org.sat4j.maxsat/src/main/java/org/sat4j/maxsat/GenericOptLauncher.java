@@ -27,7 +27,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
-import org.sat4j.maxsat.reader.P2DimacsReader;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.opt.MinOneDecorator;
@@ -75,9 +74,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
     protected Reader createReader(ISolver aSolver, String problemname) {
         if (problemname.endsWith(".wcnf")) { //$NON-NLS-1$
             return new WDimacsReader(( WeightedMaxSatDecorator)aSolver); //$NON-NLS-1$
-        } else if (problemname.endsWith("p2cnf")) {
-            return new P2DimacsReader((MinCostDecorator)aSolver);
-        }
+        } 
         return new DimacsReader(aSolver);
     }
 
