@@ -315,6 +315,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		constrs.remove(c);
 		clearLearntClauses();
 		cancelLearntLiterals();
+		String type = c.getClass().getName();
+		constrTypes.get(type).dec();
 		return true;
 	}
 
@@ -330,6 +332,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		Constr c = (Constr) co;
 		c.remove();
 		constrs.pop();
+		String type = c.getClass().getName();
+		constrTypes.get(type).dec();
 		return true;
 	}
 

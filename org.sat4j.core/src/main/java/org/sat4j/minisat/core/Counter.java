@@ -34,6 +34,10 @@ public class Counter {
 		value++;
 	}
 
+	public void dec() {
+		value--;
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);
