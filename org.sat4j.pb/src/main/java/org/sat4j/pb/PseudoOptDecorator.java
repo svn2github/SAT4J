@@ -111,7 +111,9 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 			for (int i = 0; i < nVars(); i++) {
 				prevfullmodel[i] = decorated().model(i + 1);
 			}
-			calculateObjective();
+			if (objfct != null) {
+				calculateObjective();
+			}
 		}
 		return result;
 	}
