@@ -131,7 +131,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	public void discardCurrentSolution() throws ContradictionException {
 		if (previousPBConstr != null) {
-			super.removeConstr(previousPBConstr);
+			super.removeSubsumedConstr(previousPBConstr);
 		}
 		previousPBConstr = super.addPseudoBoolean(objfct.getVars(), objfct
 				.getCoeffs(), false, objectiveValue.subtract(BigInteger.ONE));
