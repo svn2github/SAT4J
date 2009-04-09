@@ -93,7 +93,7 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
 	public void discardCurrentSolution() throws ContradictionException {
 		if (prevConstr != null) {
-			super.removeConstr(prevConstr);
+			super.removeSubsumedConstr(prevConstr);
 		}
 		prevConstr = super.addAtMost(lits, counter - 1);
 	}

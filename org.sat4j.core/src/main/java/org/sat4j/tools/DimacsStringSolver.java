@@ -255,7 +255,7 @@ public class DimacsStringSolver implements ISolver {
 		// for (int i = 0; i < numClausesLength; ++i) {
 		// out.setCharAt(firstCharPos + i, numClauses.charAt(i));
 		// }
-		out.insert(firstCharPos, "p cnf "+maxvarid+" "+nbclauses);
+		out.insert(firstCharPos, "p cnf " + maxvarid + " " + nbclauses);
 		return out.toString();
 	}
 
@@ -297,5 +297,9 @@ public class DimacsStringSolver implements ISolver {
 			return maxvarid;
 		}
 		return maxvarid;
+	}
+
+	public boolean removeSubsumedConstr(IConstr c) {
+		return false;
 	}
 }

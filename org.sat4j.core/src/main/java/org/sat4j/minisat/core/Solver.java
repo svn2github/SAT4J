@@ -318,6 +318,21 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return true;
 	}
 
+	public boolean removeSubsumedConstr(IConstr co) {
+		if (co == null) {
+			throw new IllegalArgumentException(
+					"Reference to the constraint to remove needed!"); //$NON-NLS-1$
+		}
+		if (constrs.last() != co) {
+			throw new IllegalArgumentException(
+					"Can only rtemoved latest added constraint!!!"); //$NON-NLS-1$
+		}
+		Constr c = (Constr) co;
+		c.remove();
+		constrs.pop();
+		return true;
+	}
+
 	public void addAllClauses(IVec<IVecInt> clauses)
 			throws ContradictionException {
 		for (Iterator<IVecInt> iterator = clauses.iterator(); iterator
@@ -951,7 +966,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		stats.reduceddb++;
 		for (i = j = 0; i < learnts.size() / 2; i++) {
 			Constr c = learnts.get(i);
-			if (c.locked() || c.size()==2) {
+			if (c.locked() || c.size() == 2) {
 				learnts.set(j++, learnts.get(i));
 			} else {
 				c.remove();
