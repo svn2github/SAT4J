@@ -445,6 +445,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	private boolean[] mseen = new boolean[0];
+	private int[] mflags = new int[0];
+	private int flag = 0;
 
 	private final IVecInt preason = new VecInt();
 
@@ -472,8 +474,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			preason.clear();
 			assert confl != null;
 			confl.calcReason(p, preason);
-			if (confl.learnt())
-				claBumpActivity(confl);
+			// if (confl.learnt())
+			// claBumpActivity(confl);
 			// Trace reason for p
 			for (int j = 0; j < preason.size(); j++) {
 				int q = preason.get(j);
@@ -504,9 +506,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		outLearnt.set(0, p ^ 1);
 		simplifier.simplify(outLearnt);
 
+		int nblevel = 1;
+		flag++;
+		int[] flags = mflags;
+		int currentLevel;
+		for (int i = 1; i < outLearnt.size(); i++) {
+			currentLevel = voc.getLevel(outLearnt.get(i));
+			if (flags[currentLevel] != flag) {
+				flags[currentLevel] = flag;
+				nblevel++;
+			}
+		}
 		Constr c = dsfactory.createUnregisteredClause(outLearnt);
 		slistener.learn(c);
-
+		c.incActivity(nblevel);
 		results.reason = c;
 
 		assert outBtlevel > -1;
@@ -968,19 +981,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		int i, j;
 		sortOnActivity();
 		stats.reduceddb++;
-		for (i = j = 0; i < learnts.size() / 2; i++) {
+		for (i = j = learnts.size() / 2; i < learnts.size(); i++) {
 			Constr c = learnts.get(i);
-			if (c.locked() || c.size() == 2) {
+			if (c.locked() || c.getActivity() <= 2.0) {
 				learnts.set(j++, learnts.get(i));
 			} else {
 				c.remove();
 			}
 		}
-		for (; i < learnts.size(); i++) {
-			learnts.set(j++, learnts.get(i));
-		}
 		System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
-				+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+				+ " clauses out of " + learnts.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
 		learnts.shrinkTo(j);
 	}
 
@@ -1039,6 +1049,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		final int howmany = voc.nVars();
 		if (mseen.length < howmany) {
 			mseen = new boolean[howmany + 1];
+			mflags = new int[howmany + 1];
 		}
 		trail.ensure(howmany);
 		trailLim.ensure(howmany);
@@ -1081,17 +1092,36 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		learner.init();
 		restarter.init(params);
 
-		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
+		// final long memorybound = Runtime.getRuntime().freeMemory() / 10;
+		//
+		// ConflictTimer freeMem = new ConflictTimerAdapter(500) {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// void run() {
+		// long freemem = Runtime.getRuntime().freeMemory();
+		// // System.out.println("c Free memory "+freemem);
+		// if (freemem < memorybound) {
+		// // Reduce the set of learnt clauses
+		// needToReduceDB = true;
+		// }
+		// }
+		// };
 
-		ConflictTimer freeMem = new ConflictTimerAdapter(500) {
+		ConflictTimer clauseManagement = new ConflictTimerAdapter(500) {
 			private static final long serialVersionUID = 1L;
+			private int nbconflict = 0;
+			private static final int MAX_CLAUSE = 20000;
+			private static final int INC_CLAUSE = 500;
+			private int nextbound = MAX_CLAUSE;
 
 			@Override
 			void run() {
-				long freemem = Runtime.getRuntime().freeMemory();
-				// System.out.println("c Free memory "+freemem);
-				if (freemem < memorybound) {
-					// Reduce the set of learnt clauses
+				nbconflict += INC_CLAUSE;
+
+				if (nbconflict >= nextbound) {
+					nextbound += INC_CLAUSE;
+					nbconflict = 0;
 					needToReduceDB = true;
 				}
 			}
@@ -1107,7 +1137,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				};
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
-				conflictCount = freeMem;
+				conflictCount = new ConflictTimerContainer()
+						.add(clauseManagement);
 			}
 		} else {
 			if (!global || conflictCount == null) {
@@ -1121,7 +1152,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					}
 				};
 				conflictCount = new ConflictTimerContainer().add(
-						conflictTimeout).add(freeMem);
+						conflictTimeout).add(clauseManagement);
 			}
 		}
 		needToReduceDB = false;
