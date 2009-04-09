@@ -25,6 +25,7 @@ import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PBSolverDecorator;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -56,6 +57,8 @@ public class MinCostDecorator extends PBSolverDecorator implements
 	private final IVec<BigInteger> coeffs = new Vec<BigInteger>();
 
 	private int objectivevalue;
+
+	private IConstr prevConstr;
 
 	public MinCostDecorator(IPBSolver solver) {
 		super(solver);
@@ -157,8 +160,17 @@ public class MinCostDecorator extends PBSolverDecorator implements
 	}
 
 	public void discardCurrentSolution() throws ContradictionException {
-		super.addPseudoBoolean(vars, coeffs, false, BigInteger
+		if (prevConstr!=null) {
+			super.removeSubsumedConstr(prevConstr);
+		}
+		prevConstr = super.addPseudoBoolean(vars, coeffs, false, BigInteger
 				.valueOf(objectivevalue - 1));
+	}
+
+	@Override
+	public void reset() {
+		prevConstr = null;
+		super.reset();
 	}
 
 	@Override

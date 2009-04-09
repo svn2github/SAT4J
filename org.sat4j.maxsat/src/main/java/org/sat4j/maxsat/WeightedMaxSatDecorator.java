@@ -337,7 +337,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     public void discardCurrentSolution() throws ContradictionException {
         assert lits.size() == coefs.size();
         if (previousPBConstr!=null) {
-        	removeConstr(previousPBConstr);
+        	removeSubsumedConstr(previousPBConstr);
         }
         previousPBConstr = super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
     }
