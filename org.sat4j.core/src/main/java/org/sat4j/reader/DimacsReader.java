@@ -28,11 +28,9 @@
 package org.sat4j.reader;
 
 import java.io.IOException;
-import java.io.LineNumberReader;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -73,6 +71,8 @@ public class DimacsReader extends Reader implements Serializable {
 
 	protected final String formatString;
 
+	protected EfficientScanner scanner;
+
 	public DimacsReader(ISolver solver) {
 		this(solver, "cnf");
 	}
@@ -94,18 +94,8 @@ public class DimacsReader extends Reader implements Serializable {
 	 * @throws IOException
 	 *             if an IO problem occurs.
 	 */
-	protected void skipComments(final LineNumberReader in) throws IOException {
-		int c;
-
-		do {
-			in.mark(4);
-			c = in.read();
-			if (c == 'c') {
-				in.readLine();
-			} else {
-				in.reset();
-			}
-		} while (c == 'c');
+	protected void skipComments() throws IOException {
+		scanner.skipComments();
 	}
 
 	/**
@@ -116,39 +106,34 @@ public class DimacsReader extends Reader implements Serializable {
 	 * @throws ParseFormatException
 	 *             if the input stream does not comply with the DIMACS format.
 	 */
-	protected void readProblemLine(LineNumberReader in) throws IOException,
-			ParseFormatException {
+	protected void readProblemLine() throws IOException, ParseFormatException {
 
-		String line = in.readLine();
+		String line = scanner.nextLine().trim();
 
 		if (line == null) {
 			throw new ParseFormatException(
-					"premature end of file: <p cnf ...> expected  on line "
-							+ in.getLineNumber());
+					"premature end of file: <p cnf ...> expected");
 		}
-		StringTokenizer stk = new StringTokenizer(line);
-
-		if (!(stk.hasMoreTokens() && stk.nextToken().equals("p")
-				&& stk.hasMoreTokens() && stk.nextToken().equals(formatString))) {
-			throw new ParseFormatException(
-					"problem line expected (p cnf ...) on line "
-							+ in.getLineNumber());
+		String[] tokens = line.split(" ");
+		if (tokens.length < 4 || !"p".equals(tokens[0])
+				|| !formatString.equals(tokens[1])) {
+			throw new ParseFormatException("problem line expected (p cnf ...)");
 		}
 
 		int vars;
 
 		// reads the max var id
-		vars = Integer.parseInt(stk.nextToken());
+		vars = Integer.parseInt(tokens[2]);
 		assert vars > 0;
 		solver.newVar(vars);
 		// reads the number of clauses
-		expectedNbOfConstr = Integer.parseInt(stk.nextToken());
+		expectedNbOfConstr = Integer.parseInt(tokens[3]);
 		assert expectedNbOfConstr > 0;
 		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
 	}
 
 	protected IVecInt literals = new VecInt();
-	
+
 	/**
 	 * @param in
 	 *            the input stream
@@ -159,19 +144,16 @@ public class DimacsReader extends Reader implements Serializable {
 	 * @throws ContradictionException
 	 *             si le probl?me est trivialement inconsistant.
 	 */
-	protected void readConstrs(LineNumberReader in) throws IOException,
-			ParseFormatException, ContradictionException {
-		String line;
-
+	protected void readConstrs() throws IOException, ParseFormatException,
+			ContradictionException {
 		int realNbOfConstr = 0;
 
 		literals.clear();
 		boolean needToContinue = true;
-		
+
 		while (needToContinue) {
-			line = in.readLine();
 			boolean added = false;
-			if (line == null) {
+			if (scanner.eof()) {
 				// end of file
 				if (literals.size() > 0) {
 					// no 0 end the last clause
@@ -180,17 +162,18 @@ public class DimacsReader extends Reader implements Serializable {
 				}
 				needToContinue = false;
 			} else {
-				if (line.startsWith("c ")) {
+				if (scanner.currentChar() == 'c') {
 					// ignore comment line
+					scanner.skipRestOfLine();
 					continue;
 				}
-				if (line.startsWith("%")
+				if (scanner.currentChar() == '%'
 						&& expectedNbOfConstr == realNbOfConstr) {
 					System.out
 							.println("Ignoring the rest of the file (SATLIB format");
 					break;
 				}
-				added = handleConstr(line);
+				added = handleLine();
 			}
 			if (added) {
 				realNbOfConstr++;
@@ -202,41 +185,40 @@ public class DimacsReader extends Reader implements Serializable {
 		}
 	}
 
-	protected void flushConstraint()
-			throws ContradictionException {
+	protected void flushConstraint() throws ContradictionException {
 		solver.addClause(literals);
 	}
 
-	protected boolean handleConstr(String line)
-			throws ContradictionException {
-		Scanner scan;
-		scan = new Scanner(line);
-		return handleLine(scan);
-	}
-
-	protected boolean handleLine(Scanner scan)
-			throws ContradictionException {
+	protected boolean handleLine() throws ContradictionException, IOException,
+			ParseFormatException {
 		int lit;
 		boolean added = false;
-		while (scan.hasNext()) {
-			lit = scan.nextInt();
+		while (!scanner.eof()) {
+			lit = scanner.nextInt();
 			if (lit == 0) {
 				if (literals.size() > 0) {
 					flushConstraint();
 					literals.clear();
 					added = true;
 				}
-			} else {
-				literals.push(lit);
+				break;
 			}
+			literals.push(lit);
 		}
 		return added;
 	}
 
 	@Override
+	public IProblem parseInstance(InputStream in) throws ParseFormatException,
+			ContradictionException, IOException {
+		scanner = new EfficientScanner(in);
+		return parseInstance();
+	}
+
+	@Override
 	public final IProblem parseInstance(final java.io.Reader in)
 			throws ParseFormatException, ContradictionException, IOException {
-		return parseInstance(new LineNumberReader(in));
+		throw new UnsupportedOperationException();
 
 	}
 
@@ -248,19 +230,19 @@ public class DimacsReader extends Reader implements Serializable {
 	 * @throws ContradictionException
 	 *             si le probl?me est trivialement inconsitant
 	 */
-	private IProblem parseInstance(LineNumberReader in)
-			throws ParseFormatException, ContradictionException {
+	private IProblem parseInstance() throws ParseFormatException,
+			ContradictionException {
 		solver.reset();
 		try {
-			skipComments(in);
-			readProblemLine(in);
-			readConstrs(in);
+			skipComments();
+			readProblemLine();
+			readConstrs();
+			scanner.close();
 			return solver;
 		} catch (IOException e) {
 			throw new ParseFormatException(e);
 		} catch (NumberFormatException e) {
-			throw new ParseFormatException("integer value expected on line "
-					+ in.getLineNumber(), e);
+			throw new ParseFormatException("integer value expected ");
 		}
 	}
 

@@ -1137,8 +1137,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				};
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
-				conflictCount = new ConflictTimerContainer()
-						.add(clauseManagement);
+				conflictCount = clauseManagement;
 			}
 		} else {
 			if (!global || conflictCount == null) {
