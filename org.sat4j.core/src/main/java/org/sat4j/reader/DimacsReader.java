@@ -114,7 +114,7 @@ public class DimacsReader extends Reader implements Serializable {
 			throw new ParseFormatException(
 					"premature end of file: <p cnf ...> expected");
 		}
-		String[] tokens = line.split(" ");
+		String[] tokens = line.split("\\s+");
 		if (tokens.length < 4 || !"p".equals(tokens[0])
 				|| !formatString.equals(tokens[1])) {
 			throw new ParseFormatException("problem line expected (p cnf ...)");
