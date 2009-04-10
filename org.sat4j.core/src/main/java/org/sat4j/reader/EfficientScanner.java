@@ -99,6 +99,9 @@ public class EfficientScanner implements Serializable {
 			val = (val * 10) + currentChar - '0';
 			currentChar = (char) in.read();
 		}
+		if (currentChar == '\r') {
+			in.read(); // skip \r\n on windows.
+		}
 		return neg ? -val : val;
 	}
 
