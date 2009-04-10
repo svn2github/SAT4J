@@ -177,12 +177,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 		throws ContradictionException {
         if (weight.compareTo(top)<0) {
 
-            if (literals.size() == 2) {
+            if (literals.size() == 1) {
                 // if there is only a coefficient and a literal, no need to
                 // create
                 // a new variable
                 // check first if the literal is already in the list:
-                int lit = -literals.get(1);
+                int lit = -literals.get(0);
                 int index = lits.containsAt(lit);
                 if (index != -1) {
                     coefs.set(index, coefs.get(index).add(weight));
