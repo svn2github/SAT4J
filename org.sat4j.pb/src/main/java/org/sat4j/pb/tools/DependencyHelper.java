@@ -443,4 +443,12 @@ public class DependencyHelper<T, C> {
 	public void stopExplanation() {
 		xplain.cancelExplanation();
 	}
+
+	public void discard(IVec<T> things) throws ContradictionException {
+		IVecInt literals = new VecInt(things.size());
+		for (Iterator<T> it = things.iterator(); it.hasNext();) {
+			literals.push(-getIntValue(it.next()));
+		}
+		xplain.addClause(literals);
+	}
 }
