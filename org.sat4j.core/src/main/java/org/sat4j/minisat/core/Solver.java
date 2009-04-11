@@ -1047,7 +1047,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		Lbool status = Lbool.UNDEFINED;
 
 		final int howmany = voc.nVars();
-		if (mseen.length < howmany) {
+		if (mseen.length <= howmany) {
 			mseen = new boolean[howmany + 1];
 			mflags = new int[howmany + 1];
 		}
