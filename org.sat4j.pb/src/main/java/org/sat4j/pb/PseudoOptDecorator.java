@@ -86,6 +86,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		} else {
 			if (previousPBConstr != null) {
 				decorated().removeConstr(previousPBConstr);
+				previousPBConstr = null;
 			}
 		}
 		return result;
@@ -121,6 +122,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		} else {
 			if (previousPBConstr != null) {
 				decorated().removeConstr(previousPBConstr);
+				previousPBConstr = null;
 			}
 		}
 		return result;
