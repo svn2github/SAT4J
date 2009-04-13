@@ -449,7 +449,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolution() {
-		return newCompetPBCPMixedConstraintsObjective();
+		return newCompetPBResMixedConstraintsObjectiveExpSimp();
 	}
 
 	/**
