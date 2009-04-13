@@ -327,7 +327,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 		if (constrs.last() != co) {
 			throw new IllegalArgumentException(
-					"Can only rtemoved latest added constraint!!!"); //$NON-NLS-1$
+					"Can only remove latest added constraint!!!"); //$NON-NLS-1$
 		}
 		Constr c = (Constr) co;
 		c.remove();
