@@ -78,6 +78,8 @@ public class DependencyHelper<T, C> {
 	private INegator<T> negator = NO_NEGATION;
 
 	private ObjectiveFunction objFunction;
+	private IVecInt objLiterals;
+	private IVec<BigInteger> objCoefs;
 
 	/**
 	 * 
@@ -333,6 +335,22 @@ public class DependencyHelper<T, C> {
 	}
 
 	/**
+	 * Create a clause (thing1 or thing 2 ... or thingn)
+	 * 
+	 * @param name
+	 * @param things
+	 * 
+	 * @throws ContradictionException
+	 */
+	public void clause(C name, T... things) throws ContradictionException {
+		IVecInt literals = new VecInt(things.length);
+		for (T t : things) {
+			literals.push(getIntValue(t));
+		}
+		descs.put(gator.addClause(literals), name);
+	}
+
+	/**
 	 * Create a constraint using equivalency chains thing <=> (thing1 <=> thing2
 	 * <=> ... <=> thingn)
 	 * 
@@ -376,7 +394,7 @@ public class DependencyHelper<T, C> {
 	}
 
 	/**
-	 * Create a constraint of the form thing <=> (thing1 and thing 2 ... and
+	 * Create a constraint of the form thing <=> (thing1 or thing 2 ... or
 	 * thingn)
 	 * 
 	 * @param name
@@ -424,14 +442,43 @@ public class DependencyHelper<T, C> {
 	 *            BigInteger).
 	 */
 	public void setObjectiveFunction(WeightedObject<T>... wobj) {
-		IVecInt literals = new VecInt(wobj.length);
-		IVec<BigInteger> coefs = new Vec<BigInteger>(wobj.length);
+		createObjectivetiveFunctionIfNeeded(wobj.length);
 		for (WeightedObject<T> wo : wobj) {
-			literals.push(getIntValue(wo.thing));
-			coefs.push(wo.getWeight());
+			objLiterals.push(getIntValue(wo.thing));
+			objCoefs.push(wo.getWeight());
 		}
-		objFunction = new ObjectiveFunction(literals, coefs);
-		xplain.setObjectiveFunction(objFunction);
+
+	}
+
+	private void createObjectivetiveFunctionIfNeeded(int n) {
+		if (objFunction == null) {
+			objLiterals = new VecInt(n);
+			objCoefs = new Vec<BigInteger>(n);
+			objFunction = new ObjectiveFunction(objLiterals, objCoefs);
+			xplain.setObjectiveFunction(objFunction);
+		}
+	}
+
+	/**
+	 * Add a weighted literal to the objective function.
+	 * 
+	 * @param thing
+	 * @param weight
+	 */
+	public void addToObjectiveFunction(T thing, int weight) {
+		addToObjectiveFunction(thing, BigInteger.valueOf(weight));
+	}
+
+	/**
+	 * Add a weighted literal to the objective function.
+	 * 
+	 * @param thing
+	 * @param weight
+	 */
+	public void addToObjectiveFunction(T thing, BigInteger weight) {
+		createObjectivetiveFunctionIfNeeded(20);
+		objLiterals.push(getIntValue(thing));
+		objCoefs.push(weight);
 	}
 
 	/**
