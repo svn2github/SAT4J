@@ -77,6 +77,8 @@ public class DependencyHelper<T, C> {
 
 	private INegator<T> negator = NO_NEGATION;
 
+	private ObjectiveFunction objFunction;
+
 	/**
 	 * 
 	 * @param solver
@@ -136,6 +138,10 @@ public class DependencyHelper<T, C> {
 			}
 		}
 		return toInstall;
+	}
+
+	public BigInteger getSolutionCost() {
+		return objFunction.calculateDegree(xplain.model());
 	}
 
 	/**
@@ -424,8 +430,8 @@ public class DependencyHelper<T, C> {
 			literals.push(getIntValue(wo.thing));
 			coefs.push(wo.getWeight());
 		}
-		ObjectiveFunction obj = new ObjectiveFunction(literals, coefs);
-		xplain.setObjectiveFunction(obj);
+		objFunction = new ObjectiveFunction(literals, coefs);
+		xplain.setObjectiveFunction(objFunction);
 	}
 
 	/**
