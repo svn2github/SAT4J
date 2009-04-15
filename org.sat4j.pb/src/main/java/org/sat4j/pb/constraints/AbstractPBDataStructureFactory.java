@@ -61,7 +61,7 @@ public abstract class AbstractPBDataStructureFactory extends
 				throws ContradictionException;
 	}
 
-	static final INormalizer FOR_COMPETITION = new INormalizer() {
+	public static final INormalizer FOR_COMPETITION = new INormalizer() {
 
 		private static final long serialVersionUID = 1L;
 
@@ -80,7 +80,7 @@ public abstract class AbstractPBDataStructureFactory extends
 
 	};
 
-	static final INormalizer NO_COMPETITION = new INormalizer() {
+	public static final INormalizer NO_COMPETITION = new INormalizer() {
 
 		private static final long serialVersionUID = 1L;
 
