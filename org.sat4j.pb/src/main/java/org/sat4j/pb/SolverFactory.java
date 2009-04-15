@@ -39,6 +39,7 @@ import org.sat4j.minisat.orders.UserFixedPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
+import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxCBClauseCardConstrDataStructure;
@@ -275,12 +276,36 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
+	public static PBSolverResolution newPBResHTMixedConstraintsObjective() {
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		AbstractPBDataStructureFactory ds = new CompetResolutionPBMixedHTClauseCardConstrDataStructure();
+		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
+				learning, ds, new VarOrderHeapObjective(),
+				new MiniSATRestarts());
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
+		return solver;
+	}
+
 	public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjective() {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
 				learning,
 				new CompetMinHTmixedClauseCardConstrDataStructureFactory(),
 				new VarOrderHeapObjective(), new MiniSATRestarts());
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
+		return solver;
+	}
+
+	public static PBSolverResolution newPBResMinHTMixedConstraintsObjective() {
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		AbstractPBDataStructureFactory ds = new CompetMinHTmixedClauseCardConstrDataStructureFactory();
+		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
+				learning, ds, new VarOrderHeapObjective(),
+				new MiniSATRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
@@ -294,6 +319,12 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
 		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+		return solver;
+	}
+
+	public static PBSolverResolution newPBResHTMixedConstraintsObjectiveExpSimp() {
+		PBSolverResolution solver = newPBResHTMixedConstraintsObjective();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
@@ -462,6 +493,18 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 */
 	public static IPBSolver newDefault() {
 		return newCompetPBResHTMixedConstraintsObjectiveExpSimp();
+	}
+
+	/**
+	 * Default solver of the SolverFactory for instances not normalized. This
+	 * solver is meant to be used on challenging SAT benchmarks.
+	 * 
+	 * @return the best "general purpose" SAT solver available in the factory.
+	 * @see #defaultSolver() the same method, polymorphic, to be called from an
+	 *      instance of ASolverFactory.
+	 */
+	public static IPBSolver newDefaultNonNormalized() {
+		return newPBResHTMixedConstraintsObjectiveExpSimp();
 	}
 
 	@Override
