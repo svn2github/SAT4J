@@ -1400,7 +1400,11 @@ class ActivityComparator implements Comparator<Constr>, Serializable {
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
 	public int compare(Constr c1, Constr c2) {
-		return (int) Math.round(c1.getActivity() - c2.getActivity());
+		long delta = Math.round(c1.getActivity() - c2.getActivity());
+		if (delta == 0) {
+			return c1.size() - c2.size();
+		}
+		return (int) delta;
 	}
 }
 
