@@ -55,24 +55,25 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	private int nbOfConstraints;
 
-	private static IConstr FAKE_CONSTR = new IConstr(){
-	
+	private static IConstr FAKE_CONSTR = new IConstr() {
+
 		public int size() {
 			throw new UnsupportedOperationException("Fake IConstr");
 		}
-	
+
 		public boolean learnt() {
 			throw new UnsupportedOperationException("Fake IConstr");
 		}
-	
+
 		public double getActivity() {
 			throw new UnsupportedOperationException("Fake IConstr");
 		}
-	
+
 		public int get(int i) {
 			throw new UnsupportedOperationException("Fake IConstr");
 		}
 	};
+
 	/**
 	 * 
 	 */
@@ -106,13 +107,10 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	public void setObjectiveFunction(ObjectiveFunction obj) {
 		StringBuffer out = getOut();
 		StringBuffer tmp = new StringBuffer();
-		tmp.append("* #variable= "+nVars());
+		tmp.append("* #variable= " + nVars());
 		tmp.append(" #constraint= " + nbOfConstraints + " \n");
 		tmp.append("min : ");
-		IVecInt lits = obj.getVars();
-		IVec<BigInteger> coeffs = obj.getCoeffs();
-		for (int i = 0; i < lits.size(); i++)
-			tmp.append(coeffs.get(i) + " x" + lits.get(i) + " ");
+		tmp.append(obj);
 		tmp.append(" ;\n");
 		out.insert(indxConstrObj, tmp);
 	}
@@ -200,6 +198,10 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	@Override
 	public void setExpectedNumberOfClauses(int nb) {
+	}
+
+	public ObjectiveFunction getObjectiveFunction() {
+		throw new UnsupportedOperationException();
 	}
 
 }

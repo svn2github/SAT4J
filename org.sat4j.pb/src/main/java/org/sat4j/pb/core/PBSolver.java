@@ -46,6 +46,8 @@ import org.sat4j.specs.IVecInt;
 public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 		IPBSolver {
 
+	private ObjectiveFunction objf;
+
 	/**
      * 
      */
@@ -74,9 +76,14 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 	}
 
 	public void setObjectiveFunction(ObjectiveFunction obj) {
+		objf = obj;
 		IOrder order = getOrder();
 		if (order instanceof VarOrderHeapObjective) {
 			((VarOrderHeapObjective) order).setObjectiveFunction(obj);
 		}
+	}
+
+	public ObjectiveFunction getObjectiveFunction() {
+		return objf;
 	}
 }

@@ -62,4 +62,8 @@ public class PBSolverDecorator extends SolverDecorator<IPBSolver> implements
 		decorated().setObjectiveFunction(obj);
 	}
 
+	public ObjectiveFunction getObjectiveFunction() {
+		return decorated().getObjectiveFunction();
+	}
+
 }

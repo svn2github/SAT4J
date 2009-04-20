@@ -92,4 +92,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 		decorated().setObjectiveFunction(obj);
 	}
 
+	public ObjectiveFunction getObjectiveFunction() {
+		return decorated().getObjectiveFunction();
+	}
 }

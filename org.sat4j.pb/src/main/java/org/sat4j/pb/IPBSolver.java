@@ -69,4 +69,6 @@ public interface IPBSolver extends ISolver {
 			boolean moreThan, BigInteger d) throws ContradictionException;
 
 	public void setObjectiveFunction(ObjectiveFunction obj);
+
+	public ObjectiveFunction getObjectiveFunction();
 }

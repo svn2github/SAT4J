@@ -504,4 +504,23 @@ public class DependencyHelper<T, C> {
 		}
 		xplain.addClause(literals);
 	}
+
+	public String getObjectiveFunction() {
+		ObjectiveFunction obj = xplain.getObjectiveFunction();
+		StringBuffer stb = new StringBuffer();
+		for (int i = 0; i < obj.getVars().size(); i++) {
+			stb.append(obj.getCoeffs().get(i)
+					+ (obj.getVars().get(i) > 0 ? " " : "~")
+					+ mapToDomain.get(Math.abs(obj.getVars().get(i))) + " ");
+		}
+		return stb.toString();
+	}
+
+	public int getNumberOfVariables() {
+		return mapToDimacs.size();
+	}
+
+	public int getNumberOfConstraints() {
+		return descs.size();
+	}
 }
