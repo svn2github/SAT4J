@@ -1138,6 +1138,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
 				conflictCount = clauseManagement;
+				undertimeout = true;
 			}
 		} else {
 			if (!global || conflictCount == null) {
@@ -1150,13 +1151,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 						undertimeout = false;
 					}
 				};
+				undertimeout = true;
 				conflictCount = new ConflictTimerContainer().add(
 						conflictTimeout).add(clauseManagement);
 			}
 		}
 		needToReduceDB = false;
-		undertimeout = true;
-
 		// Solve
 		while ((status == Lbool.UNDEFINED) && undertimeout) {
 			status = search(restarter.nextRestartNumberOfConflict());
