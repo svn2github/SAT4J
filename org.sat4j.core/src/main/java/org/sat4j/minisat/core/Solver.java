@@ -1084,6 +1084,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				return false;
 			}
 		}
+		// force the literals to be learned during search
+		// to be on decision level 1, not 0, in order to
+		// be able to undo them when quiting the search.
+		if (trailLim.size() == 0) {
+			trailLim.push(trail.size());
+		}
 		rootLevel = decisionLevel();
 
 		// moved initialization here if new literals are added in the
