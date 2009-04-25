@@ -145,6 +145,12 @@ public class SolverFactory extends ASolverFactory<ISolver> {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureDanielHT());
 	}
 
+	public static Solver<DataStructureFactory> newGlucose() {
+		Solver<DataStructureFactory> solver = newBestWL();
+		solver.setLearnedConstraintsDeletionStrategy(solver.GLUCOSE);
+		return solver;
+	}
+
 	/**
 	 * @param dsf
 	 *            a specific data structure factory
