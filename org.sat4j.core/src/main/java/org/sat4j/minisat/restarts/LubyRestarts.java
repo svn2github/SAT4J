@@ -31,83 +31,87 @@ import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 
 /**
- * Luby series 
+ * Luby series
  */
 public class LubyRestarts implements RestartStrategy {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static int[] cachedValues = new int[] { 0, 1, 1, 2 };
-    
-    public static final int luby(int i) {
-        if (i>=Integer.MAX_VALUE/2) {
-            throw new IllegalArgumentException("i is too big");
-        }
-        if (i >= cachedValues.length) {
-            int oldsize = cachedValues.length;
-            int newsize = i<<1;
-            int[] newContent = new int[newsize + 1];
-            System.arraycopy(cachedValues, 0, newContent, 0, oldsize);
-            int nextPowerOfTwo = 1;
-            while(nextPowerOfTwo<=oldsize)
-                    nextPowerOfTwo <<= 1;
-            
-            int lastPowerOfTwo = nextPowerOfTwo >> 1;
-            for (int j = oldsize; j <= newsize; j++) {
-                if (j + 1 == nextPowerOfTwo) {
-                    newContent[j] = lastPowerOfTwo;
-                    lastPowerOfTwo = nextPowerOfTwo;
-                    nextPowerOfTwo <<=1;
-                } else {
-                    newContent[j] = newContent[j - lastPowerOfTwo + 1];
-                }
-            }
-            cachedValues = newContent;
+	private static int[] cachedValues = new int[] { 0, 1, 1, 2 };
 
-        }
-        return cachedValues[i];
-    }
+	public static final int luby(int i) {
+		if (i >= Integer.MAX_VALUE / 2) {
+			throw new IllegalArgumentException("i is too big");
+		}
+		if (i >= cachedValues.length) {
+			int oldsize = cachedValues.length;
+			int newsize = i << 1;
+			int[] newContent = new int[newsize + 1];
+			System.arraycopy(cachedValues, 0, newContent, 0, oldsize);
+			int nextPowerOfTwo = 1;
+			while (nextPowerOfTwo <= oldsize)
+				nextPowerOfTwo <<= 1;
 
-    static {
-        // precompute 64 first values
-        luby(32);
-    }
+			int lastPowerOfTwo = nextPowerOfTwo >> 1;
+			for (int j = oldsize; j <= newsize; j++) {
+				if (j + 1 == nextPowerOfTwo) {
+					newContent[j] = lastPowerOfTwo;
+					lastPowerOfTwo = nextPowerOfTwo;
+					nextPowerOfTwo <<= 1;
+				} else {
+					newContent[j] = newContent[j - lastPowerOfTwo + 1];
+				}
+			}
+			cachedValues = newContent;
 
-    private int factor;
+		}
+		return cachedValues[i];
+	}
 
-    private int count;
+	static {
+		// precompute 64 first values
+		luby(32);
+	}
 
-    public LubyRestarts() {
-        setFactor(32); // uses TiniSAT default
-    }
+	private int factor;
 
-    public void setFactor(int factor) {
-        this.factor = factor;
-    }
+	private int count;
 
-    public int getFactor() {
-        return factor;
-    }
+	public LubyRestarts() {
+		this(32); // uses TiniSAT default
+	}
 
-    public void init(SearchParams params) {
-        count = 1;
-    }
+	public LubyRestarts(int factor) {
+		setFactor(factor);
+	}
 
-    public long nextRestartNumberOfConflict() {
-        return luby(count) * factor;
-    }
+	public void setFactor(int factor) {
+		this.factor = factor;
+	}
 
-    public void onRestart() {
-        count++;
-    }
+	public int getFactor() {
+		return factor;
+	}
 
-    @Override
-    public String toString() {
-        return "luby style (SATZ_rand, TiniSAT) restarts strategy with factor "
-                + factor;
-    }
+	public void init(SearchParams params) {
+		count = 1;
+	}
+
+	public long nextRestartNumberOfConflict() {
+		return luby(count) * factor;
+	}
+
+	public void onRestart() {
+		count++;
+	}
+
+	@Override
+	public String toString() {
+		return "luby style (SATZ_rand, TiniSAT) restarts strategy with factor "
+				+ factor;
+	}
 
 }
