@@ -966,6 +966,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	protected void reduceDB() {
 		sortOnActivity();
 		stats.reduceddb++;
+		learnedConstraintsDeletionStrategy.reduce(learnts);
 
 	}
 
