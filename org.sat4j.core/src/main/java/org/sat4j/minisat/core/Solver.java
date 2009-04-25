@@ -967,7 +967,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		sortOnActivity();
 		stats.reduceddb++;
 		learnedConstraintsDeletionStrategy.reduce(learnts);
-
+		System.gc();
 	}
 
 	/**
@@ -1056,18 +1056,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 		public void reduce(IVec<Constr> learnedConstrs) {
 			int i, j;
-			for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
-				Constr c = learnedConstrs.get(i);
-				if (c.locked() || c.getActivity() <= 2.0) {
-					learnedConstrs.set(j++, learnedConstrs.get(i));
+			for (i = j = 0; i < learnts.size() / 2; i++) {
+				Constr c = learnts.get(i);
+				if (c.locked() || c.size() == 2) {
+					learnts.set(j++, learnts.get(i));
 				} else {
 					c.remove();
 				}
 			}
-			System.out.println("c cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-					+ " clauses out of " + learnedConstrs.size()); //$NON-NLS-1$ //$NON-NLS-2$
-			learnedConstrs.shrinkTo(j);
-
+			for (; i < learnts.size(); i++) {
+				learnts.set(j++, learnts.get(i));
+			}
+			System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
+					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+			learnts.shrinkTo(j);
 		}
 
 		public ConflictTimer getTimer() {
