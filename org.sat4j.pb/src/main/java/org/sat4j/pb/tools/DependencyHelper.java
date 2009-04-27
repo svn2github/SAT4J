@@ -72,14 +72,16 @@ public class DependencyHelper<T, C> {
 	private final Map<Integer, T> mapToDomain = new HashMap<Integer, T>();
 	final Map<IConstr, C> descs = new HashMap<IConstr, C>();
 
-	final XplainPB xplain;
+	private final XplainPB xplain;
 	private final GateTranslator gator;
-
+	final IPBSolver solver;
 	private INegator<T> negator = NO_NEGATION;
 
 	private ObjectiveFunction objFunction;
 	private IVecInt objLiterals;
 	private IVec<BigInteger> objCoefs;
+
+	public boolean explanationEnabled = true;
 
 	/**
 	 * 
@@ -87,8 +89,18 @@ public class DependencyHelper<T, C> {
 	 *            the solver to be used to solve the problem.
 	 */
 	public DependencyHelper(IPBSolver solver) {
-		this.xplain = new XplainPB(solver);
-		this.gator = new GateTranslator(xplain);
+		this(solver, true);
+	}
+
+	public DependencyHelper(IPBSolver solver, boolean explanationEnabled) {
+		if (explanationEnabled) {
+			this.xplain = new XplainPB(solver);
+			this.solver = this.xplain;
+		} else {
+			this.xplain = null;
+			this.solver = solver;
+		}
+		this.gator = new GateTranslator(this.solver);
 	}
 
 	public void setNegator(INegator<T> negator) {
@@ -112,7 +124,7 @@ public class DependencyHelper<T, C> {
 		}
 		Integer intValue = mapToDimacs.get(myThing);
 		if (intValue == null) {
-			intValue = xplain.nextFreeVarId(true);
+			intValue = solver.nextFreeVarId(true);
 			mapToDomain.put(intValue, thing);
 			mapToDimacs.put(thing, intValue);
 		}
@@ -132,7 +144,7 @@ public class DependencyHelper<T, C> {
 	 * @see {@link #hasASolution()}
 	 */
 	public IVec<T> getSolution() {
-		int[] model = xplain.model();
+		int[] model = solver.model();
 		IVec<T> toInstall = new Vec<T>();
 		for (int i : model) {
 			if (i > 0) {
@@ -143,7 +155,7 @@ public class DependencyHelper<T, C> {
 	}
 
 	public BigInteger getSolutionCost() {
-		return objFunction.calculateDegree(xplain.model());
+		return objFunction.calculateDegree(solver.model());
 	}
 
 	/**
@@ -157,7 +169,7 @@ public class DependencyHelper<T, C> {
 	 *         solution.
 	 */
 	public boolean getBooleanValueFor(T t) {
-		return xplain.model(getIntValue(t));
+		return solver.model(getIntValue(t));
 	}
 
 	/**
@@ -167,7 +179,7 @@ public class DependencyHelper<T, C> {
 	 * @throws TimeoutException
 	 */
 	public boolean hasASolution() throws TimeoutException {
-		return xplain.isSatisfiable();
+		return solver.isSatisfiable();
 	}
 
 	/**
@@ -181,7 +193,7 @@ public class DependencyHelper<T, C> {
 		for (Iterator<T> it = assumps.iterator(); it.hasNext();) {
 			assumptions.push(getIntValue(it.next()));
 		}
-		return xplain.isSatisfiable(assumptions);
+		return solver.isSatisfiable(assumptions);
 	}
 
 	/**
@@ -195,7 +207,7 @@ public class DependencyHelper<T, C> {
 		for (T t : assumps) {
 			assumptions.push(getIntValue(t));
 		}
-		return xplain.isSatisfiable(assumptions);
+		return solver.isSatisfiable(assumptions);
 	}
 
 	/**
@@ -209,6 +221,9 @@ public class DependencyHelper<T, C> {
 	 * @see {@link #hasASolution()}
 	 */
 	public Set<C> why() throws TimeoutException {
+		if (!explanationEnabled) {
+			throw new UnsupportedOperationException("Explanation not enabled!");
+		}
 		Collection<IConstr> explanation = xplain.explain();
 		Set<C> ezexplain = new TreeSet<C>();
 		for (IConstr constr : explanation) {
@@ -330,7 +345,7 @@ public class DependencyHelper<T, C> {
 		for (T t : things) {
 			literals.push(getIntValue(t));
 		}
-		toName.push(xplain.addAtMost(literals, i));
+		toName.push(solver.addAtMost(literals, i));
 		return new ImplicationNamer<T, C>(this, toName);
 	}
 
@@ -455,7 +470,7 @@ public class DependencyHelper<T, C> {
 			objLiterals = new VecInt(n);
 			objCoefs = new Vec<BigInteger>(n);
 			objFunction = new ObjectiveFunction(objLiterals, objCoefs);
-			xplain.setObjectiveFunction(objFunction);
+			solver.setObjectiveFunction(objFunction);
 		}
 	}
 
@@ -486,7 +501,7 @@ public class DependencyHelper<T, C> {
 	 * a TimeoutException.
 	 */
 	public void stopSolver() {
-		xplain.expireTimeout();
+		solver.expireTimeout();
 	}
 
 	/**
@@ -494,6 +509,9 @@ public class DependencyHelper<T, C> {
 	 * the explanation algorithm.
 	 */
 	public void stopExplanation() {
+		if (!explanationEnabled) {
+			throw new UnsupportedOperationException("Explanation not enabled!");
+		}
 		xplain.cancelExplanation();
 	}
 
@@ -502,11 +520,11 @@ public class DependencyHelper<T, C> {
 		for (Iterator<T> it = things.iterator(); it.hasNext();) {
 			literals.push(-getIntValue(it.next()));
 		}
-		xplain.addClause(literals);
+		solver.addClause(literals);
 	}
 
 	public String getObjectiveFunction() {
-		ObjectiveFunction obj = xplain.getObjectiveFunction();
+		ObjectiveFunction obj = solver.getObjectiveFunction();
 		StringBuffer stb = new StringBuffer();
 		for (int i = 0; i < obj.getVars().size(); i++) {
 			stb.append(obj.getCoeffs().get(i)

@@ -29,7 +29,7 @@ public class DisjunctionRHS<T, C> {
 		for (IteratorInt it = literals.iterator(); it.hasNext();) {
 			p = it.next();
 			clause.push(p);
-			toName.push(helper.xplain.addClause(clause));
+			toName.push(helper.solver.addClause(clause));
 			clause.remove(p);
 		}
 		return new ImplicationNamer<T, C>(helper, toName);
