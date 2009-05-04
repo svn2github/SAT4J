@@ -81,6 +81,34 @@ public class ModelIteratorTest {
 		}
 	}
 
+	@Test
+	public void testModelIteratorLimit() {
+		try {
+			ISolver solver = new ModelIterator(SolverFactory.newDefault(), 3);
+			solver.newVar(3);
+			IVecInt clause = new VecInt();
+			clause.push(1);
+			clause.push(2);
+			clause.push(3);
+			solver.addClause(clause);
+			clause.clear();
+			clause.push(-1);
+			clause.push(-2);
+			clause.push(-3);
+			solver.addClause(clause);
+			int counter = 0;
+			while (solver.isSatisfiable()) {
+				solver.model();
+				counter++;
+			}
+			assertEquals(3, counter);
+		} catch (ContradictionException e) {
+			fail();
+		} catch (TimeoutException e) {
+			fail();
+		}
+	}
+
 	// Is not Implemented Yet. We need a Backup/Restore solution to do so.
 	// public void testIncMinModel() {
 	// try {
@@ -258,11 +286,10 @@ public class ModelIteratorTest {
 			fail();
 		}
 	}
-	
+
 	@Test(timeout = 5000)
 	public void testGlobalTimeoutIterator() {
-		ModelIterator iterator = new ModelIterator(SolverFactory
-				.newDefault());
+		ModelIterator iterator = new ModelIterator(SolverFactory.newDefault());
 		IVecInt clause = new VecInt();
 		for (int i = 1; i < 100; i++) {
 			clause.push(i);
@@ -279,18 +306,18 @@ public class ModelIteratorTest {
 			fail();
 		}
 	}
-	
 
 	@Test(timeout = 11000)
-	public void testSpecificValues() throws ContradictionException, TimeoutException {
-		assertEquals(3L,count(2));
-		assertEquals(7L,count(3));
-		assertEquals(15L,count(4));
-		assertEquals(31L,count(5));
-		assertEquals(63L,count(6));
-		assertEquals(127L,count(7));
-		assertEquals(255L,count(8));
-		assertEquals(511L,count(9));
+	public void testSpecificValues() throws ContradictionException,
+			TimeoutException {
+		assertEquals(3L, count(2));
+		assertEquals(7L, count(3));
+		assertEquals(15L, count(4));
+		assertEquals(31L, count(5));
+		assertEquals(63L, count(6));
+		assertEquals(127L, count(7));
+		assertEquals(255L, count(8));
+		assertEquals(511L, count(9));
 	}
 
 	private long count(int size) throws ContradictionException,
