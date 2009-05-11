@@ -180,4 +180,9 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		discardCurrentSolution();
 	}
 
+	public void forceObjectiveValueTo(Number forcedValue)
+			throws ContradictionException {
+		super.addPseudoBoolean(objfct.getVars(), objfct.getCoeffs(), false,
+				(BigInteger) forcedValue);
+	}
 }
