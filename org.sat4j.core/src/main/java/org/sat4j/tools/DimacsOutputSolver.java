@@ -263,4 +263,9 @@ public class DimacsOutputSolver implements ISolver {
 	public boolean removeSubsumedConstr(IConstr c) {
 		return false;
 	}
+
+	public IConstr addBlockingClause(IVecInt literals)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
 }

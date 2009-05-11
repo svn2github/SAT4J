@@ -114,6 +114,16 @@ public interface ISolver extends IProblem, Serializable {
 	IConstr addClause(IVecInt literals) throws ContradictionException;
 
 	/**
+	 * Add a clause in order to prevent an assignment to occur. This happens
+	 * usually when iterating over models for instance.
+	 * 
+	 * @param literals
+	 * @return
+	 * @throws ContradictionException
+	 */
+	IConstr addBlockingClause(IVecInt literals) throws ContradictionException;
+
+	/**
 	 * Remove a constraint returned by one of the add method from the solver.
 	 * All learned clauses will be cleared.
 	 * 

@@ -116,4 +116,9 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 		}
 	}
 
+	public void forceObjectiveValueTo(Number forcedValue)
+			throws ContradictionException {
+		super.addAtMost(lits, forcedValue.intValue());
+	}
+
 }

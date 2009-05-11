@@ -216,6 +216,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		solver.addAllClauses(clauses);
 	}
 
+	public IConstr addBlockingClause(IVecInt literals)
+			throws ContradictionException {
+		return solver.addBlockingClause(literals);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

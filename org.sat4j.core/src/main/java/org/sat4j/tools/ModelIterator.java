@@ -95,7 +95,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 		}
 		try {
 			// System.out.println("adding " + clause);
-			addClause(clause);
+			addBlockingClause(clause);
 		} catch (ContradictionException e) {
 			trivialfalsity = true;
 		}

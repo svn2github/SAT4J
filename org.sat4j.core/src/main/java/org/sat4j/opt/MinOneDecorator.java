@@ -131,4 +131,10 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
 	public void discard() throws ContradictionException {
 		discardCurrentSolution();
 	}
+
+	public void forceObjectiveValueTo(Number forcedValue)
+			throws ContradictionException {
+		addAtMost(literals, forcedValue.intValue());
+
+	}
 }

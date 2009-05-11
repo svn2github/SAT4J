@@ -825,6 +825,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			undoOne();
 		}
 		qhead = trail.size();
+		// learnedLiterals = 0;
 	}
 
 	/**
@@ -1496,6 +1497,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public int nextFreeVarId(boolean reserve) {
 		return voc.nextFreeVarId(reserve);
+	}
+
+	public IConstr addBlockingClause(IVecInt literals)
+			throws ContradictionException {
+		return addClause(literals);
 	}
 
 }
