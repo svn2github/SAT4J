@@ -349,4 +349,9 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 	public void discard() throws ContradictionException {
 		discardCurrentSolution();
 	}
+
+	public void forceObjectiveValueTo(Number forcedValue)
+			throws ContradictionException {
+		super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
+	}
 }

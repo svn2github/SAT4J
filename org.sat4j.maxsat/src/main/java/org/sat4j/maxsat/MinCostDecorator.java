@@ -186,4 +186,10 @@ public class MinCostDecorator extends PBSolverDecorator implements
 	public void discard() throws ContradictionException {
 		discardCurrentSolution();
 	}
+
+	public void forceObjectiveValueTo(Number forcedValue)
+			throws ContradictionException {
+		super.addPseudoBoolean(vars, coeffs, false, (BigInteger)
+				forcedValue);
+	}
 }
