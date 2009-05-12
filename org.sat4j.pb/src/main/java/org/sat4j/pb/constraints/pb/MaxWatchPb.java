@@ -169,7 +169,7 @@ public class MaxWatchPb extends WatchPb {
 	/**
 	 * Enl???ve une contrainte du prouveur
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < lits.length; i++) {
 			if (!voc.isFalsified(lits[i]))
 				voc.watches(lits[i] ^ 1).remove(this);

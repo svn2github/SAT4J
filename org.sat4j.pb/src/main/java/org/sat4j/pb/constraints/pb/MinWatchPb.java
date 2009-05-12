@@ -294,7 +294,7 @@ public class MinWatchPb extends WatchPb {
 	/**
 	 * Enl???ve une contrainte du prouveur
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < watchingCount; i++) {
 			voc.watches(lits[watching[i]] ^ 1).remove(this);
 			this.watched[this.watching[i]] = false;
