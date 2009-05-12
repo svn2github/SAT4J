@@ -110,7 +110,7 @@ public abstract class HTClause implements Constr, Serializable {
 	 * 
 	 * @see Constr#remove(Solver)
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		voc.watches(neg(head)).remove(this);
 		voc.watches(neg(tail)).remove(this);
 	}

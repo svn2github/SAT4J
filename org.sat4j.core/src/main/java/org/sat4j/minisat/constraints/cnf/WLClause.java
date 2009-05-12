@@ -85,7 +85,7 @@ public abstract class WLClause implements Constr, Serializable {
 	 * 
 	 * @see Constr#remove(Solver)
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		voc.watches(lits[0] ^ 1).remove(this);
 		voc.watches(lits[1] ^ 1).remove(this);
 		// la clause peut etre effacee

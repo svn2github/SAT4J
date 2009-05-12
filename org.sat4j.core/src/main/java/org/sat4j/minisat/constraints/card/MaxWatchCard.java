@@ -306,7 +306,7 @@ public class MaxWatchCard implements Constr, Undoable, Serializable {
 	/**
 	 * Enl?ve une contrainte du prouveur
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int q : lits) {
 			voc.watches(q ^ 1).remove(this);
 		}

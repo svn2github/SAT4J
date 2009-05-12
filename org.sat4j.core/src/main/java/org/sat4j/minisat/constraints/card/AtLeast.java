@@ -30,6 +30,7 @@ package org.sat4j.minisat.constraints.card;
 import java.io.Serializable;
 
 import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
@@ -118,11 +119,11 @@ public class AtLeast implements Constr, Undoable, Serializable {
 
 	}
 
-	public static AtLeast atLeastNew(UnitPropagationListener s, ILits voc,
+	public static Constr atLeastNew(UnitPropagationListener s, ILits voc,
 			IVecInt ps, int n) throws ContradictionException {
 		int degree = niceParameters(s, voc, ps, n);
 		if (degree == 0)
-			return null;
+			return new UnitClauses(ps);
 		return new AtLeast(voc, ps, degree);
 	}
 
@@ -131,7 +132,7 @@ public class AtLeast implements Constr, Undoable, Serializable {
 	 * 
 	 * @see Constr#remove(Solver)
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int q : lits) {
 			voc.watches(q ^ 1).remove(this);
 		}

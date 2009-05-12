@@ -375,7 +375,7 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	/**
 	 * Removes a constraint from the solver
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i <= degree; i++) {
 			voc.watches(lits[i] ^ 1).remove(this);
 		}

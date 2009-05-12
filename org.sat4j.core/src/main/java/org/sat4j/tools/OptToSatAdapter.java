@@ -89,6 +89,14 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 			do {
 				problem.discardCurrentSolution();
 			} while (problem.admitABetterSolution());
+			if (!optimalValueForced) {
+				try {
+					problem.forceObjectiveValueTo(problem.getObjectiveValue());
+				} catch (ContradictionException e1) {
+					throw new IllegalStateException();
+				}
+				optimalValueForced = true;
+			}
 		} catch (TimeoutException e) {
 			// solver timeout
 		} catch (ContradictionException e) {

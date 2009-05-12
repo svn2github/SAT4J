@@ -78,7 +78,7 @@ public class CBClause implements Constr, Undoable, Serializable {
 	 * 
 	 * @see org.sat4j.minisat.core.Constr#remove()
 	 */
-	public void remove() {
+	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < lits.length; i++) {
 			voc.watches(lits[i] ^ 1).remove(this);
 		}

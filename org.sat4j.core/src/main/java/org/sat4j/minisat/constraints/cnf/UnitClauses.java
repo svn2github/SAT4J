@@ -31,16 +31,19 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
-public class UnitClause implements Constr {
+public class UnitClauses implements Constr {
 
-	protected final int literal;
+	protected final int[] literals;
 
-	public UnitClause(int value) {
-		literal = value;
+	public UnitClauses(IVecInt values) {
+		literals = new int[values.size()];
+		values.copyTo(literals);
 	}
 
 	public void assertConstraint(UnitPropagationListener s) {
-		s.enqueue(literal, this);
+		for (int p : literals) {
+			s.enqueue(p, this);
+		}
 	}
 
 	public void calcReason(int p, IVecInt outReason) {
@@ -65,7 +68,9 @@ public class UnitClause implements Constr {
 	}
 
 	public void remove(UnitPropagationListener upl) {
-		upl.unset(literal);
+		for (int i = literals.length - 1; i >= 0; i--) {
+			upl.unset(literals[i]);
+		}
 	}
 
 	public void rescaleBy(double d) {
@@ -85,9 +90,7 @@ public class UnitClause implements Constr {
 	}
 
 	public int get(int i) {
-		if (i > 0)
-			throw new IllegalArgumentException();
-		return literal;
+		throw new UnsupportedOperationException();
 	}
 
 	public boolean learnt() {
@@ -95,7 +98,7 @@ public class UnitClause implements Constr {
 	}
 
 	public int size() {
-		return 1;
+		throw new UnsupportedOperationException();
 	}
 
 	public void forwardActivity(double claInc) {

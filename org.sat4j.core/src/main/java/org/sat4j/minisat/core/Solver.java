@@ -311,7 +311,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					"Reference to the constraint to remove needed!"); //$NON-NLS-1$
 		}
 		Constr c = (Constr) co;
-		c.remove();
+		c.remove(this);
 		constrs.remove(c);
 		clearLearntClauses();
 		cancelLearntLiterals();
@@ -330,7 +330,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					"Can only remove latest added constraint!!!"); //$NON-NLS-1$
 		}
 		Constr c = (Constr) co;
-		c.remove();
+		c.remove(this);
 		constrs.pop();
 		String type = c.getClass().getName();
 		constrTypes.get(type).dec();
@@ -377,7 +377,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			for (int i = 0; i < cs[type].size(); i++) {
 				if (cs[type].get(i).simplify()) {
 					// enleve les contraintes satisfaites de la base
-					cs[type].get(i).remove();
+					cs[type].get(i).remove(this);
 				} else {
 					cs[type].moveTo(j++, i);
 				}
@@ -960,7 +960,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public void clearLearntClauses() {
 		for (Iterator<Constr> iterator = learnts.iterator(); iterator.hasNext();)
-			iterator.next().remove();
+			iterator.next().remove(this);
 		learnts.clear();
 	}
 
@@ -1062,7 +1062,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (c.locked() || c.size() == 2) {
 					learnts.set(j++, learnts.get(i));
 				} else {
-					c.remove();
+					c.remove(Solver.this);
 				}
 			}
 			for (; i < learnts.size(); i++) {
@@ -1133,7 +1133,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (c.locked() || c.getActivity() <= 2.0) {
 					learnedConstrs.set(j++, learnts.get(i));
 				} else {
-					c.remove();
+					c.remove(Solver.this);
 				}
 			}
 			System.out
@@ -1502,6 +1502,15 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public IConstr addBlockingClause(IVecInt literals)
 			throws ContradictionException {
 		return addClause(literals);
+	}
+
+	public void unset(int p) {
+		int current = trail.last();
+		while (current != p) {
+			undoOne();
+			current = trail.last();
+		}
+		undoOne();
 	}
 
 }

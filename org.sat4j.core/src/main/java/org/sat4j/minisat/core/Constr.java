@@ -45,9 +45,10 @@ public interface Constr extends Propagatable, IConstr {
 
 	/**
 	 * Remove a constraint from the solver.
+	 * @param upl TODO
 	 * 
 	 */
-	void remove();
+	void remove(UnitPropagationListener upl);
 
 	/**
 	 * Simplifies a constraint, by removing top level falsified literals for

@@ -32,6 +32,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.TimeoutException;
 
 /**
  * Computes a solution that satisfies the maximum of clauses.
@@ -96,6 +97,20 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 			super.removeSubsumedConstr(prevConstr);
 		}
 		prevConstr = super.addAtMost(lits, counter - 1);
+	}
+
+	@Override
+	public boolean admitABetterSolution(IVecInt assumps)
+			throws TimeoutException {
+
+		boolean result = super.admitABetterSolution(assumps);
+		if (!result) {
+			if (prevConstr != null) {
+				super.removeSubsumedConstr(prevConstr);
+				prevConstr = null;
+			}
+		}
+		return result;
 	}
 
 	public void discard() throws ContradictionException {
