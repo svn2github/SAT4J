@@ -109,7 +109,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		StringBuffer tmp = new StringBuffer();
 		tmp.append("* #variable= " + nVars());
 		tmp.append(" #constraint= " + nbOfConstraints + " \n");
-		tmp.append("min : ");
+		tmp.append("min: ");
 		tmp.append(obj);
 		tmp.append(" ;\n");
 		out.insert(indxConstrObj, tmp);
