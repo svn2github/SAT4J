@@ -825,7 +825,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			undoOne();
 		}
 		qhead = trail.size();
-		// learnedLiterals = 0;
+		learnedLiterals = 0;
 	}
 
 	/**
