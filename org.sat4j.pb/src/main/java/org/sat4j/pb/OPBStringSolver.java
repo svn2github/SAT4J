@@ -55,6 +55,10 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	private int nbOfConstraints;
 
+	private ObjectiveFunction obj;
+
+	private boolean inserted = false;
+
 	private static IConstr FAKE_CONSTR = new IConstr() {
 
 		public int size() {
@@ -105,14 +109,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	}
 
 	public void setObjectiveFunction(ObjectiveFunction obj) {
-		StringBuffer out = getOut();
-		StringBuffer tmp = new StringBuffer();
-		tmp.append("* #variable= " + nVars());
-		tmp.append(" #constraint= " + nbOfConstraints + " \n");
-		tmp.append("min: ");
-		tmp.append(obj);
-		tmp.append(" ;\n");
-		out.insert(indxConstrObj, tmp);
+		this.obj = obj;
 	}
 
 	@Override
@@ -178,7 +175,20 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	@Override
 	public String toString() {
-		return getOut().toString();
+		StringBuffer out = getOut();
+		if (!inserted) {
+			StringBuffer tmp = new StringBuffer();
+			tmp.append("* #variable= " + nVars());
+			tmp.append(" #constraint= " + nbOfConstraints + " \n");
+			if (obj != null) {
+				tmp.append("min: ");
+				tmp.append(obj);
+				tmp.append(" ;\n");
+			}
+			out.insert(indxConstrObj, tmp);
+			inserted = true;
+		}
+		return out.toString();
 	}
 
 	@Override
@@ -201,7 +211,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	}
 
 	public ObjectiveFunction getObjectiveFunction() {
-		throw new UnsupportedOperationException();
+		return obj;
 	}
 
 }
