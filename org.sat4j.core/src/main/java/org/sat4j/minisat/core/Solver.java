@@ -1207,7 +1207,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		learnedConstraintsDeletionStrategy.init();
 
 		int learnedLiteralsLimit = trail.size();
-		System.out.println(learnedLiterals);
+
 		// push previously learned literals
 		for (IteratorInt iterator = learnedLiterals.iterator(); iterator
 				.hasNext();) {
