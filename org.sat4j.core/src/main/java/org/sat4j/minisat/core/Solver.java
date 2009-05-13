@@ -172,7 +172,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private boolean isDBSimplificationAllowed = false;
 
-	private int learnedLiterals = 0;
+	private final IVecInt learnedLiterals = new VecInt();
 
 	protected IVecInt dimacs2internal(IVecInt in) {
 		// if (voc.nVars() == 0) {
@@ -264,7 +264,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public int nConstraints() {
-		return constrs.size() + trail.size() - learnedLiterals;
+		return constrs.size() + trail.size();
 	}
 
 	public void learn(Constr c) {
@@ -314,7 +314,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		c.remove(this);
 		constrs.remove(c);
 		clearLearntClauses();
-		cancelLearntLiterals();
 		String type = c.getClass().getName();
 		constrTypes.get(type).dec();
 		return true;
@@ -787,7 +786,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		slistener.adding(toDimacs(constr.get(0)));
 		if (constr.size() == 1) {
 			stats.learnedliterals++;
-			learnedLiterals++;
 		} else {
 			learner.learns(constr);
 		}
@@ -819,13 +817,15 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	/**
 	 * Restore literals
 	 */
-	private void cancelLearntLiterals() {
+	private void cancelLearntLiterals(int learnedLiteralsLimit) {
+		learnedLiterals.clear();
 		// assert trail.size() == qhead || !undertimeout;
-		for (int c = learnedLiterals; c > 0; c--) {
+		while (trail.size() > learnedLiteralsLimit) {
+			learnedLiterals.push(trail.last());
 			undoOne();
 		}
 		qhead = trail.size();
-		learnedLiterals = 0;
+		// learnedLiterals = 0;
 	}
 
 	/**
@@ -962,6 +962,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		for (Iterator<Constr> iterator = learnts.iterator(); iterator.hasNext();)
 			iterator.next().remove(this);
 		learnts.clear();
+		learnedLiterals.clear();
 	}
 
 	protected void reduceDB() {
@@ -1197,13 +1198,21 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 		trail.ensure(howmany);
 		trailLim.ensure(howmany);
-		learnedLiterals = 0;
+		learnedLiterals.ensure(howmany);
 		timebegin = System.currentTimeMillis();
 		slistener.start();
 		model = null; // forget about previous model
 		fullmodel = null;
 		order.init();
 		learnedConstraintsDeletionStrategy.init();
+
+		int learnedLiteralsLimit = trail.size();
+		System.out.println(learnedLiterals);
+		// push previously learned literals
+		for (IteratorInt iterator = learnedLiterals.iterator(); iterator
+				.hasNext();) {
+			enqueue(iterator.next());
+		}
 
 		// propagate constraints
 		Constr confl = propagate();
@@ -1212,6 +1221,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			slistener.conflictFound(confl);
 			slistener.end(Lbool.FALSE);
 			cancelUntil(0);
+			cancelLearntLiterals(learnedLiteralsLimit);
 			return false;
 		}
 
@@ -1226,11 +1236,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				}
 				slistener.end(Lbool.FALSE);
 				cancelUntil(0);
+				cancelLearntLiterals(learnedLiteralsLimit);
 				return false;
 			}
 		}
 		rootLevel = decisionLevel();
-
 		// moved initialization here if new literals are added in the
 		// assumptions.
 		order.init(); // duplicated on purpose
@@ -1278,6 +1288,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 
 		cancelUntil(0);
+		cancelLearntLiterals(learnedLiteralsLimit);
 		if (!global && timeBasedTimeout) {
 			timer.cancel();
 			timer = null;

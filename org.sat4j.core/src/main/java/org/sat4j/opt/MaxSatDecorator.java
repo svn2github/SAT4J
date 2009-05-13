@@ -106,7 +106,7 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 		boolean result = super.admitABetterSolution(assumps);
 		if (!result) {
 			if (prevConstr != null) {
-				super.removeSubsumedConstr(prevConstr);
+				super.removeConstr(prevConstr);
 				prevConstr = null;
 			}
 		}
