@@ -294,7 +294,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 				prevmodel[i] = prevfullmodel[i];
 			}
 			calculateObjective();
-        }
+        } else {
+			if (previousPBConstr != null) {
+				decorated().removeConstr(previousPBConstr);
+				previousPBConstr = null;
+			}
+		}
         return result;
     }
 
