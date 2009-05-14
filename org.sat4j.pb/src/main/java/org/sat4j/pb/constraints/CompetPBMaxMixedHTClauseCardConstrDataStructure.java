@@ -27,18 +27,12 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import java.math.BigInteger;
-
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
 import org.sat4j.pb.constraints.pb.LearntHTClausePB;
 import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
 import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.pb.constraints.pb.UnitClausePB;
-import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class CompetPBMaxMixedHTClauseCardConstrDataStructure extends
@@ -61,10 +55,7 @@ public class CompetPBMaxMixedHTClauseCardConstrDataStructure extends
 	}
 
 	@Override
-	protected Constr constructLearntClause(IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
+	protected Constr constructLearntClause(IVecInt resLits) {
 		if (resLits.size() == 1) {
 			return new UnitClausePB(resLits.last(), getVocabulary());
 		}

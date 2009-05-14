@@ -29,11 +29,14 @@ package org.sat4j.pb.constraints;
 
 import java.math.BigInteger;
 
+import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public abstract class AbstractPBClauseCardConstrDataStructure extends
@@ -80,7 +83,19 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	@Override
 	protected Constr learntConstraintFactory(IDataStructurePB dspb) {
 		if (dspb.getDegree().equals(BigInteger.ONE)) {
-			return constructLearntClause(dspb);
+			IVecInt literals = new VecInt();
+			IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+			dspb.buildConstraintFromConflict(literals, resCoefs);
+			// then assertive literal must be placed at the first place
+			ILits voc = getVocabulary();
+			for (int indLit = 0; indLit < literals.size(); indLit++)
+				if (voc.isUnassigned(literals.get(indLit))) {
+					int tmp = literals.get(indLit);
+					literals.set(indLit, literals.get(0));
+					literals.set(0, tmp);
+					break;
+				}
+			return constructLearntClause(literals);
 		}
 		if (dspb.isCardinality()) {
 			return constructLearntCard(dspb);
@@ -103,7 +118,7 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	abstract protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException;
 
-	abstract protected Constr constructLearntClause(IDataStructurePB dspb);
+	abstract protected Constr constructLearntClause(IVecInt literals);
 
 	abstract protected Constr constructLearntCard(IDataStructurePB dspb);
 

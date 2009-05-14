@@ -60,10 +60,7 @@ public class CompetResolutionPBMixedHTClauseCardConstrDataStructure extends
 	}
 
 	@Override
-	protected Constr constructLearntClause(IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
+	protected Constr constructLearntClause(IVecInt resLits) {
 		if (resLits.size() == 1) {
 			return new UnitClause(resLits.last());
 		}

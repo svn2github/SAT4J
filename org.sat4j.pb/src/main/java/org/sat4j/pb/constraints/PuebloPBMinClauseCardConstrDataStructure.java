@@ -76,10 +76,7 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 	}
 
 	@Override
-	protected Constr constructLearntClause(IDataStructurePB dspb) {
-		IVecInt literals = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(literals, resCoefs);
+	protected Constr constructLearntClause(IVecInt literals) {
 		if (literals.size() == 1) {
 			return new UnitClausePB(literals.last(), getVocabulary());
 		}
