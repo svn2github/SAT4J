@@ -362,11 +362,15 @@ public class ConflictMap extends MapPb implements IConflict {
 	private boolean isImplyingLiteral(BigInteger slack) {
 		// unassigned literals are tried first
 		int unassigned = levelToIndex(-1);
+		int lit;
 		if (byLevel[unassigned] != null) {
 			for (IteratorInt iterator = byLevel[unassigned].iterator(); iterator
 					.hasNext();) {
-				if (slack.compareTo(weightedLits.get(iterator.next())) < 0)
+				lit = iterator.next();
+				if (slack.compareTo(weightedLits.get(lit)) < 0) {
+					assertiveLiteral = weightedLits.allLits.get(lit);
 					return true;
+				}
 			}
 		}
 		// then we have to look at every literal at a decision level >=dl
@@ -375,9 +379,12 @@ public class ConflictMap extends MapPb implements IConflict {
 		if (byLevel[level] != null)
 			for (IteratorInt iterator = byLevel[level].iterator(); iterator
 					.hasNext();) {
-				tmp = weightedLits.get(iterator.next());
-				if (tmp != null && slack.compareTo(tmp) < 0)
+				lit = iterator.next();
+				tmp = weightedLits.get(lit);
+				if (tmp != null && slack.compareTo(tmp) < 0) {
+					assertiveLiteral = weightedLits.allLits.get(lit);
 					return true;
+				}
 			}
 		return false;
 	}

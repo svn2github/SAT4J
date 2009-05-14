@@ -33,7 +33,6 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
@@ -87,14 +86,24 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 			IVec<BigInteger> resCoefs = new Vec<BigInteger>();
 			dspb.buildConstraintFromConflict(literals, resCoefs);
 			// then assertive literal must be placed at the first place
-			ILits voc = getVocabulary();
-			for (int indLit = 0; indLit < literals.size(); indLit++)
-				if (voc.isUnassigned(literals.get(indLit))) {
-					int tmp = literals.get(indLit);
-					literals.set(indLit, literals.get(0));
-					literals.set(0, tmp);
-					break;
-				}
+			int indLit = dspb.getAssertiveLiteral();
+			if (indLit > -1) {
+				int tmp = literals.get(indLit);
+				literals.set(indLit, literals.get(0));
+				literals.set(0, tmp);
+			}
+			// ILits voc = getVocabulary();
+			// boolean ok = false;
+			// for (int indLit = 0; indLit < literals.size() && !ok; indLit++)
+			// if (voc.isUnassigned(literals.get(indLit))) {
+			// int tmp = literals.get(indLit);
+			// literals.set(indLit, literals.get(0));
+			// literals.set(0, tmp);
+			// assert voc.isUnassigned(tmp);
+			// assert voc.isUnassigned(literals.get(0));
+			// ok = true;
+			// }
+			// assert voc.isUnassigned(literals.get(0));
 			return constructLearntClause(literals);
 		}
 		if (dspb.isCardinality()) {
