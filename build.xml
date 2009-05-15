@@ -1,4 +1,6 @@
 <project name="sat4j" default="p2">
+         <!-- using Eclipse compiler -->
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
@@ -66,6 +68,9 @@
 		   <param name="src" value="org.sat4j.csp/src/main/java" />
                    <param name="jarname" value="org.sat4j.csp"/>
                 </antcall>
+                <antcall target="zip-bundle">
+		   <param name="package" value="csp"/>
+                </antcall>
 	</target>
 
 	<target name="sat" depends="core" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
@@ -92,6 +97,9 @@
                            <include name="commons-beanutils.jar"/>
 		   </zipgroupfileset>
                </jar>
+               <antcall target="zip-bundle">
+		   <param name="package" value="sat4j-sat"/>
+                </antcall>
 	</target>
 
 	<target name="core" depends="prepare" description="Build a jar file suitable for embedding SAT technology into a Java application from current source tree">
