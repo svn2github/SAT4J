@@ -28,7 +28,6 @@
 package org.sat4j.pb.reader;
 
 import java.io.IOException;
-import java.text.ParseException;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
