@@ -213,7 +213,7 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 				tmp.append(obj);
 				tmp.append(" ;\n");
 			}
-			out.insert(indxConstrObj, tmp);
+			out.insert(indxConstrObj, tmp.toString());
 			inserted = true;
 		}
 		return out.toString();

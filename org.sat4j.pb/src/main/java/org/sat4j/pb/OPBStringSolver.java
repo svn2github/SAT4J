@@ -185,7 +185,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 				tmp.append(obj);
 				tmp.append(" ;\n");
 			}
-			out.insert(indxConstrObj, tmp);
+			out.insert(indxConstrObj, tmp.toString());
 			inserted = true;
 		}
 		return out.toString();
