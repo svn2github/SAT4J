@@ -126,6 +126,16 @@ public class EfficientScanner implements Serializable {
 		return new BigInteger(stb.toString());
 	}
 
+	public String next() throws IOException, ParseFormatException {
+		StringBuffer stb = new StringBuffer();
+		char currentChar = skipSpaces();
+		while (currentChar != ' ' && currentChar != '\n') {
+			stb.append(currentChar);
+			currentChar = (char) in.read();
+		}
+		return stb.toString();
+	}
+
 	public char skipSpaces() throws IOException {
 		char car;
 
