@@ -19,10 +19,7 @@
 package org.sat4j.maxsat.reader;
 
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.math.BigInteger;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import org.sat4j.maxsat.WeightedMaxSatDecorator;
 import org.sat4j.reader.DimacsReader;
