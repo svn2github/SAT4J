@@ -94,6 +94,7 @@ public interface IOptimizationProblem extends IProblem {
 	 * @throws TimeoutException
 	 *             if the solver cannot answer in reasonable time.
 	 * @see ISolver#setTimeout(int)
+	 * @since 2.1
 	 */
 	boolean admitABetterSolution(IVecInt assumps) throws TimeoutException;
 
@@ -137,6 +138,7 @@ public interface IOptimizationProblem extends IProblem {
 	 * solution.
 	 * 
 	 * @return the value of the objective function for the current solution.
+	 * @since 2.1
 	 */
 	Number getObjectiveValue();
 
@@ -169,6 +171,7 @@ public interface IOptimizationProblem extends IProblem {
 	 * 
 	 * @throws ContradictionException
 	 *             if a trivial inconsistency is detected.
+	 * @since 2.1
 	 */
 	void discardCurrentSolution() throws ContradictionException;
 }

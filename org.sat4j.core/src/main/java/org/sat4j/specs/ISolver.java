@@ -255,6 +255,7 @@ public interface ISolver extends IProblem, Serializable {
 	 * Useful to check the internal timeout of the solver.
 	 * 
 	 * @return the internal timeout of the solver (in milliseconds)
+	 * @since 2.1
 	 */
 	long getTimeoutMs();
 
@@ -336,6 +337,7 @@ public interface ISolver extends IProblem, Serializable {
 	 * 
 	 * @param sl
 	 *            a Search Listener.
+	 * @since 2.1
 	 */
 	void setSearchListener(SearchListener sl);
 }

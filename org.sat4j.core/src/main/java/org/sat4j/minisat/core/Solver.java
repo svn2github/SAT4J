@@ -228,6 +228,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		order.setLits(voc);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void setSearchListener(SearchListener sl) {
 		slistener = sl;
 	}
@@ -1321,6 +1324,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void printLearntClausesInfos(PrintWriter out, String prefix) {
 		Map<String, Counter> learntTypes = new HashMap<String, Counter>();
 		for (Iterator<Constr> it = learnts.iterator(); it.hasNext();) {
@@ -1477,6 +1483,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return (int) (timeBasedTimeout ? timeout / 1000 : timeout);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public long getTimeoutMs() {
 		if (!timeBasedTimeout) {
 			throw new UnsupportedOperationException(

@@ -92,6 +92,9 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
 	private IConstr prevConstr;
 
+	/**
+	 * @since 2.1
+	 */
 	public void discardCurrentSolution() throws ContradictionException {
 		if (prevConstr != null) {
 			super.removeSubsumedConstr(prevConstr);
@@ -117,6 +120,9 @@ public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 		discardCurrentSolution();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public Number getObjectiveValue() {
 		return counter;
 	}

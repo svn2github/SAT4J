@@ -65,6 +65,7 @@ import org.sat4j.tools.SolverDecorator;
  * 
  * @param <T>
  *            a subinterface to ISolver.
+ * @since 2.1
  */
 public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 

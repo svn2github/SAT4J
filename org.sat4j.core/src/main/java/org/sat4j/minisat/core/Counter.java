@@ -27,6 +27,9 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+/**
+ * @since 2.1
+ */
 public class Counter {
 	private int value = 1;
 

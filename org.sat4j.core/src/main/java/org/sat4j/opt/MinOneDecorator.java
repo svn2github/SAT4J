@@ -61,6 +61,9 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
 		return admitABetterSolution(VecInt.EMPTY);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
 		boolean result = isSatisfiable(assumps, true);
@@ -99,6 +102,9 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
 
 	private IConstr previousConstr;
 
+	/**
+	 * @since 2.1
+	 */
 	public void discardCurrentSolution() throws ContradictionException {
 		if (literals.isEmpty()) {
 			for (int i = 1; i <= nVars(); i++) {
@@ -124,6 +130,9 @@ public class MinOneDecorator extends SolverDecorator<ISolver> implements
 		super.reset();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public Number getObjectiveValue() {
 		return counter;
 	}

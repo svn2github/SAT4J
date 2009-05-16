@@ -476,6 +476,9 @@ public final class Vec<T> implements IVec<T> {
 		return nbelem == 0;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public boolean contains(T e) {
 		for (int i = 0; i < nbelem; i++) {
 			if (myarray[i].equals(e))

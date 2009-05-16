@@ -137,6 +137,9 @@ public class DimacsReader extends Reader implements Serializable {
 		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	protected IVecInt literals = new VecInt();
 
 	/**
@@ -191,6 +194,11 @@ public class DimacsReader extends Reader implements Serializable {
 		}
 	}
 
+	/**
+	 * 
+	 * @throws ContradictionException
+	 * @since 2.1
+	 */
 	protected void flushConstraint() throws ContradictionException {
 		solver.addClause(literals);
 	}

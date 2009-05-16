@@ -182,6 +182,9 @@ public class DimacsStringSolver implements ISolver {
 		return 0;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public long getTimeoutMs() {
 		return 0L;
 	}
@@ -288,6 +291,9 @@ public class DimacsStringSolver implements ISolver {
 
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void setSearchListener(SearchListener sl) {
 	}
 

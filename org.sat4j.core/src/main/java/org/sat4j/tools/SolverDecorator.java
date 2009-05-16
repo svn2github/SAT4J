@@ -151,6 +151,9 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		return solver.getTimeout();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public long getTimeoutMs() {
 		return solver.getTimeoutMs();
 	}
@@ -359,6 +362,9 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		return solver.getStat();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void setSearchListener(SearchListener sl) {
 		solver.setSearchListener(sl);
 	}
