@@ -1311,7 +1311,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 		slistener.end(status);
 		if (!undertimeout) {
-			throw new TimeoutException(" Timeout (" + timeout + "s) exceeded"); //$NON-NLS-1$//$NON-NLS-2$
+			String message = " Timeout (" + timeout
+					+ (timeBasedTimeout ? "s" : " conflicts") + ") exceeded";
+			throw new TimeoutException(message); //$NON-NLS-1$//$NON-NLS-2$
 		}
 		return status == Lbool.TRUE;
 	}
