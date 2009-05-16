@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import java.util.Map;
+
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
@@ -37,27 +39,50 @@ import org.sat4j.specs.SearchListener;
  * @author daniel
  * 
  */
-public class TextOutputListener implements SearchListener {
+public class TextOutputListener<T> implements SearchListener {
 
 	private static final long serialVersionUID = 1L;
 
+	private final Map<Integer, T> mapping;
+
+	/**
+	 * @since 2.1
+	 */
+	public TextOutputListener(Map<Integer, T> mapping) {
+		this.mapping = mapping;
+	}
+
+	private String node(int dimacs) {
+
+		if (mapping != null) {
+			int var = Math.abs(dimacs);
+			T t = mapping.get(var);
+			if (t != null) {
+				if (dimacs > 0)
+					return t.toString();
+				return "-" + t.toString();
+			}
+		}
+		return Integer.toString(dimacs);
+	}
+
 	public void assuming(int p) {
-		System.out.println("assuming " + p);
+		System.out.println("assuming " + node(p));
 	}
 
 	/**
 	 * @since 2.1
 	 */
 	public void propagating(int p, IConstr reason) {
-		System.out.println("implies " + p);
+		System.out.println("propagating " + node(p));
 	}
 
 	public void backtracking(int p) {
-		System.out.println("backtracking " + p);
+		System.out.println("backtracking " + node(p));
 	}
 
 	public void adding(int p) {
-		System.out.println("adding " + p);
+		System.out.println("adding " + node(p));
 	}
 
 	/**

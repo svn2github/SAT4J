@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import org.sat4j.core.Vec;
 import org.sat4j.specs.IConstr;
@@ -51,7 +52,7 @@ import org.sat4j.specs.SearchListener;
  * @author daniel
  * 
  */
-public class DotSearchListener implements SearchListener {
+public class DotSearchListener<T> implements SearchListener {
 
 	/**
      * 
@@ -66,13 +67,33 @@ public class DotSearchListener implements SearchListener {
 
 	private boolean estOrange = false;
 
-	public DotSearchListener(final String fileNameToSave) {
+	private final Map<Integer, T> mapping;
+
+	/**
+	 * @since 2.1
+	 */
+	public DotSearchListener(final String fileNameToSave,
+			Map<Integer, T> mapping) {
 		pile = new Vec<String>();
+		this.mapping = mapping;
 		try {
 			out = new FileWriter(fileNameToSave);
 		} catch (IOException e) {
 			System.err.println("Problem when created file.");
 		}
+	}
+
+	private String node(int dimacs) {
+		if (mapping != null) {
+			int var = Math.abs(dimacs);
+			T t = mapping.get(var);
+			if (t != null) {
+				if (dimacs > 0)
+					return t.toString();
+				return "-" + t.toString();
+			}
+		}
+		return Integer.toString(dimacs);
 	}
 
 	public final void assuming(final int p) {
@@ -82,12 +103,12 @@ public class DotSearchListener implements SearchListener {
 		if (currentNodeName == null) {
 			newName = "" + absP;
 			pile.push(newName);
-			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + newName
+			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
 					+ "\", shape=circle, color=blue, style=filled]"));
 		} else {
 			newName = currentNodeName;
 			pile.push(newName);
-			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + absP
+			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
 					+ "\", shape=circle, color=blue, style=filled]"));
 		}
 		currentNodeName = newName;
@@ -104,10 +125,10 @@ public class DotSearchListener implements SearchListener {
 		}
 		final String couleur = estOrange ? "orange" : "green";
 
-		saveLine(lineTab("\"" + newName + "\"" + "[label=\""
-				+ Integer.toString(p) + "\",shape=point, color=black]"));
+		saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+				+ "\",shape=point, color=black]"));
 		saveLine(lineTab("\"" + currentNodeName + "\"" + " -- " + "\""
-				+ newName + "\"" + "[label=" + "\" " + Integer.toString(p)
+				+ newName + "\"" + "[label=" + "\" " + node(p)
 				+ "\", fontcolor =" + couleur + ", color = " + couleur
 				+ ", style = bold]"));
 		currentNodeName = newName;
