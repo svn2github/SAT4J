@@ -76,6 +76,9 @@ public class LearntWLClause extends WLClause {
 		// do nothing
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 
 	}

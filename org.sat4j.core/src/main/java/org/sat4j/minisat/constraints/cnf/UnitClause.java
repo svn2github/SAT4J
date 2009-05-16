@@ -31,6 +31,11 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * 
+ * @author daniel
+ * @since 2.1
+ */
 public class UnitClause implements Constr {
 
 	protected final int literal;

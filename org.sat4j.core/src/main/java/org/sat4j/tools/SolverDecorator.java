@@ -216,6 +216,9 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		solver.addAllClauses(clauses);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public IConstr addBlockingClause(IVecInt literals)
 			throws ContradictionException {
 		return solver.addBlockingClause(literals);
@@ -360,10 +363,16 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		solver.setSearchListener(sl);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public int nextFreeVarId(boolean reserve) {
 		return solver.nextFreeVarId(reserve);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public boolean removeSubsumedConstr(IConstr c) {
 		return solver.removeSubsumedConstr(c);
 	}

@@ -79,6 +79,7 @@ public interface ISolver extends IProblem, Serializable {
 	 *            will always answer the same.
 	 * @return a variable identifier not in use in the constraints already
 	 *         inside the solver.
+	 * @since 2.1
 	 */
 	int nextFreeVarId(boolean reserve);
 
@@ -120,6 +121,7 @@ public interface ISolver extends IProblem, Serializable {
 	 * @param literals
 	 * @return
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	IConstr addBlockingClause(IVecInt literals) throws ContradictionException;
 

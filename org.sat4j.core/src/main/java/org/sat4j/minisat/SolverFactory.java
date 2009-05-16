@@ -137,14 +137,24 @@ public class SolverFactory extends ASolverFactory<ISolver> {
 		return solver;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public static Solver<DataStructureFactory> newBestWL() {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureDanielWL());
 	}
 
+	/**
+	 * 
+	 * @since 2.1
+	 */
 	public static Solver<DataStructureFactory> newBestHT() {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureDanielHT());
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public static Solver<DataStructureFactory> newGlucose() {
 		Solver<DataStructureFactory> solver = newBestWL();
 		solver.setLearnedConstraintsDeletionStrategy(solver.GLUCOSE);

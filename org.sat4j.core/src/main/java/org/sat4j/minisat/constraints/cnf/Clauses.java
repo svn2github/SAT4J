@@ -32,6 +32,11 @@ import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * 
+ * @author daniel
+ * @since 2.1
+ */
 public abstract class Clauses {
 	/**
 	 * Perform some sanity check before constructing a clause a) if a literal is
@@ -42,15 +47,15 @@ public abstract class Clauses {
 	 * object responsible for unit propagation
 	 * 
 	 * @param ps
-	 * 		the list of literals
+	 *            the list of literals
 	 * @param voc
-	 * 		the vocabulary used
+	 *            the vocabulary used
 	 * @param s
-	 * 		the object responsible for unit propagation
+	 *            the object responsible for unit propagation
 	 * @return null if the clause should be ignored, the (possibly modified)
-	 * 	list of literals otherwise
+	 *         list of literals otherwise
 	 * @throws ContradictionException
-	 * 		if discovered by unit propagation
+	 *             if discovered by unit propagation
 	 */
 	public static IVecInt sanityCheck(IVecInt ps, ILits voc,
 			UnitPropagationListener s) throws ContradictionException {
@@ -92,18 +97,18 @@ public abstract class Clauses {
 
 		return ps;
 	}
-	
+
 	/**
 	 * Check if this clause is null or unit
 	 * 
 	 * @param p
-	 * 		the list of literals (supposed to be clean as after a call to
-	 * 		sanityCheck())
+	 *            the list of literals (supposed to be clean as after a call to
+	 *            sanityCheck())
 	 * @param s
-	 * 		the object responsible for unit propagation
+	 *            the object responsible for unit propagation
 	 * @return true iff the clause should be ignored (because it's unit)
 	 * @throws ContradictionException
-	 * 		when detected by unit propagation
+	 *             when detected by unit propagation
 	 */
 	static boolean propagationCheck(IVecInt ps, UnitPropagationListener s)
 			throws ContradictionException {
@@ -118,6 +123,5 @@ public abstract class Clauses {
 
 		return false;
 	}
-
 
 }

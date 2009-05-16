@@ -37,6 +37,7 @@ import org.sat4j.specs.IVecInt;
 
 /**
  * @author leberre
+ * @since 2.1
  */
 public class CBClause implements Constr, Undoable, Serializable {
 
@@ -73,10 +74,8 @@ public class CBClause implements Constr, Undoable, Serializable {
 		this(ps, voc, false);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.core.Constr#remove()
+	/**
+	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < lits.length; i++) {
@@ -269,6 +268,9 @@ public class CBClause implements Constr, Undoable, Serializable {
 		return stb.toString();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 		if (!learnt) {
 			activity += claInc;

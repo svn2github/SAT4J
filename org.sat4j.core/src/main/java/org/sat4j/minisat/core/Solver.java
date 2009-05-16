@@ -319,6 +319,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return true;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public boolean removeSubsumedConstr(IConstr co) {
 		if (co == null) {
 			throw new IllegalArgumentException(
@@ -1033,6 +1036,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		void onConflictAnalysis(Constr reason);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public LearnedConstraintsDeletionStrategy MEMORY_BASED = new LearnedConstraintsDeletionStrategy() {
 
 		/**
@@ -1098,6 +1104,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	};
 
+	/**
+	 * @since 2.1
+	 */
 	public LearnedConstraintsDeletionStrategy GLUCOSE = new LearnedConstraintsDeletionStrategy() {
 
 		/**
@@ -1183,6 +1192,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = MEMORY_BASED;
 
+	/**
+	 * @param lcds
+	 * @since 2.1
+	 */
 	public void setLearnedConstraintsDeletionStrategy(
 			LearnedConstraintsDeletionStrategy lcds) {
 		learnedConstraintsDeletionStrategy = lcds;
@@ -1506,15 +1519,24 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		isDBSimplificationAllowed = status;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public int nextFreeVarId(boolean reserve) {
 		return voc.nextFreeVarId(reserve);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public IConstr addBlockingClause(IVecInt literals)
 			throws ContradictionException {
 		return addClause(literals);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void unset(int p) {
 		int current = trail.last();
 		while (current != p) {

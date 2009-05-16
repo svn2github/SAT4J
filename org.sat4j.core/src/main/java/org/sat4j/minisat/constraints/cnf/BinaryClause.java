@@ -40,6 +40,7 @@ import org.sat4j.specs.IVecInt;
  * Data structure for binary clause.
  * 
  * @author leberre
+ * @since 2.1
  */
 public abstract class BinaryClause implements Constr, Serializable {
 

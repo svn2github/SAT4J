@@ -75,6 +75,12 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 		this(solver, Integer.MAX_VALUE);
 	}
 
+	/**
+	 * 
+	 * @param solver
+	 * @param bound
+	 * @since 2.1
+	 */
 	public ModelIterator(ISolver solver, int bound) {
 		super(solver);
 		this.bound = bound;

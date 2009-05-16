@@ -80,6 +80,9 @@ public class OriginalWLClause extends WLClause {
 		return c;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 		activity += claInc;
 	}

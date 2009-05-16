@@ -43,6 +43,9 @@ public abstract class WLClause implements Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @since 2.1
+	 */
 	protected double activity;
 
 	protected final int[] lits;
@@ -80,10 +83,8 @@ public abstract class WLClause implements Constr, Serializable {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#remove(Solver)
+	/**
+	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
 		voc.watches(lits[0] ^ 1).remove(this);

@@ -374,6 +374,8 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 
 	/**
 	 * Removes a constraint from the solver
+	 * 
+	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i <= degree; i++) {
@@ -590,6 +592,9 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 		return (int) sum / (lits.length + 1);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 		// do nothing
 	}

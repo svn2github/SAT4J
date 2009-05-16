@@ -48,6 +48,7 @@ import org.sat4j.specs.IVecInt;
  * @author leberre
  * @see BinaryClause
  * @see UnitClause
+ * @since 2.1
  */
 public abstract class HTClause implements Constr, Serializable {
 

@@ -94,6 +94,12 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return constr;
 	}
 
+	/**
+	 * 
+	 * @param literals
+	 * @return
+	 * @since 2.1
+	 */
 	protected int createNewVar(IVecInt literals) {
 		if (pooledVarId) {
 			pooledVarId = false;
@@ -124,6 +130,11 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @since 2.1
+	 * @return
+	 * @throws TimeoutException
+	 */
 	public Collection<IConstr> explain() throws TimeoutException {
 		assert !isSatisfiable(assump);
 		ISolver solver = decorated();
@@ -138,10 +149,17 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return explanation;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void cancelExplanation() {
 		xplainStrategy.cancelExplanationComputation();
 	}
 
+	/**
+	 * 
+	 * @since 2.1
+	 */
 	public Collection<IConstr> getConstraints() {
 		return constrs.values();
 	}

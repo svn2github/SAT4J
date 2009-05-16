@@ -304,7 +304,7 @@ public class MaxWatchCard implements Constr, Undoable, Serializable {
 	}
 
 	/**
-	 * Enl?ve une contrainte du prouveur
+	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int q : lits) {
@@ -425,6 +425,9 @@ public class MaxWatchCard implements Constr, Undoable, Serializable {
 		return voc;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 		// TODO Auto-generated method stub
 

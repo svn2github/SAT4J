@@ -38,6 +38,9 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * @since 2.1
+ */
 public class QuickXplainStrategy implements XplainStrategy {
 
 	private boolean computationCanceled;

@@ -84,6 +84,11 @@ public class LubyRestarts implements RestartStrategy {
 		this(32); // uses TiniSAT default
 	}
 
+	/**
+	 * @param factor
+	 *            the factor used for the Luby series.
+	 * @since 2.1
+	 */
 	public LubyRestarts(int factor) {
 		setFactor(factor);
 	}

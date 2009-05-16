@@ -1,9 +1,3 @@
-package org.sat4j.minisat.constraints.cnf;
-
-import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
-import org.sat4j.specs.IVecInt;
-
 /*******************************************************************************
  * SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le
  * Berre
@@ -32,6 +26,15 @@ import org.sat4j.specs.IVecInt;
  * See www.minisat.se for the original solver in C++.
  * 
  *******************************************************************************/
+package org.sat4j.minisat.constraints.cnf;
+
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.UnitPropagationListener;
+import org.sat4j.specs.IVecInt;
+
+/**
+ * @since 2.1
+ */
 public class OriginalBinaryClause extends BinaryClause {
 
 	/**

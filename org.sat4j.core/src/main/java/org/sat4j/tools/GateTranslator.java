@@ -59,6 +59,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 *            a variable to falsify
 	 * @throws ContradictionException
 	 *             iff a trivial inconsistency is found.
+	 * @since 2.1
 	 */
 	public IConstr gateFalse(int y) throws ContradictionException {
 		IVecInt clause = new VecInt(2);
@@ -72,6 +73,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param y
 	 *            a variable to verify
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr gateTrue(int y) throws ContradictionException {
 		IVecInt clause = new VecInt(2);
@@ -88,6 +90,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param x2
 	 * @param x3
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] ite(int y, int x1, int x2, int x3)
 			throws ContradictionException {
@@ -132,6 +135,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param literals
 	 *            the x1 ... xn literals.
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] and(int y, IVecInt literals) throws ContradictionException {
 		// y <=> AND x1 ... xn
@@ -161,6 +165,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param x1
 	 * @param x2
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] and(int y, int x1, int x2) throws ContradictionException {
 		IVecInt clause = new VecInt(4);
@@ -186,6 +191,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param y
 	 * @param literals
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] or(int y, IVecInt literals) throws ContradictionException {
 		// y <=> OR x1 x2 ...xn
@@ -216,6 +222,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param y
 	 * @param x
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] not(int y, int x) throws ContradictionException {
 		IConstr[] constrs = new IConstr[2];
@@ -237,6 +244,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param y
 	 * @param literals
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] xor(int y, IVecInt literals) throws ContradictionException {
 		literals.push(-y);
@@ -255,6 +263,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	 * @param y
 	 * @param literals
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	public IConstr[] iff(int y, IVecInt literals) throws ContradictionException {
 		literals.push(y);

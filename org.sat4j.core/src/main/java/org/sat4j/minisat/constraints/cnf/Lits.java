@@ -252,12 +252,15 @@ public class Lits implements Serializable, ILits {
 		return pool.length - 1;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public int nextFreeVarId(boolean reserve) {
 		if (reserve) {
-			ensurePool(maxvarid+1);
+			ensurePool(maxvarid + 1);
 			// ensure pool changes maxvarid
 			return maxvarid;
 		}
-		return maxvarid+1;
+		return maxvarid + 1;
 	}
 }

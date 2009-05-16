@@ -38,14 +38,25 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * 
+ * @author daniel
+ * @since 2.1
+ */
 public class ReplayXplainStrategy implements XplainStrategy {
 
 	private boolean computationCanceled;
 
+	/**
+	 * @since 2.1
+	 */
 	public void cancelExplanationComputation() {
 		computationCanceled = true;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
 			IVecInt assumps) throws TimeoutException {
 		computationCanceled = false;

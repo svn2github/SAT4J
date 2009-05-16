@@ -291,6 +291,9 @@ public class DimacsStringSolver implements ISolver {
 	public void setSearchListener(SearchListener sl) {
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public int nextFreeVarId(boolean reserve) {
 		if (reserve) {
 			maxvarid++;
@@ -299,10 +302,16 @@ public class DimacsStringSolver implements ISolver {
 		return maxvarid;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public boolean removeSubsumedConstr(IConstr c) {
 		return false;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public IConstr addBlockingClause(IVecInt literals)
 			throws ContradictionException {
 		throw new UnsupportedOperationException();

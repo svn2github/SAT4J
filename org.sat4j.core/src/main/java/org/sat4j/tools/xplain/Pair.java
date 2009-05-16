@@ -29,6 +29,10 @@ package org.sat4j.tools.xplain;
 
 import org.sat4j.specs.IConstr;
 
+/**
+ * @author daniel
+ * @since 2.1
+ */
 public class Pair implements Comparable<Pair> {
 	public final Integer key;
 	public final IConstr constr;

@@ -45,8 +45,9 @@ public interface Constr extends Propagatable, IConstr {
 
 	/**
 	 * Remove a constraint from the solver.
-	 * @param upl TODO
 	 * 
+	 * @param upl
+	 * @since 2.1
 	 */
 	void remove(UnitPropagationListener upl);
 
@@ -80,6 +81,11 @@ public interface Constr extends Propagatable, IConstr {
 	 */
 	void incActivity(double claInc);
 
+	/**
+	 * 
+	 * @param claInc
+	 * @since 2.1
+	 */
 	void forwardActivity(double claInc);
 
 	/**

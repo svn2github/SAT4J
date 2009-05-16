@@ -119,6 +119,9 @@ public class AtLeast implements Constr, Undoable, Serializable {
 
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public static Constr atLeastNew(UnitPropagationListener s, ILits voc,
 			IVecInt ps, int n) throws ContradictionException {
 		int degree = niceParameters(s, voc, ps, n);
@@ -127,10 +130,8 @@ public class AtLeast implements Constr, Undoable, Serializable {
 		return new AtLeast(voc, ps, degree);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#remove(Solver)
+	/**
+	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int q : lits) {
@@ -287,6 +288,9 @@ public class AtLeast implements Constr, Undoable, Serializable {
 		return stb.toString();
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void forwardActivity(double claInc) {
 		// TODO Auto-generated method stub
 

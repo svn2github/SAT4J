@@ -34,6 +34,9 @@ public class Counter {
 		value++;
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	public void dec() {
 		value--;
 	}

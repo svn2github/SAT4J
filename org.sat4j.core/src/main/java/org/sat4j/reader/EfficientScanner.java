@@ -42,6 +42,7 @@ import java.math.BigInteger;
  * 
  * @author laihem
  * @author leberre
+ * @since 2.1
  */
 public class EfficientScanner implements Serializable {
 

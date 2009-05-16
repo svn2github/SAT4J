@@ -146,6 +146,7 @@ public interface IOptimizationProblem extends IProblem {
 	 * This is especially useful to iterate over optimal solutions.
 	 * 
 	 * @throws ContradictionException
+	 * @since 2.1
 	 */
 	void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException;

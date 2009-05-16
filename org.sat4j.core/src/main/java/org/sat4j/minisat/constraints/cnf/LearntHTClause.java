@@ -32,6 +32,10 @@ import static org.sat4j.core.LiteralsUtils.neg;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * @author daniel
+ * @since 2.1
+ */
 public class LearntHTClause extends HTClause {
 
 	public LearntHTClause(IVecInt ps, ILits voc) {

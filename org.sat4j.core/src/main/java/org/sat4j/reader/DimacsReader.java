@@ -71,6 +71,9 @@ public class DimacsReader extends Reader implements Serializable {
 
 	protected final String formatString;
 
+	/**
+	 * @since 2.1
+	 */
 	protected EfficientScanner scanner;
 
 	public DimacsReader(ISolver solver) {
@@ -93,6 +96,7 @@ public class DimacsReader extends Reader implements Serializable {
 	 *            the input stream
 	 * @throws IOException
 	 *             if an IO problem occurs.
+	 * @since 2.1
 	 */
 	protected void skipComments() throws IOException {
 		scanner.skipComments();
@@ -105,6 +109,7 @@ public class DimacsReader extends Reader implements Serializable {
 	 *             iff an IO occurs
 	 * @throws ParseFormatException
 	 *             if the input stream does not comply with the DIMACS format.
+	 * @since 2.1
 	 */
 	protected void readProblemLine() throws IOException, ParseFormatException {
 
@@ -143,6 +148,7 @@ public class DimacsReader extends Reader implements Serializable {
 	 *             if the input stream does not comply with the DIMACS format.
 	 * @throws ContradictionException
 	 *             si le probl?me est trivialement inconsistant.
+	 * @since 2.1
 	 */
 	protected void readConstrs() throws IOException, ParseFormatException,
 			ContradictionException {
@@ -189,6 +195,9 @@ public class DimacsReader extends Reader implements Serializable {
 		solver.addClause(literals);
 	}
 
+	/**
+	 * @since 2.1
+	 */
 	protected boolean handleLine() throws ContradictionException, IOException,
 			ParseFormatException {
 		int lit;

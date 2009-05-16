@@ -30,6 +30,11 @@ package org.sat4j.minisat.constraints.cnf;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * 
+ * @author daniel
+ * @since 2.1
+ */
 public class LearntBinaryClause extends BinaryClause {
 
 	/**
