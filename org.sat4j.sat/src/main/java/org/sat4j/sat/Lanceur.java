@@ -213,7 +213,7 @@ public class Lanceur extends AbstractLauncher {
 					dotfilename = "sat4j.dot";
 				}
 				((Solver<DataStructureFactory>) asolver)
-						.setSearchListener(new DotSearchListener(dotfilename));
+						.setSearchListener(new DotSearchListener(dotfilename,null));
 			}
 
 			if (cmd.hasOption("m")) {
