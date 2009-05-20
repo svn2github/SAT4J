@@ -91,7 +91,7 @@ public abstract class AbstractAcceptanceTestCase<T extends ISolver> extends
 			throws FileNotFoundException, ParseFormatException, IOException {
 		try {
 			reader.parseInstance(filename);
-			solver.setTimeout(30); // set timeout to 30 seconds
+			solver.setTimeout(60); // set timeout to 60 seconds
 			return solver.isSatisfiable();
 		} catch (ContradictionException ce) {
 			return false;
