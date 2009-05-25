@@ -269,6 +269,22 @@ public class ManyCore implements ISolver, OutcomeListener {
 	public int nextFreeVarId(boolean reserve) {
 		return solvers[0].nextFreeVarId(reserve);
 	}
+
+	public IConstr addBlockingClause(IVecInt literals)
+			throws ContradictionException {
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers[i].addBlockingClause(literals);
+		}
+		return null;
+	}
+
+	public boolean removeSubsumedConstr(IConstr c) {
+		boolean removed = true;
+		for (int i = 0; i < numberOfSolvers; i++) {
+			removed = removed & solvers[i].removeSubsumedConstr(c);
+		}
+		return removed;
+	}
 }
 
 interface OutcomeListener {
