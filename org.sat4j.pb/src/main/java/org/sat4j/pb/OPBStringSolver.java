@@ -46,6 +46,8 @@ import org.sat4j.tools.DimacsStringSolver;
  */
 public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
+	private static final String FAKE_I_CONSTR_MSG = "Fake IConstr";
+
 	/**
 	 * 
 	 */
@@ -59,22 +61,22 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	private boolean inserted = false;
 
-	private static IConstr FAKE_CONSTR = new IConstr() {
+	private static final IConstr FAKE_CONSTR = new IConstr() {
 
 		public int size() {
-			throw new UnsupportedOperationException("Fake IConstr");
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
 
 		public boolean learnt() {
-			throw new UnsupportedOperationException("Fake IConstr");
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
 
 		public double getActivity() {
-			throw new UnsupportedOperationException("Fake IConstr");
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
 
 		public int get(int i) {
-			throw new UnsupportedOperationException("Fake IConstr");
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
 	};
 
@@ -97,13 +99,25 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		assert lits.size() == coeffs.size();
 		nbOfConstraints++;
 		if (moreThan) {
-			for (int i = 0; i < lits.size(); i++)
-				out.append(coeffs.get(i) + " x" + lits.get(i) + " ");
-			out.append(">= " + d + " ;\n");
+			for (int i = 0; i < lits.size(); i++) {
+				out.append(coeffs.get(i));
+				out.append(" x");
+				out.append(lits.get(i));
+				out.append(" ");
+			}
+			out.append(">= ");
+			out.append(d);
+			out.append(" ;\n");
 		} else {
-			for (int i = 0; i < lits.size(); i++)
-				out.append(coeffs.get(i).negate() + " x" + lits.get(i) + " ");
-			out.append(">= " + d.negate() + " ;\n");
+			for (int i = 0; i < lits.size(); i++) {
+				out.append(coeffs.get(i).negate());
+				out.append(" x");
+				out.append(lits.get(i));
+				out.append(" ");
+			}
+			out.append(">= ");
+			out.append(d.negate());
+			out.append(" ;\n");
 		}
 		return FAKE_CONSTR;
 	}
@@ -178,8 +192,11 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		StringBuffer out = getOut();
 		if (!inserted) {
 			StringBuffer tmp = new StringBuffer();
-			tmp.append("* #variable= " + nVars());
-			tmp.append(" #constraint= " + nbOfConstraints + " \n");
+			tmp.append("* #variable= ");
+			tmp.append(nVars());
+			tmp.append(" #constraint= ");
+			tmp.append(nbOfConstraints);
+			tmp.append(" \n");
 			if (obj != null) {
 				tmp.append("min: ");
 				tmp.append(obj);

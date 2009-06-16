@@ -367,7 +367,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		return (cumul.compareTo(degree) >= 0);
 	}
 
-	public int size() {
+	public final int size() {
 		return lits.length;
 	}
 
