@@ -43,6 +43,8 @@ import org.sat4j.specs.IVec;
  */
 public class Lits implements Serializable, ILits {
 
+	private static final int DEFAULT_INIT_SIZE = 128;
+
 	private static final long serialVersionUID = 1L;
 
 	private boolean pool[] = new boolean[1];
@@ -50,7 +52,7 @@ public class Lits implements Serializable, ILits {
 	private int realnVars = 0;
 
 	@SuppressWarnings("unchecked")
-	protected IVec<Propagatable>[] watches = new IVec[0];
+	private IVec<Propagatable>[] watches = new IVec[0];
 
 	private int[] level = new int[0];
 
@@ -64,14 +66,14 @@ public class Lits implements Serializable, ILits {
 	private boolean[] falsified = new boolean[0];
 
 	public Lits() {
-		init(128);
+		init(DEFAULT_INIT_SIZE);
 	}
 
 	@SuppressWarnings( { "unchecked" })
-	public void init(int nvar) {
-		if (nvar < pool.length)
+	public final void init(int nvar) {
+		if (nvar < pool.length) {
 			return;
-
+		}
 		assert nvar >= 0;
 		// let some space for unused 0 indexer.
 		int nvars = nvar + 1;
@@ -128,8 +130,9 @@ public class Lits implements Serializable, ILits {
 
 	public boolean belongsToPool(int x) {
 		assert x > 0;
-		if (x >= pool.length)
+		if (x >= pool.length) {
 			return false;
+		}
 		return pool[x];
 	}
 
@@ -142,8 +145,9 @@ public class Lits implements Serializable, ILits {
 	}
 
 	public void ensurePool(int howmany) {
-		if (howmany >= pool.length)
+		if (howmany >= pool.length) {
 			init(howmany);
+		}
 		maxvarid = howmany;
 	}
 
@@ -172,10 +176,12 @@ public class Lits implements Serializable, ILits {
 	}
 
 	public String valueToString(int lit) {
-		if (isUnassigned(lit))
+		if (isUnassigned(lit)) {
 			return "?"; //$NON-NLS-1$
-		if (isSatisfied(lit))
+		}
+		if (isSatisfied(lit)) {
 			return "T"; //$NON-NLS-1$
+		}
 		return "F"; //$NON-NLS-1$
 	}
 

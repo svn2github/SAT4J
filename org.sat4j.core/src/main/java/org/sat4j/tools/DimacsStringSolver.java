@@ -100,7 +100,8 @@ public class DimacsStringSolver implements ISolver {
 	}
 
 	public void setExpectedNumberOfClauses(int nb) {
-		out.append(" " + nb);
+		out.append(" ");
+		out.append(nb);
 		nbclauses = nb;
 		fixedNbClauses = true;
 	}
@@ -115,11 +116,12 @@ public class DimacsStringSolver implements ISolver {
 			}
 			firstConstr = false;
 		}
-		if (!fixedNbClauses)
+		if (!fixedNbClauses) {
 			nbclauses++;
-
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();)
+		}
+		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
 			out.append(iterator.next()).append(" ");
+		}
 		out.append("0\n");
 		return null;
 	}
@@ -150,10 +152,13 @@ public class DimacsStringSolver implements ISolver {
 
 		for (int i = 0; i <= literals.size(); i++) {
 			for (int j = i + 1; j < literals.size(); j++) {
-				if (!fixedNbClauses)
+				if (!fixedNbClauses) {
 					nbclauses++;
-				out.append("" + (-literals.get(i)) + " " + (-literals.get(j))
-						+ " 0\n");
+				}
+				out.append(-literals.get(i));
+				out.append(" ");
+				out.append(-literals.get(j));
+				out.append(" 0\n");
 			}
 		}
 		return null;

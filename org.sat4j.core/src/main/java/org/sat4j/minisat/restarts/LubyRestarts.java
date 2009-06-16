@@ -35,6 +35,8 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public class LubyRestarts implements RestartStrategy {
 
+	private static final int DEFAULT_LUBY_FACTOR = 32;
+	private static final int PRECOMPUTED_VALUES_IN_POOL = 32;
 	/**
      * 
      */
@@ -52,9 +54,9 @@ public class LubyRestarts implements RestartStrategy {
 			int[] newContent = new int[newsize + 1];
 			System.arraycopy(cachedValues, 0, newContent, 0, oldsize);
 			int nextPowerOfTwo = 1;
-			while (nextPowerOfTwo <= oldsize)
+			while (nextPowerOfTwo <= oldsize) {
 				nextPowerOfTwo <<= 1;
-
+			}
 			int lastPowerOfTwo = nextPowerOfTwo >> 1;
 			for (int j = oldsize; j <= newsize; j++) {
 				if (j + 1 == nextPowerOfTwo) {
@@ -72,8 +74,7 @@ public class LubyRestarts implements RestartStrategy {
 	}
 
 	static {
-		// precompute 64 first values
-		luby(32);
+		luby(PRECOMPUTED_VALUES_IN_POOL);
 	}
 
 	private int factor;
@@ -81,7 +82,7 @@ public class LubyRestarts implements RestartStrategy {
 	private int count;
 
 	public LubyRestarts() {
-		this(32); // uses TiniSAT default
+		this(DEFAULT_LUBY_FACTOR); // uses TiniSAT default
 	}
 
 	/**
@@ -93,7 +94,7 @@ public class LubyRestarts implements RestartStrategy {
 		setFactor(factor);
 	}
 
-	public void setFactor(int factor) {
+	public final void setFactor(int factor) {
 		this.factor = factor;
 	}
 
