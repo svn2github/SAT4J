@@ -129,8 +129,8 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	 * Constructs and normalizes a cardinality constraint. used by
 	 * MinWatchCardPB.normalizedMinWatchCardNew() in the normalized case. <br />
 	 * <strong>Should not be used if parameters are not already
-	 * normalized</strong><br />
-	 * This constraint is always an ATLEAST constraint.
+	 * normalized</strong><br /> This constraint is always an ATLEAST
+	 * constraint.
 	 * 
 	 * @param voc
 	 *            vocabulary used by the constraint
@@ -378,7 +378,7 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
-		for (int i = 0; i <= degree; i++) {
+		for (int i = 0; i < Math.min(degree + 1, lits.length); i++) {
 			voc.watches(lits[i] ^ 1).remove(this);
 		}
 	}
