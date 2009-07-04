@@ -109,23 +109,31 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps, true);
-		if (result) {
-			prevmodel = super.model();
-			prevfullmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				prevfullmodel[i] = decorated().model(i + 1);
+		try {
+			boolean result = super.isSatisfiable(assumps, true);
+			if (result) {
+				prevmodel = super.model();
+				prevfullmodel = new boolean[nVars()];
+				for (int i = 0; i < nVars(); i++) {
+					prevfullmodel[i] = decorated().model(i + 1);
+				}
+				if (objfct != null) {
+					calculateObjective();
+				}
+			} else {
+				if (previousPBConstr != null) {
+					decorated().removeConstr(previousPBConstr);
+					previousPBConstr = null;
+				}
 			}
-			if (objfct != null) {
-				calculateObjective();
-			}
-		} else {
+			return result;
+		} catch (TimeoutException te) {
 			if (previousPBConstr != null) {
 				decorated().removeConstr(previousPBConstr);
 				previousPBConstr = null;
 			}
+			throw te;
 		}
-		return result;
 	}
 
 	public boolean hasNoObjectiveFunction() {
