@@ -360,7 +360,8 @@ public class CompactMatrixReader extends Reader {
 				}
 			}
 		}
-		System.out.printf("Created %d soft constraints\n", nbconstrs);
+		System.out.printf("Created %d instance specific constraints\n",
+				nbconstrs);
 	}
 
 	private void createHardConstraints(int n, int nbVoters)
