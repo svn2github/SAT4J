@@ -39,7 +39,7 @@ public class CompactMatrixReader extends Reader {
 
 	public CompactMatrixReader(IPBSolver pbsolver) {
 		this.pbsolver = pbsolver;
-		this.helper = new DependencyHelper<IRelation, String>(pbsolver, true);
+		this.helper = new DependencyHelper<IRelation, String>(pbsolver, false);
 		this.helper.setNegator(new RelationNegator());
 	}
 
