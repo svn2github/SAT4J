@@ -523,6 +523,17 @@ public class DependencyHelper<T, C> {
 		solver.addClause(literals);
 	}
 
+	public void discardSolutionsWithObjectiveValueGreaterThan(long value)
+			throws ContradictionException {
+		ObjectiveFunction obj = solver.getObjectiveFunction();
+		IVecInt literals = new VecInt(obj.getVars().size());
+		obj.getVars().copyTo(literals);
+		IVec<BigInteger> coeffs = new Vec<BigInteger>(obj.getCoeffs().size());
+		obj.getCoeffs().copyTo(coeffs);
+		solver.addPseudoBoolean(literals, coeffs, false, BigInteger
+				.valueOf(value));
+	}
+
 	public String getObjectiveFunction() {
 		ObjectiveFunction obj = solver.getObjectiveFunction();
 		StringBuffer stb = new StringBuffer();
@@ -540,5 +551,9 @@ public class DependencyHelper<T, C> {
 
 	public int getNumberOfConstraints() {
 		return descs.size();
+	}
+
+	public Map<Integer, T> getVariablesMapping() {
+		return mapToDomain;
 	}
 }
