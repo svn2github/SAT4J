@@ -50,8 +50,8 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
 	boolean modelComputed = false;
 
-	private IVecInt assumps = new VecInt();
-	
+	private final IVecInt assumps = new VecInt();
+
 	public OptToPBSATAdapter(IOptimizationProblem problem) {
 		super((IPBSolver) problem);
 		this.problem = problem;
@@ -61,9 +61,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	public boolean isSatisfiable() throws TimeoutException {
 		modelComputed = false;
 		assumps.clear();
-        if (problem.hasNoObjectiveFunction()) {
-    		return modelComputed = problem.isSatisfiable();
-    	}
+		if (problem.hasNoObjectiveFunction()) {
+			return modelComputed = problem.isSatisfiable();
+		}
 		return problem.admitABetterSolution();
 	}
 
@@ -83,9 +83,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 		modelComputed = false;
 		this.assumps.clear();
 		assumps.copyTo(this.assumps);
-    	if (problem.hasNoObjectiveFunction()) {
-    		return modelComputed = problem.isSatisfiable(assumps);
-    	}
+		if (problem.hasNoObjectiveFunction()) {
+			return modelComputed = problem.isSatisfiable(assumps);
+		}
 		return problem.admitABetterSolution(assumps);
 	}
 
@@ -95,8 +95,10 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			return problem.model();
 		try {
 			assert problem.admitABetterSolution(assumps);
-            assert !problem.hasNoObjectiveFunction();
- 			do {
+			assert !problem.hasNoObjectiveFunction();
+			do {
+				System.out.println("c found solution with cost: "
+						+ problem.getObjectiveValue());
 				problem.discardCurrentSolution();
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
