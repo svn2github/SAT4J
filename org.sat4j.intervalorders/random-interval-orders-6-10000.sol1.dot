@@ -1,0 +1,24 @@
+digraph G {
+ legend [shape= plaintext, label="Solution 1, penalty 91622"]
+alt1 -> alt2 [label="6110" style=dashed, color=green, dir=none, rank=same]
+alt1 -> alt3 [label="6169" style=dashed, color=green, dir=none, rank=same]
+alt1 -> alt4 [label="6154" style=dashed, color=green, dir=none, rank=same]
+alt1 -> alt5 [label="6154" style=dashed, color=green, dir=none, rank=same]
+alt1 -> alt6 [label="6079" style=dashed, color=green, dir=none, rank=same]
+
+alt2 -> alt3 [label="6040" style=dashed, color=green, dir=none, rank=same]
+alt2 -> alt4 [label="6108" style=dashed, color=green, dir=none, rank=same]
+alt2 -> alt5 [label="6117" style=dashed, color=green, dir=none, rank=same]
+alt2 -> alt6 [label="6075" style=dashed, color=green, dir=none, rank=same]
+
+alt3 -> alt4 [label="6101" style=dashed, color=green, dir=none, rank=same]
+alt3 -> alt5 [label="6088" style=dashed, color=green, dir=none, rank=same]
+alt3 -> alt6 [label="6098" style=dashed, color=green, dir=none, rank=same]
+
+alt4 -> alt5 [label="6145" style=dashed, color=green, dir=none, rank=same]
+alt4 -> alt6 [label="6060" style=dashed, color=green, dir=none, rank=same]
+
+alt5 -> alt6 [label="6124" style=dashed, color=green, dir=none, rank=same]
+
+
+}
