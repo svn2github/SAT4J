@@ -30,7 +30,7 @@ public class Tester {
 
 		IPBSolver solver = new OptToPBSATAdapter(new PseudoOptDecorator(
 				SolverFactory.newDefault()));
-		// solver.setTimeout(120);
+		solver.setTimeout(600);
 		CompactMatrixReader reader = new CompactMatrixReader(solver);
 
 		if (args.length >= 2) {
