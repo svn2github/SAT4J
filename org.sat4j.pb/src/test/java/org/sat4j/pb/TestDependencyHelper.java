@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.sat4j.pb.tools.WeightedObject.newWO;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -261,5 +262,54 @@ public class TestDependencyHelper {
 		helper.atMost(1, "A", "B", "C", "D", "E").named("C5");
 		assertFalse(helper.hasASolution());
 		assertEquals(3, helper.why().size());
+	}
+
+	@Test
+	public void testCardinalityConstraints() throws ContradictionException,
+			TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		// A + B + C <= 2
+		helper.atMost("C1", 2, "A", "B", "C");
+		helper.atLeast("C2", 2, "A", "B", "C");
+		helper.setFalse("C3", "A");
+		assertTrue(helper.hasASolution());
+		IVec<String> solution = helper.getSolution();
+		assertTrue(solution.contains("B"));
+		assertTrue(solution.contains("C"));
+	}
+
+	@Test
+	public void testPseudoConstraints() throws ContradictionException,
+			TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		// A + B + C <= 2
+		helper.atMost("C1", BigInteger.valueOf(5),
+				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
+				WeightedObject.newWO("C", 1));
+		helper.atLeast("C2", BigInteger.valueOf(7), WeightedObject
+				.newWO("A", 6), WeightedObject.newWO("B", 4), WeightedObject
+				.newWO("C", 2));
+		assertTrue(helper.hasASolution());
+		IVec<String> solution = helper.getSolution();
+		assertTrue(solution.contains("A"));
+		assertFalse(solution.contains("B") && solution.contains("C"));
+	}
+
+	@Test
+	public void testPseudoConstraintsNegativeLiterals()
+			throws ContradictionException, TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		// A + B + C <= 2
+		helper.atMost("C1", BigInteger.valueOf(5),
+				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
+				WeightedObject.newWO("C", 1));
+		helper.atMost("C2", BigInteger.valueOf(1), WeightedObject
+				.newWO("-A", 3), WeightedObject.newWO("-B", 2), WeightedObject
+				.newWO("-C", 1));
+		assertTrue(helper.hasASolution());
+		IVec<String> solution = helper.getSolution();
+		assertTrue(solution.contains("A"));
+		assertTrue(solution.contains("B"));
+		assertFalse(solution.contains("C"));
 	}
 }
