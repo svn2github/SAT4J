@@ -43,6 +43,27 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	}
 
 	@Override
+	public IConstr addAtLeast(IVecInt literals, int degree)
+			throws ContradictionException {
+		IVec<BigInteger> coeffs = new Vec<BigInteger>();
+		coeffs.growTo(literals.size(), BigInteger.ONE);
+		int newvar = createNewVar(literals);
+		literals.push(newvar);
+		BigInteger coef = BigInteger.valueOf(coeffs.size() - degree);
+		coeffs.push(coef);
+		IConstr constr = decorated().addPseudoBoolean(literals, coeffs, true,
+				BigInteger.valueOf(degree));
+		if (constr == null) {
+			// constraint trivially satisfied
+			discardLastestVar();
+			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+		} else {
+			constrs.put(newvar, constr);
+		}
+		return constr;
+	}
+
+	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
