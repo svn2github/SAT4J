@@ -29,7 +29,7 @@ public class Tester {
 		String outputsolfile;
 
 		IPBSolver solver = new OptToPBSATAdapter(new PseudoOptDecorator(
-				SolverFactory.newDefault()));
+				SolverFactory.newCuttingPlanes()));
 		solver.setTimeout(600);
 		CompactMatrixReader reader = new CompactMatrixReader(solver);
 
