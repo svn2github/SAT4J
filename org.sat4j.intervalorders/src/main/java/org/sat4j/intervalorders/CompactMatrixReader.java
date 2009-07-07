@@ -149,14 +149,9 @@ public class CompactMatrixReader extends Reader {
 		// generate n intervals
 		for (int i = 0; i < n; i++) {
 			a = rand.nextInt(maxIntervalValue) + 1;
-			b = rand.nextInt(maxIntervalValue) + 1;
-			if (a < b) {
-				high = b;
-				low = a;
-			} else {
-				high = a;
-				low = b;
-			}
+			b = a + rand.nextInt(n) + 1;
+			high = b;
+			low = a;
 			intervals[i] = new Interval(high, low);
 		}
 		System.out.println(Arrays.asList(intervals));
