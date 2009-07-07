@@ -1365,7 +1365,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public void reset() {
-		// FIXME verify that cleanup is OK
+		trail.clear();
+		trailLim.clear();
 		voc.resetPool();
 		dsfactory.reset();
 		constrs.clear();
