@@ -338,6 +338,27 @@ public class DependencyHelper<T, C> {
 	 *         NAMED.
 	 * @throws ContradictionException
 	 */
+	public void atLeast(C name, int i, T... things)
+			throws ContradictionException {
+		IVecInt literals = new VecInt();
+		for (T t : things) {
+			literals.push(getIntValue(t));
+		}
+		descs.put(solver.addAtLeast(literals, i), name);
+	}
+
+	/**
+	 * Create a constraint stating that at most i domain object should be set to
+	 * true.
+	 * 
+	 * @param i
+	 *            the maximum number of domain object to set to true.
+	 * @param things
+	 *            the domain objects.
+	 * @return an object used to name the constraint. The constraint MUST BE
+	 *         NAMED.
+	 * @throws ContradictionException
+	 */
 	public ImplicationNamer<T, C> atMost(int i, T... things)
 			throws ContradictionException {
 		IVec<IConstr> toName = new Vec<IConstr>();
@@ -347,6 +368,27 @@ public class DependencyHelper<T, C> {
 		}
 		toName.push(solver.addAtMost(literals, i));
 		return new ImplicationNamer<T, C>(this, toName);
+	}
+
+	/**
+	 * Create a constraint stating that at most i domain object should be set to
+	 * true.
+	 * 
+	 * @param i
+	 *            the maximum number of domain object to set to true.
+	 * @param things
+	 *            the domain objects.
+	 * @return an object used to name the constraint. The constraint MUST BE
+	 *         NAMED.
+	 * @throws ContradictionException
+	 */
+	public void atMost(C name, int i, T... things)
+			throws ContradictionException {
+		IVecInt literals = new VecInt();
+		for (T t : things) {
+			literals.push(getIntValue(t));
+		}
+		descs.put(solver.addAtMost(literals, i), name);
 	}
 
 	/**
@@ -494,6 +536,56 @@ public class DependencyHelper<T, C> {
 		createObjectivetiveFunctionIfNeeded(20);
 		objLiterals.push(getIntValue(thing));
 		objCoefs.push(weight);
+	}
+
+	/**
+	 * Create a PB constraint of the form <code>
+	 * w1.l1 + w2.l2 + ... wn.ln >= degree
+	 * </code> where wi are position integers
+	 * and li are domain objects.
+	 * 
+	 * @param degree
+	 * @param wobj
+	 * @throws ContradictionException
+	 */
+	public void atLeast(C name, BigInteger degree, WeightedObject<T>... wobj)
+			throws ContradictionException {
+		IVecInt literals = new VecInt(wobj.length);
+		IVec<BigInteger> coeffs = new Vec<BigInteger>(wobj.length);
+		for (WeightedObject<T> wo : wobj) {
+			literals.push(getIntValue(wo.thing));
+			coeffs.push(wo.getWeight());
+		}
+		descs
+				.put(solver.addPseudoBoolean(literals, coeffs, true, degree),
+						name);
+	}
+
+	/**
+	 * Create a PB constraint of the form <code>
+	 * w1.l1 + w2.l2 + ... wn.ln <= degree
+	 * </code> where wi are position integers
+	 * and li are domain objects.
+	 * 
+	 * @param degree
+	 * @param wobj
+	 * @throws ContradictionException
+	 */
+	public void atMost(C name, BigInteger degree, WeightedObject<T>... wobj)
+			throws ContradictionException {
+		IVecInt literals = new VecInt(wobj.length);
+		IVec<BigInteger> coeffs = new Vec<BigInteger>(wobj.length);
+		for (WeightedObject<T> wo : wobj) {
+			literals.push(getIntValue(wo.thing));
+			coeffs.push(wo.getWeight());
+		}
+		descs.put(solver.addPseudoBoolean(literals, coeffs, false, degree),
+				name);
+	}
+
+	public void atMost(C name, int degree, WeightedObject<T>... wobj)
+			throws ContradictionException {
+		atMost(name, BigInteger.valueOf(degree), wobj);
 	}
 
 	/**
