@@ -54,9 +54,40 @@
 		   <param name="package" value="maxsat"/>
                 </antcall>
 	</target>
+	
+	<target name="intervalorders" depends="pseudo" description="Build the interval order agregation tool from  current source tree">
+		<echo>Building Interval Order tool</echo>
+                <antcall target="build">
+		   <param name="package" value="intervalorders"/>
+		   <param name="src" value="org.sat4j.intervalorders/src/main/java" />
+		   <param name="jarname" value="org.sat4j.intervalorders"/>
+		   <param name="mainclass" value="org.sat4j.intervalorders.Tester"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="intervalorders"/>
+		   <param name="src" value="org.sat4j.intervalorders/src/main/java" />
+                   <param name="jarname" value="org.sat4j.intervalorders"/>
+                </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-intervalorders.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+			<zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.pb.jar"/>
+		   </zipgroupfileset>
+               </jar>
+               <antcall target="zip-bundle">
+		   <param name="package" value="intervalorders"/>
+                </antcall>
+	</target>
 
 	<target name="csp" depends="core" description="Build a jar file suitable for the CSP competitions from  current source tree">
 		<echo>Building CSP Solver</echo>
+		<antcall target="build">
+		   <param name="package" value="csp.xmlparser"/>
+		   <param name="src" value="org.sat4j.csp.xmlparser/src/main/java" />
+                   <param name="jarname" value="org.sat4j.csp.xmlparser"/>
+		   <param name="mainclass" value="org.sat4j.csp.CSPLauncher"/>
+		</antcall>
                 <antcall target="build">
 		   <param name="package" value="csp"/>
 		   <param name="src" value="org.sat4j.csp/src/main/java" />
@@ -68,6 +99,18 @@
 		   <param name="src" value="org.sat4j.csp/src/main/java" />
                    <param name="jarname" value="org.sat4j.csp"/>
                 </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-csp.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+		   <zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.pb.jar"/>
+			   <include name="org.sat4j.csp.jar"/>
+			   <include name="org.sat4j.csp.xmlparser.jar"/>
+		   </zipgroupfileset>
+                   <zipgroupfileset dir="${lib}">
+                           <include name="js.jar"/>
+		   </zipgroupfileset>
+               </jar>
                 <antcall target="zip-bundle">
 		   <param name="package" value="csp"/>
                 </antcall>
@@ -228,7 +271,7 @@
 				<include name="**/*.js"/>
 				<include name="**/*.html"/>
 				<include name="**/*.version"/>
-
+                                <include name="**/*.xsd"/>
 				<include name="about.html"/>
 			</fileset>
 			<fileset dir="${src}/../../../">
