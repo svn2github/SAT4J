@@ -282,7 +282,7 @@ public class TestDependencyHelper {
 	public void testPseudoConstraints() throws ContradictionException,
 			TimeoutException {
 		helper.setNegator(StringNegator.instance);
-		// A + B + C <= 2
+		// 3A + 2B + C <= 5
 		helper.atMost("C1", BigInteger.valueOf(5),
 				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
 				WeightedObject.newWO("C", 1));
@@ -299,7 +299,7 @@ public class TestDependencyHelper {
 	public void testPseudoConstraintsNegativeLiterals()
 			throws ContradictionException, TimeoutException {
 		helper.setNegator(StringNegator.instance);
-		// A + B + C <= 2
+		// 3A + 2B + C <= 5
 		helper.atMost("C1", BigInteger.valueOf(5),
 				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
 				WeightedObject.newWO("C", 1));
