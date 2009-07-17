@@ -32,6 +32,7 @@ import java.math.BigInteger;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.card.MinWatchCard;
+import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
 import org.sat4j.minisat.constraints.cnf.LearntHTClause;
 import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
@@ -47,6 +48,18 @@ public class CompetResolutionPBMixedHTClauseCardConstrDataStructure extends
 		PBMaxClauseCardConstrDataStructure {
 
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Constr createClause(IVecInt literals) throws ContradictionException {
+		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
+		if (v == null)
+			return null;
+		if (v.size() == 2) {
+			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
+					v);
+		}
+		return OriginalHTClause.brandNewClause(solver, getVocabulary(), v);
+	}
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
