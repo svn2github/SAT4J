@@ -1367,10 +1367,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public void reset() {
 		trail.clear();
 		trailLim.clear();
+		qhead = 0;
+		for (Iterator<Constr> iterator = constrs.iterator(); iterator.hasNext();)
+			iterator.next().remove(this);
+		constrs.clear();
+		clearLearntClauses();
 		voc.resetPool();
 		dsfactory.reset();
-		constrs.clear();
-		learnts.clear();
 		stats.reset();
 		constrTypes.clear();
 	}
