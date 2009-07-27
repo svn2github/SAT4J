@@ -142,8 +142,59 @@ public class BugReset {
 			res = solver.isSatisfiable();
 		}
 		solver.reset();
-		solver.clearLearntClauses();
 		assertEquals(res, value);
 	}
 
+	@Test
+	public void problemTest2() throws TimeoutException, ContradictionException {
+		boolean create = false;
+
+		ISolver solver = null;
+		if (!create)
+			solver = getSolver(solver, 4, 5);
+
+		for (int i = 0; i < 10; i++) {
+			solve2(getSolver(solver, 4, 5), new int[] { -4 }, false);
+			solve2(getSolver(solver, 4, 5), new int[] {}, true);
+		}
+	}
+
+	private void solve2(ISolver solver, int[] clause, boolean value)
+			throws ContradictionException, TimeoutException {
+		boolean res = true;
+
+		try {
+
+			int[] lclause = new int[] { -1, -2, -3, 4 };
+			solver.addClause(new VecInt(lclause));
+			lclause = new int[] { 1 };
+			solver.addClause(new VecInt(lclause));
+			lclause = new int[] { 2 };
+			solver.addClause(new VecInt(lclause));
+			lclause = new int[] { 3 };
+			solver.addClause(new VecInt(lclause));
+			if (clause.length > 0)
+				solver.addClause(new VecInt(clause));
+
+		} catch (ContradictionException e) {
+			res = false;
+		}
+		if (res) {
+			res = solver.isSatisfiable();
+		}
+		assertEquals(res, value);
+	}
+
+	private ISolver getSolver(ISolver solver, int vars, int clauses) {
+		if (solver == null) {
+			solver = SolverFactory.newDefault();
+			solver.setTimeout(3600);
+			solver.newVar(vars);
+			solver.setExpectedNumberOfClauses(clauses);
+		} else {
+			solver.reset();
+			solver.clearLearntClauses();
+		}
+		return solver;
+	}
 }
