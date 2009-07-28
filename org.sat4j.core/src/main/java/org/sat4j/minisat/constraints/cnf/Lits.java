@@ -146,7 +146,7 @@ public class Lits implements Serializable, ILits {
 
 	public void ensurePool(int howmany) {
 		if (howmany >= pool.length) {
-			init(howmany);
+			init(Math.max(howmany, pool.length << 1));
 		}
 		maxvarid = howmany;
 	}
