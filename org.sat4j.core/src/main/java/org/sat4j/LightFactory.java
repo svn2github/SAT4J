@@ -39,6 +39,16 @@ import org.sat4j.minisat.restarts.ArminRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.specs.ISolver;
 
+/**
+ * That class is the entry point to the default, best performing configuration
+ * of SAT4J. Since there is only one concrete reference per strategy used inside
+ * the solver, it is a good start for people willing to reduce the library to
+ * the minimal number of classes needed to run a SAT solver. The main method
+ * allow to run the solver from the command line.
+ * 
+ * @author leberre
+ * 
+ */
 public class LightFactory extends ASolverFactory<ISolver> {
 	private static final long serialVersionUID = 1460304168178023681L;
 	private static LightFactory instance;
