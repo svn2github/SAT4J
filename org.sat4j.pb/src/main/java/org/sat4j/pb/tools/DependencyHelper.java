@@ -125,8 +125,8 @@ public class DependencyHelper<T, C> {
 		Integer intValue = mapToDimacs.get(myThing);
 		if (intValue == null) {
 			intValue = solver.nextFreeVarId(true);
-			mapToDomain.put(intValue, thing);
-			mapToDimacs.put(thing, intValue);
+			mapToDomain.put(intValue, myThing);
+			mapToDimacs.put(myThing, intValue);
 		}
 		if (negated) {
 			return -intValue;
@@ -404,7 +404,10 @@ public class DependencyHelper<T, C> {
 		for (T t : things) {
 			literals.push(getIntValue(t));
 		}
-		descs.put(gator.addClause(literals), name);
+		IConstr constr = gator.addClause(literals);
+		if (constr != null) {
+			descs.put(constr, name);
+		}
 	}
 
 	/**
