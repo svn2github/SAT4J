@@ -312,4 +312,70 @@ public class TestDependencyHelper {
 		assertTrue(solution.contains("B"));
 		assertFalse(solution.contains("C"));
 	}
+
+	@Test
+	public void testIgnoreContiguousDuplicatedEntry()
+			throws ContradictionException {
+		helper.setNegator(StringNegator.instance);
+		helper.clause("C1", "A", "-B", "C");
+		helper.clause("C2", "A", "-B", "C");
+		helper.clause("C3", "A", "-B", "C");
+		helper.clause("C4", "A", "-B", "C");
+		helper.clause("C5", "-A", "-B", "C");
+		helper.clause("C6", "A", "-B", "-C");
+		helper.clause("C7", "A", "B", "C");
+		assertEquals(4, helper.getNumberOfConstraints());
+	}
+
+	@Test
+	public void testNonDuplicatedEntryNotCatched()
+			throws ContradictionException {
+		helper.setNegator(StringNegator.instance);
+		helper.clause("C1", "A", "-B", "C");
+		helper.clause("C2", "A", "B", "C");
+		helper.clause("C3", "A", "-B", "C");
+		helper.clause("C4", "A", "B", "C");
+		helper.clause("C5", "-A", "-B", "C");
+		helper.clause("C6", "A", "-B", "-C");
+		helper.clause("C7", "A", "B", "C");
+		assertEquals(7, helper.getNumberOfConstraints());
+	}
+
+	@Test
+	public void testLimitofHashFunction() throws ContradictionException {
+		helper.setNegator(StringNegator.instance);
+		helper.clause("C0", "A", "B", "C", "D");
+		helper.clause("C1", "A", "-B", "C");
+		helper.clause("C2", "D", "-B");
+		helper.clause("C3", "A", "-B", "C");
+		helper.clause("C4", "A", "-B", "C");
+		helper.clause("C5", "A", "-B", "C");
+		helper.clause("C6", "A", "-B", "C");
+		helper.clause("C7", "A", "B", "C");
+		assertEquals(5, helper.getNumberOfConstraints());
+	}
+
+	@Test
+	public void testVariablesIntroducedInNegativeFormFirst()
+			throws ContradictionException, TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		helper.clause("C0", "-A", "-B");
+		helper.clause("C1", "A", "-B");
+		helper.clause("C2", "-A", "B");
+		helper.clause("C3", "A", "B");
+		assertFalse(helper.hasASolution());
+	}
+
+	@Test
+	public void testVariablesIntroducedInNegativeFormFirstStoredCorrectly()
+			throws ContradictionException, TimeoutException {
+		helper.setNegator(StringNegator.instance);
+		helper.clause("C0", "-A", "-B");
+		helper.clause("C1", "A", "-B");
+		helper.clause("C3", "A", "B");
+		assertTrue(helper.hasASolution());
+		IVec<String> solution = helper.getSolution();
+		assertTrue(solution.contains("A"));
+		assertFalse(solution.contains("B"));
+	}
 }
