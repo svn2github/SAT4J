@@ -97,8 +97,6 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			assert problem.admitABetterSolution(assumps);
 			assert !problem.hasNoObjectiveFunction();
 			do {
-				System.out.println("c found solution with cost: "
-						+ problem.getObjectiveValue());
 				problem.discardCurrentSolution();
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {

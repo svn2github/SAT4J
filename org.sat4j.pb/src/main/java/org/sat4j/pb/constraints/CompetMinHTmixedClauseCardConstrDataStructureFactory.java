@@ -30,8 +30,6 @@ public class CompetMinHTmixedClauseCardConstrDataStructureFactory extends
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
-		if (v == null)
-			return null;
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);

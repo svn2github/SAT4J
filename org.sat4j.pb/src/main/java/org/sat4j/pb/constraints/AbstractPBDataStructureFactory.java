@@ -128,6 +128,9 @@ public abstract class AbstractPBDataStructureFactory extends
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		if (v == null)
 			return null;
+		if (v.size() == 1) {
+			return new UnitClause(v.get(0));
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);
