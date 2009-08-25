@@ -32,7 +32,6 @@ import java.math.BigInteger;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.specs.ContradictionException;
@@ -65,9 +64,6 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 					getVocabulary(), solver);
 			if (v == null)
 				return null;
-			if (v.size() == 1) {
-				return new UnitClause(v.get(0));
-			}
 			return constructClause(v);
 		}
 		if (coefficientsEqualToOne(coefs)) {

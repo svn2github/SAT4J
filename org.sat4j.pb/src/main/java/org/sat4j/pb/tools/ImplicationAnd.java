@@ -59,12 +59,7 @@ public class ImplicationAnd<T, C> {
 		IVecInt tmpClause = new VecInt();
 		clause.copyTo(tmpClause);
 		tmpClause.push(helper.getIntValue(thing));
-		IConstr constr = helper.solver.addClause(tmpClause);
-		if (constr == null) {
-			throw new IllegalStateException("Should not have empty constraint "
-					+ thing);
-		}
-		toName.push(constr);
+		toName.push(helper.solver.addClause(tmpClause));
 		return this;
 	}
 
