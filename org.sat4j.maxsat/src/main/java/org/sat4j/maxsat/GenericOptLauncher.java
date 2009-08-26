@@ -38,6 +38,7 @@ import org.sat4j.specs.ISolver;
  * Generic launcher to be used for solving optimization problems.
  * 
  * @author daniel
+ * @since 2.0
  * 
  */
 public class GenericOptLauncher extends AbstractOptimizationLauncher {
@@ -122,7 +123,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
                 } else {
                     asolver.setTimeout(Integer.parseInt(timeout));
                 }
-                log(asolver.toString(COMMENT_PREFIX));
+                getLogWriter().println(asolver.toString(COMMENT_PREFIX));
             } catch (ParseException e1) {
                 HelpFormatter helpf = new HelpFormatter();
                 helpf.printHelp("java -jar sat4jopt.jar", options, true);
