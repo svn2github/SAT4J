@@ -29,6 +29,7 @@ package org.sat4j.minisat.constraints.cnf;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
@@ -111,7 +112,7 @@ public class Lits implements Serializable, ILits {
 		if (var > maxvarid) {
 			maxvarid = var;
 		}
-		int lit = ((x < 0) ? (var << 1) ^ 1 : (var << 1));
+		int lit = LiteralsUtils.toInternal(x);
 		assert lit > 1;
 		if (!pool[var]) {
 			realnVars++;
