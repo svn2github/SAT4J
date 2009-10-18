@@ -85,9 +85,12 @@ public interface SearchListener extends Serializable {
 	 * 
 	 * @param confl
 	 *            TODO
+	 * @param dlevel
+	 *            TODO
+	 * @param trailLevel TODO
 	 * 
 	 */
-	void conflictFound(IConstr confl);
+	void conflictFound(IConstr confl, int dlevel, int trailLevel);
 
 	/**
 	 * a conflict has been found while propagating values.
@@ -122,4 +125,15 @@ public interface SearchListener extends Serializable {
 	 */
 	void end(Lbool result);
 
+	/**
+	 * The solver restarts the search.
+	 */
+	void restarting();
+
+	/**
+	 * The solver is asked to backjump to a given decision level.
+	 * 
+	 * @param backjumpLevel
+	 */
+	void backjump(int backjumpLevel);
 }
