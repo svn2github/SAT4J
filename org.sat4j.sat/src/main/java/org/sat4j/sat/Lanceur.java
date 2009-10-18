@@ -37,7 +37,6 @@ import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.minisat.core.DotSearchListener;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -54,6 +53,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.tools.DotSearchTracing;
 
 /**
  * This class is used to launch the SAT solvers from the command line. It is
@@ -213,7 +213,7 @@ public class Lanceur extends AbstractLauncher {
 					dotfilename = "sat4j.dot";
 				}
 				((Solver<DataStructureFactory>) asolver)
-						.setSearchListener(new DotSearchListener(dotfilename,null));
+						.setSearchListener(new DotSearchTracing(dotfilename,null));
 			}
 
 			if (cmd.hasOption("m")) {
