@@ -26,10 +26,16 @@ public class DisjunctionRHS<T, C> {
 			clause.push(helper.getIntValue(t));
 		}
 		int p;
+		IConstr constr;
 		for (IteratorInt it = literals.iterator(); it.hasNext();) {
 			p = it.next();
 			clause.push(p);
-			toName.push(helper.solver.addClause(clause));
+			constr = helper.solver.addClause(clause);
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
+			toName.push(constr);
 			clause.remove(p);
 		}
 		return new ImplicationNamer<T, C>(helper, toName);

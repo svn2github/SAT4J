@@ -21,7 +21,6 @@ package org.sat4j.pb.tools;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -265,7 +264,7 @@ public class DependencyHelper<T, C> {
 
 	private Set<C> why(IVecInt assumps) throws TimeoutException {
 		if (xplain.isSatisfiable(assumps)) {
-			return Collections.emptySet();
+			return new TreeSet<C>();
 		}
 		return why();
 	}
@@ -283,7 +282,12 @@ public class DependencyHelper<T, C> {
 	 *             inconsistent.
 	 */
 	public void setTrue(T thing, C name) throws ContradictionException {
-		descs.put(gator.gateTrue(getIntValue(thing)), name);
+		IConstr constr = gator.gateTrue(getIntValue(thing));
+		if (constr == null) {
+			throw new IllegalStateException(
+					"Constraints are not supposed to be null when using the helper");
+		}
+		descs.put(constr, name);
 	}
 
 	/**
@@ -299,7 +303,12 @@ public class DependencyHelper<T, C> {
 	 *             inconsistent.
 	 */
 	public void setFalse(T thing, C name) throws ContradictionException {
-		descs.put(gator.gateFalse(getIntValue(thing)), name);
+		IConstr constr = gator.gateFalse(getIntValue(thing));
+		if (constr == null) {
+			throw new IllegalStateException(
+					"Constraints are not supposed to be null when using the helper");
+		}
+		descs.put(constr, name);
 	}
 
 	/**
@@ -405,9 +414,11 @@ public class DependencyHelper<T, C> {
 			literals.push(getIntValue(t));
 		}
 		IConstr constr = gator.addClause(literals);
-		if (constr != null) {
-			descs.put(constr, name);
+		if (constr == null) {
+			throw new IllegalStateException(
+					"Constraints are not supposed to be null when using the helper");
 		}
+		descs.put(constr, name);
 	}
 
 	/**
@@ -428,6 +439,10 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.iff(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
 			descs.put(constr, name);
 		}
 	}
@@ -449,6 +464,10 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.and(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
 			descs.put(constr, name);
 		}
 	}
@@ -470,6 +489,10 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.or(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
 			descs.put(constr, name);
 		}
 	}
@@ -489,6 +512,10 @@ public class DependencyHelper<T, C> {
 				getIntValue(conditionThing), getIntValue(thenThing),
 				getIntValue(elseThing));
 		for (IConstr constr : constrs) {
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
 			descs.put(constr, name);
 		}
 	}
@@ -615,7 +642,7 @@ public class DependencyHelper<T, C> {
 		for (Iterator<T> it = things.iterator(); it.hasNext();) {
 			literals.push(-getIntValue(it.next()));
 		}
-		solver.addClause(literals);
+		solver.addBlockingClause(literals);
 	}
 
 	public void discardSolutionsWithObjectiveValueGreaterThan(long value)
@@ -648,7 +675,7 @@ public class DependencyHelper<T, C> {
 		return descs.size();
 	}
 
-	public Map<Integer, T> getVariablesMapping() {
+	public Map<Integer, T> getMappingToDomain() {
 		return mapToDomain;
 	}
 }
