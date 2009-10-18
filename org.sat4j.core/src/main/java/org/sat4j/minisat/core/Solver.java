@@ -164,7 +164,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final IVecInt __dimacs_out = new VecInt();
 
-	private SearchListener slistener = new NullSearchListener();
+	private SearchListener slistener = new VoidTracing();
 
 	private RestartStrategy restarter;
 
@@ -854,6 +854,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		assert rootLevel == decisionLevel();
 		stats.starts++;
 		int conflictC = 0;
+		int backjumpLevel;
 
 		// varDecay = 1 / params.varDecay;
 		order.setVarDecay(1 / params.getVarDecay());
@@ -906,7 +907,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				// un conflit apparait
 				stats.conflicts++;
 				conflictC++;
-				slistener.conflictFound(confl);
+				slistener.conflictFound(confl, decisionLevel(), trail.size());
 				conflictCount.newConflict();
 				if (decisionLevel() == rootLevel) {
 					// on est a la racine, la formule est inconsistante
@@ -915,7 +916,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				// analyze conflict
 				analyze(confl, analysisResult);
 				assert analysisResult.backtrackLevel < decisionLevel();
-				cancelUntil(Math.max(analysisResult.backtrackLevel, rootLevel));
+				backjumpLevel = Math.max(analysisResult.backtrackLevel,
+						rootLevel);
+				slistener.backjump(backjumpLevel);
+				cancelUntil(backjumpLevel);
+				if (backjumpLevel == rootLevel) {
+					conflictC = 0;
+				}
 				assert (decisionLevel() >= rootLevel)
 						&& (decisionLevel() >= analysisResult.backtrackLevel);
 				if (analysisResult.reason == null) {
@@ -1234,7 +1241,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		Constr confl = propagate();
 		if (confl != null) {
 			analyzeAtRootLevel(confl);
-			slistener.conflictFound(confl);
+			slistener.conflictFound(confl, 0, 0);
 			slistener.end(Lbool.FALSE);
 			cancelUntil(0);
 			cancelLearntLiterals(learnedLiteralsLimit);
@@ -1248,7 +1255,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (confl == null) {
 					slistener.conflictFound(p);
 				} else {
-					slistener.conflictFound(confl);
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 				}
 				slistener.end(Lbool.FALSE);
 				cancelUntil(0);
@@ -1301,6 +1309,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// "+(stats.decisions/((System.currentTimeMillis()-timebegin)/1000))+"
 			// dec/s, "+stats.starts+"/"+stats.conflicts);
 			restarter.onRestart();
+			slistener.restarting();
 		}
 
 		cancelUntil(0);
@@ -1427,7 +1436,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * java.lang.String)
 	 */
 	public void printStat(PrintStream out, String prefix) {
-		printStat(new PrintWriter(out), prefix);
+		printStat(new PrintWriter(out, true), prefix);
 	}
 
 	public void printStat(PrintWriter out, String prefix) {
