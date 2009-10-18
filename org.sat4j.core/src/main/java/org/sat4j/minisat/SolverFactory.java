@@ -30,12 +30,15 @@ import org.sat4j.minisat.learning.LimitedLearning;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.learning.NoLearningButHeuristics;
 import org.sat4j.minisat.learning.PercentLengthLearning;
+import org.sat4j.minisat.orders.PhaseCachingAutoEraseStrategy;
 import org.sat4j.minisat.orders.PureOrder;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
+import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.ArminRestarts;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
+import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.minisat.uip.DecisionUIP;
 import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.opt.MinOneDecorator;
@@ -134,6 +137,31 @@ public class SolverFactory extends ASolverFactory<ISolver> {
 		solver.setSearchParams(new SearchParams(1.1, 100));
 		learning.setSolver(solver);
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+		return solver;
+	}
+
+	/**
+	 * 
+	 * @since 2.2
+	 */
+	public static Solver<DataStructureFactory> newGreedySolver() {
+		MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
+		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
+				new FirstUIP(), learning, new MixedDataStructureDanielWL(),
+				new RandomWalkDecorator(new VarOrderHeap(
+						new RSATPhaseSelectionStrategy())), new NoRestarts());
+		// solver.setSearchParams(new SearchParams(1.1, 100));
+		learning.setSolver(solver);
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+		return solver;
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public static Solver<DataStructureFactory> newDefaultAutoErasePhaseSaving() {
+		Solver<DataStructureFactory> solver = newBestWL();
+		solver.setOrder(new VarOrderHeap(new PhaseCachingAutoEraseStrategy()));
 		return solver;
 	}
 
