@@ -414,11 +414,11 @@ public class DependencyHelper<T, C> {
 			literals.push(getIntValue(t));
 		}
 		IConstr constr = gator.addClause(literals);
-		if (constr == null) {
-			throw new IllegalStateException(
-					"Constraints are not supposed to be null when using the helper");
+		// constr can be null if duplicated clauses are detected.
+		if (constr != null) {
+			descs.put(constr, name);
 		}
-		descs.put(constr, name);
+
 	}
 
 	/**
