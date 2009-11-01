@@ -31,7 +31,7 @@ import java.math.BigInteger;
 
 public class ConflictMapSwitchToClause extends ConflictMap {
 
-	public static BigInteger UPPERBOUND;
+	public static int UPPERBOUND;
 
 	public ConflictMapSwitchToClause(PBConstr cpb, int level) {
 		super(cpb, level);
@@ -61,10 +61,9 @@ public class ConflictMapSwitchToClause extends ConflictMap {
 		for (; i < reducedCoefs.length
 				&& reducedCoefs[i].equals(BigInteger.ZERO); i++) {
 		}
-		if (reducedCoefs[i].compareTo(UPPERBOUND) > 0) {
+		if (reducedCoefs[i].toString().length() > UPPERBOUND) {
 			// if we deal with really big integers
 			// reducing the constraint to a clause
-			assert degreeCons.compareTo(UPPERBOUND) > 0;
 			degreeCons = reduceToClause(ind, wpb, reducedCoefs);
 			coefMultCons = weightedLits.get(litImplied ^ 1);
 			coefMult = BigInteger.ONE;

@@ -27,8 +27,6 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
-import java.math.BigInteger;
-
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
@@ -362,8 +360,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *         PB-constraints to clauses is made in order to simplify cutting
 	 *         planes (if coefficients are larger than bound).
 	 */
-	public static PBSolverCautious newPBCPMixedConstraintsCautious(
-			BigInteger bound) {
+	public static PBSolverCautious newPBCPMixedConstraintsCautious(int bound) {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverCautious solver = new PBSolverCautious(new FirstUIP(),
 				learning, new PBMaxClauseCardConstrDataStructure(),
