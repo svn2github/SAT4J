@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
+import java.math.BigInteger;
+
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
@@ -53,6 +55,7 @@ import org.sat4j.pb.constraints.PuebloPBMinClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PuebloPBMinDataStructure;
 import org.sat4j.pb.core.PBDataStructureFactory;
 import org.sat4j.pb.core.PBSolverCP;
+import org.sat4j.pb.core.PBSolverCautious;
 import org.sat4j.pb.core.PBSolverClause;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
@@ -350,6 +353,28 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
+	}
+
+	/**
+	 * @return MiniSAT with Counter-based pseudo boolean constraints and
+	 *         constraint learning. Clauses and cardinalities with watched
+	 *         literals are also handled (and learnt). A reduction of
+	 *         PB-constraints to clauses is made in order to simplify cutting
+	 *         planes (if coefficients are larger than bound).
+	 */
+	public static PBSolverCautious newPBCPMixedConstraintsCautious(
+			BigInteger bound) {
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		PBSolverCautious solver = new PBSolverCautious(new FirstUIP(),
+				learning, new PBMaxClauseCardConstrDataStructure(),
+				new VarOrderHeap(), bound);
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
+		return solver;
+	}
+
+	public static PBSolverCautious newPBCPMixedConstraintsCautious() {
+		return newPBCPMixedConstraintsCautious(PBSolverCautious.BOUND);
 	}
 
 	/**
