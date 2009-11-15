@@ -59,6 +59,7 @@ public class PBSolverCP extends PBSolver {
 			PBDataStructureFactory dsf, IOrder order) {
 		super(acg, learner, dsf, new SearchParams(1.5, 100), order,
 				new MiniSATRestarts());
+		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	public PBSolverCP(AssertingClauseGenerator acg,
@@ -66,16 +67,25 @@ public class PBSolverCP extends PBSolver {
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
 		super(acg, learner, dsf, params, order, restarter);
+		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	public PBSolverCP(AssertingClauseGenerator acg,
 			LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
 		super(acg, learner, dsf, params, order, new MiniSATRestarts());
+		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	@Override
 	public void analyze(Constr myconfl, Pair results) {
+		if (someCriteria())
+			analyzeCP(myconfl, results);
+		else
+			super.analyze(myconfl, results);
+	}
+
+	public void analyzeCP(Constr myconfl, Pair results) {
 		int litImplied = trail.last();
 		int currentLevel = voc.getLevel(litImplied);
 		IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
@@ -124,6 +134,7 @@ public class PBSolverCP extends PBSolver {
 				.createUnregisteredPseudoBooleanConstraint(confl);
 
 		results.reason = resConstr;
+		getSearchListener().learn(resConstr);
 
 		// the conflict give the highest decision level for the backtrack
 		// (which is less than current level)
@@ -151,4 +162,9 @@ public class PBSolverCP extends PBSolver {
 		conflictVariables.clear();
 		conflictConstraints.clear();
 	}
+
+	boolean someCriteria() {
+		return true;
+	}
+
 }
