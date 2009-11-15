@@ -235,6 +235,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		slistener = sl;
 	}
 
+	public SearchListener getSearchListener() {
+		return slistener;
+	}
+
 	public void setTimeout(int t) {
 		timeout = t * 1000L;
 		timeBasedTimeout = true;
