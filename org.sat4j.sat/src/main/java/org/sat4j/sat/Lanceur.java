@@ -21,6 +21,7 @@ package org.sat4j.sat;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -182,11 +183,16 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("S")) {
 				asolver = configureFromString(cmd.getOptionValue("S"));
 			} else {
-				String solvername = cmd.getOptionValue("s");
-				if (solvername == null) {
-					asolver = factory.defaultSolver();
+				if (cmd.hasOption("s")) {
+					log("Available solvers: " + Arrays.asList(factory.solverNames()));
+					String solvername = cmd.getOptionValue("s");
+					if (solvername == null) {
+						asolver = factory.defaultSolver();
+					} else {
+						asolver = factory.createSolverByName(solvername);
+					}
 				} else {
-					asolver = factory.createSolverByName(solvername);
+					asolver = factory.defaultSolver();
 				}
 			}
 			String timeout = cmd.getOptionValue("t");
@@ -213,7 +219,8 @@ public class Lanceur extends AbstractLauncher {
 					dotfilename = "sat4j.dot";
 				}
 				((Solver<DataStructureFactory>) asolver)
-						.setSearchListener(new DotSearchTracing(dotfilename,null));
+						.setSearchListener(new DotSearchTracing(dotfilename,
+								null));
 			}
 
 			if (cmd.hasOption("m")) {
@@ -347,13 +354,14 @@ public class Lanceur extends AbstractLauncher {
 			throws FileNotFoundException, ParseFormatException, IOException,
 			ContradictionException {
 		ISolver theSolver = (ISolver) super.readProblem(problemname);
-		if (k > 0) {			
+		if (k > 0) {
 			IVecInt literals = new VecInt();
 			for (int i = 1; i <= theSolver.nVars(); i++) {
 				literals.push(-i);
 			}
 			theSolver.addAtLeast(literals, k);
-			log("Limiting solutions to those having at least "+k+" variables assigned to false");
+			log("Limiting solutions to those having at least " + k
+					+ " variables assigned to false");
 		}
 		return theSolver;
 	}
