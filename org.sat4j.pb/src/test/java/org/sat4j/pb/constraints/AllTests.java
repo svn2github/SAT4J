@@ -50,7 +50,7 @@ public class AllTests {
 		suite.addTestSuite(CounterPBConstrWithPBConstrLearningTest.class);
 		suite
 				.addTestSuite(CounterPBWithClauseCardConstrLearningReduceToClauseTest.class);
-		// suite.addTestSuite(PBCPMixedConstraintsCautiousTest.class);
+		suite.addTestSuite(PBCPMixedConstraintsCautiousTest.class);
 		suite
 				.addTestSuite(PuebloWatchedPbClauseAtLeastConstrWithPBConstrLearningTest.class);
 		suite
