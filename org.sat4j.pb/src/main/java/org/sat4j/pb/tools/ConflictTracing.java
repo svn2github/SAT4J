@@ -77,10 +77,12 @@ public class ConflictTracing implements SearchListener {
 
 	public void learn(IConstr c) {
 		PBConstr myConstr = (PBConstr) c;
-		out.print("degre : " + myConstr.getDegree());
-		if (myConstr.size() > 0)
-			out.print(" - coef max : " + myConstr.getCoef(0));
-		out.println();
+		if (myConstr.size() > 0) {
+			out.print(myConstr.getDegree());
+			out.print(" ");
+			out.print(myConstr.getCoef(0));
+			out.println();
+		}
 	}
 
 	public void propagating(int p, IConstr reason) {
