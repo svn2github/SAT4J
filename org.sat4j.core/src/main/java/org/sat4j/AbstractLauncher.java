@@ -204,17 +204,14 @@ public abstract class AbstractLauncher implements Serializable {
 				log("timeout"); //$NON-NLS-1$
 			}
 		} catch (FileNotFoundException e) {
-			log("FATAL" + e.getLocalizedMessage());
-			e.printStackTrace();
+			System.err.println("FATAL " + e.getLocalizedMessage());
 		} catch (IOException e) {
-			log("FATAL" + e.getLocalizedMessage());
-			e.printStackTrace();
+			System.err.println("FATAL " + e.getLocalizedMessage());
 		} catch (ContradictionException e) {
 			exitCode = ExitCode.UNSATISFIABLE;
 			log("(trivial inconsistency)"); //$NON-NLS-1$
 		} catch (ParseFormatException e) {
-			log("FATAL" + e.getLocalizedMessage());
-			e.printStackTrace();
+			System.err.println("FATAL " + e.getLocalizedMessage());
 		}
 	}
 
