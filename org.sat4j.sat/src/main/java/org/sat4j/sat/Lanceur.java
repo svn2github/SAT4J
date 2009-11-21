@@ -40,11 +40,13 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.IOrder;
+import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.PercentLengthLearning;
+import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
@@ -332,6 +334,8 @@ public class Lanceur extends AbstractLauncher {
 		LearningStrategy learning = setupObject("LEARNING", pf,
 				new PercentLengthLearning());
 		IOrder order = setupObject("ORDER", pf, new VarOrderHeap());
+		IPhaseSelectionStrategy pss = setupObject("PHASE", pf, new PhaseInLastLearnedClauseSelectionStrategy());
+		order.setPhaseSelectionStrategy(pss);
 		RestartStrategy restarter = setupObject("RESTARTS", pf,
 				new MiniSATRestarts());
 		Solver theSolver = new Solver(new FirstUIP(), learning, dsf, order,
@@ -344,7 +348,8 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	private void stringUsage() {
-		log("Available building blocks: DSF, LEARNING, ORDER, RESTARTS, SIMP, PARAMS");
+		log("Available building blocks: DSF, LEARNING, ORDER, PHASE, RESTARTS, SIMP, PARAMS");
+		log("Example: -S RESTARTS=org.sat4j.minisat.restarts.LubyRestarts/factor:512,LEARNING=org.sat4j.minisat.learning.MiniSATLearning");
 	}
 	
 	@SuppressWarnings("unchecked")
