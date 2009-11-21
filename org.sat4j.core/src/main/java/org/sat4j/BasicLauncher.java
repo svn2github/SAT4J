@@ -92,7 +92,9 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 
 	@Override
 	protected String getInstanceName(String[] args) {
-		assert args.length == 1;
+		if (args.length == 0) {
+			return null;
+		}
 		return args[0];
 	}
 }
