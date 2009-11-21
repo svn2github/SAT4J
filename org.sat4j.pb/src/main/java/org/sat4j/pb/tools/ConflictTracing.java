@@ -78,7 +78,7 @@ public class ConflictTracing implements SearchListener {
 	public void learn(IConstr c) {
 		PBConstr myConstr = (PBConstr) c;
 		if (myConstr.size() > 0) {
-			out.print(myConstr.getCoef(0));
+			out.println(myConstr.getCoef(0));
 		}
 	}
 
