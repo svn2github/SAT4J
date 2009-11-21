@@ -116,7 +116,7 @@
                 </antcall>
 	</target>
 
-	<target name="sat" depends="core" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
+	<target name="sat" depends="core,pseudo" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
 		<echo>Building the Java SAT Solvers toolkit</echo>
                 <antcall target="build">
 		   <param name="package" value="sat"/>
@@ -133,11 +133,13 @@
                 <jar destfile="${dist}/${release}/sat4j-sat.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
 		   <zipgroupfileset dir="${dist}/${release}">
                            <include name="org.sat4j.core.jar"/>
+                           <include name="org.sat4j.pb.jar"/>
 			   <include name="org.sat4j.sat.jar"/>
 		   </zipgroupfileset>
                    <zipgroupfileset dir="${lib}">
                            <include name="commons-cli.jar"/>
                            <include name="commons-beanutils.jar"/>
+                           <include name="commons-logging.jar"/>
 		   </zipgroupfileset>
                </jar>
                <antcall target="zip-bundle">
