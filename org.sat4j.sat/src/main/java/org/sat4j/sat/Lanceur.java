@@ -185,7 +185,12 @@ public class Lanceur extends AbstractLauncher {
 
 			ISolver asolver;
 			if (cmd.hasOption("S")) {
-				asolver = configureFromString(cmd.getOptionValue("S"));
+				String configuredSolver = cmd.getOptionValue("S");
+				if (configuredSolver==null) {
+					stringUsage();
+					return null;
+				}
+				asolver = configureFromString(configuredSolver);
 			} else {
 				if (cmd.hasOption("s")) {
 					log("Available solvers: " + Arrays.asList(factory.solverNames()));
@@ -338,6 +343,10 @@ public class Lanceur extends AbstractLauncher {
 		return theSolver;
 	}
 
+	private void stringUsage() {
+		log("Available building blocks: DSF, LEARNING, ORDER, RESTARTS, SIMP, PARAMS");
+	}
+	
 	@SuppressWarnings("unchecked")
 	private final <T> T setupObject(String component, Properties pf,
 			T defaultcomp) {
