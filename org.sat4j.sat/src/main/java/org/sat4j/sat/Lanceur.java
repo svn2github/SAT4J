@@ -20,6 +20,7 @@ package org.sat4j.sat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Properties;
@@ -54,6 +55,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.tools.DotSearchTracing;
 
 /**
@@ -122,6 +124,7 @@ public class Lanceur extends AbstractLauncher {
 		options
 				.addOption("k", "kleast", true,
 						"limit the search to models having at least k variables set to false");
+		options.addOption("r", "trace", true, "Search Listener to use for tracing the behavior of the solver");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -140,6 +143,8 @@ public class Lanceur extends AbstractLauncher {
 		op.setArgName("filename");
 		op = options.getOption("f");
 		op.setArgName("filename");
+		op = options.getOption("r");
+		op.setArgName("searchlistener");
 		return options;
 	}
 
@@ -174,9 +179,8 @@ public class Lanceur extends AbstractLauncher {
 				Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
 				factory = (ASolverFactory) m.invoke(null, (Object[]) null);
 			} catch (Exception e) { // DLB Findbugs warning ok
-				System.err.println(Messages
-						.getString("Lanceur.wrong.framework")); //$NON-NLS-1$
-				e.printStackTrace();
+				log("Wrong framework: "+framework+". Using minisat instead.");
+				factory = org.sat4j.minisat.SolverFactory.instance();
 			}
 
 			ISolver asolver;
@@ -218,8 +222,7 @@ public class Lanceur extends AbstractLauncher {
 				if (dotfilename == null) {
 					dotfilename = "sat4j.dot";
 				}
-				((Solver<DataStructureFactory>) asolver)
-						.setSearchListener(new DotSearchTracing(dotfilename,
+				asolver.setSearchListener(new DotSearchTracing(dotfilename,
 								null));
 			}
 
@@ -233,9 +236,31 @@ public class Lanceur extends AbstractLauncher {
 					k = myk.intValue();
 				}
 			}
+			if (cmd.hasOption("r")) {
+				String listener = cmd.getOptionValue("r");
+				try {
+					
+					SearchListener slistener = (SearchListener)Class.forName(listener).getConstructor(String.class).newInstance("sat4j.trace");
+					asolver.setSearchListener(slistener);
+				} catch (InstantiationException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				} catch (IllegalAccessException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				} catch (ClassNotFoundException e) {
+					log("wrong parameter for search listener: "+listener);
+				} catch (IllegalArgumentException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				} catch (SecurityException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				} catch (InvocationTargetException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				} catch (NoSuchMethodException e) {
+					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+				}
+			}
 			int others = 0;
 			String[] rargs = cmd.getArgs();
-			if (filename == null) {
+			if (filename == null && rargs.length>0) {
 				filename = rargs[others++];
 			}
 
