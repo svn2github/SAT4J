@@ -19,7 +19,7 @@ public class DecisionTracing implements SearchListener {
 	private static final long serialVersionUID = 1L;
 
 	private final String filename;
-	private int restartNumber = 0;
+	private final int restartNumber = 0;
 	private PrintStream out;
 
 	public DecisionTracing(String filename) {
@@ -96,7 +96,7 @@ public class DecisionTracing implements SearchListener {
 
 	public void restarting() {
 		out.close();
-		restartNumber++;
+		// restartNumber++;
 		updateWriter();
 	}
 
