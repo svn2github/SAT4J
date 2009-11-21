@@ -20,16 +20,17 @@ public class ManyCore implements ISolver, OutcomeListener {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String[] availableSolvers; // = { };
+	private final String[] availableSolvers; // = { };
 
-	private ISolver[] solvers;
+	private final ISolver[] solvers;
 	private int numberOfSolvers;
 	private int winnerId;
 	private boolean needToWait;
 	private boolean resultFound;
 	private int remainingSolvers;
 
-	public ManyCore(ASolverFactory<? extends ISolver> factory, String ... solverNames) {
+	public ManyCore(ASolverFactory<? extends ISolver> factory,
+			String... solverNames) {
 		availableSolvers = solverNames;
 		Runtime runtime = Runtime.getRuntime();
 		long memory = runtime.maxMemory();
@@ -39,13 +40,13 @@ public class ManyCore implements ISolver, OutcomeListener {
 		} else {
 			numberOfSolvers = 1;
 		}
-		if (solverNames.length<numberOfSolvers) {
-			throw new IllegalArgumentException("I need more solver names to run ManyCore on such computer!");
+		if (solverNames.length < numberOfSolvers) {
+			throw new IllegalArgumentException(
+					"I need more solver names to run ManyCore on such computer!");
 		}
 		solvers = new ISolver[numberOfSolvers];
 		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers[i] = factory.createSolverByName(
-					availableSolvers[i]);
+			solvers[i] = factory.createSolverByName(availableSolvers[i]);
 		}
 	}
 
@@ -98,7 +99,7 @@ public class ManyCore implements ISolver, OutcomeListener {
 	public int getTimeout() {
 		return solvers[0].getTimeout();
 	}
-	
+
 	public long getTimeoutMs() {
 		return solvers[0].getTimeoutMs();
 	}
@@ -162,12 +163,12 @@ public class ManyCore implements ISolver, OutcomeListener {
 		StringBuffer res = new StringBuffer();
 		res.append("ManyCore solver with ");
 		res.append(numberOfSolvers);
-        res.append(" solvers running in parallel");
-        res.append("\n");
-        for (int i=0;i<numberOfSolvers;i++) {
-        	res.append(solvers[i].toString(prefix));
-        	res.append("\n");
-        }
+		res.append(" solvers running in parallel");
+		res.append("\n");
+		for (int i = 0; i < numberOfSolvers; i++) {
+			res.append(solvers[i].toString(prefix));
+			res.append("\n");
+		}
 		return res.toString();
 	}
 
@@ -242,7 +243,8 @@ public class ManyCore implements ISolver, OutcomeListener {
 				if (i != winnerId)
 					solvers[i].expireTimeout();
 			}
-			System.out.println("c And the winner is "+availableSolvers[winnerId]);
+			System.out.println("c And the winner is "
+					+ availableSolvers[winnerId]);
 			needToWait = false;
 		} else {
 			remainingSolvers--;
@@ -256,14 +258,20 @@ public class ManyCore implements ISolver, OutcomeListener {
 	public void setDBSimplificationAllowed(boolean status) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setDBSimplificationAllowed(status);
-		}		
+		}
 	}
 
 	public void setSearchListener(SearchListener sl) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers[i].setSearchListener(sl);
-		}	
-		
+		}
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public SearchListener getSearchListener() {
+		return solvers[0].getSearchListener();
 	}
 
 	public int nextFreeVarId(boolean reserve) {
