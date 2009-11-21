@@ -95,9 +95,9 @@ public class DecisionTracing implements SearchListener {
 	}
 
 	public void restarting() {
-		out.close();
+		// out.close();
 		// restartNumber++;
-		updateWriter();
+		// updateWriter();
 	}
 
 	public void backjump(int backjumpLevel) {
