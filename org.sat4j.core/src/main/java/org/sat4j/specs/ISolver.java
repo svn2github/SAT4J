@@ -340,4 +340,12 @@ public interface ISolver extends IProblem, Serializable {
 	 * @since 2.1
 	 */
 	void setSearchListener(SearchListener sl);
+
+	/**
+	 * Get the current SearchListener.
+	 * 
+	 * @return a Search Listener.
+	 * @since 2.2
+	 */
+	SearchListener getSearchListener();
 }

@@ -327,4 +327,11 @@ public class DimacsStringSolver implements ISolver {
 			throws ContradictionException {
 		throw new UnsupportedOperationException();
 	}
+
+	/**
+	 * @since 2.2
+	 */
+	public SearchListener getSearchListener() {
+		throw new UnsupportedOperationException();
+	}
 }

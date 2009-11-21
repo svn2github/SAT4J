@@ -383,4 +383,10 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 		return solver.removeSubsumedConstr(c);
 	}
 
+	/**
+	 * @since 2.2
+	 */
+	public SearchListener getSearchListener() {
+		return solver.getSearchListener();
+	}
 }
