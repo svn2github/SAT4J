@@ -187,9 +187,15 @@ public abstract class AbstractLauncher implements Serializable {
 		try {
 			displayHeader();
 			solver = configureSolver(args);
-			if (solver == null)
+			if (solver == null) {
+				usage();
 				return;
+			}
 			String instanceName = getInstanceName(args);
+			if (instanceName == null) {
+				usage();
+				return;
+			}
 			beginTime = System.currentTimeMillis();
 			IProblem problem = readProblem(instanceName);
 			try {
