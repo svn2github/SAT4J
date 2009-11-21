@@ -34,7 +34,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
-import org.sat4j.Messages;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
@@ -50,6 +49,8 @@ import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
+import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -297,6 +298,9 @@ public class Lanceur extends AbstractLauncher {
 
 	@Override
 	protected Reader createReader(ISolver theSolver, String problemname) {
+		if (theSolver instanceof IPBSolver) {
+			return new PBInstanceReader((IPBSolver)theSolver);
+		}
 		return new InstanceReader(theSolver);
 	}
 
