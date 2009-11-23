@@ -78,8 +78,8 @@ import org.sat4j.tools.DotSearchTracing;
 public class Lanceur extends AbstractLauncher {
 
 	/**
-     * 
-     */
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -106,28 +106,30 @@ public class Lanceur extends AbstractLauncher {
 		Options options = new Options();
 
 		options.addOption("l", "library", true,
-				"specifies the name of the library used (minisat by default)");
+		"specifies the name of the library used (minisat by default)");
 		options.addOption("s", "solver", true,
-				"specifies the name of a prebuilt solver from the library");
+		"specifies the name of a prebuilt solver from the library");
 		options.addOption("S", "Solver", true,
-				"setup a solver using a solver config string");
+		"setup a solver using a solver config string");
 		options.addOption("t", "timeout", true,
-				"specifies the timeout (in seconds)");
+		"specifies the timeout (in seconds)");
 		options.addOption("T", "timeoutms", true,
-				"specifies the timeout (in milliseconds)");
+		"specifies the timeout (in milliseconds)");
 		options.addOption("C", "conflictbased", false,
-				"conflict based timeout (for deterministic behavior)");
+		"conflict based timeout (for deterministic behavior)");
 		options
-				.addOption("d", "dot", true,
-						"create a sat4j.dot file in current directory representing the search");
+		.addOption("d", "dot", true,
+		"create a sat4j.dot file in current directory representing the search");
 		options
-				.addOption("f", "filename", true,
-						"specifies the file to use (in conjunction with -d for instance)");
+		.addOption("f", "filename", true,
+		"specifies the file to use (in conjunction with -d for instance)");
 		options.addOption("m", "mute", false, "Set launcher in silent mode");
 		options
-				.addOption("k", "kleast", true,
-						"limit the search to models having at least k variables set to false");
-		options.addOption("r", "trace", true, "Search Listener to use for tracing the behavior of the solver");
+		.addOption("k", "kleast", true,
+		"limit the search to models having at least k variables set to false");
+		options
+		.addOption("r", "trace", true,
+		"Search Listener to use for tracing the behavior of the solver");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -177,36 +179,39 @@ public class Lanceur extends AbstractLauncher {
 
 			try {
 				Class<?> clazz = Class
-						.forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+				.forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
 				Class<?>[] params = {};
 				Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
 				factory = (ASolverFactory) m.invoke(null, (Object[]) null);
 			} catch (Exception e) { // DLB Findbugs warning ok
-				log("Wrong framework: "+framework+". Using minisat instead.");
+				log("Wrong framework: " + framework
+						+ ". Using minisat instead.");
 				factory = org.sat4j.minisat.SolverFactory.instance();
 			}
 
 			ISolver asolver;
+			if (cmd.hasOption("s")) {
+				log("Available solvers: "
+						+ Arrays.asList(factory.solverNames()));
+				String solvername = cmd.getOptionValue("s");
+				if (solvername == null) {
+					asolver = factory.defaultSolver();
+				} else {
+					asolver = factory.createSolverByName(solvername);
+				}
+			} else {
+				asolver = factory.defaultSolver();
+			}
+
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
-				if (configuredSolver==null) {
+				if (configuredSolver == null) {
 					stringUsage();
 					return null;
 				}
-				asolver = configureFromString(configuredSolver);
-			} else {
-				if (cmd.hasOption("s")) {
-					log("Available solvers: " + Arrays.asList(factory.solverNames()));
-					String solvername = cmd.getOptionValue("s");
-					if (solvername == null) {
-						asolver = factory.defaultSolver();
-					} else {
-						asolver = factory.createSolverByName(solvername);
-					}
-				} else {
-					asolver = factory.defaultSolver();
-				}
+				asolver = configureFromString(configuredSolver, asolver);
 			}
+
 			String timeout = cmd.getOptionValue("t");
 			if (timeout == null) {
 				timeout = cmd.getOptionValue("T");
@@ -231,7 +236,7 @@ public class Lanceur extends AbstractLauncher {
 					dotfilename = "sat4j.dot";
 				}
 				asolver.setSearchListener(new DotSearchTracing(dotfilename,
-								null));
+						null));
 			}
 
 			if (cmd.hasOption("m")) {
@@ -247,28 +252,36 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("r")) {
 				String listener = cmd.getOptionValue("r");
 				try {
-					
-					SearchListener slistener = (SearchListener)Class.forName(listener).getConstructor(String.class).newInstance("sat4j.trace");
+
+					SearchListener slistener = (SearchListener) Class.forName(
+							listener).getConstructor(String.class).newInstance(
+							"sat4j.trace");
 					asolver.setSearchListener(slistener);
 				} catch (InstantiationException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				} catch (IllegalAccessException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				} catch (ClassNotFoundException e) {
-					log("wrong parameter for search listener: "+listener);
+					log("wrong parameter for search listener: " + listener);
 				} catch (IllegalArgumentException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				} catch (SecurityException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				} catch (InvocationTargetException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				} catch (NoSuchMethodException e) {
-					log("wrong parameter for search listener: "+e.getLocalizedMessage());
+					log("wrong parameter for search listener: "
+							+ e.getLocalizedMessage());
 				}
 			}
 			int others = 0;
 			String[] rargs = cmd.getArgs();
-			if (filename == null && rargs.length>0) {
+			if (filename == null && rargs.length > 0) {
 				filename = rargs[others++];
 			}
 
@@ -299,7 +312,7 @@ public class Lanceur extends AbstractLauncher {
 	@Override
 	protected Reader createReader(ISolver theSolver, String problemname) {
 		if (theSolver instanceof IPBSolver) {
-			return new PBInstanceReader((IPBSolver)theSolver);
+			return new PBInstanceReader((IPBSolver) theSolver);
 		}
 		return new InstanceReader(theSolver);
 	}
@@ -321,7 +334,7 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private final ISolver configureFromString(String solverconfig) {
+	private final ISolver configureFromString(String solverconfig,ISolver solver) {
 		// AFAIK, there is no easy way to solve parameterized problems
 		// when building the solver at runtime.
 		StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -333,38 +346,55 @@ public class Lanceur extends AbstractLauncher {
 			couple = token.split("=");
 			pf.setProperty(couple[0], couple[1]);
 		}
-		DataStructureFactory dsf = setupObject("DSF", pf,
-				new MixedDataStructureDanielWL());
-		LearningStrategy learning = setupObject("LEARNING", pf,
-				new PercentLengthLearning());
-		IOrder order = setupObject("ORDER", pf, new VarOrderHeap());
-		IPhaseSelectionStrategy pss = setupObject("PHASE", pf, new PhaseInLastLearnedClauseSelectionStrategy());
-		order.setPhaseSelectionStrategy(pss);
-		RestartStrategy restarter = setupObject("RESTARTS", pf,
-				new MiniSATRestarts());
-		Solver theSolver = new Solver(new FirstUIP(), learning, dsf, order,
-				restarter);
-		learning.setSolver(theSolver);
-		theSolver.setSimplifier(pf.getProperty("SIMP", "NO_SIMPLIFICATION"));
-		SearchParams params = setupObject("PARAMS", pf, new SearchParams());
-		theSolver.setSearchParams(params);
-		return theSolver;
+		Solver aSolver = (Solver)solver;
+		DataStructureFactory dsf = setupObject("DSF", pf);
+		if (dsf!=null) {
+			aSolver.setDataStructureFactory(dsf);
+		}
+		LearningStrategy learning = setupObject("LEARNING", pf);
+		if (learning!=null) {
+			aSolver.setLearner(learning);
+			learning.setSolver(aSolver);
+		}
+		IOrder order = setupObject("ORDER", pf);
+		if (order!=null) {
+			aSolver.setOrder(order);
+		}
+		IPhaseSelectionStrategy pss = setupObject("PHASE", pf);
+		if (pss!=null) {
+			aSolver.getOrder().setPhaseSelectionStrategy(pss);
+		}
+		RestartStrategy restarter = setupObject("RESTARTS", pf);
+		if (restarter!=null) {
+			aSolver.setRestartStrategy(restarter);
+		}
+		String simp = pf.getProperty("SIMP");
+		if (simp!=null) {
+			aSolver.setSimplifier(simp);
+		}
+		SearchParams params = setupObject("PARAMS", pf);
+		if (params!=null) {
+			aSolver.setSearchParams(params);
+		}
+		String memory = pf.getProperty("MEMORY");
+		if ("GLUCOSE".equalsIgnoreCase(memory)) {
+			log("configuring MEMORY");
+			aSolver.setLearnedConstraintsDeletionStrategy(aSolver.GLUCOSE);
+		}
+		return solver;
 	}
 
 	private void stringUsage() {
 		log("Available building blocks: DSF, LEARNING, ORDER, PHASE, RESTARTS, SIMP, PARAMS");
 		log("Example: -S RESTARTS=org.sat4j.minisat.restarts.LubyRestarts/factor:512,LEARNING=org.sat4j.minisat.learning.MiniSATLearning");
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private final <T> T setupObject(String component, Properties pf,
-			T defaultcomp) {
+	private final <T> T setupObject(String component, Properties pf) {
 		try {
 			String configline = pf.getProperty(component);
 			if (configline == null) {
-				log("using default component " + defaultcomp + " for "
-						+ component);
-				return defaultcomp;
+				return null;
 			}
 			log("configuring " + component);
 			String[] config = configline.split("/");
@@ -388,14 +418,13 @@ public class Lanceur extends AbstractLauncher {
 		} catch (ClassNotFoundException e) {
 			log("Problem with component " + component + " " + e);
 		}
-		log("using default component " + defaultcomp + " for " + component);
-		return defaultcomp;
+		return null;
 	}
 
 	@Override
 	protected IProblem readProblem(String problemname)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
+	throws FileNotFoundException, ParseFormatException, IOException,
+	ContradictionException {
 		ISolver theSolver = (ISolver) super.readProblem(problemname);
 		if (k > 0) {
 			IVecInt literals = new VecInt();
