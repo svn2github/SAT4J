@@ -146,7 +146,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final ActivityComparator comparator = new ActivityComparator();
 
-	private final SolverStats stats = new SolverStats();
+	private SolverStats stats = new SolverStats();
 
 	private final LearningStrategy<D> learner;
 
@@ -1362,6 +1362,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public SolverStats getStats() {
 		return stats;
+	}
+
+	protected void initStats(SolverStats stats) {
+		this.stats = stats;
 	}
 
 	public IOrder getOrder() {
