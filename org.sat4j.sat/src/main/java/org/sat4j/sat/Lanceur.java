@@ -36,7 +36,6 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
@@ -44,11 +43,6 @@ import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
-import org.sat4j.minisat.learning.PercentLengthLearning;
-import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
-import org.sat4j.minisat.orders.VarOrderHeap;
-import org.sat4j.minisat.restarts.MiniSATRestarts;
-import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
@@ -106,30 +100,30 @@ public class Lanceur extends AbstractLauncher {
 		Options options = new Options();
 
 		options.addOption("l", "library", true,
-		"specifies the name of the library used (minisat by default)");
+				"specifies the name of the library used (minisat by default)");
 		options.addOption("s", "solver", true,
-		"specifies the name of a prebuilt solver from the library");
+				"specifies the name of a prebuilt solver from the library");
 		options.addOption("S", "Solver", true,
-		"setup a solver using a solver config string");
+				"setup a solver using a solver config string");
 		options.addOption("t", "timeout", true,
-		"specifies the timeout (in seconds)");
+				"specifies the timeout (in seconds)");
 		options.addOption("T", "timeoutms", true,
-		"specifies the timeout (in milliseconds)");
+				"specifies the timeout (in milliseconds)");
 		options.addOption("C", "conflictbased", false,
-		"conflict based timeout (for deterministic behavior)");
+				"conflict based timeout (for deterministic behavior)");
 		options
-		.addOption("d", "dot", true,
-		"create a sat4j.dot file in current directory representing the search");
+				.addOption("d", "dot", true,
+						"create a sat4j.dot file in current directory representing the search");
 		options
-		.addOption("f", "filename", true,
-		"specifies the file to use (in conjunction with -d for instance)");
+				.addOption("f", "filename", true,
+						"specifies the file to use (in conjunction with -d for instance)");
 		options.addOption("m", "mute", false, "Set launcher in silent mode");
 		options
-		.addOption("k", "kleast", true,
-		"limit the search to models having at least k variables set to false");
+				.addOption("k", "kleast", true,
+						"limit the search to models having at least k variables set to false");
 		options
-		.addOption("r", "trace", true,
-		"Search Listener to use for tracing the behavior of the solver");
+				.addOption("r", "trace", true,
+						"Search Listener to use for tracing the behavior of the solver");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -179,7 +173,7 @@ public class Lanceur extends AbstractLauncher {
 
 			try {
 				Class<?> clazz = Class
-				.forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+						.forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
 				Class<?>[] params = {};
 				Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
 				factory = (ASolverFactory) m.invoke(null, (Object[]) null);
@@ -334,7 +328,8 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private final ISolver configureFromString(String solverconfig,ISolver solver) {
+	private final ISolver configureFromString(String solverconfig,
+			ISolver theSolver) {
 		// AFAIK, there is no easy way to solve parameterized problems
 		// when building the solver at runtime.
 		StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -346,34 +341,34 @@ public class Lanceur extends AbstractLauncher {
 			couple = token.split("=");
 			pf.setProperty(couple[0], couple[1]);
 		}
-		Solver aSolver = (Solver)solver;
+		Solver aSolver = (Solver) theSolver;
 		DataStructureFactory dsf = setupObject("DSF", pf);
-		if (dsf!=null) {
+		if (dsf != null) {
 			aSolver.setDataStructureFactory(dsf);
 		}
 		LearningStrategy learning = setupObject("LEARNING", pf);
-		if (learning!=null) {
+		if (learning != null) {
 			aSolver.setLearner(learning);
 			learning.setSolver(aSolver);
 		}
 		IOrder order = setupObject("ORDER", pf);
-		if (order!=null) {
+		if (order != null) {
 			aSolver.setOrder(order);
 		}
 		IPhaseSelectionStrategy pss = setupObject("PHASE", pf);
-		if (pss!=null) {
+		if (pss != null) {
 			aSolver.getOrder().setPhaseSelectionStrategy(pss);
 		}
 		RestartStrategy restarter = setupObject("RESTARTS", pf);
-		if (restarter!=null) {
+		if (restarter != null) {
 			aSolver.setRestartStrategy(restarter);
 		}
 		String simp = pf.getProperty("SIMP");
-		if (simp!=null) {
+		if (simp != null) {
 			aSolver.setSimplifier(simp);
 		}
 		SearchParams params = setupObject("PARAMS", pf);
-		if (params!=null) {
+		if (params != null) {
 			aSolver.setSearchParams(params);
 		}
 		String memory = pf.getProperty("MEMORY");
@@ -381,7 +376,7 @@ public class Lanceur extends AbstractLauncher {
 			log("configuring MEMORY");
 			aSolver.setLearnedConstraintsDeletionStrategy(aSolver.GLUCOSE);
 		}
-		return solver;
+		return theSolver;
 	}
 
 	private void stringUsage() {
@@ -423,8 +418,8 @@ public class Lanceur extends AbstractLauncher {
 
 	@Override
 	protected IProblem readProblem(String problemname)
-	throws FileNotFoundException, ParseFormatException, IOException,
-	ContradictionException {
+			throws FileNotFoundException, ParseFormatException, IOException,
+			ContradictionException {
 		ISolver theSolver = (ISolver) super.readProblem(problemname);
 		if (k > 0) {
 			IVecInt literals = new VecInt();
