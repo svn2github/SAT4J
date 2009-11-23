@@ -16,6 +16,7 @@ public class ConflictTracing implements SearchListener {
 	private final String filename;
 	private final int restartNumber = 0;
 	private PrintStream out;
+	private final long index = 1;
 
 	public ConflictTracing(String filename) {
 		this.filename = filename;
@@ -78,7 +79,8 @@ public class ConflictTracing implements SearchListener {
 	public void learn(IConstr c) {
 		PBConstr myConstr = (PBConstr) c;
 		if (myConstr.size() > 0) {
-			out.println(myConstr.getCoef(0));
+			out.printf("%d %d %d\n", index, myConstr.getCoef(0), myConstr
+					.size());
 		}
 	}
 
