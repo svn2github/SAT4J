@@ -148,7 +148,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private SolverStats stats = new SolverStats();
 
-	private final LearningStrategy<D> learner;
+	private LearningStrategy<D> learner;
 
 	protected final AssertingClauseGenerator analyzer;
 
@@ -214,7 +214,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	/**
-	 * Change the internal representation of the contraints. Note that the
+	 * Change the internal representation of the constraints. Note that the
 	 * heuristics must be changed prior to calling that method.
 	 * 
 	 * @param dsf
@@ -237,6 +237,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public SearchListener getSearchListener() {
 		return slistener;
+	}
+
+	/**
+	 * since 2.2
+	 */
+	public void setLearner(LearningStrategy<D> learner) {
+		this.learner = learner;
 	}
 
 	public void setTimeout(int t) {
