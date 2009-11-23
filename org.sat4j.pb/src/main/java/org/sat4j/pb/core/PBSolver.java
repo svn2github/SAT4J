@@ -53,10 +53,14 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
      */
 	private static final long serialVersionUID = 1L;
 
+	protected PBSolverStats stats;
+
 	public PBSolver(AssertingClauseGenerator acg,
 			LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order, RestartStrategy restarter) {
 		super(acg, learner, dsf, order, restarter);
+		stats = new PBSolverStats();
+		initStats(stats);
 	}
 
 	public PBSolver(AssertingClauseGenerator acg,
@@ -64,6 +68,8 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
 		super(acg, learner, dsf, params, order, restarter);
+		stats = new PBSolverStats();
+		initStats(stats);
 	}
 
 	public IConstr addPseudoBoolean(IVecInt literals, IVec<BigInteger> coeffs,

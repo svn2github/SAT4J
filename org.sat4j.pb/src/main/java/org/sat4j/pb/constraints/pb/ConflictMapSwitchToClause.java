@@ -68,6 +68,8 @@ public class ConflictMapSwitchToClause extends ConflictMap {
 			if (bigCoef.toString().length() > UPPERBOUND) {
 				// if we deal with really big integers
 				// reducing the constraint to a clause
+				numberOfReductions++;
+				hasBeenReduced = true;
 				degreeCons = reduceToClause(ind, wpb, reducedCoefs);
 				coefMultCons = weightedLits.get(litImplied ^ 1);
 				coefMult = BigInteger.ONE;

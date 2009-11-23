@@ -66,4 +66,16 @@ public class PBSolverCautious extends PBSolverCP {
 				+ "When dealing with too large coefficients, simplify asserted PB constraints to clauses";
 	}
 
+	@Override
+	protected void updateNumberOfReductions(IConflict confl) {
+		stats.numberOfReductions += ((ConflictMapSwitchToClause) confl)
+				.getNumberOfReductions();
+	}
+
+	@Override
+	protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
+		if (((ConflictMapSwitchToClause) confl).hasBeenReduced())
+			stats.numberOfLearnedConstraintsReduced++;
+	}
+
 }

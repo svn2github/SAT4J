@@ -59,7 +59,6 @@ public class PBSolverCP extends PBSolver {
 			PBDataStructureFactory dsf, IOrder order) {
 		super(acg, learner, dsf, new SearchParams(1.5, 100), order,
 				new MiniSATRestarts());
-		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	public PBSolverCP(AssertingClauseGenerator acg,
@@ -67,14 +66,12 @@ public class PBSolverCP extends PBSolver {
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
 		super(acg, learner, dsf, params, order, restarter);
-		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	public PBSolverCP(AssertingClauseGenerator acg,
 			LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
 		super(acg, learner, dsf, params, order, new MiniSATRestarts());
-		// setSearchListener(new ConflictTracing("conflict"));
 	}
 
 	@Override
@@ -94,6 +91,7 @@ public class PBSolverCP extends PBSolver {
 			PBConstr constraint = (PBConstr) voc.getReason(litImplied);
 			// result of the resolution is in the conflict (confl)
 			confl.resolve(constraint, litImplied, this);
+			updateNumberOfReductions(confl);
 			assert confl.slackConflict().signum() <= 0;
 			// implication trail is reduced
 			if (trail.size() == 1)
@@ -119,6 +117,7 @@ public class PBSolverCP extends PBSolver {
 		assert currentLevel == decisionLevel();
 		undoOne();
 
+		updateNumberOfReducedLearnedConstraints(confl);
 		// necessary informations to build a PB-constraint
 		// are kept from the conflict
 		if ((confl.size() == 0)
@@ -165,6 +164,12 @@ public class PBSolverCP extends PBSolver {
 
 	boolean someCriteria() {
 		return true;
+	}
+
+	protected void updateNumberOfReductions(IConflict confl) {
+	}
+
+	protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
 	}
 
 }

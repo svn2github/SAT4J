@@ -43,6 +43,9 @@ public class ConflictMap extends MapPb implements IConflict {
 
 	private final ILits voc;
 
+	protected boolean hasBeenReduced = false;
+	protected long numberOfReductions = 0;
+
 	/**
 	 * to store the slack of the current resolvant
 	 */
@@ -680,4 +683,11 @@ public class ConflictMap extends MapPb implements IConflict {
 		return stb.toString() + " >= " + degree; //$NON-NLS-1$
 	}
 
+	public boolean hasBeenReduced() {
+		return hasBeenReduced;
+	}
+
+	public long getNumberOfReductions() {
+		return numberOfReductions;
+	}
 }
