@@ -59,14 +59,19 @@ public class ConflictMapSwitchToClause extends ConflictMap {
 		// updating of the degree of the conflict
 		int i = 0;
 		for (; i < reducedCoefs.length
-				&& reducedCoefs[i].equals(BigInteger.ZERO); i++) {
+				&& reducedCoefs[i].equals(BigInteger.ZERO) && i != ind; i++) {
 		}
-		if (reducedCoefs[i].toString().length() > UPPERBOUND) {
-			// if we deal with really big integers
-			// reducing the constraint to a clause
-			degreeCons = reduceToClause(ind, wpb, reducedCoefs);
-			coefMultCons = weightedLits.get(litImplied ^ 1);
-			coefMult = BigInteger.ONE;
+		if (i < reducedCoefs.length) {
+			BigInteger bigCoef = reducedCoefs[i].multiply(coefMultCons);
+			if (weightedLits.containsKey(wpb.get(i)))
+				bigCoef.add(weightedLits.get(wpb.get(i)).multiply(coefMult));
+			if (bigCoef.toString().length() > UPPERBOUND) {
+				// if we deal with really big integers
+				// reducing the constraint to a clause
+				degreeCons = reduceToClause(ind, wpb, reducedCoefs);
+				coefMultCons = weightedLits.get(litImplied ^ 1);
+				coefMult = BigInteger.ONE;
+			}
 		}
 		return degreeCons;
 	}
