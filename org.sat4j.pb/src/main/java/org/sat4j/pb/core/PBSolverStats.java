@@ -15,11 +15,17 @@ public class PBSolverStats extends SolverStats {
 
 	public long numberOfLearnedConstraintsReduced;
 
+	public long numberOfResolution;
+
+	public long numberOfCP;
+
 	@Override
 	public void reset() {
 		super.reset();
 		numberOfReductions = 0;
 		numberOfLearnedConstraintsReduced = 0;
+		numberOfResolution = 0;
+		numberOfCP = 0;
 	}
 
 	@Override
@@ -31,6 +37,10 @@ public class PBSolverStats extends SolverStats {
 		out.println(prefix
 				+ "number of learned constraints concerned by reduction\t: "
 				+ numberOfLearnedConstraintsReduced);
+		out.println(prefix + "number of learning phase by resolution\t: "
+				+ numberOfResolution);
+		out.println(prefix + "number of learning phase by cutting planes\t: "
+				+ numberOfCP);
 	}
 
 }

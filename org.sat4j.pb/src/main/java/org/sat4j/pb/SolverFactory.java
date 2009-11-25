@@ -55,6 +55,7 @@ import org.sat4j.pb.core.PBDataStructureFactory;
 import org.sat4j.pb.core.PBSolverCP;
 import org.sat4j.pb.core.PBSolverCautious;
 import org.sat4j.pb.core.PBSolverClause;
+import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
@@ -372,6 +373,27 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	public static PBSolverCautious newPBCPMixedConstraintsCautious() {
 		return newPBCPMixedConstraintsCautious(PBSolverCautious.BOUND);
+	}
+
+	/**
+	 * @return MiniSAT with Counter-based pseudo boolean constraints and
+	 *         constraint learning. Clauses and cardinalities with watched
+	 *         literals are also handled (and learnt). A reduction of
+	 *         PB-constraints to clauses is made in order to simplify cutting
+	 *         planes (if coefficients are larger than bound).
+	 */
+	public static PBSolverResCP newPBCPMixedConstraintsResCP(long bound) {
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		PBSolverResCP solver = new PBSolverResCP(new FirstUIP(), learning,
+				new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap(),
+				bound);
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
+		return solver;
+	}
+
+	public static PBSolverResCP newPBCPMixedConstraintsResCP() {
+		return newPBCPMixedConstraintsResCP(PBSolverResCP.MAXCONFLICTS);
 	}
 
 	/**

@@ -33,6 +33,7 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MaxWatchPb;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVecInt;
 
 public class PBMaxClauseCardConstrDataStructure extends
 		PuebloPBMinClauseCardConstrDataStructure {
@@ -52,6 +53,11 @@ public class PBMaxClauseCardConstrDataStructure extends
 	@Override
 	protected Constr constructLearntPB(IDataStructurePB mpb) {
 		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
+	}
+
+	@Override
+	public Constr createUnregisteredClause(IVecInt literals) {
+		return constructLearntClause(literals);
 	}
 
 }
