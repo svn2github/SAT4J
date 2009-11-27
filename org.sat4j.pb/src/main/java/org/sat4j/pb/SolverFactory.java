@@ -365,7 +365,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverCautious solver = new PBSolverCautious(new FirstUIP(),
 				learning, new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeap(), bound);
+				new VarOrderHeapObjective(), bound);
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
@@ -385,8 +385,8 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	public static PBSolverResCP newPBCPMixedConstraintsResCP(long bound) {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResCP solver = new PBSolverResCP(new FirstUIP(), learning,
-				new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap(),
-				bound);
+				new PBMaxClauseCardConstrDataStructure(),
+				new VarOrderHeapObjective(), bound);
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
