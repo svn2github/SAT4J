@@ -304,11 +304,11 @@ public class DependencyHelper<T, C> {
 	 */
 	public void setFalse(T thing, C name) throws ContradictionException {
 		IConstr constr = gator.gateFalse(getIntValue(thing));
-		if (constr == null) {
-			throw new IllegalStateException(
-					"Constraints are not supposed to be null when using the helper");
+		// constraints duplication detection may end up with null constraint
+		if (constr != null) {
+			descs.put(constr, name);
 		}
-		descs.put(constr, name);
+
 	}
 
 	/**
