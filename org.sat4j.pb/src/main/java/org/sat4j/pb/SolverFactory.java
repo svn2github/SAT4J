@@ -389,6 +389,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 				new VarOrderHeapObjective(), bound);
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
 
