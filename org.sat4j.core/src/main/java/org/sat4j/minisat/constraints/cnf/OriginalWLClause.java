@@ -31,7 +31,7 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
-public class OriginalWLClause extends WLClause {
+public final class OriginalWLClause extends WLClause {
 
 	public OriginalWLClause(IVecInt ps, ILits voc) {
 		super(ps, voc);

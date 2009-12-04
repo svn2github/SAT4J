@@ -43,7 +43,7 @@ import org.sat4j.specs.IteratorInt;
  * 
  * @author leberre
  */
-public class VecInt implements IVecInt {
+public final class VecInt implements IVecInt {
 	// MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
 	//
 	// Permission is hereby granted, free of charge, to any person obtaining a
@@ -67,114 +67,119 @@ public class VecInt implements IVecInt {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final IVecInt EMPTY = new VecInt() {
+	public static final IVecInt EMPTY = new IVecInt() {
 
 		/**
          * 
          */
 		private static final long serialVersionUID = 1L;
 
-		@Override
 		public int size() {
 			return 0;
 		}
 
-		@Override
 		public void shrink(int nofelems) {
 		}
 
-		@Override
 		public void shrinkTo(int newsize) {
 		}
 
-		@Override
 		public IVecInt pop() {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void growTo(int newsize, int pad) {
 		}
 
-		@Override
 		public void ensure(int nsize) {
 		}
 
-		@Override
 		public IVecInt push(int elem) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void unsafePush(int elem) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void clear() {
 		}
 
-		@Override
 		public int last() {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public int get(int i) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void set(int i, int o) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public boolean contains(int e) {
 			return false;
 		}
 
-		@Override
 		public void copyTo(IVecInt copy) {
 		}
 
-		@Override
 		public void copyTo(int[] is) {
 		}
 
-		@Override
 		public void moveTo(IVecInt dest) {
 		}
 
-		@Override
 		public void moveTo2(IVecInt dest) {
 		}
 
-		@Override
 		public void moveTo(int[] dest) {
 		}
 
-		@Override
 		public void insertFirst(int elem) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void remove(int elem) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public int delete(int i) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public void sort() {
 		}
 
-		@Override
 		public void sortUnique() {
+		}
+
+		public int unsafeGet(int eleem) {
+			throw new UnsupportedOperationException();
+		}
+
+		public int containsAt(int e) {
+			throw new UnsupportedOperationException();
+		}
+
+		public int containsAt(int e, int from) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void moveTo(int dest, int source) {
+			throw new UnsupportedOperationException();
+		}
+
+		public boolean isEmpty() {
+			return true;
+		}
+
+		public IteratorInt iterator() {
+			throw new UnsupportedOperationException();
+		}
+
+		public int[] toArray() {
+			throw new UnsupportedOperationException();
 		}
 	};
 

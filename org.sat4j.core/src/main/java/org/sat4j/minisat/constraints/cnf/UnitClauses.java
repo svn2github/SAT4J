@@ -34,7 +34,7 @@ import org.sat4j.specs.IVecInt;
 /**
  * @since 2.1
  */
-public class UnitClauses implements Constr {
+public final class UnitClauses implements Constr {
 
 	protected final int[] literals;
 

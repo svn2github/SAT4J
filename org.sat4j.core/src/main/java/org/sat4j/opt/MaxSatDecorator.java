@@ -40,7 +40,7 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * 
  */
-public class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
+public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
 	/**
      * 

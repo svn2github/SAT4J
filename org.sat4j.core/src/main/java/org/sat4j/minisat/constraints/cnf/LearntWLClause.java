@@ -30,7 +30,7 @@ package org.sat4j.minisat.constraints.cnf;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
-public class LearntWLClause extends WLClause {
+public final class LearntWLClause extends WLClause {
 
 	public LearntWLClause(IVecInt ps, ILits voc) {
 		super(ps, voc);

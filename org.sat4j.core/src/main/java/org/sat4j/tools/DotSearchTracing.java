@@ -50,7 +50,7 @@ import org.sat4j.specs.SearchListener;
  * remote solver.
  * 
  * @author daniel
- * @Since 2.2
+ * @since 2.2
  */
 public class DotSearchTracing<T> implements SearchListener {
 

@@ -40,7 +40,7 @@ import org.sat4j.specs.IVec;
  * @param <T>
  *            the type of the container.
  */
-public class ReadOnlyVec<T> implements IVec<T> {
+public final class ReadOnlyVec<T> implements IVec<T> {
 
 	/**
 	 * 

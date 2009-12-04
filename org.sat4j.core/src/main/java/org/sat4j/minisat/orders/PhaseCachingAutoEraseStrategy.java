@@ -2,7 +2,10 @@ package org.sat4j.minisat.orders;
 
 import static org.sat4j.core.LiteralsUtils.var;
 
-public class PhaseCachingAutoEraseStrategy extends
+/**
+ * @since 2.2
+ */
+public final class PhaseCachingAutoEraseStrategy extends
 		AbstractPhaserecordingSelectionStrategy {
 
 	/**

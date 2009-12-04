@@ -36,7 +36,7 @@ import org.sat4j.specs.IteratorInt;
  * @author daniel
  * 
  */
-public class ReadOnlyVecInt implements IVecInt {
+public final class ReadOnlyVecInt implements IVecInt {
 
 	/**
 	 * 

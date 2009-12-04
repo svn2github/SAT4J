@@ -42,7 +42,7 @@ import org.sat4j.specs.IVec;
  * @author leberre
  * 
  */
-public class Lits implements Serializable, ILits {
+public final class Lits implements Serializable, ILits {
 
 	private static final int DEFAULT_INIT_SIZE = 128;
 
@@ -70,7 +70,7 @@ public class Lits implements Serializable, ILits {
 		init(DEFAULT_INIT_SIZE);
 	}
 
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public final void init(int nvar) {
 		if (nvar < pool.length) {
 			return;

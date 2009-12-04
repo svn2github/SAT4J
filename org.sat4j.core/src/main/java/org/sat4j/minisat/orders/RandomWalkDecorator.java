@@ -10,7 +10,7 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 /**
  * @since 2.2
  */
-public class RandomWalkDecorator implements IOrder {
+public final class RandomWalkDecorator implements IOrder {
 
 	private final IOrder decorated;
 

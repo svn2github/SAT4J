@@ -43,7 +43,7 @@ import org.sat4j.tools.SolverDecorator;
  * 
  * @author leberre
  */
-public class MinOneDecorator extends SolverDecorator<ISolver> implements
+public final class MinOneDecorator extends SolverDecorator<ISolver> implements
 		IOptimizationProblem {
 
 	/**
