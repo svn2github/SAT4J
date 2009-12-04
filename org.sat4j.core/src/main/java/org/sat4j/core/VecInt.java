@@ -175,7 +175,16 @@ public final class VecInt implements IVecInt {
 		}
 
 		public IteratorInt iterator() {
-			throw new UnsupportedOperationException();
+			return new IteratorInt() {
+
+				public boolean hasNext() {
+					return false;
+				}
+
+				public int next() {
+					throw new UnsupportedOperationException();
+				}
+			};
 		}
 
 		public int[] toArray() {
