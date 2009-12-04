@@ -35,7 +35,7 @@ import org.sat4j.specs.IVecInt;
 /**
  * @since 2.1
  */
-public final class OriginalBinaryClause extends BinaryClause {
+public class OriginalBinaryClause extends BinaryClause {
 
 	/**
 	 * 

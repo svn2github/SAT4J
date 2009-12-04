@@ -35,7 +35,7 @@ import org.sat4j.specs.IVecInt;
  * @author daniel
  * @since 2.1
  */
-public final class LearntBinaryClause extends BinaryClause {
+public class LearntBinaryClause extends BinaryClause {
 
 	/**
 	 * 
