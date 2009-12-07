@@ -33,7 +33,7 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 
-public class PuebloMinWatchPb extends MinWatchPb {
+public final class PuebloMinWatchPb extends MinWatchPb {
 
 	private static final long serialVersionUID = 1L;
 

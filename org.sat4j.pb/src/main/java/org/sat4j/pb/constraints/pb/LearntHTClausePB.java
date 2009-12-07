@@ -34,7 +34,7 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
-public class LearntHTClausePB extends LearntHTClause implements PBConstr {
+public final class LearntHTClausePB extends LearntHTClause implements PBConstr {
 
 	private static final long serialVersionUID = 1L;
 

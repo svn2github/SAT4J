@@ -33,7 +33,7 @@ import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
-public class LearntBinaryClausePB extends LearntBinaryClause implements
+public final class LearntBinaryClausePB extends LearntBinaryClause implements
 		PBConstr {
 
 	public LearntBinaryClausePB(IVecInt ps, ILits voc) {

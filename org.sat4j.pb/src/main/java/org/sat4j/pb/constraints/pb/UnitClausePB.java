@@ -6,7 +6,7 @@ import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
-public class UnitClausePB extends UnitClause implements PBConstr {
+public final class UnitClausePB extends UnitClause implements PBConstr {
 
 	private final ILits voc;
 

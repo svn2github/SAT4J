@@ -33,7 +33,7 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 
-public class MaxWatchPb extends WatchPb {
+public final class MaxWatchPb extends WatchPb {
 
 	private static final long serialVersionUID = 1L;
 

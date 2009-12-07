@@ -29,7 +29,7 @@ package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
 
-public class ConflictMapSwitchToClause extends ConflictMap {
+public final class ConflictMapSwitchToClause extends ConflictMap {
 
 	public static int UPPERBOUND;
 

@@ -34,8 +34,8 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
-public class OriginalBinaryClausePB extends OriginalBinaryClause implements
-		PBConstr {
+public final class OriginalBinaryClausePB extends OriginalBinaryClause
+		implements PBConstr {
 
 	public OriginalBinaryClausePB(IVecInt ps, ILits voc) {
 		super(ps, voc);

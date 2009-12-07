@@ -35,7 +35,7 @@ import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
-public class MinWatchCardPB extends MinWatchCard implements PBConstr {
+public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 
 	/**
      * 

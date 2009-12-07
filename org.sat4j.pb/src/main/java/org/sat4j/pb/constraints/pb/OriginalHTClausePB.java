@@ -34,7 +34,8 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
-public class OriginalHTClausePB extends OriginalHTClause implements PBConstr {
+public final class OriginalHTClausePB extends OriginalHTClause implements
+		PBConstr {
 
 	public OriginalHTClausePB(IVecInt ps, ILits voc) {
 		super(ps, voc);
