@@ -4,7 +4,7 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class PBCPMixedConstraintsResCPTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+		AbstractEZPseudoBooleanAndPigeonHoleTest {
 
 	public PBCPMixedConstraintsResCPTest(String arg) {
 		super(arg);
