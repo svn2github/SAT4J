@@ -293,6 +293,14 @@ public class ManyCore implements ISolver, OutcomeListener {
 		}
 		return removed;
 	}
+
+	public boolean isVerbose() {
+		return false;
+	}
+
+	public void setVerbose(boolean value) {
+		// do nothing
+	}
 }
 
 interface OutcomeListener {
