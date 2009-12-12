@@ -48,7 +48,7 @@ public class PBSolverResCP extends PBSolverCP {
 	@Override
 	boolean someCriteria() {
 		if (stats.conflicts == bound) {
-			this.setSimplifier(this.NO_SIMPLIFICATION);
+			this.setSimplifier(NO_SIMPLIFICATION);
 			this.reduceDB();
 			stats.numberOfCP++;
 			return true;
