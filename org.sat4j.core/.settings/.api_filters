@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.sat4j.core" version="2">
+    <resource path="src/main/java/org/sat4j/minisat/core/DataStructureFactory.java" type="org.sat4j.minisat.core.DataStructureFactory">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="conflictDetectedInWatchesFor(int, int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="getWatchesFor(int)"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="src/main/java/org/sat4j/minisat/core/ILits.java" type="org.sat4j.minisat.core.ILits">
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="watches(int)"/>
+            </message_arguments>
+        </filter>
+        <filter id="1211105284">
+            <message_arguments>
+                <message_argument value="watch(int, Propagatable)"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="src/test/java/org/sat4j/ModelIteratorTest.java" type="org.sat4j.ModelIteratorTest">
         <filter id="1110441988">
             <message_arguments>

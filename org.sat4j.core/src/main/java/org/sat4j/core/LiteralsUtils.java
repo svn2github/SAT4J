@@ -120,6 +120,7 @@ public final class LiteralsUtils {
 	 * @param x
 	 *            the literal in Dimacs format
 	 * @return the literal in internal format.
+	 * @since 2.2
 	 */
 	public static int toInternal(int x) {
 		return ((x < 0) ? ((-x) << 1) ^ 1 : (x << 1));

@@ -334,4 +334,18 @@ public class DimacsStringSolver implements ISolver {
 	public SearchListener getSearchListener() {
 		throw new UnsupportedOperationException();
 	}
+
+	/**
+	 * @since 2.2
+	 */
+	public boolean isVerbose() {
+		return true;
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public void setVerbose(boolean value) {
+		// do nothing
+	}
 }

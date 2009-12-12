@@ -389,4 +389,19 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver,
 	public SearchListener getSearchListener() {
 		return solver.getSearchListener();
 	}
+
+	/**
+	 * @since 2.2
+	 */
+	public boolean isVerbose() {
+		return solver.isVerbose();
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public void setVerbose(boolean value) {
+		solver.setVerbose(value);
+	}
+
 }

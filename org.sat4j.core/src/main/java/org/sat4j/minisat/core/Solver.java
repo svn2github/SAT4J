@@ -174,12 +174,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final IVecInt learnedLiterals = new VecInt();
 
+	private boolean verbose = true;
+
 	protected IVecInt dimacs2internal(IVecInt in) {
-		// if (voc.nVars() == 0) {
-		// throw new RuntimeException(
-		// "Please set the number of variables (solver.newVar() or solver.newVar(maxvar)) before adding constraints!"
-		// );
-		// }
 		__dimacs_out.clear();
 		__dimacs_out.ensure(in.size());
 		for (int i = 0; i < in.size(); i++) {
@@ -229,18 +226,36 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	/**
+	 * @since 2.2
+	 */
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	/**
+	 * @param value
+	 * @since 2.2
+	 */
+	public void setVerbose(boolean value) {
+		verbose = value;
+	}
+
+	/**
 	 * @since 2.1
 	 */
 	public void setSearchListener(SearchListener sl) {
 		slistener = sl;
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public SearchListener getSearchListener() {
 		return slistener;
 	}
 
 	/**
-	 * since 2.2
+	 * @since 2.2
 	 */
 	public void setLearner(LearningStrategy<D> learner) {
 		this.learner = learner;
@@ -1096,8 +1111,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			for (; i < learnts.size(); i++) {
 				learnts.set(j++, learnts.get(i));
 			}
-			System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
-					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+			if (verbose) {
+				System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
+						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 			learnts.shrinkTo(j);
 		}
 
@@ -1167,9 +1184,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					c.remove(Solver.this);
 				}
 			}
-			System.out
-					.println("c cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-							+ " clauses out of " + learnedConstrs.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
+			if (verbose) {
+				System.out
+						.println("c cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
+								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 			learnts.shrinkTo(j);
 
 		}
@@ -1371,6 +1390,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return stats;
 	}
 
+	/**
+	 * 
+	 * @param stats
+	 * @since 2.2
+	 */
 	protected void initStats(SolverStats stats) {
 		this.stats = stats;
 	}

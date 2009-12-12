@@ -348,4 +348,22 @@ public interface ISolver extends IProblem, Serializable {
 	 * @since 2.2
 	 */
 	SearchListener getSearchListener();
+
+	/**
+	 * To know if the solver is in verbose mode (output allowed) or not.
+	 * 
+	 * @return true if the solver is verbose.
+	 * @since 2.2
+	 */
+	boolean isVerbose();
+
+	/**
+	 * Set the verbosity of the solver
+	 * 
+	 * @param value
+	 *            true to allow the solver to output messages on the console,
+	 *            false either.
+	 * @since 2.2
+	 */
+	void setVerbose(boolean value);
 }

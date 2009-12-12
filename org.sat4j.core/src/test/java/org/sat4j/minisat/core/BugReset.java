@@ -11,6 +11,11 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * 
+ * @author daniel
+ * @since 2.2
+ */
 public class BugReset {
 
 	@Test
