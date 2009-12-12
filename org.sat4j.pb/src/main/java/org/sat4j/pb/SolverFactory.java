@@ -581,6 +581,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	public static IPBSolver newEclipseP2() {
 		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
 		solver.setTimeoutOnConflicts(300);
+		solver.setVerbose(false);
 		return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
 	}
 
