@@ -1075,7 +1075,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	/**
 	 * @since 2.1
 	 */
-	public LearnedConstraintsDeletionStrategy MEMORY_BASED = new LearnedConstraintsDeletionStrategy() {
+	public final LearnedConstraintsDeletionStrategy memory_based = new LearnedConstraintsDeletionStrategy() {
 
 		/**
 		 * 
@@ -1145,7 +1145,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	/**
 	 * @since 2.1
 	 */
-	public LearnedConstraintsDeletionStrategy GLUCOSE = new LearnedConstraintsDeletionStrategy() {
+	public final LearnedConstraintsDeletionStrategy glucose = new LearnedConstraintsDeletionStrategy() {
 
 		/**
 		 * 
@@ -1229,7 +1229,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	};
 
-	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = MEMORY_BASED;
+	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = memory_based;
 
 	/**
 	 * @param lcds

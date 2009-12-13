@@ -82,8 +82,8 @@ public final class Vec<T> implements IVec<T> {
 	 * @param elts
 	 *            a filled array of T.
 	 */
-	public Vec(T[] elts) {
-		myarray = elts; // NOPMD
+	public Vec(T[] elts) { // NOPMD
+		myarray = elts;
 		nbelem = elts.length;
 	}
 

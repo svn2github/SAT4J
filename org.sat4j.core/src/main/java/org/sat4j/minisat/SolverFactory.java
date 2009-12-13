@@ -185,7 +185,7 @@ public class SolverFactory extends ASolverFactory<ISolver> {
 	 */
 	public static Solver<DataStructureFactory> newGlucose() {
 		Solver<DataStructureFactory> solver = newBestWL();
-		solver.setLearnedConstraintsDeletionStrategy(solver.GLUCOSE);
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		solver.setRestartStrategy(new LubyRestarts(512));
 		return solver;
 	}

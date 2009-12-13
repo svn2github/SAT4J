@@ -210,8 +210,8 @@ public final class VecInt implements IVecInt {
 	 * @param lits
 	 *            a filled array of int.
 	 */
-	public VecInt(int[] lits) {
-		myarray = lits; // NOPMD
+	public VecInt(int[] lits) { // NOPMD
+		myarray = lits;
 		nbelem = lits.length;
 	}
 

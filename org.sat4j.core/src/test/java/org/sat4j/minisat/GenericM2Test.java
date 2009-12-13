@@ -42,7 +42,7 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
 
 	private String solvername;
 
-	private static final SolverFactory factory = SolverFactory.instance();
+	private static final SolverFactory FACTORY = SolverFactory.instance();
 
 	/**
 	 * @param arg0
@@ -59,12 +59,12 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
 	 */
 	@Override
 	protected ISolver createSolver() {
-		return factory.createSolverByName(solvername);
+		return FACTORY.createSolverByName(solvername);
 	}
 
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite();
-		String[] names = factory.solverNames();
+		String[] names = FACTORY.solverNames();
 		String name;
 		for (int i = 0; i < names.length; i++) {
 			name = names[i];

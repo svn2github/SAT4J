@@ -178,8 +178,10 @@ public class DimacsReader extends Reader implements Serializable {
 				}
 				if (scanner.currentChar() == '%'
 						&& expectedNbOfConstr == realNbOfConstr) {
-					System.out
-							.println("Ignoring the rest of the file (SATLIB format");
+					if (solver.isVerbose()) {
+						System.out
+								.println("Ignoring the rest of the file (SATLIB format");
+					}
 					break;
 				}
 				added = handleLine();

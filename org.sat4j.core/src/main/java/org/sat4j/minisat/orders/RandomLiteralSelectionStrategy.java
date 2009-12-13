@@ -49,7 +49,7 @@ public final class RandomLiteralSelectionStrategy implements
      */
 	private static final long serialVersionUID = 1L;
 
-	public static final Random rand = new Random(123456789);
+	public static final Random RAND = new Random(123456789);
 
 	public void assignLiteral(int p) {
 	}
@@ -61,7 +61,7 @@ public final class RandomLiteralSelectionStrategy implements
 	}
 
 	public int select(int var) {
-		if (rand.nextBoolean()) {
+		if (RAND.nextBoolean()) {
 			return posLit(var);
 		}
 		return negLit(var);

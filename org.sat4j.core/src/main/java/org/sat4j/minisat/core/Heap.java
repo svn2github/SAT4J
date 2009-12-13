@@ -98,8 +98,8 @@ public final class Heap implements Serializable {
 		return n >= 0 && n < indices.size();
 	}
 
-	public Heap(double[] activity) {
-		this.activity = activity; // NOPMD
+	public Heap(double[] activity) { // NOPMD
+		this.activity = activity;
 		heap.push(-1);
 	}
 

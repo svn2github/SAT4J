@@ -77,7 +77,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	private boolean pooledVarId = false;
 	private final IVecInt lastClause = new VecInt();
 
-	private static final XplainStrategy xplainStrategy = new QuickXplainStrategy();
+	private static final XplainStrategy XPLAIN_STRATEGY = new QuickXplainStrategy();
 
 	public Xplain(T solver) {
 		super(solver);
@@ -149,7 +149,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		if (solver instanceof IOptimizationProblem) {
 			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
 		}
-		IVecInt keys = xplainStrategy.explain(solver, constrs, assump);
+		IVecInt keys = XPLAIN_STRATEGY.explain(solver, constrs, assump);
 		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
 			explanation.add(constrs.get(it.next()));
@@ -161,7 +161,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	 * @since 2.1
 	 */
 	public void cancelExplanation() {
-		xplainStrategy.cancelExplanationComputation();
+		XPLAIN_STRATEGY.cancelExplanationComputation();
 	}
 
 	/**
