@@ -374,7 +374,7 @@ public class Lanceur extends AbstractLauncher {
 		String memory = pf.getProperty("MEMORY");
 		if ("GLUCOSE".equalsIgnoreCase(memory)) {
 			log("configuring MEMORY");
-			aSolver.setLearnedConstraintsDeletionStrategy(aSolver.GLUCOSE);
+			aSolver.setLearnedConstraintsDeletionStrategy(aSolver.glucose);
 		}
 		return theSolver;
 	}
