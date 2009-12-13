@@ -83,8 +83,7 @@ public final class Vec<T> implements IVec<T> {
 	 *            a filled array of T.
 	 */
 	public Vec(T[] elts) {
-		// DLB findbugs ok
-		myarray = elts;
+		myarray = elts; // NOPMD
 		nbelem = elts.length;
 	}
 

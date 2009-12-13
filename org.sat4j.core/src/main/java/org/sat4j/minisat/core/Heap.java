@@ -99,8 +99,7 @@ public final class Heap implements Serializable {
 	}
 
 	public Heap(double[] activity) {
-		// DLB findbugs ok
-		this.activity = activity;
+		this.activity = activity; // NOPMD
 		heap.push(-1);
 	}
 
