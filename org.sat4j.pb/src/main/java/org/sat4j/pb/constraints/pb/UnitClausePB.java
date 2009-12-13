@@ -37,8 +37,7 @@ public final class UnitClausePB extends UnitClause implements PBConstr {
 	}
 
 	public int[] getLits() {
-		int[] tmp = { literal };
-		return tmp;
+		return new int[] { literal };
 	}
 
 	public ILits getVocabulary() {
