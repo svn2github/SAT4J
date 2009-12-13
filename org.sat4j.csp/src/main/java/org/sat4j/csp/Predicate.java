@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Script;
 import org.mozilla.javascript.Scriptable;
 import org.sat4j.core.Vec;
@@ -54,21 +53,16 @@ public class Predicate implements Clausifiable {
     private static Scriptable scope;
 
     static {
-        cx = Context.enter(); //ContextFactory.getGlobal().enterContext();
-        // cx.setOptimizationLevel(1);
+        cx = Context.enter(); 
         scope = cx.initStandardObjects();
-        // System.out.println("scope "+vscope);
-        // System.out.println("params "+vars);
         try {
             URL url = Predicate.class.getResource("predefinedfunctions.js");
             cx.evaluateReader(scope, new InputStreamReader(url.openStream()),
                     "predefinedfunctions.js", 1, null);
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
