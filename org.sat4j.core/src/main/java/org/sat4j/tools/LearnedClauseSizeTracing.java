@@ -19,7 +19,6 @@ public class LearnedClauseSizeTracing implements SearchListener {
 	private static final long serialVersionUID = 1L;
 
 	private final String filename;
-	private final int restartNumber = 0;
 	private PrintStream out;
 
 	public LearnedClauseSizeTracing(String filename) {
@@ -29,8 +28,7 @@ public class LearnedClauseSizeTracing implements SearchListener {
 
 	private void updateWriter() {
 		try {
-			out = new PrintStream(new FileOutputStream(filename + restartNumber
-					+ ".dat"));
+			out = new PrintStream(new FileOutputStream(filename + ".dat"));
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
