@@ -34,7 +34,7 @@ final class PBContainer {
 	final BigInteger[] coefs;
 	final BigInteger degree;
 
-	PBContainer(int[] lits, BigInteger[] coefs, BigInteger degree) {
+	PBContainer(int[] lits, BigInteger[] coefs, BigInteger degree) { // NOPMD
 		this.lits = lits;
 		this.coefs = coefs;
 		this.degree = degree;

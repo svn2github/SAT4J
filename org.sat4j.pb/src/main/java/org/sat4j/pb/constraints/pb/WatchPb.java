@@ -108,7 +108,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		sort();
 	}
 
-	WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree) {
+	WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree) { // NOPMD
 		this.lits = lits;
 		this.coefs = coefs;
 		this.degree = degree;

@@ -73,7 +73,7 @@ public class MinWatchPb extends WatchPb {
 
 	}
 
-	protected MinWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
+	protected MinWatchPb(ILits voc, int[] lits, BigInteger[] coefs, // NOPMD
 			BigInteger degree) {
 
 		super(lits, coefs, degree);
