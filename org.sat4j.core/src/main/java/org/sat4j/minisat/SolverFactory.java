@@ -51,7 +51,7 @@ import org.sat4j.tools.OptToSatAdapter;
  * 
  * @author leberre
  */
-public class SolverFactory extends ASolverFactory<ISolver> {
+public final class SolverFactory extends ASolverFactory<ISolver> {
 
 	/**
      * 

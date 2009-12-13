@@ -38,7 +38,7 @@ import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
-public class MaxWatchCard implements Constr, Undoable, Serializable {
+public final class MaxWatchCard implements Constr, Undoable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 

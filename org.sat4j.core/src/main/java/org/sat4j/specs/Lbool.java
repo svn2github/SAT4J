@@ -36,7 +36,7 @@ package org.sat4j.specs;
  * @author leberre
  * @since 2.1
  */
-public class Lbool {
+public final class Lbool {
 
 	public static final Lbool FALSE = new Lbool("F");
 	public static final Lbool TRUE = new Lbool("T");
