@@ -26,8 +26,7 @@ public class EnumeratedDomain implements Domain {
 
     private final int[] values;
 
-    public EnumeratedDomain(int[] values) {
-        // DLB findbugs ok
+    public EnumeratedDomain(int[] values) { // NOPMD
         this.values = values;
     }
 
