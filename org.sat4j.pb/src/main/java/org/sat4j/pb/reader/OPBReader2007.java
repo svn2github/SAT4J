@@ -240,7 +240,7 @@ public class OPBReader2007 extends OPBReader2006 {
 		String newVar = getProductVariable(tmpLit);
 		if (newVar == null) {
 			// generate a new symbol
-			newVar = "X" + String.valueOf(nbNewSymbols++);
+			newVar = "X" + nbNewSymbols++;
 			// linearization proposed by O. Roussel (PB07)
 			// generate the clause
 			// product => newSymbol (this is a clause)
