@@ -45,15 +45,15 @@ public final class Heap implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final static int left(int i) {
+	private static final int left(int i) {
 		return i << 1;
 	}
 
-	private final static int right(int i) {
+	private static final int right(int i) {
 		return (i << 1) ^ 1;
 	}
 
-	private final static int parent(int i) {
+	private static final int parent(int i) {
 		return i >> 1;
 	}
 
