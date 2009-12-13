@@ -24,13 +24,12 @@ public final class UnitClausePB extends UnitClause implements PBConstr {
 		return null;
 	}
 
-	public BigInteger getCoef(int literal) {
+	public BigInteger getCoef(int p) {
 		return BigInteger.ONE;
 	}
 
 	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = { BigInteger.ONE };
-		return tmp;
+		return new BigInteger[] { BigInteger.ONE };
 	}
 
 	public BigInteger getDegree() {

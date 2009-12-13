@@ -97,9 +97,9 @@ public class ObjectiveFunction implements Serializable {
 	public String toString() {
 		StringBuffer stb = new StringBuffer();
 		IVecInt lits = getVars();
-		IVec<BigInteger> coeffs = getCoeffs();
+		IVec<BigInteger> coefs = getCoeffs();
 		for (int i = 0; i < lits.size(); i++)
-			stb.append(coeffs.get(i) + " x" + lits.get(i) + " ");
+			stb.append(coefs.get(i) + " x" + lits.get(i) + " ");
 		return stb.toString();
 	}
 

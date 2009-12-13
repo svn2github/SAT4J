@@ -285,8 +285,9 @@ public class OPBReader2005 extends Reader implements Serializable {
 	protected void skipSpaces() throws IOException {
 		char c;
 
-		while (Character.isWhitespace(c = get()))
-			;
+		do {
+			c = get();
+		} while (Character.isWhitespace(c));
 
 		putback(c);
 	}
@@ -504,8 +505,8 @@ public class OPBReader2005 extends Reader implements Serializable {
 	}
 
 	/**
-	 * @throws IOException 
-	 * @throws ParseFormatException  
+	 * @throws IOException
+	 * @throws ParseFormatException
 	 */
 	protected void readVariablesExplanation() throws IOException,
 			ParseFormatException {
@@ -660,8 +661,9 @@ public class OPBReader2005 extends Reader implements Serializable {
 		}
 		// Small check on the number of constraints
 		if (nbConstraintsRead != nbConstr) {
-			throw new ParseFormatException(
-					"Number of constraints read ("+nbConstraintsRead+") is different from metadata ("+nbConstr+")");
+			throw new ParseFormatException("Number of constraints read ("
+					+ nbConstraintsRead + ") is different from metadata ("
+					+ nbConstr + ")");
 		}
 	}
 

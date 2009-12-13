@@ -73,20 +73,20 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	}
 
 	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
+	public boolean isSatisfiable(IVecInt myAssumps, boolean global)
 			throws TimeoutException {
-		return isSatisfiable(assumps);
+		return isSatisfiable(myAssumps);
 	}
 
 	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+	public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
 		modelComputed = false;
 		this.assumps.clear();
-		assumps.copyTo(this.assumps);
+		myAssumps.copyTo(this.assumps);
 		if (problem.hasNoObjectiveFunction()) {
-			return modelComputed = problem.isSatisfiable(assumps);
+			return modelComputed = problem.isSatisfiable(myAssumps);
 		}
-		return problem.admitABetterSolution(assumps);
+		return problem.admitABetterSolution(myAssumps);
 	}
 
 	@Override
