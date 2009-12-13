@@ -127,6 +127,10 @@ public class EfficientScanner implements Serializable {
 		return new BigInteger(stb.toString());
 	}
 
+	/**
+	 * @throws ParseFormatException
+	 *             never used in that method.
+	 */
 	public String next() throws IOException, ParseFormatException {
 		StringBuffer stb = new StringBuffer();
 		char currentChar = skipSpaces();
@@ -140,8 +144,10 @@ public class EfficientScanner implements Serializable {
 	public char skipSpaces() throws IOException {
 		char car;
 
-		while ((car = (char) in.read()) == ' ' || car == '\n')
-			;
+		do {
+			car = (char) in.read();
+		} while (car == ' ' || car == '\n');
+
 		return car;
 	}
 

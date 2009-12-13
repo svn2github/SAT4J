@@ -29,8 +29,8 @@ public final class RandomWalkDecorator implements IOrder {
 		this.p = p;
 	}
 
-	public void assignLiteral(int p) {
-		decorated.assignLiteral(p);
+	public void assignLiteral(int q) {
+		decorated.assignLiteral(q);
 	}
 
 	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
@@ -79,12 +79,12 @@ public final class RandomWalkDecorator implements IOrder {
 		decorated.undo(x);
 	}
 
-	public void updateVar(int p) {
-		decorated.updateVar(p);
+	public void updateVar(int q) {
+		decorated.updateVar(q);
 	}
 
-	public double varActivity(int p) {
-		return decorated.varActivity(p);
+	public double varActivity(int q) {
+		return decorated.varActivity(q);
 	}
 
 	public void varDecayActivity() {

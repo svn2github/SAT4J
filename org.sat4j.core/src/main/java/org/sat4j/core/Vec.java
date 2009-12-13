@@ -424,7 +424,7 @@ public final class Vec<T> implements IVec<T> {
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof IVec) {
+		if (obj instanceof IVec<?>) {
 			IVec<?> v = (IVec<?>) obj;
 			if (v.size() != size())
 				return false;

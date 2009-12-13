@@ -91,12 +91,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	private static final double CLAUSE_RESCALE_BOUND = 1 / CLAUSE_RESCALE_FACTOR;
 
 	/**
-	 * List des contraintes du probl?me.
+	 * Set of original constraints.
 	 */
 	private final IVec<Constr> constrs = new Vec<Constr>(); // Constr
 
 	/**
-	 * Liste des clauses apprises.
+	 * Set of learned constraints.
 	 */
 	private final IVec<Constr> learnts = new Vec<Constr>(); // Clause
 
@@ -1131,7 +1131,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// do nothing
 		}
 
-		public void onConflict(Constr outLearnt) {
+		public void onConflict(Constr constr) {
 			// do nothing
 
 		}
@@ -1210,19 +1210,18 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 		}
 
-		public void onConflict(Constr outLearnt) {
-			// TODO Auto-generated method stub
+		public void onConflict(Constr constr) {
 			int nblevel = 1;
 			flag++;
 			int currentLevel;
-			for (int i = 1; i < outLearnt.size(); i++) {
-				currentLevel = voc.getLevel(outLearnt.get(i));
+			for (int i = 1; i < constr.size(); i++) {
+				currentLevel = voc.getLevel(constr.get(i));
 				if (flags[currentLevel] != flag) {
 					flags[currentLevel] = flag;
 					nblevel++;
 				}
 			}
-			outLearnt.incActivity(nblevel);
+			constr.incActivity(nblevel);
 		}
 
 		public void onConflictAnalysis(Constr reason) {
@@ -1392,11 +1391,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	/**
 	 * 
-	 * @param stats
+	 * @param myStats
 	 * @since 2.2
 	 */
-	protected void initStats(SolverStats stats) {
-		this.stats = stats;
+	protected void initStats(SolverStats myStats) {
+		this.stats = myStats;
 	}
 
 	public IOrder getOrder() {

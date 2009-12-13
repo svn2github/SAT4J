@@ -29,7 +29,6 @@ package org.sat4j.tools;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.Map;
 
 import org.sat4j.specs.ContradictionException;
@@ -47,8 +46,7 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author leberre
  */
-public abstract class SolverDecorator<T extends ISolver> implements ISolver,
-		Serializable {
+public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 
 	/**
 	 * 
