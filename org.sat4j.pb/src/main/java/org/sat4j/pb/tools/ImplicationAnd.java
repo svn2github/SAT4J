@@ -60,11 +60,9 @@ public class ImplicationAnd<T, C> {
 		clause.copyTo(tmpClause);
 		tmpClause.push(helper.getIntValue(thing));
 		IConstr constr = helper.solver.addClause(tmpClause);
-		if (constr == null) {
-			throw new IllegalStateException(
-					"Constraints are not supposed to be null when using the helper");
+		if (constr != null) {
+			toName.push(constr);
 		}
-		toName.push(constr);
 		return this;
 	}
 
@@ -81,11 +79,9 @@ public class ImplicationAnd<T, C> {
 		clause.copyTo(tmpClause);
 		tmpClause.push(-helper.getIntValue(thing));
 		IConstr constr = helper.solver.addClause(tmpClause);
-		if (constr == null) {
-			throw new IllegalStateException(
-					"Constraints are not supposed to be null when using the helper");
+		if (constr != null) {
+			toName.push(constr);
 		}
-		toName.push(constr);
 		return this;
 	}
 
