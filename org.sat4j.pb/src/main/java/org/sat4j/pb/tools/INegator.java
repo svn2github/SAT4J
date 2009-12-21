@@ -1,8 +1,8 @@
 package org.sat4j.pb.tools;
 
-public interface INegator<T> {
+public interface INegator {
 
-	boolean isNegated(T thing);
+	boolean isNegated(Object thing);
 
-	T unNegate(T thing);
+	Object unNegate(Object thing);
 }

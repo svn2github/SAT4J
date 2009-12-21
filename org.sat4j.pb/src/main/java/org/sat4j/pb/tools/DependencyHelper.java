@@ -51,16 +51,39 @@ import org.sat4j.tools.GateTranslator;
  */
 public class DependencyHelper<T, C> {
 
-	public final INegator<T> NO_NEGATION = new INegator<T>() {
+	public final INegator NO_NEGATION = new INegator() {
 
-		public boolean isNegated(T thing) {
+		public boolean isNegated(Object thing) {
 			return false;
 		}
 
-		public T unNegate(T thing) {
+		public Object unNegate(Object thing) {
 			return thing;
 		}
 	};
+
+	public static final INegator BASIC_NEGATION = new INegator() {
+
+		public boolean isNegated(Object thing) {
+			return (thing instanceof Negation);
+		}
+
+		public Object unNegate(Object thing) {
+			return ((Negation) thing).getThing();
+		}
+	};
+
+	private static final class Negation {
+		private final Object thing;
+
+		Negation(Object thing) {
+			this.thing = thing;
+		}
+
+		Object getThing() {
+			return thing;
+		}
+	}
 
 	/**
 	 * 
@@ -74,7 +97,7 @@ public class DependencyHelper<T, C> {
 	private final XplainPB xplain;
 	private final GateTranslator gator;
 	final IPBSolver solver;
-	private INegator<T> negator = NO_NEGATION;
+	private INegator negator = BASIC_NEGATION;
 
 	private ObjectiveFunction objFunction;
 	private IVecInt objLiterals;
@@ -102,7 +125,7 @@ public class DependencyHelper<T, C> {
 		this.gator = new GateTranslator(this.solver);
 	}
 
-	public void setNegator(INegator<T> negator) {
+	public void setNegator(INegator negator) {
 		this.negator = negator;
 	}
 
@@ -117,7 +140,7 @@ public class DependencyHelper<T, C> {
 		T myThing;
 		boolean negated = negator.isNegated(thing);
 		if (negated) {
-			myThing = negator.unNegate(thing);
+			myThing = (T) negator.unNegate(thing);
 		} else {
 			myThing = thing;
 		}
@@ -677,5 +700,9 @@ public class DependencyHelper<T, C> {
 
 	public Map<Integer, T> getMappingToDomain() {
 		return mapToDomain;
+	}
+
+	public Object not(T thing) {
+		return new Negation(thing);
 	}
 }

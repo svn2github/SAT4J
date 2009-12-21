@@ -1,21 +1,22 @@
 package org.sat4j.pb.tools;
 
+public class StringNegator implements INegator {
 
-public class StringNegator implements INegator<String> {
-
-	public static final INegator<String> instance = new StringNegator();
+	public static final INegator instance = new StringNegator();
 
 	private StringNegator() {
 		// no access to constructor
 	}
 
-	public boolean isNegated(String thing) {
-		return thing.startsWith("-");
+	public boolean isNegated(Object thing) {
+		if (thing instanceof String)
+			return ((String) thing).startsWith("-");
+		return false;
 	}
 
-	public String unNegate(String thing) {
+	public Object unNegate(Object thing) {
 		if (isNegated(thing))
-			return thing.substring(1);
+			return ((String) thing).substring(1);
 		return thing;
 	}
 }
