@@ -98,6 +98,11 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			assert !problem.hasNoObjectiveFunction();
 			do {
 				problem.discardCurrentSolution();
+				if (isVerbose()) {
+					System.out.println(getLogPrefix()
+							+ "Current objective function value: "
+							+ problem.getObjectiveValue());
+				}
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
 			// solver timeout
