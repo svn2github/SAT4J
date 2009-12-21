@@ -176,6 +176,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private boolean verbose = true;
 
+	private String prefix = "c ";
+
 	protected IVecInt dimacs2internal(IVecInt in) {
 		__dimacs_out.clear();
 		__dimacs_out.ensure(in.size());
@@ -1606,6 +1608,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			current = trail.last();
 		}
 		undoOne();
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public void setLogPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public String getLogPrefix() {
+		return prefix;
 	}
 
 }

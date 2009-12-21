@@ -304,4 +304,19 @@ public class DimacsOutputSolver implements ISolver {
 	public void setVerbose(boolean value) {
 		// do nothing
 	}
+
+	/**
+	 * @since 2.2
+	 */
+	public void setLogPrefix(String prefix) {
+		// do nothing
+
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public String getLogPrefix() {
+		return "";
+	}
 }

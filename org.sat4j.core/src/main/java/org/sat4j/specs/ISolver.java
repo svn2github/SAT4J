@@ -366,4 +366,8 @@ public interface ISolver extends IProblem, Serializable {
 	 * @since 2.2
 	 */
 	void setVerbose(boolean value);
+
+	void setLogPrefix(String prefix);
+
+	String getLogPrefix();
 }

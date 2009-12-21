@@ -402,4 +402,18 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		solver.setVerbose(value);
 	}
 
+	/**
+	 * @since 2.2
+	 */
+	public void setLogPrefix(String prefix) {
+		solver.setLogPrefix(prefix);
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public String getLogPrefix() {
+		return solver.getLogPrefix();
+	}
+
 }
