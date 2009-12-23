@@ -1114,7 +1114,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				learnts.set(j++, learnts.get(i));
 			}
 			if (verbose) {
-				System.out.println("c cleaning " + (learnts.size() - j) //$NON-NLS-1$
+				System.out.println(getLogPrefix()
+						+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
 						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			learnts.shrinkTo(j);
@@ -1188,7 +1189,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			}
 			if (verbose) {
 				System.out
-						.println("c cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
+						.println(getLogPrefix()
+								+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
 								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			learnts.shrinkTo(j);
