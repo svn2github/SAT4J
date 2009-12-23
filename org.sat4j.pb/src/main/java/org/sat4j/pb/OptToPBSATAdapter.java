@@ -52,6 +52,8 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
 	private final IVecInt assumps = new VecInt();
 
+	private long begin;
+
 	public OptToPBSATAdapter(IOptimizationProblem problem) {
 		super((IPBSolver) problem);
 		this.problem = problem;
@@ -61,6 +63,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	public boolean isSatisfiable() throws TimeoutException {
 		modelComputed = false;
 		assumps.clear();
+		begin = System.currentTimeMillis();
 		if (problem.hasNoObjectiveFunction()) {
 			return modelComputed = problem.isSatisfiable();
 		}
@@ -83,6 +86,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 		modelComputed = false;
 		this.assumps.clear();
 		myAssumps.copyTo(this.assumps);
+		begin = System.currentTimeMillis();
 		if (problem.hasNoObjectiveFunction()) {
 			return modelComputed = problem.isSatisfiable(myAssumps);
 		}
@@ -101,7 +105,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 				if (isVerbose()) {
 					System.out.println(getLogPrefix()
 							+ "Current objective function value: "
-							+ problem.getObjectiveValue());
+							+ problem.getObjectiveValue() + "("
+							+ ((System.currentTimeMillis() - begin) / 1000.0)
+							+ "s)");
 				}
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
