@@ -705,4 +705,12 @@ public class DependencyHelper<T, C> {
 	public Object not(T thing) {
 		return new Negation(thing);
 	}
+
+	/**
+	 * @since 2.2
+	 * @return the IPBSolver enclosed in the helper.
+	 */
+	public IPBSolver getSolver() {
+		return solver;
+	}
 }
