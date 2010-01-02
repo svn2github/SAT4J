@@ -133,15 +133,17 @@ public abstract class AbstractLauncher implements Serializable {
 		}
 		Properties prop = System.getProperties();
 		String[] infoskeys = {
-				"sun.arch.data.model", "java.version", "os.name", "os.version", "os.arch" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
-		for (String key : infoskeys) {
-			log(key + "\t" + prop.getProperty(key)); //$NON-NLS-1$
+				"java.runtime.name", "java.vm.name", "java.vm.version", "java.vm.vendor", "sun.arch.data.model", "java.version", "os.name", "os.version", "os.arch" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
+		for (int i = 0; i < infoskeys.length; i++) {
+			String key = infoskeys[i];
+			log(key
+					+ ((key.length() < 14) ? "\t\t" : "\t") + prop.getProperty(key)); //$NON-NLS-1$
 		}
 		Runtime runtime = Runtime.getRuntime();
-		log("Free memory " + runtime.freeMemory()); //$NON-NLS-1$
-		log("Max memory " + runtime.maxMemory()); //$NON-NLS-1$
-		log("Total memory " + runtime.totalMemory()); //$NON-NLS-1$
-		log("Number of processors " + runtime.availableProcessors()); //$NON-NLS-1$
+		log("Free memory \t\t" + runtime.freeMemory()); //$NON-NLS-1$
+		log("Max memory \t\t" + runtime.maxMemory()); //$NON-NLS-1$
+		log("Total memory \t\t" + runtime.totalMemory()); //$NON-NLS-1$
+		log("Number of processors \t" + runtime.availableProcessors()); //$NON-NLS-1$
 	}
 
 	public void displayLicense() {
