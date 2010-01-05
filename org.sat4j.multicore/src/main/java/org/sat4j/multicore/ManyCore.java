@@ -301,6 +301,17 @@ public class ManyCore implements ISolver, OutcomeListener {
 	public void setVerbose(boolean value) {
 		// do nothing
 	}
+
+	public void setLogPrefix(String prefix) {
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers[i].setLogPrefix(prefix);
+		}
+
+	}
+
+	public String getLogPrefix() {
+		return solvers[0].getLogPrefix();
+	}
 }
 
 interface OutcomeListener {
