@@ -1,6 +1,8 @@
 <project name="sat4j" default="p2">
          <!-- using Eclipse compiler -->
+         <!--
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        -->
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
@@ -209,7 +211,11 @@
 	<path id="somePath">
 		<pathelement location="${build}"/>
 		<fileset dir="${lib}">
+			<include name="*src.jar"/>
+		</fileset>
+        <fileset dir="${lib}">
 			<include name="*.jar"/>
+            <exclude name="*src.jar"/>
 		</fileset>
 		<fileset dir="${dist}/${release}">
 			<include name="*.jar"/>
