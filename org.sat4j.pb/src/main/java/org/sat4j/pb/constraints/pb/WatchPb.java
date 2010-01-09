@@ -154,7 +154,8 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 * @see org.sat4j.minisat.core.Constr#calcReason(int, IVecInt)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
-		for (int q : lits) {
+		final int[] mlits = lits;
+		for (int q : mlits) {
 			if (voc.isFalsified(q)) {
 				outReason.push(q ^ 1);
 			}
