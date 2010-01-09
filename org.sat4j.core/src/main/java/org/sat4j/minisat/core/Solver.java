@@ -509,14 +509,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// Trace reason for p
 			for (int j = 0; j < preason.size(); j++) {
 				int q = preason.get(j);
-				order.updateVar(q);
 				if (!seen[q >> 1]) {
-					// order.updateVar(q); // MINISAT
+					order.updateVar(q);
 					seen[q >> 1] = true;
 					if (voc.getLevel(q) == decisionLevel()) {
 						analyzer.onCurrentDecisionLevelLiteral(q);
 					} else if (voc.getLevel(q) > 0) {
-						// ajoute les variables depuis le niveau de d?cision 0
+						// only literals assigned after decision level 0 part of
+						// the explanation
 						outLearnt.push(q ^ 1);
 						outBtlevel = Math.max(outBtlevel, voc.getLevel(q));
 					}
