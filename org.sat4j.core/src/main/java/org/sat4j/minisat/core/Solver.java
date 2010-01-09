@@ -479,16 +479,18 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private boolean[] mseen = new boolean[0];
 
-	private final IVecInt preason = new VecInt();
+	private final IVecInt mpreason = new VecInt();
 
-	private final IVecInt outLearnt = new VecInt();
+	private final IVecInt moutLearnt = new VecInt();
 
 	public void analyze(Constr confl, Pair results) {
 		assert confl != null;
-		outLearnt.clear();
 
 		final boolean[] seen = mseen;
+		final IVecInt outLearnt = moutLearnt;
+		final IVecInt preason = mpreason;
 
+		outLearnt.clear();
 		assert outLearnt.size() == 0;
 		for (int i = 0; i < seen.length; i++) {
 			seen[i] = false;
@@ -1457,7 +1459,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public IVecInt getOutLearnt() {
-		return outLearnt;
+		return moutLearnt;
 	}
 
 	/**
