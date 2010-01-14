@@ -45,7 +45,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class CompetResolutionPBMixedHTClauseCardConstrDataStructure extends
-		PBMinClauseCardConstrDataStructure {
+		PBMaxClauseCardConstrDataStructure {
 
 	private static final long serialVersionUID = 1L;
 
