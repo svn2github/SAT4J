@@ -30,6 +30,8 @@ package org.sat4j.pb.constraints;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.AbstractDataStructureFactory;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
@@ -68,10 +70,25 @@ public abstract class AbstractPBDataStructureFactory extends
 		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
 				boolean moreThan, BigInteger degree, ILits voc)
 				throws ContradictionException {
-			int[] theLits = new int[literals.size()];
-			literals.copyTo(theLits);
-			BigInteger[] normCoefs = new BigInteger[coefs.size()];
-			coefs.copyTo(normCoefs);
+			if (literals.size() != coefs.size())
+				throw new IllegalArgumentException(
+						"Number of coeff and literals are different!!!");
+			IVecInt cliterals = new VecInt(literals.size());
+			literals.copyTo(cliterals);
+			IVec<BigInteger> ccoefs = new Vec<BigInteger>(literals.size());
+			coefs.copyTo(ccoefs);
+			for (int i = 0; i < cliterals.size();) {
+				if (coefs.get(i).equals(BigInteger.ZERO)) {
+					cliterals.delete(i);
+					ccoefs.delete(i);
+				} else {
+					i++;
+				}
+			}
+			int[] theLits = new int[cliterals.size()];
+			cliterals.copyTo(theLits);
+			BigInteger[] normCoefs = new BigInteger[ccoefs.size()];
+			ccoefs.copyTo(normCoefs);
 			BigInteger degRes = Pseudos.niceParametersForCompetition(theLits,
 					normCoefs, moreThan, degree);
 			return new PBContainer(theLits, normCoefs, degRes);
