@@ -168,9 +168,11 @@ public class DependencyHelper<T, C> {
 	public IVec<T> getSolution() {
 		int[] model = solver.model();
 		IVec<T> toInstall = new Vec<T>();
-		for (int i : model) {
-			if (i > 0) {
-				toInstall.push(mapToDomain.get(i));
+		if (model != null) {
+			for (int i : model) {
+				if (i > 0) {
+					toInstall.push(mapToDomain.get(i));
+				}
 			}
 		}
 		return toInstall;

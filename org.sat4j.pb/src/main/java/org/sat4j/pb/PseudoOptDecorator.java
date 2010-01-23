@@ -145,6 +145,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	}
 
 	public Number calculateObjective() {
+		if (objfct == null) {
+			throw new UnsupportedOperationException(
+					"The problem does not contain an objective function");
+		}
 		objectiveValue = objfct.calculateDegree(prevmodel);
 		return objectiveValue;
 	}
@@ -153,8 +157,11 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		if (previousPBConstr != null) {
 			super.removeSubsumedConstr(previousPBConstr);
 		}
-		previousPBConstr = super.addPseudoBoolean(objfct.getVars(), objfct
-				.getCoeffs(), false, objectiveValue.subtract(BigInteger.ONE));
+		if (objfct != null && objectiveValue != null) {
+			previousPBConstr = super.addPseudoBoolean(objfct.getVars(), objfct
+					.getCoeffs(), false, objectiveValue
+					.subtract(BigInteger.ONE));
+		}
 	}
 
 	@Override
