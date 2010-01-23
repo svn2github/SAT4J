@@ -239,6 +239,9 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	@Override
 	public int[] model() {
 		int[] fullmodel = super.model();
+		if (fullmodel == null) {
+			return null;
+		}
 		int[] model = new int[fullmodel.length - constrs.size()];
 		int j = 0;
 		for (int i = 0; i < fullmodel.length; i++) {
