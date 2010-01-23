@@ -34,6 +34,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.DimacsStringSolver;
 
 /**
@@ -91,6 +92,27 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	 */
 	public OPBStringSolver(int initSize) {
 		super(initSize);
+	}
+
+	@Override
+	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+		for (IteratorInt it = assumps.iterator(); it.hasNext();) {
+			int p = it.next();
+			if (p > 0) {
+				getOut().append("+1 x" + p + " >= 1 ;\n");
+			} else {
+				getOut().append("-1 x" + (-p) + " >= 0 ;\n");
+			}
+			nbOfConstraints++;
+		}
+		throw new TimeoutException();
+	}
+
+	@Override
+	public boolean isSatisfiable(IVecInt assumps, boolean global)
+			throws TimeoutException {
+		// TODO Auto-generated method stub
+		return super.isSatisfiable(assumps, global);
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
