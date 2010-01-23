@@ -165,6 +165,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		return solver.toString(prefix);
 	}
 
+	@Override
+	public String toString() {
+		return solver.toString();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
