@@ -1160,17 +1160,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		private int flag = 0;
 
 		private final ConflictTimer clauseManagement = new ConflictTimerAdapter(
-				500) {
+				1000) {
 			private static final long serialVersionUID = 1L;
 			private int nbconflict = 0;
-			private static final int MAX_CLAUSE = 20000;
-			private static final int INC_CLAUSE = 500;
+			private static final int MAX_CLAUSE = 5000;
+			private static final int INC_CLAUSE = 1000;
 			private int nextbound = MAX_CLAUSE;
 
 			@Override
 			void run() {
-				nbconflict += INC_CLAUSE;
-
+				nbconflict += bound();
 				if (nbconflict >= nextbound) {
 					nextbound += INC_CLAUSE;
 					nbconflict = 0;
@@ -1193,7 +1192,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				System.out
 						.println(getLogPrefix()
 								+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag); //$NON-NLS-1$ //$NON-NLS-2$
+								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			learnts.shrinkTo(j);
 
@@ -1235,7 +1234,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	};
 
-	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = memory_based;
+	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
 	/**
 	 * @param lcds
@@ -1684,6 +1683,10 @@ abstract class ConflictTimerAdapter implements Serializable, ConflictTimer {
 	}
 
 	abstract void run();
+
+	public int bound() {
+		return bound;
+	}
 }
 
 class ConflictTimerContainer implements Serializable, ConflictTimer {
