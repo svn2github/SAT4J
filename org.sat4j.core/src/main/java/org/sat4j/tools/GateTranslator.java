@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import java.math.BigInteger;
+
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -276,6 +278,22 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		return constrs;
 	}
 
+	public void xor(int x, int a, int b) throws ContradictionException {
+		IVecInt clause = new VecInt(3);
+		clause.push(-a).push(b).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(-b).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(-b).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(b).push(-x);
+		processClause(clause);
+		clause.clear();
+	}
+
 	private void xor2Clause(int[] f, int prefix, boolean negation,
 			IVec<IConstr> constrs) throws ContradictionException {
 		if (prefix == f.length - 1) {
@@ -328,4 +346,156 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		}
 	}
 
+	// From Een and Sorensson JSAT 2006 paper
+
+	public void fullAdderSum(int x, int a, int b, int c)
+			throws ContradictionException {
+		IVecInt clause = new VecInt(4);
+		clause.push(a).push(b).push(c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(-b).push(-c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(b).push(-c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(-b).push(c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(-b).push(-c).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(b).push(c).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(-b).push(c).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(b).push(-c).push(-x);
+		processClause(clause);
+		clause.clear();
+	}
+
+	public void fullAdderCarry(int x, int a, int b, int c)
+			throws ContradictionException {
+		IVecInt clause = new VecInt(3);
+		clause.push(-b).push(-c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(-c).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(-a).push(-b).push(x);
+		processClause(clause);
+		clause.clear();
+		clause.push(b).push(c).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(c).push(-x);
+		processClause(clause);
+		clause.clear();
+		clause.push(a).push(b).push(-x);
+		processClause(clause);
+		clause.clear();
+	}
+
+	public void additionalFullAdderConstraints(int xcarry, int xsum, int a,
+			int b, int c) throws ContradictionException {
+		IVecInt clause = new VecInt(3);
+		clause.push(-xcarry).push(-xsum).push(a);
+		processClause(clause);
+		clause.push(-xcarry).push(-xsum).push(b);
+		processClause(clause);
+		clause.push(-xcarry).push(-xsum).push(c);
+		processClause(clause);
+		clause.push(xcarry).push(xsum).push(-a);
+		processClause(clause);
+		clause.push(xcarry).push(xsum).push(-b);
+		processClause(clause);
+		clause.push(xcarry).push(xsum).push(-c);
+		processClause(clause);
+	}
+
+	public void halfAdderSum(int x, int a, int b) throws ContradictionException {
+		xor(x, a, b);
+	}
+
+	public void halfAdderCarry(int x, int a, int b)
+			throws ContradictionException {
+		and(x, a, b);
+	}
+
+	public void optimisationFunction(IVecInt literals, IVec<BigInteger> coefs,
+			IVecInt result) throws ContradictionException {
+		IVec<IVecInt> buckets = new Vec<IVecInt>();
+		IVecInt bucket;
+		// filling the buckets
+		for (int i = 0; i < literals.size(); i++) {
+			int p = literals.get(i);
+			BigInteger a = coefs.get(i);
+			for (int j = 0; j < a.bitLength(); j++) {
+				bucket = createIfNull(buckets, j);
+				if (a.testBit(j)) {
+					bucket.push(p);
+				}
+			}
+		}
+		// creating the adder
+		int x, y, z;
+		int sum, carry;
+		for (int i = 0; i < buckets.size(); i++) {
+			bucket = buckets.get(i);
+			while (bucket.size() >= 3) {
+				x = bucket.get(0);
+				y = bucket.get(1);
+				z = bucket.get(2);
+				bucket.remove(x);
+				bucket.remove(y);
+				bucket.remove(z);
+				sum = nextFreeVarId(true);
+				carry = nextFreeVarId(true);
+				fullAdderSum(sum, x, y, z);
+				fullAdderCarry(carry, x, y, z);
+				additionalFullAdderConstraints(carry, sum, x, y, z);
+				bucket.push(sum);
+				createIfNull(buckets, i + 1).push(carry);
+			}
+			while (bucket.size() == 2) {
+				x = bucket.get(0);
+				y = bucket.get(1);
+				bucket.remove(x);
+				bucket.remove(y);
+				sum = nextFreeVarId(true);
+				carry = nextFreeVarId(true);
+				halfAdderSum(sum, x, y);
+				halfAdderCarry(carry, x, y);
+				bucket.push(sum);
+				createIfNull(buckets, i + 1).push(carry);
+			}
+			assert bucket.size() == 1;
+			result.push(bucket.last());
+			bucket.pop();
+			assert bucket.isEmpty();
+		}
+	}
+
+	/**
+	 * Create a new bucket if it does not exists. Works only because the buckets
+	 * are explored in increasing order.
+	 * 
+	 * @param buckets
+	 * @param i
+	 * @return
+	 */
+	private IVecInt createIfNull(IVec<IVecInt> buckets, int i) {
+		IVecInt bucket = buckets.get(i);
+		if (bucket == null) {
+			bucket = new VecInt();
+			buckets.push(bucket);
+			assert buckets.get(i) == bucket;
+		}
+		return bucket;
+
+	}
 }
