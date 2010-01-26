@@ -114,23 +114,27 @@ public abstract class WLClause implements Constr, Serializable {
 			mylits[1] = p ^ 1;
 		}
 		// assert mylits[1] == (p ^ 1);
-		// if (voc.isSatisfied(lits[0])) {
-		// // do not need to do anything if clause is satisfied
-		// voc.watch(p, this);
-		// return true;
-		// }
-
-		// look for new literal to watch:
+		int previous = p ^ 1, tmp;
+		// look for new literal to watch: applying move to front strategy
 		for (int i = 2; i < mylits.length; i++) {
 			if (!voc.isFalsified(mylits[i])) {
 				mylits[1] = mylits[i];
-				mylits[i] = p ^ 1;
+				mylits[i] = previous;
 				voc.watch(mylits[1] ^ 1, this);
 				return true;
+			} else {
+				tmp = previous;
+				previous = mylits[i];
+				mylits[i] = tmp;
 			}
 		}
 		// assert voc.isFalsified(mylits[1]);
 		// the clause is now either unit or null
+		// move back the literals to their initial position
+		for (int i = 2; i < mylits.length; i++) {
+			mylits[i - 1] = mylits[i];
+		}
+		mylits[mylits.length - 1] = previous;
 		voc.watch(p, this);
 		// propagates first watched literal
 		return s.enqueue(mylits[0], this);
