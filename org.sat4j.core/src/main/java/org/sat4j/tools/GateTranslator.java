@@ -351,28 +351,30 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 	public void fullAdderSum(int x, int a, int b, int c)
 			throws ContradictionException {
 		IVecInt clause = new VecInt(4);
-		clause.push(a).push(b).push(c).push(x);
+		// -a /\ -b /\ -c -> -x
+		clause.push(a).push(b).push(c).push(-x);
 		processClause(clause);
 		clause.clear();
-		clause.push(a).push(-b).push(-c).push(x);
+		// -a /\ b /\ c -> -x
+		clause.push(a).push(-b).push(-c).push(-x);
 		processClause(clause);
 		clause.clear();
-		clause.push(-a).push(b).push(-c).push(x);
+		clause.push(-a).push(b).push(-c).push(-x);
 		processClause(clause);
 		clause.clear();
-		clause.push(-a).push(-b).push(c).push(x);
+		clause.push(-a).push(-b).push(c).push(-x);
 		processClause(clause);
 		clause.clear();
-		clause.push(-a).push(-b).push(-c).push(-x);
+		clause.push(-a).push(-b).push(-c).push(x);
 		processClause(clause);
 		clause.clear();
-		clause.push(-a).push(b).push(c).push(-x);
+		clause.push(-a).push(b).push(c).push(x);
 		processClause(clause);
 		clause.clear();
-		clause.push(a).push(-b).push(c).push(-x);
+		clause.push(a).push(-b).push(c).push(x);
 		processClause(clause);
 		clause.clear();
-		clause.push(a).push(b).push(-c).push(-x);
+		clause.push(a).push(b).push(-c).push(x);
 		processClause(clause);
 		clause.clear();
 	}
