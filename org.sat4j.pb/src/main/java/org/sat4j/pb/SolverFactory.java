@@ -37,6 +37,7 @@ import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.UserFixedPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
+import org.sat4j.minisat.restarts.ArminRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
@@ -273,7 +274,8 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
 				learning,
 				new CompetResolutionPBMixedHTClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(), new MiniSATRestarts());
+				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
+				new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
