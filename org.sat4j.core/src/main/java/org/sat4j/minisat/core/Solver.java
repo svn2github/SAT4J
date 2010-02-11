@@ -1306,10 +1306,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		// assumptions.
 		order.init(); // duplicated on purpose
 		learner.init();
-		restarter.init(params);
 
+		boolean firstTimeGlobal = false;
 		if (timeBasedTimeout) {
 			if (!global || timer == null) {
+				firstTimeGlobal = true;
 				TimerTask stopMe = new TimerTask() {
 					@Override
 					public void run() {
@@ -1323,6 +1324,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			}
 		} else {
 			if (!global || conflictCount == null) {
+				firstTimeGlobal = true;
 				ConflictTimer conflictTimeout = new ConflictTimerAdapter(
 						(int) timeout) {
 					private static final long serialVersionUID = 1L;
@@ -1338,6 +1340,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 						learnedConstraintsDeletionStrategy.getTimer());
 			}
 		}
+		if (!global || firstTimeGlobal)
+			restarter.init(params);
 		needToReduceDB = false;
 		// Solve
 		while ((status == Lbool.UNDEFINED) && undertimeout) {
