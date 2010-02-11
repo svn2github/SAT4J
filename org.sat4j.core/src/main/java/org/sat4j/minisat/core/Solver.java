@@ -1172,6 +1172,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				nbconflict += bound();
 				if (nbconflict >= nextbound) {
 					nextbound += INC_CLAUSE;
+					if (nextbound > constrs.size()) {
+						nextbound = constrs.size();
+					}
 					nbconflict = 0;
 					needToReduceDB = true;
 				}
