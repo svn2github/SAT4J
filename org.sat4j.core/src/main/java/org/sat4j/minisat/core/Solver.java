@@ -1346,11 +1346,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		// Solve
 		while ((status == Lbool.UNDEFINED) && undertimeout) {
 			status = search(restarter.nextRestartNumberOfConflict());
-			// System.out.println("c speed
-			// "+(stats.decisions/((System.currentTimeMillis()-timebegin)/1000))+"
-			// dec/s, "+stats.starts+"/"+stats.conflicts);
-			restarter.onRestart();
-			slistener.restarting();
+			if (status == Lbool.UNDEFINED) {
+				restarter.onRestart();
+				slistener.restarting();
+			}
 		}
 
 		cancelUntil(0);
