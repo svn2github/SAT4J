@@ -28,9 +28,13 @@
 package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -121,6 +125,34 @@ public abstract class Pseudos {
 
 	public static BigInteger toBigInt(int i) {
 		return BigInteger.valueOf(i);
+	}
+
+	public static ObjectiveFunction normalizeObjective(ObjectiveFunction initial) {
+		IVec<BigInteger> initCoeffs = initial.getCoeffs();
+		IVecInt initLits = initial.getVars();
+		assert initCoeffs.size() == initLits.size();
+		Map<Integer, BigInteger> reduced = new HashMap<Integer, BigInteger>();
+		int lit;
+		for (int i = 0; i < initLits.size(); i++) {
+			lit = initLits.get(i);
+			BigInteger oldCoef = reduced.get(lit);
+			if (oldCoef != null) {
+				reduced.put(lit, oldCoef.add(initCoeffs.get(i)));
+			} else {
+				reduced.put(lit, initCoeffs.get(i));
+			}
+		}
+		assert reduced.size() <= initLits.size();
+		if (reduced.size() < initLits.size()) {
+			IVecInt newLits = new VecInt(reduced.size());
+			IVec<BigInteger> newCoefs = new Vec<BigInteger>(reduced.size());
+			for (Map.Entry<Integer, BigInteger> entry : reduced.entrySet()) {
+				newLits.push(entry.getKey());
+				newCoefs.push(entry.getValue());
+			}
+			return new ObjectiveFunction(newLits, newCoefs);
+		}
+		return initial;
 	}
 
 }
