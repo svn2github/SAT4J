@@ -485,4 +485,12 @@ public final class Vec<T> implements IVec<T> {
 		}
 		return false;
 	}
+
+	public int indexOf(T element) {
+		for (int i = 0; i < nbelem; i++) {
+			if (myarray[i].equals(element))
+				return i;
+		}
+		return -1;
+	}
 }

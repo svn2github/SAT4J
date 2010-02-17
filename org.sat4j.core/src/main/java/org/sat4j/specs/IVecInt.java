@@ -80,6 +80,13 @@ public interface IVecInt extends Serializable {
 	public abstract boolean contains(int e);
 
 	/**
+	 * @since 2.2
+	 * @param e
+	 * @return
+	 */
+	public abstract int indexOf(int e);
+
+	/**
 	 * returns the index of the first occurrence of e, else -1.
 	 * 
 	 * @param e

@@ -189,4 +189,12 @@ public interface IVec<T> extends Serializable {
 	 * @since 2.1
 	 */
 	boolean contains(T element);
+
+	/**
+	 * @param element
+	 *            an object
+	 * @return the index of the element if it is found in the vector, else -1.
+	 * @since 2.2
+	 */
+	int indexOf(T element);
 }

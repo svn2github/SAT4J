@@ -190,6 +190,10 @@ public final class VecInt implements IVecInt {
 		public int[] toArray() {
 			throw new UnsupportedOperationException();
 		}
+
+		public int indexOf(int e) {
+			return -1;
+		}
 	};
 
 	public VecInt() {
@@ -318,6 +322,15 @@ public final class VecInt implements IVecInt {
 				return true;
 		}
 		return false;
+	}
+
+	public int indexOf(int e) {
+		final int[] workArray = myarray; // dvh, faster access
+		for (int i = 0; i < nbelem; i++) {
+			if (workArray[i] == e)
+				return i;
+		}
+		return -1;
 	}
 
 	public int containsAt(int e) {
