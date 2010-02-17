@@ -104,6 +104,7 @@ public class DependencyHelper<T, C> {
 	private IVec<BigInteger> objCoefs;
 
 	public boolean explanationEnabled = true;
+	public boolean canonicalOptFunction = true;
 
 	/**
 	 * 
@@ -114,7 +115,38 @@ public class DependencyHelper<T, C> {
 		this(solver, true);
 	}
 
+	/**
+	 * 
+	 * @param solver
+	 *            the solver to be used to solve the problem.
+	 * @param explanationEnabled
+	 *            if true, will add one new variable per constraint to allow the
+	 *            solver to compute an explanation in case of failure. Default
+	 *            is true. Usually, this is set to false when one wants to check
+	 *            the encoding produced by the helper.
+	 */
 	public DependencyHelper(IPBSolver solver, boolean explanationEnabled) {
+		this(solver, explanationEnabled, true);
+	}
+
+	/**
+	 * 
+	 * @param solver
+	 *            the solver to be used to solve the problem.
+	 * @param explanationEnabled
+	 *            if true, will add one new variable per constraint to allow the
+	 *            solver to compute an explanation in case of failure. Default
+	 *            is true. Usually, this is set to false when one wants to check
+	 *            the encoding produced by the helper.
+	 * @param canonicalOptFunctionEnabled
+	 *            when set to true, the objective function sum up all the
+	 *            coefficients for a given literal. The default is true. It is
+	 *            useful to set it to false when checking the encoding produced
+	 *            by the helper.
+	 * @since 2.2
+	 */
+	public DependencyHelper(IPBSolver solver, boolean explanationEnabled,
+			boolean canonicalOptFunctionEnabled) {
 		if (explanationEnabled) {
 			this.xplain = new XplainPB(solver);
 			this.solver = this.xplain;
@@ -123,6 +155,7 @@ public class DependencyHelper<T, C> {
 			this.solver = solver;
 		}
 		this.gator = new GateTranslator(this.solver);
+		canonicalOptFunction = canonicalOptFunctionEnabled;
 	}
 
 	public void setNegator(INegator negator) {
@@ -556,10 +589,20 @@ public class DependencyHelper<T, C> {
 	public void setObjectiveFunction(WeightedObject<T>... wobj) {
 		createObjectivetiveFunctionIfNeeded(wobj.length);
 		for (WeightedObject<T> wo : wobj) {
-			objLiterals.push(getIntValue(wo.thing));
-			objCoefs.push(wo.getWeight());
+			addProperly(wo.thing, wo.getWeight());
 		}
 
+	}
+
+	private void addProperly(T thing, BigInteger weight) {
+		int lit = getIntValue(thing);
+		int index;
+		if (canonicalOptFunction && (index = objLiterals.indexOf(lit)) != -1) {
+			objCoefs.set(index, objCoefs.get(index).add(weight));
+		} else {
+			objLiterals.push(lit);
+			objCoefs.push(weight);
+		}
 	}
 
 	private void createObjectivetiveFunctionIfNeeded(int n) {
@@ -589,8 +632,7 @@ public class DependencyHelper<T, C> {
 	 */
 	public void addToObjectiveFunction(T thing, BigInteger weight) {
 		createObjectivetiveFunctionIfNeeded(20);
-		objLiterals.push(getIntValue(thing));
-		objCoefs.push(weight);
+		addProperly(thing, weight);
 	}
 
 	/**
@@ -611,9 +653,7 @@ public class DependencyHelper<T, C> {
 			literals.push(getIntValue(wo.thing));
 			coeffs.push(wo.getWeight());
 		}
-		descs
-				.put(solver.addPseudoBoolean(literals, coeffs, true, degree),
-						name);
+		descs.put(solver.addPseudoBoolean(literals, coeffs, true, degree), name);
 	}
 
 	/**
