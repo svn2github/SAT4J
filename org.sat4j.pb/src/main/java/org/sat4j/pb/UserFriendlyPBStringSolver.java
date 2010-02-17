@@ -216,13 +216,34 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 			tmp.append(" \n");
 			if (obj != null) {
 				tmp.append("min: ");
-				tmp.append(obj);
+				tmp.append(decode(obj));
 				tmp.append(" ;\n");
 			}
 			out.insert(indxConstrObj, tmp.toString());
 			inserted = true;
 		}
 		return out.toString();
+	}
+
+	private Object decode(ObjectiveFunction obj2) {
+		StringBuffer stb = new StringBuffer();
+		IVecInt vars = obj2.getVars();
+		IVec<BigInteger> coeffs = obj2.getCoeffs();
+		int lit;
+		for (int i = 0; i < vars.size(); i++) {
+			stb.append(coeffs.get(i));
+			stb.append(" ");
+			lit = vars.get(i);
+			if (lit > 0) {
+				stb.append(mapping.get(lit));
+			} else {
+				stb.append("~");
+				stb.append(mapping.get(-lit));
+			}
+			stb.append(" ");
+		}
+
+		return stb.toString();
 	}
 
 	@Override
