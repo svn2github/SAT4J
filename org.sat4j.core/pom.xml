@@ -36,8 +36,4 @@
       <name>Dieter von Holten</name>
      </contributor>
   </contributors>
-  <scm>
-    <connection>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0/org.sat4j.core</connection>
-    <url>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0org.sat4j.core</url>
-  </scm>
 </project>

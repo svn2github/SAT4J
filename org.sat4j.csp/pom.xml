@@ -24,10 +24,4 @@
       <version>1.7R1</version>
     </dependency>
   </dependencies>
-  <scm>
-    <connection>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0</developerConnection>
-    <tag>HEAD</tag>
-    <url>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0</url>
-  </scm>
 </project>

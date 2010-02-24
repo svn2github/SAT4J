@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.sat4j</groupId>
@@ -10,8 +11,8 @@
 The aim of the SAT4J library is to provide an efficient library of SAT solvers in Java. Compared to the OpenSAT project, the SAT4J library targets first users of SAT "black boxes", willing to embed  SAT technologies into their application without worrying about the details. Since we use the library for our own research, it is also possible for SAT researchers to use it as a basis for their work.
   </description>
   <scm>
-    <connection>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0</connection>
-    <url>scm:svn:svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.2.0</url>
+    <connection>scm:svn:svn+ssh://leberre@svn.forge.ow2.org/svnroot/sat4j/maven/tags/2_2_0</connection>
+    <url>scm:svn:svn+ssh://leberre@svn.forge.ow2.org/svnroot/sat4j/maven/tags/2_2_0</url>
   </scm>
   <licenses>
   <license>
@@ -210,7 +211,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>svn+ssh://svn.forge.ow2.org/svnroot/sat4j/maven/tags</tagBase>
+          <tagBase>svn+ssh://leberre@svn.forge.ow2.org/svnroot/sat4j/maven/tags</tagBase>
         </configuration>
       </plugin>
     </plugins>
