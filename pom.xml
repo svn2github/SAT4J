@@ -53,9 +53,9 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
   <developers>
     <developer>
       <id>leberre</id>
-      <name>Daniel</name>
-      <email>leberre@cril.univ-artois.fr</email>
-      <url>http://www.cril.fr/~leberre/</url>
+      <name>Daniel Le Berre</name>
+      <email>daniel.leberre@sat4j.org</email>
+      <url>http://www.sat4j.org/</url>
       <organization>CRIL CNRS 8188</organization>
       <organizationUrl>http://www.cril.fr</organizationUrl>
       <roles>
