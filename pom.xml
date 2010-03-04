@@ -105,10 +105,11 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
   <build>
     <defaultGoal>install</defaultGoal>
     <resources>
-      <resource>src/main/resources</resource>
-      <filtering>true</filtering>
+      <resource>
+         <directory>src/main/resources</directory>
+         <filtering>true</filtering>
+      </resource>
     </resources>
-
     <extensions>
       <extension>
         <groupId>org.apache.maven.wagon</groupId>
