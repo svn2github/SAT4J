@@ -76,6 +76,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <siteRepositoryUrl />
     <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
     <sat4j.custom.version>${version}.v${maven.build.timestamp}</sat4j.custom.version>
+    <bundle-manifest>${project.build.directory}/META-INF/MANIFEST.MF</bundle-manifest>
   </properties>
    <pluginRepositories>
     <pluginRepository>
@@ -130,7 +131,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
         </executions>
         <configuration>
           <archive>
-            <manifestFile>${basedir}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestFile>${bundle-manifest}</manifestFile>
           </archive>
         </configuration>
       </plugin>
@@ -239,6 +240,27 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <tagBase>svn+ssh://leberre@svn.forge.ow2.org/svnroot/sat4j/maven/tags</tagBase>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>translate-qualifier</id>
+            <phase>generate-resources</phase>
+            <configuration>
+          <tasks>
+          <echo>Changing ${bundle-manifest}</echo>
+        <copy file="META-INF/MANIFEST.MF" tofile="${bundle-manifest}" overwrite="true"/>
+        <replace file="${bundle-manifest}" token="9.9.9.token" value="${sat4j.custom.version}">
+            </replace>
+          </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin> 
     </plugins>
   </build>
 
