@@ -288,6 +288,7 @@
 			</fileset>
 		</copy>
 		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/><include name="**/*.MF"/></replace>
+		<replace dir="${build}" token="9.9.9.token" value="${release}"><include name="**/about.html"/></replace>
 		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"/>
 		<copy todir="${dist}/${release}/lib" failonerror="false">
 			<fileset dir="${lib}">
