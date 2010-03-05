@@ -76,6 +76,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <siteRepositoryUrl />
     <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
     <sat4j.custom.version>${version}.v${maven.build.timestamp}</sat4j.custom.version>
+    <next.eclipse.release.date>June, 2010</next.eclipse.release.date>
     <bundle-manifest>${project.build.directory}/META-INF/MANIFEST.MF</bundle-manifest>
   </properties>
    <pluginRepositories>

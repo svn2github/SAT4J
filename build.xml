@@ -11,6 +11,7 @@
         <property name="release" value="CUSTOM"/>
         <property name="tag" value="HEAD"/>
         <property name="lib" value="lib"/>
+        <property name="next.eclipse.release.date" value="June, 2010"/>
 	<target name="pseudo" depends="core" description="Build a jar file suitable for the PB evaluations from current source tree">
 		<echo>Building Pseudo Boolean Solver</echo>
 		<antcall target="build">
@@ -287,8 +288,10 @@
 				<include name="**/*.MF"/>
 			</fileset>
 		</copy>
-		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/><include name="**/*.MF"/></replace>
-		<replace dir="${build}" token="9.9.9.token" value="${release}"><include name="**/about.html"/></replace>
+		<replace dir="${build}" token="9.9.9.token" value="${release}.v${BUILD_DATE}"><include name="**/*.MF"/></replace>
+                <replace dir="${build}" token="$${version}" value="${release}.v${BUILD_DATE}"><include name="**/*.version"/></replace>
+		<replace dir="${build}" token="$${version}" value="${release}"><include name="**/about.html"/></replace>
+                <replace dir="${build}" token="$${next.eclipse.release.date}" value="${next.eclipse.release.date}"><include name="**/about.html"/></replace>
 		<jar destfile="${dist}/${release}/${jarname}.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF"/>
 		<copy todir="${dist}/${release}/lib" failonerror="false">
 			<fileset dir="${lib}">
