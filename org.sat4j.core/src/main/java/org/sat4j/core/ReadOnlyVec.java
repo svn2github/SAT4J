@@ -170,4 +170,10 @@ public final class ReadOnlyVec<T> implements IVec<T> {
 	public int indexOf(T element) {
 		return vec.indexOf(element);
 	}
+
+	@Override
+	public String toString() {
+		return vec.toString();
+	}
+
 }

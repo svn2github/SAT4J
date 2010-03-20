@@ -176,4 +176,9 @@ public final class ReadOnlyVecInt implements IVecInt {
 		return vec.indexOf(e);
 	}
 
+	@Override
+	public String toString() {
+		return vec.toString();
+	}
+
 }

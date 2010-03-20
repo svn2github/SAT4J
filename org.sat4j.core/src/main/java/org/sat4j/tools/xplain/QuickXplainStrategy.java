@@ -27,10 +27,8 @@
  *******************************************************************************/
 package org.sat4j.tools.xplain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.IConstr;
@@ -54,20 +52,13 @@ public class QuickXplainStrategy implements XplainStrategy {
 		computationCanceled = false;
 		IVecInt encodingAssumptions = new VecInt(constrs.size()
 				+ assumps.size());
-		List<Pair> pairs = new ArrayList<Pair>(constrs.size());
-		IConstr constr;
-		for (Map.Entry<Integer, IConstr> entry : constrs.entrySet()) {
-			constr = entry.getValue();
-			pairs.add(new Pair(entry.getKey(), constr));
-		}
-		Collections.sort(pairs);
-
 		assumps.copyTo(encodingAssumptions);
-		// for (Integer p : constrsIds) {
-		// encodingAssumptions.push(p);
-		// }
-		for (Pair p : pairs) {
-			encodingAssumptions.push(p.key);
+		IVecInt firstExplanation = solver.unsatExplanation();
+		Set<Integer> constraintsVariables = constrs.keySet();
+		for (int i = 0; i < firstExplanation.size(); i++) {
+			if (constraintsVariables.contains(firstExplanation.get(i))) {
+				encodingAssumptions.push(firstExplanation.get(i));
+			}
 		}
 		IVecInt results = new VecInt(encodingAssumptions.size());
 		computeExplanation(solver, encodingAssumptions, assumps.size(),

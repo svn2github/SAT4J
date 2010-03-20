@@ -85,7 +85,9 @@ public interface Constr extends Propagatable, IConstr {
 	 * 
 	 * @param claInc
 	 * @since 2.1
+	 * 
 	 */
+	@Deprecated
 	void forwardActivity(double claInc);
 
 	/**

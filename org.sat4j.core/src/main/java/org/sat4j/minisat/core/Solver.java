@@ -113,7 +113,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	/**
 	 * Queue de propagation
 	 */
-	// private final IntQueue propQ = new IntQueue(); // Lit
 	// head of the queue in trail ... (taken from MiniSAT 1.14)
 	private int qhead = 0;
 
@@ -182,7 +181,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		__dimacs_out.clear();
 		__dimacs_out.ensure(in.size());
 		for (int i = 0; i < in.size(); i++) {
-			assert (in.get(i) != 0); // && (Math.abs(in.get(i)) <= voc.nVars());
+			assert (in.get(i) != 0);
 			__dimacs_out.unsafePush(voc.getFromPool(in.get(i)));
 		}
 		return __dimacs_out;
@@ -396,12 +395,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	@SuppressWarnings("unchecked")
 	public boolean simplifyDB() {
-		// aucune raison de recommencer un propagate?
-		// if (propagate() != null) {
-		// // Un conflit est d?couvert, la base est inconsistante
-		// return false;
-		// }
-
 		// Simplifie la base de clauses apres la premiere propagation des
 		// clauses unitaires
 		IVec<Constr>[] cs = new IVec[] { constrs, learnts };
@@ -453,7 +446,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 *            the literal.
 	 * @param from
 	 *            the reason to propagate that literal, else null
-	 * @return true if the asignment can be made, false if a conflict is
+	 * @return true if the assignment can be made, false if a conflict is
 	 *         detected.
 	 */
 	public boolean enqueue(int p, Constr from) {
@@ -471,9 +464,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
-		if (from != null) {
-			from.forwardActivity(claInc);
-		}
 		return true;
 	}
 
@@ -545,6 +535,64 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 		assert outBtlevel > -1;
 		results.backtrackLevel = outBtlevel;
+	}
+
+	public IVecInt analyzeFinalConflictInTermsOfAssumptions(Constr confl) {
+		assert confl != null;
+		if (rootLevel == 0) {
+			return null;
+		}
+		final boolean[] seen = mseen;
+		final IVecInt outLearnt = moutLearnt;
+		final IVecInt preason = mpreason;
+
+		outLearnt.clear();
+		assert outLearnt.size() == 0;
+		for (int i = 0; i < seen.length; i++) {
+			seen[i] = false;
+		}
+
+		int p = ILits.UNDEFINED;
+
+		int outBtlevel = 0;
+
+		do {
+			if (confl == null) {
+				outLearnt.push(toDimacs(p ^ 1));
+			} else {
+				preason.clear();
+				confl.calcReason(p, preason);
+				learnedConstraintsDeletionStrategy.onConflictAnalysis(confl);
+				// Trace reason for p
+				for (int j = 0; j < preason.size(); j++) {
+					int q = preason.get(j);
+					order.updateVar(q);
+					if (!seen[q >> 1]) {
+						seen[q >> 1] = true;
+						if (voc.getLevel(q) < decisionLevel()
+								&& voc.getLevel(q) > 0) {
+							// only literals assigned after decision level 0
+							// part of
+							// the explanation
+							outLearnt.push(toDimacs(q ^ 1));
+							outBtlevel = Math.max(outBtlevel, voc.getLevel(q));
+						}
+					}
+				}
+			}
+			// select next reason to look at
+			do {
+				p = trail.last();
+				confl = voc.getReason(p);
+				undoOne();
+				if (trail.size() < trailLim.last()) {
+					trailLim.pop();
+				}
+			} while (!seen[p >> 1]);
+			// seen[p.var] indique que p se trouve dans outLearnt ou dans
+			// le dernier niveau de d?cision
+		} while (decisionLevel() == rootLevel);
+		return outLearnt;
 	}
 
 	interface ISimplifier extends Serializable {
@@ -880,6 +928,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private boolean[] fullmodel;
 
+	private IVecInt unsatExplanationInTermsOfAssumptions;
+
 	Lbool search(long nofConflicts) {
 		assert rootLevel == decisionLevel();
 		stats.starts++;
@@ -939,8 +989,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				conflictC++;
 				slistener.conflictFound(confl, decisionLevel(), trail.size());
 				conflictCount.newConflict();
+
 				if (decisionLevel() == rootLevel) {
 					// on est a la racine, la formule est inconsistante
+					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(confl);
 					return Lbool.FALSE;
 				}
 				// analyze conflict
@@ -1265,6 +1317,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		slistener.start();
 		model = null; // forget about previous model
 		fullmodel = null;
+		unsatExplanationInTermsOfAssumptions = null;
 		order.init();
 		learnedConstraintsDeletionStrategy.init();
 
@@ -1289,13 +1342,22 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 		// push incremental assumptions
 		for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
-			int p = voc.getFromPool(iterator.next());
+			int assump = iterator.next();
+			int p = voc.getFromPool(assump);
 			if (!assume(p) || ((confl = propagate()) != null)) {
 				if (confl == null) {
 					slistener.conflictFound(p);
 				} else {
 					slistener.conflictFound(confl, decisionLevel(), trail
 							.size());
+				}
+				unsatExplanationInTermsOfAssumptions = new VecInt();
+				int i = 0;
+				while (i < assumps.size()) {
+					unsatExplanationInTermsOfAssumptions.push(-assumps.get(i));
+					if (unsatExplanationInTermsOfAssumptions.last() == assump)
+						break;
+					i++;
 				}
 				slistener.end(Lbool.FALSE);
 				cancelUntil(0);
@@ -1633,6 +1695,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public String getLogPrefix() {
 		return prefix;
+	}
+
+	/**
+	 * @since 2.2
+	 */
+	public IVecInt unsatExplanation() {
+		return unsatExplanationInTermsOfAssumptions;
 	}
 
 }

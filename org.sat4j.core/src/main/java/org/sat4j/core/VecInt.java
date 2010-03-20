@@ -194,6 +194,12 @@ public final class VecInt implements IVecInt {
 		public int indexOf(int e) {
 			return -1;
 		}
+
+		@Override
+		public String toString() {
+			return "[]";
+		}
+
 	};
 
 	public VecInt() {

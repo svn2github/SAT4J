@@ -319,4 +319,11 @@ public class DimacsOutputSolver implements ISolver {
 	public String getLogPrefix() {
 		return "";
 	}
+
+	/**
+	 * @since 2.2
+	 */
+	public IVecInt unsatExplanation() {
+		throw new UnsupportedOperationException();
+	}
 }

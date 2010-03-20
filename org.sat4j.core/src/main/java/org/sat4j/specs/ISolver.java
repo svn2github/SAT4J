@@ -367,7 +367,35 @@ public interface ISolver extends IProblem, Serializable {
 	 */
 	void setVerbose(boolean value);
 
+	/**
+	 * Set the prefix used to display information.
+	 * 
+	 * @param prefix
+	 *            the prefix to be in front of each line of text
+	 * @since 2.2
+	 */
 	void setLogPrefix(String prefix);
 
+	/**
+	 * 
+	 * @return the string used to prefix the output.
+	 * @since 2.2
+	 */
 	String getLogPrefix();
+
+	/**
+	 * 
+	 * Retrieve an explanation of the inconsistency in terms of assumption
+	 * literals. This is only application when isSatisfiable(assumps) is used.
+	 * Note that !isSatisfiable(assumps)&&assumps.contains(unsatExplanation())
+	 * should hold.
+	 * 
+	 * @return a subset of the assumptions used when calling
+	 *         isSatisfiable(assumps). Will return null if not applicable (i.e.
+	 *         no assumptions used).
+	 * @see #isSatisfiable(IVecInt)
+	 * @see #isSatisfiable(IVecInt, boolean)
+	 * @since 2.2
+	 */
+	IVecInt unsatExplanation();
 }
