@@ -47,7 +47,7 @@ import org.sat4j.specs.ISolver;
  * allow to run the solver from the command line.
  * 
  * @author leberre
- * 
+ * @since 2.2
  */
 public class LightFactory extends ASolverFactory<ISolver> {
 	private static final long serialVersionUID = 1460304168178023681L;
