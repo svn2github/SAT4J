@@ -95,12 +95,19 @@ public class MSUncoreDecorator extends SolverDecorator<ISolver> implements
 
 	public void discardCurrentSolution() throws ContradictionException {
 		IVecInt explanation = unsatExplanation();
-		addAtMost(explanation, 1);
+		IVecInt literals = new VecInt(explanation.size());
+		int p;
+		for (int i = 0; i < explanation.size(); i++) {
+			p = explanation.get(i);
+			literals.push(-p);
+			negLits.remove(p);
+		}
+		addAtMost(literals, 1);
 		counter++;
 	}
 
 	public boolean admitABetterSolution() throws TimeoutException {
-		if (negLits.size() < lits.size()) {
+		if (negLits.isEmpty()) {
 			for (int i = 0; i < lits.size(); i++) {
 				negLits.push(-lits.get(i));
 			}
