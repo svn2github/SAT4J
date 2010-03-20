@@ -228,10 +228,10 @@ public class TestQuickExplainPB {
 		solver.addClause(clause);
 		clause.clear();
 		clause.push(-12).push(2);
-		solver.addClause(clause);
+		IConstr patch = solver.addClause(clause);
 		clause.clear();
 		clause.push(-12).push(7);
-		IConstr patch = solver.addClause(clause);
+		solver.addClause(clause);
 		IVecInt assump = new VecInt();
 		assump.push(12);
 		assertFalse(solver.isSatisfiable(assump));
