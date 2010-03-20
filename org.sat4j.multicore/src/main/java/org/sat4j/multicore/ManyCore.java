@@ -312,6 +312,10 @@ public class ManyCore implements ISolver, OutcomeListener {
 	public String getLogPrefix() {
 		return solvers[0].getLogPrefix();
 	}
+
+	public IVecInt unsatExplanation() {
+		return solvers[0].unsatExplanation();
+	}
 }
 
 interface OutcomeListener {
