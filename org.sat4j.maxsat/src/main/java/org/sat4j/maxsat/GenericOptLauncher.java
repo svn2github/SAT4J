@@ -28,7 +28,7 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.maxsat.reader.WDimacsReader;
-import org.sat4j.opt.MaxSatDecorator;
+import org.sat4j.opt.MSUncoreDecorator;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
@@ -110,8 +110,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
                         asolver = new WeightedMaxSatDecorator(SolverFactory
                                 .newDefault());
                     } else {
-                        asolver = new MaxSatDecorator(SolverFactory
-                                .newMiniMaxSAT());
+                        asolver = new MSUncoreDecorator(org.sat4j.minisat.SolverFactory
+                                .newDefault());
                     }
                 }
                 String timeout = cmd.getOptionValue("t");
