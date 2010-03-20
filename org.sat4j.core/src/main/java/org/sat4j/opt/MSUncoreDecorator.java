@@ -100,7 +100,8 @@ public class MSUncoreDecorator extends SolverDecorator<ISolver> implements
 		for (int i = 0; i < explanation.size(); i++) {
 			p = explanation.get(i);
 			literals.push(-p);
-			negLits.remove(-p);
+			negLits.remove(p);
+
 		}
 		addAtMost(literals, 1);
 		counter++;

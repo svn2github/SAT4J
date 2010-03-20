@@ -55,9 +55,10 @@ public class QuickXplainStrategy implements XplainStrategy {
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
 		Set<Integer> constraintsVariables = constrs.keySet();
+		int p;
 		for (int i = 0; i < firstExplanation.size(); i++) {
-			if (constraintsVariables.contains(firstExplanation.get(i))) {
-				encodingAssumptions.push(firstExplanation.get(i));
+			if (constraintsVariables.contains(p = -firstExplanation.get(i))) {
+				encodingAssumptions.push(p);
 			}
 		}
 		IVecInt results = new VecInt(encodingAssumptions.size());
