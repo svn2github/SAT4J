@@ -100,6 +100,11 @@ public class MSUncoreDecorator extends SolverDecorator<ISolver> implements
 	}
 
 	public boolean admitABetterSolution() throws TimeoutException {
+		if (negLits.size() < lits.size()) {
+			for (int i = 0; i < lits.size(); i++) {
+				negLits.push(-lits.get(i));
+			}
+		}
 		return admitABetterSolution(negLits);
 	}
 
