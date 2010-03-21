@@ -539,7 +539,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public IVecInt analyzeFinalConflictInTermsOfAssumptions(Constr confl,
 			IVecInt assumps) {
-		assert confl != null;
 		if (assumps.size() == 0) {
 			return null;
 		}
