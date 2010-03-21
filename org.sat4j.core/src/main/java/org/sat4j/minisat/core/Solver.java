@@ -553,7 +553,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 
 		int p = ILits.UNDEFINED;
-		if (confl == null) {
+		while (confl == null) {
 			p = trail.last();
 			confl = voc.getReason(p);
 			undoOne();
