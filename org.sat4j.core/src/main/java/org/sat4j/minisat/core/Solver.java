@@ -540,7 +540,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public IVecInt analyzeFinalConflictInTermsOfAssumptions(Constr confl,
 			IVecInt assumps) {
 		assert confl != null;
-		if (rootLevel == 0) {
+		if (assumps.size() == 0) {
 			return null;
 		}
 		final boolean[] seen = mseen;
@@ -550,47 +550,44 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		outLearnt.clear();
 		assert outLearnt.size() == 0;
 		for (int i = 0; i < seen.length; i++) {
-			seen[i] = true;
-		}
-		for (int i = 0; i < assumps.size(); i++) {
-			seen[Math.abs(assumps.get(i))] = false;
+			seen[i] = false;
 		}
 
 		int p = ILits.UNDEFINED;
-
+		if (confl == null) {
+			p = trail.last();
+			confl = voc.getReason(p);
+			undoOne();
+			if (trail.size() <= trailLim.last()) {
+				trailLim.pop();
+			}
+		}
 		do {
-			if (confl == null) {
-				outLearnt.push(toDimacs(p));
-			} else {
-				preason.clear();
-				confl.calcReason(p, preason);
-				// Trace reason for p
-				for (int j = 0; j < preason.size(); j++) {
-					int q = preason.get(j);
-					if (!seen[q >> 1]) {
-						seen[q >> 1] = true;
-						if (voc.getLevel(q) < decisionLevel()
-								&& voc.getLevel(q) > 0) {
-							// only literals assigned after decision level 0
-							// part of
-							// the explanation
-							outLearnt.push(toDimacs(q));
-						}
+
+			preason.clear();
+			confl.calcReason(p, preason);
+			// Trace reason for p
+			for (int j = 0; j < preason.size(); j++) {
+				int q = preason.get(j);
+				if (!seen[q >> 1]) {
+					seen[q >> 1] = true;
+					if (voc.getReason(q) == null && voc.getLevel(q) > 0) {
+						assert assumps.contains(toDimacs(q));
+						outLearnt.push(toDimacs(q));
 					}
 				}
 			}
+
 			// select next reason to look at
 			do {
 				p = trail.last();
 				confl = voc.getReason(p);
 				undoOne();
-				if (trail.size() < trailLim.last()) {
+				if (trail.size() <= trailLim.last()) {
 					trailLim.pop();
 				}
-			} while (!seen[p >> 1]);
-			// seen[p.var] indique que p se trouve dans outLearnt ou dans
-			// le dernier niveau de d?cision
-		} while (decisionLevel() == rootLevel);
+			} while (trail.size() > 0 && (!seen[p >> 1] || confl == null));
+		} while (decisionLevel() > 0);
 		return outLearnt;
 	}
 
@@ -1347,18 +1344,25 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			if (!assume(p) || ((confl = propagate()) != null)) {
 				if (confl == null) {
 					slistener.conflictFound(p);
+					// unsatExplanationInTermsOfAssumptions = new VecInt();
+					// int i = 0;
+					// while (i < assumps.size()) {
+					// unsatExplanationInTermsOfAssumptions.push(assumps.get(i));
+					// if (unsatExplanationInTermsOfAssumptions.last() ==
+					// assump)
+					// break;
+					// i++;
+					// }
+					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
+							null, assumps);
+					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
 					slistener.conflictFound(confl, decisionLevel(), trail
 							.size());
+					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
+							confl, assumps);
 				}
-				unsatExplanationInTermsOfAssumptions = new VecInt();
-				int i = 0;
-				while (i < assumps.size()) {
-					unsatExplanationInTermsOfAssumptions.push(assumps.get(i));
-					if (unsatExplanationInTermsOfAssumptions.last() == assump)
-						break;
-					i++;
-				}
+
 				slistener.end(Lbool.FALSE);
 				cancelUntil(0);
 				cancelLearntLiterals(learnedLiteralsLimit);
