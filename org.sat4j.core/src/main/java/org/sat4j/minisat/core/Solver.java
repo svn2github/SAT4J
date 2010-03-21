@@ -538,7 +538,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public IVecInt analyzeFinalConflictInTermsOfAssumptions(Constr confl,
-			IVecInt assumps) {
+			IVecInt assumps, int conflictingLiteral) {
 		if (assumps.size() == 0) {
 			return null;
 		}
@@ -550,6 +550,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		assert outLearnt.size() == 0;
 		for (int i = 0; i < seen.length; i++) {
 			seen[i] = false;
+		}
+
+		if (confl == null) {
+			seen[conflictingLiteral >> 1] = true;
 		}
 
 		int p = ILits.UNDEFINED;
@@ -989,7 +993,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (decisionLevel() == rootLevel) {
 					// on est a la racine, la formule est inconsistante
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
-							confl, assumps);
+							confl, assumps, ILits.UNDEFINED);
 					return Lbool.FALSE;
 				}
 				// analyze conflict
@@ -1344,23 +1348,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			if (!assume(p) || ((confl = propagate()) != null)) {
 				if (confl == null) {
 					slistener.conflictFound(p);
-					// unsatExplanationInTermsOfAssumptions = new VecInt();
-					// int i = 0;
-					// while (i < assumps.size()) {
-					// unsatExplanationInTermsOfAssumptions.push(assumps.get(i));
-					// if (unsatExplanationInTermsOfAssumptions.last() ==
-					// assump)
-					// break;
-					// i++;
-					// }
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
-							null, assumps);
+							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
 					slistener.conflictFound(confl, decisionLevel(), trail
 							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
-							confl, assumps);
+							confl, assumps, ILits.UNDEFINED);
 				}
 
 				slistener.end(Lbool.FALSE);
