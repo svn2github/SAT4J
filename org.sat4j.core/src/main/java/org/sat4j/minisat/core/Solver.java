@@ -585,7 +585,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (trail.size() <= trailLim.last()) {
 					trailLim.pop();
 				}
-			} while (trail.size() > 0 && (!seen[p >> 1] || confl == null));
+			} while (trail.size() > 0 && decisionLevel() > 0
+					&& (!seen[p >> 1] || confl == null));
 		} while (decisionLevel() > 0);
 		return outLearnt;
 	}
