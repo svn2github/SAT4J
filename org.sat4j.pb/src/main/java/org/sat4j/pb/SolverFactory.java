@@ -43,6 +43,7 @@ import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.CompetResolutionPBMixedWLClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxCBClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseAtLeastConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseCardConstrDataStructure;
@@ -269,11 +270,11 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjective() {
+	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjective() {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
 				learning,
-				new CompetResolutionPBMixedHTClauseCardConstrDataStructure(),
+				new CompetResolutionPBMixedWLClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
 				new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
@@ -322,8 +323,8 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
+	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjectiveExpSimp() {
+		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjective();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
@@ -504,6 +505,8 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		PBSolverCP solver = new PBSolverCP(new FirstUIP(), learning, dsf, order);
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
+		solver.setRestartStrategy(new ArminRestarts());
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		return solver;
 	}
 
@@ -540,7 +543,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *      instance of ASolverFactory.
 	 */
 	public static IPBSolver newDefault() {
-		return newCompetPBResHTMixedConstraintsObjectiveExpSimp();
+		return newCompetPBResWLMixedConstraintsObjectiveExpSimp();
 	}
 
 	/**
@@ -581,7 +584,14 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	}
 
 	public static IPBSolver newEclipseP2() {
-		PBSolverResolution solver = newCompetPBResHTMixedConstraintsObjective();
+		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
+				learning,
+				new CompetResolutionPBMixedHTClauseCardConstrDataStructure(),
+				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
+				new ArminRestarts());
+		learning.setDataStructureFactory(solver.getDSFactory());
+		learning.setVarActivityListener(solver);
 		solver.setTimeoutOnConflicts(300);
 		solver.setVerbose(false);
 		return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
