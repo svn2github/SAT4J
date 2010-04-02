@@ -78,7 +78,7 @@ public abstract class AbstractPBDataStructureFactory extends
 			IVec<BigInteger> ccoefs = new Vec<BigInteger>(literals.size());
 			coefs.copyTo(ccoefs);
 			for (int i = 0; i < cliterals.size();) {
-				if (coefs.get(i).equals(BigInteger.ZERO)) {
+				if (ccoefs.get(i).equals(BigInteger.ZERO)) {
 					cliterals.delete(i);
 					ccoefs.delete(i);
 				} else {
