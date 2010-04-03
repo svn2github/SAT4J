@@ -271,12 +271,19 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	}
 
 	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjective() {
+		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBMixedWLClauseCardConstrDataStructure());
+	}
+
+	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjective() {
+		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
+	}
+
+	public static PBSolverResolution newCompetPBResMixedConstraintsObjective(
+			PBDataStructureFactory dsf) {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(new FirstUIP(),
-				learning,
-				new CompetResolutionPBMixedWLClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
-				new ArminRestarts());
+				learning, dsf, new VarOrderHeapObjective(
+						new RSATPhaseSelectionStrategy()), new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		return solver;
