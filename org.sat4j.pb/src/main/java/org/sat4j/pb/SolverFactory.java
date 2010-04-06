@@ -286,6 +286,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 						new RSATPhaseSelectionStrategy()), new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		return solver;
 	}
 
