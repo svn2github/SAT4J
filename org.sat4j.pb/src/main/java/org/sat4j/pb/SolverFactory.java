@@ -538,7 +538,32 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolution() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp();
+		return newResolutionGlucose();
+	}
+
+	/**
+	 * Resolution based solver (i.e. classic SAT solver able to handle generic
+	 * constraints. No specific inference mechanism). Uses glucose based memory
+	 * management.
+	 * 
+	 * @return the best available resolution based solver of the library.
+	 */
+	public static IPBSolver newResolutionGlucose() {
+		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+		return solver;
+	}
+
+	/**
+	 * Resolution based solver (i.e. classic SAT solver able to handle generic
+	 * constraints. No specific inference mechanism).
+	 * 
+	 * Keeps the constraints as long as there is enough memory available.
+	 * 
+	 * @return the best available resolution based solver of the library.
+	 */
+	public static IPBSolver newResolutionMaxMemory() {
+		return newCompetPBResWLMixedConstraintsObjectiveExpSimp();
 	}
 
 	/**
