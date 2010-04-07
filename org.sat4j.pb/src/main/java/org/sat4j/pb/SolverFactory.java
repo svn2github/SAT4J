@@ -575,7 +575,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *      instance of ASolverFactory.
 	 */
 	public static IPBSolver newDefault() {
-		return newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		return newResolutionGlucose();
 	}
 
 	/**
