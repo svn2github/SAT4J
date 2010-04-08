@@ -556,6 +556,20 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	/**
 	 * Resolution based solver (i.e. classic SAT solver able to handle generic
+	 * constraints. No specific inference mechanism). Uses glucose based memory
+	 * management. Uses a simple restart strategy (original Minisat's one).
+	 * 
+	 * @return the best available resolution based solver of the library.
+	 */
+	public static IPBSolver newResolutionSimpleRestarts() {
+		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+		solver.setRestartStrategy(new MiniSATRestarts());
+		return solver;
+	}
+
+	/**
+	 * Resolution based solver (i.e. classic SAT solver able to handle generic
 	 * constraints. No specific inference mechanism).
 	 * 
 	 * Keeps the constraints as long as there is enough memory available.
