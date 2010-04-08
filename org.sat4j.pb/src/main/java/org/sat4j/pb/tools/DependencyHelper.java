@@ -341,11 +341,9 @@ public class DependencyHelper<T, C> {
 	 */
 	public void setTrue(T thing, C name) throws ContradictionException {
 		IConstr constr = gator.gateTrue(getIntValue(thing));
-		if (constr == null) {
-			throw new IllegalStateException(
-					"Constraints are not supposed to be null when using the helper");
+		if (constr != null) {
+			descs.put(constr, name);
 		}
-		descs.put(constr, name);
 	}
 
 	/**
@@ -638,8 +636,7 @@ public class DependencyHelper<T, C> {
 	/**
 	 * Create a PB constraint of the form <code>
 	 * w1.l1 + w2.l2 + ... wn.ln >= degree
-	 * </code> where wi are position integers
-	 * and li are domain objects.
+	 * </code> where wi are position integers and li are domain objects.
 	 * 
 	 * @param degree
 	 * @param wobj
@@ -659,8 +656,7 @@ public class DependencyHelper<T, C> {
 	/**
 	 * Create a PB constraint of the form <code>
 	 * w1.l1 + w2.l2 + ... wn.ln <= degree
-	 * </code> where wi are position integers
-	 * and li are domain objects.
+	 * </code> where wi are position integers and li are domain objects.
 	 * 
 	 * @param degree
 	 * @param wobj
