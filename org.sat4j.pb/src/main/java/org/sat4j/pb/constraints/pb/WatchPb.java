@@ -38,22 +38,18 @@ import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
+/**
+ * Abstract data structure for pseudo-boolean constraint with watched literals.
+ * 
+ * @author anne
+ * 
+ */
 public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * constant for the initial type of inequality less than or equal
-	 */
-	public static final boolean ATMOST = false;
-
-	/**
-	 * constant for the initial type of inequality more than or equal
-	 */
-	public static final boolean ATLEAST = true;
 
 	/**
 	 * constraint activity
@@ -81,11 +77,6 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	protected boolean learnt = false;
 
 	/**
-	 * sum of the coefficients of the literals satisfied or unvalued
-	 */
-	protected BigInteger watchCumul = BigInteger.ZERO;
-
-	/**
 	 * constraint's vocabulary
 	 */
 	protected ILits voc;
@@ -104,7 +95,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 
 		this.degree = mpb.getDegree();
 
-		// On peut trier suivant les coefficients
+		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
@@ -112,7 +103,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		this.lits = lits;
 		this.coefs = coefs;
 		this.degree = degree;
-		// On peut trier suivant les coefficients
+		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
@@ -217,7 +208,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 * @return la marge
 	 */
 	public BigInteger slackConstraint() {
-		return recalcLeftSide().subtract(this.degree);
+		return computeLeftSide().subtract(this.degree);
 	}
 
 	/**
@@ -232,7 +223,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 */
 	public BigInteger slackConstraint(BigInteger[] theCoefs,
 			BigInteger theDegree) {
-		return recalcLeftSide(theCoefs).subtract(theDegree);
+		return computeLeftSide(theCoefs).subtract(theDegree);
 	}
 
 	/**
@@ -243,9 +234,9 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 *            coefficients of the constraint
 	 * @return poss
 	 */
-	public BigInteger recalcLeftSide(BigInteger[] theCoefs) {
+	public BigInteger computeLeftSide(BigInteger[] theCoefs) {
 		BigInteger poss = BigInteger.ZERO;
-		// Pour chaque litteral
+		// for each literal
 		for (int i = 0; i < lits.length; i++)
 			if (!voc.isFalsified(lits[i])) {
 				assert theCoefs[i].signum() >= 0;
@@ -260,23 +251,25 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	 * 
 	 * @return poss
 	 */
-	public BigInteger recalcLeftSide() {
-		return recalcLeftSide(this.coefs);
+	public BigInteger computeLeftSide() {
+		return computeLeftSide(this.coefs);
 	}
 
 	/**
-	 * D?termine si la contrainte est toujours satisfiable
+	 * tests if the constraint is still satisfiable.
 	 * 
-	 * @return la contrainte est encore satisfiable
+	 * this method is only called in assertions.
+	 * 
+	 * @return the constraint is satisfiable
 	 */
 	protected boolean isSatisfiable() {
-		return recalcLeftSide().compareTo(degree) >= 0;
+		return computeLeftSide().compareTo(degree) >= 0;
 	}
 
 	/**
-	 * is the constraint a learnt constrainte ?
+	 * is the constraint a learnt constraint ?
 	 * 
-	 * @return true si la contrainte est apprise, false sinon
+	 * @return true if the constraint is learnt, else false
 	 * @see org.sat4j.specs.IConstr#learnt()
 	 */
 	public boolean learnt() {
@@ -298,23 +291,24 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	}
 
 	/**
-	 * Calcule le ppcm de deux nombres
+	 * ppcm : least common multiple for two integers (plus petit commun
+	 * multiple)
 	 * 
 	 * @param a
-	 *            premier nombre de l'op?ration
+	 *            one integer
 	 * @param b
-	 *            second nombre de l'op?ration
-	 * @return le ppcm en question
+	 *            the other integer
+	 * @return the least common multiple of a and b
 	 */
 	protected static BigInteger ppcm(BigInteger a, BigInteger b) {
 		return a.divide(a.gcd(b)).multiply(b);
 	}
 
 	/**
-	 * Permet le r??????chantillonage de l'activit??? de la contrainte
+	 * to re-scale the activity of the constraint
 	 * 
 	 * @param d
-	 *            facteur d'ajustement
+	 *            adjusting factor
 	 */
 	public void rescaleBy(double d) {
 		activity *= d;
@@ -342,16 +336,16 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	}
 
 	/**
-	 * La contrainte est apprise
+	 * the constraint is learnt
 	 */
 	public void setLearnt() {
 		learnt = true;
 	}
 
 	/**
-	 * Simplifie la contrainte(l'all???ge)
+	 * simplify the constraint (if it is satisfied)
 	 * 
-	 * @return true si la contrainte est satisfaite, false sinon
+	 * @return true if the constraint is satisfied, else false
 	 */
 	public boolean simplify() {
 		BigInteger cumul = BigInteger.ZERO;
@@ -359,7 +353,7 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		int i = 0;
 		while (i < lits.length && cumul.compareTo(degree) < 0) {
 			if (voc.isSatisfied(lits[i])) {
-				// Mesure pessimiste
+				// strong measure
 				cumul = cumul.add(coefs[i]);
 			}
 			i++;
@@ -472,8 +466,6 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		}
 	}
 
-	// protected abstract WatchPb watchPbNew(Lits voc, VecInt lits, VecInt
-	// coefs, boolean moreThan, int degree, int[] indexer);
 	/**
 	 * @return Returns the degree.
 	 */
@@ -491,12 +483,22 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		}
 	}
 
+	/**
+	 * to obtain the coefficients of the constraint.
+	 * 
+	 * @return a copy of the array of the coefficients
+	 */
 	public BigInteger[] getCoefs() {
 		BigInteger[] coefsBis = new BigInteger[coefs.length];
 		System.arraycopy(coefs, 0, coefsBis, 0, coefs.length);
 		return coefsBis;
 	}
 
+	/**
+	 * to obtain the literals of the constraint.
+	 * 
+	 * @return a copy of the array of the literals
+	 */
 	public int[] getLits() {
 		int[] litsBis = new int[lits.length];
 		System.arraycopy(lits, 0, litsBis, 0, lits.length);
@@ -508,7 +510,9 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 	}
 
 	/**
-	 * compute an implied clause on the literals with the greater coefficients
+	 * compute an implied clause on the literals with the greater coefficients.
+	 * 
+	 * @return a vector containing the literals for this clause.
 	 */
 	public IVecInt computeAnImpliedClause() {
 		BigInteger cptCoefs = BigInteger.ZERO;
@@ -517,8 +521,6 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 			cptCoefs = cptCoefs.add(coefs[--index]);
 		}
 		if (index > 0 && index < size() / 2) {
-			// System.out.println(this);
-			// System.out.println("index : "+index);
 			IVecInt literals = new VecInt(index);
 			for (int j = 0; j <= index; j++)
 				literals.push(lits[j]);

@@ -92,18 +92,6 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 				literals.set(indLit, literals.get(0));
 				literals.set(0, tmp);
 			}
-			// ILits voc = getVocabulary();
-			// boolean ok = false;
-			// for (int indLit = 0; indLit < literals.size() && !ok; indLit++)
-			// if (voc.isUnassigned(literals.get(indLit))) {
-			// int tmp = literals.get(indLit);
-			// literals.set(indLit, literals.get(0));
-			// literals.set(0, tmp);
-			// assert voc.isUnassigned(tmp);
-			// assert voc.isUnassigned(literals.get(0));
-			// ok = true;
-			// }
-			// assert voc.isUnassigned(literals.get(0));
 			return constructLearntClause(literals);
 		}
 		if (dspb.isCardinality()) {

@@ -33,23 +33,35 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 
+/**
+ * Data structure for pseudo-boolean constraint with watched literals.
+ * 
+ * All literals are watched. The sum of the literals satisfied or unvalued is
+ * always memorized, to detect conflict.
+ * 
+ * @author anne
+ * 
+ */
 public final class MaxWatchPb extends WatchPb {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructeur de base cr?ant des contraintes vides
+	 * sum of the coefficients of the literals satisfied or unvalued
+	 */
+	private BigInteger watchCumul = BigInteger.ZERO;
+
+	/**
+	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
+	 * 
+	 * This constructor is called for learnt pseudo boolean constraints.
 	 * 
 	 * @param voc
-	 *            Informations sur le vocabulaire employ?
-	 * @param ps
-	 *            Liste des litt?raux
-	 * @param weightedLits
-	 *            Liste des coefficients
-	 * @param moreThan
-	 *            Indication sur le comparateur
-	 * @param degree
-	 *            Stockage du degr? de la contrainte
+	 *            all the possible variables (vocabulary)
+	 * @param mpb
+	 *            data structure which contains literals of the constraint,
+	 *            coefficients (a0, a1, ... an), and the degree of the
+	 *            constraint (k). The constraint is a "more than" constraint.
 	 */
 	private MaxWatchPb(ILits voc, IDataStructurePB mpb) {
 
@@ -60,6 +72,19 @@ public final class MaxWatchPb extends WatchPb {
 		watchCumul = BigInteger.ZERO;
 	}
 
+	/**
+	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
+	 * 
+	 * @param voc
+	 *            all the possible variables (vocabulary)
+	 * @param lits
+	 *            literals of the constraint (x0,x1, ... xn)
+	 * @param coefs
+	 *            coefficients of the left side of the constraint (a0, a1, ...
+	 *            an)
+	 * @param degree
+	 *            degree of the constraint (k)
+	 */
 	private MaxWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
 			BigInteger degree) {
 
@@ -71,7 +96,7 @@ public final class MaxWatchPb extends WatchPb {
 	}
 
 	/**
-	 * Permet l'observation de tous les litt???raux
+	 * All the literals are watched.
 	 * 
 	 * @see org.sat4j.pb.constraints.pb.WatchPb#computeWatches()
 	 */
@@ -85,89 +110,100 @@ public final class MaxWatchPb extends WatchPb {
 					voc.watch(lits[i] ^ 1, this);
 				}
 			} else {
-				// Mise ? jour de la possibilit? initiale
+				// updating of the initial value for the counter
 				voc.watch(lits[i] ^ 1, this);
 				watchCumul = watchCumul.add(coefs[i]);
 			}
 		}
 
-		assert watchCumul.compareTo(recalcLeftSide()) >= 0;
+		assert watchCumul.compareTo(computeLeftSide()) >= 0;
 		if (!learnt && watchCumul.compareTo(degree) < 0) {
 			throw new ContradictionException("non satisfiable constraint");
 		}
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * This method propagates any possible value.
+	 * 
+	 * This method is only called in the factory methods.
 	 * 
 	 * @see org.sat4j.minisat.constraints.WatchPb#computePropagation()
 	 */
 	@Override
 	protected void computePropagation(UnitPropagationListener s)
 			throws ContradictionException {
-		// On propage
+		// propagate any possible value
 		int ind = 0;
 		while (ind < coefs.length
 				&& watchCumul.subtract(coefs[ind]).compareTo(degree) < 0) {
 			if (voc.isUnassigned(lits[ind]) && !s.enqueue(lits[ind], this))
+				// because this happens during the building of a constraint.
 				throw new ContradictionException("non satisfiable constraint");
 			ind++;
 		}
-		assert watchCumul.compareTo(recalcLeftSide()) >= 0;
+		assert watchCumul.compareTo(computeLeftSide()) >= 0;
 	}
 
 	/**
-	 * Propagation de la valeur de v?rit? d'un litt?ral falsifi?
+	 * Propagation of a falsified literal
 	 * 
 	 * @param s
-	 *            un prouveur
+	 *            the solver
 	 * @param p
-	 *            le litt?ral propag? (il doit etre falsifie)
-	 * @return false ssi une inconsistance est d?tect?e
+	 *            the propagated literal (it must be falsified)
+	 * @return false iff there is a conflict
 	 */
 	public boolean propagate(UnitPropagationListener s, int p) {
 		voc.watch(p, this);
 
-		assert watchCumul.compareTo(recalcLeftSide()) >= 0 : "" + watchCumul
-				+ "/" + recalcLeftSide() + ":" + learnt;
+		assert watchCumul.compareTo(computeLeftSide()) >= 0 : "" + watchCumul
+				+ "/" + computeLeftSide() + ":" + learnt;
 
-		// Si le litt?ral est impliqu? il y a un conflit
+		// finding the index for p in the array of literals
 		int indiceP = 0;
 		while ((lits[indiceP] ^ 1) != p)
 			indiceP++;
 
+		// compute the new value for watchCumul
 		BigInteger coefP = coefs[indiceP];
-
 		BigInteger newcumul = watchCumul.subtract(coefP);
-		if (newcumul.compareTo(degree) < 0) {
-			// System.out.println(this.analyse(new ConstrHandle()));
 
+		if (newcumul.compareTo(degree) < 0) {
+			// there is a conflict
 			assert !isSatisfiable();
 			return false;
 		}
 
-		// On met en place la mise ? jour du compteur
+		// if no conflict, not(p) can be propagated
+		// allow a later un-assignation
 		voc.undos(p).push(this);
+		// really update watchCumul
 		watchCumul = newcumul;
 
-		// On propage
+		// propagation
 		int ind = 0;
+		// limit is the margin between the sum of the coefficients of the
+		// satisfied+unassigned literals
+		// and the degree of the constraint
 		BigInteger limit = watchCumul.subtract(degree);
+		// for each coefficient greater than limit
 		while (ind < coefs.length && limit.compareTo(coefs[ind]) < 0) {
+			// its corresponding literal is implied
 			if (voc.isUnassigned(lits[ind]) && (!s.enqueue(lits[ind], this))) {
+				// if it is not possible then there is a conflict
 				assert !isSatisfiable();
 				return false;
 			}
 			ind++;
 		}
 
-		assert learnt || watchCumul.compareTo(recalcLeftSide()) >= 0;
-		assert watchCumul.compareTo(recalcLeftSide()) >= 0;
+		assert learnt || watchCumul.compareTo(computeLeftSide()) >= 0;
+		assert watchCumul.compareTo(computeLeftSide()) >= 0;
 		return true;
 	}
 
 	/**
-	 * Enl???ve une contrainte du prouveur
+	 * Remove a constraint from the solver
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < lits.length; i++) {
@@ -177,10 +213,10 @@ public final class MaxWatchPb extends WatchPb {
 	}
 
 	/**
-	 * M?thode appel?e lors du backtrack
+	 * this method is called during backtrack
 	 * 
 	 * @param p
-	 *            un litt?ral d?saffect?
+	 *            an unassigned literal
 	 */
 	public void undo(int p) {
 		int indiceP = 0;
@@ -193,8 +229,12 @@ public final class MaxWatchPb extends WatchPb {
 	}
 
 	/**
+	 * build a pseudo boolean constraint. Coefficients are positive integers
+	 * less than or equal to the degree (this is called a normalized
+	 * constraint).
+	 * 
 	 * @param s
-	 *            a unit propagation listener
+	 *            a unit propagation listener (usually the solver)
 	 * @param voc
 	 *            the vocabulary
 	 * @param lits
@@ -209,7 +249,7 @@ public final class MaxWatchPb extends WatchPb {
 	public static MaxWatchPb normalizedMaxWatchPbNew(UnitPropagationListener s,
 			ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
-		// Il ne faut pas modifier les param?tres
+		// Parameters must not be modified
 		MaxWatchPb outclause = new MaxWatchPb(voc, lits, coefs, degree);
 
 		if (outclause.degree.signum() <= 0) {
@@ -225,8 +265,18 @@ public final class MaxWatchPb extends WatchPb {
 	}
 
 	/**
-     * 
-     */
+	 * build a pseudo boolean constraint from a specific data structure. For
+	 * learnt constraints.
+	 * 
+	 * @param s
+	 *            a unit propagation listener (usually the solver)
+	 * @param mpb
+	 *            data structure which contains literals of the constraint,
+	 *            coefficients (a0, a1, ... an), and the degree of the
+	 *            constraint (k). The constraint is a "more than" constraint.
+	 * @return a new PB constraint or null if a trivial inconsistency is
+	 *         detected.
+	 */
 	public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
 		return new MaxWatchPb(voc, mpb);
 	}
