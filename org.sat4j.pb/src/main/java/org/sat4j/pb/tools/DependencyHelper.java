@@ -170,6 +170,21 @@ public class DependencyHelper<T, C> {
 	 * @return the dimacs variable (an integer) representing that domain object.
 	 */
 	int getIntValue(T thing) {
+		return getIntValue(thing, true);
+	}
+
+	/**
+	 * Translate a domain object into a dimacs variable.
+	 * 
+	 * @param thing
+	 *            a domain object
+	 * @param create
+	 *            to allow or not the solver to create a new id if the object in
+	 *            unknown. If set to false, the method will throw an
+	 *            IllegalArgumentException if the object is unknown.
+	 * @return the dimacs variable (an integer) representing that domain object.
+	 */
+	int getIntValue(T thing, boolean create) {
 		T myThing;
 		boolean negated = negator.isNegated(thing);
 		if (negated) {
@@ -179,9 +194,14 @@ public class DependencyHelper<T, C> {
 		}
 		Integer intValue = mapToDimacs.get(myThing);
 		if (intValue == null) {
-			intValue = solver.nextFreeVarId(true);
-			mapToDomain.put(intValue, myThing);
-			mapToDimacs.put(myThing, intValue);
+			if (create) {
+				intValue = solver.nextFreeVarId(true);
+				mapToDomain.put(intValue, myThing);
+				mapToDimacs.put(myThing, intValue);
+			} else {
+				throw new IllegalArgumentException("" + myThing
+						+ " is unknown in the solver!");
+			}
 		}
 		if (negated) {
 			return -intValue;
@@ -226,7 +246,11 @@ public class DependencyHelper<T, C> {
 	 *         solution.
 	 */
 	public boolean getBooleanValueFor(T t) {
-		return solver.model(getIntValue(t));
+		try {
+			return solver.model(getIntValue(t, false));
+		} catch (IllegalArgumentException ex) {
+			return false;
+		}
 	}
 
 	/**
