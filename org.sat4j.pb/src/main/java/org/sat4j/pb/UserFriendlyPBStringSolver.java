@@ -178,6 +178,9 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 				out.append("OR ");
 			}
 		}
+		if (beginning) {
+			out.append("-> false");
+		}
 		out.append(" ;\n");
 		return FAKE_CONSTR;
 	}
