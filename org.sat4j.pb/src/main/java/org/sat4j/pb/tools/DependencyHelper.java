@@ -244,13 +244,11 @@ public class DependencyHelper<T, C> {
 	 *            a domain object
 	 * @return true iff the domain object has been set to true in the current
 	 *         solution.
+	 * @throws IllegalArgumentException
+	 *             If the argument of the method is unknown to the solver.
 	 */
 	public boolean getBooleanValueFor(T t) {
-		try {
-			return solver.model(getIntValue(t, false));
-		} catch (IllegalArgumentException ex) {
-			return false;
-		}
+		return solver.model(getIntValue(t, false));
 	}
 
 	/**
