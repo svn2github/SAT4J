@@ -314,7 +314,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	}
 
-	public int decisionLevel() {
+	public final int decisionLevel() {
 		return trailLim.size();
 	}
 
@@ -586,7 +586,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				p = trail.last();
 				confl = voc.getReason(p);
 				undoOne();
-				if (trailLim.size() > 0 && trail.size() <= trailLim.last()) {
+				if (decisionLevel() > 0 && trail.size() <= trailLim.last()) {
 					trailLim.pop();
 				}
 			} while (trail.size() > 0 && decisionLevel() > 0
