@@ -160,7 +160,7 @@ public class OPBReader2007 extends OPBReader2006 {
 		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
 		int id = Integer.parseInt(var.substring(beginning));
 		int lid = ((var.charAt(0) == '~') ? -1 : 1) * id;
-		if (lid == 0 || Math.abs(lid) > nbVars) {
+		if (lid == 0 || Math.abs(lid) >= nbNewSymbols) {
 			throw new ParseFormatException("Wrong variable id");
 		}
 		lits.push(lid);
@@ -236,7 +236,7 @@ public class OPBReader2007 extends OPBReader2006 {
 	protected int translateVarToId(String var) throws ParseFormatException {
 		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
 		int id = Integer.parseInt(var.substring(beginning));
-		if (id == 0 || id > nbVars) {
+		if (id == 0 || id >= nbNewSymbols) {
 			throw new ParseFormatException("Wrong variable id format: " + var);
 		}
 		return ((var.charAt(0) == '~') ? -1 : 1) * id;
