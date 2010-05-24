@@ -52,6 +52,7 @@
 package org.sat4j.pb.reader;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -285,6 +286,44 @@ public class OPBReader2007 extends OPBReader2006 {
 			if (c.getValue().equals(lits))
 				return c.getKey();
 		return null;
+	}
+
+	@Override
+	public String decode(int[] model) {
+		StringBuffer stb = new StringBuffer();
+		int p;
+		for (int i = 0; i < model.length; i++) {
+			p = model[i];
+			if (Math.abs(p) <= nbVars) {
+				if (p < 0) {
+					stb.append("-x");
+					stb.append(-p);
+				} else {
+					stb.append("x");
+					stb.append(p);
+				}
+				stb.append(" ");
+			}
+		}
+		return stb.toString();
+	}
+
+	@Override
+	public void decode(int[] model, PrintWriter out) {
+		int p;
+		for (int i = 0; i < model.length; i++) {
+			p = model[i];
+			if (Math.abs(p) <= nbVars) {
+				if (model[i] < 0) {
+					out.print("-x");
+					out.print(-p);
+				} else {
+					out.print("x");
+					out.print(p);
+				}
+				out.print(" ");
+			}
+		}
 	}
 
 }
