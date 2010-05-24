@@ -153,11 +153,16 @@ public class OPBReader2007 extends OPBReader2006 {
 	 * @param lits
 	 *            a set of literals in DIMACS format in which var once
 	 *            translated will be added.
+	 * @throws ParseFormatException
 	 */
-	protected void literalInAProduct(String var, IVecInt lits) {
+	protected void literalInAProduct(String var, IVecInt lits)
+			throws ParseFormatException {
 		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
 		int id = Integer.parseInt(var.substring(beginning));
 		int lid = ((var.charAt(0) == '~') ? -1 : 1) * id;
+		if (lid == 0 || Math.abs(lid) > nbVars) {
+			throw new ParseFormatException("Wrong variable id");
+		}
 		lits.push(lid);
 	}
 
@@ -228,14 +233,17 @@ public class OPBReader2007 extends OPBReader2006 {
 	}
 
 	@Override
-	protected int translateVarToId(String var) {
+	protected int translateVarToId(String var) throws ParseFormatException {
 		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
 		int id = Integer.parseInt(var.substring(beginning));
+		if (id == 0 || id > nbVars) {
+			throw new ParseFormatException("Wrong variable id format: " + var);
+		}
 		return ((var.charAt(0) == '~') ? -1 : 1) * id;
 	}
 
 	private String linearizeProduct(IVec<String> tmpLit)
-			throws ContradictionException {
+			throws ContradictionException, ParseFormatException {
 		tmpLit.sort(String.CASE_INSENSITIVE_ORDER);
 		String newVar = getProductVariable(tmpLit);
 		if (newVar == null) {

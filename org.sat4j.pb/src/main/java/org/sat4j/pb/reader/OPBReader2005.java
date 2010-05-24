@@ -184,13 +184,15 @@ public class OPBReader2005 extends Reader implements Serializable {
 	 *            the coefficient of the term
 	 * @param var
 	 *            the identifier of the variable
+	 * @throws ParseFormatException
 	 */
-	private void constraintTerm(BigInteger coeff, String var) {
+	private void constraintTerm(BigInteger coeff, String var)
+			throws ParseFormatException {
 		coeffs.push(coeff);
 		lits.push(translateVarToId(var));
 	}
 
-	protected int translateVarToId(String var) {
+	protected int translateVarToId(String var) throws ParseFormatException {
 		int id = Integer.parseInt(var.substring(1));
 		return ((savedChar == '-') ? -1 : 1) * id;
 	}
@@ -682,8 +684,18 @@ public class OPBReader2005 extends Reader implements Serializable {
 		try {
 			parse();
 			return solver;
-		} catch (IOException e) {
-			throw new ParseFormatException(e);
+		} catch (Exception e) {
+			String message;
+
+			if (e instanceof ParseFormatException) {
+				message = e.getMessage().substring(
+						"DIMACS Format error: ".length());
+			} else {
+				message = e.getMessage();
+			}
+			throw new ParseFormatException(" line " + input.getLineNumber()
+					+ ", " + message);
+
 		}
 	}
 
