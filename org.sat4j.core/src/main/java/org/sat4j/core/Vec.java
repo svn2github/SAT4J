@@ -486,6 +486,9 @@ public final class Vec<T> implements IVec<T> {
 		return false;
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public int indexOf(T element) {
 		for (int i = 0; i < nbelem; i++) {
 			if (myarray[i].equals(element))

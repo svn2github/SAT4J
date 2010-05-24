@@ -278,6 +278,9 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		return constrs;
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public void xor(int x, int a, int b) throws ContradictionException {
 		IVecInt clause = new VecInt(3);
 		clause.push(-a).push(b).push(x);
@@ -348,6 +351,9 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 
 	// From Een and Sorensson JSAT 2006 paper
 
+	/**
+	 * @since 2.2
+	 */
 	public void fullAdderSum(int x, int a, int b, int c)
 			throws ContradictionException {
 		IVecInt clause = new VecInt(4);
@@ -379,6 +385,9 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		clause.clear();
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public void fullAdderCarry(int x, int a, int b, int c)
 			throws ContradictionException {
 		IVecInt clause = new VecInt(3);
@@ -402,6 +411,9 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		clause.clear();
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public void additionalFullAdderConstraints(int xcarry, int xsum, int a,
 			int b, int c) throws ContradictionException {
 		IVecInt clause = new VecInt(3);
@@ -419,15 +431,28 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		processClause(clause);
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public void halfAdderSum(int x, int a, int b) throws ContradictionException {
 		xor(x, a, b);
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public void halfAdderCarry(int x, int a, int b)
 			throws ContradictionException {
 		and(x, a, b);
 	}
 
+	/**
+	 * Translate an optimization function into constraints and provides the
+	 * binary literals in results. Works only when the value of the objective
+	 * function is positive.
+	 * 
+	 * @since 2.2
+	 */
 	public void optimisationFunction(IVecInt literals, IVec<BigInteger> coefs,
 			IVecInt result) throws ContradictionException {
 		IVec<IVecInt> buckets = new Vec<IVecInt>();

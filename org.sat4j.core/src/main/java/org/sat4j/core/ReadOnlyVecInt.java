@@ -172,6 +172,9 @@ public final class ReadOnlyVecInt implements IVecInt {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public int indexOf(int e) {
 		return vec.indexOf(e);
 	}

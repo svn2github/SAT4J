@@ -421,6 +421,9 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		return solver.getLogPrefix();
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public IVecInt unsatExplanation() {
 		return solver.unsatExplanation();
 	}

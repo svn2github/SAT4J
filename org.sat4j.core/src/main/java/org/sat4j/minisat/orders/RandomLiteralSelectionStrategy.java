@@ -49,6 +49,9 @@ public final class RandomLiteralSelectionStrategy implements
      */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @since 2.2
+	 */
 	public static final Random RAND = new Random(123456789);
 
 	public void assignLiteral(int p) {

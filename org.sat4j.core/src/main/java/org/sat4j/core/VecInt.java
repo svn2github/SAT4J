@@ -330,6 +330,9 @@ public final class VecInt implements IVecInt {
 		return false;
 	}
 
+	/**
+	 * @since 2.2
+	 */
 	public int indexOf(int e) {
 		final int[] workArray = myarray; // dvh, faster access
 		for (int i = 0; i < nbelem; i++) {
