@@ -108,15 +108,19 @@ public class OPBReader2010 extends OPBReader2007 {
 		}
 	}
 
+	private boolean softConstraint;
+
 	@Override
 	protected void beginConstraint() {
 		super.beginConstraint();
+		softConstraint = false;
 		try {
 			if (isWbo) {
 				skipSpaces();
 				char c = get();
 				putback(c);
 				if (c == '[') {
+					softConstraint = true;
 					String s = readWord();
 					if (!s.endsWith("]"))
 						throw new ParseFormatException(
@@ -136,7 +140,7 @@ public class OPBReader2010 extends OPBReader2007 {
 
 	@Override
 	protected void endConstraint() throws ContradictionException {
-		if (isWbo) {
+		if (softConstraint) {
 			int varId = getVars().last();
 			BigInteger constrWeight = d;
 			if ("<=".equals(operator)) {
