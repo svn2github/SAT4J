@@ -149,41 +149,13 @@ public class OPBReader2010 extends OPBReader2007 {
 	}
 
 	@Override
-	protected void readConstraint() throws IOException, ParseFormatException,
-			ContradictionException {
-		if (isWbo) {
-			skipSpaces();
-			char c = get();
-			putback(c);
-			if (c == '[') {
-				String s = readWord();
-				if (!s.endsWith("]"))
-					throw new ParseFormatException("Expecting end of weight ");
-				BigInteger coeff = new BigInteger(
-						s.substring(1, s.length() - 1));
-				getCoeffs().push(coeff);
-				int varId = nbNewSymbols++;
-				getVars().push(varId);
-				super.readConstraint();
-				BigInteger constrWeight = SAT4J_MAX_BIG_INTEGER;
-				if ("<=".equals(operator)) {
-					constrWeight = constrWeight.negate();
-				}
-				coeffs.push(constrWeight);
-				lits.push(varId);
-				return;
-			}
-
-		}
-		super.readConstraint();
-	}
-
-	@Override
 	public IProblem parseInstance(final java.io.Reader input)
 			throws ParseFormatException, ContradictionException {
 		super.parseInstance(input);
-		solver.addPseudoBoolean(getVars(), getCoeffs(), false,
-				softLimit.subtract(BigInteger.ONE));
+		if (isWbo && softLimit != SAT4J_MAX_BIG_INTEGER) {
+			solver.addPseudoBoolean(getVars(), getCoeffs(), false,
+					softLimit.subtract(BigInteger.ONE));
+		}
 		return solver;
 	}
 }
