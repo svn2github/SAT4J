@@ -137,7 +137,7 @@ public class OPBReader2010 extends OPBReader2007 {
 	@Override
 	protected void endConstraint() throws ContradictionException {
 		if (isWbo) {
-			int varId = nbNewSymbols - 1;
+			int varId = getVars().last();
 			BigInteger constrWeight = d;
 			if ("<=".equals(operator)) {
 				constrWeight = constrWeight.negate();
