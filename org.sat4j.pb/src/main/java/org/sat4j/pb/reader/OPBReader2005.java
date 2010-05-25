@@ -92,20 +92,20 @@ public class OPBReader2005 extends Reader implements Serializable {
 
 	protected final IPBSolver solver;
 
-	private final IVecInt lits;
+	protected final IVecInt lits;
 
-	private final IVec<BigInteger> coeffs;
+	protected final IVec<BigInteger> coeffs;
 
-	private BigInteger d;
+	protected BigInteger d;
 
-	private String operator;
+	protected String operator;
 
 	private final IVecInt objectiveVars = new VecInt();
 
 	private final IVec<BigInteger> objectiveCoeffs = new Vec<BigInteger>();
 
 	// does the instance have an objective function?
-	private boolean hasObjFunc = false;
+	protected boolean hasObjFunc = false;
 
 	// does the instance need variables explanation?
 	protected boolean hasVariablesExplanation = false;
@@ -521,7 +521,7 @@ public class OPBReader2005 extends Reader implements Serializable {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	private void readObjective() throws IOException, ParseFormatException {
+	protected void readObjective() throws IOException, ParseFormatException {
 		char c;
 		StringBuffer var = new StringBuffer();
 		StringBuffer coeff = new StringBuffer();
@@ -569,7 +569,7 @@ public class OPBReader2005 extends Reader implements Serializable {
 	 * @throws IOException
 	 * @throws ContradictionException
 	 */
-	private void readConstraint() throws IOException, ParseFormatException,
+	protected void readConstraint() throws IOException, ParseFormatException,
 			ContradictionException {
 		StringBuffer var = new StringBuffer();
 		StringBuffer coeff = new StringBuffer();
@@ -670,7 +670,7 @@ public class OPBReader2005 extends Reader implements Serializable {
 	}
 
 	@Override
-	public final IProblem parseInstance(final java.io.Reader input)
+	public IProblem parseInstance(final java.io.Reader input)
 			throws ParseFormatException, ContradictionException {
 		IProblem problem = parseInstance(new LineNumberReader(input));
 		solver.setObjectiveFunction(getObjectiveFunction());

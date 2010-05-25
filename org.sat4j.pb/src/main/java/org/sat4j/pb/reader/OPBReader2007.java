@@ -114,7 +114,7 @@ public class OPBReader2007 extends OPBReader2006 {
 	/**
 	 * contains the number of new symbols generated to linearize products
 	 */
-	private int nbNewSymbols;
+	protected int nbNewSymbols;
 
 	@Override
 	protected void readTerm(StringBuffer coeff, StringBuffer var)
