@@ -90,6 +90,8 @@ public abstract class AbstractLauncher implements Serializable {
 
 	protected void displayResult() {
 		if (solver != null) {
+			System.out.flush();
+			out.flush();
 			double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
 			solver.printStat(out, COMMENT_PREFIX);
 			solver.printInfos(out, COMMENT_PREFIX);

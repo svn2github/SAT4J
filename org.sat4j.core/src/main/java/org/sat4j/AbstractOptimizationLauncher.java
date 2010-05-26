@@ -62,7 +62,9 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 	protected void displayAnswer() {
 		if (solver == null)
 			return;
+		System.out.flush();
 		PrintWriter out = getLogWriter();
+		out.flush();
 		solver.printStat(out, COMMENT_PREFIX);
 		solver.printInfos(out, COMMENT_PREFIX);
 		ExitCode exitCode = getExitCode();
