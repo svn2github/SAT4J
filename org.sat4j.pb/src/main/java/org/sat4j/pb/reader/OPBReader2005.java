@@ -684,6 +684,8 @@ public class OPBReader2005 extends Reader implements Serializable {
 		try {
 			parse();
 			return solver;
+                } catch (ContradictionException ce) {
+                        throw ce;
 		} catch (Exception e) {
 			String message;
 

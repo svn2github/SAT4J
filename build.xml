@@ -25,6 +25,12 @@
 		   <param name="src" value="org.sat4j.pb/src/main/java" />
                    <param name="jarname" value="org.sat4j.pb"/>
                 </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-pb.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+			<zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+		        </zipgroupfileset>
+               </jar>
                 <antcall target="zip-bundle">
 		   <param name="package" value="pb"/>
                 </antcall>

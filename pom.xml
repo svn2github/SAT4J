@@ -169,14 +169,14 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <target>${javaTarget}</target>
           <testSource>${testSource}</testSource>
           <testTarget>${testTarget}</testTarget>
-          <compilerId>eclipse</compilerId>
+          <compilerId>jdt</compilerId>
         </configuration>
          <dependencies>
           <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-compiler-eclipse</artifactId>
-            <version>1.7</version>
-          </dependency>
+              <groupId>org.sonatype.tycho</groupId>
+              <artifactId>tycho-compiler-jdt</artifactId>
+              <version>0.7.0</version>
+           </dependency>
         </dependencies>
       </plugin>
       <plugin>
