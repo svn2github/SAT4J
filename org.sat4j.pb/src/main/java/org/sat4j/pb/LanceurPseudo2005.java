@@ -31,6 +31,7 @@ import static java.lang.System.out;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
+import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2006;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
@@ -42,6 +43,16 @@ import org.sat4j.specs.ISolver;
  * @author mederic
  */
 public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
+
+	ASolverFactory<IPBSolver> factory;
+
+	public LanceurPseudo2005() {
+		this(SolverFactory.instance());
+	}
+
+	LanceurPseudo2005(ASolverFactory<IPBSolver> factory) {
+		this.factory = factory;
+	}
 
 	/**
      * 
@@ -82,9 +93,9 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 	protected ISolver configureSolver(String[] args) {
 		IPBSolver theSolver;
 		if (args.length > 1) {
-			theSolver = SolverFactory.instance().createSolverByName(args[0]);
+			theSolver = factory.createSolverByName(args[0]);
 		} else {
-			theSolver = SolverFactory.newDefault();
+			theSolver = factory.defaultSolver();
 		}
 		theSolver = new PseudoOptDecorator(theSolver);
 		if (args.length == 3) {
@@ -96,8 +107,7 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 
 	@Override
 	public void usage() {
-		out
-				.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
+		out.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
 		showAvailableSolvers(SolverFactory.instance());
 	}
 
