@@ -47,6 +47,10 @@ public class WeightedObject<T> implements Comparable<WeightedObject<T>> {
 		return new WeightedObject<E>(e, BigInteger.valueOf(w));
 	}
 
+	public static <E> WeightedObject<E> newWO(E e, long w) {
+		return new WeightedObject<E>(e, BigInteger.valueOf(w));
+	}
+
 	public static <E> WeightedObject<E> newWO(E e, BigInteger w) {
 		return new WeightedObject<E>(e, w);
 	}
