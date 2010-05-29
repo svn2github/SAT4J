@@ -1319,7 +1319,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
 		Lbool status = Lbool.UNDEFINED;
-
+		undertimeout = true;
 		final int howmany = voc.nVars();
 		if (mseen.length <= howmany) {
 			mseen = new boolean[howmany + 1];
@@ -1396,7 +1396,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
 				conflictCount = learnedConstraintsDeletionStrategy.getTimer();
-				undertimeout = true;
 			}
 		} else {
 			if (!global || conflictCount == null) {
@@ -1410,7 +1409,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 						undertimeout = false;
 					}
 				};
-				undertimeout = true;
 				conflictCount = new ConflictTimerContainer().add(
 						conflictTimeout).add(
 						learnedConstraintsDeletionStrategy.getTimer());
