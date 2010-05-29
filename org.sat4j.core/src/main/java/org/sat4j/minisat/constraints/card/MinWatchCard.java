@@ -161,15 +161,9 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	 * @see Constr#calcReason(int p, IVecInt outReason)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
-		int c = (p == ILits.UNDEFINED) ? -1 : 0;
-		int maxUnsatisfied = lits.length - degree;
 		for (int i = 0; i < lits.length; i++) {
-			// Si il est falsifi?
 			if (voc.isFalsified(lits[i])) {
-				// On ajoute sa n?gation au vecteur
 				outReason.push(lits[i] ^ 1);
-				if (++c == maxUnsatisfied)
-					return;
 			}
 		}
 	}
