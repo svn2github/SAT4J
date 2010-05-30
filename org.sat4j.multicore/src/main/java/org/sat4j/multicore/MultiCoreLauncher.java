@@ -1,7 +1,7 @@
 package org.sat4j.multicore;
 
-import org.sat4j.BasicLauncher;
-import org.sat4j.specs.ISolver;
+import org.sat4j.AbstractLauncher;
+import org.sat4j.pb.LanceurPseudo2007;
 
 public class MultiCoreLauncher {
 
@@ -13,8 +13,12 @@ public class MultiCoreLauncher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
+		final AbstractLauncher lanceur = new LanceurPseudo2007(
 				SolverFactory.instance());
+		if (args.length == 0 || args.length > 3) {
+			lanceur.usage();
+			return;
+		}
 		lanceur.run(args);
 		System.exit(lanceur.getExitCode().value());
 	}

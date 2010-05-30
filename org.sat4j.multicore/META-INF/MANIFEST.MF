@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Multicore
 Bundle-SymbolicName: org.sat4j.multicore
 Bundle-Version: 9.9.9.token
-Require-Bundle: org.sat4j.core
+Require-Bundle: org.sat4j.core,org.sat4j.pb
 Main-Class: org.sat4j.multicore.MultiCoreLauncher
-Class-Path: org.sat4j.core.jar
+Class-Path: org.sat4j.core.jar org.sat4j.pb.jar
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
