@@ -64,6 +64,31 @@
                 </antcall>
 	</target>
 	
+	<target name="multicore" depends="pseudo" description="Build a jar file with a parallel pseudo boolean solver">
+		<echo>Building Parallel Pseudo Boolean Solver</echo>
+                <antcall target="build">
+		   <param name="package" value="multicore"/>
+		   <param name="src" value="org.sat4j.multicore/src/main/java" />
+		   <param name="jarname" value="org.sat4j.multicore"/>
+		   <param name="mainclass" value="org.sat4j.multicore.MultiCoreLauncher"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="multicore"/>
+		   <param name="src" value="org.sat4j.multicore/src/main/java" />
+                   <param name="jarname" value="org.sat4j.multicore"/>
+                </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-multicore.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
+			<zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+			   <include name="org.sat4j.pb.jar"/>
+		   </zipgroupfileset>
+               </jar>
+               <antcall target="zip-bundle">
+		   <param name="package" value="multicore"/>
+                </antcall>
+	</target>
+	
 	<target name="intervalorders" depends="pseudo" description="Build the interval order agregation tool from  current source tree">
 		<echo>Building Interval Order tool</echo>
                 <antcall target="build">
