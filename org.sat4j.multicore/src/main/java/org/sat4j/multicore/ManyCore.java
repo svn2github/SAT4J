@@ -258,9 +258,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 			}
 			System.out.println("c And the winner is "
 					+ availableSolvers[winnerId]);
-		} else {
-			remainingSolvers--;
 		}
+		remainingSolvers--;
 	}
 
 	public boolean isDBSimplificationAllowed() {
