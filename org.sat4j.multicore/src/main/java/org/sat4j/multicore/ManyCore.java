@@ -196,6 +196,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	public boolean isSatisfiable(IVecInt assumps, boolean globalTimeout)
 			throws TimeoutException {
 		remainingSolvers = numberOfSolvers;
+		resultFound = false;
 		needToWait = true;
 		for (int i = 0; i < numberOfSolvers; i++) {
 			new Thread(new RunnableSolver(i, solvers.get(i), assumps,
@@ -356,7 +357,7 @@ class RunnableSolver implements Runnable {
 		try {
 			boolean result = solver.isSatisfiable(assumps, globalTimeout);
 			ol.onFinishWithAnswer(true, result, index);
-		} catch (TimeoutException e) {
+		} catch (Exception e) {
 			ol.onFinishWithAnswer(false, false, index);
 		}
 	}
