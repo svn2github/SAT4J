@@ -31,7 +31,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	private int winnerId;
 	private boolean needToWait;
 	private boolean resultFound;
-	private int remainingSolvers;
+	private volatile int remainingSolvers;
+
+	private volatile boolean solved;
 
 	public ManyCore(ASolverFactory<S> factory, String... solverNames) {
 		availableSolvers = solverNames;
@@ -196,7 +198,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	public boolean isSatisfiable(IVecInt assumps, boolean globalTimeout)
 			throws TimeoutException {
 		remainingSolvers = numberOfSolvers;
-		resultFound = false;
+		solved = false;
 		needToWait = true;
 		for (int i = 0; i < numberOfSolvers; i++) {
 			new Thread(new RunnableSolver(i, solvers.get(i), assumps,
@@ -209,7 +211,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		} catch (InterruptedException e) {
 			// TODO: handle exception
 		}
-		if (remainingSolvers == 0) {
+		if (!solved) {
+			assert remainingSolvers == 0;
 			throw new TimeoutException();
 		}
 		return resultFound;
@@ -247,8 +250,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public synchronized void onFinishWithAnswer(boolean finished,
 			boolean result, int index) {
-		if (finished) {
+		if (finished && !solved) {
 			winnerId = index;
+			solved = true;
 			resultFound = result;
 			for (int i = 0; i < numberOfSolvers; i++) {
 				if (i != winnerId)
