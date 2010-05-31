@@ -204,7 +204,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		}
 		try {
 			do {
-				Thread.sleep(1000);
+				Thread.sleep(500);
 			} while (remainingSolvers > 0);
 		} catch (InterruptedException e) {
 			// TODO: handle exception
