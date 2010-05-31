@@ -29,7 +29,6 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	protected final List<S> solvers;
 	protected final int numberOfSolvers;
 	private int winnerId;
-	private boolean needToWait;
 	private boolean resultFound;
 	private volatile int remainingSolvers;
 
@@ -199,7 +198,6 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 			throws TimeoutException {
 		remainingSolvers = numberOfSolvers;
 		solved = false;
-		needToWait = true;
 		for (int i = 0; i < numberOfSolvers; i++) {
 			new Thread(new RunnableSolver(i, solvers.get(i), assumps,
 					globalTimeout, this)).start();
@@ -207,7 +205,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		try {
 			do {
 				Thread.sleep(1000);
-			} while (needToWait && remainingSolvers > 0);
+			} while (remainingSolvers > 0);
 		} catch (InterruptedException e) {
 			// TODO: handle exception
 		}
@@ -260,7 +258,6 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 			}
 			System.out.println("c And the winner is "
 					+ availableSolvers[winnerId]);
-			needToWait = false;
 		} else {
 			remainingSolvers--;
 		}
