@@ -107,7 +107,7 @@ public class ObjectiveFunction implements Serializable {
 				lit = -lit;
 				coef = coef.negate();
 			}
-			stb.append(coef.signum() < 0 ? coef : "+" + coef + " x" + lit + " ");
+			stb.append((coef.signum() < 0 ? "" : "+") + coef + " x" + lit + " ");
 		}
 		return stb.toString();
 	}
