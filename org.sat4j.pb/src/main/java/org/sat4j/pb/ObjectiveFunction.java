@@ -98,8 +98,17 @@ public class ObjectiveFunction implements Serializable {
 		StringBuffer stb = new StringBuffer();
 		IVecInt lits = getVars();
 		IVec<BigInteger> coefs = getCoeffs();
-		for (int i = 0; i < lits.size(); i++)
-			stb.append(coefs.get(i) + " x" + lits.get(i) + " ");
+		BigInteger coef;
+		int lit;
+		for (int i = 0; i < lits.size(); i++) {
+			coef = coefs.get(i);
+			lit = lits.get(i);
+			if (lit < 0) {
+				lit = -lit;
+				coef = coef.negate();
+			}
+			stb.append(coef.signum() < 0 ? coef : "+" + coef + " x" + lit + " ");
+		}
 		return stb.toString();
 	}
 
