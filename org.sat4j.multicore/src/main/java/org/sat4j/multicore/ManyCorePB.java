@@ -24,7 +24,7 @@ public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i)
 					.addPseudoBoolean(lits, coeffs, moreThan, d));

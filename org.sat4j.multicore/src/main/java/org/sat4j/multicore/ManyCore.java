@@ -291,7 +291,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public IConstr addBlockingClause(IVecInt literals)
 			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i).addBlockingClause(literals));
 		}
