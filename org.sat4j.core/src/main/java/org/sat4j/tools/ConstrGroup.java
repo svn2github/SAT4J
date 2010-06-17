@@ -45,12 +45,21 @@ import org.sat4j.specs.IVec;
 public class ConstrGroup implements IConstr {
 
 	private final IVec<IConstr> constrs = new Vec<IConstr>();
+	private final boolean disallowNullConstraints;
+
+	public ConstrGroup() {
+		this(true);
+	}
+
+	ConstrGroup(boolean allowNullConstraints) {
+		this.disallowNullConstraints = allowNullConstraints;
+	}
 
 	public void add(IConstr constr) {
-		// if (constr == null) {
-		// throw new IllegalArgumentException(
-		// "The constraint you entered cannot be removed from the solver.");
-		// }
+		if (constr == null && disallowNullConstraints) {
+			throw new IllegalArgumentException(
+					"The constraint you entered cannot be removed from the solver.");
+		}
 		constrs.push(constr);
 	}
 
