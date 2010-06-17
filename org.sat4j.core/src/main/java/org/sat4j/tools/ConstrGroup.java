@@ -47,12 +47,22 @@ public class ConstrGroup implements IConstr {
 	private final IVec<IConstr> constrs = new Vec<IConstr>();
 	private final boolean disallowNullConstraints;
 
+	/**
+	 * Create a ConstrGroup that cannot contain null constrs.
+	 */
 	public ConstrGroup() {
 		this(true);
 	}
 
-	ConstrGroup(boolean allowNullConstraints) {
-		this.disallowNullConstraints = allowNullConstraints;
+	/**
+	 * Create a new constrGroup.
+	 * 
+	 * @param disallowNullConstraints
+	 *            should be set to false to allow adding null constraints to the
+	 *            group.
+	 */
+	public ConstrGroup(boolean disallowNullConstraints) {
+		this.disallowNullConstraints = disallowNullConstraints;
 	}
 
 	public void add(IConstr constr) {
