@@ -254,7 +254,16 @@ public class OPBReader2007 extends OPBReader2006 {
 			// generate the clause
 			// product => newSymbol (this is a clause)
 			// not x1 or not x2 ... or not xn or newSymbol
-			productStore.put(newVar, tmpLit);
+			if (tmpLit.size() == 2) {
+				Map<String, String> map1 = binaryProductToVar
+						.get(tmpLit.get(0));
+				if (map1 == null) {
+					map1 = new HashMap<String, String>();
+					binaryProductToVar.put(tmpLit.get(0), map1);
+				}
+				map1.put(tmpLit.get(1), newVar);
+			}
+			varToProduct.put(newVar, tmpLit);
 			IVecInt newLits = new VecInt();
 			for (Iterator<String> iterator = tmpLit.iterator(); iterator
 					.hasNext();)
@@ -279,10 +288,18 @@ public class OPBReader2007 extends OPBReader2006 {
 		return newVar;
 	}
 
-	private final Map<String, IVec<String>> productStore = new HashMap<String, IVec<String>>();
+	private final Map<String, IVec<String>> varToProduct = new HashMap<String, IVec<String>>();
+
+	private final Map<String, Map<String, String>> binaryProductToVar = new HashMap<String, Map<String, String>>();
 
 	private String getProductVariable(IVec<String> lits) {
-		for (Map.Entry<String, IVec<String>> c : productStore.entrySet())
+		if (lits.size() == 2) {
+			Map<String, String> map = binaryProductToVar.get(lits.get(0));
+			if (map == null)
+				return null;
+			return map.get(lits.get(1));
+		}
+		for (Map.Entry<String, IVec<String>> c : varToProduct.entrySet())
 			if (c.getValue().equals(lits))
 				return c.getKey();
 		return null;
