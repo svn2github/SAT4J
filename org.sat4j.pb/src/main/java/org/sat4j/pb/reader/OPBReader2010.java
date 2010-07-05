@@ -2,6 +2,7 @@ package org.sat4j.pb.reader;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Iterator;
 
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.ParseFormatException;
@@ -143,6 +144,9 @@ public class OPBReader2010 extends OPBReader2007 {
 		if (softConstraint) {
 			int varId = getVars().last();
 			BigInteger constrWeight = d;
+			for (Iterator<BigInteger> it = coeffs.iterator(); it.hasNext();) {
+				constrWeight = constrWeight.add(it.next().abs());
+			}
 			if ("<=".equals(operator)) {
 				constrWeight = constrWeight.negate();
 			}
@@ -157,8 +161,8 @@ public class OPBReader2010 extends OPBReader2007 {
 			throws ParseFormatException, ContradictionException {
 		super.parseInstance(input);
 		if (isWbo && softLimit != SAT4J_MAX_BIG_INTEGER) {
-			solver.addPseudoBoolean(getVars(), getCoeffs(), false,
-					softLimit.subtract(BigInteger.ONE));
+			solver.addPseudoBoolean(getVars(), getCoeffs(), false, softLimit
+					.subtract(BigInteger.ONE));
 		}
 		return solver;
 	}
