@@ -513,7 +513,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		solver.setRestartStrategy(new ArminRestarts());
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+		solver.setLearnedConstraintsDeletionStrategy(solver.fixed_size);
 		return solver;
 	}
 
