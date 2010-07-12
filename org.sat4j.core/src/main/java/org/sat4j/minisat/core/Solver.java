@@ -1075,7 +1075,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	protected void reduceDB() {
-		sortOnActivity();
 		stats.reduceddb++;
 		learnedConstraintsDeletionStrategy.reduce(learnts);
 		System.gc();
@@ -1142,6 +1141,58 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		void onConflictAnalysis(Constr reason);
 	}
 
+	public final LearnedConstraintsDeletionStrategy fixed_size = new LearnedConstraintsDeletionStrategy() {
+		private static final int MAXSIZE = 100;
+		private final ConflictTimer timer = new ConflictTimerAdapter(MAXSIZE) {
+
+			@Override
+			void run() {
+				needToReduceDB = true;
+			}
+		};
+
+		public void reduce(IVec<Constr> learnedConstrs) {
+			int i, j;
+			for (i = j = 0; i < learnts.size() && learnts.size() - j > MAXSIZE; i++) {
+				Constr c = learnts.get(i);
+				if (c.locked() || c.size() == 2) {
+					learnts.set(j++, learnts.get(i));
+				} else {
+					c.remove(Solver.this);
+				}
+			}
+			for (; i < learnts.size(); i++) {
+				learnts.set(j++, learnts.get(i));
+			}
+			if (verbose) {
+				System.out.println(getLogPrefix()
+						+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
+						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.flush();
+			}
+			learnts.shrinkTo(j);
+		}
+
+		public void onConflictAnalysis(Constr reason) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void onConflict(Constr outLearnt) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void init() {
+			// TODO Auto-generated method stub
+
+		}
+
+		public ConflictTimer getTimer() {
+			return timer;
+		}
+	};
+
 	/**
 	 * @since 2.1
 	 */
@@ -1169,6 +1220,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		};
 
 		public void reduce(IVec<Constr> learnedConstrs) {
+			sortOnActivity();
 			int i, j;
 			for (i = j = 0; i < learnts.size() / 2; i++) {
 				Constr c = learnts.get(i);
@@ -1185,6 +1237,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				System.out.println(getLogPrefix()
 						+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
 						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.flush();
 			}
 			learnts.shrinkTo(j);
 		}
@@ -1249,6 +1302,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		};
 
 		public void reduce(IVec<Constr> learnedConstrs) {
+			sortOnActivity();
 			int i, j;
 			for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
 				Constr c = learnedConstrs.get(i);
@@ -1263,6 +1317,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 						.println(getLogPrefix()
 								+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
 								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.flush();
 			}
 			learnts.shrinkTo(j);
 
@@ -1365,8 +1420,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(),
-							trail.size());
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
