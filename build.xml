@@ -434,7 +434,7 @@
 	<target name="clean" description="Delete build and doc directories">
 		<!-- Delete the ${build} and ${doc} directory trees -->
 		<delete dir="${build}" />
-                <delete dir="$testreport.dir}"/>
+                <delete dir="${testreport.dir}"/>
 		<delete dir="${doc}" />
 	</target>
 
