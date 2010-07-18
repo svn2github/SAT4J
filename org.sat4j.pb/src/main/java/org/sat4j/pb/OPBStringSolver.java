@@ -253,4 +253,9 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		return obj;
 	}
 
+	@Override
+	public int nConstraints() {
+		return nbOfConstraints;
+	}
+
 }
