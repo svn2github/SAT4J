@@ -29,7 +29,6 @@ package org.sat4j.pb.core;
 
 import java.math.BigInteger;
 
-import org.sat4j.minisat.core.AssertingClauseGenerator;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -55,19 +54,17 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 
 	protected PBSolverStats stats;
 
-	public PBSolver(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolver(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order, RestartStrategy restarter) {
-		super(acg, learner, dsf, order, restarter);
+		super(learner, dsf, order, restarter);
 		stats = new PBSolverStats();
 		initStats(stats);
 	}
 
-	public PBSolver(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolver(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
-		super(acg, learner, dsf, params, order, restarter);
+		super(learner, dsf, params, order, restarter);
 		stats = new PBSolverStats();
 		initStats(stats);
 	}

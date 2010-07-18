@@ -28,7 +28,6 @@
 package org.sat4j.pb.core;
 
 import org.sat4j.core.Vec;
-import org.sat4j.minisat.core.AssertingClauseGenerator;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
@@ -54,24 +53,21 @@ public class PBSolverCP extends PBSolver {
 	 * @param learner
 	 * @param dsf
 	 */
-	public PBSolverCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order) {
-		super(acg, learner, dsf, new SearchParams(1.5, 100), order,
+		super(learner, dsf, new SearchParams(1.5, 100), order,
 				new MiniSATRestarts());
 	}
 
-	public PBSolverCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
-		super(acg, learner, dsf, params, order, restarter);
+		super(learner, dsf, params, order, restarter);
 	}
 
-	public PBSolverCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
-		super(acg, learner, dsf, params, order, new MiniSATRestarts());
+		super(learner, dsf, params, order, new MiniSATRestarts());
 	}
 
 	@Override

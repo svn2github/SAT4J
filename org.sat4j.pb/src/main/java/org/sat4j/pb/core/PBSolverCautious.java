@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.sat4j.pb.core;
 
-import org.sat4j.minisat.core.AssertingClauseGenerator;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.pb.constraints.pb.ConflictMapSwitchToClause;
@@ -39,17 +38,15 @@ public class PBSolverCautious extends PBSolverCP {
 	private static final long serialVersionUID = 1L;
 	public static final int BOUND = 10;
 
-	public PBSolverCautious(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order) {
-		super(acg, learner, dsf, order);
+		super(learner, dsf, order);
 		ConflictMapSwitchToClause.UPPERBOUND = BOUND;
 	}
 
-	public PBSolverCautious(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order, int bound) {
-		super(acg, learner, dsf, order);
+		super(learner, dsf, order);
 		ConflictMapSwitchToClause.UPPERBOUND = bound;
 	}
 

@@ -20,28 +20,24 @@ public class PBSolverResCP extends PBSolverCP {
 	public PBSolverResCP(AssertingClauseGenerator acg,
 			LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order) {
-		this(acg, learner, dsf, order, MAXCONFLICTS);
+		this(learner, dsf, order, MAXCONFLICTS);
 	}
 
-	public PBSolverResCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order, long bound) {
-		super(acg, learner, dsf, order);
+		super(learner, dsf, order);
 		this.bound = bound;
 	}
 
-	public PBSolverResCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order,
 			RestartStrategy restarter) {
-		super(acg, learner, dsf, params, order, restarter);
-		// TODO Auto-generated constructor stub
+		super(learner, dsf, params, order, restarter);
 	}
 
-	public PBSolverResCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
-		super(acg, learner, dsf, params, order);
+		super(learner, dsf, params, order);
 		// TODO Auto-generated constructor stub
 	}
 
