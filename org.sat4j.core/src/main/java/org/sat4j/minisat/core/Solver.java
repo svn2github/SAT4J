@@ -149,8 +149,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private LearningStrategy<D> learner;
 
-	protected final AssertingClauseGenerator analyzer;
-
 	private volatile boolean undertimeout;
 
 	private long timeout = Integer.MAX_VALUE;
@@ -191,19 +189,15 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * creates a Solver without LearningListener. A learningListener must be
 	 * added to the solver, else it won't backtrack!!! A data structure factory
 	 * must be provided, else it won't work either.
-	 * 
-	 * @param acg
-	 *            an asserting clause generator
 	 */
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
-			D dsf, IOrder order, RestartStrategy restarter) {
-		this(acg, learner, dsf, new SearchParams(), order, restarter);
+	public Solver(LearningStrategy<D> learner, D dsf, IOrder order,
+			RestartStrategy restarter) {
+		this(learner, dsf, new SearchParams(), order, restarter);
 	}
 
-	public Solver(AssertingClauseGenerator acg, LearningStrategy<D> learner,
-			D dsf, SearchParams params, IOrder order, RestartStrategy restarter) {
-		analyzer = acg;
+	public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
+			IOrder order, RestartStrategy restarter) {
 		this.learner = learner;
 		this.order = order;
 		this.params = params;
@@ -486,7 +480,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			seen[i] = false;
 		}
 
-		analyzer.initAnalyze();
+		int counter = 0;
 		int p = ILits.UNDEFINED;
 
 		outLearnt.push(ILits.UNDEFINED);
@@ -505,7 +499,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (!seen[q >> 1]) {
 					seen[q >> 1] = true;
 					if (voc.getLevel(q) == decisionLevel()) {
-						analyzer.onCurrentDecisionLevelLiteral(q);
+						counter++;
 					} else if (voc.getLevel(q) > 0) {
 						// only literals assigned after decision level 0 part of
 						// the explanation
@@ -523,7 +517,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			} while (!seen[p >> 1]);
 			// seen[p.var] indique que p se trouve dans outLearnt ou dans
 			// le dernier niveau de d?cision
-		} while (analyzer.clauseNonAssertive(confl));
+		} while (--counter > 0);
 
 		outLearnt.set(0, p ^ 1);
 		simplifier.simplify(outLearnt);
@@ -1634,8 +1628,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public String toString(String prefix) {
 		StringBuffer stb = new StringBuffer();
-		Object[] objs = { analyzer, dsfactory, learner, params, order,
-				simplifier, restarter, learnedConstraintsDeletionStrategy };
+		Object[] objs = { dsfactory, learner, params, order, simplifier,
+				restarter, learnedConstraintsDeletionStrategy };
 		stb.append(prefix);
 		stb.append("--- Begin Solver configuration ---"); //$NON-NLS-1$
 		stb.append("\n"); //$NON-NLS-1$

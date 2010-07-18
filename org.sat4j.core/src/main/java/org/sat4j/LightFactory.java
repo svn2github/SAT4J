@@ -36,7 +36,6 @@ import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.ArminRestarts;
-import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.specs.ISolver;
 
 /**
@@ -75,8 +74,7 @@ public class LightFactory extends ASolverFactory<ISolver> {
 	public ISolver defaultSolver() {
 		MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
 		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
-				new FirstUIP(), learning, new MixedDataStructureDanielWL(),
-				new VarOrderHeap(new RSATPhaseSelectionStrategy()),
+				learning, new MixedDataStructureDanielWL(), new VarOrderHeap(new RSATPhaseSelectionStrategy()),
 				new ArminRestarts());
 		learning.setSolver(solver);
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
