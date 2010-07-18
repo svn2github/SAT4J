@@ -61,6 +61,7 @@ import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
+import org.sat4j.pb.tools.ManyCorePB;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;
 
@@ -539,6 +540,18 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 */
 	public static IPBSolver newResolution() {
 		return newResolutionGlucose();
+	}
+
+	/**
+	 * Resolution and CuttingPlanes based solvers running in parallel. Does only
+	 * make sense if run on a computer with several cores.
+	 * 
+	 * @return a parallel solver using both resolution and cutting planes proof
+	 *         system.
+	 */
+	public static IPBSolver newBoth() {
+		return new ManyCorePB(org.sat4j.pb.SolverFactory.instance(),
+				"Resolution", "CuttingPlanes");
 	}
 
 	/**
