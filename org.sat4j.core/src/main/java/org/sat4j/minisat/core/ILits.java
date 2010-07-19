@@ -144,6 +144,8 @@ public interface ILits {
 	 */
 	public abstract IVec<Propagatable> watches(int lit);
 
+	public abstract void removeWatch(int neg, Propagatable constraint);
+
 	public abstract String valueToString(int lit);
 
 	public IVecInt shortCircuits(int lit);

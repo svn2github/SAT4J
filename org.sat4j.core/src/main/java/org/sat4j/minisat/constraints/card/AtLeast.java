@@ -135,7 +135,7 @@ public class AtLeast implements Constr, Undoable, Serializable {
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int q : lits) {
-			voc.watches(q ^ 1).remove(this);
+			voc.removeWatch(q ^ 1, this);
 		}
 	}
 

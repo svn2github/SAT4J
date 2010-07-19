@@ -248,6 +248,13 @@ public final class Lits implements Serializable, ILits {
 	public void watch(int lit, Propagatable c, int shortcut) {
 		watches[lit].push(c);
 		shortcuts[lit].push(shortcut);
+		assert watches[lit].size() == shortcuts[lit].size();
+	}
+
+	public void removeWatch(int lit, Propagatable c) {
+		int index = watches[lit].indexOf(c);
+		watches[lit].delete(index);
+		shortcuts[lit].delete(index);
 	}
 
 	public IVec<Propagatable> watches(int lit) {

@@ -860,6 +860,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			shortcuts.clear();
 			voc.watches(p).moveTo(watched);
 			voc.shortCircuits(p).moveTo(shortcuts);
+			assert watched.size() == shortcuts.size();
 			final int size = watched.size();
 			int shortcut;
 			for (int i = 0; i < size; i++) {
@@ -868,6 +869,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				shortcut = shortcuts.get(i);
 				if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut)) {
 					voc.watch(p, watched.get(i), shortcut);
+					stats.shortcuts++;
 					continue;
 				}
 				if (!watched.get(i).propagate(this, p)) {
