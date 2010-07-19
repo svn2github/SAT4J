@@ -41,8 +41,6 @@ public class AllTests {
 				.addTestSuite(CounterPBConstrClauseImpliedWithClauseCardConstrLearning.class);
 		suite.addTestSuite(CounterPBConstrOnRandomCardProblemsTest.class);
 		suite
-				.addTestSuite(CounterPBConstrWithCBClauseCardConstrLearningTest.class);
-		suite
 				.addTestSuite(CounterPBConstrWithClauseAtLeastConstrLearningTest.class);
 		suite
 				.addTestSuite(CounterPBConstrWithClauseCardConstrLearningTest.class);
