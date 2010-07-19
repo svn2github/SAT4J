@@ -857,6 +857,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// watches manipulation in counter Based clauses for instance.
 			assert p > 1;
 			watched.clear();
+			shortcuts.clear();
 			voc.watches(p).moveTo(watched);
 			voc.shortCircuits(p).moveTo(shortcuts);
 			final int size = watched.size();
