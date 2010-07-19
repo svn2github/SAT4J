@@ -208,7 +208,7 @@ public final class MaxWatchPb extends WatchPb {
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < lits.length; i++) {
 			if (!voc.isFalsified(lits[i]))
-				voc.watches(lits[i] ^ 1).remove(this);
+				voc.removeWatch(lits[i] ^ 1, this);
 		}
 	}
 

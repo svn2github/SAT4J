@@ -342,7 +342,7 @@ public class MinWatchPb extends WatchPb {
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < watchingCount; i++) {
-			voc.watches(lits[watching[i]] ^ 1).remove(this);
+			voc.removeWatch(lits[watching[i]] ^ 1, this);
 			this.watched[this.watching[i]] = false;
 		}
 		watchingCount = 0;
