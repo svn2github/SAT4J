@@ -589,4 +589,10 @@ public abstract class WatchPb implements PBConstr, Undoable, Serializable {
 		}
 	}
 
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return ILits.UNDEFINED;
+	}
 }

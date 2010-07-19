@@ -1,6 +1,5 @@
 package org.sat4j.pb.core;
 
-import org.sat4j.minisat.core.AssertingClauseGenerator;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -17,8 +16,7 @@ public class PBSolverResCP extends PBSolverCP {
 
 	private long bound;
 
-	public PBSolverResCP(AssertingClauseGenerator acg,
-			LearningStrategy<PBDataStructureFactory> learner,
+	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
 			PBDataStructureFactory dsf, IOrder order) {
 		this(learner, dsf, order, MAXCONFLICTS);
 	}

@@ -43,7 +43,6 @@ import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedWLClauseCardConstrDataStructure;
-import org.sat4j.pb.constraints.PBMaxCBClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseAtLeastConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxDataStructure;
@@ -429,14 +428,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 */
 	public static PBSolverCP newMiniOPBClauseAtLeastConstrMax() {
 		return newPBCP(new PBMaxClauseAtLeastConstrDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         clauses, watched cardinalities, and constraint learning.
-	 */
-	public static PBSolverCP newMiniOPBCounterBasedClauseCardConstrMax() {
-		return newPBCP(new PBMaxCBClauseCardConstrDataStructure());
 	}
 
 	/**
