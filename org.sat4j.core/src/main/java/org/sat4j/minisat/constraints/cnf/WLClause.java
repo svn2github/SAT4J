@@ -239,4 +239,10 @@ public abstract class WLClause implements Constr, Serializable {
 		return (int) sum / lits.length;
 	}
 
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return lits[lits.length / 2];
+	}
 }

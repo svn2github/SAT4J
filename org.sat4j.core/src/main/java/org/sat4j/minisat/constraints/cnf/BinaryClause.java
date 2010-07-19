@@ -212,4 +212,11 @@ public abstract class BinaryClause implements Constr, Serializable {
 		voc.watch(neg(head), this);
 		voc.watch(neg(tail), this);
 	}
+
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return head;
+	}
 }

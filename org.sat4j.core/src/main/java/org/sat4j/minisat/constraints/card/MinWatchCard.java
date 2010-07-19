@@ -594,4 +594,11 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	public void forwardActivity(double claInc) {
 		// do nothing
 	}
+
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return ILits.UNDEFINED;
+	}
 }

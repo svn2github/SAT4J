@@ -19,7 +19,6 @@
 package org.sat4j.minisat;
 
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.minisat.constraints.ClausalDataStructureCBWL;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielHT;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
@@ -210,14 +209,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	public static Solver<DataStructureFactory> newMiniLearningPure() {
 		return newMiniLearning(new MixedDataStructureDanielWL(),
 				new PureOrder());
-	}
-
-	/**
-	 * @return a default minilearning SAT solver choosing periodically to branch
-	 *         on literal "pure in the original set of clauses" if any.
-	 */
-	public static Solver<DataStructureFactory> newMiniLearningCBWLPure() {
-		return newMiniLearning(new ClausalDataStructureCBWL(), new PureOrder());
 	}
 
 	/**

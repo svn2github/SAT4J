@@ -296,4 +296,11 @@ public class AtLeast implements Constr, Undoable, Serializable {
 
 	}
 
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return ILits.UNDEFINED;
+	}
+
 }

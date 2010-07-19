@@ -106,4 +106,8 @@ public class UnitClause implements Constr {
 	public void forwardActivity(double claInc) {
 		// silent to prevent problems with xplain trick.
 	}
+
+	public int getShortCircuitLiteral() {
+		return literal;
+	}
 }

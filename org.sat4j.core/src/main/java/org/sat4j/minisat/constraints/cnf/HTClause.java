@@ -288,4 +288,11 @@ public abstract class HTClause implements Constr, Serializable {
 		}
 		return (int) sum / middleLits.length;
 	}
+
+	/**
+	 * @since 2.2.1
+	 */
+	public int getShortCircuitLiteral() {
+		return middleLits[middleLits.length / 2];
+	}
 }

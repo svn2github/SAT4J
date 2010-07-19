@@ -28,6 +28,7 @@
 package org.sat4j.minisat.core;
 
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
 
 /**
  * That interface manages the solver's internal vocabulary. Everything related
@@ -134,6 +135,8 @@ public interface ILits {
 
 	public abstract void watch(int lit, Propagatable c);
 
+	public abstract void watch(int lit, Propagatable c, int shortcut);
+
 	/**
 	 * @param lit
 	 *            a literal
@@ -142,4 +145,6 @@ public interface ILits {
 	public abstract IVec<Propagatable> watches(int lit);
 
 	public abstract String valueToString(int lit);
+
+	public IVecInt shortCircuits(int lit);
 }

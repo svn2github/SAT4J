@@ -203,7 +203,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		res.append("\n");
 		for (int i = 0; i < numberOfSolvers; i++) {
 			res.append(solvers.get(i).toString(prefix));
-			res.append("\n");
+			if (i < numberOfSolvers - 1) {
+				res.append("\n");
+			}
 		}
 		return res.toString();
 	}

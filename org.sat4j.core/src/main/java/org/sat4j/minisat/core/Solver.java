@@ -840,6 +840,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		claInc *= CLAUSE_RESCALE_FACTOR;
 	}
 
+	private final IVec<Propagatable> watched = new Vec<Propagatable>();
+	private final IVecInt shortcuts = new VecInt();
+
 	/**
 	 * @return null if not conflict is found, else a conflicting constraint.
 	 */
@@ -853,16 +856,26 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// Moved original MiniSAT code to dsfactory to avoid
 			// watches manipulation in counter Based clauses for instance.
 			assert p > 1;
-			IVec<Propagatable> watched = dsfactory.getWatchesFor(p);
-
+			watched.clear();
+			voc.watches(p).moveTo(watched);
+			voc.shortCircuits(p).moveTo(shortcuts);
 			final int size = watched.size();
+			int shortcut;
 			for (int i = 0; i < size; i++) {
 				stats.inspects++;
+				// try shortcut
+				shortcut = shortcuts.get(i);
+				if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut)) {
+					voc.watch(p, watched.get(i), shortcut);
+					continue;
+				}
 				if (!watched.get(i).propagate(this, p)) {
 					// Constraint is conflicting: copy remaining watches to
 					// watches[p]
 					// and return constraint
-					dsfactory.conflictDetectedInWatchesFor(p, i);
+					for (int j = i + 1; j < watched.size(); j++) {
+						voc.watch(p, watched.get(j), shortcuts.get(j));
+					}
 					qhead = trail.size(); // propQ.clear();
 					// FIXME enlever le transtypage
 					return (Constr) watched.get(i);
