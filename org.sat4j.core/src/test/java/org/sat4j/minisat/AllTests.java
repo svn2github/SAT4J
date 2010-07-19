@@ -50,7 +50,6 @@ public class AllTests {
 		suite.addTestSuite(M2CardMinYannTest.class);
 		suite.addTestSuite(M2AtLeastTest.class);
 		suite.addTestSuite(M2BackjumpingTest.class);
-		suite.addTestSuite(M2MiniLearningCBTest.class);
 		suite.addTest(GenericM2Test.suite());
 		suite.addTestSuite(M2CardMaxYannTest.class);
 		// $JUnit-END$
