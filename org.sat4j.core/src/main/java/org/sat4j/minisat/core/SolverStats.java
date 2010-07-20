@@ -103,8 +103,8 @@ public class SolverStats implements Serializable {
 						+ learnedbinaryclauses);
 		out.println(prefix + "learnt ternary clauses\t: "
 				+ learnedternaryclauses);
-		out.println(prefix + "learnt clauses\t: " + learnedclauses);
-		out.println(prefix + "ignored clauses\t: " + ignoredclauses);
+		out.println(prefix + "learnt constraints\t: " + learnedclauses);
+		out.println(prefix + "ignored constraints\t: " + ignoredclauses);
 		out.println(prefix + "root simplifications\t: " + rootSimplifications);
 		out.println(prefix + "removed literals (reason simplification)\t: "
 				+ reducedliterals);
