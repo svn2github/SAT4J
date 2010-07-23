@@ -1158,13 +1158,15 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		};
 
 		public void reduce(IVec<Constr> learnedConstrs) {
-			int i, j;
-			for (i = j = 0; i < learnts.size() && learnts.size() - j > MAXSIZE; i++) {
+			int i, j, k;
+			for (i = j = k = 0; i < learnts.size()
+					&& learnts.size() - k > MAXSIZE; i++) {
 				Constr c = learnts.get(i);
 				if (c.locked() || c.size() == 2) {
 					learnts.set(j++, learnts.get(i));
 				} else {
 					c.remove(Solver.this);
+					k++;
 				}
 			}
 			for (; i < learnts.size(); i++) {
