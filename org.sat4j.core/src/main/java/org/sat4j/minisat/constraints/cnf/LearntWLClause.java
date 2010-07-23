@@ -47,24 +47,25 @@ public final class LearntWLClause extends WLClause {
 	 * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
 	 */
 	public void register() {
-		assert lits.length > 1;
+		assert lits.length > 0;
 		// prendre un deuxieme litt???ral ??? surveiller
-		int maxi = 1;
-		int maxlevel = voc.getLevel(lits[1]);
-		for (int i = 2; i < lits.length; i++) {
+		int maxi = -1;
+		int maxlevel = voc.getLevel(literal1);
+		for (int i = 0; i < lits.length; i++) {
 			int level = voc.getLevel(lits[i]);
 			if (level > maxlevel) {
 				maxi = i;
 				maxlevel = level;
 			}
 		}
-		int l = lits[1];
-		lits[1] = lits[maxi];
-		lits[maxi] = l;
-
+		if (maxi >= 0) {
+			int l = literal1;
+			literal1 = lits[maxi];
+			lits[maxi] = l;
+		}
 		// ajoute la clause a la liste des clauses control???es.
-		voc.watch(lits[0] ^ 1, this);
-		voc.watch(lits[1] ^ 1, this);
+		voc.watch(literal0 ^ 1, this);
+		voc.watch(literal1 ^ 1, this);
 
 	}
 

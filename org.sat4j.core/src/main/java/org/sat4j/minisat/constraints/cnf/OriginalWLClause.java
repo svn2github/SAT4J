@@ -48,9 +48,9 @@ public final class OriginalWLClause extends WLClause {
 	 * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
 	 */
 	public void register() {
-		assert lits.length > 1;
-		voc.watch(lits[0] ^ 1, this);
-		voc.watch(lits[1] ^ 1, this);
+		assert lits.length > 0;
+		voc.watch(literal0 ^ 1, this);
+		voc.watch(literal1 ^ 1, this);
 	}
 
 	public boolean learnt() {

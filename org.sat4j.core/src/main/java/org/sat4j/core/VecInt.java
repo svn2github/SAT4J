@@ -200,6 +200,10 @@ public final class VecInt implements IVecInt {
 			return "[]";
 		}
 
+		public void moveTo(int sourceStartingIndex, int[] dest) {
+			throw new UnsupportedOperationException();
+		}
+
 	};
 
 	public VecInt() {
@@ -402,6 +406,12 @@ public final class VecInt implements IVecInt {
 
 	public void moveTo(int[] dest) {
 		System.arraycopy(myarray, 0, dest, 0, nbelem);
+		nbelem = 0;
+	}
+
+	public void moveTo(int sourceStartingIndex, int[] dest) {
+		System.arraycopy(myarray, sourceStartingIndex, dest, 0, nbelem
+				- sourceStartingIndex);
 		nbelem = 0;
 	}
 

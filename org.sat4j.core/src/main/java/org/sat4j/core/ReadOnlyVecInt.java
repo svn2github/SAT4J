@@ -184,4 +184,8 @@ public final class ReadOnlyVecInt implements IVecInt {
 		return vec.toString();
 	}
 
+	public void moveTo(int sourceStartingIndex, int[] dest) {
+		throw new UnsupportedOperationException();
+	}
+
 }

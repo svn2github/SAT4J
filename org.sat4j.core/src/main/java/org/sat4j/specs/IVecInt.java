@@ -125,6 +125,8 @@ public interface IVecInt extends Serializable {
 	 */
 	public abstract void moveTo(IVecInt dest);
 
+	public abstract void moveTo(int sourceStartingIndex, int[] dest);
+
 	public abstract void moveTo2(IVecInt dest);
 
 	public abstract void moveTo(int[] dest);
