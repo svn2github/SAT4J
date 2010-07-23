@@ -31,13 +31,11 @@ import java.io.Serializable;
 
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
 /**
  * @author laihem
@@ -56,8 +54,6 @@ public final class Lits implements Serializable, ILits {
 
 	@SuppressWarnings("unchecked")
 	private IVec<Propagatable>[] watches = new IVec[0];
-
-	private IVecInt[] shortcuts = new IVecInt[0];
 
 	private int[] level = new int[0];
 
@@ -94,10 +90,6 @@ public final class Lits implements Serializable, ILits {
 		System.arraycopy(watches, 0, nwatches, 0, watches.length);
 		watches = nwatches;
 
-		IVecInt[] nshortcuts = new IVecInt[2 * nvars];
-		System.arraycopy(shortcuts, 0, nshortcuts, 0, shortcuts.length);
-		shortcuts = nshortcuts;
-
 		IVec<Undoable>[] nundos = new IVec[nvars];
 		System.arraycopy(undos, 0, nundos, 0, undos.length);
 		undos = nundos;
@@ -127,8 +119,6 @@ public final class Lits implements Serializable, ILits {
 			pool[var] = true;
 			watches[var << 1] = new Vec<Propagatable>();
 			watches[(var << 1) | 1] = new Vec<Propagatable>();
-			shortcuts[var << 1] = new VecInt();
-			shortcuts[(var << 1) | 1] = new VecInt();
 			undos[var] = new Vec<Undoable>();
 			level[var] = -1;
 			falsified[var << 1] = false; // because truthValue[var] is
@@ -212,8 +202,6 @@ public final class Lits implements Serializable, ILits {
 	public void reset(int lit) {
 		watches[lit].clear();
 		watches[lit ^ 1].clear();
-		shortcuts[lit].clear();
-		shortcuts[lit ^ 1].clear();
 		level[lit >> 1] = -1;
 		reason[lit >> 1] = null;
 		undos[lit >> 1].clear();
@@ -242,27 +230,15 @@ public final class Lits implements Serializable, ILits {
 	}
 
 	public void watch(int lit, Propagatable c) {
-		watch(lit, c, c.getShortCircuitLiteral());
-	}
-
-	public void watch(int lit, Propagatable c, int shortcut) {
 		watches[lit].push(c);
-		shortcuts[lit].push(shortcut);
-		assert watches[lit].size() == shortcuts[lit].size();
 	}
 
 	public void removeWatch(int lit, Propagatable c) {
-		int index = watches[lit].indexOf(c);
-		watches[lit].delete(index);
-		shortcuts[lit].delete(index);
+		watches[lit].remove(c);
 	}
 
 	public IVec<Propagatable> watches(int lit) {
 		return watches[lit];
-	}
-
-	public IVecInt shortCircuits(int lit) {
-		return shortcuts[lit];
 	}
 
 	public boolean isImplied(int lit) {

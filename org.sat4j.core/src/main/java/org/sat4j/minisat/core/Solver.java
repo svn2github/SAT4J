@@ -841,7 +841,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	private final IVec<Propagatable> watched = new Vec<Propagatable>();
-	private final IVecInt shortcuts = new VecInt();
 
 	/**
 	 * @return null if not conflict is found, else a conflicting constraint.
@@ -857,27 +856,24 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			// watches manipulation in counter Based clauses for instance.
 			assert p > 1;
 			watched.clear();
-			shortcuts.clear();
 			voc.watches(p).moveTo(watched);
-			voc.shortCircuits(p).moveTo(shortcuts);
-			assert watched.size() == shortcuts.size();
 			final int size = watched.size();
-			int shortcut;
 			for (int i = 0; i < size; i++) {
 				stats.inspects++;
 				// try shortcut
-				shortcut = shortcuts.get(i);
-				if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut)) {
-					voc.watch(p, watched.get(i), shortcut);
-					stats.shortcuts++;
-					continue;
-				}
+				// shortcut = shortcuts.get(i);
+				// if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut))
+				// {
+				// voc.watch(p, watched.get(i), shortcut);
+				// stats.shortcuts++;
+				// continue;
+				// }
 				if (!watched.get(i).propagate(this, p)) {
 					// Constraint is conflicting: copy remaining watches to
 					// watches[p]
 					// and return constraint
 					for (int j = i + 1; j < watched.size(); j++) {
-						voc.watch(p, watched.get(j), shortcuts.get(j));
+						voc.watch(p, watched.get(j));
 					}
 					qhead = trail.size(); // propQ.clear();
 					// FIXME enlever le transtypage

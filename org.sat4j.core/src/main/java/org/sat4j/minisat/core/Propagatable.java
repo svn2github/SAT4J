@@ -48,15 +48,4 @@ public interface Propagatable {
 	 */
 	boolean propagate(UnitPropagationListener s, int p);
 
-	/**
-	 * Return on literal of the constraint that can be used in the solver to
-	 * short circuit the propagation when that literal is true. This is
-	 * basically only possible for clauses. Other constraints are expected to
-	 * return ILits.UNDEFINED.
-	 * 
-	 * @return and additional literal to watch to avoid having satisfied
-	 *         constraints in the cache.
-	 */
-	int getShortCircuitLiteral();
-
 }
