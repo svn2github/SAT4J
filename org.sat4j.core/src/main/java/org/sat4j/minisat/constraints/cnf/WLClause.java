@@ -50,7 +50,7 @@ public abstract class WLClause implements Constr, Serializable {
 
 	protected final int[] lits;
 
-	protected final int shortcut;
+	protected int shortcut;
 
 	protected final ILits voc;
 
@@ -120,6 +120,11 @@ public abstract class WLClause implements Constr, Serializable {
 			mylits[0] = mylits[1];
 			mylits[1] = p ^ 1;
 		}
+		if (voc.isSatisfied(mylits[0])) {
+			voc.watch(p, this);
+			shortcut = mylits[0];
+			return true;
+		}
 		// assert mylits[1] == (p ^ 1);
 		int previous = p ^ 1, tmp;
 		// look for new literal to watch: applying move to front strategy
@@ -128,6 +133,9 @@ public abstract class WLClause implements Constr, Serializable {
 				mylits[1] = mylits[i];
 				mylits[i] = previous;
 				voc.watch(mylits[1] ^ 1, this);
+				if (voc.isSatisfied(mylits[i])) {
+					shortcut = mylits[i];
+				}
 				return true;
 			} else {
 				tmp = previous;
