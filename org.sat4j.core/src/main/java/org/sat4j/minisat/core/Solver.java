@@ -549,6 +549,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		if (assumps.size() == 0) {
 			return null;
 		}
+		if (trailLim.last() == trail.size()) {
+			// conflict detected when assuming a value
+			trailLim.pop();
+		}
 		final boolean[] seen = mseen;
 		final IVecInt outLearnt = moutLearnt;
 		final IVecInt preason = mpreason;
@@ -564,13 +568,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 
 		int p = ILits.UNDEFINED;
-		while (confl == null) {
+		while (confl == null && trail.size() > 0) {
 			p = trail.last();
 			confl = voc.getReason(p);
 			undoOne();
-			if (trail.size() <= trailLim.last()) {
+			if (confl == null && trailLim.size() > 0
+					&& p == (conflictingLiteral ^ 1)) {
+				outLearnt.push(toDimacs(p));
+			}
+			if (trailLim.size() > 0 && trail.size() <= trailLim.last()) {
 				trailLim.pop();
 			}
+		}
+		if (confl == null) {
+			return outLearnt;
 		}
 		do {
 
@@ -1428,8 +1439,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(), trail
-							.size());
+					slistener.conflictFound(confl, decisionLevel(),
+							trail.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
