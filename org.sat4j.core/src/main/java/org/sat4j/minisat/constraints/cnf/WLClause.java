@@ -50,8 +50,6 @@ public abstract class WLClause implements Constr, Serializable {
 
 	protected final int[] lits;
 
-	protected int shortcut;
-
 	protected final ILits voc;
 
 	/**
@@ -65,7 +63,6 @@ public abstract class WLClause implements Constr, Serializable {
 	public WLClause(IVecInt ps, ILits voc) {
 		lits = new int[ps.size()];
 		ps.moveTo(lits);
-		shortcut = lits[lits.length / 2];
 		assert ps.size() == 0;
 		this.voc = voc;
 		activity = 0;
@@ -110,20 +107,11 @@ public abstract class WLClause implements Constr, Serializable {
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
-		if (voc.isSatisfied(shortcut)) {
-			voc.watch(p, this);
-			return true;
-		}
 		final int[] mylits = lits;
 		// Lits[1] must contain a falsified literal
 		if (mylits[0] == (p ^ 1)) {
 			mylits[0] = mylits[1];
 			mylits[1] = p ^ 1;
-		}
-		if (voc.isSatisfied(mylits[0])) {
-			voc.watch(p, this);
-			shortcut = mylits[0];
-			return true;
 		}
 		// assert mylits[1] == (p ^ 1);
 		int previous = p ^ 1, tmp;
@@ -133,9 +121,6 @@ public abstract class WLClause implements Constr, Serializable {
 				mylits[1] = mylits[i];
 				mylits[i] = previous;
 				voc.watch(mylits[1] ^ 1, this);
-				if (voc.isSatisfied(mylits[i])) {
-					shortcut = mylits[i];
-				}
 				return true;
 			} else {
 				tmp = previous;
@@ -252,12 +237,5 @@ public abstract class WLClause implements Constr, Serializable {
 			sum += p;
 		}
 		return (int) sum / lits.length;
-	}
-
-	/**
-	 * @since 2.2.1
-	 */
-	public int getShortCircuitLiteral() {
-		return lits[lits.length / 2];
 	}
 }
