@@ -50,10 +50,9 @@ public abstract class WLClause implements Constr, Serializable {
 
 	protected final int[] lits;
 
-	protected final ILits voc;
+	protected final int shortcut;
 
-	protected int literal0;
-	protected int literal1;
+	protected final ILits voc;
 
 	/**
 	 * Creates a new basic clause
@@ -64,10 +63,9 @@ public abstract class WLClause implements Constr, Serializable {
 	 *            A VecInt that WILL BE EMPTY after calling that method.
 	 */
 	public WLClause(IVecInt ps, ILits voc) {
-		lits = new int[ps.size() - 2];
-		literal0 = ps.get(0);
-		literal1 = ps.get(1);
-		ps.moveTo(2, lits);
+		lits = new int[ps.size()];
+		ps.moveTo(lits);
+		shortcut = lits[lits.length / 2];
 		assert ps.size() == 0;
 		this.voc = voc;
 		activity = 0;
@@ -81,12 +79,8 @@ public abstract class WLClause implements Constr, Serializable {
 	public void calcReason(int p, IVecInt outReason) {
 		// assert outReason.size() == 0
 		// && ((p == ILits.UNDEFINED) || (p == lits[0]));
-		if (p == ILits.UNDEFINED) {
-			outReason.push(literal0 ^ 1);
-		}
-		outReason.push(literal1 ^ 1);
 		final int[] mylits = lits;
-		for (int i = 0; i < mylits.length; i++) {
+		for (int i = (p == ILits.UNDEFINED) ? 0 : 1; i < mylits.length; i++) {
 			assert voc.isFalsified(mylits[i]);
 			outReason.push(mylits[i] ^ 1);
 		}
@@ -96,8 +90,8 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @since 2.1
 	 */
 	public void remove(UnitPropagationListener upl) {
-		voc.removeWatch(literal0 ^ 1, this);
-		voc.removeWatch(literal1 ^ 1, this);
+		voc.removeWatch(lits[0] ^ 1, this);
+		voc.removeWatch(lits[1] ^ 1, this);
 		// la clause peut etre effacee
 	}
 
@@ -107,10 +101,6 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @see Constr#simplify(Solver)
 	 */
 	public boolean simplify() {
-		if (voc.isSatisfied(literal0) || voc.isSatisfied(literal1)) {
-			return true;
-		}
-
 		for (int i = 0; i < lits.length; i++) {
 			if (voc.isSatisfied(lits[i])) {
 				return true;
@@ -120,23 +110,24 @@ public abstract class WLClause implements Constr, Serializable {
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
-		// literal1 must contain a falsified literal
-		if (literal0 == (p ^ 1)) {
-			literal0 = literal1;
-			literal1 = p ^ 1;
-		}
-		if (voc.isSatisfied(literal0)) {
+		if (voc.isSatisfied(shortcut)) {
 			voc.watch(p, this);
 			return true;
 		}
 		final int[] mylits = lits;
+		// Lits[1] must contain a falsified literal
+		if (mylits[0] == (p ^ 1)) {
+			mylits[0] = mylits[1];
+			mylits[1] = p ^ 1;
+		}
+		// assert mylits[1] == (p ^ 1);
 		int previous = p ^ 1, tmp;
 		// look for new literal to watch: applying move to front strategy
-		for (int i = 0; i < mylits.length; i++) {
+		for (int i = 2; i < mylits.length; i++) {
 			if (!voc.isFalsified(mylits[i])) {
-				literal1 = mylits[i];
+				mylits[1] = mylits[i];
 				mylits[i] = previous;
-				voc.watch(literal1 ^ 1, this);
+				voc.watch(mylits[1] ^ 1, this);
 				return true;
 			} else {
 				tmp = previous;
@@ -147,21 +138,20 @@ public abstract class WLClause implements Constr, Serializable {
 		// assert voc.isFalsified(mylits[1]);
 		// the clause is now either unit or null
 		// move back the literals to their initial position
-		literal1 = mylits[0];
-		for (int i = 1; i < mylits.length; i++) {
+		for (int i = 2; i < mylits.length; i++) {
 			mylits[i - 1] = mylits[i];
 		}
 		mylits[mylits.length - 1] = previous;
 		voc.watch(p, this);
 		// propagates first watched literal
-		return s.enqueue(literal0, this);
+		return s.enqueue(mylits[0], this);
 	}
 
 	/*
 	 * For learnt clauses only @author leberre
 	 */
 	public boolean locked() {
-		return voc.getReason(literal0) == this;
+		return voc.getReason(lits[0]) == this;
 	}
 
 	/**
@@ -174,10 +164,6 @@ public abstract class WLClause implements Constr, Serializable {
 	@Override
 	public String toString() {
 		StringBuffer stb = new StringBuffer();
-		stb.append(literal0);
-		stb.append(" ");
-		stb.append(literal1);
-		stb.append(" ");
 		for (int i = 0; i < lits.length; i++) {
 			stb.append(Lits.toString(lits[i]));
 			stb.append("["); //$NON-NLS-1$
@@ -197,13 +183,7 @@ public abstract class WLClause implements Constr, Serializable {
 	 * @return the literal
 	 */
 	public int get(int i) {
-		if (i == 0) {
-			return literal0;
-		}
-		if (i == 1) {
-			return literal1;
-		}
-		return lits[i - 2];
+		return lits[i];
 	}
 
 	/**
@@ -214,11 +194,11 @@ public abstract class WLClause implements Constr, Serializable {
 	}
 
 	public int size() {
-		return lits.length + 2;
+		return lits.length;
 	}
 
 	public void assertConstraint(UnitPropagationListener s) {
-		boolean ret = s.enqueue(literal0, this);
+		boolean ret = s.enqueue(lits[0], this);
 		assert ret;
 	}
 
@@ -228,9 +208,7 @@ public abstract class WLClause implements Constr, Serializable {
 
 	public int[] getLits() {
 		int[] tmp = new int[size()];
-		tmp[0] = literal0;
-		tmp[1] = literal1;
-		System.arraycopy(lits, 0, tmp, 2, size());
+		System.arraycopy(lits, 0, tmp, 0, size());
 		return tmp;
 	}
 
