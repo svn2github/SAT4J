@@ -55,12 +55,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.reader.ParseFormatException;
+import org.sat4j.reader.Reader;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IProblem;
+import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
 
 /**
  * Based on the "Official" reader for the Pseudo Boolean evaluation 2005.
