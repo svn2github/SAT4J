@@ -26,7 +26,6 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
-import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;
 
@@ -80,7 +79,7 @@ public class SolverFactory extends ASolverFactory<ISolver> {
     public static <L extends ILits> Solver<DataStructureFactory> newMiniSAT(
             DataStructureFactory dsf) {
         MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
-        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(), learning, dsf,
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(learning, dsf,
                 new VarOrderHeap(), new MiniSATRestarts());
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
