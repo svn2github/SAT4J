@@ -62,7 +62,7 @@ public final class RemiUtils {
 				if (s.isSatisfiable(backbone)) {
 					backbone.pop();
 				} else {
-					// -i is in the backbone
+					// i is in the backbone
 					backbone.pop().push(i);
 				}
 			} else {
