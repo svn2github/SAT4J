@@ -26,7 +26,6 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
-import org.sat4j.minisat.uip.FirstUIP;
 import org.sat4j.pb.IPBSolver;
 
 public class SolverFactory extends ASolverFactory<IPBSolver> {
@@ -41,7 +40,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static Solver<DataStructureFactory> newMiniMaxSAT() {
         MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
-        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(new FirstUIP(), learning,
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(learning,
                 new MixedDataStructureDanielWL(), new SearchParams(1.2,
                         100000), new VarOrderHeap(),
                 new MiniSATRestarts());
