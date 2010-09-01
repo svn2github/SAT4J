@@ -112,7 +112,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
 				prevboolmodel[i] = decorated().model(i + 1);
 			}
 			prevfullmodel = super.model();
-			int end = nborigvars - 1;
+			int end = Math.min(prevfullmodel.length, nborigvars) - 1;
 			while (Math.abs(prevfullmodel[end]) > nborigvars)
 				end--;
 			prevmodel = new int[end + 1];
