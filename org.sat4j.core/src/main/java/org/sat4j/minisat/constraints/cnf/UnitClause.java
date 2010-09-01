@@ -27,7 +27,9 @@
  *******************************************************************************/
 package org.sat4j.minisat.constraints.cnf;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
@@ -49,8 +51,8 @@ public class UnitClause implements Constr {
 	}
 
 	public void calcReason(int p, IVecInt outReason) {
-		throw new UnsupportedOperationException();
-
+		if (p == ILits.UNDEFINED)
+			outReason.push(LiteralsUtils.neg(p));
 	}
 
 	public double getActivity() {
