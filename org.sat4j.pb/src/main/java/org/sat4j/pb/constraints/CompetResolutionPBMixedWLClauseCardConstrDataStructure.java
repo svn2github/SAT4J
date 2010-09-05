@@ -40,12 +40,13 @@ import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.pb.constraints.pb.MaxWatchPb;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
-		PBMaxClauseCardConstrDataStructure {
+		AbstractPBClauseCardConstrDataStructure {
 
 	private static final long serialVersionUID = 1L;
 
@@ -97,6 +98,18 @@ public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
 		dspb.buildConstraintFromConflict(resLits, resCoefs);
 		return new MinWatchCard(getVocabulary(), resLits, true, dspb
 				.getDegree().intValue());
+	}
+
+	@Override
+	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
+			BigInteger degree) throws ContradictionException {
+		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
+				theLits, coefs, degree);
+	}
+
+	@Override
+	protected Constr constructLearntPB(IDataStructurePB mpb) {
+		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
 	}
 
 }
