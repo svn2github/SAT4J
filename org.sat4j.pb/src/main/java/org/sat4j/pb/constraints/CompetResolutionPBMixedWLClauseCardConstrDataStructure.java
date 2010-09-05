@@ -63,6 +63,17 @@ public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
 	}
 
 	@Override
+	public Constr createUnregisteredClause(IVecInt literals) {
+		if (literals.size() == 1) {
+			return new UnitClause(literals.last());
+		}
+		if (literals.size() == 2) {
+			return new LearntBinaryClause(literals, getVocabulary());
+		}
+		return new LearntWLClause(literals, getVocabulary());
+	}
+
+	@Override
 	protected Constr constructClause(IVecInt v) {
 		if (v == null)
 			return null;
