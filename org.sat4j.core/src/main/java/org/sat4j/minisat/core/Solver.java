@@ -171,7 +171,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final IVecInt learnedLiterals = new VecInt();
 
-	private boolean verbose = true;
+	private boolean verbose = false;
 
 	private String prefix = "c ";
 
