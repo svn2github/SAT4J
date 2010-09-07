@@ -195,6 +195,8 @@ public abstract class AbstractLauncher implements Serializable {
 				usage();
 				return;
 			}
+			if (!silent)
+				solver.setVerbose(true);
 			String instanceName = getInstanceName(args);
 			if (instanceName == null) {
 				usage();
