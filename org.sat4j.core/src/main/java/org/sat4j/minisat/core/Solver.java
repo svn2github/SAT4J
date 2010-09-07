@@ -1164,8 +1164,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public final LearnedConstraintsDeletionStrategy fixed_size = new LearnedConstraintsDeletionStrategy() {
+		private static final long serialVersionUID = 1L;
 		private static final int MAXSIZE = 100;
-		private final ConflictTimer timer = new ConflictTimerAdapter(MAXSIZE) {
+		private final ConflictTimer aTimer = new ConflictTimerAdapter(MAXSIZE) {
+
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			void run() {
@@ -1213,7 +1216,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 
 		public ConflictTimer getTimer() {
-			return timer;
+			return aTimer;
 		}
 	};
 
@@ -1222,9 +1225,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public final LearnedConstraintsDeletionStrategy memory_based = new LearnedConstraintsDeletionStrategy() {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 
 		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
@@ -1295,9 +1295,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public final LearnedConstraintsDeletionStrategy glucose = new LearnedConstraintsDeletionStrategy() {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 		private int[] flags = new int[0];
 		private int flag = 0;
