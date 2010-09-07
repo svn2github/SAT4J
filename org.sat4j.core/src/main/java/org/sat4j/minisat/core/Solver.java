@@ -558,6 +558,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		final IVecInt preason = mpreason;
 
 		outLearnt.clear();
+		if (trailLim.size() == 0) {
+			// conflict detected on unit clauses
+			return outLearnt;
+		}
+
 		assert outLearnt.size() == 0;
 		for (int i = 0; i < seen.length; i++) {
 			seen[i] = false;
