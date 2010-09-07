@@ -1787,7 +1787,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * @since 2.2
 	 */
 	public IVecInt unsatExplanation() {
-		return unsatExplanationInTermsOfAssumptions;
+		IVecInt copy = new VecInt(unsatExplanationInTermsOfAssumptions.size());
+		unsatExplanationInTermsOfAssumptions.copyTo(copy);
+		return copy;
 	}
 
 }
