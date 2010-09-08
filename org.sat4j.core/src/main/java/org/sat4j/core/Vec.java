@@ -188,7 +188,7 @@ public final class Vec<T> implements IVec<T> {
 	}
 
 	/**
-	 * Insert an element at the very begining of the vector. The former first
+	 * Insert an element at the very beginning of the vector. The former first
 	 * element is appended to the end of the vector in order to have a constant
 	 * time operation.
 	 * 
