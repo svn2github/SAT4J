@@ -862,20 +862,26 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * @return null if not conflict is found, else a conflicting constraint.
 	 */
 	public Constr propagate() {
-		while (qhead < trail.size()) {
-			stats.propagations++;
-			int p = trail.get(qhead++);
-			slistener.propagating(toDimacs(p), null);
-			order.assignLiteral(p);
+		IVec<Propagatable> lwatched = watched;
+		IVecInt ltrail = trail;
+		ILits lvoc = voc;
+		SolverStats lstats = stats;
+		IOrder lorder = order;
+		SearchListener lslistener = slistener;
+		while (qhead < ltrail.size()) {
+			lstats.propagations++;
+			int p = ltrail.get(qhead++);
+			lslistener.propagating(toDimacs(p), null);
+			lorder.assignLiteral(p);
 			// p is the literal to propagate
 			// Moved original MiniSAT code to dsfactory to avoid
 			// watches manipulation in counter Based clauses for instance.
 			assert p > 1;
-			watched.clear();
-			voc.watches(p).moveTo(watched);
-			final int size = watched.size();
+			lwatched.clear();
+			lvoc.watches(p).moveTo(lwatched);
+			final int size = lwatched.size();
 			for (int i = 0; i < size; i++) {
-				stats.inspects++;
+				lstats.inspects++;
 				// try shortcut
 				// shortcut = shortcuts.get(i);
 				// if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut))
@@ -884,16 +890,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				// stats.shortcuts++;
 				// continue;
 				// }
-				if (!watched.get(i).propagate(this, p)) {
+				if (!lwatched.get(i).propagate(this, p)) {
 					// Constraint is conflicting: copy remaining watches to
 					// watches[p]
 					// and return constraint
-					for (int j = i + 1; j < watched.size(); j++) {
-						voc.watch(p, watched.get(j));
+					for (int j = i + 1; j < lwatched.size(); j++) {
+						lvoc.watch(p, lwatched.get(j));
 					}
-					qhead = trail.size(); // propQ.clear();
+					qhead = ltrail.size(); // propQ.clear();
 					// FIXME enlever le transtypage
-					return (Constr) watched.get(i);
+					return (Constr) lwatched.get(i);
 				}
 			}
 		}
@@ -1441,8 +1447,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(),
-							trail.size());
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
