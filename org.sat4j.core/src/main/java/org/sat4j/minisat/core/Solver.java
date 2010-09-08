@@ -772,27 +772,31 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	//
 	private boolean analyzeRemovable(int p) {
 		assert voc.getReason(p) != null;
-		analyzestack.clear();
-		analyzestack.push(p);
+		ILits lvoc = voc;
+		IVecInt lanalyzestack = analyzestack;
+		IVecInt lanalyzetoclear = analyzetoclear;
+		lanalyzestack.clear();
+		lanalyzestack.push(p);
 		final boolean[] seen = mseen;
-		int top = analyzetoclear.size();
-		while (analyzestack.size() > 0) {
-			int q = analyzestack.last();
-			assert voc.getReason(q) != null;
-			Constr c = voc.getReason(q);
-			analyzestack.pop();
+		int top = lanalyzetoclear.size();
+		while (lanalyzestack.size() > 0) {
+			int q = lanalyzestack.last();
+			assert lvoc.getReason(q) != null;
+			Constr c = lvoc.getReason(q);
+			lanalyzestack.pop();
 			for (int i = 0; i < c.size(); i++) {
 				int l = c.get(i);
-				if (voc.isFalsified(l) && !seen[var(l)] && voc.getLevel(l) != 0) {
-					if (voc.getReason(l) == null) {
-						for (int j = top; j < analyzetoclear.size(); j++)
-							seen[analyzetoclear.get(j) >> 1] = false;
-						analyzetoclear.shrink(analyzetoclear.size() - top);
+				if (lvoc.isFalsified(l) && !seen[var(l)]
+						&& lvoc.getLevel(l) != 0) {
+					if (lvoc.getReason(l) == null) {
+						for (int j = top; j < lanalyzetoclear.size(); j++)
+							seen[lanalyzetoclear.get(j) >> 1] = false;
+						lanalyzetoclear.shrink(lanalyzetoclear.size() - top);
 						return false;
 					}
 					seen[l >> 1] = true;
-					analyzestack.push(l);
-					analyzetoclear.push(l);
+					lanalyzestack.push(l);
+					lanalyzetoclear.push(l);
 				}
 			}
 		}
