@@ -670,6 +670,23 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	};
 
+	public final ISimplifier EXPENSIVE_SIMPLIFICATION_WLONLY = new ISimplifier() {
+
+		/**
+         * 
+         */
+		private static final long serialVersionUID = 1L;
+
+		public void simplify(IVecInt conflictToReduce) {
+			expensiveSimplificationWLOnly(conflictToReduce);
+		}
+
+		@Override
+		public String toString() {
+			return "Expensive reason simplification specific for WL data structure"; //$NON-NLS-1$
+		}
+	};
+
 	private ISimplifier simplifier = NO_SIMPLIFICATION;
 
 	/**
@@ -797,6 +814,55 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					seen[l >> 1] = true;
 					lanalyzestack.push(l);
 					lanalyzetoclear.push(l);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	// Taken from MiniSAT 1.14
+	private void expensiveSimplificationWLOnly(IVecInt conflictToReduce) {
+		// Simplify conflict clause (a lot):
+		//
+		int i, j;
+		// (maintain an abstraction of levels involved in conflict)
+		analyzetoclear.clear();
+		conflictToReduce.copyTo(analyzetoclear);
+		for (i = 1, j = 1; i < conflictToReduce.size(); i++)
+			if (voc.getReason(conflictToReduce.get(i)) == null
+					|| !analyzeRemovableWLOnly(conflictToReduce.get(i)))
+				conflictToReduce.moveTo(j++, i);
+		conflictToReduce.shrink(i - j);
+		stats.reducedliterals += (i - j);
+	}
+
+	// Check if 'p' can be removed.' min_level' is used to abort early if
+	// visiting literals at a level that cannot be removed.
+	//
+	private boolean analyzeRemovableWLOnly(int p) {
+		assert voc.getReason(p) != null;
+		analyzestack.clear();
+		analyzestack.push(p);
+		final boolean[] seen = mseen;
+		int top = analyzetoclear.size();
+		while (analyzestack.size() > 0) {
+			int q = analyzestack.last();
+			assert voc.getReason(q) != null;
+			Constr c = voc.getReason(q);
+			analyzestack.pop();
+			for (int i = 1; i < c.size(); i++) {
+				int l = c.get(i);
+				if (!seen[var(l)] && voc.getLevel(l) != 0) {
+					if (voc.getReason(l) == null) {
+						for (int j = top; j < analyzetoclear.size(); j++)
+							seen[analyzetoclear.get(j) >> 1] = false;
+						analyzetoclear.shrink(analyzetoclear.size() - top);
+						return false;
+					}
+					seen[l >> 1] = true;
+					analyzestack.push(l);
+					analyzetoclear.push(l);
 				}
 			}
 		}

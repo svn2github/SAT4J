@@ -21,6 +21,7 @@ package org.sat4j.minisat;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielHT;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
+import org.sat4j.minisat.constraints.MixedDataStructureSingleWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.SearchParams;
@@ -175,6 +176,29 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 */
 	public static Solver<DataStructureFactory> newBestHT() {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureDanielHT());
+	}
+
+	/**
+	 * 
+	 * @since 2.2
+	 */
+	public static Solver<DataStructureFactory> newBestSingleWL() {
+		return newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
+	}
+
+	/**
+	 * 
+	 * @since 2.2
+	 */
+	public static Solver<DataStructureFactory> newBest17() {
+		Solver<DataStructureFactory> solver = newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION_WLONLY);
+		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+		LimitedLearning<DataStructureFactory> learning = new PercentLengthLearning<DataStructureFactory>(
+				10);
+		solver.setLearner(learning);
+		learning.setSolver(solver);
+		return solver;
 	}
 
 	/**
