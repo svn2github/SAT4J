@@ -111,19 +111,15 @@ public class Lanceur extends AbstractLauncher {
 				"specifies the timeout (in milliseconds)");
 		options.addOption("C", "conflictbased", false,
 				"conflict based timeout (for deterministic behavior)");
-		options
-				.addOption("d", "dot", true,
-						"create a sat4j.dot file in current directory representing the search");
-		options
-				.addOption("f", "filename", true,
-						"specifies the file to use (in conjunction with -d for instance)");
+		options.addOption("d", "dot", true,
+				"create a sat4j.dot file in current directory representing the search");
+		options.addOption("f", "filename", true,
+				"specifies the file to use (in conjunction with -d for instance)");
 		options.addOption("m", "mute", false, "Set launcher in silent mode");
-		options
-				.addOption("k", "kleast", true,
-						"limit the search to models having at least k variables set to false");
-		options
-				.addOption("r", "trace", true,
-						"Search Listener to use for tracing the behavior of the solver");
+		options.addOption("k", "kleast", true,
+				"limit the search to models having at least k variables set to false");
+		options.addOption("r", "trace", true,
+				"Search Listener to use for tracing the behavior of the solver");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -154,7 +150,7 @@ public class Lanceur extends AbstractLauncher {
 	 *            the command line
 	 * @return a solver properly configured.
 	 */
-	@SuppressWarnings( { "nls", "unchecked" })
+	@SuppressWarnings({ "nls", "unchecked" })
 	@Override
 	protected ISolver configureSolver(String[] args) {
 		Options options = createCLIOptions();
@@ -247,9 +243,9 @@ public class Lanceur extends AbstractLauncher {
 				String listener = cmd.getOptionValue("r");
 				try {
 
-					SearchListener slistener = (SearchListener) Class.forName(
-							listener).getConstructor(String.class).newInstance(
-							"sat4j.trace");
+					SearchListener slistener = (SearchListener) Class
+							.forName(listener).getConstructor(String.class)
+							.newInstance("sat4j.trace");
 					asolver.setSearchListener(slistener);
 				} catch (InstantiationException e) {
 					log("wrong parameter for search listener: "
@@ -293,7 +289,7 @@ public class Lanceur extends AbstractLauncher {
 				others++;
 			}
 
-			log(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+			getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
 			return asolver;
 		} catch (ParseException e1) {
 			HelpFormatter helpf = new HelpFormatter();
