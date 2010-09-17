@@ -501,7 +501,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
 		solver.setRestartStrategy(new ArminRestarts());
-		solver.setLearnedConstraintsDeletionStrategy(solver.fixed_size);
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		return solver;
 	}
 
@@ -517,6 +517,18 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 */
 	public static IPBSolver newCuttingPlanes() {
 		return newCompetPBCPMixedConstraintsObjective();
+	}
+
+	/**
+	 * Cutting Planes based solver. The inference during conflict analysis is
+	 * based on cutting planes instead of resolution as in a SAT solver.
+	 * 
+	 * @return the best available cutting planes based solver of the library.
+	 */
+	public static IPBSolver newCuttingPlanesAggressiveCleanup() {
+		PBSolverCP solver = newCompetPBCPMixedConstraintsObjective();
+		solver.setLearnedConstraintsDeletionStrategy(solver.fixedSize(100));
+		return solver;
 	}
 
 	/**
