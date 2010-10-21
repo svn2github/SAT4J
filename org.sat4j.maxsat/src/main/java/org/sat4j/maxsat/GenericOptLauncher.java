@@ -118,8 +118,14 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 									.newDefault());
 						}
 					} else {
-						asolver = new MaxSatDecorator(
-								org.sat4j.minisat.SolverFactory.newDefault());
+						if (cmd.hasOption("p")) {
+							asolver = new MaxSatDecorator(
+									org.sat4j.pb.SolverFactory.newBoth());
+						} else {
+							asolver = new MaxSatDecorator(
+									org.sat4j.minisat.SolverFactory
+											.newDefault());
+						}
 					}
 				}
 				String timeout = cmd.getOptionValue("t");
