@@ -22,12 +22,9 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.core.IOrder;
-import org.sat4j.minisat.core.Solver;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PBSolverDecorator;
-import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IOptimizationProblem;
@@ -72,10 +69,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
         super(solver);
-        IOrder order = ((Solver<?>) solver).getOrder();
-        if (order instanceof VarOrderHeapObjective) {
-            ((VarOrderHeapObjective) order).setObjectiveFunction(obj);
-        }
+        solver.setObjectiveFunction(obj);
     }
 
     @Override
