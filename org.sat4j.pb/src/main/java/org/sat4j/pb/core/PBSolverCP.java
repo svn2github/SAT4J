@@ -39,6 +39,7 @@ import org.sat4j.pb.constraints.pb.ConflictMap;
 import org.sat4j.pb.constraints.pb.IConflict;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.TimeoutException;
 
 /**
  * @author parrain To change the template for this generated type comment go to
@@ -71,19 +72,22 @@ public class PBSolverCP extends PBSolver {
 	}
 
 	@Override
-	public void analyze(Constr myconfl, Pair results) {
+	public void analyze(Constr myconfl, Pair results) throws TimeoutException {
 		if (someCriteria())
 			analyzeCP(myconfl, results);
 		else
 			super.analyze(myconfl, results);
 	}
 
-	public void analyzeCP(Constr myconfl, Pair results) {
+	public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
 		int litImplied = trail.last();
 		int currentLevel = voc.getLevel(litImplied);
 		IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
 		assert confl.slackConflict().signum() < 0;
 		while (!confl.isAssertive(currentLevel)) {
+			if (!undertimeout) {
+				throw new TimeoutException();
+			}
 			PBConstr constraint = (PBConstr) voc.getReason(litImplied);
 			// result of the resolution is in the conflict (confl)
 			confl.resolve(constraint, litImplied, this);
