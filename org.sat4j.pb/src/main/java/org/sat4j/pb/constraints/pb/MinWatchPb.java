@@ -293,7 +293,7 @@ public class MinWatchPb extends WatchPb {
 		// (pIndice excluded)
 		BigInteger maxCoef = maximalCoefficient(pIndice);
 
-		// update watching and watched w.r.t. to the propogation of p
+		// update watching and watched w.r.t. to the propagation of p
 		// new literals will be watched, maxCoef could be changed
 		maxCoef = updateWatched(maxCoef, pIndice);
 
@@ -342,7 +342,7 @@ public class MinWatchPb extends WatchPb {
 	 */
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < watchingCount; i++) {
-			voc.removeWatch(lits[watching[i]] ^ 1, this);
+			voc.watches(lits[watching[i]] ^ 1).remove(this);
 			this.watched[this.watching[i]] = false;
 		}
 		watchingCount = 0;
