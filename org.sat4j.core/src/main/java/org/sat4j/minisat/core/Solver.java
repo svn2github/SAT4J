@@ -149,7 +149,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private LearningStrategy<D> learner;
 
-	private volatile boolean undertimeout;
+	protected volatile boolean undertimeout;
 
 	private long timeout = Integer.MAX_VALUE;
 
@@ -467,7 +467,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final IVecInt moutLearnt = new VecInt();
 
-	public void analyze(Constr confl, Pair results) {
+	/**
+	 * @throws TimeoutException
+	 *             if the timeout is reached during conflict analysis.
+	 */
+	public void analyze(Constr confl, Pair results) throws TimeoutException {
 		assert confl != null;
 
 		final boolean[] seen = mseen;
@@ -1108,7 +1112,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					return Lbool.FALSE;
 				}
 				// analyze conflict
-				analyze(confl, analysisResult);
+				try {
+					analyze(confl, analysisResult);
+				} catch (TimeoutException e) {
+					return Lbool.UNDEFINED;
+				}
 				assert analysisResult.backtrackLevel < decisionLevel();
 				backjumpLevel = Math.max(analysisResult.backtrackLevel,
 						rootLevel);
