@@ -233,10 +233,6 @@ public final class Lits implements Serializable, ILits {
 		watches[lit].push(c);
 	}
 
-	public void removeWatch(int lit, Propagatable c) {
-		watches[lit].remove(c);
-	}
-
 	public IVec<Propagatable> watches(int lit) {
 		return watches[lit];
 	}
