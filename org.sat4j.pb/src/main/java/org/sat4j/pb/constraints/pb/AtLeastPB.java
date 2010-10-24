@@ -49,11 +49,11 @@ public final class AtLeastPB extends AtLeast implements PBConstr {
 		this.degree = BigInteger.valueOf(degree);
 	}
 
-	public static AtLeastPB atLeastNew(UnitPropagationListener s, ILits voc,
+	public static PBConstr atLeastNew(UnitPropagationListener s, ILits voc,
 			IVecInt ps, int n) throws ContradictionException {
 		int degree = niceParameters(s, voc, ps, n);
 		if (degree == 0)
-			return null;
+			return new UnitClausesPB(ps);
 		return new AtLeastPB(voc, ps, degree);
 	}
 
