@@ -30,6 +30,7 @@ package org.sat4j.minisat.constraints.card;
 import java.io.Serializable;
 
 import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
@@ -267,8 +268,8 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	 * @return a new cardinality constraint, null if it is a tautology
 	 * @throws ContradictionException
 	 */
-	public static MinWatchCard minWatchCardNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, boolean moreThan, int degree)
+	public static Constr minWatchCardNew(UnitPropagationListener s, ILits voc,
+			IVecInt ps, boolean moreThan, int degree)
 			throws ContradictionException {
 
 		int mydegree = degree + linearisation(voc, ps);
@@ -280,7 +281,7 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 				if (!s.enqueue(ps.get(i))) {
 					throw new ContradictionException();
 				}
-			return null;
+			return new UnitClauses(ps);
 		}
 
 		// La contrainte est maintenant cr??e
