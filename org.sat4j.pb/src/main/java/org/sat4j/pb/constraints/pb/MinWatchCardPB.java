@@ -94,7 +94,7 @@ public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 	 * @return une nouvelle clause si tout va bien, null sinon
 	 * @throws ContradictionException
 	 */
-	public static MinWatchCardPB normalizedMinWatchCardPBNew(
+	public static PBConstr normalizedMinWatchCardPBNew(
 			UnitPropagationListener s, ILits voc, IVecInt ps, int degree)
 			throws ContradictionException {
 		return minWatchCardPBNew(s, voc, ps, ATLEAST, degree, true);
@@ -116,13 +116,13 @@ public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 	 * @return une nouvelle clause si tout va bien, null sinon
 	 * @throws ContradictionException
 	 */
-	public static MinWatchCardPB minWatchCardPBNew(UnitPropagationListener s,
+	public static PBConstr minWatchCardPBNew(UnitPropagationListener s,
 			ILits voc, IVecInt ps, boolean moreThan, int degree)
 			throws ContradictionException {
 		return minWatchCardPBNew(s, voc, ps, moreThan, degree, false);
 	}
 
-	private static MinWatchCardPB minWatchCardPBNew(UnitPropagationListener s,
+	private static PBConstr minWatchCardPBNew(UnitPropagationListener s,
 			ILits voc, IVecInt ps, boolean moreThan, int degree,
 			boolean normalized) throws ContradictionException {
 		int mydegree = degree + linearisation(voc, ps);
@@ -134,7 +134,7 @@ public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 				if (!s.enqueue(ps.get(i))) {
 					throw new ContradictionException();
 				}
-			return null;
+			return new UnitClausesPB(ps);
 		}
 
 		// constraint is now instanciated
