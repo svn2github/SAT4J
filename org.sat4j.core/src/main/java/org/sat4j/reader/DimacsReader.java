@@ -202,7 +202,13 @@ public class DimacsReader extends Reader implements Serializable {
 	 * @since 2.1
 	 */
 	protected void flushConstraint() throws ContradictionException {
-		solver.addClause(literals);
+		try {
+			solver.addClause(literals);
+		} catch (IllegalArgumentException ex) {
+			if (isVerbose()) {
+				System.err.println("c Skipping constraint " + literals);
+			}
+		}
 	}
 
 	/**
