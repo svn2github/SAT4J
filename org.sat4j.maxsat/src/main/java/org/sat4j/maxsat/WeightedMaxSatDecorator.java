@@ -206,7 +206,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                         coefs.push(weight);
                     }
                 }
-                return null;
+                return new UnitWeightedClause();
             }
             coefs.push(weight);
             int newvar = nborigvars + ++nbnewvar;
