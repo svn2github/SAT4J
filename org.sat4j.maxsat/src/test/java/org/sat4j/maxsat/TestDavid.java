@@ -1,5 +1,6 @@
 package org.sat4j.maxsat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -32,7 +33,7 @@ public class TestDavid {
 		maxsat.addClause(literals);
 		OptToSatAdapter opt = new OptToSatAdapter(maxsat);
 		assertTrue(opt.isSatisfiable());
-		assertTrue(maxsat.calculateObjective().equals(1));
+		assertEquals(1,maxsat.calculateObjective());
 	}
 	
 	@Test
