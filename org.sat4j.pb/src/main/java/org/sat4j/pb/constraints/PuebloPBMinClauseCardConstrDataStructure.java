@@ -57,7 +57,7 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		if (v == null)
-			return null;
+			return new UnitClausePB(literals.last(), getVocabulary());
 		if (v.size() == 2) {
 			return OriginalBinaryClausePB.brandNewClause(solver,
 					getVocabulary(), v);

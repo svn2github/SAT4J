@@ -54,7 +54,7 @@ public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		if (v == null)
-			return null;
+			return new UnitClause(literals.last());
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);
