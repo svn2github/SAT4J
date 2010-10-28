@@ -149,7 +149,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private LearningStrategy<D> learner;
 
-	protected volatile boolean undertimeout;
+	private volatile boolean undertimeout;
 
 	private long timeout = Integer.MAX_VALUE;
 
@@ -1486,6 +1486,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
 		Lbool status = Lbool.UNDEFINED;
+		undertimeout = true;
 		final int howmany = voc.nVars();
 		if (mseen.length <= howmany) {
 			mseen = new boolean[howmany + 1];
@@ -1553,7 +1554,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		if (timeBasedTimeout) {
 			if (!global || timer == null) {
 				firstTimeGlobal = true;
-				undertimeout = true;
 				TimerTask stopMe = new TimerTask() {
 					@Override
 					public void run() {
@@ -1567,7 +1567,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		} else {
 			if (!global || conflictCount == null) {
 				firstTimeGlobal = true;
-				undertimeout = true;
 				ConflictTimer conflictTimeout = new ConflictTimerAdapter(
 						(int) timeout) {
 					private static final long serialVersionUID = 1L;
@@ -1602,9 +1601,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 		slistener.end(status);
 		if (!undertimeout) {
-			if (!global) {
-				undertimeout = true;
-			}
 			String message = " Timeout (" + timeout
 					+ (timeBasedTimeout ? "s" : " conflicts") + ") exceeded";
 			throw new TimeoutException(message); //$NON-NLS-1$//$NON-NLS-2$
