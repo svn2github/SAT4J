@@ -57,7 +57,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	private int winnerId;
 	private boolean resultFound;
 	private volatile int remainingSolvers;
-
+	private volatile int sleepTime;
 	private volatile boolean solved;
 
 	public ManyCore(ASolverFactory<S> factory, String... solverNames) {
@@ -120,6 +120,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.get(i).expireTimeout();
 		}
+		sleepTime = 50;
 	}
 
 	public Map<String, Number> getStat() {
@@ -231,8 +232,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 					globalTimeout, this)).start();
 		}
 		try {
+			sleepTime = 500;
 			do {
-				Thread.sleep(500);
+				Thread.sleep(sleepTime);
 			} while (remainingSolvers > 0);
 		} catch (InterruptedException e) {
 			// TODO: handle exception
@@ -284,6 +286,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 				if (i != winnerId)
 					solvers.get(i).expireTimeout();
 			}
+			sleepTime = 50;
 			System.out.println("c And the winner is "
 					+ availableSolvers[winnerId]);
 		}
