@@ -149,7 +149,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private LearningStrategy<D> learner;
 
-	private volatile boolean undertimeout;
+	protected volatile boolean undertimeout;
 
 	private long timeout = Integer.MAX_VALUE;
 
@@ -1532,8 +1532,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(),
-							trail.size());
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
