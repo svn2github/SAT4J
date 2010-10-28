@@ -75,10 +75,14 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
 	@Override
 	protected Reader createReader(ISolver aSolver, String problemname) {
+		Reader reader;
 		if (problemname.endsWith(".wcnf")) { //$NON-NLS-1$
-			return new WDimacsReader((WeightedMaxSatDecorator) aSolver); //$NON-NLS-1$
+			reader = new WDimacsReader((WeightedMaxSatDecorator) aSolver); //$NON-NLS-1$
+		} else {
+		reader = new DimacsReader(aSolver);
 		}
-		return new DimacsReader(aSolver);
+		reader.setVerbosity(true);
+		return reader;
 	}
 
 	@Override
