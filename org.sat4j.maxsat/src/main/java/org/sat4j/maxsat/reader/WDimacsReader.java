@@ -39,7 +39,14 @@ public class WDimacsReader extends DimacsReader {
 	
     @Override
 	protected void flushConstraint() throws ContradictionException {
-    	decorator.addSoftClause(weight, literals);
+    	try {
+    		decorator.addSoftClause(weight, literals);
+		} catch (IllegalArgumentException ex) {
+			if (isVerbose()) {
+				System.err.println("c Skipping constraint " + literals);
+			}
+		}
+    	
 	}
 
 	@Override
