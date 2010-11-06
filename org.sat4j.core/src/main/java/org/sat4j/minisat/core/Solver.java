@@ -1852,9 +1852,17 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * @since 2.1
 	 */
 	public void unset(int p) {
+		// the literal might already been
+		// removed from the trail.
+		if (trail.isEmpty()) {
+			return;
+		}
 		int current = trail.last();
 		while (current != p) {
 			undoOne();
+			if (trail.isEmpty()) {
+				return;
+			}
 			current = trail.last();
 		}
 		undoOne();
