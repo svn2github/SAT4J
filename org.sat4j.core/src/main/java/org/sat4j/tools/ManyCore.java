@@ -45,6 +45,12 @@ import org.sat4j.specs.TimeoutException;
 
 public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
+	private static final long MINIMAL_MEMORY_REQUIREMENT = 500000000L;
+
+	private static final int NORMAL_SLEEP = 500;
+
+	private static final int FAST_SLEEP = 50;
+
 	/**
 	 * 
 	 */
@@ -65,7 +71,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		Runtime runtime = Runtime.getRuntime();
 		long memory = runtime.maxMemory();
 		int numberOfCores = runtime.availableProcessors();
-		if (memory > 500000000L) {
+		if (memory > MINIMAL_MEMORY_REQUIREMENT) {
 			numberOfSolvers = solverNames.length < numberOfCores ? solverNames.length
 					: numberOfCores;
 		} else {
@@ -120,7 +126,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.get(i).expireTimeout();
 		}
-		sleepTime = 50;
+		sleepTime = FAST_SLEEP;
 	}
 
 	public Map<String, Number> getStat() {
@@ -157,12 +163,17 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public boolean removeConstr(IConstr c) {
-		ConstrGroup group = (ConstrGroup) c;
-		boolean removed = true;
-		for (int i = 0; i < numberOfSolvers; i++) {
-			removed = removed & solvers.get(i).removeConstr(group.getConstr(i));
+		if (c instanceof ConstrGroup) {
+			ConstrGroup group = (ConstrGroup) c;
+			boolean removed = true;
+			for (int i = 0; i < numberOfSolvers; i++) {
+				removed = removed
+						& solvers.get(i).removeConstr(group.getConstr(i));
+			}
+			return removed;
 		}
-		return removed;
+		throw new IllegalArgumentException(
+				"Can only remove a group of constraints!");
 	}
 
 	public void reset() {
@@ -232,7 +243,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 					globalTimeout, this)).start();
 		}
 		try {
-			sleepTime = 500;
+			sleepTime = NORMAL_SLEEP;
 			do {
 				Thread.sleep(sleepTime);
 			} while (remainingSolvers > 0);
@@ -286,7 +297,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 				if (i != winnerId)
 					solvers.get(i).expireTimeout();
 			}
-			sleepTime = 50;
+			sleepTime = FAST_SLEEP;
 			System.out.println("c And the winner is "
 					+ availableSolvers[winnerId]);
 		}
@@ -330,13 +341,18 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public boolean removeSubsumedConstr(IConstr c) {
-		ConstrGroup group = (ConstrGroup) c;
-		boolean removed = true;
-		for (int i = 0; i < numberOfSolvers; i++) {
-			removed = removed
-					& solvers.get(i).removeSubsumedConstr(group.getConstr(i));
+		if (c instanceof ConstrGroup) {
+			ConstrGroup group = (ConstrGroup) c;
+			boolean removed = true;
+			for (int i = 0; i < numberOfSolvers; i++) {
+				removed = removed
+						& solvers.get(i).removeSubsumedConstr(
+								group.getConstr(i));
+			}
+			return removed;
 		}
-		return removed;
+		throw new IllegalArgumentException(
+				"Can only remove a group of constraints!");
 	}
 
 	public boolean isVerbose() {
