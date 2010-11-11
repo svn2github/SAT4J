@@ -35,7 +35,6 @@ import java.util.Map;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
@@ -146,7 +145,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	public Collection<IConstr> explain() throws TimeoutException {
 		assert !isSatisfiable(assump);
 		ISolver solver = decorated();
-		if (solver instanceof IOptimizationProblem) {
+		if (solver instanceof SolverDecorator<?>) {
 			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
 		}
 		IVecInt keys = XPLAIN_STRATEGY.explain(solver, constrs, assump);
