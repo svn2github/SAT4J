@@ -50,11 +50,11 @@ public interface XplainStrategy {
 	 * @throws TimeoutException
 	 * @since 2.1
 	 */
-	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
+	IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
 			IVecInt assumps) throws TimeoutException;
 
 	/**
 	 * @since 2.1
 	 */
-	public void cancelExplanationComputation();
+	void cancelExplanationComputation();
 }
