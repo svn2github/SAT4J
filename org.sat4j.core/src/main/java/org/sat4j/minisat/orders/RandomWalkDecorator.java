@@ -91,4 +91,8 @@ public final class RandomWalkDecorator implements IOrder {
 		decorated.varDecayActivity();
 	}
 
+	public void updateVarAtDecisionLevel(int q) {
+		decorated.updateVarAtDecisionLevel(q);
+	}
+
 }

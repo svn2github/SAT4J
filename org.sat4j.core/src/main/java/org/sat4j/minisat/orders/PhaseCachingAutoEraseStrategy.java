@@ -26,4 +26,6 @@ public final class PhaseCachingAutoEraseStrategy extends
 		return "Phase caching with auto forget feature";
 	}
 
+	public void updateVarAtDecisionLevel(int q) {
+	}
 }

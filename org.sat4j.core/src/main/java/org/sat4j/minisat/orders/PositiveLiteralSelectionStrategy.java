@@ -59,4 +59,7 @@ public final class PositiveLiteralSelectionStrategy implements
 	public String toString() {
 		return "positive phase selection";
 	}
+
+	public void updateVarAtDecisionLevel(int q) {
+	}
 }

@@ -32,6 +32,7 @@ import org.sat4j.minisat.learning.NoLearningButHeuristics;
 import org.sat4j.minisat.learning.PercentLengthLearning;
 import org.sat4j.minisat.orders.PhaseCachingAutoEraseStrategy;
 import org.sat4j.minisat.orders.PureOrder;
+import org.sat4j.minisat.orders.RSATLastLearnedClausesPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
@@ -160,6 +161,16 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	public static Solver<DataStructureFactory> newDefaultAutoErasePhaseSaving() {
 		Solver<DataStructureFactory> solver = newBestWL();
 		solver.setOrder(new VarOrderHeap(new PhaseCachingAutoEraseStrategy()));
+		return solver;
+	}
+
+	/**
+	 * @since 2.2.3
+	 */
+	public static Solver<DataStructureFactory> newDefaultMS21PhaseSaving() {
+		Solver<DataStructureFactory> solver = newBestWL();
+		solver.setOrder(new VarOrderHeap(
+				new RSATLastLearnedClausesPhaseSelectionStrategy()));
 		return solver;
 	}
 

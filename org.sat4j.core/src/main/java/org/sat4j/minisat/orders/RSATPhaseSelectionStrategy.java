@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.orders;
 
+import static org.sat4j.core.LiteralsUtils.var;
+
 /**
  * Keeps track of the phase of the latest assignment.
  * 
@@ -42,7 +44,7 @@ public final class RSATPhaseSelectionStrategy extends
 	private static final long serialVersionUID = 1L;
 
 	public void assignLiteral(int p) {
-		phase[p >> 1] = p;
+		phase[var(p)] = p;
 	}
 
 	@Override
@@ -51,5 +53,8 @@ public final class RSATPhaseSelectionStrategy extends
 	}
 
 	public void updateVar(int p) {
+	}
+
+	public void updateVarAtDecisionLevel(int p) {
 	}
 }

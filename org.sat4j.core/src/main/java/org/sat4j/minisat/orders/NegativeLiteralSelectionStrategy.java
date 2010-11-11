@@ -59,4 +59,7 @@ public final class NegativeLiteralSelectionStrategy implements
 	public String toString() {
 		return "negative phase selection";
 	}
+
+	public void updateVarAtDecisionLevel(int q) {
+	}
 }

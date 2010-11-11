@@ -73,6 +73,9 @@ public final class RandomLiteralSelectionStrategy implements
 	public void updateVar(int p) {
 	}
 
+	public void updateVarAtDecisionLevel(int q) {
+	}
+
 	@Override
 	public String toString() {
 		return "random phase selection";

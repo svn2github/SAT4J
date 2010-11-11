@@ -30,12 +30,12 @@ package org.sat4j.minisat.orders;
 import static org.sat4j.core.LiteralsUtils.var;
 
 /**
- * Keeps record of the phase of a variable in the lastest recorded clause.
+ * Keeps track of the phase of the latest assignment.
  * 
  * @author leberre
  * 
  */
-public final class PhaseInLastLearnedClauseSelectionStrategy extends
+public final class RSATLastLearnedClausesPhaseSelectionStrategy extends
 		AbstractPhaserecordingSelectionStrategy {
 
 	/**
@@ -43,18 +43,19 @@ public final class PhaseInLastLearnedClauseSelectionStrategy extends
      */
 	private static final long serialVersionUID = 1L;
 
-	public void updateVar(int p) {
+	public void assignLiteral(int p) {
 		phase[var(p)] = p;
 	}
 
 	@Override
 	public String toString() {
-		return "phase appearing in latest learned clause";
+		return "lightweight component caching from RSAT inverting phase for variables at conflict decision level";
 	}
 
-	public void assignLiteral(int p) {
+	public void updateVar(int p) {
 	}
 
-	public void updateVarAtDecisionLevel(int q) {
+	public void updateVarAtDecisionLevel(int p) {
+		phase[var(p)] = p;
 	}
 }

@@ -504,6 +504,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					seen[q >> 1] = true;
 					if (voc.getLevel(q) == decisionLevel()) {
 						counter++;
+						order.updateVarAtDecisionLevel(q);
 					} else if (voc.getLevel(q) > 0) {
 						// only literals assigned after decision level 0 part of
 						// the explanation
@@ -1532,8 +1533,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(), trail
-							.size());
+					slistener.conflictFound(confl, decisionLevel(),
+							trail.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}

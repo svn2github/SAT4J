@@ -52,4 +52,7 @@ public final class UserFixedPhaseSelectionStrategy extends
 	public String toString() {
 		return "Fixed selection strategy.";
 	}
+
+	public void updateVarAtDecisionLevel(int q) {
+	}
 }

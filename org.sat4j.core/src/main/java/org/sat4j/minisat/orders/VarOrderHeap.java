@@ -231,4 +231,9 @@ public class VarOrderHeap implements IOrder, Serializable {
 	public void assignLiteral(int p) {
 		// do nothing
 	}
+
+	public void updateVarAtDecisionLevel(int q) {
+		phaseStrategy.updateVarAtDecisionLevel(q);
+
+	}
 }
