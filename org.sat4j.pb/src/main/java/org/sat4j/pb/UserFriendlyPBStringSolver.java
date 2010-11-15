@@ -171,6 +171,9 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 				}
 				out.append(mapping.get(lit));
 			} else {
+				if (!beginning) {
+					out.append(" NOT ");
+				}
 				out.append(mapping.get(-lit));
 			}
 			out.append(" ");
