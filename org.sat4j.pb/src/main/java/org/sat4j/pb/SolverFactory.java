@@ -573,6 +573,20 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * 
 	 * @return the best available resolution based solver of the library.
 	 */
+	public static IPBSolver newResolutionGlucoseSimpleSimp() {
+		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+		return solver;
+	}
+
+	/**
+	 * Resolution based solver (i.e. classic SAT solver able to handle generic
+	 * constraints. No specific inference mechanism). Uses glucose based memory
+	 * management.
+	 * 
+	 * @return the best available resolution based solver of the library.
+	 */
 	public static IPBSolver newSimpleSimplification() {
 		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
 		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
