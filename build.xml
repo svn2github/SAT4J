@@ -259,7 +259,7 @@
 		<echo>Generating Javodoc</echo>
 		<javadoc destdir="${doc}/${module}" 
 				 access="public" 
-				 source="1.5" 
+				 source="1.6" 
 				 use="true" 
 				 notree="false" 
 				 nonavbar="false" 

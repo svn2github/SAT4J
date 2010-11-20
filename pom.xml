@@ -4,7 +4,7 @@
   <groupId>org.sat4j</groupId>
   <artifactId>org.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.2.2-SNAPSHOT</version>
+  <version>2.2.3-SNAPSHOT</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org</url>
   <description>
@@ -89,7 +89,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
   <modules>
     <module>org.sat4j.core</module>
     <module>org.sat4j.pb</module>
-    <module>org.sat4j.multicore</module>
     <module>org.sat4j.maxsat</module>
     <module>org.sat4j.sat</module>
     <module>org.sat4j.csp</module>
