@@ -356,11 +356,13 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public boolean isVerbose() {
-		return false;
+		return solvers.get(0).isVerbose();
 	}
 
 	public void setVerbose(boolean value) {
-		// do nothing
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers.get(i).setVerbose(value);
+		}
 	}
 
 	public void setLogPrefix(String prefix) {
