@@ -576,6 +576,31 @@ public class DependencyHelper<T, C> {
 	}
 
 	/**
+	 * Create a constraint of the form thing <= (thing1 or thing 2 ... or
+	 * thingn)
+	 * 
+	 * @param name
+	 * @param thing
+	 * @param otherThings
+	 * @throws ContradictionException
+	 */
+	public void halfOr(C name, T thing, T... otherThings)
+			throws ContradictionException {
+		IVecInt literals = new VecInt(otherThings.length);
+		for (T t : otherThings) {
+			literals.push(getIntValue(t));
+		}
+		IConstr[] constrs = gator.halfOr(getIntValue(thing), literals);
+		for (IConstr constr : constrs) {
+			if (constr == null) {
+				throw new IllegalStateException(
+						"Constraints are not supposed to be null when using the helper");
+			}
+			descs.put(constr, name);
+		}
+	}
+
+	/**
 	 * Create a constraint of the form thing <=> (if conditionThing then
 	 * thenThing else elseThing)
 	 * 
@@ -735,8 +760,8 @@ public class DependencyHelper<T, C> {
 		obj.getVars().copyTo(literals);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>(obj.getCoeffs().size());
 		obj.getCoeffs().copyTo(coeffs);
-		solver.addPseudoBoolean(literals, coeffs, false, BigInteger
-				.valueOf(value));
+		solver.addPseudoBoolean(literals, coeffs, false,
+				BigInteger.valueOf(value));
 	}
 
 	public String getObjectiveFunction() {
