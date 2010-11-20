@@ -214,6 +214,28 @@ public class GateTranslator extends SolverDecorator<ISolver> {
 		return constrs;
 	}
 
+	/**
+	 * translate y <= x1 \/ x2 \/ ... \/ xn into clauses.
+	 * 
+	 * @param y
+	 * @param literals
+	 * @throws ContradictionException
+	 * @since 2.1
+	 */
+	public IConstr[] halfOr(int y, IVecInt literals)
+			throws ContradictionException {
+		IConstr[] constrs = new IConstr[literals.size()];
+		IVecInt clause = new VecInt(literals.size() + 2);
+		for (int i = 0; i < literals.size(); i++) {
+			// xi => y
+			clause.clear();
+			clause.push(y);
+			clause.push(-literals.get(i));
+			constrs[i] = processClause(clause);
+		}
+		return constrs;
+	}
+
 	private IConstr processClause(IVecInt clause) throws ContradictionException {
 		return addClause(clause);
 	}
