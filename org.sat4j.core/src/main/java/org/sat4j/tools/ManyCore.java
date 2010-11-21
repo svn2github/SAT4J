@@ -298,7 +298,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 					solvers.get(i).expireTimeout();
 			}
 			sleepTime = FAST_SLEEP;
-			System.out.println("c And the winner is "
+			System.out.println(getLogPrefix() + " And the winner is "
 					+ availableSolvers[winnerId]);
 		}
 		remainingSolvers--;
