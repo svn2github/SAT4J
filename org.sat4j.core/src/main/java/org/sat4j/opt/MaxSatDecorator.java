@@ -99,7 +99,12 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 		if (prevConstr != null) {
 			super.removeSubsumedConstr(prevConstr);
 		}
-		prevConstr = super.addAtMost(lits, counter - 1);
+		try {
+			prevConstr = super.addAtMost(lits, counter - 1);
+		} catch (ContradictionException ce) {
+			isSolutionOptimal = true;
+			throw ce;
+		}
 	}
 
 	@Override

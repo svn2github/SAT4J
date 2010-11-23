@@ -151,7 +151,12 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
 	 */
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
-		addAtMost(literals, forcedValue.intValue());
+		try {
+			addAtMost(literals, forcedValue.intValue());
+		} catch (ContradictionException ce) {
+			isSolutionOptimal = true;
+			throw ce;
+		}
 
 	}
 

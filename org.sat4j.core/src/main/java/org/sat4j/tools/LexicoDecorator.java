@@ -127,8 +127,13 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 		if (prevConstr != null) {
 			super.removeSubsumedConstr(prevConstr);
 		}
-		prevConstr = super.addAtMost(criteria.get(currentCriterion),
-				currentValue - 1);
+		try {
+			prevConstr = super.addAtMost(criteria.get(currentCriterion),
+					currentValue - 1);
+		} catch (ContradictionException c) {
+			isSolutionOptimal = true;
+			throw c;
+		}
 
 	}
 

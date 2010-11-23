@@ -69,7 +69,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	 */
 	protected boolean[] prevboolmodel;
 
-	private boolean isSolutionOptimal;
+	protected boolean isSolutionOptimal;
 
 	public AbstractSelectorVariablesDecorator(ISolver solver) {
 		super(solver);
