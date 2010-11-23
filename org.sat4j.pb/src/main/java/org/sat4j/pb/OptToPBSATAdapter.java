@@ -54,6 +54,8 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
 	private long begin;
 
+	private boolean isSolutionOptimal;
+
 	public OptToPBSATAdapter(IOptimizationProblem problem) {
 		super((IPBSolver) problem);
 		this.problem = problem;
@@ -84,6 +86,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	@Override
 	public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
 		modelComputed = false;
+		isSolutionOptimal = false;
 		this.assumps.clear();
 		myAssumps.copyTo(this.assumps);
 		begin = System.currentTimeMillis();
@@ -100,6 +103,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 		try {
 			assert problem.admitABetterSolution(assumps);
 			assert !problem.hasNoObjectiveFunction();
+			isSolutionOptimal = false;
 			do {
 				problem.discardCurrentSolution();
 				if (isVerbose()) {
@@ -110,6 +114,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 							+ "s)");
 				}
 			} while (problem.admitABetterSolution(assumps));
+			isSolutionOptimal = true;
 		} catch (TimeoutException e) {
 			if (isVerbose()) {
 				System.out.println(getLogPrefix() + "Solver timed out after "
@@ -118,6 +123,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			}
 		} catch (ContradictionException e) {
 			// OK, optimal model found
+			isSolutionOptimal = true;
 		}
 		modelComputed = true;
 		return problem.model();
@@ -137,6 +143,6 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	}
 
 	public boolean isOptimal() {
-		return problem.isOptimal();
+		return isSolutionOptimal;
 	}
 }
