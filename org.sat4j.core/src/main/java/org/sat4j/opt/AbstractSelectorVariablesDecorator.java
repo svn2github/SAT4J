@@ -69,6 +69,8 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	 */
 	protected boolean[] prevboolmodel;
 
+	private boolean isSolutionOptimal;
+
 	public AbstractSelectorVariablesDecorator(ISolver solver) {
 		super(solver);
 	}
@@ -105,6 +107,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	 */
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
+		isSolutionOptimal = false;
 		boolean result = super.isSatisfiable(assumps, true);
 		if (result) {
 			prevboolmodel = new boolean[nVars()];
@@ -120,6 +123,8 @@ public abstract class AbstractSelectorVariablesDecorator extends
 				prevmodel[i] = prevfullmodel[i];
 			}
 			calculateObjectiveValue();
+		} else {
+			isSolutionOptimal = true;
 		}
 		return result;
 	}
@@ -134,5 +139,9 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	@Override
 	public boolean model(int var) {
 		return prevboolmodel[var - 1];
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 }

@@ -174,4 +174,12 @@ public interface IOptimizationProblem extends IProblem {
 	 * @since 2.1
 	 */
 	void discardCurrentSolution() throws ContradictionException;
+
+	/**
+	 * Allows to check afterwards if the solution provided by the solver is
+	 * optimal or not.
+	 * 
+	 * @return
+	 */
+	boolean isOptimal();
 }

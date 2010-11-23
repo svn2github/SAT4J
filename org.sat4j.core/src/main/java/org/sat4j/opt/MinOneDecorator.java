@@ -53,6 +53,8 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
 
 	private int[] prevmodel;
 
+	private boolean isSolutionOptimal;
+
 	public MinOneDecorator(ISolver solver) {
 		super(solver);
 	}
@@ -66,10 +68,13 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
 	 */
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
+		isSolutionOptimal = false;
 		boolean result = isSatisfiable(assumps, true);
 		if (result) {
 			prevmodel = super.model();
 			calculateObjectiveValue();
+		} else {
+			isSolutionOptimal = true;
 		}
 		return result;
 	}
@@ -148,5 +153,9 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
 			throws ContradictionException {
 		addAtMost(literals, forcedValue.intValue());
 
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 }

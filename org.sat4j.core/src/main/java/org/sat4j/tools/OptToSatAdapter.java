@@ -126,4 +126,14 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 		return prefix + "Optimization to SAT adapter\n"
 				+ super.toString(prefix);
 	}
+
+	/**
+	 * Allow to easily check is the solution returned by isSatisfiable is
+	 * optimal or not.
+	 * 
+	 * @return true is the solution found is indeed optimal.
+	 */
+	public boolean isOptimal() {
+		return problem.isOptimal();
+	}
 }

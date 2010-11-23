@@ -26,6 +26,8 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 	protected int[] prevfullmodel;
 	protected boolean[] prevboolmodel;
 
+	boolean isSolutionOptimal;
+
 	/**
 	 * 
 	 */
@@ -47,7 +49,8 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
-		if (decorated().isSatisfiable(assumps)) {
+		isSolutionOptimal = false;
+		if (decorated().isSatisfiable(assumps, true)) {
 			prevboolmodel = new boolean[nVars()];
 			for (int i = 0; i < nVars(); i++) {
 				prevboolmodel[i] = decorated().model(i + 1);
@@ -75,6 +78,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			calculateObjective();
 			return true;
 		}
+		isSolutionOptimal = true;
 		if (prevConstr != null) {
 			super.removeConstr(prevConstr);
 			prevConstr = null;
@@ -130,13 +134,20 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 
 	private int evaluate() {
 		int value = 0;
+		int lit;
 		for (IteratorInt it = criteria.get(currentCriterion).iterator(); it
 				.hasNext();) {
-			if (prevboolmodel[it.next() - 1]) {
+			lit = it.next();
+			if ((lit > 0 && prevboolmodel[lit - 1])
+					|| (lit < 0 && !prevboolmodel[-lit - 1])) {
 				value++;
 			}
 		}
 		return value;
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 
 }
