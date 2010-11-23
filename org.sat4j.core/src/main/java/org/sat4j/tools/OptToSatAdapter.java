@@ -45,6 +45,8 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 	boolean modelComputed = false;
 	boolean optimalValueForced = false;
 
+	private boolean isSolutionOptimal;
+
 	public OptToSatAdapter(IOptimizationProblem problem) {
 		super((ISolver) problem);
 		this.problem = problem;
@@ -53,6 +55,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 	@Override
 	public boolean isSatisfiable() throws TimeoutException {
 		modelComputed = false;
+		isSolutionOptimal = false;
 		return problem.admitABetterSolution();
 	}
 
@@ -65,6 +68,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 	@Override
 	public boolean isSatisfiable(boolean global) throws TimeoutException {
 		modelComputed = false;
+		isSolutionOptimal = false;
 		return problem.admitABetterSolution();
 	}
 
@@ -86,9 +90,11 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 
 		try {
 			assert problem.admitABetterSolution();
+			isSolutionOptimal = false;
 			do {
 				problem.discardCurrentSolution();
 			} while (problem.admitABetterSolution());
+			isSolutionOptimal = true;
 			if (!optimalValueForced) {
 				try {
 					problem.forceObjectiveValueTo(problem.getObjectiveValue());
@@ -101,6 +107,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 			// solver timeout
 		} catch (ContradictionException e) {
 			// OK, optimal model found
+			isSolutionOptimal = true;
 			if (!optimalValueForced) {
 				try {
 					problem.forceObjectiveValueTo(problem.getObjectiveValue());
@@ -134,6 +141,6 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 	 * @return true is the solution found is indeed optimal.
 	 */
 	public boolean isOptimal() {
-		return problem.isOptimal();
+		return isSolutionOptimal;
 	}
 }
