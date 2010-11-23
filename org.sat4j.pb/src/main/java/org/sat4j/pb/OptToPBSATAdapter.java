@@ -111,7 +111,11 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 				}
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
-			// solver timeout
+			if (isVerbose()) {
+				System.out.println(getLogPrefix() + "Solver timed out after "
+						+ ((System.currentTimeMillis() - begin) / 1000.0)
+						+ "s)");
+			}
 		} catch (ContradictionException e) {
 			// OK, optimal model found
 		}
@@ -130,5 +134,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	public String toString(String prefix) {
 		return prefix + "Optimization to Pseudo Boolean adapter\n"
 				+ super.toString(prefix);
+	}
+
+	public boolean isOptimal() {
+		return problem.isOptimal();
 	}
 }

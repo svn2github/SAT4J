@@ -59,6 +59,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	private IConstr previousPBConstr;
 
+	private boolean isSolutionOptimal;
+
 	public PseudoOptDecorator(IPBSolver solver) {
 		super(solver);
 	}
@@ -110,6 +112,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
 		try {
+			isSolutionOptimal = false;
 			boolean result = super.isSatisfiable(assumps, true);
 			if (result) {
 				prevmodel = super.model();
@@ -121,6 +124,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 					calculateObjective();
 				}
 			} else {
+				isSolutionOptimal = true;
 				if (previousPBConstr != null) {
 					decorated().removeConstr(previousPBConstr);
 					previousPBConstr = null;
@@ -158,9 +162,9 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 			super.removeSubsumedConstr(previousPBConstr);
 		}
 		if (objfct != null && objectiveValue != null) {
-			previousPBConstr = super.addPseudoBoolean(objfct.getVars(), objfct
-					.getCoeffs(), false, objectiveValue
-					.subtract(BigInteger.ONE));
+			previousPBConstr = super.addPseudoBoolean(objfct.getVars(),
+					objfct.getCoeffs(), false,
+					objectiveValue.subtract(BigInteger.ONE));
 		}
 	}
 
@@ -199,5 +203,9 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 			throws ContradictionException {
 		super.addPseudoBoolean(objfct.getVars(), objfct.getCoeffs(), false,
 				(BigInteger) forcedValue);
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 }

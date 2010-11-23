@@ -40,4 +40,8 @@ public class LexicoHelper<T, C> extends DependencyHelper<T, C> {
 		}
 		lexico.addCriterion(literals);
 	}
+
+	public boolean isOptimal() {
+		return ((OptToPBSATAdapter) getSolver()).isOptimal();
+	}
 }
