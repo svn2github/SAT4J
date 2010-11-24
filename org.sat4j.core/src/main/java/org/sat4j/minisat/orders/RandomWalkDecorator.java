@@ -95,4 +95,9 @@ public final class RandomWalkDecorator implements IOrder {
 		decorated.updateVarAtDecisionLevel(q);
 	}
 
+	@Override
+	public String toString() {
+		return decorated.toString() + " with random walks " + p;
+	}
+
 }
