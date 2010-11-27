@@ -67,6 +67,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     
     private IConstr previousPBConstr;
 
+    private boolean isSolutionOptimal;
+    
     public WeightedMaxSatDecorator(IPBSolver solver) {
         super(solver);
         solver.setObjectiveFunction(obj);
@@ -271,6 +273,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     
     public boolean admitABetterSolution(IVecInt assumps)
 		throws TimeoutException {
+    	isSolutionOptimal = false;
         boolean result = super.isSatisfiable(assumps,true);
         if (result) {
 			prevboolmodel = new boolean[nVars()];
@@ -289,6 +292,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 			}
 			calculateObjective();
         } else {
+        	isSolutionOptimal = true;
 			if (previousPBConstr != null) {
 				decorated().removeConstr(previousPBConstr);
 				previousPBConstr = null;
@@ -338,7 +342,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         if (previousPBConstr!=null) {
         	removeSubsumedConstr(previousPBConstr);
         }
-        previousPBConstr = super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
+        try {
+			previousPBConstr = super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
+		} catch (ContradictionException e) {
+			isSolutionOptimal = true;
+			throw e;
+		}
     }
 
 	public Number getObjectiveValue() {
@@ -352,5 +361,9 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
 		super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 }

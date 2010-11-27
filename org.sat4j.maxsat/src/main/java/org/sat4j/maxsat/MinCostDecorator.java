@@ -60,6 +60,8 @@ public class MinCostDecorator extends PBSolverDecorator implements
 
 	private IConstr prevConstr;
 
+	private boolean isSolutionOptimal;
+	
 	public MinCostDecorator(IPBSolver solver) {
 		super(solver);
 	}
@@ -128,10 +130,13 @@ public class MinCostDecorator extends PBSolverDecorator implements
 
 	public boolean admitABetterSolution(IVecInt assumps)
 			throws TimeoutException {
+		isSolutionOptimal = false;
 		boolean result = super.isSatisfiable(assumps, true);
 		if (result) {
 			prevmodel = super.model();
 			calculateObjective();
+		} else {
+			isSolutionOptimal = true;
 		}
 		return result;
 	}
@@ -163,8 +168,13 @@ public class MinCostDecorator extends PBSolverDecorator implements
 		if (prevConstr!=null) {
 			super.removeSubsumedConstr(prevConstr);
 		}
-		prevConstr = super.addPseudoBoolean(vars, coeffs, false, BigInteger
-				.valueOf(objectivevalue - 1));
+		try {
+			prevConstr = super.addPseudoBoolean(vars, coeffs, false, BigInteger
+					.valueOf(objectivevalue - 1));
+		} catch (ContradictionException e) {
+			isSolutionOptimal = true;
+			throw e;
+		}
 	}
 
 	@Override
@@ -191,5 +201,9 @@ public class MinCostDecorator extends PBSolverDecorator implements
 			throws ContradictionException {
 		super.addPseudoBoolean(vars, coeffs, false, (BigInteger)
 				forcedValue);
+	}
+
+	public boolean isOptimal() {
+		return isSolutionOptimal;
 	}
 }
