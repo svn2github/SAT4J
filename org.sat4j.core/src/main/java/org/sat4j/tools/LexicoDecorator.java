@@ -59,6 +59,10 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			prevfullmodel = decorated().model();
 			return true;
 		}
+		return manageUnsatCase();
+	}
+
+	private boolean manageUnsatCase() {
 		if (currentCriterion < criteria.size() - 1) {
 			if (prevConstr != null) {
 				super.removeConstr(prevConstr);
@@ -77,6 +81,10 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			currentCriterion++;
 			calculateObjective();
 			return true;
+		}
+		if (isVerbose()) {
+			System.out.println(getLogPrefix()
+					+ "Found optimal solution for the last criterion ");
 		}
 		isSolutionOptimal = true;
 		if (prevConstr != null) {
@@ -131,8 +139,9 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			prevConstr = super.addAtMost(criteria.get(currentCriterion),
 					currentValue - 1);
 		} catch (ContradictionException c) {
-			isSolutionOptimal = true;
-			throw c;
+			if (!manageUnsatCase()) {
+				throw c;
+			}
 		}
 
 	}
