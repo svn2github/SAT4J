@@ -139,6 +139,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			prevConstr = super.addAtMost(criteria.get(currentCriterion),
 					currentValue - 1);
 		} catch (ContradictionException c) {
+			prevConstr = null;
 			if (!manageUnsatCase()) {
 				throw c;
 			}
