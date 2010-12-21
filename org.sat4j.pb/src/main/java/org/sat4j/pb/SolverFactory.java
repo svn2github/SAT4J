@@ -617,7 +617,9 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolutionMaxMemory() {
-		return newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+		return solver;
 	}
 
 	/**
