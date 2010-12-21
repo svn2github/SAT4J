@@ -26,7 +26,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 	protected int[] prevfullmodel;
 	protected boolean[] prevboolmodel;
 
-	boolean isSolutionOptimal;
+	private boolean isSolutionOptimal;
 
 	/**
 	 * 
@@ -70,6 +70,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			}
 			try {
 				super.addAtMost(criteria.get(currentCriterion), currentValue);
+				super.addAtLeast(criteria.get(currentCriterion), currentValue);
 			} catch (ContradictionException e) {
 				throw new IllegalStateException(e);
 			}
