@@ -1867,6 +1867,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			current = trail.last();
 		}
 		undoOne();
+		qhead = trail.size();
 	}
 
 	/**
