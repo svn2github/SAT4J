@@ -23,7 +23,6 @@ public class DecisionTracing implements SearchListener {
 
 	public DecisionTracing(String filename) {
 		this.filename = filename;
-		updateWriter();
 	}
 
 	private void updateWriter() {
@@ -89,7 +88,7 @@ public class DecisionTracing implements SearchListener {
 	}
 
 	public void start() {
-
+		updateWriter();
 	}
 
 	public void restarting() {
