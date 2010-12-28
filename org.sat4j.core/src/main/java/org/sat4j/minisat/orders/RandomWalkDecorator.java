@@ -55,7 +55,7 @@ public final class RandomWalkDecorator implements IOrder {
 				lit = rand.nextInt(maxlitid) + 2;
 				if (voc.isUnassigned(lit)) {
 					nbRandomWalks++;
-					return lit;
+					return getPhaseSelectionStrategy().select(lit >> 1);
 				}
 			}
 		}
