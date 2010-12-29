@@ -44,23 +44,12 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolverDecorator;
 
 /**
- * An implementation of the QuickXplain algorithm as explained by Ulrich Junker
- * in the following paper:
+ * Explanation framework for SAT4J.
  * 
- * @inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
- *                 title={QUICKXPLAIN: Conflict Detection for Arbitrary
- *                 Constraint Propagation Algorithms}, booktitle={IJCAI'01
- *                 Workshop on Modelling and Solving problems with constraints
- *                 (CONS-1)}, year={2001}, month={August}, address={Seattle, WA,
- *                 USA}, url={citeseer.ist.psu.edu/junker01quickxplain.html},
- *                 url={http://www.lirmm.fr/~bessiere/ws_ijcai01/junker.ps.gz} }
+ * The explanation uses selector variables and assumptions.
  * 
- *                 The algorithm has been adapted to work properly in a context
- *                 where we can afford to add a selector variable to each clause
- *                 to enable or disable each constraint.
- * 
- *                 Note that for the moment, QuickXplain does not work properly
- *                 in an optimization setting.
+ * It is based on a two steps method: 1) extraction of a set of assumptions
+ * implying the inconsistency 2) minimization of that set.
  * 
  * @author daniel
  * 

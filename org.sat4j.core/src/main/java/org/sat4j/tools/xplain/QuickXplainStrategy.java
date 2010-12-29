@@ -36,6 +36,25 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
+ * An implementation of the QuickXplain algorithm as explained by Ulrich Junker
+ * in the following paper:
+ * 
+ * @inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
+ *                 title={QUICKXPLAIN: Conflict Detection for Arbitrary
+ *                 Constraint Propagation Algorithms}, booktitle={IJCAI'01
+ *                 Workshop on Modelling and Solving problems with constraints
+ *                 (CONS-1)}, year={2001}, month={August}, address={Seattle, WA,
+ *                 USA}, url={citeseer.ist.psu.edu/junker01quickxplain.html},
+ *                 url={http://www.lirmm.fr/~bessiere/ws_ijcai01/junker.ps.gz} }
+ * 
+ *                 The algorithm has been adapted to work properly in a context
+ *                 where we can afford to add a selector variable to each clause
+ *                 to enable or disable each constraint.
+ * 
+ *                 Note that for the moment, QuickXplain does not work properly
+ *                 in an optimization setting.
+ * 
+ * 
  * @since 2.1
  */
 public class QuickXplainStrategy implements XplainStrategy {

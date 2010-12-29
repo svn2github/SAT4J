@@ -34,6 +34,8 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
+ * Minimization technique used to reduce an unsatisfiable set of constraints
+ * into a minimally unsatisfiable subformula (MUS).
  * 
  * @author daniel
  * @since 2.1
