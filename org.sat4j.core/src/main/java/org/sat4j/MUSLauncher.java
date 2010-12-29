@@ -94,10 +94,11 @@ public class MUSLauncher extends AbstractLauncher {
 				log("Size of initial unsat subformula: "
 						+ solver.unsatExplanation().size());
 				log("Computing MUS ...");
+				double beginmus = System.currentTimeMillis();
 				mus = xplain.minimalExplanation();
 				log("Size of the MUS: " + mus.length);
 				log("Unsat core  computation wall clock time (in seconds) : "
-						+ (System.currentTimeMillis() - wallclocktime) / 1000.0);
+						+ (System.currentTimeMillis() - beginmus) / 1000.0);
 			} catch (TimeoutException e) {
 				log("Cannot compute MUS within the timeout.");
 			}
