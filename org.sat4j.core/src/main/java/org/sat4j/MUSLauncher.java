@@ -16,6 +16,8 @@ public class MUSLauncher extends AbstractLauncher {
 
 	int[] mus;
 
+	Xplain<ISolver> xplain;
+
 	@Override
 	public void usage() {
 		log("java -jar sat4j-mus.jar <cnffile>");
@@ -36,11 +38,11 @@ public class MUSLauncher extends AbstractLauncher {
 
 	@Override
 	protected ISolver configureSolver(String[] args) {
-		ISolver asolver = new Xplain<ISolver>(SolverFactory.newDefault());
-		asolver.setTimeout(Integer.MAX_VALUE);
-		asolver.setDBSimplificationAllowed(true);
-		getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return asolver;
+		xplain = new Xplain<ISolver>(SolverFactory.newDefault());
+		xplain.setTimeout(Integer.MAX_VALUE);
+		xplain.setDBSimplificationAllowed(true);
+		getLogWriter().println(xplain.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+		return xplain;
 	}
 
 	@Override
@@ -73,8 +75,11 @@ public class MUSLauncher extends AbstractLauncher {
 			try {
 				log("Unsat detection wall clock time (in seconds) : "
 						+ wallclocktime);
+				log("Size of initial unsat subformula: "
+						+ xplain.unsatExplanation().size());
 				log("Computing MUS ...");
-				mus = ((Xplain<ISolver>) solver).explainInTermsOfClauseIndex();
+				mus = xplain.explainInTermsOfClauseIndex();
+				log("Size of the MUS: " + mus.length);
 				log("Unsat core  computation wall clock time (in seconds) : "
 						+ (System.currentTimeMillis() - wallclocktime) / 1000.0);
 			} catch (TimeoutException e) {
