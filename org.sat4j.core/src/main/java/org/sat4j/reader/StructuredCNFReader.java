@@ -76,6 +76,11 @@ public class StructuredCNFReader extends DimacsReader {
 		}
 		currentComponentIndex = Integer.valueOf(component.substring(1,
 				component.length() - 1));
+		if (currentComponentIndex < 0
+				|| currentComponentIndex > numberOfComponents) {
+			throw new ParseFormatException("wrong component index: "
+					+ currentComponentIndex);
+		}
 		while (!scanner.eof()) {
 			lit = scanner.nextInt();
 			if (lit == 0) {
