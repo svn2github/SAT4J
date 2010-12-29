@@ -27,11 +27,10 @@
  *******************************************************************************/
 package org.sat4j.tools.xplain;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.sat4j.core.VecInt;
@@ -44,23 +43,8 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolverDecorator;
 
 /**
- * An implementation of the QuickXplain algorithm as explained by Ulrich Junker
- * in the following paper:
- * 
- * @inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
- *                 title={QUICKXPLAIN: Conflict Detection for Arbitrary
- *                 Constraint Propagation Algorithms}, booktitle={IJCAI'01
- *                 Workshop on Modelling and Solving problems with constraints
- *                 (CONS-1)}, year={2001}, month={August}, address={Seattle, WA,
- *                 USA}, url={citeseer.ist.psu.edu/junker01quickxplain.html},
- *                 url={http://www.lirmm.fr/~bessiere/ws_ijcai01/junker.ps.gz} }
- * 
- *                 The algorithm has been adapted to work properly in a context
- *                 where we can afford to add a selector variable to each clause
- *                 to enable or disable each constraint.
- * 
- *                 Note that for the moment, QuickXplain does not work properly
- *                 in an optimization setting.
+ * Computation of MUS in a structured CNF, i.e. the clauses belong to
+ * components, the explanation is to be extracted in terms of components.
  * 
  * @author daniel
  * 
@@ -68,7 +52,8 @@ import org.sat4j.tools.SolverDecorator;
  *            a subinterface to ISolver.
  * @since 2.1
  */
-public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T> {
+public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
+		implements Explainer {
 
 	protected Map<Integer, Integer> constrs = new HashMap<Integer, Integer>();
 
@@ -158,16 +143,14 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T> {
 		return XPLAIN_STRATEGY.explain(solver, constrs, assump);
 	}
 
-	public int[] explainInTermsOfLevels() throws TimeoutException {
-		IVecInt keys = explanationKeys();
-		keys.sort();
-		List<Integer> allKeys = new ArrayList<Integer>(constrs.keySet());
-		Collections.sort(allKeys);
-		int[] model = new int[keys.size()];
+	public int[] minimalExplanation() throws TimeoutException {
+		Collection<Integer> components = explain();
+		int[] model = new int[components.size()];
 		int i = 0;
-		for (IteratorInt it = keys.iterator(); it.hasNext();) {
-			model[i++] = constrs.get(allKeys.indexOf(it.next()));
+		for (int c : components) {
+			model[i++] = c;
 		}
+		Arrays.sort(model);
 		return model;
 	}
 
@@ -178,7 +161,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T> {
 	 */
 	public Collection<Integer> explain() throws TimeoutException {
 		IVecInt keys = explanationKeys();
-		Collection<Integer> explanation = new ArrayList<Integer>(keys.size());
+		Collection<Integer> explanation = new HashSet<Integer>(keys.size());
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
 			explanation.add(constrs.get(it.next()));
 		}

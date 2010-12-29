@@ -3,8 +3,11 @@ package org.sat4j;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.Reader;
+import org.sat4j.reader.StructuredCNFReader;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.xplain.Explainer;
+import org.sat4j.tools.xplain.HighLevelXplain;
 import org.sat4j.tools.xplain.Xplain;
 
 public class MUSLauncher extends AbstractLauncher {
@@ -14,9 +17,9 @@ public class MUSLauncher extends AbstractLauncher {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	int[] mus;
+	private int[] mus;
 
-	Xplain<ISolver> xplain;
+	private Explainer xplain;
 
 	@Override
 	public void usage() {
@@ -25,6 +28,9 @@ public class MUSLauncher extends AbstractLauncher {
 
 	@Override
 	protected Reader createReader(ISolver theSolver, String problemname) {
+		if (problemname.endsWith(".scnf")) {
+			return new StructuredCNFReader((HighLevelXplain<ISolver>) theSolver);
+		}
 		return new LecteurDimacs(theSolver);
 	}
 
@@ -38,11 +44,21 @@ public class MUSLauncher extends AbstractLauncher {
 
 	@Override
 	protected ISolver configureSolver(String[] args) {
-		xplain = new Xplain<ISolver>(SolverFactory.newDefault());
-		xplain.setTimeout(Integer.MAX_VALUE);
-		xplain.setDBSimplificationAllowed(true);
-		getLogWriter().println(xplain.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return xplain;
+		ISolver solver;
+		if (args[0].endsWith(".scnf")) {
+			HighLevelXplain<ISolver> hlxp = new HighLevelXplain<ISolver>(
+					SolverFactory.newDefault());
+			xplain = hlxp;
+			solver = hlxp;
+		} else {
+			Xplain<ISolver> xp = new Xplain<ISolver>(SolverFactory.newDefault());
+			xplain = xp;
+			solver = xp;
+		}
+		solver.setTimeout(Integer.MAX_VALUE);
+		solver.setDBSimplificationAllowed(true);
+		getLogWriter().println(solver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+		return solver;
 	}
 
 	@Override
@@ -76,9 +92,9 @@ public class MUSLauncher extends AbstractLauncher {
 				log("Unsat detection wall clock time (in seconds) : "
 						+ wallclocktime);
 				log("Size of initial unsat subformula: "
-						+ xplain.unsatExplanation().size());
+						+ solver.unsatExplanation().size());
 				log("Computing MUS ...");
-				mus = xplain.explainInTermsOfClauseIndex();
+				mus = xplain.minimalExplanation();
 				log("Size of the MUS: " + mus.length);
 				log("Unsat core  computation wall clock time (in seconds) : "
 						+ (System.currentTimeMillis() - wallclocktime) / 1000.0);

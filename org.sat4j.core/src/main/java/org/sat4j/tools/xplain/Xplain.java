@@ -68,7 +68,8 @@ import org.sat4j.tools.SolverDecorator;
  *            a subinterface to ISolver.
  * @since 2.1
  */
-public class Xplain<T extends ISolver> extends SolverDecorator<T> {
+public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
+		Explainer {
 
 	protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
 
@@ -153,7 +154,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return XPLAIN_STRATEGY.explain(solver, constrs, assump);
 	}
 
-	public int[] explainInTermsOfClauseIndex() throws TimeoutException {
+	public int[] minimalExplanation() throws TimeoutException {
 		IVecInt keys = explanationKeys();
 		keys.sort();
 		List<Integer> allKeys = new ArrayList<Integer>(constrs.keySet());
@@ -274,5 +275,4 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		}
 		return model;
 	}
-
 }
