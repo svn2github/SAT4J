@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.sat4j.core.VecInt;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -47,7 +46,7 @@ public class QuickXplainStrategy implements XplainStrategy {
 		computationCanceled = true;
 	}
 
-	public IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
+	public IVecInt explain(ISolver solver, Map<Integer, ?> constrs,
 			IVecInt assumps) throws TimeoutException {
 		computationCanceled = false;
 		IVecInt encodingAssumptions = new VecInt(constrs.size()

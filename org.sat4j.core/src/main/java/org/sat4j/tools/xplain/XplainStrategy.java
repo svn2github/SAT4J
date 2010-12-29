@@ -29,7 +29,6 @@ package org.sat4j.tools.xplain;
 
 import java.util.Map;
 
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -50,8 +49,8 @@ public interface XplainStrategy {
 	 * @throws TimeoutException
 	 * @since 2.1
 	 */
-	IVecInt explain(ISolver solver, Map<Integer, IConstr> constrs,
-			IVecInt assumps) throws TimeoutException;
+	IVecInt explain(ISolver solver, Map<Integer, ?> constrs, IVecInt assumps)
+			throws TimeoutException;
 
 	/**
 	 * @since 2.1

@@ -68,37 +68,42 @@ import org.sat4j.tools.SolverDecorator;
  *            a subinterface to ISolver.
  * @since 2.1
  */
-public class Xplain<T extends ISolver> extends SolverDecorator<T> {
+public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T> {
 
-	protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
+	protected Map<Integer, Integer> constrs = new HashMap<Integer, Integer>();
 
 	protected IVecInt assump;
 
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
-	private final IVecInt lastClause = new VecInt();
 
 	private static final XplainStrategy XPLAIN_STRATEGY = new QuickXplainStrategy();
 
-	public Xplain(T solver) {
+	public HighLevelXplain(T solver) {
 		super(solver);
 	}
 
-	@Override
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		if (literals.equals(lastClause)) {
-			// System.err.println("c Duplicated entry: " + literals);
-			return null;
+	/**
+	 * 
+	 * @param literals
+	 *            a clause
+	 * @param desc
+	 *            the level of the clause set
+	 * @return on object representing that clause in the solver.
+	 * @throws ContradictionException
+	 */
+	public IConstr addClause(IVecInt literals, int desc)
+			throws ContradictionException {
+		if (desc == 0) {
+			return addClause(literals);
 		}
-		lastClause.clear();
-		literals.copyTo(lastClause);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
 		IConstr constr = super.addClause(literals);
 		if (constr == null) {
 			discardLastestVar();
 		} else {
-			constrs.put(newvar, constr);
+			constrs.put(newvar, desc);
 		}
 		return constr;
 	}
@@ -153,7 +158,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		return XPLAIN_STRATEGY.explain(solver, constrs, assump);
 	}
 
-	public int[] explainInTermsOfClauseIndex() throws TimeoutException {
+	public int[] explainInTermsOfLevels() throws TimeoutException {
 		IVecInt keys = explanationKeys();
 		keys.sort();
 		List<Integer> allKeys = new ArrayList<Integer>(constrs.keySet());
@@ -161,7 +166,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 		int[] model = new int[keys.size()];
 		int i = 0;
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
-			model[i++] = allKeys.indexOf(it.next()) + 1;
+			model[i++] = constrs.get(allKeys.indexOf(it.next()));
 		}
 		return model;
 	}
@@ -171,9 +176,9 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	 * @return
 	 * @throws TimeoutException
 	 */
-	public Collection<IConstr> explain() throws TimeoutException {
+	public Collection<Integer> explain() throws TimeoutException {
 		IVecInt keys = explanationKeys();
-		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
+		Collection<Integer> explanation = new ArrayList<Integer>(keys.size());
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
 			explanation.add(constrs.get(it.next()));
 		}
@@ -185,14 +190,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	 */
 	public void cancelExplanation() {
 		XPLAIN_STRATEGY.cancelExplanationComputation();
-	}
-
-	/**
-	 * 
-	 * @since 2.1
-	 */
-	public Collection<IConstr> getConstraints() {
-		return constrs.values();
 	}
 
 	@Override
