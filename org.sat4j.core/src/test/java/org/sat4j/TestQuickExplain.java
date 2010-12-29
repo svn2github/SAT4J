@@ -46,7 +46,8 @@ import org.sat4j.tools.xplain.Xplain;
 public class TestQuickExplain {
 
 	@Test
-	public void testGlobalInconsistency() throws ContradictionException, TimeoutException {
+	public void testGlobalInconsistency() throws ContradictionException,
+			TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVecInt clause = new VecInt();
@@ -64,11 +65,40 @@ public class TestQuickExplain {
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 	}
-	
+
 	@Test
-	public void testAlmostGlobalInconsistency() throws ContradictionException, TimeoutException {
+	public void testGlobalInconsistencyIndex() throws ContradictionException,
+			TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(2);
+		IVecInt clause = new VecInt();
+		clause.push(1).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(1).push(-2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(2);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(-2);
+		solver.addClause(clause);
+		clause.clear();
+		assertFalse(solver.isSatisfiable());
+		int[] explanation = solver.explainInTermsOfClauseIndex();
+		assertEquals(4, explanation.length);
+		assertEquals(1, explanation[0]);
+		assertEquals(2, explanation[1]);
+		assertEquals(3, explanation[2]);
+		assertEquals(4, explanation[3]);
+
+	}
+
+	@Test
+	public void testAlmostGlobalInconsistency() throws ContradictionException,
+			TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
@@ -76,10 +106,10 @@ public class TestQuickExplain {
 		IConstr c1 = solver.addClause(clause);
 		clause.clear();
 		clause.push(1).push(-2);
-		IConstr c2 =  solver.addClause(clause);
+		IConstr c2 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(2);
-		IConstr c3 =  solver.addClause(clause);
+		IConstr c3 = solver.addClause(clause);
 		clause.clear();
 		clause.push(-1).push(-2);
 		IConstr c4 = solver.addClause(clause);
@@ -89,15 +119,42 @@ public class TestQuickExplain {
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 		assertTrue(explanation.contains(c3));
 		assertTrue(explanation.contains(c4));
 	}
-	
+
 	@Test
-	public void testAlmostGlobalInconsistencyII() throws ContradictionException, TimeoutException {
+	public void testAlmostGlobalInconsistencyIndex()
+			throws ContradictionException, TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(3);
+		IVecInt clause = new VecInt();
+		clause.push(1).push(2);
+		clause.clear();
+		clause.push(1).push(-2);
+		clause.clear();
+		clause.push(-1).push(2);
+		clause.clear();
+		clause.push(-1).push(-2);
+		clause.clear();
+		clause.push(1).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		assertFalse(solver.isSatisfiable());
+		int[] explanation = solver.explainInTermsOfClauseIndex();
+		assertEquals(4, explanation.length);
+		assertEquals(1, explanation[0]);
+		assertEquals(2, explanation[1]);
+		assertEquals(3, explanation[2]);
+		assertEquals(4, explanation[3]);
+	}
+
+	@Test
+	public void testAlmostGlobalInconsistencyII()
+			throws ContradictionException, TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
@@ -118,15 +175,42 @@ public class TestQuickExplain {
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 		assertTrue(explanation.contains(c4));
 		assertTrue(explanation.contains(c5));
 	}
-	
+
 	@Test
-	public void testTheCaseOfTwoMUSes() throws ContradictionException, TimeoutException {
+	public void testAlmostGlobalInconsistencyIIIndex()
+			throws ContradictionException, TimeoutException {
+		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+		solver.newVar(3);
+		IVecInt clause = new VecInt();
+		clause.push(1).push(2);
+		clause.clear();
+		clause.push(1).push(-2);
+		clause.clear();
+		clause.push(1).push(3);
+		solver.addClause(clause);
+		clause.clear();
+		clause.push(-1).push(2);
+		clause.clear();
+		clause.push(-1).push(-2);
+		clause.clear();
+		assertFalse(solver.isSatisfiable());
+		int[] explanation = solver.explainInTermsOfClauseIndex();
+		assertEquals(4, explanation.length);
+		assertEquals(1, explanation[0]);
+		assertEquals(2, explanation[1]);
+		assertEquals(4, explanation[2]);
+		assertEquals(5, explanation[3]);
+	}
+
+	@Test
+	public void testTheCaseOfTwoMUSes() throws ContradictionException,
+			TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVecInt clause = new VecInt();
@@ -150,13 +234,14 @@ public class TestQuickExplain {
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 	}
-	
+
 	@Test
-	public void testEclipseTestCase() throws ContradictionException, TimeoutException {
+	public void testEclipseTestCase() throws ContradictionException,
+			TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
@@ -174,11 +259,12 @@ public class TestQuickExplain {
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(3,explanation.size());
+		assertEquals(3, explanation.size());
 	}
-	
+
 	@Test
-	public void testEclipseTestCase2() throws ContradictionException, TimeoutException {
+	public void testEclipseTestCase2() throws ContradictionException,
+			TimeoutException {
 		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVecInt clause = new VecInt();
@@ -198,6 +284,6 @@ public class TestQuickExplain {
 		assump.push(4);
 		assertFalse(solver.isSatisfiable(assump));
 		Collection<IConstr> explanation = solver.explain();
-		assertEquals(4,explanation.size());
+		assertEquals(4, explanation.size());
 	}
 }
