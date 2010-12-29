@@ -29,7 +29,9 @@ package org.sat4j.tools.xplain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.sat4j.core.VecInt;
@@ -138,17 +140,39 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @since 2.1
+	 * @since 2.2.4
 	 * @return
 	 * @throws TimeoutException
 	 */
-	public Collection<IConstr> explain() throws TimeoutException {
+	private IVecInt explanationKeys() throws TimeoutException {
 		assert !isSatisfiable(assump);
 		ISolver solver = decorated();
 		if (solver instanceof SolverDecorator<?>) {
 			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
 		}
-		IVecInt keys = XPLAIN_STRATEGY.explain(solver, constrs, assump);
+		return XPLAIN_STRATEGY.explain(solver, constrs, assump);
+	}
+
+	public int[] explainInTermsOfClauseIndex() throws TimeoutException {
+		IVecInt keys = explanationKeys();
+		keys.sort();
+		List allKeys = new ArrayList(constrs.keySet());
+		Collections.sort(allKeys);
+		int[] model = new int[keys.size()];
+		int i = 0;
+		for (IteratorInt it = keys.iterator(); it.hasNext();) {
+			model[i++] = allKeys.indexOf(it.next()) + 1;
+		}
+		return model;
+	}
+
+	/**
+	 * @since 2.1
+	 * @return
+	 * @throws TimeoutException
+	 */
+	public Collection<IConstr> explain() throws TimeoutException {
+		IVecInt keys = explanationKeys();
 		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
 		for (IteratorInt it = keys.iterator(); it.hasNext();) {
 			explanation.add(constrs.get(it.next()));

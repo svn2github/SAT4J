@@ -65,13 +65,13 @@ public abstract class AbstractLauncher implements Serializable {
 
 	public static final String COMMENT_PREFIX = "c "; //$NON-NLS-1$
 
-	private long beginTime;
+	protected long beginTime;
 
-	private ExitCode exitCode = ExitCode.UNKNOWN;
+	protected ExitCode exitCode = ExitCode.UNKNOWN;
 
 	protected Reader reader;
 
-	private transient PrintWriter out = new PrintWriter(System.out, true);
+	protected transient PrintWriter out = new PrintWriter(System.out, true);
 
 	protected transient Thread shutdownHook = new Thread() {
 		@Override
