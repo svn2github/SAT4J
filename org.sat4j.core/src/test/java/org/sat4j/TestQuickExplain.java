@@ -87,7 +87,7 @@ public class TestQuickExplain {
 		solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		int[] explanation = solver.explainInTermsOfClauseIndex();
+		int[] explanation = solver.minimalExplanation();
 		assertEquals(4, explanation.length);
 		assertEquals(1, explanation[0]);
 		assertEquals(2, explanation[1]);
@@ -144,7 +144,7 @@ public class TestQuickExplain {
 		solver.addClause(clause);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		int[] explanation = solver.explainInTermsOfClauseIndex();
+		int[] explanation = solver.minimalExplanation();
 		assertEquals(4, explanation.length);
 		assertEquals(1, explanation[0]);
 		assertEquals(2, explanation[1]);
@@ -200,7 +200,7 @@ public class TestQuickExplain {
 		clause.push(-1).push(-2);
 		clause.clear();
 		assertFalse(solver.isSatisfiable());
-		int[] explanation = solver.explainInTermsOfClauseIndex();
+		int[] explanation = solver.minimalExplanation();
 		assertEquals(4, explanation.length);
 		assertEquals(1, explanation[0]);
 		assertEquals(2, explanation[1]);
