@@ -1,6 +1,6 @@
 <project name="sat4j" default="p2">
          <!-- using Eclipse compiler -->
-         
+         <!-- COMMENT THAT LINE IF YOU WANT TO USE DEFAULT JDK COMPILER -->        
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         
         <property name="testreport.dir" value="tests"/>
@@ -197,6 +197,22 @@
                 <antcall target="zip-bundle">
 		   <param name="package" value="core"/>
                 </antcall>
+	</target>
+	
+	<target name="mus" depends="prepare" description="Build a jar file for MUS solver">
+		<echo>Building MUS solver</echo>
+                <antcall target="build">
+		   <param name="package" value="core"/>
+		   <param name="src" value="org.sat4j.core/src/main/java" />
+                   <param name="jarname" value="sat4j-mus"/>
+		   <param name="mainclass" value="org.sat4j.MUSLauncher"/>
+		</antcall>
+		<jar destfile="${dist}/${release}/sat4j-mus.jar" basedir="${build}">                        
+                       <manifest>
+                                <attribute name="Built-By" value="Daniel Le Berre"/>
+                                <attribute name="Main-Class" value="org.sat4j.MUSLauncher"/>
+                       </manifest>
+                 </jar>
 	</target>
 
 	<target name="sudoku" depends="core" description="Build the sudoku demo  from current source tree">
