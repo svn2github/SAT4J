@@ -45,7 +45,7 @@ public class MUSLauncher extends AbstractLauncher {
 	@Override
 	protected ISolver configureSolver(String[] args) {
 		ISolver solver;
-		if (args[0].endsWith(".scnf")) {
+		if (args[0].endsWith(".gcnf")) {
 			HighLevelXplain<ISolver> hlxp = new HighLevelXplain<ISolver>(
 					SolverFactory.newDefault());
 			xplain = hlxp;
