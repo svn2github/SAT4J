@@ -110,10 +110,9 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			IVecInt encodingAssumptions, int start, int end, IVecInt result)
 			throws TimeoutException {
 		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "qxp " + start + "/"
+			System.out.println(solver.getLogPrefix() + "qxplain " + start + "/"
 					+ end);
 		}
-		System.out.println();
 		if (!solver.isSatisfiable(encodingAssumptions)) {
 			return;
 		}
