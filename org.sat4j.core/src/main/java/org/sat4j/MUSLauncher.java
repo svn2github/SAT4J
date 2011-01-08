@@ -1,9 +1,9 @@
 package org.sat4j;
 
 import org.sat4j.minisat.SolverFactory;
+import org.sat4j.reader.GroupedCNFReader;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.Reader;
-import org.sat4j.reader.GroupedCNFReader;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Explainer;
@@ -23,7 +23,7 @@ public class MUSLauncher extends AbstractLauncher {
 
 	@Override
 	public void usage() {
-		log("java -jar sat4j-mus.jar <cnffile>");
+		log("java -jar sat4j-mus.jar <cnffile>|<gcnffile>");
 	}
 
 	@Override
