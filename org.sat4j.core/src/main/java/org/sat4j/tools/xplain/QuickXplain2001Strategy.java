@@ -75,6 +75,7 @@ public class QuickXplain2001Strategy implements MinimizationStrategy {
 		IVecInt firstExplanation = solver.unsatExplanation();
 		if (solver.isVerbose()) {
 			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			firstExplanation.sort();
 			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
 				System.out.print(constrs.get(-it.next()));
 				System.out.print(" ");

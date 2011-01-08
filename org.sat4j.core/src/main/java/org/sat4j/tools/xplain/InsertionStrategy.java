@@ -87,6 +87,7 @@ public class InsertionStrategy implements MinimizationStrategy {
 		}
 		if (solver.isVerbose()) {
 			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			firstExplanation.sort();
 			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
 				System.out.print(constrs.get(-it.next()));
 				System.out.print(" ");
