@@ -8,6 +8,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Explainer;
 import org.sat4j.tools.xplain.HighLevelXplain;
+import org.sat4j.tools.xplain.MinimizationStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
 public class MUSLauncher extends AbstractLauncher {
@@ -21,14 +22,16 @@ public class MUSLauncher extends AbstractLauncher {
 
 	private Explainer xplain;
 
+	private boolean highLevel = false;
+
 	@Override
 	public void usage() {
-		log("java -jar sat4j-mus.jar <cnffile>|<gcnffile>");
+		log("java -jar sat4j-mus.jar [Insertion|Deletion|QuickXplain] <cnffile>|<gcnffile>");
 	}
 
 	@Override
 	protected Reader createReader(ISolver theSolver, String problemname) {
-		if (problemname.endsWith(".gcnf")) {
+		if (highLevel) {
 			return new GroupedCNFReader((HighLevelXplain<ISolver>) theSolver);
 		}
 		return new LecteurDimacs(theSolver);
@@ -39,13 +42,17 @@ public class MUSLauncher extends AbstractLauncher {
 		if (args.length == 0) {
 			return null;
 		}
-		return args[0];
+		return args[args.length - 1];
 	}
 
 	@Override
 	protected ISolver configureSolver(String[] args) {
+		String problemName = args[args.length - 1];
+		if (problemName.endsWith(".gcnf")) {
+			highLevel = true;
+		}
 		ISolver solver;
-		if (args[0].endsWith(".gcnf")) {
+		if (highLevel) {
 			HighLevelXplain<ISolver> hlxp = new HighLevelXplain<ISolver>(
 					SolverFactory.newDefault());
 			xplain = hlxp;
@@ -54,6 +61,16 @@ public class MUSLauncher extends AbstractLauncher {
 			Xplain<ISolver> xp = new Xplain<ISolver>(SolverFactory.newDefault());
 			xplain = xp;
 			solver = xp;
+		}
+		if (args.length == 2) {
+			// retrieve minimization strategy
+			String className = "org.sat4j.tools.xplain." + args[0] + "Strategy";
+			try {
+				xplain.setMinimizationStrategy((MinimizationStrategy) Class
+						.forName(className).newInstance());
+			} catch (Exception e) {
+				log(e.getMessage());
+			}
 		}
 		solver.setTimeout(Integer.MAX_VALUE);
 		solver.setDBSimplificationAllowed(true);
@@ -108,7 +125,7 @@ public class MUSLauncher extends AbstractLauncher {
 
 	public static void main(final String[] args) {
 		MUSLauncher lanceur = new MUSLauncher();
-		if (args.length != 1) {
+		if (args.length < 1 || args.length > 2) {
 			lanceur.usage();
 			return;
 		}
