@@ -28,7 +28,7 @@ public class MUSLauncher extends AbstractLauncher {
 
 	@Override
 	protected Reader createReader(ISolver theSolver, String problemname) {
-		if (problemname.endsWith(".scnf")) {
+		if (problemname.endsWith(".gcnf")) {
 			return new GroupedCNFReader((HighLevelXplain<ISolver>) theSolver);
 		}
 		return new LecteurDimacs(theSolver);
