@@ -33,9 +33,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -43,12 +43,20 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Xplain;
 
-public class TestQuickExplain {
+public abstract class AbstractXplainTest {
+
+	private Xplain<ISolver> solver;
+
+	protected abstract Xplain<ISolver> getXplain();
+
+	@Before
+	public void startUp() {
+		solver = getXplain();
+	}
 
 	@Test
 	public void testGlobalInconsistency() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -71,7 +79,6 @@ public class TestQuickExplain {
 	@Test
 	public void testGlobalInconsistencyIndex() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(2);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -99,7 +106,6 @@ public class TestQuickExplain {
 	@Test
 	public void testAlmostGlobalInconsistency() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -129,7 +135,6 @@ public class TestQuickExplain {
 	@Test
 	public void testAlmostGlobalInconsistencyIndex()
 			throws ContradictionException, TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -159,7 +164,6 @@ public class TestQuickExplain {
 	@Test
 	public void testAlmostGlobalInconsistencyII()
 			throws ContradictionException, TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -189,7 +193,6 @@ public class TestQuickExplain {
 	@Test
 	public void testAlmostGlobalInconsistencyIIIndex()
 			throws ContradictionException, TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -219,7 +222,6 @@ public class TestQuickExplain {
 	@Test
 	public void testTheCaseOfTwoMUSes() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2);
@@ -250,7 +252,6 @@ public class TestQuickExplain {
 	@Test
 	public void testEclipseTestCase() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(3);
 		IVecInt clause = new VecInt();
 		clause.push(-1);
@@ -273,7 +274,6 @@ public class TestQuickExplain {
 	@Test
 	public void testEclipseTestCase2() throws ContradictionException,
 			TimeoutException {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVecInt clause = new VecInt();
 		clause.push(-1).push(2);
