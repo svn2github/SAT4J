@@ -62,7 +62,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
 
-	private static final XplainStrategy XPLAIN_STRATEGY = new QuickXplainStrategy();
+	private MinimizationStrategy xplainStrategy = new InsertionStrategy();
 
 	public HighLevelXplain(T solver) {
 		super(solver);
@@ -140,7 +140,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 		if (solver instanceof SolverDecorator<?>) {
 			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
 		}
-		return XPLAIN_STRATEGY.explain(solver, constrs, assump);
+		return xplainStrategy.explain(solver, constrs, assump);
 	}
 
 	public int[] minimalExplanation() throws TimeoutException {
@@ -172,7 +172,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 	 * @since 2.1
 	 */
 	public void cancelExplanation() {
-		XPLAIN_STRATEGY.cancelExplanationComputation();
+		xplainStrategy.cancelExplanationComputation();
 	}
 
 	@Override
@@ -253,6 +253,18 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 			}
 		}
 		return model;
+	}
+
+	@Override
+	public String toString(String prefix) {
+		System.out.println(prefix
+				+ "High Level Explanation (MUS) enabled solver");
+		System.out.println(prefix + "Minimization strategy: " + xplainStrategy);
+		return super.toString(prefix);
+	}
+
+	public void setMinimizationStrategy(MinimizationStrategy strategy) {
+		xplainStrategy = strategy;
 	}
 
 }

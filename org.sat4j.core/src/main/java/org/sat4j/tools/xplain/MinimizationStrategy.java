@@ -40,7 +40,7 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * @since 2.1
  */
-public interface XplainStrategy {
+public interface MinimizationStrategy {
 
 	/**
 	 * 

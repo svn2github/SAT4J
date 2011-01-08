@@ -33,6 +33,7 @@ import java.util.Set;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -58,7 +59,7 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * @since 2.1
  */
-public class ReplayXplainStrategy implements XplainStrategy {
+public class InsertionStrategy implements MinimizationStrategy {
 
 	private boolean computationCanceled;
 
@@ -79,13 +80,32 @@ public class ReplayXplainStrategy implements XplainStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
-		Set<Integer> constraintsVariables = constrs.keySet();
-		int p;
-		for (int i = 0; i < firstExplanation.size(); i++) {
-			if (constraintsVariables.contains(p = -firstExplanation.get(i))) {
-				encodingAssumptions.push(p);
+		if (solver.isVerbose()) {
+			System.out.println(solver.getLogPrefix() + "initial unsat core "
+					+ firstExplanation);
+		}
+		for (int i = 0; i < firstExplanation.size();) {
+			if (assumps.contains(firstExplanation.get(i))) {
+				firstExplanation.delete(i);
+			} else {
+				i++;
 			}
 		}
+		Set<Integer> constraintsVariables = constrs.keySet();
+		IVecInt remainingVariables = new VecInt(constraintsVariables.size());
+		for (Integer v : constraintsVariables) {
+			remainingVariables.push(v);
+		}
+		int p;
+		for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
+			p = it.next();
+			if (p < 0) {
+				p = -p;
+			}
+			remainingVariables.remove(p);
+			encodingAssumptions.push(p);
+		}
+		remainingVariables.copyTo(encodingAssumptions);
 		boolean shouldContinue;
 		int startingPoint = assumps.size();
 		do {
@@ -110,6 +130,10 @@ public class ReplayXplainStrategy implements XplainStrategy {
 								-encodingAssumptions.get(j - 1));
 					}
 					encodingAssumptions.set(startingPoint, tmp);
+					if (solver.isVerbose()) {
+						System.out.println(solver.getLogPrefix() + tmp
+								+ " is mandatory ");
+					}
 				}
 				shouldContinue = true;
 			}
@@ -124,5 +148,10 @@ public class ReplayXplainStrategy implements XplainStrategy {
 			constrsKeys.push(-encodingAssumptions.get(i));
 		}
 		return constrsKeys;
+	}
+
+	@Override
+	public String toString() {
+		return "Replay (Insertion-based) minimization strategy";
 	}
 }

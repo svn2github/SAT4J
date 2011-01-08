@@ -33,7 +33,6 @@ import java.util.Set;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -58,7 +57,7 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @since 2.1
  */
-public class QuickXplainStrategy implements MinimizationStrategy {
+public class QuickXplain2001Strategy implements MinimizationStrategy {
 
 	private boolean computationCanceled;
 
@@ -73,47 +72,22 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
-		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "initial unsat core "
-					+ firstExplanation);
-		}
-		for (int i = 0; i < firstExplanation.size();) {
-			if (assumps.contains(firstExplanation.get(i))) {
-				firstExplanation.delete(i);
-			} else {
-				i++;
-			}
-		}
 		Set<Integer> constraintsVariables = constrs.keySet();
-		IVecInt remainingVariables = new VecInt(constraintsVariables.size());
-		for (Integer v : constraintsVariables) {
-			remainingVariables.push(v);
-		}
 		int p;
-		for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
-			p = it.next();
-			if (p < 0) {
-				p = -p;
+		for (int i = 0; i < firstExplanation.size(); i++) {
+			if (constraintsVariables.contains(p = -firstExplanation.get(i))) {
+				encodingAssumptions.push(p);
 			}
-			remainingVariables.remove(p);
-			encodingAssumptions.push(p);
 		}
-		int unsatcorelimit = encodingAssumptions.size() - 1;
-		IVecInt results = new VecInt(firstExplanation.size());
-		remainingVariables.copyTo(encodingAssumptions);
+		IVecInt results = new VecInt(encodingAssumptions.size());
 		computeExplanation(solver, encodingAssumptions, assumps.size(),
-				unsatcorelimit, results);
+				encodingAssumptions.size() - 1, results);
 		return results;
 	}
 
 	private void computeExplanation(ISolver solver,
 			IVecInt encodingAssumptions, int start, int end, IVecInt result)
 			throws TimeoutException {
-		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "qxp " + start + "/"
-					+ end);
-		}
-		System.out.println();
 		if (!solver.isSatisfiable(encodingAssumptions)) {
 			return;
 		}
@@ -122,9 +96,6 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 		assert encodingAssumptions.get(i) < 0;
 		while (!computationCanceled
 				&& solver.isSatisfiable(encodingAssumptions)) {
-			if (solver.isVerbose()) {
-				System.out.println(solver.getLogPrefix() + "qxp => " + i);
-			}
 			if (i == end) {
 				for (int j = start; j <= end; j++) {
 					encodingAssumptions.set(j, -encodingAssumptions.get(j));
@@ -136,10 +107,6 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			encodingAssumptions.set(i, -encodingAssumptions.get(i));
 		}
 		result.push(-encodingAssumptions.get(i));
-		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix()
-					+ -encodingAssumptions.get(i) + " is mandatory ");
-		}
 		if (start == i) {
 			return;
 		}
@@ -163,10 +130,4 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			throw new TimeoutException();
 		}
 	}
-
-	@Override
-	public String toString() {
-		return "QuickXplain minimization strategy";
-	}
-
 }
