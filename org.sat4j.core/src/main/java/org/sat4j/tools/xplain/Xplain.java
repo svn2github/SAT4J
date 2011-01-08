@@ -268,7 +268,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	@Override
 	public String toString(String prefix) {
 		System.out.println(prefix + "Explanation (MUS) enabled solver");
-		System.out.println(prefix + "Minimization strategy: " + xplainStrategy);
+		System.out.println(prefix + xplainStrategy);
 		return super.toString(prefix);
 	}
 
