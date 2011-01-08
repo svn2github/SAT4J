@@ -57,9 +57,18 @@ public class DeletionStrategy implements MinimizationStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
+		IVecInt results = new VecInt(firstExplanation.size());
+		if (firstExplanation.size() == 1) {
+			results.push(-firstExplanation.get(0));
+			return results;
+		}
 		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "initial unsat core "
-					+ firstExplanation);
+			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
+				System.out.print(constrs.get(-it.next()));
+				System.out.print(" ");
+			}
+			System.out.println();
 		}
 		for (int i = 0; i < firstExplanation.size();) {
 			if (assumps.contains(firstExplanation.get(i))) {
@@ -82,7 +91,6 @@ public class DeletionStrategy implements MinimizationStrategy {
 			remainingVariables.remove(p);
 		}
 
-		IVecInt results = new VecInt(firstExplanation.size());
 		remainingVariables.copyTo(encodingAssumptions);
 		int unsatcorebegin = encodingAssumptions.size();
 		firstExplanation.copyTo(encodingAssumptions);
@@ -95,7 +103,7 @@ public class DeletionStrategy implements MinimizationStrategy {
 			encodingAssumptions.set(i, -encodingAssumptions.get(i));
 			if (solver.isVerbose()) {
 				System.out.println(solver.getLogPrefix() + "checking "
-						+ (-encodingAssumptions.get(i)) + " ...");
+						+ constrs.get(encodingAssumptions.get(i)) + " ...");
 			}
 			if (solver.isSatisfiable(encodingAssumptions)) {
 				encodingAssumptions.set(i, -encodingAssumptions.get(i));

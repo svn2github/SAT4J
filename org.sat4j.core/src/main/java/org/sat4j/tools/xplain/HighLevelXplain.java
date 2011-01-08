@@ -63,6 +63,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 	private boolean pooledVarId = false;
 
 	private MinimizationStrategy xplainStrategy = new DeletionStrategy();
+	private final Map<Integer, Integer> highLevelToVar = new HashMap<Integer, Integer>();
 
 	public HighLevelXplain(T solver) {
 		super(solver);
@@ -82,14 +83,14 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 		if (desc == 0) {
 			return addClause(literals);
 		}
-		int newvar = createNewVar(literals);
-		literals.push(newvar);
-		IConstr constr = super.addClause(literals);
-		if (constr == null) {
-			discardLastestVar();
-		} else {
-			constrs.put(newvar, desc);
+		Integer hlvar = highLevelToVar.get(desc);
+		if (hlvar == null) {
+			hlvar = createNewVar(literals);
+			highLevelToVar.put(desc, hlvar);
+			constrs.put(hlvar, desc);
 		}
+		literals.push(hlvar);
+		IConstr constr = super.addClause(literals);
 		return constr;
 	}
 

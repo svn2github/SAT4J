@@ -33,6 +33,7 @@ import java.util.Set;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -72,6 +73,14 @@ public class QuickXplain2001Strategy implements MinimizationStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
+		if (solver.isVerbose()) {
+			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
+				System.out.print(constrs.get(-it.next()));
+				System.out.print(" ");
+			}
+			System.out.println();
+		}
 		Set<Integer> constraintsVariables = constrs.keySet();
 		int p;
 		for (int i = 0; i < firstExplanation.size(); i++) {

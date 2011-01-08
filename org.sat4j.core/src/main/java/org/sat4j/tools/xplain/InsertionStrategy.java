@@ -80,9 +80,18 @@ public class InsertionStrategy implements MinimizationStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
+		if (firstExplanation.size() == 1) {
+			IVecInt results = new VecInt();
+			results.push(-firstExplanation.get(0));
+			return results;
+		}
 		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "initial unsat core "
-					+ firstExplanation);
+			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
+				System.out.print(constrs.get(-it.next()));
+				System.out.print(" ");
+			}
+			System.out.println();
 		}
 		for (int i = 0; i < firstExplanation.size();) {
 			if (assumps.contains(firstExplanation.get(i))) {
@@ -131,8 +140,8 @@ public class InsertionStrategy implements MinimizationStrategy {
 					}
 					encodingAssumptions.set(startingPoint, tmp);
 					if (solver.isVerbose()) {
-						System.out.println(solver.getLogPrefix() + tmp
-								+ " is mandatory ");
+						System.out.println(solver.getLogPrefix()
+								+ constrs.get(tmp) + " is mandatory ");
 					}
 				}
 				shouldContinue = true;

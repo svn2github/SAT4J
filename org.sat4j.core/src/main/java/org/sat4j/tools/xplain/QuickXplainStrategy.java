@@ -76,9 +76,18 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 				+ assumps.size());
 		assumps.copyTo(encodingAssumptions);
 		IVecInt firstExplanation = solver.unsatExplanation();
+		IVecInt results = new VecInt(firstExplanation.size());
+		if (firstExplanation.size() == 1) {
+			results.push(-firstExplanation.get(0));
+			return results;
+		}
 		if (solver.isVerbose()) {
-			System.out.println(solver.getLogPrefix() + "initial unsat core "
-					+ firstExplanation);
+			System.out.print(solver.getLogPrefix() + "initial unsat core ");
+			for (IteratorInt it = firstExplanation.iterator(); it.hasNext();) {
+				System.out.print(constrs.get(-it.next()));
+				System.out.print(" ");
+			}
+			System.out.println();
 		}
 		for (int i = 0; i < firstExplanation.size();) {
 			if (assumps.contains(firstExplanation.get(i))) {
@@ -102,14 +111,14 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			encodingAssumptions.push(p);
 		}
 		int unsatcorelimit = encodingAssumptions.size() - 1;
-		IVecInt results = new VecInt(firstExplanation.size());
+
 		remainingVariables.copyTo(encodingAssumptions);
-		computeExplanation(solver, encodingAssumptions, assumps.size(),
-				unsatcorelimit, results);
+		computeExplanation(solver, constrs, encodingAssumptions,
+				assumps.size(), unsatcorelimit, results);
 		return results;
 	}
 
-	private void computeExplanation(ISolver solver,
+	private void computeExplanation(ISolver solver, Map<Integer, ?> constrs,
 			IVecInt encodingAssumptions, int start, int end, IVecInt result)
 			throws TimeoutException {
 		if (solver.isVerbose()) {
@@ -124,7 +133,8 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			encodingAssumptions.set(start, -encodingAssumptions.get(start));
 			if (solver.isVerbose()) {
 				System.out.println(solver.getLogPrefix()
-						+ -encodingAssumptions.get(start) + " is mandatory ");
+						+ constrs.get(-encodingAssumptions.get(start))
+						+ " is mandatory ");
 			}
 			return;
 		}
@@ -133,15 +143,15 @@ public class QuickXplainStrategy implements MinimizationStrategy {
 			for (int j = start; j <= split; j++) {
 				encodingAssumptions.set(j, -encodingAssumptions.get(j));
 			}
-			computeExplanation(solver, encodingAssumptions, split + 1, end,
-					result);
+			computeExplanation(solver, constrs, encodingAssumptions, split + 1,
+					end, result);
 		}
 		if (start <= split) {
 			for (int j = start; j <= split; j++) {
 				encodingAssumptions.set(j, -encodingAssumptions.get(j));
 			}
-			computeExplanation(solver, encodingAssumptions, start, split,
-					result);
+			computeExplanation(solver, constrs, encodingAssumptions, start,
+					split, result);
 		}
 		if (computationCanceled) {
 			throw new TimeoutException();
