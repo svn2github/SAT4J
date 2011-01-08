@@ -89,6 +89,9 @@ public class DeletionStrategy implements MinimizationStrategy {
 		assert !solver.isSatisfiable(encodingAssumptions);
 		int unsatcorelimit = encodingAssumptions.size() - 1;
 		for (int i = unsatcorebegin; i <= unsatcorelimit; i++) {
+			if (computationCanceled) {
+				throw new TimeoutException();
+			}
 			encodingAssumptions.set(i, -encodingAssumptions.get(i));
 			if (solver.isVerbose()) {
 				System.out.println(solver.getLogPrefix() + "checking "
