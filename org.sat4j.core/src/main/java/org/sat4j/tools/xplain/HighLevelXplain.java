@@ -62,7 +62,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
 
-	private MinimizationStrategy xplainStrategy = new InsertionStrategy();
+	private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 
 	public HighLevelXplain(T solver) {
 		super(solver);
