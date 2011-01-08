@@ -6,7 +6,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.xplain.HighLevelXplain;
 
-public class StructuredCNFReader extends DimacsReader {
+public class GroupedCNFReader extends DimacsReader {
 
 	/**
 	 * 
@@ -19,8 +19,8 @@ public class StructuredCNFReader extends DimacsReader {
 
 	private int currentComponentIndex;
 
-	public StructuredCNFReader(HighLevelXplain<ISolver> solver) {
-		super(solver, "scnf");
+	public GroupedCNFReader(HighLevelXplain<ISolver> solver) {
+		super(solver, "gcnf");
 		hlxplain = solver;
 	}
 
@@ -39,13 +39,14 @@ public class StructuredCNFReader extends DimacsReader {
 		String line = scanner.nextLine().trim();
 
 		if (line == null) {
-			throw new ParseFormatException(
-					"premature end of file: <p scnf ...> expected");
+			throw new ParseFormatException("premature end of file: <p "
+					+ formatString + " ...> expected");
 		}
 		String[] tokens = line.split("\\s+");
 		if (tokens.length < 5 || !"p".equals(tokens[0])
 				|| !formatString.equals(tokens[1])) {
-			throw new ParseFormatException("problem line expected (p scnf ...)");
+			throw new ParseFormatException("problem line expected (p "
+					+ formatString + " ...)");
 		}
 
 		int vars;
