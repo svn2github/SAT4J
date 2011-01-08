@@ -130,4 +130,9 @@ public class QuickXplain2001Strategy implements MinimizationStrategy {
 			throw new TimeoutException();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "QuickXplain (IJCAI WS 2001 version) minimization strategy";
+	}
 }
