@@ -97,7 +97,7 @@ public class DeletionStrategy implements MinimizationStrategy {
 		firstExplanation.copyTo(encodingAssumptions);
 		assert !solver.isSatisfiable(encodingAssumptions);
 		int unsatcorelimit = encodingAssumptions.size() - 1;
-		for (int i = unsatcorebegin; i <= unsatcorelimit; i++) {
+		for (int i = unsatcorebegin; i < unsatcorelimit; i++) {
 			if (computationCanceled) {
 				throw new TimeoutException();
 			}
@@ -117,6 +117,37 @@ public class DeletionStrategy implements MinimizationStrategy {
 					System.out.println(solver.getLogPrefix() + "not needed.");
 				}
 			}
+		}
+		if (results.size() == 0) {
+			// the last group must be the cause of the inconsistency
+			results.push(-encodingAssumptions.get(unsatcorelimit));
+			if (solver.isVerbose()) {
+				System.out.println(solver.getLogPrefix()
+						+ "skipping last test,the remaining element "
+						+ constrs.get(encodingAssumptions.get(unsatcorelimit))
+						+ " is causing the inconsistency!");
+			}
+		} else {
+			encodingAssumptions.set(unsatcorelimit,
+					-encodingAssumptions.get(unsatcorelimit));
+			if (solver.isVerbose()) {
+				System.out.println(solver.getLogPrefix() + "checking "
+						+ constrs.get(encodingAssumptions.get(unsatcorelimit))
+						+ " ...");
+			}
+			if (solver.isSatisfiable(encodingAssumptions)) {
+				encodingAssumptions.set(unsatcorelimit,
+						-encodingAssumptions.get(unsatcorelimit));
+				results.push(-encodingAssumptions.get(unsatcorelimit));
+				if (solver.isVerbose()) {
+					System.out.println(solver.getLogPrefix() + "mandatory.");
+				}
+			} else {
+				if (solver.isVerbose()) {
+					System.out.println(solver.getLogPrefix() + "not needed.");
+				}
+			}
+
 		}
 		return results;
 	}
