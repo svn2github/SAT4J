@@ -1451,7 +1451,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			if (flags.length <= howmany) {
 				flags = new int[howmany + 1];
 			}
-
+			flag = 0;
+			wall = 0;
 		}
 
 		public void onConflict(Constr constr) {
