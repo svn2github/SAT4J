@@ -1412,6 +1412,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					needToReduceDB = true;
 				}
 			}
+
+			@Override
+			public void reset() {
+				super.reset();
+				nextbound = MAX_CLAUSE;
+				if (nbconflict >= nextbound) {
+					nbconflict = 0;
+					needToReduceDB = true;
+				}
+			}
 		};
 
 		public void reduce(IVec<Constr> learnedConstrs) {
@@ -1452,7 +1462,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				flags = new int[howmany + 1];
 			}
 			flag = 0;
-			wall = 0;
+			clauseManagement.reset();
 		}
 
 		public void onConflict(Constr constr) {
