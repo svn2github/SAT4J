@@ -18,7 +18,6 @@
 		   <param name="package" value="pb"/>
 		   <param name="src" value="org.sat4j.pb/src/main/java" />
                    <param name="jarname" value="org.sat4j.pb"/>
-		   <param name="mainclass" value="org.sat4j.pb.LanceurPseudo2007"/>
                 </antcall>
                 <antcall target="source-package">
                    <param name="package" value="pb"/>
@@ -42,7 +41,6 @@
 		   <param name="package" value="maxsat"/>
 		   <param name="src" value="org.sat4j.maxsat/src/main/java" />
 		   <param name="jarname" value="org.sat4j.maxsat"/>
-		   <param name="mainclass" value="org.sat4j.maxsat.GenericOptLauncher"/>
 		</antcall>
                 <antcall target="source-package">
                    <param name="package" value="maxsat"/>
@@ -64,38 +62,12 @@
                 </antcall>
 	</target>
 	
-	<target name="multicore" depends="pseudo" description="Build a jar file with a parallel pseudo boolean solver">
-		<echo>Building Parallel Pseudo Boolean Solver</echo>
-                <antcall target="build">
-		   <param name="package" value="multicore"/>
-		   <param name="src" value="org.sat4j.multicore/src/main/java" />
-		   <param name="jarname" value="org.sat4j.multicore"/>
-		   <param name="mainclass" value="org.sat4j.multicore.MultiCoreLauncher"/>
-		</antcall>
-                <antcall target="source-package">
-                   <param name="package" value="multicore"/>
-		   <param name="src" value="org.sat4j.multicore/src/main/java" />
-                   <param name="jarname" value="org.sat4j.multicore"/>
-                </antcall>
-                <echo>Create All-In-One auto-executable package</echo>
-                <jar destfile="${dist}/${release}/sat4j-multicore.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
-			<zipgroupfileset dir="${dist}/${release}">
-                           <include name="org.sat4j.core.jar"/>
-			   <include name="org.sat4j.pb.jar"/>
-		   </zipgroupfileset>
-               </jar>
-               <antcall target="zip-bundle">
-		   <param name="package" value="multicore"/>
-                </antcall>
-	</target>
-	
 	<target name="intervalorders" depends="pseudo" description="Build the interval order agregation tool from  current source tree">
 		<echo>Building Interval Order tool</echo>
                 <antcall target="build">
 		   <param name="package" value="intervalorders"/>
 		   <param name="src" value="org.sat4j.intervalorders/src/main/java" />
 		   <param name="jarname" value="org.sat4j.intervalorders"/>
-		   <param name="mainclass" value="org.sat4j.intervalorders.Tester"/>
 		</antcall>
                 <antcall target="source-package">
                    <param name="package" value="intervalorders"/>
@@ -120,7 +92,6 @@
 		   <param name="package" value="csp.xmlparser"/>
 		   <param name="src" value="org.sat4j.csp.xmlparser/src/main/java" />
                    <param name="jarname" value="org.sat4j.csp.xmlparser"/>
-		   <param name="mainclass" value="org.sat4j.csp.CSPLauncher"/>
 		</antcall>
                 <antcall target="build">
 		   <param name="package" value="csp"/>
@@ -156,7 +127,6 @@
 		   <param name="package" value="sat"/>
 		   <param name="src" value="org.sat4j.sat/src/main/java" />
                    <param name="jarname" value="org.sat4j.sat"/>
-		   <param name="mainclass" value="org.sat4j.Lanceur"/>
 		</antcall>
                 <antcall target="source-package">
                    <param name="package" value="sat"/>
@@ -187,7 +157,6 @@
 		   <param name="package" value="core"/>
 		   <param name="src" value="org.sat4j.core/src/main/java" />
                    <param name="jarname" value="org.sat4j.core"/>
-		   <param name="mainclass" value="org.sat4j.BasicLauncher"/>
 		</antcall>
                 <antcall target="source-package">
 		   <param name="package" value="core"/>
@@ -205,9 +174,9 @@
 		   <param name="package" value="core"/>
 		   <param name="src" value="org.sat4j.core/src/main/java" />
                    <param name="jarname" value="sat4j-mus"/>
-		   <param name="mainclass" value="org.sat4j.MUSLauncher"/>
 		</antcall>
-		<jar destfile="${dist}/${release}/sat4j-mus.jar" basedir="${build}">                        
+		<delete file="${dist}/${release}/sat4j-mus.jar"/>
+		<jar destfile="${dist}/${release}/sat4j-mus-v${BUILD_DATE}.jar" basedir="${build}">                        
                        <manifest>
                                 <attribute name="Built-By" value="Daniel Le Berre"/>
                                 <attribute name="Main-Class" value="org.sat4j.MUSLauncher"/>
