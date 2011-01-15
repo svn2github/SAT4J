@@ -305,6 +305,23 @@ public class VecTest extends TestCase {
 		assertEquals(new Integer(1), nvec.delete(0));
 	}
 
+	public void testRemove() {
+		IVec<Integer> nvec = new Vec<Integer>();
+		for (int i = 0; i < 100; i++) {
+			nvec.push(new Integer(i));
+		}
+		Integer toRemove = nvec.get(10);
+		nvec.remove(toRemove);
+		assertEquals(99, nvec.size());
+		assertEquals(new Integer(11), nvec.get(10));
+		nvec.clear();
+		toRemove = new Integer(1);
+		nvec.push(toRemove);
+		assertEquals(1, nvec.size());
+		nvec.remove(toRemove);
+		assertEquals(0, nvec.size());
+	}
+
 	public void testEquals() {
 		IVec<Integer> nvec = new Vec<Integer>(3, new Integer(2));
 		IVec<Integer> vect = new Vec<Integer>(3, new Integer(2));
