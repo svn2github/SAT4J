@@ -444,7 +444,7 @@ public final class VecInt implements IVecInt {
 		for (; myarray[j] != elem; j++) {
 			assert j < size();
 		}
-		System.arraycopy(myarray, j + 1, myarray, j, size() - j);
+		System.arraycopy(myarray, j + 1, myarray, j, size() - j - 1);
 		pop();
 	}
 
