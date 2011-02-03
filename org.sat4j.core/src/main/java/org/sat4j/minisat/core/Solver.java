@@ -881,24 +881,25 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
      * 
      */
 	protected void undoOne() {
-		// recupere le dernier litteral affecte
+		// gather last assigned literal
 		int p = trail.last();
 		assert p > 1;
 		assert voc.getLevel(p) >= 0;
 		int x = p >> 1;
-		// desaffecte la variable
+		// unassign variable
 		voc.unassign(p);
 		voc.setReason(p, null);
 		voc.setLevel(p, -1);
-		// met a jour l'heuristique
+		// update heuristics value
 		order.undo(x);
-		// depile le litteral des affectations
+		// remove literal from the trail
 		trail.pop();
-		// met a jour les contraintes apres desaffectation du litteral :
-		// normalement, il n'y a rien a faire ici pour les prouveurs de type
-		// Chaff??
+		// update constraints on backtrack.
+		// not used if the solver uses watched literals.
 		IVec<Undoable> undos = voc.undos(p);
 		assert undos != null;
+		// here again, the size of the undos is changing
+		// at each step, cannot cache it.
 		while (undos.size() > 0) {
 			undos.last().undo(p);
 			undos.pop();
@@ -943,6 +944,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		SolverStats lstats = stats;
 		IOrder lorder = order;
 		SearchListener lslistener = slistener;
+		// ltrail.size() changes due to propagation
+		// cannot cache that value.
 		while (qhead < ltrail.size()) {
 			lstats.propagations++;
 			int p = ltrail.get(qhead++);
@@ -969,7 +972,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					// Constraint is conflicting: copy remaining watches to
 					// watches[p]
 					// and return constraint
-					for (int j = i + 1; j < lwatched.size(); j++) {
+					final int sizew = lwatched.size();
+					for (int j = i + 1; j < sizew; j++) {
 						lvoc.watch(p, lwatched.get(j));
 					}
 					qhead = ltrail.size(); // propQ.clear();
@@ -1544,8 +1548,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(),
-							trail.size());
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
