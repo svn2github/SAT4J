@@ -898,9 +898,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		// not used if the solver uses watched literals.
 		IVec<Undoable> undos = voc.undos(p);
 		assert undos != null;
-		// here again, the size of the undos is changing
-		// at each step, cannot cache it.
-		while (undos.size() > 0) {
+		for (int size = undos.size(); size > 0; size--) {
 			undos.last().undo(p);
 			undos.pop();
 		}
