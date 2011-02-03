@@ -75,7 +75,7 @@ public class VarOrderHeapObjective extends VarOrderHeap {
 						p = neg(p);
 					}
 					int var = var(p);
-					activity[var] = c.abs().doubleValue();
+					activity[var] = c.abs().longValue();
 					if (heap.inHeap(var))
 						heap.increase(var);
 					else
