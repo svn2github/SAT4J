@@ -38,8 +38,27 @@ public class TestLonca {
 	}
 
 	@Test
-	public void testIteratingWithObjectiveFunction() {
+	public void testIteratingWithObjectiveFunctionCard() {
 		IPBSolver solver = buildSolver2();
+		IProblem problem = solver;
+		int nbModel = 0;
+		try {
+			while (problem.isSatisfiable()) {
+				int[] mod = problem.model();
+				solver.addBlockingClause(new VecInt(invert(mod)));
+				nbModel++;
+			}
+		} catch (TimeoutException e) {
+			fail();
+		} catch (ContradictionException e) {
+			fail();
+		}
+		assertEquals(4, nbModel);
+	}
+
+	@Test
+	public void testIteratingWithObjectiveFunctionPseudo() {
+		IPBSolver solver = buildSolver3();
 		IProblem problem = solver;
 		int nbModel = 0;
 		try {
@@ -90,16 +109,24 @@ public class TestLonca {
 			solver.addClause(new VecInt(new int[] { -1, -2 }));
 			solver.addClause(new VecInt(new int[] { -2, -3 }));
 		} catch (ContradictionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail();
 		}
 		return solver;
 	}
 
 	private static IPBSolver buildSolver2() {
 		IPBSolver solver = buildSolver1();
+		IVecInt vars = new VecInt(new int[] { 1, 2, 3 });
+		IVec<BigInteger> coeffs = new Vec<BigInteger>(new BigInteger[] {
+				BigInteger.valueOf(1), BigInteger.valueOf(1),
+				BigInteger.valueOf(1) });
+		ObjectiveFunction func = new ObjectiveFunction(vars, coeffs);
+		solver.setObjectiveFunction(func);
+		return solver;
+	}
 
-		// debut ajout fonction objectif
+	private static IPBSolver buildSolver3() {
+		IPBSolver solver = buildSolver1();
 		IVecInt vars = new VecInt(new int[] { 1, 2, 3 });
 		IVec<BigInteger> coeffs = new Vec<BigInteger>(new BigInteger[] {
 				BigInteger.valueOf(8), BigInteger.valueOf(4),
@@ -107,9 +134,6 @@ public class TestLonca {
 		ObjectiveFunction func = new ObjectiveFunction(vars, coeffs);
 
 		solver.setObjectiveFunction(func);
-		// fin ajout fonction objectif
-
 		return solver;
 	}
-
 }
