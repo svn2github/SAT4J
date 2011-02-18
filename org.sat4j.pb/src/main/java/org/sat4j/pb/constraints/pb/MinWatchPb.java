@@ -347,6 +347,12 @@ public class MinWatchPb extends WatchPb {
 		}
 		watchingCount = 0;
 		assert nbOfWatched() == watchingCount;
+		int ind = 0;
+		while (ind < coefs.length
+				&& watchCumul.subtract(coefs[ind]).compareTo(degree) < 0) {
+			upl.unset(lits[ind]);
+			ind++;
+		}
 	}
 
 	/**

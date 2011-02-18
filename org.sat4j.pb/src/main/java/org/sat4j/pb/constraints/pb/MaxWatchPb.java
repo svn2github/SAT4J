@@ -210,6 +210,13 @@ public final class MaxWatchPb extends WatchPb {
 			if (!voc.isFalsified(lits[i]))
 				voc.watches(lits[i] ^ 1).remove(this);
 		}
+		int ind = 0;
+		while (ind < coefs.length
+				&& watchCumul.subtract(coefs[ind]).compareTo(degree) < 0) {
+			upl.unset(lits[ind]);
+			ind++;
+		}
+
 	}
 
 	/**
