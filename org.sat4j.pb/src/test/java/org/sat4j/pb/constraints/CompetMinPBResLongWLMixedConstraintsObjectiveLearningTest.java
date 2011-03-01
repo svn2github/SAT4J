@@ -40,7 +40,8 @@ public class CompetMinPBResLongWLMixedConstraintsObjectiveLearningTest extends
 
 	@Override
 	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetMinPBResLongWLMixedConstraintsObjective();
+		return SolverFactory
+				.newCompetMinPBResLongWLMixedConstraintsObjectiveExpSimp();
 	}
 
 }

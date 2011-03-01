@@ -40,7 +40,7 @@ public class CompetPBResHTMixedConstraintsObjectiveLearningTest extends
 
 	@Override
 	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetPBResHTMixedConstraintsObjective();
+		return SolverFactory.newCompetPBResHTMixedConstraintsObjectiveExpSimp();
 	}
 
 }
