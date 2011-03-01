@@ -272,27 +272,27 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
-	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjective() {
-		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBMixedWLClauseCardConstrDataStructure());
+	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjectiveExpSimp() {
+		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedWLClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjective() {
-		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
+	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
+		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverResolution newCompetPBResLongHTMixedConstraintsObjective() {
-		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBLongMixedHTClauseCardConstrDataStructure());
+	public static PBSolverResolution newCompetPBResLongHTMixedConstraintsObjectiveExpSimp() {
+		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedHTClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverResolution newCompetPBResLongWLMixedConstraintsObjective() {
-		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure());
+	public static PBSolverResolution newCompetPBResLongWLMixedConstraintsObjectiveExpSimp() {
+		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverResolution newCompetMinPBResLongWLMixedConstraintsObjective() {
-		return newCompetPBResMixedConstraintsObjective(new CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure());
+	public static PBSolverResolution newCompetMinPBResLongWLMixedConstraintsObjectiveExpSimp() {
+		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure());
 	}
 
-	public static PBSolverResolution newCompetPBResMixedConstraintsObjective(
+	public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp(
 			PBDataStructureFactory dsf) {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(learning, dsf,
@@ -300,6 +300,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 				new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
 
@@ -337,12 +338,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp() {
 		PBSolverResolution solver = newPBResMixedConstraintsObjective();
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjective();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
@@ -576,7 +571,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolutionGlucose() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
 		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		return solver;
 	}
