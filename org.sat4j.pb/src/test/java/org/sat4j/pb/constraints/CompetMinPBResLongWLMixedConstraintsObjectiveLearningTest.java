@@ -30,17 +30,17 @@ package org.sat4j.pb.constraints;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
-public class CompetPBResHTMixedConstraintsObjectiveLearningTest extends
+public class CompetMinPBResLongWLMixedConstraintsObjectiveLearningTest extends
 		AbstractEZPseudoBooleanAndPigeonHoleTest {
 
-	public CompetPBResHTMixedConstraintsObjectiveLearningTest(String arg) {
+	public CompetMinPBResLongWLMixedConstraintsObjectiveLearningTest(String arg) {
 		super(arg);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetPBResHTMixedConstraintsObjective();
+		return SolverFactory.newCompetMinPBResLongWLMixedConstraintsObjective();
 	}
 
 }
