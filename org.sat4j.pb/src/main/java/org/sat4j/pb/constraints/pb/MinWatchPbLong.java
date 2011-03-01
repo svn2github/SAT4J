@@ -41,14 +41,14 @@ import org.sat4j.specs.ContradictionException;
  * 
  * 
  */
-public class MinWatchPb extends WatchPb {
+public class MinWatchPbLong extends WatchPbLong {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * sum of the coefficients of the literals satisfied or unvalued
 	 */
-	protected BigInteger watchCumul = BigInteger.ZERO;
+	protected long watchCumul = 0;
 
 	/**
 	 * is the literal of index i watching the constraint ?
@@ -77,7 +77,7 @@ public class MinWatchPb extends WatchPb {
 	 * @param mpb
 	 *            a mutable PB constraint
 	 */
-	protected MinWatchPb(ILits voc, IDataStructurePB mpb) {
+	protected MinWatchPbLong(ILits voc, IDataStructurePB mpb) {
 
 		super(mpb);
 		this.voc = voc;
@@ -85,7 +85,7 @@ public class MinWatchPb extends WatchPb {
 		watching = new int[this.coefs.length];
 		watched = new boolean[this.coefs.length];
 		activity = 0;
-		watchCumul = BigInteger.ZERO;
+		watchCumul = 0;
 		watchingCount = 0;
 
 	}
@@ -103,7 +103,7 @@ public class MinWatchPb extends WatchPb {
 	 * @param degree
 	 *            degree of the constraint (k)
 	 */
-	protected MinWatchPb(ILits voc, int[] lits, BigInteger[] coefs, // NOPMD
+	protected MinWatchPbLong(ILits voc, int[] lits, BigInteger[] coefs, // NOPMD
 			BigInteger degree) {
 
 		super(lits, coefs, degree);
@@ -112,7 +112,7 @@ public class MinWatchPb extends WatchPb {
 		watching = new int[this.coefs.length];
 		watched = new boolean[this.coefs.length];
 		activity = 0;
-		watchCumul = BigInteger.ZERO;
+		watchCumul = 0;
 		watchingCount = 0;
 
 	}
@@ -126,23 +126,22 @@ public class MinWatchPb extends WatchPb {
 	 */
 	@Override
 	protected void computeWatches() throws ContradictionException {
-		assert watchCumul.signum() == 0;
+		assert watchCumul == 0;
 		assert watchingCount == 0;
-		for (int i = 0; i < lits.length
-				&& watchCumul.subtract(coefs[0]).compareTo(degree) < 0; i++) {
+		for (int i = 0; i < lits.length && (watchCumul - coefs[0]) < degree; i++) {
 			if (!voc.isFalsified(lits[i])) {
 				voc.watch(lits[i] ^ 1, this);
 				watching[watchingCount++] = i;
 				watched[i] = true;
 				// update the initial value for watchCumul (poss)
-				watchCumul = watchCumul.add(coefs[i]);
+				watchCumul = watchCumul + coefs[i];
 			}
 		}
 
 		if (learnt)
 			watchMoreForLearntConstraint();
 
-		if (watchCumul.compareTo(degree) < 0) {
+		if (watchCumul < degree) {
 			throw new ContradictionException("non satisfiable constraint");
 		}
 		assert nbOfWatched() == watchingCount;
@@ -154,8 +153,7 @@ public class MinWatchPb extends WatchPb {
 		int free = 1;
 		int maxlevel, maxi, level;
 
-		while ((watchCumul.subtract(coefs[0]).compareTo(degree) < 0)
-				&& (free > 0)) {
+		while ((watchCumul - coefs[0]) < degree && (free > 0)) {
 			free = 0;
 			// looking for the literal falsified
 			// at the least (lowest ?) level
@@ -178,7 +176,7 @@ public class MinWatchPb extends WatchPb {
 				watching[watchingCount++] = maxi;
 				watched[maxi] = true;
 				// update of the watchCumul value
-				watchCumul = watchCumul.add(coefs[maxi]);
+				watchCumul = watchCumul + coefs[maxi];
 				free--;
 				assert free >= 0;
 			}
@@ -201,7 +199,7 @@ public class MinWatchPb extends WatchPb {
 		// propagate any possible value
 		int ind = 0;
 		while (ind < lits.length
-				&& watchCumul.subtract(coefs[watching[ind]]).compareTo(degree) < 0) {
+				&& (watchCumul - coefs[watching[ind]]) < degree) {
 			if (voc.isUnassigned(lits[ind]) && !s.enqueue(lits[ind], this)) {
 				throw new ContradictionException("non satisfiable constraint");
 			}
@@ -273,6 +271,7 @@ public class MinWatchPb extends WatchPb {
 	 *            the propagated literal (it must be falsified)
 	 * @return false iff there is a conflict
 	 */
+	@Override
 	public boolean propagate(UnitPropagationListener s, int p) {
 		assert nbOfWatched() == watchingCount;
 		assert watchingCount > 1;
@@ -290,29 +289,28 @@ public class MinWatchPb extends WatchPb {
 
 		// the greatest coefficient of the watched literals is necessary
 		// (pIndice excluded)
-		BigInteger maxCoef = maximalCoefficient(pIndice);
+		long maxCoef = maximalCoefficient(pIndice);
 
 		// update watching and watched w.r.t. to the propagation of p
 		// new literals will be watched, maxCoef could be changed
 		maxCoef = updateWatched(maxCoef, pIndice);
 
-		BigInteger upWatchCumul = watchCumul.subtract(coefs[pIndice]);
+		long upWatchCumul = watchCumul - coefs[pIndice];
 		assert nbOfWatched() == watchingCount;
 
 		// if a conflict has been detected, return false
-		if (upWatchCumul.compareTo(degree) < 0) {
+		if (upWatchCumul < degree) {
 			// conflit
 			voc.watch(p, this);
 			assert watched[pIndice];
 			assert !isSatisfiable();
 			return false;
-		} else if (upWatchCumul.compareTo(degree.add(maxCoef)) < 0) {
+		} else if (upWatchCumul < (degree + maxCoef)) {
 			// some literals must be assigned to true and then propagated
 			assert watchingCount != 0;
-			BigInteger limit = upWatchCumul.subtract(degree);
+			long limit = upWatchCumul - degree;
 			for (int i = 0; i < watchingCount; i++) {
-				if (limit.compareTo(coefs[watching[i]]) < 0
-						&& i != pIndiceWatching
+				if (limit < coefs[watching[i]] && i != pIndiceWatching
 						&& !voc.isSatisfied(lits[watching[i]])
 						&& !s.enqueue(lits[watching[i]], this)) {
 					voc.watch(p, this);
@@ -339,6 +337,7 @@ public class MinWatchPb extends WatchPb {
 	/**
 	 * Remove the constraint from the solver
 	 */
+	@Override
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < watchingCount; i++) {
 			voc.watches(lits[watching[i]] ^ 1).remove(this);
@@ -347,8 +346,7 @@ public class MinWatchPb extends WatchPb {
 		watchingCount = 0;
 		assert nbOfWatched() == watchingCount;
 		int ind = 0;
-		while (ind < coefs.length
-				&& watchCumul.subtract(coefs[ind]).compareTo(degree) < 0) {
+		while (ind < coefs.length && (watchCumul - coefs[ind]) < degree) {
 			upl.unset(lits[ind]);
 			ind++;
 		}
@@ -360,6 +358,7 @@ public class MinWatchPb extends WatchPb {
 	 * @param p
 	 *            un unassigned literal
 	 */
+	@Override
 	public void undo(int p) {
 		voc.watch(p, this);
 		int pIndice = 0;
@@ -368,7 +367,7 @@ public class MinWatchPb extends WatchPb {
 
 		assert pIndice < lits.length;
 
-		watchCumul = watchCumul.add(coefs[pIndice]);
+		watchCumul = watchCumul + coefs[pIndice];
 
 		assert watchingCount == nbOfWatched();
 
@@ -403,15 +402,14 @@ public class MinWatchPb extends WatchPb {
 	 *            search of the maximal coefficient
 	 * @return the maximal coefficient for the watched literals
 	 */
-	protected BigInteger maximalCoefficient(int pIndice) {
-		BigInteger maxCoef = BigInteger.ZERO;
+	protected long maximalCoefficient(int pIndice) {
+		long maxCoef = 0;
 		for (int i = 0; i < watchingCount; i++)
-			if (coefs[watching[i]].compareTo(maxCoef) > 0
-					&& watching[i] != pIndice) {
+			if (coefs[watching[i]] > maxCoef && watching[i] != pIndice) {
 				maxCoef = coefs[watching[i]];
 			}
 
-		assert learnt || maxCoef.signum() != 0;
+		assert learnt || maxCoef != 0;
 		// DLB assert maxCoef!=0;
 		return maxCoef;
 	}
@@ -428,18 +426,18 @@ public class MinWatchPb extends WatchPb {
 	 *            the literal propagated (falsified)
 	 * @return the new maximal coefficient of the watched literals
 	 */
-	protected BigInteger updateWatched(BigInteger mc, int pIndice) {
-		BigInteger maxCoef = mc;
+	protected long updateWatched(long mc, int pIndice) {
+		long maxCoef = mc;
 		// if not all the literals are watched
 		if (watchingCount < size()) {
 			// the watchCumul sum will have to be updated
-			BigInteger upWatchCumul = watchCumul.subtract(coefs[pIndice]);
+			long upWatchCumul = watchCumul - coefs[pIndice];
 
 			// we must obtain upWatchCumul such that
 			// upWatchCumul = degree + maxCoef
-			BigInteger degreePlusMaxCoef = degree.add(maxCoef); // dvh
+			long degreePlusMaxCoef = degree + maxCoef; // dvh
 			for (int ind = 0; ind < lits.length; ind++) {
-				if (upWatchCumul.compareTo(degreePlusMaxCoef) >= 0) {
+				if (upWatchCumul >= degreePlusMaxCoef) {
 					// nothing more to watch
 					// note: logic negated to old version // dvh
 					break;
@@ -447,7 +445,7 @@ public class MinWatchPb extends WatchPb {
 				// while upWatchCumul does not contain enough
 				if (!voc.isFalsified(lits[ind]) && !watched[ind]) {
 					// watch one more
-					upWatchCumul = upWatchCumul.add(coefs[ind]);
+					upWatchCumul = upWatchCumul + coefs[ind];
 					// update arrays watched and watching
 					watched[ind] = true;
 					assert watchingCount < size();
@@ -455,16 +453,16 @@ public class MinWatchPb extends WatchPb {
 					voc.watch(lits[ind] ^ 1, this);
 					// this new watched literal could change the maximal
 					// coefficient
-					if (coefs[ind].compareTo(maxCoef) > 0) {
+					if (coefs[ind] > maxCoef) {
 						maxCoef = coefs[ind];
-						degreePlusMaxCoef = degree.add(maxCoef); // update
+						degreePlusMaxCoef = degree + maxCoef; // update
 						// that one
 						// too
 					}
 				}
 			}
 			// update watchCumul
-			watchCumul = upWatchCumul.add(coefs[pIndice]);
+			watchCumul = upWatchCumul + coefs[pIndice];
 		}
 		return maxCoef;
 	}

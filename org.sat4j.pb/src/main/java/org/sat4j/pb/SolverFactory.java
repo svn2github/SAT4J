@@ -41,6 +41,9 @@ import org.sat4j.minisat.restarts.ArminRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
+import org.sat4j.pb.constraints.CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.CompetResolutionPBLongMixedHTClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.CompetResolutionPBLongMixedWLClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedWLClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseAtLeastConstrDataStructure;
@@ -275,6 +278,18 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjective() {
 		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
+	}
+
+	public static PBSolverResolution newCompetPBResLongHTMixedConstraintsObjective() {
+		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBLongMixedHTClauseCardConstrDataStructure());
+	}
+
+	public static PBSolverResolution newCompetPBResLongWLMixedConstraintsObjective() {
+		return newCompetPBResMixedConstraintsObjective(new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure());
+	}
+
+	public static PBSolverResolution newCompetMinPBResLongWLMixedConstraintsObjective() {
+		return newCompetPBResMixedConstraintsObjective(new CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure());
 	}
 
 	public static PBSolverResolution newCompetPBResMixedConstraintsObjective(
