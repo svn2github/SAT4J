@@ -225,13 +225,14 @@ public class MinWatchPbLong extends WatchPbLong {
 	 * @return a new PB constraint or null if a trivial inconsistency is
 	 *         detected.
 	 */
-	public static MinWatchPb normalizedMinWatchPbNew(UnitPropagationListener s,
-			ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree)
+	public static MinWatchPbLong normalizedMinWatchPbNew(
+			UnitPropagationListener s, ILits voc, int[] lits,
+			BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
 		// Parameters must not be modified
-		MinWatchPb outclause = new MinWatchPb(voc, lits, coefs, degree);
+		MinWatchPbLong outclause = new MinWatchPbLong(voc, lits, coefs, degree);
 
-		if (outclause.degree.signum() <= 0) {
+		if (outclause.degree <= 0) {
 			return null;
 		}
 
@@ -390,8 +391,9 @@ public class MinWatchPbLong extends WatchPbLong {
 	 * @return a new PB constraint or null if a trivial inconsistency is
 	 *         detected.
 	 */
-	public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
-		return new MinWatchPb(voc, mpb);
+	public static WatchPbLong normalizedWatchPbNew(ILits voc,
+			IDataStructurePB mpb) {
+		return new MinWatchPbLong(voc, mpb);
 	}
 
 	/**
