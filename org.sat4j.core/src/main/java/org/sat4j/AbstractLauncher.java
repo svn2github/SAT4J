@@ -101,11 +101,6 @@ public abstract class AbstractLauncher implements Serializable {
 				out.print(SOLUTION_PREFIX);
 				reader.decode(model, out);
 				out.println();
-				log("For information, a prime implicant:");
-				int[] implicant = solver.primeImplicant();
-				out.println(COMMENT_PREFIX);
-				reader.decode(implicant, out);
-				out.println();
 			}
 			log("Total wall clock time (in seconds) : " + wallclocktime); //$NON-NLS-1$
 		}
