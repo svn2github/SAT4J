@@ -1144,6 +1144,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	protected void analyzeAtRootLevel(Constr conflict) {
 	}
 
+	private final IVecInt implied = new VecInt();
+	private final IVecInt decisions = new VecInt();
+
 	/**
      * 
      */
@@ -1157,11 +1160,46 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				if (!voc.isUnassigned(p)) {
 					model[index++] = voc.isSatisfied(p) ? i : -i;
 					fullmodel[i - 1] = voc.isSatisfied(p);
+					if (voc.getReason(p) == null) {
+						decisions.push(model[index - 1]);
+					} else {
+						implied.push(model[index - 1]);
+					}
 				}
 			}
 		}
 		assert index == model.length;
 		cancelUntil(rootLevel);
+	}
+
+	public int[] primeImplicant() {
+		IVecInt currentD = new VecInt(decisions.size());
+		decisions.copyTo(currentD);
+		IVecInt assumptions = new VecInt(implied.size() + decisions.size());
+		implied.copyTo(assumptions);
+		decisions.copyTo(assumptions);
+		IVecInt prime = new VecInt(assumptions.size());
+		implied.copyTo(prime);
+		for (int i = 0; i < currentD.size(); i++) {
+			int p = currentD.get(i);
+			assumptions.remove(p);
+			assumptions.push(-p);
+			try {
+				if (isSatisfiable(assumptions)) {
+					assumptions.pop();
+					assumptions.push(-p);
+				} else {
+					prime.push(p);
+					assumptions.pop();
+					assumptions.push(p);
+				}
+			} catch (TimeoutException e) {
+				throw new IllegalStateException("Should not timeout here", e);
+			}
+		}
+		int[] implicant = new int[prime.size()];
+		prime.copyTo(implicant);
+		return implicant;
 	}
 
 	public boolean model(int var) {
@@ -1508,6 +1546,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		trail.ensure(howmany);
 		trailLim.ensure(howmany);
 		learnedLiterals.ensure(howmany);
+		decisions.clear();
+		implied.clear();
 		timebegin = System.currentTimeMillis();
 		slistener.start();
 		model = null; // forget about previous model
@@ -1546,8 +1586,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(), trail
-							.size());
+					slistener.conflictFound(confl, decisionLevel(),
+							trail.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}

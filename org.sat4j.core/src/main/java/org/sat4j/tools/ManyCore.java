@@ -377,7 +377,11 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public IVecInt unsatExplanation() {
-		return solvers.get(0).unsatExplanation();
+		return solvers.get(winnerId).unsatExplanation();
+	}
+
+	public int[] primeImplicant() {
+		return solvers.get(winnerId).primeImplicant();
 	}
 }
 

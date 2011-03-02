@@ -89,6 +89,7 @@ public class TextOutputTracing<T> implements SearchListener {
 	 * @since 2.1
 	 */
 	public void learn(IConstr clause) {
+		System.out.println("learning " + clause);
 
 	}
 

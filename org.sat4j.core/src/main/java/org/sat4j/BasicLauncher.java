@@ -32,6 +32,7 @@ import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.TextOutputTracing;
 
 /**
  * Very simple launcher, to be used during the SAT competition or the SAT race
@@ -74,6 +75,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 	@Override
 	protected ISolver configureSolver(String[] args) {
 		ISolver asolver = factory.defaultSolver();
+		asolver.setSearchListener(new TextOutputTracing<T>(null));
 		asolver.setTimeout(Integer.MAX_VALUE);
 		asolver.setDBSimplificationAllowed(true);
 		getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$

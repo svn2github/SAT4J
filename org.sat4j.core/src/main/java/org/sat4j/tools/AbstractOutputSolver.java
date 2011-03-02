@@ -218,4 +218,8 @@ public abstract class AbstractOutputSolver implements ISolver {
 	public IVecInt unsatExplanation() {
 		throw new UnsupportedOperationException();
 	}
+
+	public int[] primeImplicant() {
+		throw new UnsupportedOperationException();
+	}
 }

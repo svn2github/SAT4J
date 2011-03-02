@@ -428,4 +428,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		return solver.unsatExplanation();
 	}
 
+	/**
+	 * @since 2.3
+	 */
+	public int[] primeImplicant() {
+		return solver.primeImplicant();
+	}
+
 }

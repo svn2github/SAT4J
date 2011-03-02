@@ -123,7 +123,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 
 	public static Solver<DataStructureFactory> newMiniLearningHeapRsatExpSimpLuby() {
 		Solver<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
-		solver.setRestartStrategy(new LubyRestarts());
+		solver.setRestartStrategy(new LubyRestarts(512));
 		return solver;
 	}
 
