@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.sat4j.tools.xplain;
 
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,6 +71,7 @@ public class DeletionStrategy implements MinimizationStrategy {
 				System.out.print(" ");
 			}
 			System.out.println();
+			solver.printStat(new PrintWriter(System.out, true), "c ");
 		}
 		for (int i = 0; i < firstExplanation.size();) {
 			if (assumps.contains(firstExplanation.get(i))) {
@@ -117,6 +119,7 @@ public class DeletionStrategy implements MinimizationStrategy {
 					System.out.println(solver.getLogPrefix() + "not needed.");
 				}
 			}
+			solver.printStat(new PrintWriter(System.out, true), "c ");
 		}
 		if (results.size() == 0) {
 			// the last group must be the cause of the inconsistency
@@ -147,7 +150,7 @@ public class DeletionStrategy implements MinimizationStrategy {
 					System.out.println(solver.getLogPrefix() + "not needed.");
 				}
 			}
-			solver.printStat(System.out, "c ");
+			solver.printStat(new PrintWriter(System.out, true), "c ");
 
 		}
 		return results;
