@@ -98,9 +98,7 @@ public class SolverStats implements Serializable {
 		out.println(prefix + "inspects\t\t: " + inspects);
 		out.println(prefix + "shortcuts\t\t: " + shortcuts);
 		out.println(prefix + "learnt literals\t: " + learnedliterals);
-		out
-				.println(prefix + "learnt binary clauses\t: "
-						+ learnedbinaryclauses);
+		out.println(prefix + "learnt binary clauses\t: " + learnedbinaryclauses);
 		out.println(prefix + "learnt ternary clauses\t: "
 				+ learnedternaryclauses);
 		out.println(prefix + "learnt constraints\t: " + learnedclauses);
@@ -115,13 +113,13 @@ public class SolverStats implements Serializable {
 
 	public Map<String, Number> toMap() {
 		Map<String, Number> map = new HashMap<String, Number>();
-		for (Field f : this.getClass().getDeclaredFields()) {
+		for (Field f : this.getClass().getFields()) {
 			try {
 				map.put(f.getName(), (Number) f.get(this));
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				// ignores silently
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				// ignores silently
 			}
 		}
 		return map;
