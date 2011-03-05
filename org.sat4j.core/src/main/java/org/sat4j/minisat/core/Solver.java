@@ -178,9 +178,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	protected IVecInt dimacs2internal(IVecInt in) {
 		__dimacs_out.clear();
 		__dimacs_out.ensure(in.size());
+		int p;
 		for (int i = 0; i < in.size(); i++) {
-			assert (in.get(i) != 0);
-			__dimacs_out.unsafePush(voc.getFromPool(in.get(i)));
+		    p = in.get(i);
+			if (p == 0) {
+				throw new IllegalArgumentException(
+						"0 is not a valid variable identifier");
+			}
+			__dimacs_out.unsafePush(voc.getFromPool(p));
 		}
 		return __dimacs_out;
 	}
