@@ -65,14 +65,14 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 	private static final long serialVersionUID = 1L;
 
 	private boolean trivialfalsity = false;
-	private final int bound;
-	private int nbModelFound = 0;
+	private final long bound;
+	private long nbModelFound = 0;
 
 	/**
 	 * @param solver
 	 */
 	public ModelIterator(ISolver solver) {
-		this(solver, Integer.MAX_VALUE);
+		this(solver, Long.MAX_VALUE);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 	 * @param bound
 	 * @since 2.1
 	 */
-	public ModelIterator(ISolver solver, int bound) {
+	public ModelIterator(ISolver solver, long bound) {
 		super(solver);
 		this.bound = bound;
 	}
@@ -150,7 +150,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 	@Override
 	public int[] primeImplicant() {
 		int[] last = super.primeImplicant();
-		nbModelFound++;
+		nbModelFound += Math.pow(2, nVars() - last.length);
 		IVecInt clause = new VecInt(last.length);
 		for (int q : last) {
 			clause.push(-q);
@@ -161,5 +161,15 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 			trivialfalsity = true;
 		}
 		return last;
+	}
+
+	/**
+	 * To know the number of models already found.
+	 * 
+	 * @return the number of models found so far.
+	 * @since 2.3
+	 */
+	public long numberOfModelsFoundSoFar() {
+		return nbModelFound;
 	}
 }
