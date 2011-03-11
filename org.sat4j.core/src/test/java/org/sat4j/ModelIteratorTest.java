@@ -33,6 +33,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
@@ -74,6 +76,33 @@ public class ModelIteratorTest {
 				counter++;
 			}
 			assertEquals(6, counter);
+		} catch (ContradictionException e) {
+			fail();
+		} catch (TimeoutException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testInplicantCoverIterator() {
+		try {
+			ModelIterator solver = new ModelIterator(SolverFactory.newDefault());
+			solver.newVar(3);
+			IVecInt clause = new VecInt();
+			clause.push(1);
+			clause.push(2);
+			clause.push(3);
+			solver.addClause(clause);
+			clause.clear();
+			clause.push(-1);
+			clause.push(-2);
+			clause.push(-3);
+			solver.addClause(clause);
+			while (solver.isSatisfiable()) {
+				int[] prime = solver.primeImplicant();
+				System.out.println(Arrays.toString(prime));
+			}
+			assertEquals(6, solver.numberOfModelsFoundSoFar());
 		} catch (ContradictionException e) {
 			fail();
 		} catch (TimeoutException e) {
@@ -137,7 +166,7 @@ public class ModelIteratorTest {
 	// fail();
 	// }
 	// }
-	//    
+	//
 	// public void testCardMinModel() {
 	// try {
 	// ISolver solver = new ModelIterator(new
@@ -169,8 +198,8 @@ public class ModelIteratorTest {
 	@Test
 	public void testCardModel() {
 		try {
-			ISolver solver = new Minimal4CardinalityModel(SolverFactory
-					.newDefault());
+			ISolver solver = new Minimal4CardinalityModel(
+					SolverFactory.newDefault());
 			solver.newVar(3);
 			IVecInt clause = new VecInt();
 			clause.push(1);
@@ -198,8 +227,8 @@ public class ModelIteratorTest {
 	@Test
 	public void testIncModel() {
 		try {
-			ISolver solver = new Minimal4InclusionModel(SolverFactory
-					.newDefault());
+			ISolver solver = new Minimal4InclusionModel(
+					SolverFactory.newDefault());
 			solver.newVar(3);
 			IVecInt clause = new VecInt();
 			clause.push(1);
@@ -270,8 +299,8 @@ public class ModelIteratorTest {
 
 	@Test(timeout = 5000)
 	public void testGlobalTimeoutCounter() {
-		SolutionCounter counter = new SolutionCounter(SolverFactory
-				.newDefault());
+		SolutionCounter counter = new SolutionCounter(
+				SolverFactory.newDefault());
 		IVecInt clause = new VecInt();
 		for (int i = 1; i < 100; i++) {
 			clause.push(i);
@@ -322,8 +351,8 @@ public class ModelIteratorTest {
 
 	private long count(int size) throws ContradictionException,
 			TimeoutException {
-		SolutionCounter counter = new SolutionCounter(SolverFactory
-				.newDefault());
+		SolutionCounter counter = new SolutionCounter(
+				SolverFactory.newDefault());
 		IVecInt clause = new VecInt();
 		for (int i = 1; i <= size; i++) {
 			clause.push(i);
