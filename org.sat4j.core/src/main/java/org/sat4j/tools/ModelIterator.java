@@ -100,7 +100,6 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 			clause.push(-q);
 		}
 		try {
-			// System.out.println("adding " + clause);
 			addBlockingClause(clause);
 		} catch (ContradictionException e) {
 			trivialfalsity = true;
@@ -146,5 +145,21 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 		trivialfalsity = false;
 		nbModelFound = 0;
 		super.reset();
+	}
+
+	@Override
+	public int[] primeImplicant() {
+		int[] last = super.primeImplicant();
+		nbModelFound++;
+		IVecInt clause = new VecInt(last.length);
+		for (int q : last) {
+			clause.push(-q);
+		}
+		try {
+			addBlockingClause(clause);
+		} catch (ContradictionException e) {
+			trivialfalsity = true;
+		}
+		return last;
 	}
 }
