@@ -68,7 +68,8 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 			assert degree.compareTo(MAX_INT_VALUE) < 0;
 			return constructCard(new VecInt(literals), degree.intValue());
 		}
-		if (degree.bitLength() < Long.SIZE) {
+		// test insuffisant : if (degree.bitLength() < Long.SIZE) {
+		if (isLongSufficient(coefs, degree)) {
 			return constructLongPB(literals, coefs, degree);
 		}
 		return constructPB(literals, coefs, degree);
@@ -98,7 +99,7 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 		if (dspb.isCardinality()) {
 			return constructLearntCard(dspb);
 		}
-		if (dspb.getDegree().bitLength() < Long.SIZE) {
+		if (dspb.isLongSufficient()) {
 			return constructLearntLongPB(dspb);
 		}
 		return constructLearntPB(dspb);
@@ -112,6 +113,13 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 
 	protected Constr constructLearntLongPB(IDataStructurePB mpb) {
 		return MaxWatchPbLong.normalizedWatchPbNew(getVocabulary(), mpb);
+	}
+
+	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
+		BigInteger somCoefs = BigInteger.ZERO;
+		for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length; i++)
+			somCoefs = somCoefs.add(coefs[i]);
+		return somCoefs.bitLength() < Long.SIZE;
 	}
 
 }

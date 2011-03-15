@@ -40,4 +40,8 @@ public class CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure
 		return MinWatchPbLong.normalizedWatchPbNew(getVocabulary(), dspb);
 	}
 
+	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
+		return (degree.add(coefs[0].add(coefs[1]))).bitLength() < Long.SIZE;
+	}
+
 }
