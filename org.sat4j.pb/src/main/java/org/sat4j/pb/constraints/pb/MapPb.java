@@ -68,6 +68,15 @@ public class MapPb implements IDataStructurePB {
 		return true;
 	}
 
+	public boolean isLongSufficient() {
+		BigInteger som = BigInteger.ZERO;
+		for (int i = 0; i < size() && som.bitLength() < Long.SIZE; i++) {
+			assert weightedLits.getCoef(i).compareTo(BigInteger.ZERO) >= 0;
+			som = som.add(weightedLits.getCoef(i));
+		}
+		return som.bitLength() < Long.SIZE;
+	}
+
 	public int getAssertiveLiteral() {
 		return assertiveLiteral;
 	}
