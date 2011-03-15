@@ -201,7 +201,7 @@ public class ConflictMap extends MapPb implements IConflict {
 			} else {
 				// pb-constraint has to be reduced
 				// to obtain a conflictual result from the cutting plane
-				WatchPb wpb = (WatchPb) cpb; // DLB Findbugs warning ok
+				IWatchPb wpb = (IWatchPb) cpb; // DLB Findbugs warning ok
 				coefsCons = wpb.getCoefs();
 				assert positiveCoefs(coefsCons);
 				degreeCons = reduceUntilConflict(litImplied, ind, coefsCons,
@@ -240,7 +240,7 @@ public class ConflictMap extends MapPb implements IConflict {
 	}
 
 	protected BigInteger reduceUntilConflict(int litImplied, int ind,
-			BigInteger[] reducedCoefs, WatchPb wpb) {
+			BigInteger[] reducedCoefs, IWatchPb wpb) {
 		BigInteger slackResolve = BigInteger.ONE.negate();
 		BigInteger slackThis = BigInteger.ZERO;
 		BigInteger slackIndex;
@@ -301,9 +301,12 @@ public class ConflictMap extends MapPb implements IConflict {
 		// for each literal
 		for (int i = 0; i < size(); i++) {
 			tmp = weightedLits.getCoef(i);
-			if (tmp.signum() != 0 && !voc.isFalsified(weightedLits.getLit(i)))
+			if (tmp.signum() != 0 && !voc.isFalsified(weightedLits.getLit(i))) {
+				assert tmp.signum() > 0;
 				poss = poss.add(tmp);
+			}
 		}
+		// assert poss.subtract(degree).signum() >= 0;
 		return poss.subtract(degree);
 	}
 
@@ -439,24 +442,24 @@ public class ConflictMap extends MapPb implements IConflict {
 	 *            proposed
 	 * @return new degree of the reduced constraint
 	 */
-	public BigInteger reduceInConstraint(WatchPb wpb,
+	public BigInteger reduceInConstraint(IWatchPb wpb,
 			final BigInteger[] coefsBis, final int indLitImplied,
 			final BigInteger degreeBis) {
 		// logger.entering(this.getClass().getName(),"reduceInConstraint");
 		assert degreeBis.compareTo(BigInteger.ONE) > 0;
 		// search of an unassigned literal
 		int lit = -1;
-		for (int ind = 0; (ind < wpb.lits.length) && (lit == -1); ind++)
-			if (coefsBis[ind].signum() != 0 && voc.isUnassigned(wpb.lits[ind])) {
+		for (int ind = 0; (ind < wpb.size()) && (lit == -1); ind++)
+			if (coefsBis[ind].signum() != 0 && voc.isUnassigned(wpb.get(ind))) {
 				assert coefsBis[ind].compareTo(degreeBis) < 0;
 				lit = ind;
 			}
 
 		// else, search of a satisfied literal
 		if (lit == -1)
-			for (int ind = 0; (ind < wpb.lits.length) && (lit == -1); ind++)
+			for (int ind = 0; (ind < wpb.size()) && (lit == -1); ind++)
 				if ((coefsBis[ind].signum() != 0)
-						&& (voc.isSatisfied(wpb.lits[ind]))
+						&& (voc.isSatisfied(wpb.get(ind)))
 						&& (ind != indLitImplied))
 					lit = ind;
 
@@ -690,4 +693,5 @@ public class ConflictMap extends MapPb implements IConflict {
 	public long getNumberOfReductions() {
 		return numberOfReductions;
 	}
+
 }
