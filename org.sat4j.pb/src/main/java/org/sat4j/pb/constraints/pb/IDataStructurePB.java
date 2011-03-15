@@ -61,4 +61,6 @@ public interface IDataStructurePB {
 
 	public int getAssertiveLiteral();
 
+	public boolean isLongSufficient();
+
 }
