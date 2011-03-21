@@ -51,7 +51,7 @@ public final class ConflictMapMerging extends ConflictMap {
 	 */
 	@Override
 	protected BigInteger reduceUntilConflict(int litImplied, int ind,
-			BigInteger[] reducedCoefs, WatchPb wpb) {
+			BigInteger[] reducedCoefs, IWatchPb wpb) {
 		BigInteger tmp = reducedCoefs[ind].subtract(BigInteger.ONE);
 		reducedCoefs[ind] = BigInteger.ONE;
 		coefMultCons = weightedLits.get(litImplied ^ 1);

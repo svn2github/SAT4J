@@ -53,7 +53,7 @@ public final class ConflictMapSwitchToClause extends ConflictMap {
 	 */
 	@Override
 	protected BigInteger reduceUntilConflict(int litImplied, int ind,
-			BigInteger[] reducedCoefs, WatchPb wpb) {
+			BigInteger[] reducedCoefs, IWatchPb wpb) {
 		BigInteger degreeCons = super.reduceUntilConflict(litImplied, ind,
 				reducedCoefs, wpb);
 		// updating of the degree of the conflict
@@ -79,7 +79,7 @@ public final class ConflictMapSwitchToClause extends ConflictMap {
 		return degreeCons;
 	}
 
-	private BigInteger reduceToClause(int ind, WatchPb wpb,
+	private BigInteger reduceToClause(int ind, IWatchPb wpb,
 			BigInteger[] reducedCoefs) {
 		for (int i = 0; i < reducedCoefs.length; i++)
 			if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i)))
