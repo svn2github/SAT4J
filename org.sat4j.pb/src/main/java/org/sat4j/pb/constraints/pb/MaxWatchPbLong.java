@@ -210,12 +210,6 @@ public final class MaxWatchPbLong extends WatchPbLong {
 			if (!voc.isFalsified(lits[i]))
 				voc.watches(lits[i] ^ 1).remove(this);
 		}
-		int ind = 0;
-		while (ind < coefs.length && (watchCumul - coefs[ind]) < degree) {
-			upl.unset(lits[ind]);
-			ind++;
-		}
-
 	}
 
 	/**

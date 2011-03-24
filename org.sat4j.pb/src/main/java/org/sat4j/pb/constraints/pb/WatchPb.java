@@ -44,7 +44,7 @@ import org.sat4j.specs.IVecInt;
  * @author anne
  * 
  */
-public abstract class WatchPb implements PBConstr, Undoable, Serializable {
+public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 
 	/**
 	 * 
