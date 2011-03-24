@@ -274,9 +274,9 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 
 		int mydegree = degree + linearisation(voc, ps);
 
-		if (ps.size() == 0 && mydegree > 0) {
+		if (ps.size() < mydegree) {
 			throw new ContradictionException();
-		} else if (ps.size() == mydegree || ps.size() <= 0) {
+		} else if (ps.size() == mydegree) {
 			for (int i = 0; i < ps.size(); i++)
 				if (!s.enqueue(ps.get(i))) {
 					throw new ContradictionException();
