@@ -127,7 +127,9 @@ public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 			boolean normalized) throws ContradictionException {
 		int mydegree = degree + linearisation(voc, ps);
 
-		if (ps.size() == 0 && mydegree > 0) {
+		if (ps.size() < mydegree) {
+			throw new ContradictionException();
+		} else if (ps.size() == 0 && mydegree > 0) {
 			throw new ContradictionException();
 		} else if (ps.size() == mydegree || ps.size() <= 0) {
 			for (int i = 0; i < ps.size(); i++)
