@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
@@ -205,22 +206,23 @@ public final class MaxWatchCard implements Constr, Undoable, Serializable {
 	 * @return une nouvelle clause si tout va bien, null sinon
 	 * @throws ContradictionException
 	 */
-	public static MaxWatchCard maxWatchCardNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, boolean moreThan, int degree)
+	public static Constr maxWatchCardNew(UnitPropagationListener s, ILits voc,
+			IVecInt ps, boolean moreThan, int degree)
 			throws ContradictionException {
 
 		MaxWatchCard outclause = null;
 
 		// La contrainte ne doit pas ?tre vide
-		if (ps.size() == 0) {
-			throw new ContradictionException("Creating empty clause"); //$NON-NLS-1$
+		if (ps.size() < degree) {
+			throw new ContradictionException(
+					"Creating trivially inconsistent constraint"); //$NON-NLS-1$
 		} else if (ps.size() == degree) {
 			for (int i = 0; i < ps.size(); i++)
 				if (!s.enqueue(ps.get(i))) {
 					throw new ContradictionException(
 							"Contradiction with implied literal"); //$NON-NLS-1$
 				}
-			return null;
+			return new UnitClauses(ps);
 		}
 
 		// On cree la contrainte
