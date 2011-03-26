@@ -18,30 +18,32 @@ public class TestGlobalTimeoutForOptimalModelEnumeration {
 
 	@Before
 	public void setUp() throws ContradictionException {
-		IPBSolver pbsolver = new OptToPBSATAdapter(new PseudoOptDecorator(
-				SolverFactory.newDefault()));
+		PseudoOptDecorator pbsolver = new PseudoOptDecorator(
+				SolverFactory.newDefault());
 		IVecInt clause = new VecInt();
 		for (int i = 1; i <= 1000; i++)
 			clause.push(-i);
 		pbsolver.addClause(clause);
 		Vec<BigInteger> weights = new Vec<BigInteger>();
-		for (int i = 1; i <= 1000; i += 2) {
+		for (int i = 1; i <= 1000; i++) {
 			weights.push(BigInteger.valueOf(5));
-			weights.push(BigInteger.valueOf(10));
 		}
 		pbsolver.setObjectiveFunction(new ObjectiveFunction(clause, weights));
 		solver = new ModelIterator(pbsolver);
 	}
 
-	@Test(expected = TimeoutException.class, timeout = 2500)
+	@Test(expected = TimeoutException.class, timeout = 3000)
 	public void testTimeoutOnSeconds() throws TimeoutException {
 		solver.setTimeout(2);
 		while (solver.isSatisfiable()) {
-			solver.model(); // needed to discard that solution
+			solver.model(); // needed to
+							// discard
+							// that
+							// solution
 		}
 	}
 
-	@Test(expected = TimeoutException.class, timeout = 2500)
+	@Test(expected = TimeoutException.class, timeout = 5000)
 	public void testTimeoutOnConflicts() throws TimeoutException {
 		solver.setTimeoutOnConflicts(1000);
 		while (solver.isSatisfiable()) {
