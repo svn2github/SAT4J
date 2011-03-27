@@ -76,7 +76,8 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 		ExitCode exitCode = getExitCode();
 		out.println(ANSWER_PREFIX + exitCode);
 		if (exitCode == ExitCode.SATISFIABLE
-				|| exitCode == ExitCode.OPTIMUM_FOUND) {
+				|| exitCode == ExitCode.OPTIMUM_FOUND
+				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
 			out.print(SOLUTION_PREFIX);
 			getReader().decode(solver.model(), out);
 			out.println();
