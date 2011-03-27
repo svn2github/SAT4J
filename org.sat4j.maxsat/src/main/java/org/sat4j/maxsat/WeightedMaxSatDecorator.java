@@ -219,6 +219,112 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     }
 
 	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtLeast(IVecInt literals,int degree) throws ContradictionException {
+		return addSoftAtLeast(BigInteger.ONE,literals,degree);
+	}
+	
+	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param weight the weight of the constraint.
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtLeast(int weight,IVecInt literals,int degree) throws ContradictionException {
+		return addSoftAtLeast(BigInteger.valueOf(weight),literals,degree);
+	}
+	
+	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param weight the weight of the constraint.
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtLeast(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
+		if (weight.compareTo(top)<0) {
+			coefs.push(weight);
+            int newvar = nborigvars + ++nbnewvar;
+            lits.push(newvar);
+            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
+            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
+			literals.push(newvar);			
+			BigInteger bigDegree = BigInteger.valueOf(degree);
+			cardcoeffs.push(bigDegree);
+			return addPseudoBoolean(literals,cardcoeffs,true,bigDegree);
+		} else {
+			return addAtLeast(literals, degree);
+		}
+	}
+	
+	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtMost(IVecInt literals,int degree) throws ContradictionException {
+		return addSoftAtMost(BigInteger.ONE,literals,degree);
+	}
+	
+	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param weight the weight of the constraint.
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtMost(int weight,IVecInt literals,int degree) throws ContradictionException {
+		return addSoftAtMost(BigInteger.valueOf(weight),literals,degree);
+	}
+	
+	/**
+	 * Allow adding a new soft cardinality constraint in the solver.
+	 * 
+	 * @param weight the weight of the constraint.
+	 * @param literals the literals of the cardinality constraint.
+	 * @param degree the degree of the cardinality constraint.
+	 * @return a pseudo boolean constraint encoding that soft constraint.
+	 * @throws ContradictionException if a trivial contradiction is found.
+	 * @since 2.3
+	 */
+	public IConstr addSoftAtMost(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
+		if (weight.compareTo(top)<0) {
+			coefs.push(weight);
+            int newvar = nborigvars + ++nbnewvar;
+            lits.push(newvar);
+            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
+            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
+			literals.push(newvar);
+			BigInteger bigDegree = BigInteger.valueOf(degree);
+			cardcoeffs.push(bigDegree.negate());
+			return addPseudoBoolean(literals,cardcoeffs,true,bigDegree);
+		} else {
+			return addAtMost(literals, degree);
+		}
+	}
+	
+	/**
 	 * Set some literals whose sum must be minimized.
 	 * 
 	 * @param literals
