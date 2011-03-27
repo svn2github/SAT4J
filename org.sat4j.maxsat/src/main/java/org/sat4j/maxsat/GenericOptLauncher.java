@@ -18,8 +18,6 @@
  *******************************************************************************/
 package org.sat4j.maxsat;
 
-import static java.lang.System.out;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -43,6 +41,7 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
+	
 	/**
      * 
      */
@@ -59,6 +58,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				"specifies the timeout (in milliseconds)");
 		options.addOption("k", "kind", true,
 				"kind of problem: minone, maxsat, etc.");
+		options.addOption("i", "incomplete", false,
+				"incomplete mode for maxsat");
 		return options;
 	}
 
@@ -131,6 +132,9 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 											.newDefault());
 						}
 					}
+				}
+				if (cmd.hasOption("i")) {
+					setIncomplete(true);
 				}
 				String timeout = cmd.getOptionValue("t");
 				if (timeout == null) {
