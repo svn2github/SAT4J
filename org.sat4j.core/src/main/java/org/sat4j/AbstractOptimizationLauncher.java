@@ -51,6 +51,12 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 
 	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
 
+	private boolean incomplete = false;
+
+	protected void setIncomplete(boolean value) {
+		incomplete = value;
+	}
+
 	@Override
 	protected void displayResult() {
 		displayAnswer();
@@ -96,6 +102,8 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 							return;
 						}
 						log("SATISFIABLE"); //$NON-NLS-1$
+					} else if (incomplete) {
+						setExitCode(ExitCode.UPPER_BOUND);
 					}
 					isSatisfiable = true;
 					log("OPTIMIZING..."); //$NON-NLS-1$
