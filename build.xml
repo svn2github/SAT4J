@@ -255,14 +255,13 @@
 				 nodeprecatedlist="false" 
 				 nodeprecated="false" 
 				 packagenames="org.sat4j.*,org.sat4j.spec.*,org.sat4j.core.*,org.sat4j.minisat.*,org.sat4j.minisat.core.*,org.sat4j.minisat.constraints.*,org.sat4j.minisat.constraints.cnf.*"
-				 sourcepath="${module}/src" 
-				 stylesheetfile="core/lib/stylesheet.css"
-				 overview="${module}/src/overview.html" 
+				 sourcepath="${module}/src/main/java" 
+				 stylesheetfile="stylesheet.css"
+				 overview="${module}/src/main/java/overview.html" 
 				 doctitle="SAT4J: a SATisfiability library for Java">
 				 <classpath refid="somePath"/>
 				<group title="User level: stable public API." packages="org.sat4j:org.sat4j.*"/>
 				<group title="Developer level: internal API, subject to change." packages="org.sat4j.minisat.*:org.sat4j.reader.csp:org.sat4j.pb.*"/>
-
 		</javadoc>
 	</target>
 
