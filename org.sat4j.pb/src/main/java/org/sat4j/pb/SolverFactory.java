@@ -46,6 +46,8 @@ import org.sat4j.pb.constraints.CompetResolutionPBLongMixedHTClauseCardConstrDat
 import org.sat4j.pb.constraints.CompetResolutionPBLongMixedWLClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedHTClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.CompetResolutionPBMixedWLClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.PBLongMaxClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.PBLongMinClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseAtLeastConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PBMaxDataStructure;
@@ -154,6 +156,21 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	public static PBSolverCP newCompetPBCPMixedConstraintsObjective() {
 		return newPBCP(new PBMaxClauseCardConstrDataStructure(),
+				new VarOrderHeapObjective());
+	}
+
+	public static PBSolverCP newCompetPBCPMixedConstraintsMinObjective() {
+		return newPBCP(new PBMinClauseCardConstrDataStructure(),
+				new VarOrderHeapObjective());
+	}
+
+	public static PBSolverCP newCompetPBCPMixedConstraintsLongMaxObjective() {
+		return newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
+				new VarOrderHeapObjective());
+	}
+
+	public static PBSolverCP newCompetPBCPMixedConstraintsLongMinObjective() {
+		return newPBCP(new PBLongMinClauseCardConstrDataStructure(),
 				new VarOrderHeapObjective());
 	}
 
