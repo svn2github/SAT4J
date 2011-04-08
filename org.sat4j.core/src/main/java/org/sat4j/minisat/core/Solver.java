@@ -180,7 +180,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		__dimacs_out.ensure(in.size());
 		int p;
 		for (int i = 0; i < in.size(); i++) {
-		    p = in.get(i);
+			p = in.get(i);
 			if (p == 0) {
 				throw new IllegalArgumentException(
 						"0 is not a valid variable identifier");
@@ -286,6 +286,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public void expireTimeout() {
 		undertimeout = false;
+		if (timeBasedTimeout) {
+			if (timer != null) {
+				timer.cancel();
+				timer = null;
+			}
+		} else {
+			if (conflictCount != null) {
+				conflictCount = null;
+			}
+		}
 	}
 
 	protected int nAssigns() {
@@ -1590,8 +1600,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(),
-							trail.size());
+					slistener.conflictFound(confl, decisionLevel(), trail
+							.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
