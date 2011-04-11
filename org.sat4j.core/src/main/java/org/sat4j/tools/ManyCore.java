@@ -68,18 +68,33 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public ManyCore(ASolverFactory<S> factory, String... solverNames) {
 		availableSolvers = solverNames;
+		numberOfSolvers = computeNumberOfSolversInParallel(solverNames.length);
+		solvers = new ArrayList<S>(numberOfSolvers);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers.add(factory.createSolverByName(availableSolvers[i]));
+		}
+	}
+
+	private int computeNumberOfSolversInParallel(int upperBound) {
 		Runtime runtime = Runtime.getRuntime();
 		long memory = runtime.maxMemory();
 		int numberOfCores = runtime.availableProcessors();
 		if (memory > MINIMAL_MEMORY_REQUIREMENT) {
-			numberOfSolvers = solverNames.length < numberOfCores ? solverNames.length
-					: numberOfCores;
+			return upperBound < numberOfCores ? upperBound : numberOfCores;
 		} else {
-			numberOfSolvers = 1;
+			return 1;
 		}
+	}
+
+	public ManyCore(ASolverFactory<S> factory, S... solverNames) {
+		availableSolvers = new String[solverNames.length];
+		for (int i = 0; i < solverNames.length; i++) {
+			availableSolvers[i] = "solver" + i;
+		}
+		numberOfSolvers = computeNumberOfSolversInParallel(solverNames.length);
 		solvers = new ArrayList<S>(numberOfSolvers);
 		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.add(factory.createSolverByName(availableSolvers[i]));
+			solvers.add(solverNames[i]);
 		}
 	}
 
