@@ -798,4 +798,20 @@ public class DependencyHelper<T, C> {
 	public IPBSolver getSolver() {
 		return solver;
 	}
+
+	/**
+	 * Reset the state of the helper (mapping, objective function, etc).
+	 * 
+	 * @since 2.3.1
+	 */
+	public void reset() {
+		mapToDimacs.clear();
+		mapToDomain.clear();
+		descs.clear();
+		solver.reset();
+		if (objLiterals != null) {
+			objLiterals.clear();
+			objCoefs.clear();
+		}
+	}
 }
