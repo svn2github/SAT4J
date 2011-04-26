@@ -569,7 +569,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		if (assumps.size() == 0) {
 			return null;
 		}
-		if (trailLim.last() == trail.size()) {
+		while (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
 			// conflict detected when assuming a value
 			trailLim.pop();
 		}
@@ -1600,8 +1600,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 							null, assumps, p);
 					unsatExplanationInTermsOfAssumptions.push(assump);
 				} else {
-					slistener.conflictFound(confl, decisionLevel(), trail
-							.size());
+					slistener.conflictFound(confl, decisionLevel(),
+							trail.size());
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 				}
