@@ -18,7 +18,6 @@ public class BugSAT17 {
 	@Before
 	public void setup() throws ContradictionException {
 		solver = SolverFactory.newDefault();
-		solver.setTimeout(15);
 		solver.addClause(new VecInt(new int[] { 1 }));
 		solver.addClause(new VecInt(new int[] { 2 }));
 	}
@@ -50,6 +49,13 @@ public class BugSAT17 {
 	@Test
 	public void testSameLits() throws ContradictionException, TimeoutException {
 		assertTrue(solver.isSatisfiable(new VecInt(new int[] { 2, 1 })));
+	}
+
+	@Test
+	public void testOneSameOneContradictory() throws ContradictionException,
+			TimeoutException {
+		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 2, -1 })));
+		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -2 })));
 	}
 
 }
