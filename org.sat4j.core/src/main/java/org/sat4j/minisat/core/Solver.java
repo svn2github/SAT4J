@@ -593,15 +593,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 
 		int p = ILits.UNDEFINED;
-		while (confl == null && trail.size() > 0) {
+		while (confl == null && trail.size() > 0 && trailLim.size() > 0) {
 			p = trail.last();
 			confl = voc.getReason(p);
 			undoOne();
-			if (confl == null && trailLim.size() > 0
-					&& p == (conflictingLiteral ^ 1)) {
+			if (confl == null && p == (conflictingLiteral ^ 1)) {
 				outLearnt.push(toDimacs(p));
 			}
-			if (trailLim.size() > 0 && trail.size() <= trailLim.last()) {
+			if (trail.size() <= trailLim.last()) {
 				trailLim.pop();
 			}
 		}
