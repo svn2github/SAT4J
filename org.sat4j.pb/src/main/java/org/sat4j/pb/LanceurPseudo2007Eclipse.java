@@ -27,8 +27,6 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
-import static java.lang.System.out;
-
 import java.util.Collection;
 
 import org.sat4j.AbstractLauncher;

@@ -27,8 +27,6 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
-import static java.lang.System.out;
-
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.core.ASolverFactory;
