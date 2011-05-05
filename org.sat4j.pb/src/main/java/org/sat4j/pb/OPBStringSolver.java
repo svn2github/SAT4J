@@ -153,9 +153,19 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 			throws ContradictionException {
 		StringBuffer out = getOut();
 		nbOfConstraints++;
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();)
-			out.append("+1 x" + iterator.next() + " ");
-		out.append(">= " + degree + " ;\n");
+		int negationweight = 0;
+		int p;
+		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+			p = iterator.next();
+			assert p != 0;
+			if (p > 0) {
+				out.append("+1 x" + p + " ");
+			} else {
+				out.append("-1 x" + (-p) + " ");
+				negationweight++;
+			}
+		}
+		out.append(">= " + (degree - negationweight) + " ;\n");
 		return FAKE_CONSTR;
 	}
 
@@ -164,9 +174,19 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 			throws ContradictionException {
 		StringBuffer out = getOut();
 		nbOfConstraints++;
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();)
-			out.append("-1 x" + iterator.next() + " ");
-		out.append(">= " + (-degree) + " ;\n");
+		int negationweight = 0;
+		int p;
+		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+			p = iterator.next();
+			assert p != 0;
+			if (p > 0) {
+				out.append("-1 x" + p + " ");
+			} else {
+				out.append("+1 x" + (-p) + " ");
+				negationweight++;
+			}
+		}
+		out.append(">= " + (-degree + negationweight) + " ;\n");
 		return FAKE_CONSTR;
 	}
 
