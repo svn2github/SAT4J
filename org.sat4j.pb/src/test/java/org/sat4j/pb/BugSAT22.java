@@ -3,14 +3,11 @@ package org.sat4j.pb;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.sat4j.pb.tools.DependencyHelper;
-import org.sat4j.pb.tools.WeightedObject;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.TimeoutException;
@@ -32,11 +29,10 @@ public class BugSAT22 {
 		Named X = new Named("X");
 		// base
 		helper.setTrue(X, "Build");
-		// weighted
-		List<WeightedObject<Named>> wos = new ArrayList<WeightedObject<Named>>();
-		wos.add(WeightedObject.newWO(A2, 1));
-		wos.add(WeightedObject.newWO(A1, 2));
-		helper.setObjectiveFunction(wos.toArray(new WeightedObject[0]));
+		// objective function
+		helper.addToObjectiveFunction(A2, 1);
+		helper.addToObjectiveFunction(A1, 2);
+		helper.addToObjectiveFunction(B, 1);
 		// depends
 		helper.or("a", X, new Named[] { A1, A2 });
 		helper.or("b", X, new Named[] { B });
@@ -63,11 +59,10 @@ public class BugSAT22 {
 		Named B = new Named("B");
 		slice.add(B);
 		Named X = new Named("X");
-		// weighted
-		List<WeightedObject<Named>> wos = new ArrayList<WeightedObject<Named>>();
-		wos.add(WeightedObject.newWO(A2, 1));
-		wos.add(WeightedObject.newWO(A1, 2));
-		helper.setObjectiveFunction(wos.toArray(new WeightedObject[0]));
+		// objective function
+		helper.addToObjectiveFunction(A2, 1);
+		helper.addToObjectiveFunction(A1, 2);
+		helper.addToObjectiveFunction(B, 1);
 		// depends
 		helper.or("a", X, new Named[] { A1, A2 });
 		helper.or("b", X, new Named[] { B });
