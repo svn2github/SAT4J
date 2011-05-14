@@ -78,8 +78,8 @@ public class PBInstanceReader extends InstanceReader {
 		if (filename.startsWith("http://")) {
 			isHttp = true;
 			tempFileName = filename;
-			filename = filename.substring(filename.lastIndexOf('/'), filename
-					.length() - 1);
+			filename = filename.substring(filename.lastIndexOf('/'),
+					filename.length() - 1);
 		}
 
 		if (filename.indexOf(':') != -1) {
@@ -116,11 +116,5 @@ public class PBInstanceReader extends InstanceReader {
 	@Override
 	public void decode(int[] model, PrintWriter out) {
 		reader.decode(model, out);
-	}
-
-	@Override
-	public IProblem parseInstance(java.io.Reader in)
-			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException();
 	}
 }
