@@ -98,12 +98,6 @@ public class LecteurDimacs extends Reader implements Serializable {
 		return s;
 	}
 
-	@Override
-	public IProblem parseInstance(java.io.Reader input) throws IOException,
-			ContradictionException {
-		throw new UnsupportedOperationException();
-	}
-
 	/** on passe les commentaires et on lit le nombre de literaux */
 	private char passerCommentaire() throws IOException {
 		char car;

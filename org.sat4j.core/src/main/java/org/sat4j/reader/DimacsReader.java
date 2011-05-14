@@ -240,13 +240,6 @@ public class DimacsReader extends Reader implements Serializable {
 		return parseInstance();
 	}
 
-	@Override
-	public final IProblem parseInstance(final java.io.Reader in)
-			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException();
-
-	}
-
 	/**
 	 * @param in
 	 *            the input stream

@@ -31,7 +31,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
@@ -47,6 +46,23 @@ import org.sat4j.specs.IProblem;
  */
 public abstract class Reader {
 
+	/**
+	 * This is the usual method to feed a solver with a benchmark.
+	 * 
+	 * @param filename
+	 *            the fully qualified name of the benchmark. The filename
+	 *            extension may by used to detect which type of benchmarks it is
+	 *            (SAT, OPB, MAXSAT, etc).
+	 * @return the problem to solve (an ISolver in fact).
+	 * @throws FileNotFoundException
+	 *             if the file cannot be found.
+	 * @throws ParseFormatException
+	 *             if an error occurs during parsing.
+	 * @throws IOException
+	 *             if an I/O error occurs.
+	 * @throws ContradictionException
+	 *             if the problem is found trivially inconsistent.
+	 */
 	public IProblem parseInstance(final String filename)
 			throws FileNotFoundException, ParseFormatException, IOException,
 			ContradictionException {
@@ -78,13 +94,48 @@ public abstract class Reader {
 		}
 	}
 
-	public IProblem parseInstance(final InputStream in)
-			throws ParseFormatException, ContradictionException, IOException {
-		return parseInstance(new InputStreamReader(in));
-	}
-
-	public abstract IProblem parseInstance(final java.io.Reader in)
+	/**
+	 * Read a file from a stream.
+	 * 
+	 * It is important to note that benchmarks are usually encoded in ASCII, not
+	 * UTF8. As such, the only reasonable way to feed a solver from a stream is
+	 * to use a stream.
+	 * 
+	 * @param in
+	 *            a stream containing the benchmark.
+	 * @return the problem to solve (an ISolver in fact).
+	 * @throws ParseFormatException
+	 *             if an error occurs during parsing.
+	 * @throws IOException
+	 *             if an I/O error occurs.
+	 * @throws ContradictionException
+	 *             if the problem is found trivially inconsistent.
+	 */
+	public abstract IProblem parseInstance(final InputStream in)
 			throws ParseFormatException, ContradictionException, IOException;
+
+	/**
+	 * Read a file from a reader.
+	 * 
+	 * Do not use that method, it is no longer supported.
+	 * 
+	 * @param in
+	 *            a stream containing the benchmark.
+	 * @return the problem to solve (an ISolver in fact).
+	 * @throws ParseFormatException
+	 *             if an error occurs during parsing.
+	 * @throws IOException
+	 *             if an I/O error occurs.
+	 * @throws ContradictionException
+	 *             if the problem is found trivially inconsistent.
+	 * @see #parseInstance(InputStream)
+	 */
+	@Deprecated
+	public IProblem parseInstance(java.io.Reader in)
+			throws ParseFormatException, ContradictionException, IOException {
+		throw new UnsupportedOperationException(
+				"Use #parseInstance(InputStream) instead");
+	}
 
 	/**
 	 * Produce a model using the reader format.

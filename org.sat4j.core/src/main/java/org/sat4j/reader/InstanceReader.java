@@ -102,8 +102,8 @@ public class InstanceReader extends Reader {
 		if (filename.startsWith("http://")) {
 			isHttp = true;
 			tempFileName = filename;
-			filename = filename.substring(filename.lastIndexOf('/'), filename
-					.length() - 1);
+			filename = filename.substring(filename.lastIndexOf('/'),
+					filename.length() - 1);
 		}
 
 		if (filename.indexOf(':') != -1) {
@@ -148,8 +148,10 @@ public class InstanceReader extends Reader {
 	}
 
 	@Override
-	public IProblem parseInstance(java.io.Reader in)
+	public IProblem parseInstance(java.io.InputStream in)
 			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+				"Use a domain specific Reader (LecteurDimacs, AIGReader, etc.) for stream input ");
 	}
+
 }

@@ -147,11 +147,4 @@ public class AAGReader extends Reader {
 		}
 		return inputs;
 	}
-
-	@Override
-	public IProblem parseInstance(java.io.Reader in)
-			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException();
-	}
-
 }
