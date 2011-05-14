@@ -22,8 +22,7 @@ public class BugSAT25 {
 			ContradictionException, IOException {
 		String cnfString = "p cnf 3 4\n1 2 3 0\n-1 -2 0\n-1 -3 0\n-2 -3 0";
 		InstanceReader reader = new InstanceReader(SolverFactory.newDefault());
-		IProblem problem = reader.parseInstance(new ByteArrayInputStream(
-				cnfString.getBytes()));
+		reader.parseInstance(new ByteArrayInputStream(cnfString.getBytes()));
 		fail();
 	}
 
