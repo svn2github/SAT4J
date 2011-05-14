@@ -28,6 +28,7 @@
 package org.sat4j.pb;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -38,7 +39,6 @@ import java.util.Scanner;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
@@ -218,5 +218,11 @@ public class GoodOPBReader extends Reader implements Serializable {
 			}
 			out.print(" ");
 		}
+	}
+
+	@Override
+	public IProblem parseInstance(InputStream in) throws ParseFormatException,
+			ContradictionException, IOException {
+		throw new UnsupportedOperationException();
 	}
 }
