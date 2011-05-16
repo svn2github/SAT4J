@@ -20,6 +20,8 @@ package org.sat4j.reader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 
@@ -74,6 +76,12 @@ public class XMLCSPReader extends org.sat4j.reader.Reader {
         throw new UnsupportedOperationException();
     }
 
+	@Override
+	public IProblem parseInstance(final InputStream in)
+			throws ParseFormatException, ContradictionException, IOException {
+		return parseInstance(new InputStreamReader(in));
+	}
+	
     /*
      * (non-Javadoc)
      * 

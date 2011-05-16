@@ -19,6 +19,8 @@
 package org.sat4j.reader;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -496,4 +498,10 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
     IProblem getProblem() {
         return solver;
     }
+    
+	@Override
+	public IProblem parseInstance(final InputStream in)
+			throws ParseFormatException, ContradictionException, IOException {
+		return parseInstance(new InputStreamReader(in));
+	}
 }
