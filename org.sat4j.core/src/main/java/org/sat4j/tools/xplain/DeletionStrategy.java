@@ -150,8 +150,6 @@ public class DeletionStrategy implements MinimizationStrategy {
 					System.out.println(solver.getLogPrefix() + "not needed.");
 				}
 			}
-			solver.printStat(new PrintWriter(System.out, true), "c ");
-
 		}
 		return results;
 	}
