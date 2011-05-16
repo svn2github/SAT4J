@@ -54,6 +54,7 @@ package org.sat4j.pb.reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -745,10 +746,8 @@ public class OPBReader2005 extends Reader implements Serializable {
 	}
 
 	@Override
-	public IProblem parseInstance(InputStream in) throws ParseFormatException,
-			ContradictionException, IOException {
-		throw new UnsupportedOperationException(
-				"OPB files are read from a Reader, not an InputStream (need to be fixed)");
+	public IProblem parseInstance(final InputStream in)
+			throws ParseFormatException, ContradictionException, IOException {
+		return parseInstance(new InputStreamReader(in));
 	}
-
 }
