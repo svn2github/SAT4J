@@ -67,6 +67,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	private int lastCreatedVar;
 	private boolean pooledVarId = false;
 	private final IVecInt lastClause = new VecInt();
+	private IConstr lastConstr;
 
 	private MinimizationStrategy xplainStrategy = new QuickXplainStrategy();
 
@@ -84,13 +85,13 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 		literals.copyTo(lastClause);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
-		IConstr constr = super.addClause(literals);
-		if (constr == null) {
+		lastConstr = super.addClause(literals);
+		if (lastConstr == null) {
 			discardLastestVar();
 		} else {
-			constrs.put(newvar, constr);
+			constrs.put(newvar, lastConstr);
 		}
-		return constr;
+		return lastConstr;
 	}
 
 	/**
@@ -274,6 +275,24 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 
 	public void setMinimizationStrategy(MinimizationStrategy strategy) {
 		xplainStrategy = strategy;
+	}
+
+	@Override
+	public boolean removeConstr(IConstr c) {
+		if (lastConstr == c) {
+			lastClause.clear();
+			lastConstr = null;
+		}
+		return super.removeConstr(c);
+	}
+
+	@Override
+	public boolean removeSubsumedConstr(IConstr c) {
+		if (lastConstr == c) {
+			lastClause.clear();
+			lastConstr = null;
+		}
+		return super.removeSubsumedConstr(c);
 	}
 
 }
