@@ -119,7 +119,6 @@ public class DeletionStrategy implements MinimizationStrategy {
 					System.out.println(solver.getLogPrefix() + "not needed.");
 				}
 			}
-			solver.printStat(new PrintWriter(System.out, true), "c ");
 		}
 		if (results.size() == 0) {
 			// the last group must be the cause of the inconsistency
