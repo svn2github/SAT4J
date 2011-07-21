@@ -70,7 +70,7 @@ public final class Lits implements Serializable, ILits {
 		init(DEFAULT_INIT_SIZE);
 	}
 
-	@SuppressWarnings( { "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	public final void init(int nvar) {
 		if (nvar < pool.length) {
 			return;
@@ -143,6 +143,8 @@ public final class Lits implements Serializable, ILits {
 				reset(i << 1);
 			}
 		}
+		maxvarid = 0;
+		realnVars = 0;
 	}
 
 	public void ensurePool(int howmany) {
@@ -207,6 +209,7 @@ public final class Lits implements Serializable, ILits {
 		undos[lit >> 1].clear();
 		falsified[lit] = false;
 		falsified[lit ^ 1] = false;
+		pool[lit >> 1] = false;
 	}
 
 	public int getLevel(int lit) {
