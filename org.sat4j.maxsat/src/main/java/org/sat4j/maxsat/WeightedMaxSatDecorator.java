@@ -466,7 +466,9 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
-		super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
+		if (lits.size() > 0) 
+			// there is at least one soft clause
+			super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
 	}
 
 	public boolean isOptimal() {
