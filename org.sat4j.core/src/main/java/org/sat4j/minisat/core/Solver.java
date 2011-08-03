@@ -1013,6 +1013,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public boolean assume(int p) {
 		// Precondition: assume propagation queue is empty
 		assert trail.size() == qhead;
+		assert !trailLim.contains(trail.size());
 		trailLim.push(trail.size());
 		return enqueue(p);
 	}
@@ -1123,7 +1124,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				conflictCount.newConflict();
 
 				if (decisionLevel() == rootLevel) {
-					// on est a la racine, la formule est inconsistante
+					// conflict at root level, the formula is inconsistent
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
 							confl, assumps, ILits.UNDEFINED);
 					return Lbool.FALSE;
@@ -1592,7 +1593,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
 			int assump = iterator.next();
 			int p = voc.getFromPool(assump);
-			if (!assume(p) || ((confl = propagate()) != null)) {
+			if ((!voc.isSatisfied(p) && !assume(p))
+					|| ((confl = propagate()) != null)) {
 				if (confl == null) {
 					slistener.conflictFound(p);
 					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
