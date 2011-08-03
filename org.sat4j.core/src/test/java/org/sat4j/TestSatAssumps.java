@@ -28,7 +28,7 @@ public class TestSatAssumps {
 			ContradictionException, TimeoutException {
 		ISolver satSolver = SolverFactory.newDefault();
 		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("Eshop-fm.dimacs");
+		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 		List<Integer> vars = new ArrayList<Integer>();
 		for (int i = 1; i <= p.nVars(); i++) {
@@ -41,7 +41,7 @@ public class TestSatAssumps {
 		for (int i = 0; i < vars.size(); i++) {
 			ISolver satSolverOracle = SolverFactory.newDefault();
 			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("Eshop-fm.dimacs");
+			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 			int varnr = vars.get(i);
 
@@ -74,7 +74,7 @@ public class TestSatAssumps {
 			ContradictionException, TimeoutException {
 		ISolver satSolver = SolverFactory.newDefault();
 		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("Eshop-fm.dimacs");
+		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 		List<Integer> vars = new ArrayList<Integer>();
 		for (int i = 1; i <= p.nVars(); i++) {
@@ -87,7 +87,7 @@ public class TestSatAssumps {
 		for (int i = 0; i < vars.size(); i++) {
 			ISolver satSolverOracle = SolverFactory.newDefault();
 			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("Eshop-fm.dimacs");
+			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 			int varnr = vars.get(i);
 
@@ -120,14 +120,14 @@ public class TestSatAssumps {
 			TimeoutException {
 		ISolver satSolver = SolverFactory.newDefault();
 		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("Eshop-fm.dimacs");
+		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 		Set<Integer> sol = new HashSet<Integer>();
 
 		for (int i = 1; i <= p.nVars(); i++) {
 			ISolver satSolverOracle = SolverFactory.newDefault();
 			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("Eshop-fm.dimacs");
+			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
 			int assumpsArray[] = new int[sol.size() + 1];
 			int c = 0;
@@ -151,7 +151,7 @@ public class TestSatAssumps {
 			System.out.println(assumps);
 			satSolverOracle = SolverFactory.newDefault();
 			readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("Eshop-fm.dimacs");
+			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 			assertEquals(satSolverOracle.isSatisfiable(assumps),
 					satSolver.isSatisfiable(assumps));
 			if (satSolver.isSatisfiable(assumps)) {
