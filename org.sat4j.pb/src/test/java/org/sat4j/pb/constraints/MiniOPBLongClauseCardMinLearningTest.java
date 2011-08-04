@@ -12,7 +12,8 @@ public class MiniOPBLongClauseCardMinLearningTest extends
 
 	@Override
 	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetPBResMinHTMixedConstraintsObjective();
+		return SolverFactory
+				.newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
 	}
 
 }
