@@ -20,6 +20,7 @@
 package org.sat4j.pb.tools;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -212,11 +213,16 @@ public class DependencyHelper<T, C> {
 	/**
 	 * Retrieve the solution found.
 	 * 
+	 * Note that this method returns a Sat4j specific data structure (IVec).
+	 * People willing to retrieve a more common data structure should use
+	 * {@link #getASolution()} instead.
+	 * 
 	 * THAT METHOD IS EXPECTED TO BE CALLED IF hasASolution() RETURNS TRUE.
 	 * 
 	 * @return the domain object that must be satisfied to satisfy the
 	 *         constraints entered in the solver.
 	 * @see {@link #hasASolution()}
+	 * @see {@link #getASolution()}
 	 */
 	public IVec<T> getSolution() {
 		int[] model = solver.model();
@@ -225,6 +231,33 @@ public class DependencyHelper<T, C> {
 			for (int i : model) {
 				if (i > 0) {
 					toInstall.push(mapToDomain.get(i));
+				}
+			}
+		}
+		return toInstall;
+	}
+
+	/**
+	 * Retrieve a collection of objects satisfying the constraints.
+	 * 
+	 * It behaves basically the same as {@link #getSolution()} but returns a
+	 * common Collection instead of a Sat4j specific IVec.
+	 * 
+	 * THAT METHOD IS EXPECTED TO BE CALLED IF hasASolution() RETURNS TRUE.
+	 * 
+	 * @return the domain object that must be satisfied to satisfy the
+	 *         constraints entered in the solver.
+	 * @see {@link #hasASolution()}
+	 * @see {@link #getSolution()}
+	 * @since 2.3.1
+	 */
+	public Collection<T> getASolution() {
+		int[] model = solver.model();
+		Collection<T> toInstall = new ArrayList<T>();
+		if (model != null) {
+			for (int i : model) {
+				if (i > 0) {
+					toInstall.add(mapToDomain.get(i));
 				}
 			}
 		}
