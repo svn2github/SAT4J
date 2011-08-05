@@ -59,6 +59,9 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	@Override
 	protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
+		if (literals.length == 0 && degree.signum() <= 0) {
+			return null;
+		}
 		if (degree.equals(BigInteger.ONE)) {
 			IVecInt v = Clauses.sanityCheck(new VecInt(literals),
 					getVocabulary(), solver);

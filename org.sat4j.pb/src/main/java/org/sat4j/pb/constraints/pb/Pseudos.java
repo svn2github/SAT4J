@@ -91,7 +91,7 @@ public abstract class Pseudos {
 			IVec<BigInteger> bigCoefs, boolean moreThan, BigInteger bigDeg,
 			ILits voc) throws ContradictionException {
 		// Ajouter les simplifications quand la structure sera d?finitive
-		if (ps.size() == 0) {
+		if (ps.size() == 0 && bigDeg.signum() > 0) {
 			throw new ContradictionException("Creating Empty clause ?");
 		} else if (ps.size() != bigCoefs.size()) {
 			throw new IllegalArgumentException(
@@ -105,7 +105,7 @@ public abstract class Pseudos {
 			BigInteger[] bigCoefs, boolean moreThan, BigInteger bigDeg)
 			throws ContradictionException {
 		// Ajouter les simplifications quand la structure sera d?finitive
-		if (ps.length == 0) {
+		if (ps.length == 0 && bigDeg.signum() > 0) {
 			throw new ContradictionException("Creating Empty clause ?");
 		} else if (ps.length != bigCoefs.length) {
 			throw new IllegalArgumentException(
