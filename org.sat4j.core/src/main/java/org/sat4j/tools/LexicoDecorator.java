@@ -48,7 +48,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 
 	private IConstr prevConstr;
 
-	private int currentValue = -1;
+	private Number currentValue = -1;
 
 	protected int[] prevfullmodel;
 	protected boolean[] prevboolmodel;
@@ -82,22 +82,21 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			for (int i = 0; i < nVars(); i++) {
 				prevboolmodel[i] = decorated().model(i + 1);
 			}
-			calculateObjective();
 			prevfullmodel = decorated().model();
+			calculateObjective();
 			return true;
 		}
 		return manageUnsatCase();
 	}
 
 	private boolean manageUnsatCase() {
-		if (currentCriterion < criteria.size() - 1) {
+		if (currentCriterion < numberOfCriteria() - 1) {
 			if (prevConstr != null) {
 				super.removeConstr(prevConstr);
 				prevConstr = null;
 			}
 			try {
-				super.addAtMost(criteria.get(currentCriterion), currentValue);
-				super.addAtLeast(criteria.get(currentCriterion), currentValue);
+				fixCriterionValue();
 			} catch (ContradictionException e) {
 				throw new IllegalStateException(e);
 			}
@@ -120,6 +119,16 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			prevConstr = null;
 		}
 		return false;
+	}
+
+	protected int numberOfCriteria() {
+		return criteria.size();
+	}
+
+	protected void fixCriterionValue() throws ContradictionException {
+		super.addAtMost(criteria.get(currentCriterion), currentValue.intValue());
+		super.addAtLeast(criteria.get(currentCriterion),
+				currentValue.intValue());
 	}
 
 	@Override
@@ -164,8 +173,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 			super.removeSubsumedConstr(prevConstr);
 		}
 		try {
-			prevConstr = super.addAtMost(criteria.get(currentCriterion),
-					currentValue - 1);
+			prevConstr = discardSolutionsForOptimizing();
 		} catch (ContradictionException c) {
 			prevConstr = null;
 			if (!manageUnsatCase()) {
@@ -175,7 +183,13 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 
 	}
 
-	private int evaluate() {
+	protected IConstr discardSolutionsForOptimizing()
+			throws ContradictionException {
+		return super.addAtMost(criteria.get(currentCriterion),
+				currentValue.intValue() - 1);
+	}
+
+	protected Number evaluate() {
 		int value = 0;
 		int lit;
 		for (IteratorInt it = criteria.get(currentCriterion).iterator(); it
