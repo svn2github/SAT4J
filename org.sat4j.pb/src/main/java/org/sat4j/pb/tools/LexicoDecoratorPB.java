@@ -50,6 +50,7 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 	private static final long serialVersionUID = 1L;
 
 	private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
+	private BigInteger bigCurrentValue;
 
 	public LexicoDecoratorPB(IPBSolver solver) {
 		super(solver);
@@ -79,8 +80,39 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 	@Override
 	public void addCriterion(IVecInt literals) {
 		objs.add(new ObjectiveFunction(literals, new Vec<BigInteger>(literals
-				.size(), BigInteger.TEN)));
-		super.addCriterion(literals);
+				.size(), BigInteger.ONE)));
+	}
+
+	public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
+		objs.add(new ObjectiveFunction(literals, coefs));
+	}
+
+	@Override
+	protected Number evaluate() {
+		bigCurrentValue = objs.get(currentCriterion).calculateDegree(
+				prevfullmodel);
+		return bigCurrentValue;
+	}
+
+	@Override
+	protected void fixCriterionValue() throws ContradictionException {
+		addPseudoBoolean(objs.get(currentCriterion).getVars(),
+				objs.get(currentCriterion).getCoeffs(), true, bigCurrentValue);
+		addPseudoBoolean(objs.get(currentCriterion).getVars(),
+				objs.get(currentCriterion).getCoeffs(), false, bigCurrentValue);
+	}
+
+	@Override
+	protected IConstr discardSolutionsForOptimizing()
+			throws ContradictionException {
+		return addPseudoBoolean(objs.get(currentCriterion).getVars(),
+				objs.get(currentCriterion).getCoeffs(), false,
+				bigCurrentValue.subtract(BigInteger.ONE));
+	}
+
+	@Override
+	protected int numberOfCriteria() {
+		return objs.size();
 	}
 
 }

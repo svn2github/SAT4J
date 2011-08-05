@@ -27,12 +27,15 @@
  *******************************************************************************/
 package org.sat4j.pb.tools;
 
+import java.math.BigInteger;
 import java.util.Collection;
 
+import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PBSolverDecorator;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class LexicoHelper<T, C> extends DependencyHelper<T, C> {
@@ -66,6 +69,16 @@ public class LexicoHelper<T, C> extends DependencyHelper<T, C> {
 			literals.push(getIntValue(thing));
 		}
 		lexico.addCriterion(literals);
+	}
+
+	public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
+		IVecInt literals = new VecInt(things.size());
+		IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
+		for (WeightedObject<T> wo : things) {
+			literals.push(getIntValue(wo.thing));
+			coefs.push(wo.getWeight());
+		}
+		lexico.addCriterion(literals, coefs);
 	}
 
 	public boolean isOptimal() {
