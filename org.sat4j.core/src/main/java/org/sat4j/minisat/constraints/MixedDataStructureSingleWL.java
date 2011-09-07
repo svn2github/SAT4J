@@ -32,6 +32,7 @@ import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntWLClause;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
+import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
@@ -41,8 +42,7 @@ import org.sat4j.specs.IVecInt;
  * @author leberre
  * @since 2.1
  */
-public class MixedDataStructureSingleWL extends
-		AbstractDataStructureFactory {
+public class MixedDataStructureSingleWL extends AbstractDataStructureFactory {
 
 	private static final long serialVersionUID = 1L;
 
@@ -68,8 +68,13 @@ public class MixedDataStructureSingleWL extends
 	 */
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null)
-			return null;
+		if (v == null) {
+			assert literals.size() == 1;
+			return new UnitClause(literals.last());
+		}
+		if (v.size() == 1) {
+			return new UnitClause(v.last());
+		}
 		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
 	}
 
