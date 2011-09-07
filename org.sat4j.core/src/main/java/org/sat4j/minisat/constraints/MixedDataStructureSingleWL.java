@@ -31,6 +31,7 @@ import org.sat4j.minisat.constraints.card.AtLeast;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntWLClause;
 import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
@@ -69,11 +70,15 @@ public class MixedDataStructureSingleWL extends AbstractDataStructureFactory {
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		if (v == null) {
-			assert literals.size() == 1;
-			return new UnitClause(literals.last());
+			// tautological clause
+			return null;
 		}
 		if (v.size() == 1) {
 			return new UnitClause(v.last());
+		}
+		if (v.size() == 2) {
+			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
+					v);
 		}
 		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
 	}

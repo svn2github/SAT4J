@@ -71,8 +71,8 @@ public class MixedDataStructureDanielWL extends AbstractDataStructureFactory {
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		if (v == null) {
-			assert literals.size() == 1;
-			return new UnitClause(literals.last());
+			// tautological clause
+			return null;
 		}
 		if (v.size() == 1) {
 			return new UnitClause(v.last());
