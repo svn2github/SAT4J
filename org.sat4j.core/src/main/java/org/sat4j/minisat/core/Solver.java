@@ -303,7 +303,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public int nConstraints() {
-		return constrs.size() + trail.size();
+		return constrs.size();
 	}
 
 	public void learn(Constr c) {
