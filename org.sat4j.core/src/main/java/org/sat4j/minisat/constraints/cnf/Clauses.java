@@ -92,8 +92,7 @@ public abstract class Clauses {
 			}
 		}
 
-		if (propagationCheck(ps, s))
-			return null;
+		propagationCheck(ps, s);
 
 		return ps;
 	}
