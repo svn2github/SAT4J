@@ -238,11 +238,19 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public int[] findModel() throws TimeoutException {
-		throw new UnsupportedOperationException();
+		if (isSatisfiable()) {
+			return model();
+		}
+		// A zero length array would mean that the formula is a tautology.
+		return null;
 	}
 
 	public int[] findModel(IVecInt assumps) throws TimeoutException {
-		throw new UnsupportedOperationException();
+		if (isSatisfiable(assumps)) {
+			return model();
+		}
+		// A zero length array would mean that the formula is a tautology.
+		return null;
 	}
 
 	public boolean isSatisfiable() throws TimeoutException {
