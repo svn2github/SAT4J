@@ -56,8 +56,13 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 	@Override
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null)
+		if (v == null) {
+			// tautological clause
+			return null;
+		}
+		if (v.size() == 1) {
 			return new UnitClausePB(literals.last(), getVocabulary());
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClausePB.brandNewClause(solver,
 					getVocabulary(), v);
@@ -67,6 +72,9 @@ public class PuebloPBMinClauseCardConstrDataStructure extends
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
+		if (v.size() == 1) {
+			return new UnitClausePB(v.last(), getVocabulary());
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClausePB.brandNewClause(solver,
 					getVocabulary(), v);

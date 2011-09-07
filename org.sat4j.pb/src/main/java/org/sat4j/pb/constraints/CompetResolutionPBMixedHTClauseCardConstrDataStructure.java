@@ -52,8 +52,13 @@ public class CompetResolutionPBMixedHTClauseCardConstrDataStructure extends
 	@Override
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null)
+		if (v == null) {
+			// tautological clause
 			return null;
+		}
+		if (v.size() == 1) {
+			return new UnitClause(v.last());
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);

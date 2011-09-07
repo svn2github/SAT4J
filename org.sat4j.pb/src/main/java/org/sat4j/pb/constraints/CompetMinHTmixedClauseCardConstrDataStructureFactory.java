@@ -57,8 +57,13 @@ public class CompetMinHTmixedClauseCardConstrDataStructureFactory extends
 
 	@Override
 	protected Constr constructClause(IVecInt v) {
-		if (v == null)
+		if (v == null) {
+			// tautological clause
 			return null;
+		}
+		if (v.size() == 1) {
+			return new UnitClause(v.last());
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);
