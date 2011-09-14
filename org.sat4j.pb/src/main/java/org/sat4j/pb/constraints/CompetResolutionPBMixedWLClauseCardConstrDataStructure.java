@@ -82,6 +82,9 @@ public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
 	protected Constr constructClause(IVecInt v) {
 		if (v == null)
 			return null;
+		if (v.size() == 1) {
+			return new UnitClause(v.last());
+		}
 		if (v.size() == 2) {
 			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
 					v);
