@@ -86,15 +86,15 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		}
 	}
 
-	public ManyCore(ASolverFactory<S> factory, S... solverNames) {
-		availableSolvers = new String[solverNames.length];
-		for (int i = 0; i < solverNames.length; i++) {
+	public ManyCore(S... solverObjects) {
+		availableSolvers = new String[solverObjects.length];
+		for (int i = 0; i < solverObjects.length; i++) {
 			availableSolvers[i] = "solver" + i;
 		}
-		numberOfSolvers = computeNumberOfSolversInParallel(solverNames.length);
+		numberOfSolvers = computeNumberOfSolversInParallel(solverObjects.length);
 		solvers = new ArrayList<S>(numberOfSolvers);
 		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.add(solverNames[i]);
+			solvers.add(solverObjects[i]);
 		}
 	}
 
