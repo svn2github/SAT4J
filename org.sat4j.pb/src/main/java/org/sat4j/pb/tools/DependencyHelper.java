@@ -551,11 +551,9 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.iff(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
+			if (constr != null) {
+				descs.put(constr, name);
 			}
-			descs.put(constr, name);
 		}
 	}
 
@@ -576,11 +574,9 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.and(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
+			if (constr != null) {
+				descs.put(constr, name);
 			}
-			descs.put(constr, name);
 		}
 	}
 
@@ -601,11 +597,9 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.or(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
+			if (constr != null) {
+				descs.put(constr, name);
 			}
-			descs.put(constr, name);
 		}
 	}
 
@@ -626,11 +620,9 @@ public class DependencyHelper<T, C> {
 		}
 		IConstr[] constrs = gator.halfOr(getIntValue(thing), literals);
 		for (IConstr constr : constrs) {
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
+			if (constr != null) {
+				descs.put(constr, name);
 			}
-			descs.put(constr, name);
 		}
 	}
 
@@ -649,11 +641,9 @@ public class DependencyHelper<T, C> {
 				getIntValue(conditionThing), getIntValue(thenThing),
 				getIntValue(elseThing));
 		for (IConstr constr : constrs) {
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
+			if (constr != null) {
+				descs.put(constr, name);
 			}
-			descs.put(constr, name);
 		}
 	}
 
