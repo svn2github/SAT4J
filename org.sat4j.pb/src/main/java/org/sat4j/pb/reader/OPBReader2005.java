@@ -693,9 +693,9 @@ public class OPBReader2005 extends Reader implements Serializable {
 
 			if (e instanceof ParseFormatException) {
 				message = e.getMessage().substring(
-						"DIMACS Format error: ".length());
+						ParseFormatException.PARSING_ERROR.length());
 			} else {
-				message = e.getMessage();
+				message = e.toString();
 			}
 			throw new ParseFormatException(" line "
 					+ (input.getLineNumber() + 1) + ", " + message);
