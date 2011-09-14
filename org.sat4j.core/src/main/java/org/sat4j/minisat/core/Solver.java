@@ -764,18 +764,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	// Taken from MiniSAT 1.14: Simplify conflict clause (a little):
 	private void simpleSimplification(IVecInt conflictToReduce) {
-		int i, j;
+		int i, j, p;
 		final boolean[] seen = mseen;
 		for (i = j = 1; i < conflictToReduce.size(); i++) {
 			IConstr r = voc.getReason(conflictToReduce.get(i));
 			if (r == null) {
 				conflictToReduce.moveTo(j++, i);
 			} else {
-				for (int k = 0; k < r.size(); k++)
-					if (voc.isFalsified(r.get(k)) && !seen[r.get(k) >> 1]
-							&& (voc.getLevel(r.get(k)) != 0)) {
-						conflictToReduce.moveTo(j++, i);
-						break;
+					for (int k = 0; k < r.size(); k++) {
+						p = r.get(k);
+						if (!seen[p >> 1] && voc.isFalsified(p)
+								&& (voc.getLevel(p) != 0)) {
+							conflictToReduce.moveTo(j++, i);
+							break;
+						}
 					}
 			}
 		}
@@ -822,7 +824,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			lanalyzestack.pop();
 			for (int i = 0; i < c.size(); i++) {
 				int l = c.get(i);
-				if (lvoc.isFalsified(l) && !seen[var(l)]
+				if (!seen[var(l)] && lvoc.isFalsified(l)
 						&& lvoc.getLevel(l) != 0) {
 					if (lvoc.getReason(l) == null) {
 						for (int j = top; j < lanalyzetoclear.size(); j++)
