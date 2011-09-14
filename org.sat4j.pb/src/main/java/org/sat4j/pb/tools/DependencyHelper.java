@@ -104,8 +104,8 @@ public class DependencyHelper<T, C> {
 	private IVecInt objLiterals;
 	private IVec<BigInteger> objCoefs;
 
-	public boolean explanationEnabled = true;
-	public boolean canonicalOptFunction = true;
+	private final boolean explanationEnabled;
+	private final boolean canonicalOptFunction;
 
 	/**
 	 * 
@@ -156,6 +156,7 @@ public class DependencyHelper<T, C> {
 			this.solver = solver;
 		}
 		this.gator = new GateTranslator(this.solver);
+		this.explanationEnabled = explanationEnabled;
 		canonicalOptFunction = canonicalOptFunctionEnabled;
 	}
 
@@ -829,6 +830,8 @@ public class DependencyHelper<T, C> {
 	 * @return the IPBSolver enclosed in the helper.
 	 */
 	public IPBSolver getSolver() {
+		if (explanationEnabled)
+			return xplain.decorated();
 		return solver;
 	}
 
