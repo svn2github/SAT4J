@@ -55,7 +55,8 @@ public interface IPBSolver extends ISolver {
 	 *            since the solver is not supposed to keep a reference to that
 	 *            vector.
 	 * @param moreThan
-	 *            true if it is a constraint >= degree
+	 *            true if it is a constraint >= degree, false if it is a
+	 *            constraint <= degree
 	 * @param d
 	 *            the degree of the cardinality constraint
 	 * @return a reference to the constraint added in the solver, to use in
@@ -68,7 +69,18 @@ public interface IPBSolver extends ISolver {
 	IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException;
 
+	/**
+	 * Provide an objective function to the solver.
+	 * 
+	 * @param obj
+	 *            the objective function
+	 */
 	public void setObjectiveFunction(ObjectiveFunction obj);
 
+	/**
+	 * Retrieve the objective function from the solver.
+	 * 
+	 * @return the objective function
+	 */
 	public ObjectiveFunction getObjectiveFunction();
 }
