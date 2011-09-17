@@ -114,7 +114,7 @@ public class DecisionLevelTracing implements SearchListener {
 	}
 
 	public void start() {
-
+		updateWriter();
 	}
 
 	public void restarting() {
