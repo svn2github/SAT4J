@@ -588,4 +588,8 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 			activity += claInc;
 		}
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return true;
+	}
 }

@@ -653,4 +653,7 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		return bigDegree;
 	}
 
+	public boolean canBePropagatedMultipleTimes() {
+		return true;
+	}
 }

@@ -578,4 +578,8 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 
 	}
 
+	public boolean canBePropagatedMultipleTimes() {
+		return true;
+	}
+
 }
