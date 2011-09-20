@@ -104,4 +104,8 @@ public class ConstrGroup implements IConstr {
 	public int get(int i) {
 		throw new UnsupportedOperationException();
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
+	}
 }

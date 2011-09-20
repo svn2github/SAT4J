@@ -430,4 +430,8 @@ public final class MaxWatchCard implements Constr, Undoable, Serializable {
 		// TODO Auto-generated method stub
 
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return true;
+	}
 }

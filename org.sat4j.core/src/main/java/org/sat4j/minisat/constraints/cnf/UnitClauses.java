@@ -107,4 +107,8 @@ public class UnitClauses implements Constr {
 	public void forwardActivity(double claInc) {
 		// silent to prevent problems with xplain trick.
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
+	}
 }

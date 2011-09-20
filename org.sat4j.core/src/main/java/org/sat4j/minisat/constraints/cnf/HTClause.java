@@ -288,4 +288,8 @@ public abstract class HTClause implements Constr, Serializable {
 		}
 		return (int) sum / middleLits.length;
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
+	}
 }

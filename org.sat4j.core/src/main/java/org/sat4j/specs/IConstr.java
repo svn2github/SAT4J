@@ -62,4 +62,5 @@ public interface IConstr {
 	 */
 	double getActivity();
 
+	boolean canBePropagatedMultipleTimes();
 }

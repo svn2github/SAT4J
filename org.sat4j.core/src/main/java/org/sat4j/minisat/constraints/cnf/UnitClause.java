@@ -98,7 +98,7 @@ public class UnitClause implements Constr {
 	}
 
 	public boolean learnt() {
-		throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public int size() {
@@ -112,5 +112,9 @@ public class UnitClause implements Constr {
 	@Override
 	public String toString() {
 		return Lits.toString(literal);
+	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
 	}
 }

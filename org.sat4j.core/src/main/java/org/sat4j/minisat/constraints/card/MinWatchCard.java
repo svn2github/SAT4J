@@ -595,4 +595,8 @@ public class MinWatchCard implements Constr, Undoable, Serializable {
 	public void forwardActivity(double claInc) {
 		// do nothing
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return true;
+	}
 }

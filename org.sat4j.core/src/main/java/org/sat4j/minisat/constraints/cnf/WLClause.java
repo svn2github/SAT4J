@@ -238,4 +238,8 @@ public abstract class WLClause implements Constr, Serializable {
 		}
 		return (int) sum / lits.length;
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
+	}
 }

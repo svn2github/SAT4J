@@ -212,4 +212,9 @@ public abstract class BinaryClause implements Constr, Serializable {
 		voc.watch(neg(head), this);
 		voc.watch(neg(tail), this);
 	}
+
+	public boolean canBePropagatedMultipleTimes() {
+		return false;
+	}
+
 }
