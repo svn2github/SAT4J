@@ -831,19 +831,22 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			assert lvoc.getReason(q) != null;
 			Constr c = lvoc.getReason(q);
 			lanalyzestack.pop();
-			for (int i = 0; i < c.size(); i++) {
-				int l = c.get(i);
-				if (!seen[var(l)] && lvoc.isFalsified(l)
-						&& lvoc.getLevel(l) != 0) {
-					if (lvoc.getReason(l) == null) {
-						for (int j = top; j < lanalyzetoclear.size(); j++)
-							seen[lanalyzetoclear.get(j) >> 1] = false;
-						lanalyzetoclear.shrink(lanalyzetoclear.size() - top);
-						return false;
+			if (!c.canBePropagatedMultipleTimes()) {
+				for (int i = 0; i < c.size(); i++) {
+					int l = c.get(i);
+					if (!seen[var(l)] && lvoc.isFalsified(l)
+							&& lvoc.getLevel(l) != 0) {
+						if (lvoc.getReason(l) == null) {
+							for (int j = top; j < lanalyzetoclear.size(); j++)
+								seen[lanalyzetoclear.get(j) >> 1] = false;
+							lanalyzetoclear
+									.shrink(lanalyzetoclear.size() - top);
+							return false;
+						}
+						seen[l >> 1] = true;
+						lanalyzestack.push(l);
+						lanalyzetoclear.push(l);
 					}
-					seen[l >> 1] = true;
-					lanalyzestack.push(l);
-					lanalyzetoclear.push(l);
 				}
 			}
 		}
