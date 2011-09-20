@@ -79,6 +79,10 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 		public int get(int i) {
 			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
+
+		public boolean canBePropagatedMultipleTimes() {
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+		}
 	};
 
 	/**

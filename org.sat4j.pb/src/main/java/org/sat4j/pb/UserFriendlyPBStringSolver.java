@@ -78,6 +78,10 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 		public int get(int i) {
 			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
 		}
+
+		public boolean canBePropagatedMultipleTimes() {
+			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+		}
 	};
 
 	private Map<Integer, T> mapping;
