@@ -20,4 +20,8 @@ public class UnitWeightedClause implements IConstr {
 		throw new UnsupportedOperationException();
 	}
 
+	public boolean canBePropagatedMultipleTimes() {
+		throw new UnsupportedOperationException();
+	}
+
 }
