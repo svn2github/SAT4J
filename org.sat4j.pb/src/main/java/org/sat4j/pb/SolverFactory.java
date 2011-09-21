@@ -30,6 +30,7 @@ package org.sat4j.pb;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
+import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.ClauseOnlyLearning;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.learning.NoLearningButHeuristics;
@@ -576,19 +577,20 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *         system.
 	 */
 	public static IPBSolver newBoth() {
-		return new ManyCorePB(org.sat4j.pb.SolverFactory.instance(),
-				"Resolution", "CuttingPlanes");
+		return new ManyCorePB(newResolution(), newCuttingPlanes());
 	}
 
 	/**
 	 * Resolution based solver (i.e. classic SAT solver able to handle generic
 	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management.
+	 * management. The reason simplification is now disabled by default because
+	 * it slows down a lot when long PB or cardinality constraints are used.
 	 * 
 	 * @return the best available resolution based solver of the library.
 	 */
-	public static IPBSolver newResolutionGlucose() {
+	public static PBSolverResolution newResolutionGlucose() {
 		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
+		solver.setSimplifier(Solver.NO_SIMPLIFICATION);
 		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		return solver;
 	}
@@ -600,10 +602,25 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * 
 	 * @return the best available resolution based solver of the library.
 	 */
-	public static IPBSolver newResolutionGlucoseSimpleSimp() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+	public static PBSolverResolution newResolutionGlucoseSimpleSimp() {
+		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
 		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+		return solver;
+	}
+
+	/**
+	 * Resolution based solver (i.e. classic SAT solver able to handle generic
+	 * constraints. No specific inference mechanism). Uses glucose based memory
+	 * management. It uses the expensive reason simplification. If the problem
+	 * contains long PB or cardinality constraints, it might be slowed down by
+	 * such treatment.
+	 * 
+	 * @return the best available resolution based solver of the library.
+	 */
+	public static PBSolverResolution newResolutionGlucoseExpSimp() {
+		PBSolverResolution solver = newResolutionGlucose();
+		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
 	}
 
@@ -629,7 +646,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolutionSimpleRestarts() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
 		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
 		solver.setRestartStrategy(new MiniSATRestarts());
 		return solver;
@@ -644,7 +661,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolutionMaxMemory() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
 		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
 		return solver;
 	}
