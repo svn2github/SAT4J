@@ -39,19 +39,19 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
  */
 public final class RandomWalkDecorator implements IOrder {
 
-	private final IOrder decorated;
+	private final VarOrderHeap decorated;
 
 	private final double p;
 
-	private final Random rand = new Random();
+	private final Random rand = new Random(123456789);
 	private ILits voc;
 	private int nbRandomWalks;
 
-	public RandomWalkDecorator(IOrder order) {
+	public RandomWalkDecorator(VarOrderHeap order) {
 		this(order, 0.01);
 	}
 
-	public RandomWalkDecorator(IOrder order, double p) {
+	public RandomWalkDecorator(VarOrderHeap order, double p) {
 		decorated = order;
 		this.p = p;
 	}
@@ -76,13 +76,15 @@ public final class RandomWalkDecorator implements IOrder {
 
 	public int select() {
 		if (rand.nextDouble() < p) {
-			int lit;
-			int maxlitid = (voc.nVars() << 1);
-			for (int i = 0; i <= 10; i++) {
-				lit = rand.nextInt(maxlitid) + 2;
+			int var, lit, max;
+
+			while (!decorated.heap.empty()) {
+				max = decorated.heap.size();
+				var = decorated.heap.get(rand.nextInt(max) + 1);
+				lit = getPhaseSelectionStrategy().select(var);
 				if (voc.isUnassigned(lit)) {
 					nbRandomWalks++;
-					return getPhaseSelectionStrategy().select(lit >> 1);
+					return lit;
 				}
 			}
 		}
