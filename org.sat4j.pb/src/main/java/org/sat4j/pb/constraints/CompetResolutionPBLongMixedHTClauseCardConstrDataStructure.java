@@ -34,8 +34,8 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.MinWatchPb;
-import org.sat4j.pb.constraints.pb.MinWatchPbLong;
+import org.sat4j.pb.constraints.pb.MaxWatchPb;
+import org.sat4j.pb.constraints.pb.MaxWatchPbLong;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -111,12 +111,12 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 
 	protected Constr constructLongPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
-		return MinWatchPbLong.normalizedMinWatchPbNew(solver, getVocabulary(),
+		return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, getVocabulary(),
 				theLits, coefs, degree);
 	}
 
 	protected Constr constructLearntLongPB(IDataStructurePB mpb) {
-		return MinWatchPbLong.normalizedWatchPbNew(getVocabulary(), mpb);
+		return MaxWatchPbLong.normalizedWatchPbNew(getVocabulary(), mpb);
 	}
 
 	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
@@ -129,13 +129,13 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 	@Override
 	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
-		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(),
+		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
 				theLits, coefs, degree);
 	}
 
 	@Override
 	protected Constr constructLearntPB(IDataStructurePB mpb) {
-		return MinWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
+		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
 	}
 
 }
