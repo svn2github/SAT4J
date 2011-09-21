@@ -505,34 +505,30 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		outLearnt.push(ILits.UNDEFINED);
 		// reserve de la place pour le litteral falsifie
 		int outBtlevel = 0;
-		IConstr prevConfl = null;
 
 		do {
 			preason.clear();
 			assert confl != null;
-			if (prevConfl != confl) {
-				confl.calcReason(p, preason);
-				learnedConstraintsDeletionStrategy.onConflictAnalysis(confl);
-				// Trace reason for p
-				for (int j = 0; j < preason.size(); j++) {
-					int q = preason.get(j);
-					order.updateVar(q);
-					if (!seen[q >> 1]) {
-						seen[q >> 1] = true;
-						if (voc.getLevel(q) == decisionLevel()) {
-							counter++;
-							order.updateVarAtDecisionLevel(q);
-						} else if (voc.getLevel(q) > 0) {
-							// only literals assigned after decision level 0
-							// part of
-							// the explanation
-							outLearnt.push(q ^ 1);
-							outBtlevel = Math.max(outBtlevel, voc.getLevel(q));
-						}
+			confl.calcReason(p, preason);
+			learnedConstraintsDeletionStrategy.onConflictAnalysis(confl);
+			// Trace reason for p
+			for (int j = 0; j < preason.size(); j++) {
+				int q = preason.get(j);
+				order.updateVar(q);
+				if (!seen[q >> 1]) {
+					seen[q >> 1] = true;
+					if (voc.getLevel(q) == decisionLevel()) {
+						counter++;
+						order.updateVarAtDecisionLevel(q);
+					} else if (voc.getLevel(q) > 0) {
+						// only literals assigned after decision level 0
+						// part of
+						// the explanation
+						outLearnt.push(q ^ 1);
+						outBtlevel = Math.max(outBtlevel, voc.getLevel(q));
 					}
 				}
 			}
-			prevConfl = confl;
 			// select next reason to look at
 			do {
 				p = trail.last();
@@ -776,9 +772,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			if (r == null) {
 				conflictToReduce.moveTo(j++, i);
 			} else {
-				if (r.canBePropagatedMultipleTimes()) {
-					continue;
-				}
 				for (int k = 0; k < r.size(); k++) {
 					p = r.get(k);
 					if (!seen[p >> 1] && voc.isFalsified(p)
@@ -830,12 +823,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			assert lvoc.getReason(q) != null;
 			Constr c = lvoc.getReason(q);
 			lanalyzestack.pop();
-			if (c.canBePropagatedMultipleTimes()) {
-				for (int j = top; j < lanalyzetoclear.size(); j++)
-					seen[lanalyzetoclear.get(j) >> 1] = false;
-				lanalyzetoclear.shrink(lanalyzetoclear.size() - top);
-				return false;
-			}
 			for (int i = 0; i < c.size(); i++) {
 				int l = c.get(i);
 				if (!seen[var(l)] && lvoc.isFalsified(l)
