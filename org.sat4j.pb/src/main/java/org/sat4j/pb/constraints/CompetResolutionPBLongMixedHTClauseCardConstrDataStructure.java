@@ -34,6 +34,7 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.pb.constraints.pb.MinWatchPb;
 import org.sat4j.pb.constraints.pb.MinWatchPbLong;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
@@ -123,6 +124,18 @@ public class CompetResolutionPBLongMixedHTClauseCardConstrDataStructure extends
 		for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length; i++)
 			somCoefs = somCoefs.add(coefs[i]);
 		return somCoefs.bitLength() < Long.SIZE;
+	}
+
+	@Override
+	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
+			BigInteger degree) throws ContradictionException {
+		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(),
+				theLits, coefs, degree);
+	}
+
+	@Override
+	protected Constr constructLearntPB(IDataStructurePB mpb) {
+		return MinWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
 	}
 
 }
