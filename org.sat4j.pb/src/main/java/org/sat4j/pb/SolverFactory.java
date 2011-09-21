@@ -566,7 +566,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static IPBSolver newResolution() {
-		return newResolutionGlucose();
+		return newResolutionGlucoseExpSimp();
 	}
 
 	/**
@@ -603,8 +603,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @return the best available resolution based solver of the library.
 	 */
 	public static PBSolverResolution newResolutionGlucoseSimpleSimp() {
-		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+		PBSolverResolution solver = newResolutionGlucose();
 		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
 		return solver;
 	}
