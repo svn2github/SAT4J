@@ -123,6 +123,21 @@ public final class Heap implements Serializable {
 		return heap.size() == 1;
 	}
 
+	public int size() {
+		return heap.size() - 1;
+	}
+
+	public int get(int i) {
+		int r = heap.get(i);
+		heap.set(i, heap.last());
+		indices.set(heap.get(i), i);
+		indices.set(r, 0);
+		heap.pop();
+		if (heap.size() > 1)
+			percolateDown(i);
+		return r;
+	}
+
 	public void insert(int n) {
 		assert (ok(n));
 		indices.set(n, heap.size());
@@ -131,14 +146,7 @@ public final class Heap implements Serializable {
 	}
 
 	public int getmin() {
-		int r = heap.get(1);
-		heap.set(1, heap.last());
-		indices.set(heap.get(1), 1);
-		indices.set(r, 0);
-		heap.pop();
-		if (heap.size() > 1)
-			percolateDown(1);
-		return r;
+		return get(1);
 	}
 
 	public boolean heapProperty() {
