@@ -722,6 +722,7 @@ public class OPBReader2005 extends Reader implements Serializable {
 
 	@Override
 	public void decode(int[] model, PrintWriter out) {
+		int counter = 0;
 		for (int i = 0; i < model.length; i++) {
 			if (model[i] < 0) {
 				out.print("-x");
@@ -731,6 +732,10 @@ public class OPBReader2005 extends Reader implements Serializable {
 				out.print(model[i]);
 			}
 			out.print(" ");
+			if (++counter == 1000) {
+				out.flush();
+				counter = 0;
+			}
 		}
 	}
 
