@@ -52,7 +52,7 @@ import org.sat4j.tools.GateTranslator;
  */
 public class DependencyHelper<T, C> {
 
-	public final INegator NO_NEGATION = new INegator() {
+	public static final INegator NO_NEGATION = new INegator() {
 
 		public boolean isNegated(Object thing) {
 			return false;
