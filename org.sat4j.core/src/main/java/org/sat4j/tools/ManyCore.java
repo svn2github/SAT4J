@@ -107,7 +107,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i).addAtLeast(literals, degree));
 		}
@@ -116,7 +116,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i).addAtMost(literals, degree));
 		}
@@ -124,7 +124,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i).addClause(literals));
 		}
@@ -181,9 +181,12 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		if (c instanceof ConstrGroup) {
 			ConstrGroup group = (ConstrGroup) c;
 			boolean removed = true;
+			IConstr toRemove;
 			for (int i = 0; i < numberOfSolvers; i++) {
-				removed = removed
-						& solvers.get(i).removeConstr(group.getConstr(i));
+				toRemove = group.getConstr(i);
+				if (toRemove != null) {
+					removed = removed & solvers.get(i).removeConstr(toRemove);
+				}
 			}
 			return removed;
 		}
@@ -367,10 +370,13 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		if (c instanceof ConstrGroup) {
 			ConstrGroup group = (ConstrGroup) c;
 			boolean removed = true;
+			IConstr toRemove;
 			for (int i = 0; i < numberOfSolvers; i++) {
-				removed = removed
-						& solvers.get(i).removeSubsumedConstr(
-								group.getConstr(i));
+				toRemove = group.getConstr(i);
+				if (toRemove != null) {
+					removed = removed
+							& solvers.get(i).removeSubsumedConstr(toRemove);
+				}
 			}
 			return removed;
 		}
@@ -405,6 +411,10 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public int[] primeImplicant() {
 		return solvers.get(winnerId).primeImplicant();
+	}
+
+	public List<S> getSolvers() {
+		return new ArrayList<S>(this.solvers);
 	}
 }
 
