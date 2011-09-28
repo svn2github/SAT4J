@@ -171,7 +171,7 @@ public class DependencyHelper<T, C> {
 	 *            a domain object
 	 * @return the dimacs variable (an integer) representing that domain object.
 	 */
-	int getIntValue(T thing) {
+	protected int getIntValue(T thing) {
 		return getIntValue(thing, true);
 	}
 
@@ -186,7 +186,7 @@ public class DependencyHelper<T, C> {
 	 *            IllegalArgumentException if the object is unknown.
 	 * @return the dimacs variable (an integer) representing that domain object.
 	 */
-	int getIntValue(T thing, boolean create) {
+	protected int getIntValue(T thing, boolean create) {
 		T myThing;
 		boolean negated = negator.isNegated(thing);
 		if (negated) {
