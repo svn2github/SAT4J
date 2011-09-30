@@ -86,6 +86,21 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		}
 	}
 
+	/**
+	 * Create a parallel solver from a list of solvers and a list of names.
+	 * 
+	 * @param names
+	 *            a String to describe each solver in the messages.
+	 * @param solverObjects
+	 *            the solvers
+	 */
+	public ManyCore(String[] names, S... solverObjects) {
+		this(solverObjects);
+		for (int i = 0; i < names.length; i++) {
+			availableSolvers[i] = names[i];
+		}
+	}
+
 	public ManyCore(S... solverObjects) {
 		availableSolvers = new String[solverObjects.length];
 		for (int i = 0; i < solverObjects.length; i++) {
