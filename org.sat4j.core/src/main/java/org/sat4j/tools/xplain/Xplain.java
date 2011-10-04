@@ -68,21 +68,29 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	private boolean pooledVarId = false;
 	private final IVecInt lastClause = new VecInt();
 	private IConstr lastConstr;
+	private final boolean skipDuplicatedEntries;
 
 	private MinimizationStrategy xplainStrategy = new QuickXplainStrategy();
 
-	public Xplain(T solver) {
+	public Xplain(T solver, boolean skipDuplicatedEntries) {
 		super(solver);
+		this.skipDuplicatedEntries = skipDuplicatedEntries;
+	}
+
+	public Xplain(T solver) {
+		this(solver, true);
 	}
 
 	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		if (literals.equals(lastClause)) {
-			// System.err.println("c Duplicated entry: " + literals);
-			return null;
+		if (skipDuplicatedEntries) {
+			if (literals.equals(lastClause)) {
+				// System.err.println("c Duplicated entry: " + literals);
+				return null;
+			}
+			lastClause.clear();
+			literals.copyTo(lastClause);
 		}
-		lastClause.clear();
-		literals.copyTo(lastClause);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
 		lastConstr = super.addClause(literals);
