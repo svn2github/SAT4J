@@ -1576,7 +1576,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		learnedLiterals.ensure(howmany);
 		decisions.clear();
 		implied.clear();
-		timebegin = System.currentTimeMillis();
 		slistener.start();
 		model = null; // forget about previous model
 		fullmodel = null;
@@ -1666,8 +1665,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 						learnedConstraintsDeletionStrategy.getTimer());
 			}
 		}
-		if (!global || firstTimeGlobal)
+		if (!global || firstTimeGlobal) {
 			restarter.init(params);
+			timebegin = System.currentTimeMillis();
+		}
 		needToReduceDB = false;
 		// Solve
 		while ((status == Lbool.UNDEFINED) && undertimeout) {
