@@ -1055,7 +1055,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			learnedLiterals.push(trail.last());
 			undoOne();
 		}
-		qhead = trail.size();
+		qhead = 0;
 		// learnedLiterals = 0;
 	}
 
