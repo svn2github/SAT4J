@@ -58,7 +58,8 @@ public class MUSLauncher extends AbstractLauncher {
 			xplain = hlxp;
 			solver = hlxp;
 		} else {
-			Xplain<ISolver> xp = new Xplain<ISolver>(SolverFactory.newDefault());
+			Xplain<ISolver> xp = new Xplain<ISolver>(
+					SolverFactory.newDefault(), false);
 			xplain = xp;
 			solver = xp;
 		}
