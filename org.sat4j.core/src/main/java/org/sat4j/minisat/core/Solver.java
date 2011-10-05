@@ -1582,7 +1582,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		unsatExplanationInTermsOfAssumptions = null;
 		order.init();
 		learnedConstraintsDeletionStrategy.init();
-
+		qhead = 0;
 		int learnedLiteralsLimit = trail.size();
 
 		// push previously learned literals
