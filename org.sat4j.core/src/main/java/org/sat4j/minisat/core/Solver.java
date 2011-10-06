@@ -1055,7 +1055,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			learnedLiterals.push(trail.last());
 			undoOne();
 		}
-		qhead = trail.size();
+		// qhead = 0;
 		// learnedLiterals = 0;
 	}
 
@@ -1582,8 +1582,21 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		unsatExplanationInTermsOfAssumptions = null;
 		order.init();
 		learnedConstraintsDeletionStrategy.init();
-
 		int learnedLiteralsLimit = trail.size();
+
+		// Fix for Bug SAT37
+		qhead = 0;
+		// Apply undos on unit literals because they are getting propagated
+		// again now that qhead is 0.
+		for (int i = learnedLiteralsLimit - 1; i >= 0; i--) {
+			int p = trail.get(i);
+			IVec<Undoable> undos = voc.undos(p);
+			assert undos != null;
+			for (int size = undos.size(); size > 0; size--) {
+				undos.last().undo(p);
+				undos.pop();
+			}
+		}
 
 		// push previously learned literals
 		for (IteratorInt iterator = learnedLiterals.iterator(); iterator
