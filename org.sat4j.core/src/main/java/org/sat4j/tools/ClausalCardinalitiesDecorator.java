@@ -21,6 +21,9 @@ public class ClausalCardinalitiesDecorator<T extends ISolver> extends
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
+		if (degree == 1) {
+			return addClause(literals);
+		}
 		throw new UnsupportedOperationException("At least not managed yet");
 	}
 
