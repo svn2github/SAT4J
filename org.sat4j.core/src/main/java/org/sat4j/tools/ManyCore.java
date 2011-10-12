@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -134,6 +135,15 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		ConstrGroup group = new ConstrGroup(false);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			group.add(solvers.get(i).addAtMost(literals, degree));
+		}
+		return group;
+	}
+
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addExactly(literals, n));
 		}
 		return group;
 	}

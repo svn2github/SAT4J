@@ -139,6 +139,18 @@ public class DimacsStringSolver extends AbstractOutputSolver {
 		return null;
 	}
 
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		if (n > 1) {
+			throw new UnsupportedOperationException(
+					"Not a clausal problem! degree " + n);
+		}
+		assert n == 1;
+		addAtMost(literals, n);
+		addAtLeast(literals, n);
+		return null;
+	}
+
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
 		if (degree > 1) {

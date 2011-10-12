@@ -183,7 +183,7 @@ public interface ISolver extends IProblem, Serializable {
 	 *            a set of literals The vector can be reused since the solver is
 	 *            not supposed to keep a reference to that vector.
 	 * @param degree
-	 *            the degree of the cardinality constraint
+	 *            the degree (n) of the cardinality constraint
 	 * @return a reference to the constraint added in the solver, to use in
 	 *         removeConstr().
 	 * @throws ContradictionException
@@ -203,7 +203,7 @@ public interface ISolver extends IProblem, Serializable {
 	 *            a set of literals. The vector can be reused since the solver
 	 *            is not supposed to keep a reference to that vector.
 	 * @param degree
-	 *            the degree of the cardinality constraint
+	 *            the degree (n) of the cardinality constraint
 	 * @return a reference to the constraint added in the solver, to use in
 	 *         removeConstr().
 	 * @throws ContradictionException
@@ -213,6 +213,23 @@ public interface ISolver extends IProblem, Serializable {
 	 */
 	IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException;
+
+	/**
+	 * Create a cardinality constraint of the type
+	 * "exactly n of those literals must be satisfied".
+	 * 
+	 * @param literals
+	 *            a set of literals. The vector can be reused since the solver
+	 *            is not supposed to keep a reference to that vector.
+	 * @param n
+	 *            the number of literals that must be satisfied
+	 * @return a reference to the constraint added to the solver. It might
+	 *         return an object representing a group of constraints.
+	 * @throws ContradictionException
+	 *             iff the constraint is trivially unsatisfiable.
+	 * @since 2.3.1
+	 */
+	IConstr addExactly(IVecInt literals, int n) throws ContradictionException;
 
 	/**
 	 * To set the internal timeout of the solver. When the timeout is reached, a

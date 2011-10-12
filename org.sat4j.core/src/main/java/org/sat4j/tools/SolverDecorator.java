@@ -40,7 +40,7 @@ import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
 /**
- * The aim of that class is to allow adding dynamic responsabilities to SAT
+ * The aim of that class is to allow adding dynamic responsibilities to SAT
  * solvers using the Decorator design pattern. The class is abstract because it
  * does not makes sense to use it "as is".
  * 
@@ -433,6 +433,14 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 	 */
 	public int[] primeImplicant() {
 		return solver.primeImplicant();
+	}
+
+	/**
+	 * @since 2.3.1
+	 */
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		return solver.addExactly(literals, n);
 	}
 
 }

@@ -65,6 +65,7 @@ import java.util.TimerTask;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -400,6 +401,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			throws ContradictionException {
 		IVecInt vlits = dimacs2internal(literals);
 		return addConstr(dsfactory.createCardinalityConstraint(vlits, degree));
+	}
+
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		group.add(addAtMost(literals, n));
+		group.add(addAtLeast(literals, n));
+		return group;
 	}
 
 	@SuppressWarnings("unchecked")
