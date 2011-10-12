@@ -37,6 +37,7 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
+import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
@@ -88,5 +89,51 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 
 	public ObjectiveFunction getObjectiveFunction() {
 		return objf;
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		IVecInt vlits = dimacs2internal(literals);
+		assert vlits.size() == literals.size();
+		assert literals.size() == coeffs.size();
+		return addConstr(dsfactory.createPseudoBooleanConstraint(vlits, coeffs,
+				false, degree));
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		IVecInt vlits = dimacs2internal(literals);
+		assert vlits.size() == literals.size();
+		assert literals.size() == coeffs.size();
+		return addConstr(dsfactory.createPseudoBooleanConstraint(vlits, coeffs,
+				true, degree));
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		IVecInt vlits = dimacs2internal(literals);
+		assert vlits.size() == literals.size();
+		assert literals.size() == coeffs.size();
+		ConstrGroup group = new ConstrGroup(false);
+		group.add(addConstr(dsfactory.createPseudoBooleanConstraint(vlits,
+				coeffs, false, weight)));
+		group.add(addConstr(dsfactory.createPseudoBooleanConstraint(vlits,
+				coeffs, true, weight)));
+		return group;
 	}
 }

@@ -44,8 +44,8 @@ import org.sat4j.specs.IVecInt;
 public interface IPBSolver extends ISolver {
 
 	/**
-	 * Create a Pseudo-Boolean constraint of the type "at least n of those
-	 * literals must be satisfied"
+	 * Create a Pseudo-Boolean constraint of the type "at least n or at most n
+	 * of those literals must be satisfied"
 	 * 
 	 * @param lits
 	 *            a set of literals. The vector can be reused since the solver
@@ -68,6 +68,138 @@ public interface IPBSolver extends ISolver {
 	 */
 	IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException;
+
+	/**
+	 * Create a pseudo boolean constraint of the type "at most".
+	 * 
+	 * @param literals
+	 *            a set of literals The vector can be reused since the solver is
+	 *            not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param degree
+	 *            the degree of the pseudo-boolean constraint
+	 * @return a reference to the constraint added in the solver, to use in
+	 *         removeConstr().
+	 * @throws ContradictionException
+	 *             iff the constraint is found trivially unsat.
+	 * @see #removeConstr(IConstr)
+	 * @since 2.3.1
+	 */
+
+	IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException;
+
+	/**
+	 * Create a pseudo boolean constraint of the type "at most".
+	 * 
+	 * @param literals
+	 *            a set of literals The vector can be reused since the solver is
+	 *            not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param degree
+	 *            the degree of the pseudo-boolean constraint
+	 * @return a reference to the constraint added in the solver, to use in
+	 *         removeConstr().
+	 * @throws ContradictionException
+	 *             iff the constraint is found trivially unsat.
+	 * @see #removeConstr(IConstr)
+	 * @since 2.3.1
+	 */
+
+	IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException;
+
+	/**
+	 * Create a pseudo-boolean constraint of the type "at least".
+	 * 
+	 * @param literals
+	 *            a set of literals. The vector can be reused since the solver
+	 *            is not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param degree
+	 *            the degree of the pseudo-boolean constraint
+	 * @return a reference to the constraint added in the solver, to use in
+	 *         removeConstr().
+	 * @throws ContradictionException
+	 *             iff the constraint is found trivially unsat.
+	 * @see #removeConstr(IConstr)
+	 * @since 2.3.1
+	 */
+	IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException;
+
+	/**
+	 * Create a pseudo-boolean constraint of the type "at least".
+	 * 
+	 * @param literals
+	 *            a set of literals. The vector can be reused since the solver
+	 *            is not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param degree
+	 *            the degree of the pseudo-boolean constraint
+	 * @return a reference to the constraint added in the solver, to use in
+	 *         removeConstr().
+	 * @throws ContradictionException
+	 *             iff the constraint is found trivially unsat.
+	 * @see #removeConstr(IConstr)
+	 * @since 2.3.1
+	 */
+	IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException;
+
+	/**
+	 * Create a pseudo-boolean constraint of the type "subset sum".
+	 * 
+	 * @param literals
+	 *            a set of literals. The vector can be reused since the solver
+	 *            is not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param weight
+	 *            the number of literals that must be satisfied
+	 * @return a reference to the constraint added to the solver. It might
+	 *         return an object representing a group of constraints.
+	 * @throws ContradictionException
+	 *             iff the constraint is trivially unsatisfiable.
+	 * @since 2.3.1
+	 */
+	IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException;
+
+	/**
+	 * Create a pseudo-boolean constraint of the type "subset sum".
+	 * 
+	 * @param literals
+	 *            a set of literals. The vector can be reused since the solver
+	 *            is not supposed to keep a reference to that vector.
+	 * @param coeffs
+	 *            the coefficients of the literals. The vector can be reused
+	 *            since the solver is not supposed to keep a reference to that
+	 *            vector.
+	 * @param weight
+	 *            the number of literals that must be satisfied
+	 * @return a reference to the constraint added to the solver. It might
+	 *         return an object representing a group of constraints.
+	 * @throws ContradictionException
+	 *             iff the constraint is trivially unsatisfiable.
+	 * @since 2.3.1
+	 */
+	IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException;
 
 	/**
 	 * Provide an objective function to the solver.

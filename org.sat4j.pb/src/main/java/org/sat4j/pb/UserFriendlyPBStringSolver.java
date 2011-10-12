@@ -279,4 +279,82 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 		return obj;
 	}
 
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append("<= " + degree + " ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append("<= " + degree + " ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append(">= " + degree + " ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append(">= " + degree + " ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append("= " + weight + " ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i) + " " + mapping.get(literals.get(i))
+					+ " + ");
+		}
+		out.append("= " + weight + " ;\n");
+		return FAKE_CONSTR;
+	}
+
 }

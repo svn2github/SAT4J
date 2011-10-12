@@ -115,37 +115,15 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	@Override
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
-		// TODO Auto-generated method stub
 		return super.isSatisfiable(assumps, global);
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
-		StringBuffer out = getOut();
-		assert lits.size() == coeffs.size();
-		nbOfConstraints++;
 		if (moreThan) {
-			for (int i = 0; i < lits.size(); i++) {
-				out.append(coeffs.get(i));
-				out.append(" x");
-				out.append(lits.get(i));
-				out.append(" ");
-			}
-			out.append(">= ");
-			out.append(d);
-			out.append(" ;\n");
-		} else {
-			for (int i = 0; i < lits.size(); i++) {
-				out.append(coeffs.get(i).negate());
-				out.append(" x");
-				out.append(lits.get(i));
-				out.append(" ");
-			}
-			out.append(">= ");
-			out.append(d.negate());
-			out.append(" ;\n");
+			return addAtLeast(lits, coeffs, d);
 		}
-		return FAKE_CONSTR;
+		return addAtMost(lits, coeffs, d);
 	}
 
 	public void setObjectiveFunction(ObjectiveFunction obj) {
@@ -280,6 +258,109 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 	@Override
 	public int nConstraints() {
 		return nbOfConstraints;
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(-coeffs.get(i));
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append(">= ");
+		out.append(-degree);
+		out.append(" ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i).negate());
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append(">= ");
+		out.append(degree.negate());
+		out.append(" ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i));
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append(">= ");
+		out.append(degree);
+		out.append(" ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i));
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append(">= ");
+		out.append(degree);
+		out.append(" ;\n");
+		return FAKE_CONSTR;
+
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i));
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append("= ");
+		out.append(weight);
+		out.append(" ;\n");
+		return FAKE_CONSTR;
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		StringBuffer out = getOut();
+		assert literals.size() == coeffs.size();
+		nbOfConstraints++;
+		for (int i = 0; i < literals.size(); i++) {
+			out.append(coeffs.get(i));
+			out.append(" x");
+			out.append(literals.get(i));
+			out.append(" ");
+		}
+		out.append("= ");
+		out.append(weight);
+		out.append(" ;\n");
+		return FAKE_CONSTR;
 	}
 
 }

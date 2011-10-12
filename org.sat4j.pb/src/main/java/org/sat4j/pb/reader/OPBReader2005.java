@@ -170,11 +170,13 @@ public class OPBReader2005 extends Reader implements Serializable {
 		assert !(coeffs.size() == 0);
 		assert lits.size() == coeffs.size();
 
-		if ("<=".equals(operator) || "=".equals(operator)) {
-			solver.addPseudoBoolean(lits, coeffs, false, d);
-		}
-		if (">=".equals(operator) || "=".equals(operator)) {
-			solver.addPseudoBoolean(lits, coeffs, true, d);
+		if ("=".equals(operator)) {
+			solver.addExactly(lits, coeffs, d);
+		} else if ("<=".equals(operator)) {
+			solver.addAtMost(lits, coeffs, d);
+		} else {
+			assert ">=".equals(operator);
+			solver.addAtLeast(lits, coeffs, d);
 		}
 		nbConstraintsRead++;
 	}

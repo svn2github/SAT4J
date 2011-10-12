@@ -115,4 +115,34 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 		return objs.size();
 	}
 
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
 }

@@ -37,4 +37,34 @@ public class ClausalConstraintsDecorator extends
 	public ObjectiveFunction getObjectiveFunction() {
 		return pbsolver.getObjectiveFunction();
 	}
+
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		return pbsolver.addAtMost(literals, coeffs, degree);
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		return pbsolver.addAtMost(literals, coeffs, degree);
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		return pbsolver.addAtLeast(literals, coeffs, degree);
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		return pbsolver.addAtLeast(literals, coeffs, degree);
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		return pbsolver.addExactly(literals, coeffs, weight);
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		return pbsolver.addExactly(literals, coeffs, weight);
+	}
 }

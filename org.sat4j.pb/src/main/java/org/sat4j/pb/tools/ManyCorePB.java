@@ -23,11 +23,11 @@ import java.math.BigInteger;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.tools.ConstrGroup;
 import org.sat4j.tools.ManyCore;
 
 public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
@@ -63,6 +63,60 @@ public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
 
 	public ObjectiveFunction getObjectiveFunction() {
 		return solvers.get(0).getObjectiveFunction();
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addAtMost(literals, coeffs, degree));
+		}
+		return group;
+	}
+
+	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addAtMost(literals, coeffs, degree));
+		}
+		return group;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addAtLeast(literals, coeffs, degree));
+		}
+		return group;
+	}
+
+	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger degree) throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addAtLeast(literals, coeffs, degree));
+		}
+		return group;
+	}
+
+	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addExactly(literals, coeffs, weight));
+		}
+		return group;
+	}
+
+	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+			BigInteger weight) throws ContradictionException {
+		ConstrGroup group = new ConstrGroup(false);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			group.add(solvers.get(i).addExactly(literals, coeffs, weight));
+		}
+		return group;
 	}
 
 }
