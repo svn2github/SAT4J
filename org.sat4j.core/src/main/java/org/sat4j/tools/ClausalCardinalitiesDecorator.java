@@ -30,12 +30,13 @@ public class ClausalCardinalitiesDecorator<T extends ISolver> extends
 	@Override
 	public IConstr addAtMost(IVecInt literals, int k)
 			throws ContradictionException {
+		if (k == 0 || literals.size() == 1) {
+			// will propagate unit literals
+			return super.addAtMost(literals, k);
+		}
 		if (literals.size() <= 1) {
 			throw new UnsupportedOperationException(
 					"requires at least 2 literals");
-		}
-		if (k == 0) {
-			return super.addAtMost(literals, k);
 		}
 		ConstrGroup group = new ConstrGroup(false);
 		final int n = literals.size();
