@@ -27,108 +27,14 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import java.math.BigInteger;
-
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.card.MinWatchCard;
-import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
-import org.sat4j.minisat.constraints.cnf.LearntWLClause;
-import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
-import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.MaxWatchPb;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
-
 public class CompetResolutionPBMixedWLClauseCardConstrDataStructure extends
 		AbstractPBClauseCardConstrDataStructure {
 
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
-	}
-
-	@Override
-	public Constr createUnregisteredClause(IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClause(literals, getVocabulary());
-		}
-		return new LearntWLClause(literals, getVocabulary());
-	}
-
-	@Override
-	protected Constr constructClause(IVecInt v) {
-		if (v == null)
-			return null;
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
-	}
-
-	@Override
-	protected Constr constructLearntClause(IVecInt resLits) {
-		if (resLits.size() == 1) {
-			return new UnitClause(resLits.last());
-		}
-		if (resLits.size() == 2) {
-			return new LearntBinaryClause(resLits, getVocabulary());
-		}
-		return new LearntWLClause(resLits, getVocabulary());
-	}
-
-	@Override
-	protected Constr constructCard(IVecInt theLits, int degree)
-			throws ContradictionException {
-		return MinWatchCard.minWatchCardNew(solver, getVocabulary(), theLits,
-				MinWatchCard.ATLEAST, degree);
-	}
-
-	@Override
-	protected Constr constructLearntCard(IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
-		return new MinWatchCard(getVocabulary(), resLits, true, dspb
-				.getDegree().intValue());
-	}
-
-	@Override
-	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
-				theLits, coefs, degree);
-	}
-
-	@Override
-	protected Constr constructLearntPB(IDataStructurePB mpb) {
-		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
+	public CompetResolutionPBMixedWLClauseCardConstrDataStructure() {
+		super(new UnitBinaryWLClauseConstructor(), new MinCardConstructor(),
+				new MaxWatchPBConstructor());
 	}
 
 }

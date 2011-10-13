@@ -35,7 +35,7 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
-import org.sat4j.pb.constraints.CompetResolutionPBLongMixedHTClauseCardConstrDataStructure;
+import org.sat4j.pb.constraints.MaxLongWatchPBConstructor;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
@@ -98,8 +98,8 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		bigCoefs = new BigInteger[size];
 		mpb.buildConstraintFromMapPb(lits, bigCoefs);
 		assert mpb.isLongSufficient();
-		assert CompetResolutionPBLongMixedHTClauseCardConstrDataStructure
-				.isLongSufficient(bigCoefs, mpb.getDegree());
+		assert MaxLongWatchPBConstructor.isLongSufficient(bigCoefs,
+				mpb.getDegree());
 		coefs = toLong(bigCoefs);
 
 		this.bigDegree = mpb.getDegree();

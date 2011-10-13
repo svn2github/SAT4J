@@ -27,99 +27,18 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import java.math.BigInteger;
-
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.MaxWatchPbLongCP;
-import org.sat4j.pb.constraints.pb.PBConstr;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
 public class PBLongMaxClauseCardConstrDataStructure extends
-		PBMaxClauseCardConstrDataStructure {
+		AbstractPBClauseCardConstrDataStructure {
 
 	/**
-	 * 
-	 */
+* 
+*/
 	private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		if (degree.equals(BigInteger.ONE)) {
-			IVecInt v = Clauses.sanityCheck(new VecInt(literals),
-					getVocabulary(), solver);
-			if (v == null)
-				return null;
-			return constructClause(v);
-		}
-		if (coefficientsEqualToOne(coefs)) {
-			assert degree.compareTo(MAX_INT_VALUE) < 0;
-			return constructCard(new VecInt(literals), degree.intValue());
-		}
-		if (isLongSufficient(coefs, degree)) {
-			return constructLongPB(literals, coefs, degree);
-		}
-		return constructPB(literals, coefs, degree);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
-	 */
-	@Override
-	protected Constr learntConstraintFactory(IDataStructurePB dspb) {
-		if (dspb.getDegree().equals(BigInteger.ONE)) {
-			IVecInt literals = new VecInt();
-			IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-			dspb.buildConstraintFromConflict(literals, resCoefs);
-			// then assertive literal must be placed at the first place
-			int indLit = dspb.getAssertiveLiteral();
-			if (indLit > -1) {
-				int tmp = literals.get(indLit);
-				literals.set(indLit, literals.get(0));
-				literals.set(0, tmp);
-			}
-			return constructLearntClause(literals);
-		}
-		if (dspb.isCardinality()) {
-			return constructLearntCard(dspb);
-		}
-		if (dspb.isLongSufficient()) {
-			return constructLearntLongPB(dspb);
-		}
-		return constructLearntPB(dspb);
-	}
-
-	protected PBConstr constructLongPB(int[] theLits, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return MaxWatchPbLongCP.normalizedMaxWatchPbNew(solver,
-				getVocabulary(), theLits, coefs, degree);
-	}
-
-	protected PBConstr constructLearntLongPB(IDataStructurePB mpb) {
-		return MaxWatchPbLongCP.normalizedWatchPbNew(getVocabulary(), mpb);
-	}
-
-	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
-		BigInteger somCoefs = BigInteger.ZERO;
-		for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length; i++)
-			somCoefs = somCoefs.add(coefs[i]);
-		return somCoefs.bitLength() < Long.SIZE;
+	public PBLongMaxClauseCardConstrDataStructure() {
+		super(new UnitBinaryHTClausePBConstructor(),
+				new MinCardPBConstructor(), new MaxLongWatchPBConstructor());
 	}
 
 }

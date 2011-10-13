@@ -27,36 +27,17 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import java.math.BigInteger;
-
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.pb.constraints.pb.MaxWatchPb;
-import org.sat4j.specs.ContradictionException;
-
 public class PBMaxClauseCardConstrDataStructure extends
-		PuebloPBMinClauseCardConstrDataStructure {
+		AbstractPBClauseCardConstrDataStructure {
 
 	/**
      * 
      */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
-				theLits, coefs, degree);
+	public PBMaxClauseCardConstrDataStructure() {
+		super(new UnitBinaryHTClausePBConstructor(),
+				new MinCardPBConstructor(), new MaxWatchPBConstructor());
 	}
-
-	@Override
-	protected Constr constructLearntPB(IDataStructurePB mpb) {
-		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), mpb);
-	}
-
-	// @Override
-	// public Constr createUnregisteredClause(IVecInt literals) {
-	// return constructLearntClause(literals);
-	// }
 
 }

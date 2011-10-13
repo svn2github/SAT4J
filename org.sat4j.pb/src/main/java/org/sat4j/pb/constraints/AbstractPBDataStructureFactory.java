@@ -65,8 +65,6 @@ public abstract class AbstractPBDataStructureFactory extends
 
 	public static final INormalizer FOR_COMPETITION = new INormalizer() {
 
-		private static final long serialVersionUID = 1L;
-
 		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
 				boolean moreThan, BigInteger degree, ILits voc)
 				throws ContradictionException {
@@ -98,8 +96,6 @@ public abstract class AbstractPBDataStructureFactory extends
 	};
 
 	public static final INormalizer NO_COMPETITION = new INormalizer() {
-
-		private static final long serialVersionUID = 1L;
 
 		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
 				boolean moreThan, BigInteger degree, ILits voc)

@@ -49,6 +49,26 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 	static final BigInteger MAX_INT_VALUE = BigInteger
 			.valueOf(Integer.MAX_VALUE);
 
+	private final IPBConstructor ipbc;
+	private final ICardConstructor icardc;
+	private final IClauseConstructor iclausec;
+
+	AbstractPBClauseCardConstrDataStructure(IClauseConstructor iclausec,
+			ICardConstructor icardc, IPBConstructor ipbc) {
+		this.iclausec = iclausec;
+		this.icardc = icardc;
+		this.ipbc = ipbc;
+	}
+
+	public Constr createClause(IVecInt literals) throws ContradictionException {
+		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
+		return constructClause(v);
+	}
+
+	public Constr createUnregisteredClause(IVecInt literals) {
+		return constructLearntClause(literals);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,18 +130,31 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 		return true;
 	}
 
-	abstract protected Constr constructClause(IVecInt v);
+	protected Constr constructClause(IVecInt v) {
+		return iclausec.constructClause(solver, getVocabulary(), v);
+	}
 
-	abstract protected Constr constructCard(IVecInt theLits, int degree)
-			throws ContradictionException;
+	protected Constr constructCard(IVecInt theLits, int degree)
+			throws ContradictionException {
+		return icardc.constructCard(solver, getVocabulary(), theLits, degree);
+	}
 
-	abstract protected Constr constructPB(int[] theLits, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException;
+	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
+			BigInteger degree) throws ContradictionException {
+		return ipbc
+				.constructPB(solver, getVocabulary(), theLits, coefs, degree);
+	}
 
-	abstract protected Constr constructLearntClause(IVecInt literals);
+	protected Constr constructLearntClause(IVecInt literals) {
+		return iclausec.constructLearntClause(getVocabulary(), literals);
+	}
 
-	abstract protected Constr constructLearntCard(IDataStructurePB dspb);
+	protected Constr constructLearntCard(IDataStructurePB dspb) {
+		return icardc.constructLearntCard(getVocabulary(), dspb);
+	}
 
-	abstract protected Constr constructLearntPB(IDataStructurePB dspb);
+	protected Constr constructLearntPB(IDataStructurePB dspb) {
+		return ipbc.constructLearntPB(getVocabulary(), dspb);
+	}
 
 }

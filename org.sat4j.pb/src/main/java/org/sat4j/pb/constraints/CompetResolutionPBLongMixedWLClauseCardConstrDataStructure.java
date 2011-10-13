@@ -27,77 +27,17 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
-import org.sat4j.minisat.constraints.cnf.LearntWLClause;
-import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
-import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVecInt;
-
 public class CompetResolutionPBLongMixedWLClauseCardConstrDataStructure extends
-		CompetResolutionPBLongMixedHTClauseCardConstrDataStructure {
+		AbstractPBClauseCardConstrDataStructure {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
-	}
-
-	@Override
-	public Constr createUnregisteredClause(IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClause(literals, getVocabulary());
-		}
-		return new LearntWLClause(literals, getVocabulary());
-	}
-
-	@Override
-	protected Constr constructClause(IVecInt v) {
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
-	}
-
-	@Override
-	protected Constr constructLearntClause(IVecInt resLits) {
-		if (resLits.size() == 1) {
-			return new UnitClause(resLits.last());
-		}
-		if (resLits.size() == 2) {
-			return new LearntBinaryClause(resLits, getVocabulary());
-		}
-		return new LearntWLClause(resLits, getVocabulary());
+	public CompetResolutionPBLongMixedWLClauseCardConstrDataStructure() {
+		super(new UnitBinaryWLClauseConstructor(), new MinCardConstructor(),
+				new MaxLongWatchPBConstructor());
 	}
 
 }

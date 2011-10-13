@@ -16,39 +16,42 @@
  * required by the LGPL. If you do not delete the provisions above, a recipient
  * may use your version of this file under the terms of the EPL or the LGPL.
  * 
- * Based on the pseudo boolean algorithms described in:
- * A fast pseudo-Boolean constraint solver Chai, D.; Kuehlmann, A.
- * Computer-Aided Design of Integrated Circuits and Systems, IEEE Transactions on
- * Volume 24, Issue 3, March 2005 Page(s): 305 - 317
+ * Based on the original MiniSat specification from:
  * 
- * and 
- * Heidi E. Dixon, 2004. Automating Pseudo-Boolean Inference within a DPLL 
- * Framework. Ph.D. Dissertation, University of Oregon.
+ * An extensible SAT solver. Niklas Een and Niklas Sorensson. Proceedings of the
+ * Sixth International Conference on Theory and Applications of Satisfiability
+ * Testing, LNCS 2919, pp 502-518, 2003.
+ *
+ * See www.minisat.se for the original solver in C++.
+ * 
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import org.sat4j.minisat.constraints.cnf.Clauses;
+import java.math.BigInteger;
+
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.UnitPropagationListener;
+import org.sat4j.pb.constraints.pb.AtLeastPB;
+import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
-public class PuebloPBMinClauseCardConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+public class AtLeastCardPBConstructor implements ICardConstructor {
 
-	/**
-     * 
-     */
-	private static final long serialVersionUID = 1L;
-
-	public PuebloPBMinClauseCardConstrDataStructure() {
-		super(new UnitBinaryHTClausePBConstructor(),
-				new MinCardPBConstructor(), new PuebloMinWatchPBConstructor());
+	public Constr constructCard(UnitPropagationListener solver, ILits voc,
+			IVecInt theLits, int degree) throws ContradictionException {
+		return AtLeastPB.atLeastNew(solver, voc, theLits, degree);
 	}
 
-	@Override
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		return constructClause(v);
+	public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
+		IVecInt resLits = new VecInt();
+		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+		dspb.buildConstraintFromConflict(resLits, resCoefs);
+		return AtLeastPB.atLeastNew(voc, resLits, dspb.getDegree().intValue());
 	}
 
 }
