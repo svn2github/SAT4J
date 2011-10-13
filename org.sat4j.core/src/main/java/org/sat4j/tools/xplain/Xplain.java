@@ -122,6 +122,12 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	}
 
 	@Override
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
 		throw new UnsupportedOperationException();
