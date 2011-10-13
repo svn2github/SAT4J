@@ -29,6 +29,7 @@ package org.sat4j.pb.core;
 
 import java.math.BigInteger;
 
+import org.sat4j.core.Vec;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -93,7 +94,12 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 
 	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		// TODO use direct encoding to int/long
+		IVec<BigInteger> bcoeffs = new Vec<BigInteger>(coeffs.size());
+		for (int i = 0; i < coeffs.size(); i++) {
+			bcoeffs.push(BigInteger.valueOf(coeffs.get(i)));
+		}
+		return addAtMost(literals, bcoeffs, BigInteger.valueOf(degree));
 	}
 
 	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
@@ -107,7 +113,12 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 
 	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		// TODO use direct encoding to int/long
+		IVec<BigInteger> bcoeffs = new Vec<BigInteger>(coeffs.size());
+		for (int i = 0; i < coeffs.size(); i++) {
+			bcoeffs.push(BigInteger.valueOf(coeffs.get(i)));
+		}
+		return addAtLeast(literals, bcoeffs, BigInteger.valueOf(degree));
 	}
 
 	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
@@ -121,7 +132,12 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 
 	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		// TODO use direct encoding to int/long
+		IVec<BigInteger> bcoeffs = new Vec<BigInteger>(coeffs.size());
+		for (int i = 0; i < coeffs.size(); i++) {
+			bcoeffs.push(BigInteger.valueOf(coeffs.get(i)));
+		}
+		return addExactly(literals, bcoeffs, BigInteger.valueOf(weight));
 	}
 
 	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
