@@ -5,7 +5,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.tools.xplain.QuickXplainStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
-public class TestQuickXplain extends AbstractXplainTest {
+public class TestQuickXplain extends AbstractXplainTest<ISolver> {
 
 	@Override
 	protected Xplain<ISolver> getXplain() {

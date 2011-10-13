@@ -43,11 +43,11 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Xplain;
 
-public abstract class AbstractXplainTest {
+public abstract class AbstractXplainTest<T extends ISolver> {
 
-	private Xplain<ISolver> solver;
+	protected Xplain<T> solver;
 
-	protected abstract Xplain<ISolver> getXplain();
+	protected abstract Xplain<T> getXplain();
 
 	@Before
 	public void startUp() {
