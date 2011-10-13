@@ -124,19 +124,22 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	@Override
 	public IConstr addExactly(IVecInt literals, int n)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
 	}
 
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
 	}
 
 	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(
+				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
 	}
 
 	/**
