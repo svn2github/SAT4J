@@ -105,4 +105,9 @@ public class ConstrGroup implements IConstr {
 	public boolean canBePropagatedMultipleTimes() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return constrs.toString();
+	}
 }
