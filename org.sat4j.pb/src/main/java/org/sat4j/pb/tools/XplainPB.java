@@ -22,9 +22,10 @@ package org.sat4j.pb.tools;
 import java.math.BigInteger;
 import java.util.Iterator;
 
-import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
@@ -45,18 +46,14 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
-		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.growTo(literals.size(), BigInteger.ONE);
+		IVecInt coeffs = new VecInt(literals.size(), 1);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
-		BigInteger coef = BigInteger.valueOf(coeffs.size() - degree);
-		coeffs.push(coef);
-		IConstr constr = decorated().addPseudoBoolean(literals, coeffs, true,
-				BigInteger.valueOf(degree));
+		coeffs.push(coeffs.size() - degree);
+		IConstr constr = decorated().addAtLeast(literals, coeffs, degree);
 		if (constr == null) {
 			// constraint trivially satisfied
 			discardLastestVar();
-			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
 		} else {
 			constrs.put(newvar, constr);
 		}
@@ -66,22 +63,43 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
-		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.growTo(literals.size(), BigInteger.ONE);
+		IVecInt coeffs = new VecInt(literals.size(), 1);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
-		BigInteger coef = BigInteger.valueOf(degree - coeffs.size());
-		coeffs.push(coef);
-		IConstr constr = decorated().addPseudoBoolean(literals, coeffs, false,
-				BigInteger.valueOf(degree));
+		coeffs.push(degree - coeffs.size());
+		IConstr constr = decorated().addAtMost(literals, coeffs, degree);
 		if (constr == null) {
 			// constraint trivially satisfied
 			discardLastestVar();
-			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
 		} else {
 			constrs.put(newvar, constr);
 		}
 		return constr;
+	}
+
+	@Override
+	public IConstr addExactly(IVecInt literals, int n)
+			throws ContradictionException {
+		int newvar = createNewVar(literals);
+
+		// at most
+		IVecInt coeffs = new VecInt(literals.size(), 1);
+		literals.push(newvar);
+		coeffs.push(n - coeffs.size());
+		IConstr constr1 = decorated().addAtMost(literals, coeffs, n);
+		// at least
+		coeffs.pop();
+		coeffs.push(coeffs.size() - n);
+		IConstr constr2 = decorated().addAtLeast(literals, coeffs, n);
+		if (constr1 == null && constr2 == null) {
+			discardLastestVar();
+			return null;
+		}
+		ConstrGroup group = new ConstrGroup();
+		group.add(constr1);
+		group.add(constr2);
+		constrs.put(newvar, group);
+		return group;
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
