@@ -21,9 +21,9 @@ package org.sat4j.pb.tools;
 import java.math.BigInteger;
 
 import org.sat4j.core.ASolverFactory;
+import org.sat4j.core.ConstrGroup;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
