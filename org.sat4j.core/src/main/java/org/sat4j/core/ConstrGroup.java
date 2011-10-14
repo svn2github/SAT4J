@@ -25,11 +25,13 @@
  * See www.minisat.se for the original solver in C++.
  * 
  *******************************************************************************/
-package org.sat4j.specs;
+package org.sat4j.core;
 
 import java.util.Iterator;
 
-import org.sat4j.core.Vec;
+import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVec;
 
 /**
  * A utility class used to manage easily group of clauses to be deleted at some

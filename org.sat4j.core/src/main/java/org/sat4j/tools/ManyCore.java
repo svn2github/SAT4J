@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.sat4j.core.ASolverFactory;
+import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.VecInt;
-import org.sat4j.specs.ConstrGroup;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
