@@ -568,7 +568,7 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		// their literals in the same order
 		try {
 
-			WatchPbLong wpb = (WatchPbLong) pb;
+			WatchPbLongCP wpb = (WatchPbLongCP) pb;
 			if (degree != wpb.degree || coefs.length != wpb.coefs.length
 					|| lits.length != wpb.lits.length) {
 				return false;
