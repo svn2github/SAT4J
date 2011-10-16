@@ -27,70 +27,9 @@
  *******************************************************************************/
 package org.sat4j.pb.orders;
 
-import static org.sat4j.core.LiteralsUtils.neg;
-import static org.sat4j.core.LiteralsUtils.var;
-
-import java.math.BigInteger;
-
-import org.sat4j.minisat.core.IPhaseSelectionStrategy;
-import org.sat4j.minisat.orders.PhaseInLastLearnedClauseSelectionStrategy;
-import org.sat4j.minisat.orders.VarOrderHeap;
+import org.sat4j.minisat.core.IOrder;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
-public class VarOrderHeapObjective extends VarOrderHeap implements
-		IOrderObjective {
-
-	/**
-     * 
-     */
-	private static final long serialVersionUID = 1L;
-
-	private ObjectiveFunction obj;
-
-	public VarOrderHeapObjective() {
-		this(new PhaseInLastLearnedClauseSelectionStrategy());
-	}
-
-	public VarOrderHeapObjective(IPhaseSelectionStrategy strategy) {
-		super(strategy);
-	}
-
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		this.obj = obj;
-	}
-
-	@Override
-	public void init() {
-		super.init();
-		if (obj != null) {
-			IVecInt vars = obj.getVars();
-			IVec<BigInteger> coefs = obj.getCoeffs();
-			for (int i = 0; i < vars.size(); i++) {
-				int dimacsLiteral = vars.get(i);
-				if (lits.belongsToPool(Math.abs(dimacsLiteral))) {
-					int p = lits.getFromPool(dimacsLiteral);
-					BigInteger c = coefs.get(i);
-					if (c.signum() < 0) {
-						p = neg(p);
-					}
-					int var = var(p);
-					activity[var] = c.bitLength() < Long.SIZE ? c.abs()
-							.longValue() : Long.MAX_VALUE;
-					if (heap.inHeap(var))
-						heap.increase(var);
-					else
-						heap.insert(var);
-					phaseStrategy.init(var, neg(p));
-				}
-			}
-		}
-	}
-
-	@Override
-	public String toString() {
-		return super.toString() + " taking into account the objective function";
-	}
-
+public interface IOrderObjective extends IOrder {
+	void setObjectiveFunction(ObjectiveFunction obj);
 }

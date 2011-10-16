@@ -38,7 +38,7 @@ import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.pb.orders.VarOrderHeapObjective;
+import org.sat4j.pb.orders.IOrderObjective;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
@@ -83,8 +83,8 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 	public void setObjectiveFunction(ObjectiveFunction obj) {
 		objf = obj;
 		IOrder order = getOrder();
-		if (order instanceof VarOrderHeapObjective) {
-			((VarOrderHeapObjective) order).setObjectiveFunction(obj);
+		if (order instanceof IOrderObjective) {
+			((IOrderObjective) order).setObjectiveFunction(obj);
 		}
 	}
 
