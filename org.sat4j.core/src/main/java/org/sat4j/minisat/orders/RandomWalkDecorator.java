@@ -37,7 +37,7 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 /**
  * @since 2.2
  */
-public final class RandomWalkDecorator implements IOrder {
+public class RandomWalkDecorator implements IOrder {
 
 	private final VarOrderHeap decorated;
 
@@ -66,11 +66,10 @@ public final class RandomWalkDecorator implements IOrder {
 
 	public void init() {
 		decorated.init();
-		nbRandomWalks = 0;
 	}
 
 	public void printStat(PrintWriter out, String prefix) {
-		out.println(prefix + "random Assignements: " + nbRandomWalks);
+		out.println(prefix + "random walks\t: " + nbRandomWalks);
 		decorated.printStat(out, prefix);
 	}
 
@@ -94,6 +93,7 @@ public final class RandomWalkDecorator implements IOrder {
 	public void setLits(ILits lits) {
 		decorated.setLits(lits);
 		voc = lits;
+		nbRandomWalks = 0;
 	}
 
 	public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy) {
