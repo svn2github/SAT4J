@@ -34,14 +34,14 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MaxWatchPb;
-import org.sat4j.pb.constraints.pb.MaxWatchPbLongCP;
+import org.sat4j.pb.constraints.pb.MaxWatchPbLong;
 import org.sat4j.specs.ContradictionException;
 
 public class MaxLongWatchPBConstructor implements IPBConstructor {
 
 	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
 		if (dspb.isLongSufficient()) {
-			return MaxWatchPbLongCP.normalizedWatchPbNew(voc, dspb);
+			return MaxWatchPbLong.normalizedWatchPbNew(voc, dspb);
 		}
 		return MaxWatchPb.normalizedWatchPbNew(voc, dspb);
 	}
@@ -50,8 +50,8 @@ public class MaxLongWatchPBConstructor implements IPBConstructor {
 			int[] theLits, BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
 		if (isLongSufficient(coefs, degree)) {
-			return MaxWatchPbLongCP.normalizedMaxWatchPbNew(solver, voc,
-					theLits, coefs, degree);
+			return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc, theLits,
+					coefs, degree);
 		}
 		return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
 				degree);
