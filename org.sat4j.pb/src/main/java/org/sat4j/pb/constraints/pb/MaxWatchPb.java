@@ -28,6 +28,8 @@
 package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
@@ -51,6 +53,8 @@ public final class MaxWatchPb extends WatchPb {
 	 */
 	private BigInteger watchCumul = BigInteger.ZERO;
 
+	private final Map<Integer, BigInteger> litToCoeffs;
+
 	/**
 	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
 	 * 
@@ -70,6 +74,10 @@ public final class MaxWatchPb extends WatchPb {
 
 		activity = 0;
 		watchCumul = BigInteger.ZERO;
+		litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
+		for (int i = 0; i < coefs.length; i++) {
+			litToCoeffs.put(lits[i], this.coefs[i]);
+		}
 	}
 
 	/**
@@ -93,6 +101,10 @@ public final class MaxWatchPb extends WatchPb {
 
 		activity = 0;
 		watchCumul = BigInteger.ZERO;
+		litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
+		for (int i = 0; i < coefs.length; i++) {
+			litToCoeffs.put(lits[i], this.coefs[i]);
+		}
 	}
 
 	/**
@@ -159,13 +171,8 @@ public final class MaxWatchPb extends WatchPb {
 		assert watchCumul.compareTo(computeLeftSide()) >= 0 : "" + watchCumul
 				+ "/" + computeLeftSide() + ":" + learnt;
 
-		// finding the index for p in the array of literals
-		int indiceP = 0;
-		while ((lits[indiceP] ^ 1) != p)
-			indiceP++;
-
 		// compute the new value for watchCumul
-		BigInteger coefP = coefs[indiceP];
+		BigInteger coefP = litToCoeffs.get(p ^ 1);
 		BigInteger newcumul = watchCumul.subtract(coefP);
 
 		if (newcumul.compareTo(degree) < 0) {
@@ -219,13 +226,7 @@ public final class MaxWatchPb extends WatchPb {
 	 *            an unassigned literal
 	 */
 	public void undo(int p) {
-		int indiceP = 0;
-		while ((lits[indiceP] ^ 1) != p)
-			indiceP++;
-
-		assert coefs[indiceP].signum() > 0;
-
-		watchCumul = watchCumul.add(coefs[indiceP]);
+		watchCumul = watchCumul.add(litToCoeffs.get(p ^ 1));
 	}
 
 	/**

@@ -52,7 +52,7 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 */
 	private long watchCumul = 0;
 
-	private final Map<Integer, Long> litToCoeffs = new HashMap<Integer, Long>();
+	private final Map<Integer, Long> litToCoeffs;
 
 	/**
 	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
@@ -73,6 +73,7 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
+		litToCoeffs = new HashMap<Integer, Long>(coefs.length);
 		for (int i = 0; i < coefs.length; i++) {
 			litToCoeffs.put(lits[i], coefs[i]);
 		}
@@ -99,6 +100,7 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
+		litToCoeffs = new HashMap<Integer, Long>(coefs.length);
 		for (int i = 0; i < coefs.length; i++) {
 			litToCoeffs.put(lits[i], this.coefs[i]);
 		}
