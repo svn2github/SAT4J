@@ -158,13 +158,8 @@ public final class MaxWatchPbLong extends WatchPbLong {
 		assert watchCumul >= computeLeftSide() : "" + watchCumul + "/"
 				+ computeLeftSide() + ":" + learnt;
 
-		// finding the index for p in the array of literals
-		int indiceP = 0;
-		while ((lits[indiceP] ^ 1) != p)
-			indiceP++;
-
 		// compute the new value for watchCumul
-		long coefP = coefs[indiceP];
+		long coefP = litToCoeffs.get(p ^ 1);
 		long newcumul = watchCumul - coefP;
 
 		if (newcumul < degree) {
@@ -220,13 +215,7 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 */
 	@Override
 	public void undo(int p) {
-		int indiceP = 0;
-		while ((lits[indiceP] ^ 1) != p)
-			indiceP++;
-
-		assert coefs[indiceP] > 0;
-
-		watchCumul = watchCumul + coefs[indiceP];
+		watchCumul = watchCumul + litToCoeffs.get(p ^ 1);
 	}
 
 	/**
