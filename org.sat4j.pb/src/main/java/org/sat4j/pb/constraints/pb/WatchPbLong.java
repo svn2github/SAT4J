@@ -29,8 +29,6 @@ package org.sat4j.pb.constraints.pb;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
@@ -77,8 +75,6 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	 * constraint's vocabulary
 	 */
 	protected ILits voc;
-
-	protected final Map<Integer, Long> litToCoeffs = new HashMap<Integer, Long>();
 
 	/**
 	 * This constructor is only available for the serialization.
@@ -373,9 +369,6 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 			for (int i = 1; i < coefs.length; i++) {
 				assert buffInt >= coefs[i];
 				buffInt = coefs[i];
-			}
-			for (int i = 0; i < coefs.length; i++) {
-				litToCoeffs.put(lits[i], coefs[i]);
 			}
 		}
 	}

@@ -28,6 +28,8 @@
 package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
@@ -50,6 +52,8 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 */
 	private long watchCumul = 0;
 
+	private final Map<Integer, Long> litToCoeffs = new HashMap<Integer, Long>();
+
 	/**
 	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
 	 * 
@@ -69,6 +73,9 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
+		for (int i = 0; i < coefs.length; i++) {
+			litToCoeffs.put(lits[i], coefs[i]);
+		}
 	}
 
 	/**
@@ -92,6 +99,9 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
+		for (int i = 0; i < coefs.length; i++) {
+			litToCoeffs.put(lits[i], this.coefs[i]);
+		}
 	}
 
 	/**
