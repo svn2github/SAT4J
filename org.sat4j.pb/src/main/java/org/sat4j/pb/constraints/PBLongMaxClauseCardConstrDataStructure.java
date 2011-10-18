@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-
 public class PBLongMaxClauseCardConstrDataStructure extends
 		AbstractPBClauseCardConstrDataStructure {
 
@@ -38,7 +37,7 @@ public class PBLongMaxClauseCardConstrDataStructure extends
 
 	public PBLongMaxClauseCardConstrDataStructure() {
 		super(new UnitBinaryHTClausePBConstructor(),
-				new MinCardPBConstructor(), new MaxLongWatchPBConstructor());
+				new MinCardPBConstructor(), new MaxLongWatchPBCPConstructor());
 	}
 
 }

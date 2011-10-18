@@ -34,14 +34,14 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MinWatchPb;
-import org.sat4j.pb.constraints.pb.MinWatchPbLong;
+import org.sat4j.pb.constraints.pb.MinWatchPbLongCP;
 import org.sat4j.specs.ContradictionException;
 
-public class MinLongWatchPBConstructor implements IPBConstructor {
+public class MinLongWatchPBCPConstructor implements IPBConstructor {
 
 	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
 		if (dspb.isLongSufficient()) {
-			return MinWatchPbLong.normalizedWatchPbNew(voc, dspb);
+			return MinWatchPbLongCP.normalizedWatchPbNew(voc, dspb);
 		}
 		return MinWatchPb.normalizedWatchPbNew(voc, dspb);
 	}
@@ -49,19 +49,12 @@ public class MinLongWatchPBConstructor implements IPBConstructor {
 	public Constr constructPB(UnitPropagationListener solver, ILits voc,
 			int[] theLits, BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
-		if (isLongSufficient(coefs, degree)) {
-			return MinWatchPbLong.normalizedMinWatchPbNew(solver, voc, theLits,
-					coefs, degree);
+		if (MinLongWatchPBConstructor.isLongSufficient(coefs, degree)) {
+			return MinWatchPbLongCP.normalizedMinWatchPbNew(solver, voc,
+					theLits, coefs, degree);
 		}
 		return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
 				degree);
-	}
-
-	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
-		assert coefs.length > 1;
-		BigInteger som = coefs[0].add(coefs[1]);
-		som = som.add(degree);
-		return som.bitLength() < Long.SIZE;
 	}
 
 }
