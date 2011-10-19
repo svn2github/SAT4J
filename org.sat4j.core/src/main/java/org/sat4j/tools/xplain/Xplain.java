@@ -269,7 +269,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 
 	@Override
 	public int[] model() {
-		int[] fullmodel = super.model();
+		int[] fullmodel = super.modelWithInternalVariables();
 		if (fullmodel == null) {
 			return null;
 		}
