@@ -52,10 +52,6 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
      */
     private static final long serialVersionUID = 1L;
 
-    protected int nborigvars;
-
-    private int nbexpectedclauses;
-
     private BigInteger falsifiedWeight = BigInteger.ZERO;
 
     protected int nbnewvar;
@@ -75,18 +71,10 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
     }
 
     @Override
-    public int newVar(int howmany) {
-        nborigvars = super.newVar(howmany);
-        return nborigvars;
-    }
-
-    @Override
     public void setExpectedNumberOfClauses(int nb) {
-        nbexpectedclauses = nb;
         lits.ensure(nb);
         falsifiedWeight = BigInteger.ZERO;
         super.setExpectedNumberOfClauses(nb);
-        super.newVar(nborigvars + nbexpectedclauses);
     }
 
     @Override
@@ -211,7 +199,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                 return new UnitWeightedClause();
             }
             coefs.push(weight);
-            int newvar = nborigvars + ++nbnewvar;
+            int newvar = nextFreeVarId(true);
 			literals.push(newvar);
             lits.push(newvar);
         }
@@ -258,7 +246,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 	public IConstr addSoftAtLeast(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
 		if (weight.compareTo(top)<0) {
 			coefs.push(weight);
-            int newvar = nborigvars + ++nbnewvar;
+            int newvar = nextFreeVarId(true);
             lits.push(newvar);
             IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
             cardcoeffs.growTo(literals.size(), BigInteger.ONE);
@@ -311,7 +299,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 	public IConstr addSoftAtMost(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
 		if (weight.compareTo(top)<0) {
 			coefs.push(weight);
-            int newvar = nborigvars + ++nbnewvar;
+            int newvar = nextFreeVarId(true);
             lits.push(newvar);
             IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
             cardcoeffs.growTo(literals.size(), BigInteger.ONE);
@@ -386,16 +374,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 			for (int i = 0; i < nVars(); i++) {
 				prevboolmodel[i] = decorated().model(i + 1);
 			}
-            int nbtotalvars = nborigvars + nbnewvar;
-            if (prevfullmodel == null)
-                prevfullmodel = new int[nbtotalvars];
-            for (int i = 1; i <= nbtotalvars; i++) {
-                prevfullmodel[i - 1] = super.model(i) ? i : -i;
-            }
-            prevmodel = new int[nborigvars];
-			for (int i = 0; i < nborigvars; i++) {
-				prevmodel[i] = prevfullmodel[i];
-			}
+			prevfullmodel = modelWithInternalVariables();
+            prevmodel = model();
 			calculateObjective();
         } else {
         	isSolutionOptimal = true;
