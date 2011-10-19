@@ -47,7 +47,7 @@ public class BugSAT43 {
 		assertEquals(10, solver.nVars());
 		assertEquals(20, solver.realNumberOfVariables());
 		model1 = solver.findModel();
-		assertEquals(10, model1.length);
+		assertEquals(3, model1.length);
 		System.out.println(new VecInt(model1));
 		model2 = solver.modelWithInternalVariables();
 		assertEquals(20, model2.length);
