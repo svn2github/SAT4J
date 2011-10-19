@@ -1211,18 +1211,18 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			}
 		}
 		model = new int[tempmodel.size()];
-		tempmodel.moveTo(model);
+		tempmodel.copyTo(model);
 		if (realNumberOfVariables() > nVars()) {
-			int fullindex = 0;
-			fullmodel = new int[realNumberOfVariables()];
-			for (int i = 1; i <= realNumberOfVariables(); i++) {
+			for (int i = nVars() + 1; i <= realNumberOfVariables(); i++) {
 				if (voc.belongsToPool(i)) {
 					int p = voc.getFromPool(i);
 					if (!voc.isUnassigned(p)) {
-						fullmodel[fullindex++] = voc.isSatisfied(p) ? i : -i;
+						tempmodel.push(voc.isSatisfied(p) ? i : -i);
 					}
 				}
 			}
+			fullmodel = new int[tempmodel.size()];
+			tempmodel.moveTo(fullmodel);
 		}
 		cancelUntil(rootLevel);
 	}
