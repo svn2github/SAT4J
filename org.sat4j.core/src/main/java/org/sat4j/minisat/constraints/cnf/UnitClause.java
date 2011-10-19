@@ -84,7 +84,7 @@ public class UnitClause implements Constr {
 	}
 
 	public boolean simplify() {
-		throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
