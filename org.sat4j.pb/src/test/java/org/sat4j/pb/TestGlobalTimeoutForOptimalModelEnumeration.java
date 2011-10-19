@@ -21,6 +21,7 @@ public class TestGlobalTimeoutForOptimalModelEnumeration {
 		PseudoOptDecorator pbsolver = new PseudoOptDecorator(
 				SolverFactory.newDefault());
 		IVecInt clause = new VecInt();
+		pbsolver.newVar(1000);
 		for (int i = 1; i <= 1000; i++)
 			clause.push(-i);
 		pbsolver.addClause(clause);
