@@ -26,7 +26,9 @@ public class RemiUtilsTest {
 		ISolver solver1 = SolverFactory.newDefault();
 		ISolver solver2 = SolverFactory.newDefault();
 		ISolver solver3 = SolverFactory.newDefault();
-
+		solver1.newVar(3);
+		solver2.newVar(3);
+		solver3.newVar(3);
 		int[][] cnf1 = new int[][] { new int[] { 1 }, new int[] { 1, -2 },
 				new int[] { 1, -3 }, new int[] { -1, 2 } };
 		// A & (A v -B) & (A v -C) & (-A v B)
