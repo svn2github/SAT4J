@@ -178,7 +178,10 @@ public abstract class AbstractLauncher implements Serializable {
 		IProblem problem = reader.parseInstance(problemname);
 		log("... done. Wall clock time " //$NON-NLS-1$
 				+ (System.currentTimeMillis() - beginTime) / 1000.0 + "s."); //$NON-NLS-1$
-		log("#vars     " + problem.nVars()); //$NON-NLS-1$
+		log("declared #vars     " + problem.nVars()); //$NON-NLS-1$
+		if (solver.nVars() < solver.realNumberOfVariables()) {
+			log("internal #vars     " + solver.realNumberOfVariables()); //$NON-NLS-1$
+		}
 		log("#constraints  " + problem.nConstraints()); //$NON-NLS-1$
 		problem.printInfos(out, COMMENT_PREFIX);
 		return problem;
