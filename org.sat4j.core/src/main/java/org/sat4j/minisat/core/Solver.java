@@ -1193,28 +1193,25 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
      * 
      */
 	void modelFound() {
-		if (realNumberOfVariables() == nVars()) {
-			model = new int[trail.size()];
-		} else {
-			model = new int[nVars()];
-		}
+		IVecInt tempmodel = new VecInt(nVars());
 		userbooleanmodel = new boolean[nVars()];
 		fullmodel = null;
-		int index = 0;
 		for (int i = 1; i <= nVars(); i++) {
 			if (voc.belongsToPool(i)) {
 				int p = voc.getFromPool(i);
 				if (!voc.isUnassigned(p)) {
-					model[index++] = voc.isSatisfied(p) ? i : -i;
+					tempmodel.push(voc.isSatisfied(p) ? i : -i);
 					userbooleanmodel[i - 1] = voc.isSatisfied(p);
 					if (voc.getReason(p) == null) {
-						decisions.push(model[index - 1]);
+						decisions.push(tempmodel.last());
 					} else {
-						implied.push(model[index - 1]);
+						implied.push(tempmodel.last());
 					}
 				}
 			}
 		}
+		model = new int[tempmodel.size()];
+		tempmodel.moveTo(model);
 		if (realNumberOfVariables() > nVars()) {
 			int fullindex = 0;
 			fullmodel = new int[realNumberOfVariables()];
@@ -1227,7 +1224,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				}
 			}
 		}
-		assert index == model.length;
 		cancelUntil(rootLevel);
 	}
 
