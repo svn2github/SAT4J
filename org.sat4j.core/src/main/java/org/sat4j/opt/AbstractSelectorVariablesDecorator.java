@@ -52,11 +52,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected int nborigvars;
-
 	private int nbexpectedclauses;
-
-	protected int nbnewvar;
 
 	protected int[] prevfullmodel;
 
@@ -76,26 +72,12 @@ public abstract class AbstractSelectorVariablesDecorator extends
 	}
 
 	@Override
-	public int newVar(int howmany) {
-		nborigvars = super.newVar(howmany);
-		return nborigvars;
-	}
-
-	@Override
 	public void setExpectedNumberOfClauses(int nb) {
 		nbexpectedclauses = nb;
-		super.setExpectedNumberOfClauses(nb);
-		super.newVar(nborigvars + nbexpectedclauses);
 	}
 
 	public int getExpectedNumberOfClauses() {
 		return nbexpectedclauses;
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
-		nbnewvar = 0;
 	}
 
 	public boolean admitABetterSolution() throws TimeoutException {
@@ -114,14 +96,8 @@ public abstract class AbstractSelectorVariablesDecorator extends
 			for (int i = 0; i < nVars(); i++) {
 				prevboolmodel[i] = decorated().model(i + 1);
 			}
-			prevfullmodel = super.model();
-			int end = Math.min(prevfullmodel.length, nborigvars) - 1;
-			while (Math.abs(prevfullmodel[end]) > nborigvars)
-				end--;
-			prevmodel = new int[end + 1];
-			for (int i = 0; i <= end; i++) {
-				prevmodel[i] = prevfullmodel[i];
-			}
+			prevfullmodel = super.modelWithInternalVariables();
+			prevmodel = super.model();
 			calculateObjectiveValue();
 		} else {
 			isSolutionOptimal = true;

@@ -160,6 +160,17 @@ public class DimacsOutputSolver extends AbstractOutputSolver {
 	 * @since 2.1
 	 */
 	public int nextFreeVarId(boolean reserve) {
+		if (reserve) {
+			return ++nbvars;
+		}
+		return nbvars + 1;
+	}
+
+	public int[] modelWithInternalVariables() {
 		throw new UnsupportedOperationException();
+	}
+
+	public int realNumberOfVariables() {
+		return nbvars;
 	}
 }

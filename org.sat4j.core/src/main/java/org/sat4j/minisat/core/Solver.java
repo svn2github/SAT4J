@@ -175,6 +175,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	private boolean verbose = false;
 
 	private String prefix = "c ";
+	private int declaredMaxVarId = 0;
 
 	protected IVecInt dimacs2internal(IVecInt in) {
 		__dimacs_out.clear();
@@ -337,7 +338,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	public int newVar(int howmany) {
 		voc.ensurePool(howmany);
-		return voc.nVars();
+		declaredMaxVarId = howmany;
+		return howmany;
 	}
 
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
@@ -1082,7 +1084,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final Pair analysisResult = new Pair();
 
-	private boolean[] fullmodel;
+	private boolean[] userbooleanmodel;
 
 	private IVecInt unsatExplanationInTermsOfAssumptions;
 
@@ -1185,23 +1187,42 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	private final IVecInt implied = new VecInt();
 	private final IVecInt decisions = new VecInt();
 
+	private int[] fullmodel;
+
 	/**
      * 
      */
 	void modelFound() {
-		model = new int[trail.size()];
-		fullmodel = new boolean[nVars()];
+		if (realNumberOfVariables() == nVars()) {
+			model = new int[trail.size()];
+		} else {
+			model = new int[nVars()];
+		}
+		userbooleanmodel = new boolean[nVars()];
+		fullmodel = null;
 		int index = 0;
-		for (int i = 1; i <= voc.nVars(); i++) {
+		for (int i = 1; i <= nVars(); i++) {
 			if (voc.belongsToPool(i)) {
 				int p = voc.getFromPool(i);
 				if (!voc.isUnassigned(p)) {
 					model[index++] = voc.isSatisfied(p) ? i : -i;
-					fullmodel[i - 1] = voc.isSatisfied(p);
+					userbooleanmodel[i - 1] = voc.isSatisfied(p);
 					if (voc.getReason(p) == null) {
 						decisions.push(model[index - 1]);
 					} else {
 						implied.push(model[index - 1]);
+					}
+				}
+			}
+		}
+		if (realNumberOfVariables() > nVars()) {
+			int fullindex = 0;
+			fullmodel = new int[realNumberOfVariables()];
+			for (int i = 1; i <= realNumberOfVariables(); i++) {
+				if (voc.belongsToPool(i)) {
+					int p = voc.getFromPool(i);
+					if (!voc.isUnassigned(p)) {
+						fullmodel[fullindex++] = voc.isSatisfied(p) ? i : -i;
 					}
 				}
 			}
@@ -1245,11 +1266,11 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			throw new IllegalArgumentException(
 					"Use a valid Dimacs var id as argument!"); //$NON-NLS-1$
 		}
-		if (fullmodel == null) {
+		if (userbooleanmodel == null) {
 			throw new UnsupportedOperationException(
 					"Call the solve method first!!!"); //$NON-NLS-1$
 		}
-		return fullmodel[var - 1];
+		return userbooleanmodel[var - 1];
 	}
 
 	public void clearLearntClauses() {
@@ -1582,7 +1603,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		implied.clear();
 		slistener.start();
 		model = null; // forget about previous model
-		fullmodel = null;
+		userbooleanmodel = null;
 		unsatExplanationInTermsOfAssumptions = null;
 		order.init();
 		learnedConstraintsDeletionStrategy.init();
@@ -1781,7 +1802,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public int nVars() {
-		return voc.nVars();
+		return declaredMaxVarId;
 	}
 
 	/**
@@ -1993,6 +2014,33 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		IVecInt copy = new VecInt(unsatExplanationInTermsOfAssumptions.size());
 		unsatExplanationInTermsOfAssumptions.copyTo(copy);
 		return copy;
+	}
+
+	/**
+	 * @since 2.3.1
+	 */
+	public int[] modelWithInternalVariables() {
+		if (model == null) {
+			throw new UnsupportedOperationException(
+					"Call the solve method first!!!"); //$NON-NLS-1$
+		}
+		int[] nmodel;
+		if (nVars() == realNumberOfVariables()) {
+			nmodel = new int[model.length];
+			System.arraycopy(model, 0, nmodel, 0, nmodel.length);
+		} else {
+			nmodel = new int[fullmodel.length];
+			System.arraycopy(fullmodel, 0, nmodel, 0, nmodel.length);
+		}
+
+		return nmodel;
+	}
+
+	/**
+	 * @since 2.3.1
+	 */
+	public int realNumberOfVariables() {
+		return voc.nVars();
 	}
 
 }

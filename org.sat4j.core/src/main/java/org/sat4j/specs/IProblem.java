@@ -165,9 +165,25 @@ public interface IProblem {
 	int nConstraints();
 
 	/**
-	 * To know the number of variables used in the solver.
+	 * Declare <code>howmany</code> variables in the problem (and thus in the
+	 * vocabulary), that will be represented using the Dimacs format by integers
+	 * ranging from 1 to howmany. That feature allows encodings to create
+	 * additional variables with identifier starting at howmany+1.
+	 * 
+	 * @param howmany
+	 *            number of variables to create
+	 * @return the total number of variables available in the solver (the
+	 *         highest variable number)
+	 * @see #nVars()
+	 */
+	int newVar(int howmany);
+
+	/**
+	 * To know the number of variables used in the solver as declared by
+	 * newVar()
 	 * 
 	 * @return the number of variables created using newVar().
+	 * @see #newVar(int)
 	 */
 	int nVars();
 

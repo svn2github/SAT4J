@@ -441,6 +441,14 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	public List<S> getSolvers() {
 		return new ArrayList<S>(this.solvers);
 	}
+
+	public int[] modelWithInternalVariables() {
+		return solvers.get(winnerId).modelWithInternalVariables();
+	}
+
+	public int realNumberOfVariables() {
+		return solvers.get(0).realNumberOfVariables();
+	}
 }
 
 interface OutcomeListener {

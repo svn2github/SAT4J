@@ -443,4 +443,18 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		return solver.addExactly(literals, n);
 	}
 
+	/**
+	 * @since 2.3.1
+	 */
+	public int[] modelWithInternalVariables() {
+		return solver.modelWithInternalVariables();
+	}
+
+	/**
+	 * @since 2.3.1
+	 */
+	public int realNumberOfVariables() {
+		return solver.realNumberOfVariables();
+	}
+
 }

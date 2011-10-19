@@ -59,7 +59,7 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
 	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		int newvar = nborigvars + ++nbnewvar;
+		int newvar = nextFreeVarId(true);
 		lits.push(newvar);
 		literals.push(newvar);
 		return super.addClause(literals);
@@ -67,7 +67,6 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
 	@Override
 	public void reset() {
-		nbnewvar = 0;
 		lits.clear();
 		super.reset();
 		prevConstr = null;
@@ -136,7 +135,7 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 	void calculateObjectiveValue() {
 		counter = 0;
 		for (int q : prevfullmodel) {
-			if (q > nborigvars) {
+			if (q > nVars()) {
 				counter++;
 			}
 		}

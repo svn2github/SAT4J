@@ -182,11 +182,6 @@ public class DimacsStringSolver extends AbstractOutputSolver {
 
 	@Override
 	public String toString() {
-		// String numClauses = Integer.toString(nbclauses);
-		// int numClausesLength = numClauses.length();
-		// for (int i = 0; i < numClausesLength; ++i) {
-		// out.setCharAt(firstCharPos + i, numClauses.charAt(i));
-		// }
 		out.insert(firstCharPos, "p cnf " + maxvarid + " " + nbclauses);
 		return out.toString();
 	}
@@ -196,9 +191,16 @@ public class DimacsStringSolver extends AbstractOutputSolver {
 	 */
 	public int nextFreeVarId(boolean reserve) {
 		if (reserve) {
-			maxvarid++;
-			return maxvarid;
+			return ++maxvarid;
 		}
+		return maxvarid + 1;
+	}
+
+	public int[] modelWithInternalVariables() {
+		throw new UnsupportedOperationException();
+	}
+
+	public int realNumberOfVariables() {
 		return maxvarid;
 	}
 }

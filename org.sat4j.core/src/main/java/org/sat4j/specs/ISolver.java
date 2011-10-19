@@ -32,6 +32,8 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.sat4j.tools.ModelIterator;
+
 /**
  * This interface contains all services provided by a SAT solver.
  * 
@@ -54,23 +56,15 @@ public interface ISolver extends IProblem, Serializable {
 	int newVar();
 
 	/**
-	 * Create <code>howmany</code> variables in the solver (and thus in the
-	 * vocabulary).
-	 * 
-	 * @param howmany
-	 *            number of variables to create
-	 * @return the total number of variables available in the solver (the
-	 *         highest variable number)
-	 */
-	int newVar(int howmany);
-
-	/**
 	 * Ask the solver for a free variable identifier, in Dimacs format (i.e. a
 	 * positive number). Note that a previous call to newVar(max) will reserve
 	 * in the solver the variable identifier from 1 to max, so nextFreeVarId()
 	 * would return max+1, even if some variable identifiers smaller than max
 	 * are not used. By default, the method will always answer by the maximum
 	 * variable identifier used so far + 1.
+	 * 
+	 * The number of variables reserved in the solver is accessible through the
+	 * {@link #realNumberOfVariables()} method.
 	 * 
 	 * @param reserve
 	 *            if true, the maxVarId is updated in the solver, i.e.
@@ -79,6 +73,7 @@ public interface ISolver extends IProblem, Serializable {
 	 *            will always answer the same.
 	 * @return a variable identifier not in use in the constraints already
 	 *         inside the solver.
+	 * @see #realNumberOfVariables()
 	 * @since 2.1
 	 */
 	int nextFreeVarId(boolean reserve);
@@ -415,4 +410,41 @@ public interface ISolver extends IProblem, Serializable {
 	 * @since 2.2
 	 */
 	IVecInt unsatExplanation();
+
+	/**
+	 * That method is designed to be used to retrieve the real model of the
+	 * current set of constraints, i.e. to provide the truth value of boolean
+	 * variables used internally in the solver (for encoding purposes for
+	 * instance).
+	 * 
+	 * If no variables are added in the solver, then
+	 * Arrays.equals(model(),modelWithInternalVariables()).
+	 * 
+	 * In case new variables are added to the solver, then the number of models
+	 * returned by that method is greater of equal to the number of models
+	 * returned by model() when using a ModelIterator.
+	 * 
+	 * @return an array of literals, in Dimacs format, corresponding to a model
+	 *         of the formula over all the variables declared in the solver.
+	 * @see #model()
+	 * @see ModelIterator
+	 * @since 2.3.1
+	 */
+	int[] modelWithInternalVariables();
+
+	/**
+	 * Retrieve the real number of variables used in the solver.
+	 * 
+	 * In many cases, realNumberOfVariables()==nVars(). However, when working
+	 * with SAT encodings or translation from MAXSAT to PMS, one can have
+	 * realNumberOfVariables()>nVars().
+	 * 
+	 * Those additional variables are supposed to be created using the
+	 * {@link #nextFreeVarId(boolean)} method.
+	 * 
+	 * @return the number of variables reserved in the solver.
+	 * @see #nextFreeVarId(boolean)
+	 * @since 2.3.1
+	 */
+	int realNumberOfVariables();
 }
