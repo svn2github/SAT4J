@@ -75,6 +75,9 @@ public abstract class Reader {
 			}
 			if (filename.endsWith(".gz")) {
 				in = new GZIPInputStream(in);
+			} else if (filename.endsWith(".bz2")) {
+				in = Runtime.getRuntime().exec("bunzip2 -c " + filename)
+						.getInputStream();
 			}
 			IProblem problem;
 			problem = parseInstance(in);
