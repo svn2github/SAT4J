@@ -35,14 +35,15 @@ import org.sat4j.specs.IVecInt;
 
 public class Policy extends EncodingStrategyAdapter {
 
+	private final Sequential seq = new Sequential();
+	private final Binary binary = new Binary();
+
 	@Override
 	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
 			throws ContradictionException {
-		Ladder ladder = new Ladder();
-		Sequential seq = new Sequential();
-		Binary binary = new Binary();
-		Commander commander = new Commander();
-		Product product = new Product();
+
+		// / Commander commander = new Commander();
+		// Product product = new Product();
 		if (k == 0 || literals.size() == 1) {
 			// will propagate unit literals
 			return super.addAtMost(solver, literals, k);
