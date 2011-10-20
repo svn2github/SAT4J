@@ -1,5 +1,3 @@
-package org.sat4j.tools;
-
 /*******************************************************************************
  * SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le Berre
  *
@@ -28,72 +26,60 @@ package org.sat4j.tools;
  * 
  *******************************************************************************/
 
+package org.sat4j.tools.encoding;
+
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.tools.encoding.EncodingStrategyAdapter;
-import org.sat4j.tools.encoding.Policy;
 
-public class ClausalCardinalitiesDecorator<T extends ISolver> extends
-		SolverDecorator<T> {
+/**
+ * The aim of this class is to use different encodings for specific constraints.
+ * The class is abstract because it does not makes sense to use it "as is".
+ * 
+ * @author sroussel
+ */
+public abstract class EncodingStrategyAdapter {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final EncodingStrategyAdapter encodingAdapter;
-
-	public ClausalCardinalitiesDecorator(T solver) {
-		super(solver);
-		encodingAdapter = new Policy();
-	}
-
-	public ClausalCardinalitiesDecorator(T solver,
-			EncodingStrategyAdapter encodingAd) {
-		super(solver);
-		encodingAdapter = encodingAd;
-	}
-
-	@Override
-	public IConstr addAtLeast(IVecInt literals, int k)
+	public IConstr addAtLeast(ISolver solver, IVecInt literals, int degree)
 			throws ContradictionException {
-		if (k == 1) {
-			return encodingAdapter.addAtLeastOne(decorated(), literals);
-		} else
-			return encodingAdapter.addAtLeast(decorated(), literals, k);
+		final int n = literals.size();
+		IVecInt newLiterals = new VecInt(n);
+		for (int i = 0; i < n; i++) {
+			newLiterals.set(i, -literals.get(i));
+		}
+		return solver.addAtLeast(newLiterals, n - degree);
 	}
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, int k)
+	public IConstr addAtLeastOne(ISolver solver, IVecInt literals)
 			throws ContradictionException {
-		if (k == 1)
-			return encodingAdapter.addAtMostOne(decorated(), literals);
-		else
-			return encodingAdapter.addAtMost(decorated(), literals, k);
+		return solver.addClause(literals);
 	}
 
-	@Override
-	public IConstr addExactly(IVecInt literals, int k)
+	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
 			throws ContradictionException {
+		return solver.addAtMost(literals, degree);
+	}
 
-		if (k == 1)
-			return encodingAdapter.addExactlyOne(decorated(), literals);
-		else
-			return encodingAdapter.addExactly(decorated(), literals, k);
+	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+			throws ContradictionException {
+		return this.addAtMost(solver, literals, 1);
+	}
+
+	public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+			throws ContradictionException {
+		return solver.addExactly(literals, degree);
+	}
+
+	public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+			throws ContradictionException {
+		return this.addExactly(solver, literals, 1);
 	}
 
 	@Override
 	public String toString() {
-		return toString("");
-	}
-
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix) + "\n"
-				+ "Cardinality to SAT encoding: \n" + "Encoding: "
-				+ encodingAdapter + "\n";
+		return this.getClass().getName();
 	}
 
 }

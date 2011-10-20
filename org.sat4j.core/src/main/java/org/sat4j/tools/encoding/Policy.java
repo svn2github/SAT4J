@@ -1,5 +1,3 @@
-package org.sat4j.tools;
-
 /*******************************************************************************
  * SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le Berre
  *
@@ -28,72 +26,50 @@ package org.sat4j.tools;
  * 
  *******************************************************************************/
 
+package org.sat4j.tools.encoding;
+
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.tools.encoding.EncodingStrategyAdapter;
-import org.sat4j.tools.encoding.Policy;
 
-public class ClausalCardinalitiesDecorator<T extends ISolver> extends
-		SolverDecorator<T> {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final EncodingStrategyAdapter encodingAdapter;
-
-	public ClausalCardinalitiesDecorator(T solver) {
-		super(solver);
-		encodingAdapter = new Policy();
-	}
-
-	public ClausalCardinalitiesDecorator(T solver,
-			EncodingStrategyAdapter encodingAd) {
-		super(solver);
-		encodingAdapter = encodingAd;
-	}
+public class Policy extends EncodingStrategyAdapter {
 
 	@Override
-	public IConstr addAtLeast(IVecInt literals, int k)
+	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
 			throws ContradictionException {
+		Ladder ladder = new Ladder();
+		Sequential seq = new Sequential();
+		Binary binary = new Binary();
+		Commander commander = new Commander();
+		Product product = new Product();
+		if (k == 0 || literals.size() == 1) {
+			// will propagate unit literals
+			return super.addAtMost(solver, literals, k);
+		}
+		if (literals.size() <= 1) {
+			throw new UnsupportedOperationException(
+					"requires at least 2 literals");
+		}
 		if (k == 1) {
-			return encodingAdapter.addAtLeastOne(decorated(), literals);
-		} else
-			return encodingAdapter.addAtLeast(decorated(), literals, k);
+			// return ladder.addAtMostOne(solver, literals);
+			return binary.addAtMostOne(solver, literals);
+			// return commander.addAtMostOne(solver, literals);
+			// return product.addAtMostOne(solver, literals);
+		}
+		return seq.addAtMost(solver, literals, k);
+		// return product.addAtMost(solver, literals, k);
 	}
 
 	@Override
-	public IConstr addAtMost(IVecInt literals, int k)
+	public IConstr addExactly(ISolver solver, IVecInt literals, int n)
 			throws ContradictionException {
-		if (k == 1)
-			return encodingAdapter.addAtMostOne(decorated(), literals);
-		else
-			return encodingAdapter.addAtMost(decorated(), literals, k);
-	}
+		Ladder ladder = new Ladder();
+		if (n == 1) {
+			return ladder.addExactlyOne(solver, literals);
+		}
 
-	@Override
-	public IConstr addExactly(IVecInt literals, int k)
-			throws ContradictionException {
-
-		if (k == 1)
-			return encodingAdapter.addExactlyOne(decorated(), literals);
-		else
-			return encodingAdapter.addExactly(decorated(), literals, k);
-	}
-
-	@Override
-	public String toString() {
-		return toString("");
-	}
-
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix) + "\n"
-				+ "Cardinality to SAT encoding: \n" + "Encoding: "
-				+ encodingAdapter + "\n";
+		return super.addExactly(solver, literals, n);
 	}
 
 }
