@@ -216,6 +216,10 @@ public final class MaxWatchPb extends WatchPb {
 		for (int i = 0; i < lits.length; i++) {
 			if (!voc.isFalsified(lits[i]))
 				voc.watches(lits[i] ^ 1).remove(this);
+			if (voc.isSatisfied(lits[i])) {
+				// must be on the trail !!!!
+				upl.unset(lits[i]);
+			}
 		}
 	}
 
