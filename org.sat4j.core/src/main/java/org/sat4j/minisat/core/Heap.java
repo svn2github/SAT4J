@@ -134,7 +134,7 @@ public final class Heap implements Serializable {
 		indices.set(r, 0);
 		heap.pop();
 		if (heap.size() > 1)
-			percolateDown(i);
+			percolateDown(1);
 		return r;
 	}
 
