@@ -1798,6 +1798,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public int nVars() {
+		if (declaredMaxVarId == 0) {
+			return voc.nVars();
+		}
 		return declaredMaxVarId;
 	}
 

@@ -182,6 +182,9 @@ public interface IProblem {
 	 * To know the number of variables used in the solver as declared by
 	 * newVar()
 	 * 
+	 * In case the method newVar() has not been used, the method returns the
+	 * number of variables used in the solver.
+	 * 
 	 * @return the number of variables created using newVar().
 	 * @see #newVar(int)
 	 */
