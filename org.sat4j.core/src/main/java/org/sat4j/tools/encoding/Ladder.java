@@ -42,6 +42,7 @@ import org.sat4j.specs.IVecInt;
  * Modeling and Reformulating Constraint Satisfaction Problems, 2004
  * 
  * @author sroussel
+ * @since 2.3.1
  */
 public class Ladder extends EncodingStrategyAdapter {
 

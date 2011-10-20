@@ -44,7 +44,7 @@ import org.sat4j.specs.IVecInt;
  * Reasoning, vol. 35, n¡ 1-3, 2005
  * 
  * @author sroussel
- * 
+ * @since 2.3.1
  */
 public class Binary extends EncodingStrategyAdapter {
 

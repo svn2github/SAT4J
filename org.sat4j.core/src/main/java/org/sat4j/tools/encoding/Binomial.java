@@ -28,59 +28,58 @@
 
 package org.sat4j.tools.encoding;
 
+import org.sat4j.core.ConstrGroup;
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
- * This class allows the use of different encodings for different cardinality
- * constraints.
+ * 
+ * For the "at most one" case, this encoding is equivalent to the one referred
+ * to in the litterature as the pair-wise or na•ve encoding. For the "at most k"
+ * case, the previous encoding is generalized with binomial selection.
  * 
  * @author stephanieroussel
  * @since 2.3.1
  */
-public class Policy extends EncodingStrategyAdapter {
-
-	private final Sequential seq = new Sequential();
-	private final Binary binary = new Binary();
-	private final Product product = new Product();
-	private final Commander commander = new Commander();
+public class Binomial extends EncodingStrategyAdapter {
 
 	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
+	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
 			throws ContradictionException {
+		ConstrGroup group = new ConstrGroup();
 
-		// Commander commander = new Commander();
-		// Product product = new Product();
-		if (k == 0 || literals.size() == 1) {
-			// will propagate unit literals
-			return super.addAtMost(solver, literals, k);
+		VecInt clause = new VecInt();
+
+		for (VecInt vec : literals.subset(degree + 1)) {
+			for (int i = 0; i < vec.size(); i++) {
+				clause.push(-vec.get(i));
+			}
+			group.add(solver.addClause(clause));
+			clause.clear();
 		}
-		if (literals.size() <= 1) {
-			throw new UnsupportedOperationException(
-					"requires at least 2 literals");
-		}
-		if (k == 1) {
-			// return ladder.addAtMostOne(solver, literals);
-			// return binary.addAtMostOne(solver, literals);
-			return commander.addAtMostOne(solver, literals);
-			// return product.addAtMostOne(solver, literals);
-		}
-		// return seq.addAtMost(solver, literals, k);
-		// return product.addAtMost(solver, literals, k);
-		return commander.addAtMost(solver, literals, k);
+		return group;
+
 	}
 
 	@Override
-	public IConstr addExactly(ISolver solver, IVecInt literals, int n)
+	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
 			throws ContradictionException {
-		Ladder ladder = new Ladder();
-		if (n == 1) {
-			return ladder.addExactlyOne(solver, literals);
-		}
+		ConstrGroup group = new ConstrGroup();
 
-		return super.addExactly(solver, literals, n);
+		VecInt clause = new VecInt();
+
+		for (int i = 0; i < literals.size() - 1; i++) {
+			for (int j = i + 1; j < literals.size(); j++) {
+				clause.push(-literals.get(i));
+				clause.push(-literals.get(j));
+				group.add(solver.addClause(clause));
+				clause.clear();
+			}
+		}
+		return group;
 	}
 
 }

@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.sat4j.core;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import org.sat4j.specs.IVecInt;
@@ -70,8 +71,8 @@ public final class VecInt implements IVecInt {
 	public static final IVecInt EMPTY = new IVecInt() {
 
 		/**
-         * 
-         */
+		 * 
+		 */
 		private static final long serialVersionUID = 1L;
 
 		public int size() {
@@ -203,6 +204,10 @@ public final class VecInt implements IVecInt {
 		public void moveTo(int sourceStartingIndex, int[] dest) {
 			throw new UnsupportedOperationException();
 		}
+
+		public VecInt[] subset(int cardinal) {
+			return null;
+		};
 
 	};
 
@@ -662,5 +667,46 @@ public final class VecInt implements IVecInt {
 	 */
 	public int[] toArray() {
 		return myarray;
+	}
+
+	public VecInt[] subset(int cardinal) {
+		ArrayList<VecInt> liste = new ArrayList<VecInt>();
+
+		VecInt[] result;
+
+		if (cardinal == 1) {
+			result = new VecInt[this.size()];
+			for (int i = 0; i < this.size(); i++) {
+				result[i] = new VecInt(new int[] { this.get(i) });
+			}
+			return result;
+		}
+
+		if (this.size() == 0) {
+			result = new VecInt[0];
+			return result;
+		}
+
+		VecInt subVec = new VecInt();
+		VecInt newVec;
+		this.copyTo(subVec);
+		subVec.remove(this.get(0));
+
+		for (VecInt vecWithFirst : subVec.subset(cardinal - 1)) {
+			newVec = new VecInt();
+			vecWithFirst.copyTo(newVec);
+			newVec.insertFirst(this.get(0));
+			liste.add(newVec);
+		}
+
+		for (VecInt vecWithoutFirst : subVec.subset(cardinal)) {
+			liste.add(vecWithoutFirst);
+		}
+
+		result = new VecInt[liste.size()];
+		for (int i = 0; i < liste.size(); i++) {
+			result[i] = liste.get(i);
+		}
+		return result;
 	}
 }

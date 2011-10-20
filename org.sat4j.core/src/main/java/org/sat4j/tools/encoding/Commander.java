@@ -39,13 +39,15 @@ import org.sat4j.specs.IVecInt;
  * 
  * The case "at most one" is introduced in W. Klieber and G. Kwon
  * "Efficient CNF encoding for selecting 1 from N objects" in Fourth Workshop on
- * Constraints in Formal Verification, 2007. The generalization to the
- * "at most k" case is described in A. M. Frisch and P . A. Giannaros,
- * "SAT Encodings of the At-Most-k Constraint", in International Workshop on
- * Modelling and Reformulating Constraint Satisfaction Problems, 2010
+ * Constraints in Formal Verification, 2007.
+ * 
+ * The generalization to the "at most k" case is described in A. M. Frisch and P
+ * . A. Giannaros, "SAT Encodings of the At-Most-k Constraint", in International
+ * Workshop on Modelling and Reformulating Constraint Satisfaction Problems,
+ * 2010
  * 
  * @author sroussel
- * 
+ * @since 2.3.1
  */
 public class Commander extends EncodingStrategyAdapter {
 
@@ -137,8 +139,111 @@ public class Commander extends EncodingStrategyAdapter {
 	@Override
 	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
 			throws ContradictionException {
-		// TODO Implement the case
 		return super.addAtMost(solver, literals, degree);
+		// return addAtMost(solver, literals, degree, degree * 2);
 	}
 
+	private IConstr addAtMost(ISolver solver, IVecInt literals, int k,
+			int groupSize) throws ContradictionException {
+		ConstrGroup constrGroup = new ConstrGroup(false);
+
+		IVecInt clause = new VecInt();
+
+		final int n = literals.size();
+
+		int nbGroup = (int) Math.ceil((double) n / (double) groupSize);
+
+		if (nbGroup == 1) {
+			for (VecInt vec : literals.subset(k + 1)) {
+				for (int i = 0; i < vec.size(); i++) {
+					clause.push(-vec.get(i));
+				}
+				constrGroup.add(solver.addClause(clause));
+				clause.clear();
+			}
+			return constrGroup;
+		}
+
+		int[][] c = new int[nbGroup][k];
+		VecInt vecC = new VecInt();
+
+		for (int i = 0; i < nbGroup - 1; i++) {
+			for (int j = 0; j < k; j++) {
+				c[i][j] = solver.nextFreeVarId(true);
+				vecC.push(c[i][j]);
+			}
+		}
+
+		int nbVarLastGroup = n - (nbGroup - 1) * groupSize;
+		int nbCForLastGroup;
+		// nbCForLastGroup = Math.min(k, nbVarLastGroup);
+		nbCForLastGroup = k;
+
+		for (int j = 0; j < nbCForLastGroup; j++) {
+			c[nbGroup - 1][j] = solver.nextFreeVarId(true);
+			vecC.push(c[nbGroup - 1][j]);
+		}
+
+		VecInt[] groupTab = new VecInt[nbGroup];
+
+		// Every literal x is in a group Gi
+		// For every group Gi, we construct the group every {Gi \cup {c[i][j], j
+		// =0,...k-1}}
+		for (int i = 0; i < nbGroup - 1; i++) {
+			groupTab[i] = new VecInt();
+
+			int size = 0;
+			if (i == (nbGroup - 1)) {
+				size = nbVarLastGroup;
+			} else {
+				size = groupSize;
+			}
+
+			for (int j = 0; j < size; j++) {
+				groupTab[i].push(literals.get(i * groupSize + j));
+			}
+			for (int j = 0; j < k; j++) {
+				groupTab[i].push(-c[i][j]);
+			}
+		}
+
+		int size = nbVarLastGroup;
+		groupTab[nbGroup - 1] = new VecInt();
+		for (int j = 0; j < size; j++) {
+			groupTab[nbGroup - 1].push(literals.get((nbGroup - 1) * groupSize
+					+ j));
+		}
+		for (int j = 0; j < nbCForLastGroup; j++) {
+			groupTab[nbGroup - 1].push(-c[nbGroup - 1][j]);
+		}
+
+		Binomial bin = new Binomial();
+
+		// Encode <=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
+		// encoding
+		for (int i = 0; i < nbGroup; i++) {
+			constrGroup.add(bin.addAtMost(solver, groupTab[i], k));
+			System.out.println(constrGroup.getConstr(i).size());
+		}
+
+		// Encode >=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
+		// encoding
+		for (int i = 0; i < nbGroup; i++) {
+			constrGroup.add(bin.addAtLeast(solver, groupTab[i], k));
+			System.out.println(constrGroup.getConstr(i + nbGroup).size());
+		}
+
+		for (int i = 0; i < nbGroup; i++) {
+			for (int j = 0; j < k - 1; j++) {
+				clause.push(-c[i][j]);
+				clause.push(c[i][j + 1]);
+				constrGroup.add(solver.addClause(clause));
+				clause.clear();
+			}
+		}
+
+		constrGroup.add(addAtMost(solver, vecC, k));
+
+		return constrGroup;
+	}
 }

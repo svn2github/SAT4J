@@ -35,6 +35,14 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.encoding.EncodingStrategyAdapter;
 import org.sat4j.tools.encoding.Policy;
 
+/**
+ * 
+ * A decorator for clausal cardinalities constraints.
+ * 
+ * @author stephanieroussel
+ * @since 2.3.1
+ * @param <T>
+ */
 public class ClausalCardinalitiesDecorator<T extends ISolver> extends
 		SolverDecorator<T> {
 

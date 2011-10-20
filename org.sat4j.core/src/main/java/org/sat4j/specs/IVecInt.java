@@ -29,6 +29,8 @@ package org.sat4j.specs;
 
 import java.io.Serializable;
 
+import org.sat4j.core.VecInt;
+
 /**
  * An abstraction for the vector of int used on the library.
  * 
@@ -194,4 +196,14 @@ public interface IVecInt extends Serializable {
 	 * @since 2.1
 	 */
 	int[] toArray();
+
+	/**
+	 * 
+	 * @param vec
+	 * @param cardinal
+	 * @return
+	 * @author sroussel
+	 * @since 2.3.1
+	 */
+	public VecInt[] subset(int cardinal);
 }

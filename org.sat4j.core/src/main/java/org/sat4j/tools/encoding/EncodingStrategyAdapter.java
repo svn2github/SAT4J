@@ -39,6 +39,7 @@ import org.sat4j.specs.IVecInt;
  * The class is abstract because it does not makes sense to use it "as is".
  * 
  * @author sroussel
+ * @since 2.3.1
  */
 public abstract class EncodingStrategyAdapter {
 
@@ -47,9 +48,9 @@ public abstract class EncodingStrategyAdapter {
 		final int n = literals.size();
 		IVecInt newLiterals = new VecInt(n);
 		for (int i = 0; i < n; i++) {
-			newLiterals.set(i, -literals.get(i));
+			newLiterals.push(-literals.get(i));
 		}
-		return solver.addAtLeast(newLiterals, n - degree);
+		return this.addAtMost(solver, newLiterals, n - degree);
 	}
 
 	public IConstr addAtLeastOne(ISolver solver, IVecInt literals)

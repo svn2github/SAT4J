@@ -48,6 +48,7 @@ import org.sat4j.specs.IVecInt;
  * Modelling and Reformulating Constraint Satisfaction Problems, 2010
  * 
  * @author sroussel
+ * @since 2.3.1
  * 
  */
 public class Product extends EncodingStrategyAdapter {
@@ -73,14 +74,9 @@ public class Product extends EncodingStrategyAdapter {
 			return group;
 		}
 		if (n < 7) {
-			for (VecInt vec : subset(literals, k + 1)) {
-				for (int i = 0; i < vec.size(); i++) {
-					clause.push(-vec.get(i));
-				}
-				group.add(solver.addClause(clause));
-				clause.clear();
-			}
-			return group;
+			Binomial binomial = new Binomial();
+
+			return binomial.addAtMost(solver, literals, k);
 		}
 
 		final int p = (int) Math.ceil(Math.pow(n, (1 / (double) (k + 1))));
@@ -175,15 +171,8 @@ public class Product extends EncodingStrategyAdapter {
 		final int n = literals.size();
 
 		if (n < 7) {
-			for (int i = 0; i < n - 1; i++) {
-				for (int j = i + 1; j < n; j++) {
-					clause.push(-literals.get(i));
-					clause.push(-literals.get(j));
-					group.add(solver.addClause(clause));
-					clause.clear();
-				}
-			}
-			return group;
+			Binomial binomial = new Binomial();
+			return binomial.addAtMostOne(solver, literals);
 		}
 
 		final int p = (int) Math.ceil(Math.sqrt(n));
@@ -219,39 +208,6 @@ public class Product extends EncodingStrategyAdapter {
 		group.add(addAtMostOne(solver, new VecInt(u)));
 		group.add(addAtMostOne(solver, new VecInt(v)));
 		return group;
-	}
-
-	private ArrayList<VecInt> subset(IVecInt vec, int cardinal) {
-		ArrayList<VecInt> liste = new ArrayList<VecInt>();
-
-		if (cardinal == 1) {
-			for (int i = 0; i < vec.size(); i++) {
-				liste.add(new VecInt(new int[] { vec.get(i) }));
-			}
-			return liste;
-		}
-
-		if (vec.size() == 0) {
-			return liste;
-		}
-
-		VecInt subVec = new VecInt();
-		VecInt newVec;
-		vec.copyTo(subVec);
-		subVec.remove(vec.get(0));
-		for (VecInt vecWithFirst : subset(subVec, cardinal - 1)) {
-			newVec = new VecInt();
-			vecWithFirst.copyTo(newVec);
-			newVec.insertFirst(vec.get(0));
-			liste.add(newVec);
-		}
-		// System.out.println("Quand je prends " + vec.get(0));
-		// System.out.println(liste);
-		for (VecInt vecWithoutFirst : subset(subVec, cardinal)) {
-			liste.add(vecWithoutFirst);
-		}
-
-		return liste;
 	}
 
 	private int[] decompositionBase10VersBaseP(int n, int p, int nbBits) {

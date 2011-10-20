@@ -188,4 +188,13 @@ public final class ReadOnlyVecInt implements IVecInt {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * 
+	 * @author sroussel
+	 * @since 2.3.1
+	 */
+	public VecInt[] subset(int cardinal) {
+		return null;
+	}
+
 }
