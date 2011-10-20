@@ -19,7 +19,6 @@ public class TestPrimeComputation {
 	@Before
 	public void setUp() {
 		solver = SolverFactory.newBestWL();
-		solver.newVar(3);
 		solver.getOrder().setPhaseSelectionStrategy(
 				new PositiveLiteralSelectionStrategy());
 	}

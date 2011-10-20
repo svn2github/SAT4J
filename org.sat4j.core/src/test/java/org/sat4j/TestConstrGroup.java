@@ -97,7 +97,7 @@ public class TestConstrGroup {
 			throws ContradictionException, TimeoutException {
 		ISolver solver = SolverFactory.newDefault();
 		ConstrGroup g1 = new ConstrGroup();
-		solver.newVar(3);
+
 		IVecInt clause = new VecInt(new int[] { 1 });
 		solver.addClause(clause);
 

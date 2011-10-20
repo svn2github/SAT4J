@@ -20,11 +20,11 @@ public class BugSAT43 {
 		for (int i = 0; i < 10; i++) {
 			solver.nextFreeVarId(true);
 		}
-		assertEquals(0, solver.nVars());
+		assertEquals(10, solver.nVars());
 		assertEquals(10, solver.realNumberOfVariables());
 		solver.addClause(new VecInt(new int[] { 1, 2, 3 }));
 		int[] model1 = solver.findModel();
-		assertEquals(0, model1.length);
+		assertEquals(3, model1.length);
 		int[] model2 = solver.modelWithInternalVariables();
 		assertEquals(3, model2.length);
 	}
@@ -67,14 +67,15 @@ public class BugSAT43 {
 		assertEquals(0, solver.nVars());
 		assertEquals(0, solver.realNumberOfVariables());
 		solver.addClause(new VecInt(new int[] { 1, 2, 3 }));
+		assertEquals(3, solver.nVars());
 		assertEquals(3, solver.realNumberOfVariables());
 		for (int i = 0; i < 10; i++) {
 			solver.nextFreeVarId(true);
 		}
-		assertEquals(0, solver.nVars());
+		assertEquals(13, solver.nVars());
 		assertEquals(13, solver.realNumberOfVariables());
 		int[] model1 = solver.findModel();
-		assertEquals(0, model1.length);
+		assertEquals(3, model1.length);
 		int[] model2 = solver.modelWithInternalVariables();
 		assertEquals(3, model2.length);
 	}

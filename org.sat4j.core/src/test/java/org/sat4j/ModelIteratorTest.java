@@ -353,7 +353,6 @@ public class ModelIteratorTest {
 			TimeoutException {
 		SolutionCounter counter = new SolutionCounter(
 				SolverFactory.newDefault());
-		counter.newVar(size);
 		IVecInt clause = new VecInt();
 		for (int i = 1; i <= size; i++) {
 			clause.push(i);
