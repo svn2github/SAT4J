@@ -154,7 +154,7 @@ public class Commander extends EncodingStrategyAdapter {
 		int nbGroup = (int) Math.ceil((double) n / (double) groupSize);
 
 		if (nbGroup == 1) {
-			for (VecInt vec : literals.subset(k + 1)) {
+			for (IVecInt vec : literals.subset(k + 1)) {
 				for (int i = 0; i < vec.size(); i++) {
 					clause.push(-vec.get(i));
 				}

@@ -38,7 +38,7 @@ import org.sat4j.specs.IVecInt;
 /**
  * 
  * For the "at most one" case, this encoding is equivalent to the one referred
- * to in the litterature as the pair-wise or na•ve encoding. For the "at most k"
+ * to in the literature as the pair-wise or naive encoding. For the "at most k"
  * case, the previous encoding is generalized with binomial selection.
  * 
  * @author stephanieroussel
@@ -51,9 +51,9 @@ public class Binomial extends EncodingStrategyAdapter {
 			throws ContradictionException {
 		ConstrGroup group = new ConstrGroup();
 
-		VecInt clause = new VecInt();
+		IVecInt clause = new VecInt();
 
-		for (VecInt vec : literals.subset(degree + 1)) {
+		for (IVecInt vec : literals.subset(degree + 1)) {
 			for (int i = 0; i < vec.size(); i++) {
 				clause.push(-vec.get(i));
 			}

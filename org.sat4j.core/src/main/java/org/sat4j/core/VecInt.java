@@ -28,6 +28,7 @@
 package org.sat4j.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.sat4j.specs.IVecInt;
@@ -205,8 +206,8 @@ public final class VecInt implements IVecInt {
 			throw new UnsupportedOperationException();
 		}
 
-		public VecInt[] subset(int cardinal) {
-			return null;
+		public IVecInt[] subset(int cardinal) {
+			return new IVecInt[0];
 		};
 
 	};
@@ -669,10 +670,14 @@ public final class VecInt implements IVecInt {
 		return myarray;
 	}
 
-	public VecInt[] subset(int cardinal) {
-		ArrayList<VecInt> liste = new ArrayList<VecInt>();
+	/**
+	 * @since 2.3.1
+	 * @author sroussel
+	 */
+	public IVecInt[] subset(int cardinal) {
+		List<IVecInt> liste = new ArrayList<IVecInt>();
 
-		VecInt[] result;
+		IVecInt[] result;
 
 		if (cardinal == 1) {
 			result = new VecInt[this.size()];
@@ -692,14 +697,14 @@ public final class VecInt implements IVecInt {
 		this.copyTo(subVec);
 		subVec.remove(this.get(0));
 
-		for (VecInt vecWithFirst : subVec.subset(cardinal - 1)) {
+		for (IVecInt vecWithFirst : subVec.subset(cardinal - 1)) {
 			newVec = new VecInt();
 			vecWithFirst.copyTo(newVec);
 			newVec.insertFirst(this.get(0));
 			liste.add(newVec);
 		}
 
-		for (VecInt vecWithoutFirst : subVec.subset(cardinal)) {
+		for (IVecInt vecWithoutFirst : subVec.subset(cardinal)) {
 			liste.add(vecWithoutFirst);
 		}
 
