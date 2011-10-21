@@ -29,8 +29,6 @@ package org.sat4j.specs;
 
 import java.io.Serializable;
 
-import org.sat4j.core.VecInt;
-
 /**
  * An abstraction for the vector of int used on the library.
  * 
@@ -198,12 +196,13 @@ public interface IVecInt extends Serializable {
 	int[] toArray();
 
 	/**
+	 * Compute all subsets of cardinal k of the vector.
 	 * 
-	 * @param vec
-	 * @param cardinal
-	 * @return
+	 * @param k
+	 *            a cardinal (k<= vec.size())
+	 * @return an array of IVectInt representing each a k-subset of this vector.
 	 * @author sroussel
 	 * @since 2.3.1
 	 */
-	public VecInt[] subset(int cardinal);
+	public IVecInt[] subset(int k);
 }
