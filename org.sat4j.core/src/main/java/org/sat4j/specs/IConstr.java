@@ -62,5 +62,14 @@ public interface IConstr {
 	 */
 	double getActivity();
 
+	/**
+	 * Partition constraints into the ones that can only be found once on the
+	 * trail (e.g. clauses) and the ones that can be found several times (e.g.
+	 * cardinality constraints and pseudo-boolean constraints).
+	 * 
+	 * @return true if the constraint can be used several times as a reason to
+	 *         propagate a literal.
+	 * @since 2.3.1
+	 */
 	boolean canBePropagatedMultipleTimes();
 }
