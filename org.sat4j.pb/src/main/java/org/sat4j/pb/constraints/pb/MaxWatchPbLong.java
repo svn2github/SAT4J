@@ -73,10 +73,13 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
-		litToCoeffs = new HashMap<Integer, Long>(coefs.length);
-		for (int i = 0; i < coefs.length; i++) {
-			litToCoeffs.put(lits[i], coefs[i]);
-		}
+		if (coefs.length > MaxWatchPb.LIMIT_FOR_MAP) {
+			litToCoeffs = new HashMap<Integer, Long>(coefs.length);
+			for (int i = 0; i < coefs.length; i++) {
+				litToCoeffs.put(lits[i], coefs[i]);
+			}
+		} else
+			litToCoeffs = null;
 	}
 
 	/**
@@ -100,10 +103,13 @@ public final class MaxWatchPbLong extends WatchPbLong {
 
 		activity = 0;
 		watchCumul = 0;
-		litToCoeffs = new HashMap<Integer, Long>(coefs.length);
-		for (int i = 0; i < coefs.length; i++) {
-			litToCoeffs.put(lits[i], this.coefs[i]);
-		}
+		if (coefs.length > MaxWatchPb.LIMIT_FOR_MAP) {
+			litToCoeffs = new HashMap<Integer, Long>(coefs.length);
+			for (int i = 0; i < coefs.length; i++) {
+				litToCoeffs.put(lits[i], this.coefs[i]);
+			}
+		} else
+			litToCoeffs = null;
 	}
 
 	/**
@@ -171,7 +177,18 @@ public final class MaxWatchPbLong extends WatchPbLong {
 				+ computeLeftSide() + ":" + learnt;
 
 		// compute the new value for watchCumul
-		long coefP = litToCoeffs.get(p ^ 1);
+		long coefP;
+		if (litToCoeffs == null) {
+			// finding the index for p in the array of literals
+			int indiceP = 0;
+			while ((lits[indiceP] ^ 1) != p)
+				indiceP++;
+
+			// compute the new value for watchCumul
+			coefP = coefs[indiceP];
+		} else {
+			coefP = litToCoeffs.get(p ^ 1);
+		}
 		long newcumul = watchCumul - coefP;
 
 		if (newcumul < degree) {
@@ -232,7 +249,19 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 */
 	@Override
 	public void undo(int p) {
-		watchCumul = watchCumul + litToCoeffs.get(p ^ 1);
+		long coefP;
+		if (litToCoeffs == null) {
+			// finding the index for p in the array of literals
+			int indiceP = 0;
+			while ((lits[indiceP] ^ 1) != p)
+				indiceP++;
+
+			// compute the new value for watchCumul
+			coefP = coefs[indiceP];
+		} else {
+			coefP = litToCoeffs.get(p ^ 1);
+		}
+		watchCumul = watchCumul + coefP;
 	}
 
 	/**

@@ -48,6 +48,8 @@ public final class MaxWatchPb extends WatchPb {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int LIMIT_FOR_MAP = 100;
+
 	/**
 	 * sum of the coefficients of the literals satisfied or unvalued
 	 */
@@ -74,10 +76,13 @@ public final class MaxWatchPb extends WatchPb {
 
 		activity = 0;
 		watchCumul = BigInteger.ZERO;
-		litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
-		for (int i = 0; i < coefs.length; i++) {
-			litToCoeffs.put(lits[i], this.coefs[i]);
-		}
+		if (coefs.length > LIMIT_FOR_MAP) {
+			litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
+			for (int i = 0; i < coefs.length; i++) {
+				litToCoeffs.put(lits[i], this.coefs[i]);
+			}
+		} else
+			litToCoeffs = null;
 	}
 
 	/**
@@ -101,10 +106,13 @@ public final class MaxWatchPb extends WatchPb {
 
 		activity = 0;
 		watchCumul = BigInteger.ZERO;
-		litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
-		for (int i = 0; i < coefs.length; i++) {
-			litToCoeffs.put(lits[i], this.coefs[i]);
-		}
+		if (coefs.length > LIMIT_FOR_MAP) {
+			litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
+			for (int i = 0; i < coefs.length; i++) {
+				litToCoeffs.put(lits[i], this.coefs[i]);
+			}
+		} else
+			litToCoeffs = null;
 	}
 
 	/**
@@ -172,7 +180,19 @@ public final class MaxWatchPb extends WatchPb {
 				+ "/" + computeLeftSide() + ":" + learnt;
 
 		// compute the new value for watchCumul
-		BigInteger coefP = litToCoeffs.get(p ^ 1);
+		BigInteger coefP;
+		if (litToCoeffs == null) {
+			// finding the index for p in the array of literals
+			int indiceP = 0;
+			while ((lits[indiceP] ^ 1) != p)
+				indiceP++;
+
+			// compute the new value for watchCumul
+			coefP = coefs[indiceP];
+		} else {
+			coefP = litToCoeffs.get(p ^ 1);
+		}
+
 		BigInteger newcumul = watchCumul.subtract(coefP);
 
 		if (newcumul.compareTo(degree) < 0) {
@@ -230,7 +250,20 @@ public final class MaxWatchPb extends WatchPb {
 	 *            an unassigned literal
 	 */
 	public void undo(int p) {
-		watchCumul = watchCumul.add(litToCoeffs.get(p ^ 1));
+		BigInteger coefP;
+		if (litToCoeffs == null) {
+			// finding the index for p in the array of literals
+			int indiceP = 0;
+			while ((lits[indiceP] ^ 1) != p)
+				indiceP++;
+
+			// compute the new value for watchCumul
+			coefP = coefs[indiceP];
+		} else {
+			coefP = litToCoeffs.get(p ^ 1);
+		}
+
+		watchCumul = watchCumul.add(coefP);
 	}
 
 	/**
