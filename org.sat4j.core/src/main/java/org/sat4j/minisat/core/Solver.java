@@ -1977,7 +1977,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public void unset(int p) {
 		// the literal might already have been
 		// removed from the trail.
-		if (voc.isUnassigned(p)) {
+		if (voc.isUnassigned(p) || trail.isEmpty()) {
 			return;
 		}
 		int current = trail.last();
