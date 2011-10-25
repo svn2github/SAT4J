@@ -374,8 +374,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 			for (int i = 0; i < nVars(); i++) {
 				prevboolmodel[i] = decorated().model(i + 1);
 			}
-			prevfullmodel = modelWithInternalVariables();
-            prevmodel = model();
+			prevfullmodel = super.modelWithInternalVariables();
+            prevmodel = super.model();
 			calculateObjective();
         } else {
         	isSolutionOptimal = true;
