@@ -181,6 +181,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 	@Override
 	public void setObjectiveFunction(ObjectiveFunction func) {
 		this.objfct = func;
+		this.maxValue = objfct.minValue().intValue();
 		decorated().setObjectiveFunction(func);
 	}
 

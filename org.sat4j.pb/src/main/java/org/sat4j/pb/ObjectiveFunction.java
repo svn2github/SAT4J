@@ -112,4 +112,18 @@ public class ObjectiveFunction implements Serializable {
 		return stb.toString();
 	}
 
+	public BigInteger minValue() {
+		BigInteger tempDegree = BigInteger.ZERO;
+		for (int i = 0; i < vars.size(); i++) {
+			BigInteger coeff = coeffs.get(i);
+			if (coeff.signum() < 0) {
+				// the variable does not appear in the model: it can be assigned
+				// either way
+				// System.out.println("c special optimisation obj. function for var "+i);
+				tempDegree = tempDegree.add(coeff);
+			}
+		}
+		return tempDegree;
+	}
+
 }
