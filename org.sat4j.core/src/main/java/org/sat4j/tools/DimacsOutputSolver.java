@@ -166,11 +166,24 @@ public class DimacsOutputSolver extends AbstractOutputSolver {
 		return nbvars + 1;
 	}
 
+	/**
+	 * @since 2.3.1
+	 */
 	public int[] modelWithInternalVariables() {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @since 2.3.1
+	 */
 	public int realNumberOfVariables() {
 		return nbvars;
+	}
+
+	/**
+	 * @since 2.3.1
+	 */
+	public void registerLiteral(int p) {
+		throw new UnsupportedOperationException();
 	}
 }

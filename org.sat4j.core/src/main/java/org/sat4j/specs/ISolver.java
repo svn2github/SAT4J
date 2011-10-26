@@ -79,6 +79,18 @@ public interface ISolver extends IProblem, Serializable {
 	int nextFreeVarId(boolean reserve);
 
 	/**
+	 * Tell the solver to consider that the literal is in the CNF.
+	 * 
+	 * Since model() only return the truth value of the literals that appear in
+	 * the solver, it is sometimes required that the solver provides a default
+	 * truth value for a given literal. This happens for instance for MaxSat.
+	 * 
+	 * @param p
+	 *            the literal in Dimacs format that should appear in the model.
+	 */
+	void registerLiteral(int p);
+
+	/**
 	 * To inform the solver of the expected number of clauses to read. This is
 	 * an optional method, that is called when the <code>p cnf</code> line is
 	 * read in dimacs formatted input file.

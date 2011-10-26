@@ -192,6 +192,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return __dimacs_out;
 	}
 
+	/*
+	 * @since 2.3.1
+	 */
+	public void registerLiteral(int p) {
+		voc.getFromPool(p);
+	}
+
 	/**
 	 * creates a Solver without LearningListener. A learningListener must be
 	 * added to the solver, else it won't backtrack!!! A data structure factory

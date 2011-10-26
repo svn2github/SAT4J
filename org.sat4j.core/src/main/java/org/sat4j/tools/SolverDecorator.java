@@ -457,4 +457,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 		return solver.realNumberOfVariables();
 	}
 
+	/**
+	 * @since 2.3.1
+	 */
+	public void registerLiteral(int p) {
+		solver.registerLiteral(p);
+	}
+
 }

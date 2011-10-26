@@ -196,11 +196,18 @@ public class DimacsStringSolver extends AbstractOutputSolver {
 		return maxvarid + 1;
 	}
 
+	/**
+	 * @since 2.3.1
+	 */
 	public int[] modelWithInternalVariables() {
 		throw new UnsupportedOperationException();
 	}
 
 	public int realNumberOfVariables() {
 		return maxvarid;
+	}
+
+	public void registerLiteral(int p) {
+		throw new UnsupportedOperationException();
 	}
 }

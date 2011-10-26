@@ -449,6 +449,13 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	public int realNumberOfVariables() {
 		return solvers.get(0).realNumberOfVariables();
 	}
+
+	public void registerLiteral(int p) {
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers.get(i).registerLiteral(p);
+		}
+
+	}
 }
 
 interface OutcomeListener {
