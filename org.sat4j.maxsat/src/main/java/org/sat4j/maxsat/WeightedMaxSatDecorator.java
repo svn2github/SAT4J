@@ -192,6 +192,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                             coefs.delete(index);
                         }
                     } else {
+                    	registerLiteral(lit);
                         lits.push(lit);
                         coefs.push(weight);
                     }
