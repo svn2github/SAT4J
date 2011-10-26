@@ -114,7 +114,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				} else {
 					assert "maxsat".equalsIgnoreCase(kind);
 
-					if (args[problemindex].endsWith(".wcnf")) { //$NON-NLS-1$
+					if (args[problemindex].contains(".wcnf")) { //$NON-NLS-1$
 						if (cmd.hasOption("p")) {
 							asolver = new WeightedMaxSatDecorator(
 									org.sat4j.pb.SolverFactory.newBoth());
