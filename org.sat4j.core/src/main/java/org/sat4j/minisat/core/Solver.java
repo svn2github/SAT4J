@@ -1201,7 +1201,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
      */
 	void modelFound() {
 		IVecInt tempmodel = new VecInt(nVars());
-		userbooleanmodel = new boolean[nVars()];
+		userbooleanmodel = new boolean[realNumberOfVariables()];
 		fullmodel = null;
 		for (int i = 1; i <= nVars(); i++) {
 			if (voc.belongsToPool(i)) {
@@ -1225,6 +1225,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 					int p = voc.getFromPool(i);
 					if (!voc.isUnassigned(p)) {
 						tempmodel.push(voc.isSatisfied(p) ? i : -i);
+						userbooleanmodel[i - 1] = voc.isSatisfied(p);
 					}
 				}
 			}
@@ -1265,7 +1266,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public boolean model(int var) {
-		if (var <= 0 || var > nVars()) {
+		if (var <= 0 || var > realNumberOfVariables()) {
 			throw new IllegalArgumentException(
 					"Use a valid Dimacs var id as argument!"); //$NON-NLS-1$
 		}
