@@ -1,18 +1,3 @@
-package org.sat4j.pb.constraints;
-
-import java.math.BigInteger;
-
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.card.MinWatchCard;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
-
 /*******************************************************************************
  * SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le
  * Berre
@@ -41,6 +26,22 @@ import org.sat4j.specs.IVecInt;
  * See www.minisat.se for the original solver in C++.
  * 
  *******************************************************************************/
+
+package org.sat4j.pb.constraints;
+
+import java.math.BigInteger;
+
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
+import org.sat4j.minisat.constraints.card.MinWatchCard;
+import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.UnitPropagationListener;
+import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
+
 public class MinCardConstructor implements ICardConstructor {
 
 	public Constr constructCard(UnitPropagationListener solver, ILits voc,

@@ -50,11 +50,11 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
      */
 	private static final long serialVersionUID = 1L;
 
-	private ObjectiveFunction objfct;
-
 	private BigInteger objectiveValue;
 
 	private int[] prevmodel;
+	private int[] prevmodelwithadditionalvars;
+
 	private boolean[] prevfullmodel;
 
 	private IConstr previousPBConstr;
@@ -81,6 +81,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 		boolean result = super.isSatisfiable(assumps, true);
 		if (result) {
 			prevmodel = super.model();
+			prevmodelwithadditionalvars = super.modelWithInternalVariables();
 			prevfullmodel = new boolean[nVars()];
 			for (int i = 0; i < nVars(); i++) {
 				prevfullmodel[i] = decorated().model(i + 1);
@@ -101,7 +102,6 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	@Override
 	public void setObjectiveFunction(ObjectiveFunction objf) {
-		objfct = objf;
 		decorated().setObjectiveFunction(objf);
 	}
 
@@ -116,11 +116,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 			boolean result = super.isSatisfiable(assumps, true);
 			if (result) {
 				prevmodel = super.model();
+				prevmodelwithadditionalvars = super
+						.modelWithInternalVariables();
 				prevfullmodel = new boolean[nVars()];
 				for (int i = 0; i < nVars(); i++) {
 					prevfullmodel[i] = decorated().model(i + 1);
 				}
-				if (objfct != null) {
+				if (decorated().getObjectiveFunction() != null) {
 					calculateObjective();
 				}
 			} else {
@@ -141,7 +143,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	}
 
 	public boolean hasNoObjectiveFunction() {
-		return objfct == null;
+		return decorated().getObjectiveFunction() == null;
 	}
 
 	public boolean nonOptimalMeansSatisfiable() {
@@ -149,22 +151,25 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	}
 
 	public Number calculateObjective() {
-		if (objfct == null) {
+		if (decorated().getObjectiveFunction() == null) {
 			throw new UnsupportedOperationException(
 					"The problem does not contain an objective function");
 		}
-		objectiveValue = objfct.calculateDegree(prevmodel);
-		return objectiveValue;
+		objectiveValue = decorated().getObjectiveFunction().calculateDegree(
+				prevmodelwithadditionalvars);
+		return getObjectiveValue();
 	}
 
 	public void discardCurrentSolution() throws ContradictionException {
 		if (previousPBConstr != null) {
 			super.removeSubsumedConstr(previousPBConstr);
 		}
-		if (objfct != null && objectiveValue != null) {
-			previousPBConstr = super.addPseudoBoolean(objfct.getVars(),
-					objfct.getCoeffs(), false,
-					objectiveValue.subtract(BigInteger.ONE));
+		if (decorated().getObjectiveFunction() != null
+				&& objectiveValue != null) {
+			previousPBConstr = super.addPseudoBoolean(decorated()
+					.getObjectiveFunction().getVars(), decorated()
+					.getObjectiveFunction().getCoeffs(), false, objectiveValue
+					.subtract(BigInteger.ONE));
 		}
 	}
 
@@ -192,7 +197,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 	}
 
 	public Number getObjectiveValue() {
-		return objectiveValue;
+		return objectiveValue.add(decorated().getObjectiveFunction()
+				.getCorrection());
 	}
 
 	public void discard() throws ContradictionException {
@@ -201,11 +207,17 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
-		super.addPseudoBoolean(objfct.getVars(), objfct.getCoeffs(), false,
+		super.addPseudoBoolean(decorated().getObjectiveFunction().getVars(),
+				decorated().getObjectiveFunction().getCoeffs(), false,
 				(BigInteger) forcedValue);
 	}
 
 	public boolean isOptimal() {
 		return isSolutionOptimal;
+	}
+
+	@Override
+	public int[] modelWithInternalVariables() {
+		return prevmodelwithadditionalvars;
 	}
 }

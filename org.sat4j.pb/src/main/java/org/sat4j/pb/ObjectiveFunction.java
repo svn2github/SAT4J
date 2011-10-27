@@ -55,6 +55,8 @@ public class ObjectiveFunction implements Serializable {
 
 	private final IVecInt vars;
 
+	private BigInteger correction = BigInteger.ZERO;
+
 	public ObjectiveFunction(IVecInt vars, IVec<BigInteger> coeffs) {
 		this.vars = new ReadOnlyVecInt(vars);
 		this.coeffs = new ReadOnlyVec<BigInteger>(coeffs);
@@ -91,6 +93,14 @@ public class ObjectiveFunction implements Serializable {
 
 	public IVecInt getVars() {
 		return vars;
+	}
+
+	public void setCorrection(BigInteger correction) {
+		this.correction = correction;
+	}
+
+	public BigInteger getCorrection() {
+		return correction;
 	}
 
 	@Override

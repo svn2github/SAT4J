@@ -49,7 +49,6 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 	private int[] bestModel;
 	private boolean[] bestFullModel;
 	private IConstr previousPBConstr;
-	private ObjectiveFunction objfct = null;
 	private IConstr addedConstr = null;
 	private int maxValue = 0;
 	private Number objectiveValue;
@@ -105,6 +104,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 		if (this.optimumFound) {
 			return false;
 		}
+		maxValue = getObjectiveFunction().minValue().intValue();
 		while (true) {
 			if (addedConstr != null) {
 				this.decorated().removeConstr(addedConstr);
@@ -125,7 +125,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 				for (int i = 0; i < nVars(); i++) {
 					bestFullModel[i] = decorated().model(i + 1);
 				}
-				if (objfct != null) {
+				if (getObjectiveFunction() != null) {
 					calculateObjective();
 				}
 				this.decorated().removeConstr(addedConstr);
@@ -137,7 +137,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 	}
 
 	public boolean hasNoObjectiveFunction() {
-		return objfct == null;
+		return getObjectiveFunction() == null;
 	}
 
 	public boolean nonOptimalMeansSatisfiable() {
@@ -146,11 +146,11 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 
 	@Deprecated
 	public Number calculateObjective() {
-		if (objfct == null) {
+		if (getObjectiveFunction() == null) {
 			throw new UnsupportedOperationException(
 					"The problem does not contain an objective function");
 		}
-		objectiveValue = objfct.calculateDegree(bestModel);
+		objectiveValue = getObjectiveFunction().calculateDegree(bestModel);
 		return objectiveValue;
 	}
 
@@ -160,8 +160,8 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
-		addedConstr = super.addPseudoBoolean(objfct.getVars(),
-				objfct.getCoeffs(), false,
+		addedConstr = super.addPseudoBoolean(getObjectiveFunction().getVars(),
+				getObjectiveFunction().getCoeffs(), false,
 				BigInteger.valueOf(forcedValue.longValue()));
 	}
 
@@ -177,12 +177,4 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 	public boolean isOptimal() {
 		return this.optimumFound;
 	}
-
-	@Override
-	public void setObjectiveFunction(ObjectiveFunction func) {
-		this.objfct = func;
-		this.maxValue = objfct.minValue().intValue();
-		decorated().setObjectiveFunction(func);
-	}
-
 }
