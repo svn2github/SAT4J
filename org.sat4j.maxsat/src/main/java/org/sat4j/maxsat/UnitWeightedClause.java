@@ -4,6 +4,15 @@ import org.sat4j.specs.IConstr;
 
 public class UnitWeightedClause implements IConstr {
 
+	private static final UnitWeightedClause instance = new UnitWeightedClause();
+	
+	public static UnitWeightedClause instance() {
+		return instance;
+	}
+	
+	private UnitWeightedClause() {
+		// singleton design pattern
+	}
 	public boolean learnt() {
 		throw new UnsupportedOperationException();
 	}
