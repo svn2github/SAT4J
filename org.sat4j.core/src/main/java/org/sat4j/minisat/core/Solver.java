@@ -1492,6 +1492,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		private static final long serialVersionUID = 1L;
 		private int[] flags = new int[0];
 		private int flag = 0;
+		private int wall = 0;
 
 		private final ConflictTimer clauseManagement = new ConflictTimerAdapter(
 				1000) {
@@ -1506,6 +1507,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				nbconflict += bound();
 				if (nbconflict >= nextbound) {
 					nextbound += INC_CLAUSE;
+					if (nextbound > wall) {
+						nextbound = wall;
+					}
 					nbconflict = 0;
 					needToReduceDB = true;
 				}
@@ -1555,6 +1559,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 		public void init() {
 			final int howmany = voc.nVars();
+			wall = constrs.size() > 10000 ? constrs.size() : 10000;
 			if (flags.length <= howmany) {
 				flags = new int[howmany + 1];
 			}
