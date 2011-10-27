@@ -58,24 +58,25 @@ public class TestQuickExplainPB {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(
-				BigInteger.ONE);
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2))
+				.push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
-				.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(
-				BigInteger.ONE);
-		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
-				.valueOf(4));
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE)
+				.push(BigInteger.ONE);
+		IConstr c2 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
 		Collection<IConstr> explanation = solver.explain();
 		assertEquals(2, explanation.size());
+		System.out.println(explanation);
 		assertTrue(explanation.contains(c1));
 		assertTrue(explanation.contains(c2));
 	}
@@ -176,12 +177,12 @@ public class TestQuickExplainPB {
 		XplainPB solver = new XplainPB(SolverFactory.newDefault());
 		solver.newVar(4);
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2)).push(
-				BigInteger.ONE);
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.valueOf(2))
+				.push(BigInteger.ONE);
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3);
-		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
-				.valueOf(4));
+		IConstr c1 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		clause.push(2).push(-3).push(4);
@@ -190,10 +191,10 @@ public class TestQuickExplainPB {
 		clause.clear();
 		coeffs.clear();
 		clause.push(-1).push(3).push(4);
-		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE).push(
-				BigInteger.ONE);
-		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true, BigInteger
-				.valueOf(4));
+		coeffs.push(BigInteger.valueOf(3)).push(BigInteger.ONE)
+				.push(BigInteger.ONE);
+		IConstr c3 = solver.addPseudoBoolean(clause, coeffs, true,
+				BigInteger.valueOf(4));
 		clause.clear();
 		coeffs.clear();
 		assertFalse(solver.isSatisfiable());
