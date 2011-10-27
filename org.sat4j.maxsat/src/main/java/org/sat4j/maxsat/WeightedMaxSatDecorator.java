@@ -27,11 +27,9 @@ import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PBSolverDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
-import org.sat4j.specs.TimeoutException;
 
 /**
  * A decorator for solving weighted MAX SAT problems.
@@ -42,8 +40,7 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * 
  */
-public class WeightedMaxSatDecorator extends PBSolverDecorator implements
-        IOptimizationProblem {
+public class WeightedMaxSatDecorator extends PBSolverDecorator {
 
     public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger("100000000000000000000000000000000000000000");
 
@@ -56,15 +53,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     protected int nbnewvar;
 
-	protected int[] prevmodel;
-	protected boolean[] prevboolmodel;
-
-    protected int[] prevfullmodel;
-    
-    private IConstr previousPBConstr;
-
-    private boolean isSolutionOptimal;
-    
+        
     public WeightedMaxSatDecorator(IPBSolver solver) {
         super(solver);
         solver.setObjectiveFunction(obj);
@@ -75,16 +64,6 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
         lits.ensure(nb);
         falsifiedWeight = BigInteger.ZERO;
         super.setExpectedNumberOfClauses(nb);
-    }
-
-    @Override
-    public int[] model() {
-		return prevmodel;
-    }
-
-	@Override
-	public boolean model(int var) {
-		return prevboolmodel[var - 1];
     }
 
     protected BigInteger top = SAT4J_MAX_BIG_INTEGER;
@@ -191,6 +170,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
                             lits.delete(index);
                             coefs.delete(index);
                         }
+                        obj.setCorrection(falsifiedWeight);
                     } else {
                     	registerLiteral(lit);
                         lits.push(lit);
@@ -362,61 +342,14 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 		}
     }
     
-    public boolean admitABetterSolution() throws TimeoutException {
-    	return admitABetterSolution(VecInt.EMPTY);
-    }
-    
-    public boolean admitABetterSolution(IVecInt assumps)
-		throws TimeoutException {
-    	isSolutionOptimal = false;
-        boolean result = super.isSatisfiable(assumps,true);
-        if (result) {
-			prevboolmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				prevboolmodel[i] = decorated().model(i + 1);
-			}
-			prevfullmodel = super.modelWithInternalVariables();
-            prevmodel = super.model();
-			calculateObjective();
-        } else {
-        	isSolutionOptimal = true;
-			if (previousPBConstr != null) {
-				decorated().removeConstr(previousPBConstr);
-				previousPBConstr = null;
-			}
-		}
-        return result;
-    }
-
-    @Override
+     @Override
     public void reset() {
         coefs.clear();
         lits.clear();
         nbnewvar = 0;
-        previousPBConstr = null;
         super.reset();
     }
 
-    public boolean hasNoObjectiveFunction() {
-        return false;
-    }
-
-    public boolean nonOptimalMeansSatisfiable() {
-        return false;
-    }
-
-    private BigInteger counter;
-
-    public Number calculateObjective() {
-        counter = BigInteger.ZERO;
-        for (int q : prevfullmodel) {
-            int index = lits.containsAt(q);
-            if (index != -1) {
-                counter = counter.add(coefs.get(index));
-            }
-        }
-        return falsifiedWeight.add(counter);
-    }
 
     private final IVecInt lits = new VecInt();
 
@@ -424,35 +357,11 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator implements
 
     private final ObjectiveFunction obj = new ObjectiveFunction(lits, coefs);
 
-    public void discardCurrentSolution() throws ContradictionException {
-        assert lits.size() == coefs.size();
-        if (previousPBConstr!=null) {
-        	removeSubsumedConstr(previousPBConstr);
-        }
-        try {
-			previousPBConstr = super.addPseudoBoolean(lits, coefs, false, counter.add(BigInteger.ONE.negate()));
-		} catch (ContradictionException e) {
-			isSolutionOptimal = true;
-			throw e;
-		}
-    }
-
-	public Number getObjectiveValue() {
-		return falsifiedWeight.add(counter);
-	}
-
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
-	}
-
+ 
 	public void forceObjectiveValueTo(Number forcedValue)
 			throws ContradictionException {
 		if (lits.size() > 0) 
 			// there is at least one soft clause
 			super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
-	}
-
-	public boolean isOptimal() {
-		return isSolutionOptimal;
 	}
 }

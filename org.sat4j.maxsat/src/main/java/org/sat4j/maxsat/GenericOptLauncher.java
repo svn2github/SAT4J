@@ -28,6 +28,8 @@ import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.opt.MinOneDecorator;
+import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
@@ -41,7 +43,6 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
-	
 	/**
      * 
      */
@@ -60,6 +61,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				"kind of problem: minone, maxsat, etc.");
 		options.addOption("i", "incomplete", false,
 				"incomplete mode for maxsat");
+		options.addOption("l", "lower bounding", false,
+				"search solution by lower bounding instead of by upper bounding");
 		return options;
 	}
 
@@ -78,9 +81,9 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 	protected Reader createReader(ISolver aSolver, String problemname) {
 		Reader reader;
 		if (problemname.contains(".wcnf")) { //$NON-NLS-1$
-			reader = new WDimacsReader((WeightedMaxSatDecorator) aSolver); //$NON-NLS-1$
+			reader = new WDimacsReader(wmsd); //$NON-NLS-1$
 		} else {
-		reader = new DimacsReader(aSolver);
+			reader = new DimacsReader(aSolver);
 		}
 		reader.setVerbosity(true);
 		return reader;
@@ -90,6 +93,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 	protected String getInstanceName(String[] args) {
 		return args[args.length - 1];
 	}
+
+	private WeightedMaxSatDecorator wmsd;
 
 	@Override
 	protected ISolver configureSolver(String[] args) {
@@ -116,11 +121,17 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
 					if (args[problemindex].contains(".wcnf")) { //$NON-NLS-1$
 						if (cmd.hasOption("p")) {
-							asolver = new WeightedMaxSatDecorator(
+							wmsd = new WeightedMaxSatDecorator(
 									org.sat4j.pb.SolverFactory.newBoth());
 						} else {
-							asolver = new WeightedMaxSatDecorator(SolverFactory
-									.newDefault());
+							wmsd = new WeightedMaxSatDecorator(
+									SolverFactory.newDefault());
+						}
+						if (cmd.hasOption("l")) {
+							asolver = new ConstraintRelaxingPseudoOptDecorator(
+									wmsd);
+						} else {
+							asolver = new PseudoOptDecorator(wmsd);
 						}
 					} else {
 						if (cmd.hasOption("p")) {
