@@ -73,12 +73,13 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     }
 
 	/**
-	 * Add a set of literals to the solver.
+	 * Add a soft clause to the solver.
 	 * 
-	 * Here the assumption is that the first literal (literals[0]) is the weight
-	 * of the constraint as found in the MAXSAT evaluation. if the weight is
-	 * greater or equal to the top weight, then the clause is hard, else it is
-	 * soft.
+	 * That method allows to read a clause in a CNF and to consider it as soft,
+	 * in order to solve MAXSAT problems.
+	 * 
+	 * Note that the behavior of that method changed in release 2.3.1. Prior to
+	 * that, the method was expecting a weight as first element of the list of literals.
 	 * 
 	 * @param literals
 	 *            a weighted clause, the weight being the first element of the
@@ -87,9 +88,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 	 */
     @Override
     public IConstr addClause(IVecInt literals) throws ContradictionException {
-        int weight = literals.get(0);
-		literals.delete(0);
-		return addSoftClause(weight, literals);
+		return addSoftClause(1, literals);
 	}
 
 	/**

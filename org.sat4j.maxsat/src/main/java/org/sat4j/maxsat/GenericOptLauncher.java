@@ -26,7 +26,6 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.maxsat.reader.WDimacsReader;
-import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
 import org.sat4j.pb.PseudoOptDecorator;
@@ -83,7 +82,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 		if (problemname.contains(".wcnf")) { //$NON-NLS-1$
 			reader = new WDimacsReader(wmsd); //$NON-NLS-1$
 		} else {
-			reader = new DimacsReader(aSolver);
+			reader = new DimacsReader(wmsd);
 		}
 		reader.setVerbosity(true);
 		return reader;
@@ -118,30 +117,17 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 					asolver = new MinCostDecorator(SolverFactory.newDefault());
 				} else {
 					assert "maxsat".equalsIgnoreCase(kind);
-
-					if (args[problemindex].contains(".wcnf")) { //$NON-NLS-1$
-						if (cmd.hasOption("p")) {
-							wmsd = new WeightedMaxSatDecorator(
-									org.sat4j.pb.SolverFactory.newBoth());
-						} else {
-							wmsd = new WeightedMaxSatDecorator(
-									SolverFactory.newDefault());
-						}
-						if (cmd.hasOption("l")) {
-							asolver = new ConstraintRelaxingPseudoOptDecorator(
-									wmsd);
-						} else {
-							asolver = new PseudoOptDecorator(wmsd);
-						}
+					if (cmd.hasOption("p")) {
+						wmsd = new WeightedMaxSatDecorator(
+								org.sat4j.pb.SolverFactory.newBoth());
 					} else {
-						if (cmd.hasOption("p")) {
-							asolver = new MaxSatDecorator(
-									org.sat4j.pb.SolverFactory.newBoth());
-						} else {
-							asolver = new MaxSatDecorator(
-									org.sat4j.minisat.SolverFactory
-											.newDefault());
-						}
+						wmsd = new WeightedMaxSatDecorator(
+								SolverFactory.newDefault());
+					}
+					if (cmd.hasOption("l")) {
+						asolver = new ConstraintRelaxingPseudoOptDecorator(wmsd);
+					} else {
+						asolver = new PseudoOptDecorator(wmsd);
 					}
 				}
 				if (cmd.hasOption("i")) {
