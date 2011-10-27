@@ -206,9 +206,9 @@ public abstract class AbstractLauncher implements Serializable {
 				return;
 			}
 			beginTime = System.currentTimeMillis();
-			IProblem problem = readProblem(instanceName);
+			readProblem(instanceName);
 			try {
-				solve(problem);
+				solve(solver);
 			} catch (TimeoutException e) {
 				log("timeout"); //$NON-NLS-1$
 			}
