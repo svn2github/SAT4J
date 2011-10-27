@@ -64,7 +64,6 @@ import org.sat4j.pb.core.PBSolverClause;
 import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
-import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.tools.ManyCorePB;
 import org.sat4j.specs.ISolver;
@@ -315,8 +314,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 			PBDataStructureFactory dsf) {
 		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
 		PBSolverResolution solver = new PBSolverResolution(learning, dsf,
-				new RandomWalkDecoratorObjective(new VarOrderHeapObjective(
-						new RSATPhaseSelectionStrategy()), 0.005),
+				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
 				new ArminRestarts());
 		learning.setDataStructureFactory(solver.getDSFactory());
 		learning.setVarActivityListener(solver);

@@ -122,7 +122,7 @@ public class PseudoBitsAdderDecorator extends SolverDecorator<IPBSolver>
 				// var = bitsLiterals.get(--litIndex);
 				// }
 				fixedLiterals.push(-bitsLiterals.get(litIndex--));
-				Number value = objfct.calculateDegree(gator.model());
+				Number value = objfct.calculateDegree(gator);
 				System.out.println("o " + value);
 				System.out.println("c current objective value with fixed lits "
 						+ fixedLiterals);
@@ -150,9 +150,10 @@ public class PseudoBitsAdderDecorator extends SolverDecorator<IPBSolver>
 				System.out.println("s OPTIMUM FOUND");
 				System.out.println("v " + reader.decode(problem.model()));
 				if (decorator.objfct != null) {
-					System.out.println("c objective function="
-							+ decorator.objfct.calculateDegree(decorator.gator
-									.model()));
+					System.out
+							.println("c objective function="
+									+ decorator.objfct
+											.calculateDegree(decorator.gator));
 				}
 			} else {
 				System.out.println("s UNSAT");

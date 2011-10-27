@@ -266,7 +266,7 @@ public class DependencyHelper<T, C> {
 	}
 
 	public BigInteger getSolutionCost() {
-		return objFunction.calculateDegree(solver.model());
+		return objFunction.calculateDegree(solver);
 	}
 
 	/**

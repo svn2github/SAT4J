@@ -32,6 +32,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.ReadOnlyVec;
 import org.sat4j.core.ReadOnlyVecInt;
+import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
@@ -63,28 +64,26 @@ public class ObjectiveFunction implements Serializable {
 	}
 
 	// calculate the degree of the objective function
-	public BigInteger calculateDegree(int[] model) {
+	public BigInteger calculateDegree(ISolver solver) {
 		BigInteger tempDegree = BigInteger.ZERO;
 
 		for (int i = 0; i < vars.size(); i++) {
 			BigInteger coeff = coeffs.get(i);
-			if (varInModel(vars.get(i), model))
+			if (varInModel(vars.get(i), solver))
 				tempDegree = tempDegree.add(coeff);
-			else if ((coeff.signum() < 0) && !varInModel(-vars.get(i), model)) {
+			else if ((coeff.signum() < 0) && !varInModel(-vars.get(i), solver)) {
 				// the variable does not appear in the model: it can be assigned
 				// either way
-				// System.out.println("c special optimisation obj. function for var "+i);
 				tempDegree = tempDegree.add(coeff);
 			}
 		}
 		return tempDegree;
 	}
 
-	private boolean varInModel(int var, int[] model) {
-		for (int i = 0; i < model.length; i++)
-			if (var == model[i])
-				return true;
-		return false;
+	private boolean varInModel(int var, ISolver solver) {
+		if (var > 0)
+			return solver.model(var);
+		return !solver.model(-var);
 	}
 
 	public IVec<BigInteger> getCoeffs() {
@@ -127,9 +126,6 @@ public class ObjectiveFunction implements Serializable {
 		for (int i = 0; i < vars.size(); i++) {
 			BigInteger coeff = coeffs.get(i);
 			if (coeff.signum() < 0) {
-				// the variable does not appear in the model: it can be assigned
-				// either way
-				// System.out.println("c special optimisation obj. function for var "+i);
 				tempDegree = tempDegree.add(coeff);
 			}
 		}

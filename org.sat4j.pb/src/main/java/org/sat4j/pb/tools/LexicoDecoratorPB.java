@@ -89,8 +89,7 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 
 	@Override
 	protected Number evaluate() {
-		bigCurrentValue = objs.get(currentCriterion).calculateDegree(
-				prevfullmodel);
+		bigCurrentValue = objs.get(currentCriterion).calculateDegree(this);
 		return bigCurrentValue;
 	}
 

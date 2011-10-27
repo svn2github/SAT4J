@@ -155,7 +155,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 			throw new UnsupportedOperationException(
 					"The problem does not contain an objective function");
 		}
-		objectiveValue = getObjectiveFunction().calculateDegree(bestModel);
+		objectiveValue = getObjectiveFunction().calculateDegree(this);
 		return objectiveValue;
 	}
 

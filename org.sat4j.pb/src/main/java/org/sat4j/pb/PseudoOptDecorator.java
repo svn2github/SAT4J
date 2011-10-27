@@ -156,7 +156,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 					"The problem does not contain an objective function");
 		}
 		objectiveValue = decorated().getObjectiveFunction().calculateDegree(
-				prevmodelwithadditionalvars);
+				decorated());
 		return getObjectiveValue();
 	}
 
