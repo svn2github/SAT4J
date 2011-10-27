@@ -55,7 +55,8 @@ public interface Constr extends Propagatable, IConstr {
 	 * Simplifies a constraint, by removing top level falsified literals for
 	 * instance.
 	 * 
-	 * @return true iff the constraint is satisfied.
+	 * @return true iff the constraint is satisfied and can be removed from the
+	 *         database.
 	 */
 	boolean simplify();
 
