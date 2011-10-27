@@ -177,4 +177,11 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 	public boolean isOptimal() {
 		return this.optimumFound;
 	}
+
+	@Override
+	public String toString(String prefix) {
+		return prefix + "Pseudo Boolean Optimization by lower bound\n"
+				+ super.toString(prefix);
+	}
+
 }

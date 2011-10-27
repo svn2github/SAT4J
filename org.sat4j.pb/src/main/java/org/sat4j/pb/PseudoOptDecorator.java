@@ -192,7 +192,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
 	@Override
 	public String toString(String prefix) {
-		return prefix + "Pseudo Boolean Optimization\n"
+		return prefix + "Pseudo Boolean Optimization by upper bound\n"
 				+ super.toString(prefix);
 	}
 
