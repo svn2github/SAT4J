@@ -60,7 +60,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
     }
 
     public static IPBSolver newDefault() {
-        return org.sat4j.pb.SolverFactory.newDefault();
+        return org.sat4j.pb.SolverFactory.newResolutionGlucoseExpSimp();
     }
  
     public static IPBSolver newLight() {
