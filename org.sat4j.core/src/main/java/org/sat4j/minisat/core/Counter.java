@@ -48,4 +48,13 @@ public class Counter {
 	public String toString() {
 		return String.valueOf(value);
 	}
+
+	/**
+	 * 
+	 * @return the value of the counter.
+	 * @since 2.3.1
+	 */
+	public int getValue() {
+		return value;
+	}
 }

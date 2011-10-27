@@ -1743,9 +1743,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	public void printInfos(PrintWriter out, String prefix) {
 		out.print(prefix);
 		out.println("constraints type ");
+		long total = 0;
 		for (Map.Entry<String, Counter> entry : constrTypes.entrySet()) {
 			out.println(prefix + entry.getKey() + " => " + entry.getValue());
+			total += entry.getValue().getValue();
 		}
+		out.print(prefix);
+		out.print(total);
+		out.println(" constraints processed.");
 	}
 
 	/**
@@ -1822,7 +1827,14 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 * @return a reference to the constraint for external use.
 	 */
 	protected IConstr addConstr(Constr constr) {
-		if (constr != null) {
+		if (constr == null) {
+			Counter count = constrTypes.get("ignored satisfied constraints");
+			if (count == null) {
+				constrTypes.put("ignored satisfied constraints", new Counter());
+			} else {
+				count.inc();
+			}
+		} else {
 			constrs.push(constr);
 			String type = constr.getClass().getName();
 			Counter count = constrTypes.get(type);
