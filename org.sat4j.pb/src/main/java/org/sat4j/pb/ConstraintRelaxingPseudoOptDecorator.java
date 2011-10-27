@@ -112,9 +112,11 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 			try {
 				forceObjectiveValueTo(this.maxValue++);
 			} catch (ContradictionException e) {
-				System.out.println(decorated().getLogPrefix()
-						+ " no solution for objective value "
-						+ (this.maxValue - 1));
+				if (isVerbose()) {
+					System.out.println(decorated().getLogPrefix()
+							+ "no solution for objective value "
+							+ (this.maxValue - 1));
+				}
 				continue;
 			}
 			isSatisfiable = super.isSatisfiable(assumps, true);
@@ -131,8 +133,11 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
 				this.decorated().removeConstr(addedConstr);
 				return true;
 			}
-			System.out.println(decorated().getLogPrefix()
-					+ "no solution for objective value " + (this.maxValue - 1));
+			if (isVerbose()) {
+				System.out.println(decorated().getLogPrefix()
+						+ "no solution for objective value "
+						+ (this.maxValue - 1));
+			}
 		}
 	}
 
