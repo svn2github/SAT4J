@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.sat4j.core.VecInt;
 import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.pb.OptToPBSATAdapter;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -74,7 +75,7 @@ public class TestDavid {
 		literals.clear();
 		literals.push(-3);
 		maxsat.addSoftClause(5, literals);
-		OptToPBSATAdapter opt = new OptToPBSATAdapter(maxsat);
+		OptToPBSATAdapter opt = new OptToPBSATAdapter(new PseudoOptDecorator(maxsat));
 		assertTrue(opt.isSatisfiable());
 		assertTrue(opt.model(2));
 		assertTrue(opt.model(3));
@@ -94,7 +95,7 @@ public class TestDavid {
 		literals.push(-2).push(3);
 		IVecInt coefs = new VecInt().push(10).push(5);
 		maxsat.addWeightedLiteralsToMinimize(literals, coefs);
-		OptToPBSATAdapter opt = new OptToPBSATAdapter(maxsat);
+		OptToPBSATAdapter opt = new OptToPBSATAdapter(new PseudoOptDecorator(maxsat));
 		assertTrue(opt.isSatisfiable());
 		assertTrue(opt.model(2));
 		assertTrue(opt.model(3));
@@ -113,7 +114,7 @@ public class TestDavid {
 		literals.clear();
 		literals.push(1).push(2).push(3);
 		maxsat.addLiteralsToMinimize(literals);
-		OptToPBSATAdapter opt = new OptToPBSATAdapter(maxsat);
+		OptToPBSATAdapter opt = new OptToPBSATAdapter(new PseudoOptDecorator(maxsat));
 		assertTrue(opt.isSatisfiable());
 		assertFalse(opt.model(1));
 		assertFalse(opt.model(2));

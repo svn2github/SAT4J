@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.sat4j.core.VecInt;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
@@ -36,7 +37,7 @@ public class MichalBug {
 		int[] clause_4 = { 100000, -1, 2 };
 		maxSATSolver.addClause(new VecInt(clause_4));
 
-		IOptimizationProblem problem = maxSATSolver;
+		IOptimizationProblem problem = new PseudoOptDecorator(maxSATSolver);
 
 		int exitCode = UNSATISFIABLE;
 		boolean isSatisfiable = false;
@@ -83,7 +84,7 @@ public class MichalBug {
 		int[] clause_4 = { 100000, -1, 2 };
 		maxSATSolver.addClause(new VecInt(clause_4));
 
-		IProblem problem = new OptToSatAdapter(maxSATSolver);
+		IProblem problem = new OptToSatAdapter(new PseudoOptDecorator(maxSATSolver));
 
 		boolean isSatisfiable = problem.isSatisfiable();
 

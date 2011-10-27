@@ -2,6 +2,7 @@ package org.sat4j.maxsat;
 
 import org.junit.Test;
 import org.sat4j.core.VecInt;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ModelIterator;
@@ -15,7 +16,7 @@ public class BugFatih2 {
 		// new MaxSatDecorator(SolverFactory.newDefault())));
 		WeightedMaxSatDecorator maxSatSolver = new WeightedMaxSatDecorator(
 				org.sat4j.maxsat.SolverFactory.newDefault());
-		ModelIterator solver = new ModelIterator(new OptToSatAdapter(maxSatSolver));
+		ModelIterator solver = new ModelIterator(new OptToSatAdapter(new PseudoOptDecorator(maxSatSolver)));
 		System.out.println("Taille de voc : " + solver.nVars());
 		solver.newVar(13);
 		solver.setExpectedNumberOfClauses(24);

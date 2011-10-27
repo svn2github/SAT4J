@@ -11,6 +11,7 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.maxsat.reader.WDimacsReader;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.tools.OptToSatAdapter;
@@ -54,14 +55,15 @@ public class MarcelBugsTests {
 	private void testProblemWithExpectedAnswer(String filename, int [] expectation, int expectedValue) {
 		URL url = MarcelBugsTests.class.getResource(filename);
 		try {
-			IOptimizationProblem problem = (IOptimizationProblem)reader.parseInstance(url.getFile());
+			IProblem problem = reader.parseInstance(url.getFile());
 			assertNotNull(problem);
-			IProblem satproblem = new OptToSatAdapter(problem);
+			IOptimizationProblem optproblem = new PseudoOptDecorator(maxsat);
+			IProblem satproblem = new OptToSatAdapter(optproblem);
 			assertTrue(satproblem.isSatisfiable());
 			int [] model = satproblem.model();
 			assertNotNull(model);
 			assertArrayEquals(expectation, model);
-			assertEquals(expectedValue,problem.getObjectiveValue());
+			assertEquals(expectedValue,optproblem.getObjectiveValue().intValue());
 			
 		} catch (Exception e) {
 			fail(" Problem when reading instance : "+e);
