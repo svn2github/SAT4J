@@ -16,14 +16,37 @@
     <developer>
       <id>leberre</id>
       <name>Daniel Le Berre</name>
-      <email>leberre@cril.univ-artois.fr</email>
-      <url>http://www.cril.univ-artois.fr/~leberre/</url>
-      <organization>CRIL</organization>
-      <organizationUrl>http://www.cril.univ-artois.fr/</organizationUrl>
+      <email>leberre@cril.fr</email>
+      <url>http://www.cril.fr/~leberre/</url>
+      <organization>CRIL CNRS UMR 8189</organization>
+      <organizationUrl>http://www.cril.fr</organizationUrl>
       <roles>
         <role>architect</role>
         <role>developer</role>
       </roles>
+    </developer>
+        <developer>
+      <id>sroussel</id>
+      <name>Stephanie Roussel</name>
+      <email>sroussel@cril.fr</email>
+      <organization>CRIL CNRS 8188</organization>
+      <organizationUrl>http://www.cril.fr</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <id>lonca</id>
+      <name>Emmanuel Lonca</name>
+      <email>lonca@cril.fr</email>
+      <url>http://www.sat4j.org/</url>
+      <organization>CRIL CNRS 8188</organization>
+      <organizationUrl>http://www.cril.fr</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+1</timezone>
     </developer>
   </developers>
   <contributors>
