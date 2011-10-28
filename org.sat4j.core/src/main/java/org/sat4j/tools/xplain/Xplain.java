@@ -70,7 +70,7 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	private IConstr lastConstr;
 	private final boolean skipDuplicatedEntries;
 
-	private MinimizationStrategy xplainStrategy = new QuickXplainStrategy();
+	private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 
 	public Xplain(T solver, boolean skipDuplicatedEntries) {
 		super(solver);
