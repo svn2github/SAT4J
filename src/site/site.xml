@@ -1,7 +1,7 @@
 <project>
   <body>
-    <menu ref="modules" />
-    <menu ref="parent" />
-    <menu ref="reports" />
+    <menu ref="modules" inherit="top"/>
+    <menu ref="parent" inherit="top"/>
+    <menu ref="reports" inherit="top"/>
   </body>
 </project>
