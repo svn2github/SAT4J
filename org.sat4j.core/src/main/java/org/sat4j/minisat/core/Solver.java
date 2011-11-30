@@ -316,6 +316,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public void learn(Constr c) {
+		slistener.learn(c);
 		learnts.push(c);
 		c.setLearnt();
 		c.register();
@@ -1146,6 +1147,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				int p = order.select();
 				if (p == ILits.UNDEFINED) {
 					confl = preventTheSameDecisionsToBeMade();
+					lastConflictMeansUnsat = false;
 				} else {
 					assert p > 1;
 					slistener.assuming(toDimacs(p));
@@ -1161,10 +1163,13 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				conflictCount.newConflict();
 
 				if (decisionLevel() == rootLevel) {
-					// conflict at root level, the formula is inconsistent
-					unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
-							confl, assumps, ILits.UNDEFINED);
-					return Lbool.FALSE;
+					if (lastConflictMeansUnsat) {
+						// conflict at root level, the formula is inconsistent
+						unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
+								confl, assumps, ILits.UNDEFINED);
+						return Lbool.FALSE;
+					}
+					return Lbool.UNDEFINED;
 				}
 				// analyze conflict
 				try {
@@ -1615,6 +1620,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		learnedConstraintsDeletionStrategy = lcds;
 	}
 
+	private boolean lastConflictMeansUnsat;
+
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
 		Lbool status = Lbool.UNDEFINED;
@@ -1734,8 +1741,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			timebegin = System.currentTimeMillis();
 		}
 		needToReduceDB = false;
+		// this is used to allow the solver to be incomplete,
+		// when using a heuristics limited to a subset of variables
+		lastConflictMeansUnsat = true;
 		// Solve
-		while ((status == Lbool.UNDEFINED) && undertimeout) {
+		while ((status == Lbool.UNDEFINED) && undertimeout
+				&& lastConflictMeansUnsat) {
 			status = search(restarter.nextRestartNumberOfConflict(), assumps);
 			if (status == Lbool.UNDEFINED) {
 				restarter.onRestart();
@@ -1754,6 +1765,9 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			String message = " Timeout (" + timeout
 					+ (timeBasedTimeout ? "s" : " conflicts") + ") exceeded";
 			throw new TimeoutException(message); //$NON-NLS-1$//$NON-NLS-2$
+		}
+		if (status == Lbool.UNDEFINED && !lastConflictMeansUnsat) {
+			throw new TimeoutException("Cannot decide the satisfiability");
 		}
 		return status == Lbool.TRUE;
 	}
