@@ -50,4 +50,22 @@ public class BugSAT50 {
 		solver.addClause(clause);
 		assertTrue(solver.isSatisfiable());
 	}
+
+	@Test(expected = TimeoutException.class)
+	public void test3() throws ContradictionException, TimeoutException {
+		Solver<DataStructureFactory> solver = SolverFactory.newGlucose();
+		int[] backdoor = { 1, 2, 3 };
+		IOrder order = new SubsetVarOrder(backdoor);
+		solver.setOrder(order);
+		IVecInt clause = new VecInt();
+		clause.push(-1).push(4).push(7);
+		solver.addClause(clause);
+		clause = new VecInt();
+		clause.push(-2).push(5);
+		solver.addClause(clause);
+		clause = new VecInt();
+		clause.push(-3).push(6);
+		solver.addClause(clause);
+		solver.isSatisfiable();
+	}
 }
