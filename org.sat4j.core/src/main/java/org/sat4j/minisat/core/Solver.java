@@ -1144,11 +1144,16 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 				// New variable decision
 				stats.decisions++;
 				int p = order.select();
-				assert p > 1;
-				slistener.assuming(toDimacs(p));
-				boolean ret = assume(p);
-				assert ret;
-			} else {
+				if (p == ILits.UNDEFINED) {
+					confl = preventTheSameDecisionsToBeMade();
+				} else {
+					assert p > 1;
+					slistener.assuming(toDimacs(p));
+					boolean ret = assume(p);
+					assert ret;
+				}
+			}
+			if (confl != null) {
 				// un conflit apparait
 				stats.conflicts++;
 				conflictC++;
@@ -1186,6 +1191,18 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 			}
 		} while (undertimeout);
 		return Lbool.UNDEFINED; // timeout occured
+	}
+
+	private Constr preventTheSameDecisionsToBeMade() {
+		IVecInt clause = new VecInt(nVars());
+		int p;
+		for (int i = trail.size() - 1; i >= rootLevel; i--) {
+			p = trail.get(i);
+			if (voc.getReason(p) == null) {
+				clause.push(p ^ 1);
+			}
+		}
+		return dsfactory.createUnregisteredClause(clause);
 	}
 
 	protected void analyzeAtRootLevel(Constr conflict) {
