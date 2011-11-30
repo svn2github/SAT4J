@@ -52,7 +52,7 @@ public class UnitClause implements Constr {
 
 	public void calcReason(int p, IVecInt outReason) {
 		if (p == ILits.UNDEFINED)
-			outReason.push(LiteralsUtils.neg(p));
+			outReason.push(LiteralsUtils.neg(literal));
 	}
 
 	public double getActivity() {
