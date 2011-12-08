@@ -56,6 +56,8 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	 */
 	protected long[] coefs;
 
+	protected long sumcoefs;
+
 	/**
 	 * degree of the pseudo-boolean constraint
 	 */
@@ -90,6 +92,10 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 		coefs = toLong(bigCoefs);
 
 		this.degree = mpb.getDegree().longValue();
+		sumcoefs = 0;
+		for (long c : coefs) {
+			sumcoefs += c;
+		}
 
 		// arrays are sorted by decreasing coefficients
 		sort();
@@ -99,6 +105,10 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 		this.lits = lits;
 		this.coefs = toLong(coefs);
 		this.degree = degree.longValue();
+		sumcoefs = 0;
+		for (long c : this.coefs) {
+			sumcoefs += c;
+		}
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
@@ -149,10 +159,16 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	 * @see org.sat4j.minisat.core.Constr#calcReason(int, IVecInt)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
+		long sumfalsified = 0;
 		final int[] mlits = lits;
-		for (int q : mlits) {
+		for (int i = 0; i < mlits.length; i++) {
+			int q = mlits[i];
 			if (voc.isFalsified(q)) {
 				outReason.push(q ^ 1);
+				sumfalsified += coefs[i];
+				if (sumcoefs - sumfalsified < degree) {
+					return;
+				}
 			}
 		}
 	}

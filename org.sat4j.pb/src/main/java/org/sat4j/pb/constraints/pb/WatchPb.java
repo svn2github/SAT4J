@@ -61,6 +61,8 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 	 */
 	protected BigInteger[] coefs;
 
+	protected BigInteger sumcoefs;
+
 	/**
 	 * degree of the pseudo-boolean constraint
 	 */
@@ -94,7 +96,10 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 		mpb.buildConstraintFromMapPb(lits, coefs);
 
 		this.degree = mpb.getDegree();
-
+		sumcoefs = BigInteger.ZERO;
+		for (BigInteger c : this.coefs) {
+			sumcoefs.add(c);
+		}
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
@@ -103,6 +108,10 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 		this.lits = lits;
 		this.coefs = coefs;
 		this.degree = degree;
+		sumcoefs = BigInteger.ZERO;
+		for (BigInteger c : this.coefs) {
+			sumcoefs.add(c);
+		}
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
@@ -145,10 +154,16 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 	 * @see org.sat4j.minisat.core.Constr#calcReason(int, IVecInt)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
+		BigInteger sumfalsified = BigInteger.ZERO;
 		final int[] mlits = lits;
-		for (int q : mlits) {
+		for (int i = 0; i < mlits.length; i++) {
+			int q = mlits[i];
 			if (voc.isFalsified(q)) {
 				outReason.push(q ^ 1);
+				sumfalsified.add(coefs[i]);
+				if (sumcoefs.subtract(sumfalsified).compareTo(degree) < 0) {
+					return;
+				}
 			}
 		}
 	}

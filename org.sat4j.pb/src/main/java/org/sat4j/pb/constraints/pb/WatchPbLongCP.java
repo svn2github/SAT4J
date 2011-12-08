@@ -66,6 +66,8 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 	 */
 	protected long[] coefs;
 
+	protected long sumcoefs;
+
 	/**
 	 * degree of the pseudo-boolean constraint
 	 */
@@ -101,7 +103,10 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		assert MaxLongWatchPBConstructor.isLongSufficient(bigCoefs,
 				mpb.getDegree());
 		coefs = toLong(bigCoefs);
-
+		sumcoefs = 0;
+		for (long c : coefs) {
+			sumcoefs += c;
+		}
 		this.bigDegree = mpb.getDegree();
 		this.degree = bigDegree.longValue();
 
@@ -115,6 +120,10 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		this.degree = degree.longValue();
 		bigCoefs = coefs;
 		bigDegree = degree;
+		sumcoefs = 0;
+		for (long c : this.coefs) {
+			sumcoefs += c;
+		}
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
@@ -167,10 +176,16 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 	 * @see org.sat4j.minisat.core.Constr#calcReason(int, IVecInt)
 	 */
 	public void calcReason(int p, IVecInt outReason) {
+		long sumfalsified = 0;
 		final int[] mlits = lits;
-		for (int q : mlits) {
+		for (int i = 0; i < mlits.length; i++) {
+			int q = mlits[i];
 			if (voc.isFalsified(q)) {
 				outReason.push(q ^ 1);
+				sumfalsified += coefs[i];
+				if (sumcoefs - sumfalsified < degree) {
+					return;
+				}
 			}
 		}
 	}
