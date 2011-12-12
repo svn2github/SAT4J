@@ -69,17 +69,39 @@ public class ModelIterator extends SolverDecorator<ISolver> {
 	private long nbModelFound = 0;
 
 	/**
+	 * Create an iterator over the solutions available in <code>solver</code>.
+	 * The iterator will look for one new model at each call to isSatisfiable()
+	 * and will discard that model at each call to model().
+	 * 
 	 * @param solver
+	 *            a solver containing the constraints to satisfy.
+	 * @see #isSatisfiable()
+	 * @see #isSatisfiable(boolean)
+	 * @see #isSatisfiable(IVecInt)
+	 * @see #isSatisfiable(IVecInt, boolean)
+	 * @see #model()
 	 */
 	public ModelIterator(ISolver solver) {
 		this(solver, Long.MAX_VALUE);
 	}
 
 	/**
+	 * Create an iterator over a limited number of solutions available in
+	 * <code>solver</code>. The iterator will look for one new model at each
+	 * call to isSatisfiable() and will discard that model at each call to
+	 * model(). At most <code>bound</code> calls to models() will be allowed
+	 * before the method <code>isSatisfiable()</code> returns false.
 	 * 
 	 * @param solver
+	 *            a solver containing the constraints to satisfy.
 	 * @param bound
+	 *            the maximum number of models to return.
 	 * @since 2.1
+	 * @see #isSatisfiable()
+	 * @see #isSatisfiable(boolean)
+	 * @see #isSatisfiable(IVecInt)
+	 * @see #isSatisfiable(IVecInt, boolean)
+	 * @see #model()
 	 */
 	public ModelIterator(ISolver solver, long bound) {
 		super(solver);
