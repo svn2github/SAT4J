@@ -110,9 +110,9 @@ public class MinWatchPbLongLimit extends WatchPbLong {
 	 *            degree of the constraint (k)
 	 */
 	protected MinWatchPbLongLimit(ILits voc, int[] lits, BigInteger[] coefs, // NOPMD
-			BigInteger degree) {
+			BigInteger degree, BigInteger sumCoefs) {
 
-		super(lits, coefs, degree);
+		super(lits, coefs, degree, sumCoefs);
 		this.voc = voc;
 
 		watching = new int[this.coefs.length];
@@ -235,11 +235,11 @@ public class MinWatchPbLongLimit extends WatchPbLong {
 	 */
 	public static MinWatchPbLongLimit normalizedMinWatchPbNew(
 			UnitPropagationListener s, ILits voc, int[] lits,
-			BigInteger[] coefs, BigInteger degree)
+			BigInteger[] coefs, BigInteger degree, BigInteger sumCoefs)
 			throws ContradictionException {
 		// Parameters must not be modified
 		MinWatchPbLongLimit outclause = new MinWatchPbLongLimit(voc, lits,
-				coefs, degree);
+				coefs, degree, sumCoefs);
 
 		if (outclause.degree <= 0) {
 			return null;
@@ -281,6 +281,7 @@ public class MinWatchPbLongLimit extends WatchPbLong {
 	 *            the propagated literal (it must be falsified)
 	 * @return false iff there is a conflict
 	 */
+	@Override
 	public boolean propagate(UnitPropagationListener s, int p) {
 		assert nbOfWatched() == watchingCount;
 		assert watchingCount > 1;
@@ -356,6 +357,7 @@ public class MinWatchPbLongLimit extends WatchPbLong {
 	/**
 	 * Remove the constraint from the solver
 	 */
+	@Override
 	public void remove(UnitPropagationListener upl) {
 		for (int i = 0; i < watchingCount; i++) {
 			voc.watches(lits[watching[i]] ^ 1).remove(this);
@@ -378,6 +380,7 @@ public class MinWatchPbLongLimit extends WatchPbLong {
 	 * @param p
 	 *            un unassigned literal
 	 */
+	@Override
 	public void undo(int p) {
 		voc.watch(p, this);
 		int pIndice = 0;

@@ -104,9 +104,9 @@ public class MinWatchPb extends WatchPb {
 	 *            degree of the constraint (k)
 	 */
 	protected MinWatchPb(ILits voc, int[] lits, BigInteger[] coefs, // NOPMD
-			BigInteger degree) {
+			BigInteger degree, BigInteger sumCoefs) {
 
-		super(lits, coefs, degree);
+		super(lits, coefs, degree, sumCoefs);
 		this.voc = voc;
 
 		watching = new int[this.coefs.length];
@@ -228,10 +228,11 @@ public class MinWatchPb extends WatchPb {
 	 *         detected.
 	 */
 	public static MinWatchPb normalizedMinWatchPbNew(UnitPropagationListener s,
-			ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
+			ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException {
 		// Parameters must not be modified
-		MinWatchPb outclause = new MinWatchPb(voc, lits, coefs, degree);
+		MinWatchPb outclause = new MinWatchPb(voc, lits, coefs, degree,
+				sumCoefs);
 
 		if (outclause.degree.signum() <= 0) {
 			return null;

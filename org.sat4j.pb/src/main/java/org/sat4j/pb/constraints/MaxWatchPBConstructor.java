@@ -43,10 +43,10 @@ public class MaxWatchPBConstructor implements IPBConstructor {
 	}
 
 	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
+			int[] theLits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException {
 		return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
-				degree);
+				degree, sumCoefs);
 	}
 
 }

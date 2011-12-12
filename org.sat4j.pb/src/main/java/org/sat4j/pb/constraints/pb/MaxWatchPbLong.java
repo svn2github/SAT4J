@@ -96,9 +96,9 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 *            degree of the constraint (k)
 	 */
 	private MaxWatchPbLong(ILits voc, int[] lits, BigInteger[] coefs,
-			BigInteger degree) {
+			BigInteger degree, BigInteger sumCoefs) {
 
-		super(lits, coefs, degree);
+		super(lits, coefs, degree, sumCoefs);
 		this.voc = voc;
 
 		activity = 0;
@@ -284,10 +284,11 @@ public final class MaxWatchPbLong extends WatchPbLong {
 	 */
 	public static MaxWatchPbLong normalizedMaxWatchPbNew(
 			UnitPropagationListener s, ILits voc, int[] lits,
-			BigInteger[] coefs, BigInteger degree)
+			BigInteger[] coefs, BigInteger degree, BigInteger sumCoefs)
 			throws ContradictionException {
 		// Parameters must not be modified
-		MaxWatchPbLong outclause = new MaxWatchPbLong(voc, lits, coefs, degree);
+		MaxWatchPbLong outclause = new MaxWatchPbLong(voc, lits, coefs, degree,
+				sumCoefs);
 
 		if (outclause.degree <= 0) {
 			return null;

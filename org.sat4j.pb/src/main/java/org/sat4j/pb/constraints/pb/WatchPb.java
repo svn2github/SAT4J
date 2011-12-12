@@ -98,20 +98,18 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 		this.degree = mpb.getDegree();
 		sumcoefs = BigInteger.ZERO;
 		for (BigInteger c : this.coefs) {
-			sumcoefs.add(c);
+			sumcoefs = sumcoefs.add(c);
 		}
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
-	WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree) { // NOPMD
+	WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;
 		this.coefs = coefs;
 		this.degree = degree;
-		sumcoefs = BigInteger.ZERO;
-		for (BigInteger c : this.coefs) {
-			sumcoefs.add(c);
-		}
+		this.sumcoefs = sumCoefs;
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
@@ -160,7 +158,7 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 			int q = mlits[i];
 			if (voc.isFalsified(q)) {
 				outReason.push(q ^ 1);
-				sumfalsified.add(coefs[i]);
+				sumfalsified = sumfalsified.add(coefs[i]);
 				if (sumcoefs.subtract(sumfalsified).compareTo(degree) < 0) {
 					return;
 				}

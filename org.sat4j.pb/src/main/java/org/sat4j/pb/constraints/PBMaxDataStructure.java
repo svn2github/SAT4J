@@ -57,7 +57,9 @@ public class PBMaxDataStructure extends AbstractPBDataStructureFactory {
 		// return MaxWatchPb.maxWatchPbNew(solver, getVocabulary(), literals,
 		// coefs, moreThan, degree);
 		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
-				literals, coefs, degree);
+				literals, coefs, degree,
+				AbstractPBClauseCardConstrDataStructure
+						.sumOfCoefficients(coefs));
 	}
 
 	/**

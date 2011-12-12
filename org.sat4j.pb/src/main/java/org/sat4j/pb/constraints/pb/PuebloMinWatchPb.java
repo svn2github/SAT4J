@@ -52,8 +52,8 @@ public final class PuebloMinWatchPb extends MinWatchPb {
 	 *            Stockage du degr??? de la contrainte
 	 */
 	private PuebloMinWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
-			BigInteger degree) {
-		super(voc, lits, coefs, degree);
+			BigInteger degree, BigInteger sumCoefs) {
+		super(voc, lits, coefs, degree, sumCoefs);
 	}
 
 	private PuebloMinWatchPb(ILits voc, IDataStructurePB mpb) {
@@ -80,8 +80,11 @@ public final class PuebloMinWatchPb extends MinWatchPb {
 			BigInteger[] coefs, BigInteger degree)
 			throws ContradictionException {
 		// Il ne faut pas modifier les param?tres
+		BigInteger sumCoefs = BigInteger.ZERO;
+		for (BigInteger c : coefs)
+			sumCoefs = sumCoefs.add(c);
 		PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, lits, coefs,
-				degree);
+				degree, sumCoefs);
 
 		if (outclause.degree.signum() <= 0) {
 			return null;

@@ -35,7 +35,6 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
-import org.sat4j.pb.constraints.MaxLongWatchPBConstructor;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
@@ -100,8 +99,8 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		bigCoefs = new BigInteger[size];
 		mpb.buildConstraintFromMapPb(lits, bigCoefs);
 		assert mpb.isLongSufficient();
-		assert MaxLongWatchPBConstructor.isLongSufficient(bigCoefs,
-				mpb.getDegree());
+		// assert MaxLongWatchPBConstructor.isLongSufficient(bigCoefs,
+		// mpb.getDegree());
 		coefs = toLong(bigCoefs);
 		sumcoefs = 0;
 		for (long c : coefs) {
@@ -114,16 +113,14 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		sort();
 	}
 
-	WatchPbLongCP(int[] lits, BigInteger[] coefs, BigInteger degree) { // NOPMD
+	WatchPbLongCP(int[] lits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;
 		this.coefs = toLong(coefs);
 		this.degree = degree.longValue();
 		bigCoefs = coefs;
 		bigDegree = degree;
-		sumcoefs = 0;
-		for (long c : this.coefs) {
-			sumcoefs += c;
-		}
+		sumcoefs = sumCoefs.longValue();
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}

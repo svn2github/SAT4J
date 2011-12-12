@@ -54,7 +54,9 @@ public class PBMinDataStructure extends AbstractPBDataStructureFactory {
 	protected PBConstr constraintFactory(int[] literals, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
 		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(),
-				literals, coefs, degree);
+				literals, coefs, degree,
+				AbstractPBClauseCardConstrDataStructure
+						.sumOfCoefficients(coefs));
 	}
 
 	/*

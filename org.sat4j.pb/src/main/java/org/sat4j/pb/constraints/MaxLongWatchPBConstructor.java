@@ -47,21 +47,23 @@ public class MaxLongWatchPBConstructor implements IPBConstructor {
 	}
 
 	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
-		if (isLongSufficient(coefs, degree)) {
+			int[] theLits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException {
+		if (sumCoefs.bitLength() < Long.SIZE) {
 			return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc, theLits,
-					coefs, degree);
+					coefs, degree, sumCoefs);
 		}
 		return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
-				degree);
+				degree, sumCoefs);
 	}
 
-	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
-		BigInteger somCoefs = BigInteger.ZERO;
-		for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length; i++)
-			somCoefs = somCoefs.add(coefs[i]);
-		return somCoefs.bitLength() < Long.SIZE;
-	}
+	// public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
+	// degree) {
+	// BigInteger somCoefs = BigInteger.ZERO;
+	// for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length;
+	// i++)
+	// somCoefs = somCoefs.add(coefs[i]);
+	// return somCoefs.bitLength() < Long.SIZE;
+	// }
 
 }

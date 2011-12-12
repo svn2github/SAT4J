@@ -43,8 +43,8 @@ public class PuebloMinWatchPBConstructor implements IPBConstructor {
 	}
 
 	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
+			int[] theLits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException {
 		return PuebloMinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits,
 				coefs, degree);
 	}

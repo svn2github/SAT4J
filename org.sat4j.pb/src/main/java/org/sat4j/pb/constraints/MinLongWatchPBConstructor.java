@@ -47,21 +47,22 @@ public class MinLongWatchPBConstructor implements IPBConstructor {
 	}
 
 	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
-		if (isLongSufficient(coefs, degree)) {
+			int[] theLits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException {
+		if (sumCoefs.bitLength() < Long.SIZE) {
 			return MinWatchPbLong.normalizedMinWatchPbNew(solver, voc, theLits,
-					coefs, degree);
+					coefs, degree, sumCoefs);
 		}
 		return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
-				degree);
+				degree, sumCoefs);
 	}
 
-	public static boolean isLongSufficient(BigInteger[] coefs, BigInteger degree) {
-		assert coefs.length > 1;
-		BigInteger som = coefs[0].add(coefs[1]);
-		som = som.add(degree);
-		return som.bitLength() < Long.SIZE;
-	}
+	// public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
+	// degree) {
+	// assert coefs.length > 1;
+	// BigInteger som = coefs[0].add(coefs[1]);
+	// som = som.add(degree);
+	// return som.bitLength() < Long.SIZE;
+	// }
 
 }

@@ -40,7 +40,7 @@ public interface IPBConstructor {
 	Constr constructLearntPB(ILits voc, IDataStructurePB dspb);
 
 	Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException;
+			int[] theLits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) throws ContradictionException;
 
 }

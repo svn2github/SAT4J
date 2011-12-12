@@ -101,14 +101,12 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 		sort();
 	}
 
-	WatchPbLong(int[] lits, BigInteger[] coefs, BigInteger degree) { // NOPMD
+	WatchPbLong(int[] lits, BigInteger[] coefs, BigInteger degree,
+			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;
 		this.coefs = toLong(coefs);
 		this.degree = degree.longValue();
-		sumcoefs = 0;
-		for (long c : this.coefs) {
-			sumcoefs += c;
-		}
+		sumcoefs = sumCoefs.longValue();
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}

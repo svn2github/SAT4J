@@ -177,6 +177,46 @@ public abstract class AbstractPBDataStructureFactory extends
 		return constraintFactory(res.lits, res.coefs, res.degree);
 	}
 
+	public Constr createAtMostPBConstraint(IVecInt literals,
+			IVec<BigInteger> coefs, BigInteger degree)
+			throws ContradictionException {
+		return createPseudoBooleanConstraint(literals, coefs, false, degree);
+	}
+
+	public Constr createAtLeastPBConstraint(IVecInt literals,
+			IVec<BigInteger> coefs, BigInteger degree)
+			throws ContradictionException {
+		return createPseudoBooleanConstraint(literals, coefs, true, degree);
+	}
+
+	// public Constr createPseudoBooleanConstraint(IVecInt literals,
+	// IVecInt coefs, boolean moreThan, BigInteger degree)
+	// throws ContradictionException;
+	//
+	// public Constr createAtMostPBConstraint(IVecInt literals, IVecInt coefs,
+	// boolean moreThan, BigInteger degree) throws ContradictionException {
+	// return createPseudoBooleanConstraint(literals, coefs, false, degree);
+	// }
+	//
+	// public Constr createAtLeastPBConstraint(IVecInt literals, IVecInt coefs,
+	// boolean moreThan, BigInteger degree) throws ContradictionException {
+	// return createPseudoBooleanConstraint(literals, coefs, true, degree);
+	// }
+	//
+	// public Constr createAtMostPBConstraint(IVecInt literals, long[] coefs,
+	// boolean moreThan, BigInteger degree) throws ContradictionException {
+	// return createPseudoBooleanConstraint(literals, coefs, false, degree);
+	// }
+	//
+	// public Constr createAtLeastPBConstraint(IVecInt literals, long[] coefs,
+	// boolean moreThan, BigInteger degree) throws ContradictionException {
+	// return createPseudoBooleanConstraint(literals, coefs, true, degree);
+	// }
+	//
+	// public Constr createPseudoBooleanConstraint(IVecInt literals, long[]
+	// coefs,
+	// boolean moreThan, BigInteger degree) throws ContradictionException;
+
 	public Constr createUnregisteredPseudoBooleanConstraint(
 			IDataStructurePB dspb) {
 		return learntConstraintFactory(dspb);

@@ -60,11 +60,13 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 		this.ipbc = ipbc;
 	}
 
+	@Override
 	public Constr createClause(IVecInt literals) throws ContradictionException {
 		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
 		return constructClause(v);
 	}
 
+	@Override
 	public Constr createUnregisteredClause(IVecInt literals) {
 		return constructLearntClause(literals);
 	}
@@ -141,8 +143,8 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 
 	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
 			BigInteger degree) throws ContradictionException {
-		return ipbc
-				.constructPB(solver, getVocabulary(), theLits, coefs, degree);
+		return ipbc.constructPB(solver, getVocabulary(), theLits, coefs,
+				degree, sumOfCoefficients(coefs));
 	}
 
 	protected Constr constructLearntClause(IVecInt literals) {
@@ -155,6 +157,13 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 
 	protected Constr constructLearntPB(IDataStructurePB dspb) {
 		return ipbc.constructLearntPB(getVocabulary(), dspb);
+	}
+
+	public static final BigInteger sumOfCoefficients(BigInteger[] coefs) {
+		BigInteger sumCoefs = BigInteger.ZERO;
+		for (BigInteger c : coefs)
+			sumCoefs = sumCoefs.add(c);
+		return sumCoefs;
 	}
 
 }
