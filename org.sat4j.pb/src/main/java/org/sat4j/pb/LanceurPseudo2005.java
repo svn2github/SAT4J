@@ -90,12 +90,22 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 	@Override
 	protected ISolver configureSolver(String[] args) {
 		IPBSolver theSolver;
+		String solverName = args[0];
+		boolean lower = false;
+		if (solverName.startsWith("Lower")) {
+			lower = true;
+			solverName = solverName.substring("Lower".length());
+		}
 		if (args.length > 1) {
-			theSolver = factory.createSolverByName(args[0]);
+			theSolver = factory.createSolverByName(solverName);
 		} else {
 			theSolver = factory.defaultSolver();
 		}
-		theSolver = new PseudoOptDecorator(theSolver);
+		if (lower) {
+			theSolver = new ConstraintRelaxingPseudoOptDecorator(theSolver);
+		} else {
+			theSolver = new PseudoOptDecorator(theSolver);
+		}
 		if (args.length == 3) {
 			theSolver.setTimeout(Integer.valueOf(args[1]));
 		}
