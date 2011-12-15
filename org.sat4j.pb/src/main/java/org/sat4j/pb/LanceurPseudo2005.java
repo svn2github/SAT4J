@@ -33,6 +33,9 @@ import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2006;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.ConflictLevelTracing;
+import org.sat4j.tools.DecisionTracing;
+import org.sat4j.tools.MultiTracing;
 
 /**
  * Launcher especially dedicated to the pseudo boolean 05 evaluation (@link
@@ -96,6 +99,11 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 			lower = true;
 			solverName = solverName.substring("Lower".length());
 		}
+		boolean trace = false;
+		if (solverName.startsWith("Trace")) {
+			trace = true;
+			solverName = solverName.substring("Trace".length());
+		}
 		if (args.length > 1) {
 			theSolver = factory.createSolverByName(solverName);
 		} else {
@@ -109,6 +117,13 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 		if (args.length == 3) {
 			theSolver.setTimeout(Integer.valueOf(args[1]));
 		}
+		if (trace) {
+			String fileName = args[args.length - 1];
+			theSolver.setSearchListener(new MultiTracing(
+					new ConflictLevelTracing(fileName + "-conflict-level"),
+					new DecisionTracing(fileName + "-decision-indexes")));
+		}
+		// theSolver.setSearchListener(new TextOutputTracing(null));
 		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
 		return theSolver;
 	}
