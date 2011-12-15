@@ -132,4 +132,25 @@ public class ObjectiveFunction implements Serializable {
 		return tempDegree;
 	}
 
+	public BigInteger calculateDegree(int[] model) {
+		BigInteger tempDegree = BigInteger.ZERO;
+
+		for (int i = 0; i < vars.size(); i++) {
+			BigInteger coeff = coeffs.get(i);
+			if (varInModel(vars.get(i), model))
+				tempDegree = tempDegree.add(coeff);
+			else if ((coeff.signum() < 0) && !varInModel(-vars.get(i), model)) {
+				tempDegree = tempDegree.add(coeff);
+			}
+		}
+		return tempDegree;
+	}
+
+	private boolean varInModel(int var, int[] model) {
+		for (int i = 0; i < model.length; i++)
+			if (var == model[i])
+				return true;
+		return false;
+	}
+
 }
