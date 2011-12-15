@@ -1833,6 +1833,8 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	}
 
 	public void reset() {
+		timer.cancel();
+		timer = null;
 		trail.clear();
 		trailLim.clear();
 		qhead = 0;
