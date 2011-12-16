@@ -27,11 +27,17 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2006;
+import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
@@ -141,5 +147,18 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 			return null;
 		}
 		return args[args.length - 1];
+	}
+
+	@Override
+	protected IProblem readProblem(String problemname)
+			throws FileNotFoundException, ParseFormatException, IOException,
+			ContradictionException {
+		IProblem problem = super.readProblem(problemname);
+		ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
+		if (obj != null) {
+			out.println(COMMENT_PREFIX + "objective function length is "
+					+ obj.getVars().size() + " literals");
+		}
+		return problem;
 	}
 }
