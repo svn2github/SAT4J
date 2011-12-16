@@ -100,15 +100,15 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 	protected ISolver configureSolver(String[] args) {
 		IPBSolver theSolver;
 		String solverName = args[0];
-		boolean lower = false;
-		if (solverName.startsWith("Lower")) {
-			lower = true;
-			solverName = solverName.substring("Lower".length());
-		}
 		boolean trace = false;
 		if (solverName.startsWith("Trace")) {
 			trace = true;
 			solverName = solverName.substring("Trace".length());
+		}
+		boolean lower = false;
+		if (solverName.startsWith("Lower")) {
+			lower = true;
+			solverName = solverName.substring("Lower".length());
 		}
 		if (args.length > 1) {
 			theSolver = factory.createSolverByName(solverName);
