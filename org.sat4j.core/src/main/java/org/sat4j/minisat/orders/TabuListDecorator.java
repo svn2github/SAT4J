@@ -76,13 +76,16 @@ public class TabuListDecorator implements IOrder {
 	}
 
 	public int select() {
-
 		int lit = decorated.select();
 		if (lit == ILits.UNDEFINED) {
-			if (tabuList.isEmpty()) {
-				return ILits.UNDEFINED;
-			}
-			return getPhaseSelectionStrategy().select(tabuList.removeFirst());
+			int var;
+			do {
+				if (tabuList.isEmpty()) {
+					return ILits.UNDEFINED;
+				}
+				var = tabuList.removeFirst();
+			} while (!voc.isUnassigned(var << 1));
+			return getPhaseSelectionStrategy().select(var);
 		}
 		return lit;
 	}
@@ -105,7 +108,9 @@ public class TabuListDecorator implements IOrder {
 			int var = tabuList.removeFirst();
 			decorated.undo(var);
 		}
-		tabuList.add(x);
+		if (!tabuList.contains(x)) {
+			tabuList.add(x);
+		}
 	}
 
 	public void updateVar(int q) {
