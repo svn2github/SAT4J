@@ -131,7 +131,7 @@ public class PBSolverCP extends PBSolver {
 		// assertive PB-constraint is build and referenced
 		PBConstr resConstr = (PBConstr) dsfactory
 				.createUnregisteredPseudoBooleanConstraint(confl);
-
+		slistener.learn(resConstr);
 		results.reason = resConstr;
 		getSearchListener().learn(resConstr);
 
