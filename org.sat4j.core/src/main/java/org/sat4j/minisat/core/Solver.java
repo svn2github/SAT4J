@@ -162,7 +162,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private final IVecInt __dimacs_out = new VecInt();
 
-	private SearchListener slistener = new VoidTracing();
+	protected SearchListener slistener = new VoidTracing();
 
 	private RestartStrategy restarter;
 
@@ -1360,7 +1360,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return isSatisfiable(assumps, false);
 	}
 
-	interface LearnedConstraintsDeletionStrategy extends Serializable {
+	public interface LearnedConstraintsDeletionStrategy extends Serializable {
 
 		void init();
 
@@ -1609,7 +1609,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	};
 
-	private LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
+	protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
 	/**
 	 * @param lcds
