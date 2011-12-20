@@ -41,7 +41,7 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
-import org.sat4j.tools.ConflictSizeTracing;
+import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.DecisionTracing;
 import org.sat4j.tools.MultiTracing;
 
@@ -132,7 +132,7 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 							new ConflictLevelTracing(fileName
 									+ "-conflict-level"), new DecisionTracing(
 									fileName + "-decision-indexes"),
-							new ConflictSizeTracing(fileName
+							new LearnedClausesSizeTracing(fileName
 									+ "-learned-clauses-size"),
 							new ConflictDepthTracing(fileName
 									+ "-conflict-depth")));
