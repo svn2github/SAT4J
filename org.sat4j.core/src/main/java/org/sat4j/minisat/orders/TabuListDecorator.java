@@ -46,6 +46,7 @@ public class TabuListDecorator implements IOrder {
 	private final int tabuSize;
 
 	private ILits voc;
+	private int lastVar = -1;
 
 	private final LinkedList<Integer> tabuList = new LinkedList<Integer>();
 
@@ -68,6 +69,7 @@ public class TabuListDecorator implements IOrder {
 
 	public void init() {
 		decorated.init();
+		lastVar = -1;
 	}
 
 	public void printStat(PrintWriter out, String prefix) {
@@ -87,6 +89,7 @@ public class TabuListDecorator implements IOrder {
 			} while (!voc.isUnassigned(var << 1));
 			return getPhaseSelectionStrategy().select(var);
 		}
+		lastVar = lit >> 1;
 		return lit;
 	}
 
@@ -108,8 +111,11 @@ public class TabuListDecorator implements IOrder {
 			int var = tabuList.removeFirst();
 			decorated.undo(var);
 		}
-		if (!tabuList.contains(x)) {
+		if (x == lastVar) {
 			tabuList.add(x);
+			lastVar = -1;
+		} else {
+			decorated.undo(x);
 		}
 	}
 
