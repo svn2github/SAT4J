@@ -39,7 +39,9 @@ import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
+import org.sat4j.tools.ConflictSizeTracing;
 import org.sat4j.tools.DecisionTracing;
 import org.sat4j.tools.MultiTracing;
 
@@ -125,9 +127,15 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 		}
 		if (trace) {
 			String fileName = args[args.length - 1];
-			theSolver.setSearchListener(new MultiTracing(
-					new ConflictLevelTracing(fileName + "-conflict-level"),
-					new DecisionTracing(fileName + "-decision-indexes")));
+			theSolver
+					.setSearchListener(new MultiTracing(
+							new ConflictLevelTracing(fileName
+									+ "-conflict-level"), new DecisionTracing(
+									fileName + "-decision-indexes"),
+							new ConflictSizeTracing(fileName
+									+ "-learned-clauses-size"),
+							new ConflictDepthTracing(fileName
+									+ "-conflict-depth")));
 		}
 		// theSolver.setSearchListener(new TextOutputTracing(null));
 		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
