@@ -239,6 +239,8 @@ public class ConflictMap extends MapPb implements IConflict {
 		return degree;
 	}
 
+	private BigInteger possReducedCoefs = BigInteger.ZERO;
+
 	protected BigInteger reduceUntilConflict(int litImplied, int ind,
 			BigInteger[] reducedCoefs, IWatchPb wpb) {
 		BigInteger slackResolve = BigInteger.ONE.negate();
@@ -250,6 +252,7 @@ public class ConflictMap extends MapPb implements IConflict {
 		BigInteger previousCoefLitImplied = BigInteger.ZERO;
 		BigInteger tmp;
 		BigInteger coefLitImplied = weightedLits.get(litImplied ^ 1);
+		possReducedCoefs = possConstraint(wpb, reducedCoefs);
 
 		do {
 			if (slackResolve.signum() >= 0) {
@@ -278,8 +281,10 @@ public class ConflictMap extends MapPb implements IConflict {
 			}
 
 			// slacks computed for each constraint
-			slackThis = wpb.slackConstraint(reducedCoefs, reducedDegree)
+			slackThis = (possReducedCoefs.subtract(reducedDegree))
 					.multiply(coefMultCons);
+			assert slackThis.equals(wpb.slackConstraint(reducedCoefs,
+					reducedDegree).multiply(coefMultCons));
 			assert slackConflict.equals(slackConflict());
 			slackIndex = slackConflict.multiply(coefMult);
 			assert slackIndex.signum() <= 0;
@@ -290,6 +295,22 @@ public class ConflictMap extends MapPb implements IConflict {
 				coefMultCons.multiply(reducedCoefs[ind]));
 		return reducedDegree;
 
+	}
+
+	private BigInteger possConstraint(IWatchPb wpb, BigInteger[] theCoefs) {
+		BigInteger poss = BigInteger.ZERO;
+		// for each literal
+		for (int i = 0; i < wpb.size(); i++)
+			if (!voc.isFalsified(wpb.get(i))) {
+				assert theCoefs[i].signum() >= 0;
+				poss = poss.add(theCoefs[i]);
+			}
+		return poss;
+	}
+
+	private BigInteger slackConstraint(IWatchPb wpb, BigInteger[] theCoefs,
+			BigInteger degree) {
+		return possConstraint(wpb, theCoefs).subtract(degree);
 	}
 
 	/**
@@ -470,31 +491,45 @@ public class ConflictMap extends MapPb implements IConflict {
 		// logger.finer("Found literal "+Lits.toString(lits[lit]));
 		// reduction can be done
 		BigInteger degUpdate = degreeBis.subtract(coefsBis[lit]);
+		possReducedCoefs = possReducedCoefs.subtract(coefsBis[lit]);
 		coefsBis[lit] = BigInteger.ZERO;
+		assert possReducedCoefs.equals(possConstraint(wpb, coefsBis));
 
 		// saturation of the constraint
-		degUpdate = saturation(coefsBis, degUpdate);
+		degUpdate = saturation(coefsBis, degUpdate, wpb);
 
 		assert coefsBis[indLitImplied].signum() > 0;
 		assert degreeBis.compareTo(degUpdate) > 0;
+		assert possReducedCoefs.equals(possConstraint(wpb, coefsBis));
 		return degUpdate;
 	}
 
-	static BigInteger saturation(BigInteger[] coefs, BigInteger degree) {
+	private BigInteger saturation(BigInteger[] coefs, BigInteger degree,
+			IWatchPb wpb) {
 		assert degree.signum() > 0;
 		BigInteger minimum = degree;
 		for (int i = 0; i < coefs.length; i++) {
 			if (coefs[i].signum() > 0)
 				minimum = minimum.min(coefs[i]);
-			coefs[i] = degree.min(coefs[i]);
+			if (coefs[i].compareTo(degree) > 0) {
+				if (!voc.isFalsified(wpb.get(i))) {
+					possReducedCoefs = possReducedCoefs.subtract(coefs[i]);
+					possReducedCoefs = possReducedCoefs.add(degree);
+				}
+				coefs[i] = degree;
+			}
 		}
 		if (minimum.equals(degree) && !degree.equals(BigInteger.ONE)) {
 			// the result is a clause
 			// there is no more possible reduction
+			possReducedCoefs = BigInteger.ZERO;
 			degree = BigInteger.ONE;
 			for (int i = 0; i < coefs.length; i++)
-				if (coefs[i].signum() > 0)
+				if (coefs[i].signum() > 0) {
 					coefs[i] = degree;
+					if (!voc.isFalsified(wpb.get(i)))
+						possReducedCoefs = possReducedCoefs.add(BigInteger.ONE);
+				}
 		}
 		return degree;
 	}
