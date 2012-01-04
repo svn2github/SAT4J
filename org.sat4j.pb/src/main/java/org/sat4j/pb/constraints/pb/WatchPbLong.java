@@ -84,6 +84,7 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	WatchPbLong() {
 	}
 
+	/** Constructor used for learnt constraints. */
 	WatchPbLong(IDataStructurePB mpb) {
 		int size = mpb.size();
 		lits = new int[size];
@@ -96,11 +97,12 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 		for (long c : coefs) {
 			sumcoefs += c;
 		}
-
+		learnt = true;
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
+	/** Constructor used for original constraints. */
 	WatchPbLong(int[] lits, BigInteger[] coefs, BigInteger degree,
 			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;
@@ -158,16 +160,30 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	 */
 	public void calcReason(int p, IVecInt outReason) {
 		long sumfalsified = 0;
+		long tous = 0;
 		final int[] mlits = lits;
+		boolean ok = true;
 		for (int i = 0; i < mlits.length; i++) {
 			int q = mlits[i];
 			if (voc.isFalsified(q)) {
-				outReason.push(q ^ 1);
-				sumfalsified += coefs[i];
-				if (sumcoefs - sumfalsified < degree) {
-					return;
+				if (ok) {
+					outReason.push(q ^ 1);
+					sumfalsified += coefs[i];
+					if (sumcoefs - sumfalsified < degree) {
+						ok = false;
+						tous = sumfalsified;
+						// return;
+					}
+				} else {
+					tous += coefs[i];
 				}
 			}
+		}
+		if (tous > sumfalsified) {
+			System.out.println("----------------");
+			System.out.println("Sumcoefs : " + sumcoefs);
+			System.out.println(this);
+			System.out.println(outReason);
 		}
 	}
 

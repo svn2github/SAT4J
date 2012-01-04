@@ -49,6 +49,7 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 	 * constraint activity
 	 */
 	protected double activity;
+	/** Constructor used for original constraints. */
 
 	/**
 	 * coefficients of the literals of the constraint
@@ -93,6 +94,7 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 	WatchPbLongCP() {
 	}
 
+	/** Constructor used for learnt constraints. */
 	WatchPbLongCP(IDataStructurePB mpb) {
 		int size = mpb.size();
 		lits = new int[size];
@@ -108,11 +110,12 @@ public abstract class WatchPbLongCP implements IWatchPb, Undoable, Serializable 
 		}
 		this.bigDegree = mpb.getDegree();
 		this.degree = bigDegree.longValue();
-
+		learnt = true;
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
+	/** Constructor used for original constraints. */
 	WatchPbLongCP(int[] lits, BigInteger[] coefs, BigInteger degree,
 			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;

@@ -89,6 +89,7 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 	WatchPb() {
 	}
 
+	/** Constructor used for learnt constraints. */
 	WatchPb(IDataStructurePB mpb) {
 		int size = mpb.size();
 		lits = new int[size];
@@ -100,10 +101,12 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 		for (BigInteger c : this.coefs) {
 			sumcoefs = sumcoefs.add(c);
 		}
+		learnt = true;
 		// arrays are sorted by decreasing coefficients
 		sort();
 	}
 
+	/** Constructor used for original constraints. */
 	WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree,
 			BigInteger sumCoefs) { // NOPMD
 		this.lits = lits;

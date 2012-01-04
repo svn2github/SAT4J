@@ -239,6 +239,13 @@ public class ConflictMap extends MapPb implements IConflict {
 		return degree;
 	}
 
+	/**
+	 * possReducedCoefs is used to update on the fly the slack of the wpb
+	 * constraint with reduced coefficients. possReducedCoefs is needed in
+	 * reduceUntilConflictConstraint; possReducedCoefs is computed first time in
+	 * reduceUntilConflict by a call to possConstraint and is modified directly
+	 * in reduceInConstraint and in saturation methods.
+	 */
 	private BigInteger possReducedCoefs = BigInteger.ZERO;
 
 	protected BigInteger reduceUntilConflict(int litImplied, int ind,
@@ -306,11 +313,6 @@ public class ConflictMap extends MapPb implements IConflict {
 				poss = poss.add(theCoefs[i]);
 			}
 		return poss;
-	}
-
-	private BigInteger slackConstraint(IWatchPb wpb, BigInteger[] theCoefs,
-			BigInteger degree) {
-		return possConstraint(wpb, theCoefs).subtract(degree);
 	}
 
 	/**
