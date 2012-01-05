@@ -41,7 +41,7 @@ import org.sat4j.specs.IVecInt;
  * birwise encoding) first described in A. M. Frisch, T. J. Peugniez, A. J.
  * Dogget and P. Nightingale, "Solving Non-Boolean Satisfiability Problems With
  * Stochastic Local Search: A Comparison of Encodings" in Journal of Automated
- * Reasoning, vol. 35, n¡ 1-3, 2005
+ * Reasoning, vol. 35, n 1-3, 2005
  * 
  * @author sroussel
  * @since 2.3.1
