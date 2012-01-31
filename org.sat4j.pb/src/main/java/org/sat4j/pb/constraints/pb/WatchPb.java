@@ -217,6 +217,12 @@ public abstract class WatchPb implements IWatchPb, Undoable, Serializable {
 		}
 	}
 
+	public void setActivity(double d) {
+		if (learnt) {
+			activity = d;
+		}
+	}
+
 	/**
 	 * compute the slack of the current constraint slack = poss - degree of the
 	 * constraint

@@ -179,12 +179,6 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 				}
 			}
 		}
-		if (tous > sumfalsified) {
-			System.out.println("----------------");
-			System.out.println("Sumcoefs : " + sumcoefs);
-			System.out.println(this);
-			System.out.println(outReason);
-		}
 	}
 
 	abstract protected void computeWatches() throws ContradictionException;
@@ -221,6 +215,12 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	public void incActivity(double claInc) {
 		if (learnt) {
 			activity += claInc;
+		}
+	}
+
+	public void setActivity(double d) {
+		if (learnt) {
+			activity = d;
 		}
 	}
 
