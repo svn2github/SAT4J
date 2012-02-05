@@ -2124,10 +2124,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public Lbool truthValue(int literal) {
 		int p = LiteralsUtils.toInternal(literal);
-		if (voc.isSatisfied(literal))
-			return Lbool.TRUE;
-		if (voc.isFalsified(literal))
+		if (voc.isFalsified(p))
 			return Lbool.FALSE;
+		if (voc.isSatisfied(p))
+			return Lbool.TRUE;
 		return Lbool.UNDEFINED;
 	}
 
