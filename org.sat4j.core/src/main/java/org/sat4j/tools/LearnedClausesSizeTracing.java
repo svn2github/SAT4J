@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -120,6 +121,9 @@ public class LearnedClausesSizeTracing implements SearchListener {
 	}
 
 	public void backjump(int backjumpLevel) {
+	}
+
+	public void init(ISolverService solverService) {
 	}
 
 }

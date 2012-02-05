@@ -30,6 +30,7 @@ package org.sat4j.tools;
 import java.util.Map;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -136,6 +137,12 @@ public class TextOutputTracing<T> implements SearchListener {
 
 	public void backjump(int backjumpLevel) {
 		System.out.println("backjumping to decision level " + backjumpLevel);
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void init(ISolverService solverService) {
 	}
 
 }

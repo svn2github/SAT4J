@@ -37,7 +37,6 @@ import java.util.Map;
 import org.sat4j.core.Vec;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.Lbool;
-import org.sat4j.specs.SearchListener;
 
 /**
  * Class allowing to express the search as a tree in the dot language. The
@@ -52,7 +51,7 @@ import org.sat4j.specs.SearchListener;
  * @author daniel
  * @since 2.2
  */
-public class DotSearchTracing<T> implements SearchListener {
+public class DotSearchTracing<T> extends SearchListenerAdapter {
 
 	/**
      * 
@@ -95,6 +94,7 @@ public class DotSearchTracing<T> implements SearchListener {
 		return Integer.toString(dimacs);
 	}
 
+	@Override
 	public final void assuming(final int p) {
 		final int absP = Math.abs(p);
 		String newName;
@@ -116,6 +116,7 @@ public class DotSearchTracing<T> implements SearchListener {
 	/**
 	 * @since 2.1
 	 */
+	@Override
 	public final void propagating(final int p, IConstr reason) {
 		String newName = currentNodeName + "." + p;
 
@@ -134,6 +135,7 @@ public class DotSearchTracing<T> implements SearchListener {
 		estOrange = false;
 	}
 
+	@Override
 	public final void backtracking(final int p) {
 		final String temp = pile.last();
 		pile.pop();
@@ -142,6 +144,7 @@ public class DotSearchTracing<T> implements SearchListener {
 		currentNodeName = temp;
 	}
 
+	@Override
 	public final void adding(final int p) {
 		estOrange = true;
 	}
@@ -149,15 +152,18 @@ public class DotSearchTracing<T> implements SearchListener {
 	/**
 	 * @since 2.1
 	 */
+	@Override
 	public final void learn(final IConstr clause) {
 	}
 
+	@Override
 	public final void delete(final int[] clause) {
 	}
 
 	/**
 	 * @since 2.1
 	 */
+	@Override
 	public final void conflictFound(IConstr confl, int dlevel, int trailLevel) {
 		saveLine(lineTab("\"" + currentNodeName
 				+ "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
@@ -166,19 +172,23 @@ public class DotSearchTracing<T> implements SearchListener {
 	/**
 	 * @since 2.1
 	 */
+	@Override
 	public final void conflictFound(int p) {
 		saveLine(lineTab("\"" + currentNodeName
 				+ "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
 	}
 
+	@Override
 	public final void solutionFound() {
 		saveLine(lineTab("\"" + currentNodeName
 				+ "\" [label=\"\", shape=box, color=\"green\", style=filled]"));
 	}
 
+	@Override
 	public final void beginLoop() {
 	}
 
+	@Override
 	public final void start() {
 		saveLine("graph G {");
 	}
@@ -186,6 +196,7 @@ public class DotSearchTracing<T> implements SearchListener {
 	/**
 	 * @since 2.1
 	 */
+	@Override
 	public final void end(Lbool result) {
 		saveLine("}");
 	}
@@ -210,12 +221,5 @@ public class DotSearchTracing<T> implements SearchListener {
 		// if the solver is serialized, out is linked to stdout
 		stream.defaultReadObject();
 		out = new PrintWriter(System.out);
-	}
-
-	public void restarting() {
-		// DLB add support for restarts on the graphs.
-	}
-
-	public void backjump(int backjumpLevel) {
 	}
 }

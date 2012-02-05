@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -147,6 +148,9 @@ public class MultiTracing implements SearchListener {
 			sl.backjump(backjumpLevel);
 		}
 
+	}
+
+	public void init(ISolverService solverService) {
 	}
 
 }

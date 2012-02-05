@@ -41,6 +41,15 @@ import java.io.Serializable;
 public interface SearchListener extends Serializable {
 
 	/**
+	 * Provide access to the solver's controllable interface.
+	 * 
+	 * @param solverService
+	 *            a way to safely control the solver.
+	 * @since 2.3.2
+	 */
+	void init(ISolverService solverService);
+
+	/**
 	 * decision variable
 	 * 
 	 * @param p
@@ -87,7 +96,8 @@ public interface SearchListener extends Serializable {
 	 *            TODO
 	 * @param dlevel
 	 *            TODO
-	 * @param trailLevel TODO
+	 * @param trailLevel
+	 *            TODO
 	 * 
 	 */
 	void conflictFound(IConstr confl, int dlevel, int trailLevel);

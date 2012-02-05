@@ -28,9 +28,17 @@
 package org.sat4j.minisat.core;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
+/**
+ * Do-nothing search listener. Used by default by the solver when no
+ * SearchListener is provided to the solver.
+ * 
+ * @author leberre
+ * 
+ */
 final class VoidTracing implements SearchListener {
 	private static final long serialVersionUID = 1L;
 
@@ -74,5 +82,8 @@ final class VoidTracing implements SearchListener {
 	}
 
 	public void backjump(int backjumpLevel) {
+	}
+
+	public void init(ISolverService solverService) {
 	}
 }

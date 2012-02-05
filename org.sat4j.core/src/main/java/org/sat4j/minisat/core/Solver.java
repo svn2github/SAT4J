@@ -64,11 +64,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.sat4j.core.ConstrGroup;
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
@@ -83,7 +85,7 @@ import org.sat4j.specs.TimeoutException;
  * @author leberre
  */
 public class Solver<D extends DataStructureFactory> implements ISolver,
-		UnitPropagationListener, ActivityListener, Learner {
+		UnitPropagationListener, ActivityListener, Learner, ISolverService {
 
 	private static final long serialVersionUID = 1L;
 
@@ -1634,6 +1636,7 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		learnedLiterals.ensure(howmany);
 		decisions.clear();
 		implied.clear();
+		slistener.init(this);
 		slistener.start();
 		model = null; // forget about previous model
 		userbooleanmodel = null;
@@ -2100,6 +2103,53 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 	 */
 	public int realNumberOfVariables() {
 		return voc.nVars();
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void stop() {
+		expireTimeout();
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void backtrack(int[] reason) {
+		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public Lbool truthValue(int literal) {
+		int p = LiteralsUtils.toInternal(literal);
+		if (voc.isSatisfied(literal))
+			return Lbool.TRUE;
+		if (voc.isFalsified(literal))
+			return Lbool.FALSE;
+		return Lbool.UNDEFINED;
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public int currentDecisionLevel() {
+		return decisionLevel();
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public int[] getLiteralsPropagatedAt(int decisionLevel) {
+		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void suggestNextLiteralToBranchOn(int l) {
+		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
 }
