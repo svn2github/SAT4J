@@ -5,7 +5,7 @@ import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
-abstract class SearchListenerAdapter implements SearchListener {
+public abstract class SearchListenerAdapter implements SearchListener {
 
 	/**
 	 * 
