@@ -33,10 +33,9 @@ import java.io.PrintStream;
 
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.Lbool;
-import org.sat4j.specs.SearchListener;
+import org.sat4j.tools.SearchListenerAdapter;
 
-public class ConflictTracing implements SearchListener {
+public class ConflictTracing extends SearchListenerAdapter {
 
 	private static final long serialVersionUID = 1L;
 
@@ -57,76 +56,12 @@ public class ConflictTracing implements SearchListener {
 		}
 	}
 
-	public void adding(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void assuming(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void backjump(int backjumpLevel) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void backtracking(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void beginLoop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void conflictFound(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void delete(int[] clause) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void end(Lbool result) {
-		out.close();
-	}
-
+	@Override
 	public void learn(IConstr c) {
 		PBConstr myConstr = (PBConstr) c;
 		if (myConstr.size() > 0) {
-			out.printf("%d %d %d\n", index++, myConstr.getCoef(0), myConstr
-					.size());
+			out.printf("%d %d %d\n", index++, myConstr.getCoef(0),
+					myConstr.size());
 		}
 	}
-
-	public void propagating(int p, IConstr reason) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void restarting() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void solutionFound() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void start() {
-		// TODO Auto-generated method stub
-
-	}
-
 }
