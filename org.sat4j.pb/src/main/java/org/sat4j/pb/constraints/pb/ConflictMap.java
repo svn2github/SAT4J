@@ -472,7 +472,8 @@ public class ConflictMap extends MapPb implements IConflict {
 		assert degreeBis.compareTo(BigInteger.ONE) > 0;
 		// search of an unassigned literal
 		int lit = -1;
-		for (int ind = 0; (ind < wpb.size()) && (lit == -1); ind++)
+		int size = wpb.size();
+		for (int ind = 0; (ind < size) && (lit == -1); ind++)
 			if (coefsBis[ind].signum() != 0 && voc.isUnassigned(wpb.get(ind))) {
 				assert coefsBis[ind].compareTo(degreeBis) < 0;
 				lit = ind;
@@ -480,7 +481,7 @@ public class ConflictMap extends MapPb implements IConflict {
 
 		// else, search of a satisfied literal
 		if (lit == -1)
-			for (int ind = 0; (ind < wpb.size()) && (lit == -1); ind++)
+			for (int ind = 0; (ind < size) && (lit == -1); ind++)
 				if ((coefsBis[ind].signum() != 0)
 						&& (voc.isSatisfied(wpb.get(ind)))
 						&& (ind != indLitImplied))
@@ -509,18 +510,42 @@ public class ConflictMap extends MapPb implements IConflict {
 	private BigInteger saturation(BigInteger[] coefs, BigInteger degree,
 			IWatchPb wpb) {
 		assert degree.signum() > 0;
-		BigInteger minimum = degree;
+		// BigInteger minimum = degree;
+		boolean isMinimumEqualsToDegree = true;
+		int comparison;
 		for (int i = 0; i < coefs.length; i++) {
-			if (coefs[i].signum() > 0)
-				minimum = minimum.min(coefs[i]);
-			if (coefs[i].compareTo(degree) > 0) {
+			comparison = coefs[i].compareTo(degree);
+			if (comparison > 0) {
 				if (!voc.isFalsified(wpb.get(i))) {
 					possReducedCoefs = possReducedCoefs.subtract(coefs[i]);
 					possReducedCoefs = possReducedCoefs.add(degree);
 				}
 				coefs[i] = degree;
+			} else if (comparison < 0 && coefs[i].signum() > 0) {
+				isMinimumEqualsToDegree = false;
 			}
+
 		}
+		// BigInteger minimum = saturation1(coefs, degree, wpb);
+		if (isMinimumEqualsToDegree && !degree.equals(BigInteger.ONE)) {
+			// the result is a clause
+			// there is no more possible reduction
+			possReducedCoefs = BigInteger.ZERO;
+			degree = BigInteger.ONE;
+			for (int i = 0; i < coefs.length; i++)
+				if (coefs[i].signum() > 0) {
+					coefs[i] = degree;
+					if (!voc.isFalsified(wpb.get(i)))
+						possReducedCoefs = possReducedCoefs.add(BigInteger.ONE);
+				}
+		}
+		return degree;
+		// degree = saturation2(coefs, degree, wpb, minimum);
+		// return degree;
+	}
+
+	private BigInteger saturation2(BigInteger[] coefs, BigInteger degree,
+			IWatchPb wpb, BigInteger minimum) {
 		if (minimum.equals(degree) && !degree.equals(BigInteger.ONE)) {
 			// the result is a clause
 			// there is no more possible reduction
@@ -534,6 +559,25 @@ public class ConflictMap extends MapPb implements IConflict {
 				}
 		}
 		return degree;
+	}
+
+	private BigInteger saturation1(BigInteger[] coefs, BigInteger degree,
+			IWatchPb wpb) {
+		// if (coefs.length == 0)
+		// System.out.print(".");
+		BigInteger minimum = degree;
+		for (int i = 0; i < coefs.length; i++) {
+			if (coefs[i].signum() > 0)
+				minimum = minimum.min(coefs[i]);
+			if (coefs[i].compareTo(degree) > 0) {
+				if (!voc.isFalsified(wpb.get(i))) {
+					possReducedCoefs = possReducedCoefs.subtract(coefs[i]);
+					possReducedCoefs = possReducedCoefs.add(degree);
+				}
+				coefs[i] = degree;
+			}
+		}
+		return minimum;
 	}
 
 	private static boolean positiveCoefs(final BigInteger[] coefsCons) {
