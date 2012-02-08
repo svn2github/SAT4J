@@ -261,7 +261,6 @@ public class Lanceur extends AbstractLauncher {
 				IOrder order = new RandomWalkDecorator((VarOrderHeap)((Solver)asolver).getOrder(), proba);
 				((Solver)asolver).setOrder(order);
 			}
-			
 
 			if(cmd.hasOption("opt")){
 				assert asolver instanceof IPBSolver;
@@ -317,6 +316,13 @@ public class Lanceur extends AbstractLauncher {
 					k = myk.intValue();
 				}
 			}
+			
+			int others = 0;
+			String[] rargs = cmd.getArgs();
+			if (filename == null && rargs.length > 0) {
+				filename = rargs[others++];
+			}
+
 			if (cmd.hasOption("r")) {
 				asolver.setSearchListener(new MultiTracing(
 						new ConflictLevelTracing(filename
@@ -327,12 +333,7 @@ public class Lanceur extends AbstractLauncher {
 												new ConflictDepthTracing(filename
 														+ "-conflict-depth")));
 			}
-			int others = 0;
-			String[] rargs = cmd.getArgs();
-			if (filename == null && rargs.length > 0) {
-				filename = rargs[others++];
-			}
-
+			
 			// use remaining data to configure the solver
 			while (others < rargs.length) {
 				String[] param = rargs[others].split("="); //$NON-NLS-1$
