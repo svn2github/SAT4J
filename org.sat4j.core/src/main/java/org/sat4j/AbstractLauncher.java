@@ -312,12 +312,29 @@ public abstract class AbstractLauncher implements Serializable {
 
 	protected <T extends ISolver> void showAvailableSolvers(
 			ASolverFactory<T> afactory) {
+		// if (afactory != null) {
+		//			log("Available solvers: "); //$NON-NLS-1$
+		// String[] names = afactory.solverNames();
+		// for (int i = 0; i < names.length; i++) {
+		// log(names[i]);
+		// }
+		// }
+		showAvailableSolvers(afactory, "");
+	}
+
+	protected <T extends ISolver> void showAvailableSolvers(
+			ASolverFactory<T> afactory, String framework) {
 		if (afactory != null) {
-			log("Available solvers: "); //$NON-NLS-1$
+			if (framework.length() > 0) {
+				log("Available solvers for " + framework + ": "); //$NON-NLS-1$
+			} else {
+				log("Available solvers: "); //$NON-NLS-1$
+			}
 			String[] names = afactory.solverNames();
 			for (int i = 0; i < names.length; i++) {
 				log(names[i]);
 			}
 		}
 	}
+
 }
