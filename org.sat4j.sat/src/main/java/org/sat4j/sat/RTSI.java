@@ -7,6 +7,8 @@ import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -18,8 +20,8 @@ public class RTSI {
 
 	public static Vector<String> find(String tosubclassname) {
 		alreadySeenPckges = new Vector<String>();
-		Vector<String> v = new Vector<String>();
-		Vector<String> tmp;
+		Set<String> v = new HashSet<String>();
+		Set<String> tmp;
 		try {
 			// ClassLoader.getSystemClassLoader().setPackageAssertionStatus("org.sat4j",
 			// true);
@@ -33,11 +35,11 @@ public class RTSI {
 		} catch (ClassNotFoundException ex) {
 			System.err.println("Class " + tosubclassname + " not found!");
 		}
-		return v;
+		return new Vector<String>(v);
 	}
 
-	public static Vector<String> find(String pckname, String tosubclassname) {
-		Vector<String> v = new Vector<String>();
+	public static Set<String> find(String pckname, String tosubclassname) {
+		Set<String> v = new HashSet<String>();
 		try {
 			Class<?> tosubclass = Class.forName(tosubclassname);
 			v = find(pckname, tosubclass);
@@ -47,17 +49,17 @@ public class RTSI {
 		return v;
 	}
 
-	public static Vector<String> find(String pckgname, Class<?> tosubclass) {
+	public static Set<String> find(String pckgname, Class<?> tosubclass) {
 		if (alreadySeenPckges.contains(pckgname)) {
-			return new Vector<String>();
+			return new HashSet<String>();
 		} else {
 			alreadySeenPckges.add(pckgname);
 			return findnames(pckgname, tosubclass);
 		}
 	}
 
-	public static Vector<String> findnames(String pckgname, Class<?> tosubclass) {
-		Vector<String> v = new Vector<String>();
+	public static Set<String> findnames(String pckgname, Class<?> tosubclass) {
+		Set<String> v = new HashSet<String>();
 		// Code from JWhich
 		// ======
 		// Translate the package name into an absolute path
@@ -134,7 +136,7 @@ public class RTSI {
 							.isDirectory();
 				}
 			});
-			Vector<String> tmp;
+			Set<String> tmp;
 			for (int i = 0; i < dirs.length; i++) {
 				String newName = pckgname + "." + dirs[i].getName();
 				tmp = find(newName, tosubclass);
