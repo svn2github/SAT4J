@@ -101,16 +101,20 @@ public class Lanceur extends AbstractLauncher {
 	private final static String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
 	private final static String PACKAGE_RESTARTS = "org.sat4j.minisat.restarts";
 	private final static String PACKAGE_PHASE = "org.sat4j.minisat.orders";
+	private final static String PACKAGE_PARAMS = "org.sat4j.minisat.core";
 
 	private final static String ORDERS = "ORDERS";
 	private final static String LEARNING = "LEARNING";
 	private final static String RESTARTS = "RESTARTS";
 	private final static String PHASE = "PHASE";
+	private final static String PARAMS = "PARAMS";
+	private final static String SIMP = "SIMP";
 
 	private final static String RESTART_STRATEGY_NAME = "org.sat4j.minisat.core.RestartStrategy";
 	private final static String ORDER_NAME = "org.sat4j.minisat.core.IOrder";
 	private final static String LEARNING_NAME = "org.sat4j.minisat.core.LearningStrategy";
 	private final static String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+	private final static String PARAMS_NAME = "org.sat4j.minisat.core.SearchParams";
 
 
 
@@ -120,6 +124,7 @@ public class Lanceur extends AbstractLauncher {
 		qualif.put(LEARNING, PACKAGE_LEARNING);
 		qualif.put(RESTARTS, PACKAGE_RESTARTS);
 		qualif.put(PHASE, PACKAGE_PHASE);
+		qualif.put(PARAMS, PACKAGE_PARAMS);
 	}
 	private boolean incomplete = false;
 
@@ -262,11 +267,7 @@ public class Lanceur extends AbstractLauncher {
 				((Solver)asolver).setOrder(order);
 			}
 
-			if(cmd.hasOption("opt")){
-				assert asolver instanceof IPBSolver;
-				isModeOptimization = true;
-				asolver = new PseudoOptDecorator((IPBSolver)asolver);
-			}
+			
 
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
@@ -315,6 +316,12 @@ public class Lanceur extends AbstractLauncher {
 				if (myk != null) {
 					k = myk.intValue();
 				}
+			}
+			
+			if(cmd.hasOption("opt")){
+				assert asolver instanceof IPBSolver;
+				isModeOptimization = true;
+				asolver = new PseudoOptDecorator((IPBSolver)asolver);
 			}
 			
 			int others = 0;
@@ -385,6 +392,10 @@ public class Lanceur extends AbstractLauncher {
 		showAvailableOrders();
 		showAvailableLearning();
 		showAvailablePhase();
+		showParams();
+		showSimplifiers();
+		stringUsage();
+		
 	}
 
 	@Override
@@ -411,28 +422,30 @@ public class Lanceur extends AbstractLauncher {
 		if (dsf != null) {
 			aSolver.setDataStructureFactory(dsf);
 		}
-		LearningStrategy learning = setupObject("LEARNING", pf);
+		LearningStrategy learning = setupObject(LEARNING, pf);
 		if (learning != null) {
 			aSolver.setLearner(learning);
 			learning.setSolver(aSolver);
 		}
-		IOrder order = setupObject("ORDER", pf);
+		IOrder order = setupObject(ORDERS, pf);
 		if (order != null) {
 			aSolver.setOrder(order);
 		}
-		IPhaseSelectionStrategy pss = setupObject("PHASE", pf);
+		IPhaseSelectionStrategy pss = setupObject(PHASE, pf);
 		if (pss != null) {
 			aSolver.getOrder().setPhaseSelectionStrategy(pss);
 		}
-		RestartStrategy restarter = setupObject("RESTARTS", pf);
+		RestartStrategy restarter = setupObject(RESTARTS, pf);
 		if (restarter != null) {
 			aSolver.setRestartStrategy(restarter);
 		}
-		String simp = pf.getProperty("SIMP");
+		String simp = pf.getProperty(SIMP);
 		if (simp != null) {
+			log("read " + simp);
+			log("configuring " + SIMP);
 			aSolver.setSimplifier(simp);
 		}
-		SearchParams params = setupObject("PARAMS", pf);
+		SearchParams params = setupObject(PARAMS, pf);
 		if (params != null) {
 			aSolver.setSearchParams(params);
 		}
@@ -445,7 +458,7 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	private void stringUsage() {
-		log("Available building blocks: DSF, LEARNING, ORDER, PHASE, RESTARTS, SIMP, PARAMS");
+		log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS");
 		log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
 	}
 
@@ -455,17 +468,19 @@ public class Lanceur extends AbstractLauncher {
 			String configline = pf.getProperty(component);
 			String qualification = qualif.get(component);
 
-			if (qualification != null) { 
-				System.out.println(qualification + ";" + configline);
-				if(configline.contains("Objective") && qualification.contains("minisat")){
-					System.out.println(qualification);
-					qualification = qualification.replaceFirst("minisat", "pb");	
-				}
-				configline =qualification + configline;
-			}
+			
 			if (configline == null) {
 				return null;
 			}
+			if (qualification != null) { 
+				log("read " + qualification + "." + configline);
+				if(configline.contains("Objective") && qualification.contains("minisat")){
+					//log(qualification);
+					qualification = qualification.replaceFirst("minisat", "pb");	
+				}
+				configline =qualification +"."+ configline;
+			}
+			
 			log("configuring " + component);
 			String[] config = configline.split("/");
 			T comp = (T) Class.forName(config[0]).newInstance();
@@ -615,7 +630,7 @@ public class Lanceur extends AbstractLauncher {
 				e.printStackTrace();
 			}
 		}
-		log("Available restart strategies: " + classNames);
+		log("Available restart strategies (" + RESTARTS + "): " + classNames);
 	}
 
 	protected void showAvailablePhase() {
@@ -644,7 +659,7 @@ public class Lanceur extends AbstractLauncher {
 				e.printStackTrace();
 			}
 		}
-		log("Available phase strategies: " + classNames);
+		log("Available phase strategies (" + PHASE + "): " + classNames);
 	}
 
 	protected void showAvailableLearning() {
@@ -676,7 +691,7 @@ public class Lanceur extends AbstractLauncher {
 				//System.out.println("Warning : no classDefFoundError : " + classname);
 			}
 		}
-		log("Available learning: " + classNames);
+		log("Available learning (" + LEARNING + "): " + classNames);
 	}
 
 	protected void showAvailableOrders() {
@@ -714,7 +729,31 @@ public class Lanceur extends AbstractLauncher {
 				e.printStackTrace();
 			}
 		}
-		log("Available orders: " + classNames);
+		log("Available orders (" + ORDERS + "): " + classNames);
+	}
+	
+	protected void showParams(){
+		
+		Set<String> keySet = null;
+		try {
+			keySet = BeanUtils.describe(Class.forName(PARAMS_NAME).newInstance()).keySet();
+			keySet.remove("class");
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		log("Available search params (" + PARAMS + "): [SearchParams" + keySet + "]");
+	}
+	
+	protected void showSimplifiers(){
+		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
 	}
 
 }
