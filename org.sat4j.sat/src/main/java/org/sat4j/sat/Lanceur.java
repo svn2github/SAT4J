@@ -15,16 +15,37 @@
  * the provisions above and replace them with the notice and other provisions
  * required by the LGPL. If you do not delete the provisions above, a recipient
  * may use your version of this file under the terms of the EPL or the LGPL.
+ * 
  *******************************************************************************/
 package org.sat4j.sat;
 
+/**
+   * This class is used to launch the SAT solvers from the command line. It is
+   * compliant with the SAT competition (www.satcompetition.org) I/O format. The
+   * launcher is to be used as follows:
+   * 
+   * <pre>
+   *                [solvername] filename [key=value]*
+   * </pre>
+   * 
+   * If no solver name is given, then the default solver of the solver factory is
+   * used (@see org.sat4j.core.ASolverFactory#defaultSolver()).
+   * 
+   * @author sroussel
+   */
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.cli.CommandLine;
@@ -34,6 +55,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
+import org.sat4j.ExitCode;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.DataStructureFactory;
@@ -43,32 +65,24 @@ import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.minisat.orders.RandomWalkDecorator;
+import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
+import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.DotSearchTracing;
 
-/**
- * This class is used to launch the SAT solvers from the command line. It is
- * compliant with the SAT competition (www.satcompetition.org) I/O format. The
- * launcher is to be used as follows:
- * 
- * <pre>
- *                [solvername] filename [key=value]*
- * </pre>
- * 
- * If no solver name is given, then the default solver of the solver factory is
- * used (@see org.sat4j.core.ASolverFactory#defaultSolver()).
- * 
- * @author leberre
- */
+
 public class Lanceur extends AbstractLauncher {
 
 	/**
@@ -76,13 +90,37 @@ public class Lanceur extends AbstractLauncher {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Lance le prouveur sur un fichier Dimacs.
-	 * 
-	 * @param args
-	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
-	 *            compress?.
-	 */
+	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
+
+	private final static String PACKAGE_ORDERS = "org.sat4j.minisat.orders";
+	private final static String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
+	private final static String PACKAGE_RESTARTS = "org.sat4j.minisat.restarts";
+	private final static String PACKAGE_PHASE = "org.sat4j.minisat.orders";
+
+	private final static String ORDERS = "ORDERS";
+	private final static String LEARNING = "LEARNING";
+	private final static String RESTARTS = "RESTARTS";
+	private final static String PHASE = "PHASE";
+
+	private final static String RESTART_STRATEGY_NAME = "org.sat4j.minisat.core.RestartStrategy";
+	private final static String ORDER_NAME = "org.sat4j.minisat.core.IOrder";
+	private final static String LEARNING_NAME = "org.sat4j.minisat.core.LearningStrategy";
+	private final static String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+
+
+
+	private final static Map<String,String> qualif = new HashMap<String,String>();
+	static {
+		qualif.put(ORDERS, PACKAGE_ORDERS);
+		qualif.put(LEARNING, PACKAGE_LEARNING);
+		qualif.put(RESTARTS, PACKAGE_RESTARTS);
+		qualif.put(PHASE, PACKAGE_PHASE);
+	}
+	private boolean incomplete = false;
+
+	private boolean isModeOptimization = false;
+
+
 	public static void main(final String[] args) {
 		AbstractLauncher lanceur = new Lanceur();
 		lanceur.run(args);
@@ -94,6 +132,7 @@ public class Lanceur extends AbstractLauncher {
 	private String filename;
 
 	private int k = -1;
+
 
 	@SuppressWarnings("nls")
 	private Options createCLIOptions() {
@@ -120,6 +159,10 @@ public class Lanceur extends AbstractLauncher {
 				"limit the search to models having at least k variables set to false");
 		options.addOption("r", "trace", true,
 				"Search Listener to use for tracing the behavior of the solver");
+		options.addOption("opt", "optimize", false,
+				"use solver in optimize mode instead of sat mode (default)");
+		options.addOption("rw", "randomWalk", false,
+				"specifies the random walk probability ");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -140,6 +183,10 @@ public class Lanceur extends AbstractLauncher {
 		op.setArgName("filename");
 		op = options.getOption("r");
 		op.setArgName("searchlistener");
+		op = options.getOption("opt");
+		op.setArgName("optimizeMode");
+		op = options.getOption("rw");
+		op.setArgName("number");
 		return options;
 	}
 
@@ -157,13 +204,23 @@ public class Lanceur extends AbstractLauncher {
 		if (args.length == 0) {
 			HelpFormatter helpf = new HelpFormatter();
 			helpf.printHelp("java -jar sat4j.jar", options, true);
+			
+			//			log("Available solvers: "
+			//					+ Arrays.asList(factory.solverNames()));
+			//			showAvailableLearning();
+			//			showAvailableOrders();
+			//			showAvailablePhase();
+			//			showAvailableRestarts();
 			return null;
 		}
 		try {
 			CommandLine cmd = new PosixParser().parse(options, args);
 
 			String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-			if (framework == null) { //$NON-NLS-1$
+			if(cmd.hasOption("opt")){
+				framework="pb";
+			}
+			else if (framework == null) { //$NON-NLS-1$
 				framework = "minisat";
 			}
 
@@ -193,6 +250,14 @@ public class Lanceur extends AbstractLauncher {
 				asolver = factory.defaultSolver();
 			}
 
+
+
+			if(cmd.hasOption("opt")){
+				assert asolver instanceof IPBSolver;
+				isModeOptimization = true;
+				asolver = new PseudoOptDecorator((IPBSolver)asolver);
+			}
+
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
 				if (configuredSolver == null) {
@@ -200,6 +265,12 @@ public class Lanceur extends AbstractLauncher {
 					return null;
 				}
 				asolver = configureFromString(configuredSolver, asolver);
+			}
+
+			if (cmd.hasOption("rw")){
+				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
+				IOrder order = new RandomWalkDecorator((VarOrderHeap)((Solver)asolver).getOrder(), proba);
+				((Solver)asolver).setOrder(order);
 			}
 
 			String timeout = cmd.getOptionValue("t");
@@ -315,7 +386,17 @@ public class Lanceur extends AbstractLauncher {
 
 	@Override
 	public void usage() {
-		showAvailableSolvers(factory);
+		factory = org.sat4j.minisat.SolverFactory.instance();
+		//log("SAT");
+		showAvailableSolvers(factory, "sat");
+		log("-------------------");
+		factory = (ASolverFactory) org.sat4j.pb.SolverFactory.instance();
+		//log("PB");
+		showAvailableSolvers(factory, "pb");
+		showAvailableRestarts();
+		showAvailableOrders();
+		showAvailableLearning();
+		showAvailablePhase();
 	}
 
 	@Override
@@ -377,13 +458,23 @@ public class Lanceur extends AbstractLauncher {
 
 	private void stringUsage() {
 		log("Available building blocks: DSF, LEARNING, ORDER, PHASE, RESTARTS, SIMP, PARAMS");
-		log("Example: -S RESTARTS=org.sat4j.minisat.restarts.LubyRestarts/factor:512,LEARNING=org.sat4j.minisat.learning.MiniSATLearning");
+		log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
 	}
 
 	@SuppressWarnings("unchecked")
 	private final <T> T setupObject(String component, Properties pf) {
 		try {
 			String configline = pf.getProperty(component);
+			String qualification = qualif.get(component);
+
+			if (qualification != null) { 
+				System.out.println(qualification + ";" + configline);
+				if(configline.contains("Objective") && qualification.contains("minisat")){
+					System.out.println(qualification);
+					qualification = qualification.replaceFirst("minisat", "pb");	
+				}
+				configline =qualification + configline;
+			}
 			if (configline == null) {
 				return null;
 			}
@@ -428,4 +519,232 @@ public class Lanceur extends AbstractLauncher {
 		}
 		return theSolver;
 	}
+
+
+	@Override
+	protected void solve(IProblem problem) throws TimeoutException {
+		if(isModeOptimization){
+			boolean isSatisfiable = false;
+
+			IOptimizationProblem optproblem = (IOptimizationProblem) problem;
+
+			try {
+				while (optproblem.admitABetterSolution()) {
+					if (!isSatisfiable) {
+						if (optproblem.nonOptimalMeansSatisfiable()) {
+							setExitCode(ExitCode.SATISFIABLE);
+							if (optproblem.hasNoObjectiveFunction()) {
+								return;
+							}
+							log("SATISFIABLE"); //$NON-NLS-1$
+						} else if (incomplete) {
+							setExitCode(ExitCode.UPPER_BOUND);
+						}
+						isSatisfiable = true;
+						log("OPTIMIZING..."); //$NON-NLS-1$
+					}
+					log("Got one! Elapsed wall clock time (in seconds):" //$NON-NLS-1$
+							+ (System.currentTimeMillis() - getBeginTime())
+							/ 1000.0);
+					getLogWriter().println(
+							CURRENT_OPTIMUM_VALUE_PREFIX
+							+ optproblem.getObjectiveValue());
+					optproblem.discardCurrentSolution();
+				}
+				if (isSatisfiable) {
+					setExitCode(ExitCode.OPTIMUM_FOUND);
+				} else {
+					setExitCode(ExitCode.UNSATISFIABLE);
+				}
+			} catch (ContradictionException ex) {
+				assert isSatisfiable;
+				setExitCode(ExitCode.OPTIMUM_FOUND);
+			}
+		}
+		else{
+			exitCode = problem.isSatisfiable() ? ExitCode.SATISFIABLE
+					: ExitCode.UNSATISFIABLE;
+		}
+	}
+
+	protected void displayResult() {
+		if(isModeOptimization){
+			displayAnswer();
+
+			log("Total wall clock time (in seconds): " //$NON-NLS-1$
+					+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);}
+		else{
+			super.displayResult();
+		}
+	}
+
+	protected void displayAnswer() {
+		if (solver == null)
+			return;
+		System.out.flush();
+		PrintWriter out = getLogWriter();
+		out.flush();
+		solver.printStat(out, COMMENT_PREFIX);
+		solver.printInfos(out, COMMENT_PREFIX);
+		ExitCode exitCode = getExitCode();
+		out.println(ANSWER_PREFIX + exitCode);
+		if (exitCode == ExitCode.SATISFIABLE
+				|| exitCode == ExitCode.OPTIMUM_FOUND
+				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
+			out.print(SOLUTION_PREFIX);
+			getReader().decode(solver.model(), out);
+			out.println();
+			IOptimizationProblem optproblem = (IOptimizationProblem) solver;
+			if (!optproblem.hasNoObjectiveFunction()) {
+				log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+			}
+		}
+	}
+
+	protected void showAvailableRestarts() {
+		Vector<String> classNames = new Vector<String>();
+		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME); 
+		Set<String> keySet;
+		for(String name: resultRTSI){
+			try {
+				keySet = BeanUtils.describe(Class.forName(PACKAGE_RESTARTS+"."+name).newInstance()).keySet();
+				keySet.remove("class");
+				if(keySet.size()>0){
+					classNames.add(name + keySet);
+				}
+				else{
+					classNames.add(name);
+				}
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		log("Available restart strategies: " + classNames);
+	}
+
+	protected void showAvailablePhase() {
+		Vector<String> classNames = new Vector<String>();
+		Vector<String> resultRTSI = RTSI.find(PHASE_NAME); 
+		Set<String> keySet;
+		for(String name: resultRTSI){
+			try {
+				keySet = BeanUtils.describe(Class.forName(PACKAGE_PHASE+"."+name).newInstance()).keySet();
+				keySet.remove("class");
+				if(keySet.size()>0){
+					classNames.add(name + keySet);
+				}
+				else{
+					classNames.add(name);
+				}
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		log("Available phase strategies: " + classNames);
+	}
+
+	protected void showAvailableLearning() {
+		Vector<String> classNames = new Vector<String>();
+		Vector<String> resultRTSI = RTSI.find(LEARNING_NAME); 
+		Set<String> keySet;
+		for(String name: resultRTSI){
+			try {
+				keySet = BeanUtils.describe(Class.forName(PACKAGE_LEARNING+"."+name).newInstance()).keySet();
+				keySet.remove("class");
+				if(keySet.size()>0){
+					classNames.add(name + keySet);
+				}
+				else{
+					classNames.add(name);
+				}
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				classNames.add(name);	
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (NoClassDefFoundError cnfex) {
+				//System.out.println("Warning : no classDefFoundError : " + classname);
+			}
+		}
+		log("Available learning: " + classNames);
+	}
+
+	protected void showAvailableOrders() {
+		Vector<String> classNames = new Vector<String>();
+		Vector<String> resultRTSI = RTSI.find(ORDER_NAME); 
+		Set<String> keySet;
+		for(String name: resultRTSI){
+			try {
+				if(name.contains("Objective")){
+					String namePackage = PACKAGE_ORDERS.replaceFirst("minisat", "pb");
+					keySet = BeanUtils.describe(Class.forName(namePackage+"."+name).newInstance()).keySet();
+				}
+				else{
+					keySet = BeanUtils.describe(Class.forName(PACKAGE_ORDERS+"."+name).newInstance()).keySet();
+				}
+				keySet.remove("class");
+
+				if(keySet.size()>0){
+					classNames.add(name + keySet);
+				}
+				else {
+					classNames.add(name);
+				}
+
+
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				//classNames.add(name);	
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		log("Available orders: " + classNames);
+	}
+
 }
