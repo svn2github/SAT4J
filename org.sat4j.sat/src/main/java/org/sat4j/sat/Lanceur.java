@@ -20,19 +20,19 @@
 package org.sat4j.sat;
 
 /**
-   * This class is used to launch the SAT solvers from the command line. It is
-   * compliant with the SAT competition (www.satcompetition.org) I/O format. The
-   * launcher is to be used as follows:
-   * 
-   * <pre>
-   *                [solvername] filename [key=value]*
-   * </pre>
-   * 
-   * If no solver name is given, then the default solver of the solver factory is
-   * used (@see org.sat4j.core.ASolverFactory#defaultSolver()).
-   * 
-   * @author sroussel
-   */
+ * This class is used to launch the SAT solvers from the command line. It is
+ * compliant with the SAT competition (www.satcompetition.org) I/O format. The
+ * launcher is to be used as follows:
+ * 
+ * <pre>
+ *                [solvername] filename [key=value]*
+ * </pre>
+ * 
+ * If no solver name is given, then the default solver of the solver factory is
+ * used (@see org.sat4j.core.ASolverFactory#defaultSolver()).
+ * 
+ * @author sroussel
+ */
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -80,7 +80,12 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.ConflictDepthTracing;
+import org.sat4j.tools.ConflictLevelTracing;
+import org.sat4j.tools.DecisionTracing;
 import org.sat4j.tools.DotSearchTracing;
+import org.sat4j.tools.LearnedClausesSizeTracing;
+import org.sat4j.tools.MultiTracing;
 
 
 public class Lanceur extends AbstractLauncher {
@@ -151,17 +156,17 @@ public class Lanceur extends AbstractLauncher {
 		options.addOption("C", "conflictbased", false,
 				"conflict based timeout (for deterministic behavior)");
 		options.addOption("d", "dot", true,
-				"create a sat4j.dot file in current directory representing the search");
+				"creates a sat4j.dot file in current directory representing the search");
 		options.addOption("f", "filename", true,
 				"specifies the file to use (in conjunction with -d for instance)");
 		options.addOption("m", "mute", false, "Set launcher in silent mode");
 		options.addOption("k", "kleast", true,
 				"limit the search to models having at least k variables set to false");
-		options.addOption("r", "trace", true,
-				"Search Listener to use for tracing the behavior of the solver");
+		options.addOption("r", "trace", false,
+				"traces the behavior of the solver");
 		options.addOption("opt", "optimize", false,
-				"use solver in optimize mode instead of sat mode (default)");
-		options.addOption("rw", "randomWalk", false,
+				"uses solver in optimize mode instead of sat mode (default)");
+		options.addOption("rw", "randomWalk", true,
 				"specifies the random walk probability ");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
@@ -204,7 +209,7 @@ public class Lanceur extends AbstractLauncher {
 		if (args.length == 0) {
 			HelpFormatter helpf = new HelpFormatter();
 			helpf.printHelp("java -jar sat4j.jar", options, true);
-			
+
 			//			log("Available solvers: "
 			//					+ Arrays.asList(factory.solverNames()));
 			//			showAvailableLearning();
@@ -251,6 +256,12 @@ public class Lanceur extends AbstractLauncher {
 			}
 
 
+			if (cmd.hasOption("rw")){
+				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
+				IOrder order = new RandomWalkDecorator((VarOrderHeap)((Solver)asolver).getOrder(), proba);
+				((Solver)asolver).setOrder(order);
+			}
+			
 
 			if(cmd.hasOption("opt")){
 				assert asolver instanceof IPBSolver;
@@ -267,11 +278,7 @@ public class Lanceur extends AbstractLauncher {
 				asolver = configureFromString(configuredSolver, asolver);
 			}
 
-			if (cmd.hasOption("rw")){
-				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
-				IOrder order = new RandomWalkDecorator((VarOrderHeap)((Solver)asolver).getOrder(), proba);
-				((Solver)asolver).setOrder(order);
-			}
+			
 
 			String timeout = cmd.getOptionValue("t");
 			if (timeout == null) {
@@ -311,34 +318,14 @@ public class Lanceur extends AbstractLauncher {
 				}
 			}
 			if (cmd.hasOption("r")) {
-				String listener = cmd.getOptionValue("r");
-				try {
-
-					SearchListener slistener = (SearchListener) Class
-							.forName(listener).getConstructor(String.class)
-							.newInstance("sat4j.trace");
-					asolver.setSearchListener(slistener);
-				} catch (InstantiationException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				} catch (IllegalAccessException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				} catch (ClassNotFoundException e) {
-					log("wrong parameter for search listener: " + listener);
-				} catch (IllegalArgumentException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				} catch (SecurityException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				} catch (InvocationTargetException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				} catch (NoSuchMethodException e) {
-					log("wrong parameter for search listener: "
-							+ e.getLocalizedMessage());
-				}
+				asolver.setSearchListener(new MultiTracing(
+						new ConflictLevelTracing(filename
+								+ "-conflict-level"), new DecisionTracing(
+										filename + "-decision-indexes"),
+										new LearnedClausesSizeTracing(filename
+												+ "-learned-clauses-size"),
+												new ConflictDepthTracing(filename
+														+ "-conflict-depth")));
 			}
 			int others = 0;
 			String[] rargs = cmd.getArgs();
@@ -616,19 +603,14 @@ public class Lanceur extends AbstractLauncher {
 					classNames.add(name);
 				}
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -650,19 +632,14 @@ public class Lanceur extends AbstractLauncher {
 					classNames.add(name);
 				}
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -684,18 +661,14 @@ public class Lanceur extends AbstractLauncher {
 					classNames.add(name);
 				}
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
 				classNames.add(name);	
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch (NoClassDefFoundError cnfex) {
@@ -729,18 +702,14 @@ public class Lanceur extends AbstractLauncher {
 
 
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InstantiationException e) {
 				//classNames.add(name);	
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
