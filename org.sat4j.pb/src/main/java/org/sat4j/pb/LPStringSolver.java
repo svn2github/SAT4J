@@ -203,24 +203,28 @@ public class LPStringSolver extends DimacsStringSolver implements IPBSolver {
 		nbOfConstraints++;
 		int lit;
 		boolean first = true;
+		int negationweight = 0;
 		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
 			lit = iterator.next();
+
 			if (first) {
 				if (lit > 0) {
 					out.append("x" + lit + " ");
 				} else {
-					out.append("~x" + -lit + " ");
+					out.append("-x" + -lit + " ");
+					negationweight++;
 				}
 				first = false;
 			} else {
 				if (lit > 0) {
 					out.append("+ x" + lit + " ");
 				} else {
-					out.append("+ ~x" + -lit + " ");
+					out.append("- x" + -lit + " ");
+					negationweight++;
 				}
 			}
 		}
-		out.append(">= 1 ;\n");
+		out.append(">= " + (1 - negationweight) + "\n");
 		return FAKE_CONSTR;
 	}
 
@@ -285,7 +289,7 @@ public class LPStringSolver extends DimacsStringSolver implements IPBSolver {
 			if (obj != null) {
 				objectiveFunctionToLP(obj, tmp);
 				tmp.append("\n");
-				tmp.append("Subject To");
+				tmp.append("Subject To\n ");
 			}
 			// TODO : there must an objective function
 			out.insert(indxConstrObj, tmp.toString());
@@ -293,10 +297,10 @@ public class LPStringSolver extends DimacsStringSolver implements IPBSolver {
 		}
 		// out.append("\n");
 		out.append("Binary \n");
-		// TODO : Vérifier que les varaibels sont bien numérotées de 1 à
+		// TODO : Vérifier que les variables sont bien numérotées de 1 à
 		// maxvarid
 		for (int i = 1; i <= nVars(); i++) {
-			out.append("x" + i + " ");
+			out.append("x" + i + "\n");
 		}
 		out.append("\n");
 		out.append("End");
@@ -305,7 +309,7 @@ public class LPStringSolver extends DimacsStringSolver implements IPBSolver {
 
 	@Override
 	public String toString(String prefix) {
-		return "LP output solver" + toString();
+		return toString();
 	}
 
 	@Override
