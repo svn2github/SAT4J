@@ -51,34 +51,35 @@ public class Policy extends EncodingStrategyAdapter {
 	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
 			throws ContradictionException {
 
+		return super.addAtMost(solver, literals, k);
 		// Commander commander = new Commander();
 		// Product product = new Product();
-		if (k == 0 || literals.size() == 1) {
-			// will propagate unit literals
-			return super.addAtMost(solver, literals, k);
-		}
-		if (literals.size() <= 1) {
-			throw new UnsupportedOperationException(
-					"requires at least 2 literals");
-		}
-		if (k == 1) {
-			// return ladder.addAtMostOne(solver, literals);
-			// return binary.addAtMostOne(solver, literals);
-			return commander.addAtMostOne(solver, literals);
-			// return product.addAtMostOne(solver, literals);
-		}
+		// if (k == 0 || literals.size() == 1) {
+		// // will propagate unit literals
+		// return super.addAtMost(solver, literals, k);
+		// }
+		// if (literals.size() <= 1) {
+		// throw new UnsupportedOperationException(
+		// "requires at least 2 literals");
+		// }
+		// if (k == 1) {
+		// // return ladder.addAtMostOne(solver, literals);
+		// // return binary.addAtMostOne(solver, literals);
+		// return commander.addAtMostOne(solver, literals);
+		// // return product.addAtMostOne(solver, literals);
+		// }
 		// return seq.addAtMost(solver, literals, k);
 		// return product.addAtMost(solver, literals, k);
-		return commander.addAtMost(solver, literals, k);
+		// return commander.addAtMost(solver, literals, k);
 	}
 
 	@Override
 	public IConstr addExactly(ISolver solver, IVecInt literals, int n)
 			throws ContradictionException {
-		Ladder ladder = new Ladder();
-		if (n == 1) {
-			return ladder.addExactlyOne(solver, literals);
-		}
+		// Ladder ladder = new Ladder();
+		// if (n == 1) {
+		// return ladder.addExactlyOne(solver, literals);
+		// }
 
 		return super.addExactly(solver, literals, n);
 	}
