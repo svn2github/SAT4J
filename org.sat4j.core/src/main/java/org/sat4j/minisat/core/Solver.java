@@ -94,12 +94,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	/**
 	 * Set of original constraints.
 	 */
-	private final IVec<Constr> constrs = new Vec<Constr>(); // Constr
+	protected final IVec<Constr> constrs = new Vec<Constr>(); // Constr
 
 	/**
 	 * Set of learned constraints.
 	 */
-	private final IVec<Constr> learnts = new Vec<Constr>(); // Clause
+	protected final IVec<Constr> learnts = new Vec<Constr>(); // Clause
 
 	/**
 	 * incr?ment pour l'activit? des clauses.
@@ -1319,7 +1319,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	/**
 	 * @param learnts
 	 */
-	private void sortOnActivity() {
+	protected void sortOnActivity() {
 		learnts.sort(comparator);
 	}
 
@@ -1387,7 +1387,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				void run() {
+				public void run() {
 					needToReduceDB = true;
 				}
 			};
@@ -1454,7 +1454,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			void run() {
+			public void run() {
 				long freemem = Runtime.getRuntime().freeMemory();
 				// System.out.println("c Free memory "+freemem);
 				if (freemem < memorybound) {
@@ -1530,7 +1530,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			private int nextbound = MAX_CLAUSE;
 
 			@Override
-			void run() {
+			public void run() {
 				nbconflict += bound();
 				if (nbconflict >= nextbound) {
 					nextbound += INC_CLAUSE;
@@ -2165,6 +2165,14 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 */
 	public void suggestNextLiteralToBranchOn(int l) {
 		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	protected boolean isNeedToReduceDB() {
+		return needToReduceDB;
+	}
+
+	protected void setNeedToReduceDB(boolean needToReduceDB) {
+		this.needToReduceDB = needToReduceDB;
 	}
 
 }

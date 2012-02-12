@@ -47,7 +47,7 @@ public abstract class ConflictTimerAdapter implements Serializable,
 
 	private final int bound;
 
-	ConflictTimerAdapter(final int bound) {
+	public ConflictTimerAdapter(final int bound) {
 		this.bound = bound;
 		counter = 0;
 	}
@@ -64,7 +64,7 @@ public abstract class ConflictTimerAdapter implements Serializable,
 		}
 	}
 
-	abstract void run();
+	public abstract void run();
 
 	public int bound() {
 		return bound;
