@@ -43,7 +43,7 @@ public class RandomWalkDecorator implements IOrder {
 
 	private final double p;
 
-	private final Random rand = new Random(123456789);
+	private static final Random rand = new Random(123456789);
 	private ILits voc;
 	private int nbRandomWalks;
 
