@@ -56,7 +56,6 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -69,7 +68,6 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -84,8 +82,8 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author leberre
  */
-public class Solver<D extends DataStructureFactory> implements ISolver,
-		UnitPropagationListener, ActivityListener, Learner, ISolverService {
+public class Solver<D extends DataStructureFactory> implements ISolverService,
+		ICDCL<D> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -221,12 +219,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		this.restarter = restarter;
 	}
 
-	/**
-	 * Change the internal representation of the constraints. Note that the
-	 * heuristics must be changed prior to calling that method.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param dsf
-	 *            the internal factory
+	 * @see org.sat4j.minisat.core.ICDCL#setDataStructureFactory(D)
 	 */
 	public final void setDataStructureFactory(D dsf) {
 		dsfactory = dsf;
@@ -251,22 +247,31 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		verbose = value;
 	}
 
-	/**
-	 * @since 2.1
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.sat4j.minisat.core.ICDCL#setSearchListener(org.sat4j.specs.SearchListener
+	 * )
 	 */
 	public void setSearchListener(SearchListener sl) {
 		slistener = sl;
 	}
 
-	/**
-	 * @since 2.2
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#getSearchListener()
 	 */
 	public SearchListener getSearchListener() {
 		return slistener;
 	}
 
-	/**
-	 * @since 2.2
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#setLearner(org.sat4j.minisat.core.
+	 * LearningStrategy)
 	 */
 	public void setLearner(LearningStrategy<D> learner) {
 		this.learner = learner;
@@ -287,10 +292,23 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		timeBasedTimeout = false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#setSearchParams(org.sat4j.minisat.core.
+	 * SearchParams)
+	 */
 	public void setSearchParams(SearchParams sp) {
 		params = sp;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.sat4j.minisat.core.ICDCL#setRestartStrategy(org.sat4j.minisat.core
+	 * .RestartStrategy)
+	 */
 	public void setRestartStrategy(RestartStrategy restarter) {
 		this.restarter = restarter;
 	}
@@ -458,26 +476,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return nmodel;
 	}
 
-	/**
-	 * Satisfait un litt?ral
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param p
-	 *            le litt?ral
-	 * @return true si tout se passe bien, false si un conflit appara?t.
+	 * @see org.sat4j.minisat.core.ICDCL#enqueue(int)
 	 */
 	public boolean enqueue(int p) {
 		return enqueue(p, null);
 	}
 
-	/**
-	 * Put the literal on the queue of assignments to be done.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param p
-	 *            the literal.
-	 * @param from
-	 *            the reason to propagate that literal, else null
-	 * @return true if the assignment can be made, false if a conflict is
-	 *         detected.
+	 * @see org.sat4j.minisat.core.ICDCL#enqueue(int,
+	 * org.sat4j.minisat.core.Constr)
 	 */
 	public boolean enqueue(int p, Constr from) {
 		assert p > 1;
@@ -662,10 +674,6 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		return outLearnt;
 	}
 
-	interface ISimplifier extends Serializable {
-		void simplify(IVecInt outLearnt);
-	}
-
 	public static final ISimplifier NO_SIMPLIFICATION = new ISimplifier() {
 		/**
          * 
@@ -733,14 +741,10 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	private ISimplifier simplifier = NO_SIMPLIFICATION;
 
-	/**
-	 * Setup the reason simplification strategy. By default, there is no reason
-	 * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH
-	 * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param simp
-	 *            the name of the simplifier (one of NO_SIMPLIFICATION,
-	 *            SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION).
+	 * @see org.sat4j.minisat.core.ICDCL#setSimplifier(java.lang.String)
 	 */
 	public void setSimplifier(String simp) {
 		Field f;
@@ -753,14 +757,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		}
 	}
 
-	/**
-	 * Setup the reason simplification strategy. By default, there is no reason
-	 * simplification. NOTE THAT REASON SIMPLIFICATION IS ONLY ALLOWED FOR WL
-	 * CLAUSAL data structures. USING REASON SIMPLIFICATION ON CB CLAUSES,
-	 * CARDINALITY CONSTRAINTS OR PB CONSTRAINTS MIGHT RESULT IN INCORRECT
-	 * RESULTS.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param simp
+	 * @see
+	 * org.sat4j.minisat.core.ICDCL#setSimplifier(org.sat4j.minisat.core.Solver
+	 * .ISimplifier)
 	 */
 	public void setSimplifier(ISimplifier simp) {
 		simplifier = simp;
@@ -1613,9 +1615,12 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 
 	protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
-	/**
-	 * @param lcds
-	 * @since 2.1
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.sat4j.minisat.core.ICDCL#setLearnedConstraintsDeletionStrategy(org
+	 * .sat4j.minisat.core.Solver.LearnedConstraintsDeletionStrategy)
 	 */
 	public void setLearnedConstraintsDeletionStrategy(
 			LearnedConstraintsDeletionStrategy lcds) {
@@ -1822,10 +1827,20 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		this.stats = myStats;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#getOrder()
+	 */
 	public IOrder getOrder() {
 		return order;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#setOrder(org.sat4j.minisat.core.IOrder)
+	 */
 	public void setOrder(IOrder h) {
 		order = h;
 		order.setLits(voc);
@@ -2152,93 +2167,4 @@ public class Solver<D extends DataStructureFactory> implements ISolver,
 		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
-}
-
-class ActivityComparator implements Comparator<Constr>, Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 */
-	public int compare(Constr c1, Constr c2) {
-		long delta = Math.round(c1.getActivity() - c2.getActivity());
-		if (delta == 0) {
-			return c1.size() - c2.size();
-		}
-		return (int) delta;
-	}
-}
-
-interface ConflictTimer {
-
-	void reset();
-
-	void newConflict();
-}
-
-abstract class ConflictTimerAdapter implements Serializable, ConflictTimer {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private int counter;
-
-	private final int bound;
-
-	ConflictTimerAdapter(final int bound) {
-		this.bound = bound;
-		counter = 0;
-	}
-
-	public void reset() {
-		counter = 0;
-	}
-
-	public void newConflict() {
-		counter++;
-		if (counter == bound) {
-			run();
-			counter = 0;
-		}
-	}
-
-	abstract void run();
-
-	public int bound() {
-		return bound;
-	}
-}
-
-class ConflictTimerContainer implements Serializable, ConflictTimer {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private final IVec<ConflictTimer> timers = new Vec<ConflictTimer>();
-
-	ConflictTimerContainer add(ConflictTimer timer) {
-		timers.push(timer);
-		return this;
-	}
-
-	public void reset() {
-		Iterator<ConflictTimer> it = timers.iterator();
-		while (it.hasNext()) {
-			it.next().reset();
-		}
-	}
-
-	public void newConflict() {
-		Iterator<ConflictTimer> it = timers.iterator();
-		while (it.hasNext()) {
-			it.next().newConflict();
-		}
-	}
 }
