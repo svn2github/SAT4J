@@ -36,6 +36,7 @@ import org.sat4j.minisat.core.ConflictTimer;
 import org.sat4j.minisat.core.ConflictTimerAdapter;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.IOrder;
+import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
