@@ -1100,10 +1100,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	private IVecInt unsatExplanationInTermsOfAssumptions;
 
-	Lbool search(long nofConflicts, IVecInt assumps) {
+	Lbool search(IVecInt assumps) {
 		assert rootLevel == decisionLevel();
 		stats.starts++;
-		int conflictC = 0;
 		int backjumpLevel;
 
 		// varDecay = 1 / params.varDecay;
@@ -1135,7 +1134,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 					modelFound();
 					return Lbool.TRUE;
 				}
-				if (conflictC >= nofConflicts) {
+				if (restarter.shouldRestart()) {
 					// Reached bound on number of conflicts
 					// Force a restart
 					cancelUntil(rootLevel);
@@ -1162,7 +1161,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			if (confl != null) {
 				// un conflit apparait
 				stats.conflicts++;
-				conflictC++;
 				slistener.conflictFound(confl, decisionLevel(), trail.size());
 				conflictCount.newConflict();
 
@@ -1187,7 +1185,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				slistener.backjump(backjumpLevel);
 				cancelUntil(backjumpLevel);
 				if (backjumpLevel == rootLevel) {
-					conflictC = 0;
+					restarter.onBackjumpToRootLevel();
 				}
 				assert (decisionLevel() >= rootLevel)
 						&& (decisionLevel() >= analysisResult.backtrackLevel);
@@ -1356,7 +1354,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	private boolean needToReduceDB;
 
-	private ConflictTimer conflictCount;
+	private ConflictTimerContainer conflictCount;
 
 	private transient Timer timer;
 
@@ -1710,7 +1708,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		// assumptions.
 		order.init(); // duplicated on purpose
 		learner.init();
-
+		conflictCount = new ConflictTimerContainer();
 		boolean firstTimeGlobal = false;
 		if (timeBasedTimeout) {
 			if (!global || timer == null) {
@@ -1724,7 +1722,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				};
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
-				conflictCount = learnedConstraintsDeletionStrategy.getTimer();
+				conflictCount
+						.add(learnedConstraintsDeletionStrategy.getTimer());
 			}
 		} else {
 			if (!global || conflictCount == null) {
@@ -1739,8 +1738,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 						undertimeout = false;
 					}
 				};
-				conflictCount = new ConflictTimerContainer().add(
-						conflictTimeout).add(
+				conflictCount.add(conflictTimeout).add(
 						learnedConstraintsDeletionStrategy.getTimer());
 			}
 		}
@@ -1755,7 +1753,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		// Solve
 		while ((status == Lbool.UNDEFINED) && undertimeout
 				&& lastConflictMeansUnsat) {
-			status = search(restarter.nextRestartNumberOfConflict(), assumps);
+			status = search(assumps);
 			if (status == Lbool.UNDEFINED) {
 				restarter.onRestart();
 				slistener.restarting();
