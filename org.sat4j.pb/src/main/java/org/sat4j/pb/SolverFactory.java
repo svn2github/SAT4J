@@ -58,6 +58,7 @@ import org.sat4j.pb.constraints.PuebloPBMinClauseAtLeastConstrDataStructure;
 import org.sat4j.pb.constraints.PuebloPBMinClauseCardConstrDataStructure;
 import org.sat4j.pb.constraints.PuebloPBMinDataStructure;
 import org.sat4j.pb.core.PBDataStructureFactory;
+import org.sat4j.pb.core.PBSolver;
 import org.sat4j.pb.core.PBSolverCP;
 import org.sat4j.pb.core.PBSolverCautious;
 import org.sat4j.pb.core.PBSolverClause;
@@ -673,7 +674,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 * @see #defaultSolver() the same method, polymorphic, to be called from an
 	 *      instance of ASolverFactory.
 	 */
-	public static IPBSolver newDefault() {
+	public static PBSolver newDefault() {
 		return newResolutionGlucose();
 	}
 
@@ -690,7 +691,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	}
 
 	@Override
-	public IPBSolver defaultSolver() {
+	public PBSolver defaultSolver() {
 		return newDefault();
 	}
 
