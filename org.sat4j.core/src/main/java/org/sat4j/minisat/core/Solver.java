@@ -2155,7 +2155,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		return needToReduceDB;
 	}
 
-	protected void setNeedToReduceDB(boolean needToReduceDB) {
+	public void setNeedToReduceDB(boolean needToReduceDB) {
 		this.needToReduceDB = needToReduceDB;
 	}
 
