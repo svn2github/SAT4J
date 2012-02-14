@@ -47,6 +47,7 @@ public final class ArminRestarts implements RestartStrategy {
 	private double inner, outer;
 	private long conflicts;
 	private SearchParams params;
+	private long conflictcount = 0;
 
 	public void init(SearchParams theParams) {
 		this.params = theParams;
@@ -67,10 +68,27 @@ public final class ArminRestarts implements RestartStrategy {
 			inner *= params.getConflictBoundIncFactor();
 		}
 		conflicts = Math.round(inner);
+		conflictcount = 0;
 	}
 
 	@Override
 	public String toString() {
 		return "Armin Biere (Picosat) restarts strategy";
+	}
+
+	public boolean shouldRestart() {
+		return conflictcount >= conflicts;
+	}
+
+	public void onBackjumpToRootLevel() {
+		conflictcount = 0;
+	}
+
+	public void reset() {
+		conflictcount = 0;
+	}
+
+	public void newConflict() {
+		conflictcount++;
 	}
 }

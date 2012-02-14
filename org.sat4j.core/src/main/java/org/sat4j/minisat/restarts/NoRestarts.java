@@ -52,4 +52,20 @@ public final class NoRestarts implements RestartStrategy {
 		// do nothing
 	}
 
+	public void reset() {
+		// do nothing
+	}
+
+	public void newConflict() {
+		// do nothing
+	}
+
+	public boolean shouldRestart() {
+		return false;
+	}
+
+	public void onBackjumpToRootLevel() {
+		// do nothing
+	}
+
 }

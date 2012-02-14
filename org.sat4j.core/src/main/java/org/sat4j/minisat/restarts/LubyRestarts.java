@@ -80,6 +80,7 @@ public final class LubyRestarts implements RestartStrategy {
 	private int factor;
 
 	private int count;
+	private int conflictcount;
 
 	public LubyRestarts() {
 		this(DEFAULT_LUBY_FACTOR); // uses TiniSAT default
@@ -120,4 +121,19 @@ public final class LubyRestarts implements RestartStrategy {
 				+ factor;
 	}
 
+	public boolean shouldRestart() {
+		return conflictcount >= count;
+	}
+
+	public void onBackjumpToRootLevel() {
+		conflictcount = 0;
+	}
+
+	public void reset() {
+		conflictcount = 0;
+	}
+
+	public void newConflict() {
+		conflictcount++;
+	}
 }

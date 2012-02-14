@@ -47,6 +47,8 @@ public final class MiniSATRestarts implements RestartStrategy {
 
 	private SearchParams params;
 
+	private int conflictcount;
+
 	public void init(SearchParams theParams) {
 		this.params = theParams;
 		nofConflicts = theParams.getInitConflictBound();
@@ -63,5 +65,21 @@ public final class MiniSATRestarts implements RestartStrategy {
 	@Override
 	public String toString() {
 		return "MiniSAT restarts strategy";
+	}
+
+	public boolean shouldRestart() {
+		return conflictcount >= nofConflicts;
+	}
+
+	public void onBackjumpToRootLevel() {
+		conflictcount = 0;
+	}
+
+	public void reset() {
+		conflictcount = 0;
+	}
+
+	public void newConflict() {
+		conflictcount++;
 	}
 }
