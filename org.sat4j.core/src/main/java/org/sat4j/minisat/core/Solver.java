@@ -54,7 +54,6 @@ import static org.sat4j.core.LiteralsUtils.var;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1360,19 +1359,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
 		return isSatisfiable(assumps, false);
-	}
-
-	public interface LearnedConstraintsDeletionStrategy extends Serializable {
-
-		void init();
-
-		ConflictTimer getTimer();
-
-		void reduce(IVec<Constr> learnedConstrs);
-
-		void onConflict(Constr outLearnt);
-
-		void onConflictAnalysis(Constr reason);
 	}
 
 	public final LearnedConstraintsDeletionStrategy fixedSize(final int maxsize) {

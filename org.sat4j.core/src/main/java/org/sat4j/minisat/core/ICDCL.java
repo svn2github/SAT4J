@@ -27,7 +27,6 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import org.sat4j.minisat.core.Solver.LearnedConstraintsDeletionStrategy;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.SearchListener;
 
