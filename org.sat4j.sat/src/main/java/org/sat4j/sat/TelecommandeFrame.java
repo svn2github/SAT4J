@@ -94,7 +94,7 @@ public class TelecommandeFrame extends JFrame{
 		
 		createMenuBar();
 		
-		CommandePanel commandePanel = new CommandePanel(telecomStrategy);
+		CommandeDetailleePanel commandePanel = new CommandeDetailleePanel(telecomStrategy);
 		
 		this.add(commandePanel);
 
