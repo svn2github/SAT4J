@@ -135,7 +135,7 @@ public class TestClausalCardinalities {
 			throws ContradictionException, TimeoutException {
 		solver.newVar(8);
 
-		boolean debug = true;
+		boolean debug = false;
 		IVecInt clause = new VecInt();
 		clause.push(1).push(2).push(3).push(4).push(5).push(6).push(7).push(8);
 
@@ -175,7 +175,7 @@ public class TestClausalCardinalities {
 		IConstr constr = solver.addExactly(clause, 1);
 		assertNotNull(constr);
 
-		assertEquals(16, constr.size());
+		assertEquals(2, constr.size());
 
 		if (debug) {
 			System.out.println("Constraintes EO");
