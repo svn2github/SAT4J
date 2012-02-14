@@ -41,7 +41,6 @@ import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.orders.IOrderObjective;
 import org.sat4j.specs.ContradictionException;
@@ -51,7 +50,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
 public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
-		IPBSolver {
+		IPBCDCLSolver<PBDataStructureFactory> {
 
 	private ObjectiveFunction objf;
 
