@@ -103,4 +103,6 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 
 	public abstract void setOrder(IOrder h);
 
+	public abstract void setNeedToReduceDB(boolean needToReduceDB);
+
 }
