@@ -47,6 +47,8 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 
 	private static final long serialVersionUID = 1L;
+	
+	private RestartStrategy restart;
 
 
 	private boolean hasClickedOnRestart;
@@ -58,6 +60,7 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	public TelecommandeStrategy(){
 		hasClickedOnClean = false;
 		hasClickedOnRestart = false;
+		restart=null;
 	}
 
 
@@ -67,6 +70,27 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 	public void setHasClickedOnRestart(boolean hasClickedOnRestart) {
 		this.hasClickedOnRestart = hasClickedOnRestart;
+	}
+
+
+	public RestartStrategy getRestartStrategy() {
+		return restart;
+	}
+
+
+	public void setRestartStrategy(RestartStrategy restart) {
+		if(restart==null){
+			this.restart=restart;
+		}
+		else if(this.restart==null || !this.restart.getClass().getName().equals(restart.getClass().getName())){
+			this.restart = restart;
+			restart.init(new SearchParams());
+		}
+//		else if(){
+//			this.restart = restart;
+//			restart.init(new SearchParams());
+//		}
+		
 	}
 
 
@@ -82,6 +106,9 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 
 	public void init(SearchParams params) {
+		if(restart!=null){
+			restart.init(params);
+		}
 	}
 
 	public long nextRestartNumberOfConflict() {
@@ -92,15 +119,27 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 		if(hasClickedOnRestart){
 			hasClickedOnRestart=false;
 			System.out.println("Told the solver to restart");
+			if(restart!=null){
+				System.out.println("and my restart strategy is " + restart.getClass().getName());
+			}
 			return true;
+		}
+		if(restart!=null){
+			return restart.shouldRestart();
 		}
 		return false;
 	}
 
 	public void onRestart() {
+		if(restart!=null){
+			restart.onRestart();
+		}
 	}
 
 	public void onBackjumpToRootLevel() {
+		if(restart!=null){
+			restart.onBackjumpToRootLevel();
+		}
 	}
 
 
