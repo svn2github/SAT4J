@@ -67,24 +67,25 @@ public class CommandeDetailleePanel extends JPanel{
 
 	private final static String RESTART_PANEL = "Restart strategy";	
 	private final static String RESTART = "Restart";
-	
+
 	private JPanel restartPanel;
-	
+
 	private JLabel chooseRestartStrategyLabel;
 	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
 
 	private JComboBox listeRestarts;
-	private final static String RESTART_NO_STRATEGY = "No strategy";
+	//	private final static String RESTART_NO_STRATEGY = "No strategy";
+	private final static String RESTART_DEFAULT = "NoRestarts";
 	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
 	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
 
 	private JButton restartButton;
-	
+
 	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
 	private final static String CLEAN = "Clean";
-	
+
 	private JPanel cleanPanel;
-	
+
 	private JButton cleanButton;
 
 	private JTextArea console;
@@ -120,25 +121,22 @@ public class CommandeDetailleePanel extends JPanel{
 	public void hasClickedOnRestart(){
 		telecomStrategy.setHasClickedOnRestart(true);
 		String choix = (String)listeRestarts.getSelectedItem();
-		if(choix.equals(RESTART_NO_STRATEGY)){
-			telecomStrategy.setRestartStrategy(null);
+
+		try{
+			RestartStrategy restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
+			assert restart!=null;
+			telecomStrategy.setRestartStrategy(restart);
 		}
-		else{
-			try{
-				RestartStrategy restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
-				assert restart!=null;
-				telecomStrategy.setRestartStrategy(restart);
-			}
-			catch(ClassNotFoundException e){
-				e.printStackTrace();
-			}
-			catch(IllegalAccessException e){
-				e.printStackTrace();
-			}
-			catch(InstantiationException e){
-				e.printStackTrace();
-			}
+		catch(ClassNotFoundException e){
+			e.printStackTrace();
 		}
+		catch(IllegalAccessException e){
+			e.printStackTrace();
+		}
+		catch(InstantiationException e){
+			e.printStackTrace();
+		}
+
 		console.append("Has clicked on " + RESTART + " with "+ choix +"\n");
 		console.repaint();
 		this.repaint();
@@ -167,6 +165,7 @@ public class CommandeDetailleePanel extends JPanel{
 		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
 
 		listeRestarts = new JComboBox(getListOfRestartStrategies());
+		listeRestarts.setSelectedItem(RESTART_DEFAULT);
 
 		tmpPanel1.add(chooseRestartStrategyLabel);
 		tmpPanel1.add(listeRestarts);
@@ -186,18 +185,18 @@ public class CommandeDetailleePanel extends JPanel{
 		restartPanel.add(tmpPanel2,BorderLayout.SOUTH);
 
 	}
-	
+
 	public void createCleanPanel(){
 		cleanPanel = new JPanel();
-		
+
 		cleanPanel.setName(CLEAN_PANEL);
 		cleanPanel.setBorder(new CompoundBorder(new TitledBorder(null, cleanPanel.getName(), 
 				TitledBorder.LEFT, TitledBorder.TOP), border5));
 
 		cleanPanel.setLayout(new BorderLayout());
-		
+
 		JPanel tmpPanel2 = new JPanel();
-		
+
 		cleanButton = new JButton(CLEAN);
 
 		cleanButton.addActionListener(new ActionListener() {
@@ -205,18 +204,18 @@ public class CommandeDetailleePanel extends JPanel{
 				hasClickedOnClean();
 			}
 		});
-		
+
 		tmpPanel2.add(cleanButton);
-		
+
 		cleanPanel.add(tmpPanel2,BorderLayout.SOUTH);
-		
+
 	}
 
 	public Vector<String> getListOfRestartStrategies(){
 		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
 		Vector<String> finalResult = new Vector<String>();
 
-		finalResult.add(RESTART_NO_STRATEGY);
+//		finalResult.add(RESTART_NO_STRATEGY);
 
 		for(String s:resultRTSI){
 			if(!s.contains("Telecommande")){

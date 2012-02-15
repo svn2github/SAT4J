@@ -34,6 +34,7 @@ import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.specs.IVec;
 
 /**
@@ -47,7 +48,7 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private RestartStrategy restart;
 
 
@@ -60,7 +61,7 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	public TelecommandeStrategy(){
 		hasClickedOnClean = false;
 		hasClickedOnRestart = false;
-		restart=null;
+		restart=new NoRestarts();
 	}
 
 
@@ -79,18 +80,15 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 
 	public void setRestartStrategy(RestartStrategy restart) {
-		if(restart==null){
-			this.restart=restart;
-		}
-		else if(this.restart==null || !this.restart.getClass().getName().equals(restart.getClass().getName())){
+		if(this.restart==null || !this.restart.getClass().getName().equals(restart.getClass().getName())){
 			this.restart = restart;
 			restart.init(new SearchParams());
 		}
-//		else if(){
-//			this.restart = restart;
-//			restart.init(new SearchParams());
-//		}
-		
+		//		else if(){
+		//			this.restart = restart;
+		//			restart.init(new SearchParams());
+		//		}
+
 	}
 
 
@@ -106,9 +104,7 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 
 	public void init(SearchParams params) {
-		if(restart!=null){
-			restart.init(params);
-		}
+		restart.init(params);
 	}
 
 	public long nextRestartNumberOfConflict() {
@@ -118,28 +114,18 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	public boolean shouldRestart() {
 		if(hasClickedOnRestart){
 			hasClickedOnRestart=false;
-			System.out.println("Told the solver to restart");
-			if(restart!=null){
-				System.out.println("and my restart strategy is " + restart.getClass().getName());
-			}
+			System.out.println("Told the solver to restart with strategy " + restart.getClass().getName());
 			return true;
 		}
-		if(restart!=null){
-			return restart.shouldRestart();
-		}
-		return false;
+		return restart.shouldRestart();
 	}
 
 	public void onRestart() {
-		if(restart!=null){
-			restart.onRestart();
-		}
+		restart.onRestart();
 	}
 
 	public void onBackjumpToRootLevel() {
-		if(restart!=null){
-			restart.onBackjumpToRootLevel();
-		}
+		restart.onBackjumpToRootLevel();
 	}
 
 
