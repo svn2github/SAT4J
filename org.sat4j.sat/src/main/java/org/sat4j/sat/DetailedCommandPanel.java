@@ -632,9 +632,9 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 						stringWriter = new StringWriter();
 						
 						if(problem.isSatisfiable()){
-							log("Satisfiable coco !");
+							log("Satisfiable !");
 							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-							reader.decode(problem.model(), new PrintWriter(stringWriter));
+							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
 							log(stringWriter.toString());
 						}
 						else{
