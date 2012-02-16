@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -64,6 +65,7 @@ import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.LubyRestarts;
@@ -78,7 +80,6 @@ import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
@@ -90,7 +91,6 @@ import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
-import org.sat4j.tools.OptToSatAdapter;
 
 
 /**
@@ -115,6 +115,8 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private IProblem problem;
 
 	private Thread solveurThread;
+	
+	private StringWriter stringWriter;
 
 	private JPanel instancePanel;
 	private final static String INSTANCE_PANEL = "Instance";
@@ -622,15 +624,18 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		solveurThread = new Thread() {
 			public void run() {
 				//Thread thisThread = Thread.currentThread();
-				if(shouldStop){
-					System.out.println("coucou");
-				}
-				while(!shouldStop){
+//				if(shouldStop){
+//					System.out.println("coucou");
+//				}
+//				while(!shouldStop){
 					try{
+						stringWriter = new StringWriter();
+						
 						if(problem.isSatisfiable()){
-							log("Satisfiable !");
-//							log(((OptToSatAdapter)problem).+"");
-							reader.decode(problem.model(), new PrintWriter(System.out));
+							log("Satisfiable coco !");
+							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+							reader.decode(problem.model(), new PrintWriter(stringWriter));
+							log(stringWriter.toString());
 						}
 						else{
 							log("Unsatisfiable !");
@@ -639,7 +644,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 						log("Timeout, sorry!");      
 					}
 					//log("Solver has stopped");
-				}
+//				}
 			}
 		};
 		solveurThread.start();
