@@ -38,7 +38,10 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.sat4j.minisat.core.ICDCL;
+import org.sat4j.minisat.orders.RandomWalkDecorator;
 
 /**
  * 
@@ -47,7 +50,7 @@ import javax.swing.JPanel;
  * @author sroussel
  *
  */
-public class TelecommandeFrame extends JFrame{
+public class TelecommandeFrame extends JFrame implements ILog{
 
 
 	/**
@@ -63,16 +66,19 @@ public class TelecommandeFrame extends JFrame{
 
 	private JMenuBar barreMenu;
 	private JMenu menu;
-
+	
+	private CommandeDetailleePanel commandePanel;
+	private String filename;
 
 	private TelecommandeStrategy telecomStrategy;
+	private RandomWalkDecorator randomWalk;
+	private ICDCL solver;
 
 
-	public TelecommandeFrame(TelecommandeStrategy telecomStrategy){	
+	public TelecommandeFrame(String filename){	
 		super("Télécommande");
-
-		this.telecomStrategy = telecomStrategy;
-
+		
+		this.filename=filename;
 		initLookAndFeel();
 
 		createAndShowGUI();
@@ -94,9 +100,11 @@ public class TelecommandeFrame extends JFrame{
 		
 		createMenuBar();
 		
-		CommandeDetailleePanel commandePanel = new CommandeDetailleePanel(telecomStrategy);
+		commandePanel = new CommandeDetailleePanel(filename);
 		
-		this.add(commandePanel);
+		JScrollPane scrollPane = new JScrollPane(commandePanel);
+		
+		this.add(scrollPane);
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.pack();
@@ -127,6 +135,10 @@ public class TelecommandeFrame extends JFrame{
 		});
 		this.setJMenuBar(barreMenu);
 		
+	}
+	
+	public void log(String message){
+		commandePanel.log(message);
 	}
 
 

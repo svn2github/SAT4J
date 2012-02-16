@@ -33,7 +33,6 @@ import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
-import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.specs.IVec;
 
@@ -50,18 +49,30 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	private static final long serialVersionUID = 1L;
 
 	private RestartStrategy restart;
+	
+	private ILog logger;
 
 
 	private boolean hasClickedOnRestart;
 	private boolean hasClickedOnClean;
+	
+	private int conflictNumber;
+	private int nbClausesAtWhichWeShouldClean;
 
 	private ICDCL solver;
 
-
+	public TelecommandeStrategy(ILog log){
+		hasClickedOnClean = false;
+		hasClickedOnRestart = false;
+		restart=new NoRestarts();
+		this.logger=log;
+	}
+	
 	public TelecommandeStrategy(){
 		hasClickedOnClean = false;
 		hasClickedOnRestart = false;
 		restart=new NoRestarts();
+		this.logger=null;
 	}
 
 
@@ -74,24 +85,6 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	}
 
 
-	public RestartStrategy getRestartStrategy() {
-		return restart;
-	}
-
-
-	public void setRestartStrategy(RestartStrategy restart) {
-		if(this.restart==null || !this.restart.getClass().getName().equals(restart.getClass().getName())){
-			this.restart = restart;
-			restart.init(new SearchParams());
-		}
-		//		else if(){
-		//			this.restart = restart;
-		//			restart.init(new SearchParams());
-		//		}
-
-	}
-
-
 	public boolean isHasClickedOnClean() {
 		return hasClickedOnClean;
 	}
@@ -101,6 +94,35 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 		this.hasClickedOnClean = hasClickedOnClean;
 		solver.setNeedToReduceDB(true);
 	}
+	
+
+	public RestartStrategy getRestartStrategy() {
+		return restart;
+	}
+	
+	public void setRestartStrategy(RestartStrategy restart) {
+		this.restart = restart;
+	}
+
+	public int getNbClausesAtWhichWeShouldClean() {
+		return nbClausesAtWhichWeShouldClean;
+	}
+
+	public void setNbClausesAtWhichWeShouldClean(int nbClausesAtWhichWeShouldClean) {
+		this.nbClausesAtWhichWeShouldClean = nbClausesAtWhichWeShouldClean;
+	}
+
+	public ILog getLogger() {
+		return logger;
+	}
+
+	public void setLogger(ILog logger) {
+		this.logger = logger;
+	}
+
+	
+
+
 
 
 	public void init(SearchParams params) {
@@ -114,13 +136,14 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	public boolean shouldRestart() {
 		if(hasClickedOnRestart){
 			hasClickedOnRestart=false;
-			System.out.println("Told the solver to restart with strategy " + restart.getClass().getName());
+			logger.log("Told the solver to restart with strategy " + restart);
 			return true;
 		}
 		return restart.shouldRestart();
 	}
 
 	public void onRestart() {
+		logger.log("Has restarted");
 		restart.onRestart();
 	}
 
@@ -155,9 +178,8 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 
 	public void reduce(IVec<Constr> learnts) {
 		//System.out.println("je suis lˆ ??");
-		assert hasClickedOnClean;
+		//assert hasClickedOnClean;
 
-		System.out.println("Told the solver to clean");
 		int i, j;
 		for (i = j = 0; i < learnts.size() / 2; i++) {
 			Constr c = learnts.get(i);
@@ -171,10 +193,8 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 			learnts.set(j++, learnts.get(i));
 		}
 		if (true) {
-			System.out.println("c "
-					+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
+			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
 					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-			System.out.flush();
 		}
 		learnts.shrinkTo(j);
 
@@ -182,14 +202,19 @@ public class TelecommandeStrategy implements RestartStrategy, LearnedConstraints
 	}
 
 	public void onConflict(Constr outLearnt) {
-		// TODO Auto-generated method stub
-
+		conflictNumber++;
+		if(conflictNumber>nbClausesAtWhichWeShouldClean){
+			//hasClickedOnClean=true;
+			conflictNumber=0;
+			solver.setNeedToReduceDB(true);
+		}
 	}
 
 	public void onConflictAnalysis(Constr reason) {
 		// TODO Auto-generated method stub
 
 	}
-
+	
+	
 
 }
