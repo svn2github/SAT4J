@@ -1703,8 +1703,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		// assumptions.
 		order.init(); // duplicated on purpose
 		learner.init();
+		boolean alreadylaunched = conflictCount != null;
 		conflictCount = new ConflictTimerContainer();
 		conflictCount.add(restarter);
+		conflictCount.add(learnedConstraintsDeletionStrategy.getTimer());
 		boolean firstTimeGlobal = false;
 		if (timeBasedTimeout) {
 			if (!global || timer == null) {
@@ -1718,11 +1720,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				};
 				timer = new Timer(true);
 				timer.schedule(stopMe, timeout);
-				conflictCount
-						.add(learnedConstraintsDeletionStrategy.getTimer());
+
 			}
 		} else {
-			if (!global || conflictCount == null) {
+			if (!global || !alreadylaunched) {
 				firstTimeGlobal = true;
 				undertimeout = true;
 				ConflictTimer conflictTimeout = new ConflictTimerAdapter(
@@ -1734,8 +1735,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 						undertimeout = false;
 					}
 				};
-				conflictCount.add(conflictTimeout).add(
-						learnedConstraintsDeletionStrategy.getTimer());
+				conflictCount.add(conflictTimeout);
 			}
 		}
 		if (!global || firstTimeGlobal) {
