@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
+import java.io.PrintWriter;
+
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
@@ -95,6 +97,18 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
 	@Override
 	public int[] model() {
+		return model(new PrintWriter(System.out));
+	}
+
+	/**
+	 * Compute a minimal model according to the objective function of the
+	 * IPBProblem decorated.
+	 * 
+	 * @param out
+	 *            a writer to display information in verbose mode
+	 * @since 2.3.2
+	 */
+	public int[] model(PrintWriter out) {
 		if (modelComputed)
 			return problem.model();
 		try {
@@ -103,7 +117,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			do {
 				problem.discardCurrentSolution();
 				if (isVerbose()) {
-					System.out.println(getLogPrefix()
+					out.println(getLogPrefix()
 							+ "Current objective function value: "
 							+ problem.getObjectiveValue() + "("
 							+ ((System.currentTimeMillis() - begin) / 1000.0)
@@ -112,7 +126,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 			} while (problem.admitABetterSolution(assumps));
 		} catch (TimeoutException e) {
 			if (isVerbose()) {
-				System.out.println(getLogPrefix() + "Solver timed out after "
+				out.println(getLogPrefix() + "Solver timed out after "
 						+ ((System.currentTimeMillis() - begin) / 1000.0)
 						+ "s)");
 			}
