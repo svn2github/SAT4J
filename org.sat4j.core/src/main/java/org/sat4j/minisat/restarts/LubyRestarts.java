@@ -80,6 +80,7 @@ public final class LubyRestarts implements RestartStrategy {
 	private int factor;
 
 	private int count;
+	private int bound;
 	private int conflictcount;
 
 	public LubyRestarts() {
@@ -105,14 +106,17 @@ public final class LubyRestarts implements RestartStrategy {
 
 	public void init(SearchParams params) {
 		count = 1;
+		bound = luby(count) * factor;
 	}
 
 	public long nextRestartNumberOfConflict() {
-		return luby(count) * factor;
+		return bound;
 	}
 
 	public void onRestart() {
 		count++;
+		bound = luby(count) * factor;
+		conflictcount = 0;
 	}
 
 	@Override
@@ -122,7 +126,7 @@ public final class LubyRestarts implements RestartStrategy {
 	}
 
 	public boolean shouldRestart() {
-		return conflictcount >= count;
+		return conflictcount >= bound;
 	}
 
 	public void onBackjumpToRootLevel() {
