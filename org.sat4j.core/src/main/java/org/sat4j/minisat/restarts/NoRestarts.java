@@ -68,4 +68,8 @@ public final class NoRestarts implements RestartStrategy {
 		// do nothing
 	}
 
+	@Override
+	public String toString() {
+		return "NoRestarts";
+	}
 }
