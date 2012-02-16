@@ -312,6 +312,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		this.restarter = restarter;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#getRestartStrategy()
+	 */
+	public RestartStrategy getRestartStrategy() {
+		return restarter;
+	}
+
 	public void expireTimeout() {
 		undertimeout = false;
 		if (timeBasedTimeout) {

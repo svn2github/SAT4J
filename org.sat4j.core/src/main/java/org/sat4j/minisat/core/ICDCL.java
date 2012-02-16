@@ -70,6 +70,8 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 
 	public abstract void setRestartStrategy(RestartStrategy restarter);
 
+	public abstract RestartStrategy getRestartStrategy();
+
 	/**
 	 * Setup the reason simplification strategy. By default, there is no reason
 	 * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH
