@@ -1704,6 +1704,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		order.init(); // duplicated on purpose
 		learner.init();
 		conflictCount = new ConflictTimerContainer();
+		conflictCount.add(restarter);
 		boolean firstTimeGlobal = false;
 		if (timeBasedTimeout) {
 			if (!global || timer == null) {
