@@ -66,6 +66,10 @@ public class PBInstanceReader extends InstanceReader {
 		return opb;
 	}
 
+	public boolean hasObjectiveFunction() {
+		return opb.hasObjFunc;
+	}
+
 	@Override
 	public IProblem parseInstance(String filename)
 			throws FileNotFoundException, ParseFormatException, IOException,
