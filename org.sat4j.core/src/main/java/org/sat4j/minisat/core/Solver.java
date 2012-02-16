@@ -1757,7 +1757,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 		cancelUntil(0);
 		cancelLearntLiterals(learnedLiteralsLimit);
-		if (!global && timeBasedTimeout) {
+		if (!global && timeBasedTimeout && timer != null) {
 			timer.cancel();
 			timer = null;
 		}
