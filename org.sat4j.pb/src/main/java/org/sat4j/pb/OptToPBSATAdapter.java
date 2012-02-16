@@ -139,4 +139,14 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 	public boolean isOptimal() {
 		return problem.isOptimal();
 	}
+
+	/**
+	 * Return the value of the objective function in the last model found.
+	 * 
+	 * @return
+	 * @since 2.3.2
+	 */
+	public Number getCurrentObjectiveValue() {
+		return problem.getObjectiveValue();
+	}
 }
