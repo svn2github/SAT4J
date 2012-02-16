@@ -41,7 +41,7 @@ public class RandomWalkDecorator implements IOrder {
 
 	private final VarOrderHeap decorated;
 
-	private final double p;
+	private double p;
 
 	private static final Random rand = new Random(123456789);
 	private ILits voc;
@@ -62,6 +62,14 @@ public class RandomWalkDecorator implements IOrder {
 
 	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
 		return decorated.getPhaseSelectionStrategy();
+	}
+
+	public double getProbability() {
+		return p;
+	}
+
+	public void setProbability(double p) {
+		this.p = p;
 	}
 
 	public void init() {
