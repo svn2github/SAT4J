@@ -35,7 +35,7 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public final class LubyRestarts implements RestartStrategy {
 
-	private static final int DEFAULT_LUBY_FACTOR = 32;
+	public static final int DEFAULT_LUBY_FACTOR = 32;
 	private static final int PRECOMPUTED_VALUES_IN_POOL = 32;
 	/**
      * 
