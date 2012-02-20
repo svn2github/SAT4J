@@ -72,4 +72,8 @@ public final class NoRestarts implements RestartStrategy {
 	public String toString() {
 		return "NoRestarts";
 	}
+
+	public SearchParams getSearchParams() {
+		return new SearchParams();
+	}
 }

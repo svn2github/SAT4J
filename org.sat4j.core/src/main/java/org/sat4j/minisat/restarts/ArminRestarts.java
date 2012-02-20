@@ -54,6 +54,7 @@ public final class ArminRestarts implements RestartStrategy {
 		inner = theParams.getInitConflictBound();
 		outer = theParams.getInitConflictBound();
 		conflicts = Math.round(inner);
+		System.out.println("init");
 	}
 
 	public long nextRestartNumberOfConflict() {
@@ -61,6 +62,9 @@ public final class ArminRestarts implements RestartStrategy {
 	}
 
 	public void onRestart() {
+		System.out.println("inner= " + inner);
+		System.out.println("outer= " + outer);
+		System.out.println("params= " + params);
 		if (inner >= outer) {
 			outer *= params.getConflictBoundIncFactor();
 			inner = params.getInitConflictBound();
@@ -90,5 +94,9 @@ public final class ArminRestarts implements RestartStrategy {
 
 	public void newConflict() {
 		conflictcount++;
+	}
+
+	public SearchParams getSearchParams() {
+		return params;
 	}
 }

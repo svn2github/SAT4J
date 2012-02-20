@@ -74,4 +74,6 @@ public interface RestartStrategy extends Serializable, ConflictTimer {
 	 * @since 2.3.2
 	 */
 	void onBackjumpToRootLevel();
+
+	SearchParams getSearchParams();
 }

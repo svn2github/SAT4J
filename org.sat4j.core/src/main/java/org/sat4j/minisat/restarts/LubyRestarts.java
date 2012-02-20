@@ -140,4 +140,8 @@ public final class LubyRestarts implements RestartStrategy {
 	public void newConflict() {
 		conflictcount++;
 	}
+
+	public SearchParams getSearchParams() {
+		return new SearchParams();
+	}
 }
