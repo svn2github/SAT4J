@@ -107,7 +107,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private static final long serialVersionUID = 1L;
 
 	private static final EmptyBorder border5 = new EmptyBorder(5,5,5,5);
-	
+
 	private String ramdisk;
 
 	private RemoteControlStrategy telecomStrategy;
@@ -117,7 +117,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private IProblem problem;
 
 	private Thread solveurThread;
-	
+
 	private StringWriter stringWriter;
 
 	private JPanel instancePanel;
@@ -227,7 +227,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 
 	private boolean shouldStop;
 
-	
+
 	public DetailedCommandPanel(String filename){
 		this(filename,"");
 	}
@@ -242,7 +242,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		this.telecomStrategy.setLogger(this);
 
 		this.instancePath=filename;
-		
+
 		this.ramdisk = ramdisk;
 
 		this.setPreferredSize(new Dimension(700,950));
@@ -508,7 +508,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 
 
 		JPanel tmpPanel2 = new JPanel();
-		
+
 		manualCleanLabel = new JLabel(MANUAL_CLEAN);
 
 		cleanButton = new JButton(CLEAN);
@@ -576,13 +576,13 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 
 		//pbSolver.setNeedToReduceDB(true);
 
-		
+
 		String whereToWriteFiles = instancePath;
-		
+
 		if(ramdisk.length()>0){
 			String[] instancePathSplit= instancePath.split("/");
 			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
-			
+
 		}
 		System.out.println(whereToWriteFiles);
 		solver.setSearchListener(new MultiTracing(this,
@@ -639,27 +639,27 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		solveurThread = new Thread() {
 			public void run() {
 				//Thread thisThread = Thread.currentThread();
-//				if(shouldStop){
-//					System.out.println("coucou");
-//				}
-//				while(!shouldStop){
-					try{
-						stringWriter = new StringWriter();
-						
-						if(problem.isSatisfiable()){
-							log("Satisfiable !");
-							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
-							log(stringWriter.toString());
-						}
-						else{
-							log("Unsatisfiable !");
-						}
-					} catch (TimeoutException e) {
-						log("Timeout, sorry!");      
+				//				if(shouldStop){
+				//					System.out.println("coucou");
+				//				}
+				//				while(!shouldStop){
+				try{
+					stringWriter = new StringWriter();
+
+					if(problem.isSatisfiable()){
+						log("Satisfiable !");
+						log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+						reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+						log(stringWriter.toString());
 					}
-					//log("Solver has stopped");
-//				}
+					else{
+						log("Unsatisfiable !");
+					}
+				} catch (TimeoutException e) {
+					log("Timeout, sorry!");      
+				}
+				//log("Solver has stopped");
+				//				}
 			}
 		};
 		solveurThread.start();
@@ -850,18 +850,18 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	}
 
 	public void updateListOfSolvers(){
+
 		if(instancePath.endsWith(".opb")){
-			if(instancePath.endsWith(".opb")){
-				listeSolvers = new JComboBox(getListOfPBSolvers().toArray());
-				listeSolvers.setSelectedItem("pb.Default");
-				selectedSolver = "pb.Default";
-			}
-			else{
-				listeSolvers = new JComboBox(getListOfSolvers().toArray());
-				listeSolvers.setSelectedItem("minisat.Default");
-				selectedSolver = "minisat.Default";
-			}
+			listeSolvers = new JComboBox(getListOfPBSolvers().toArray());
+			listeSolvers.setSelectedItem("pb.Default");
+			selectedSolver = "pb.Default";
 		}
+		else{
+			listeSolvers = new JComboBox(getListOfSolvers().toArray());
+			listeSolvers.setSelectedItem("minisat.Default");
+			selectedSolver = "minisat.Default";
+		}
+
 	}
 
 	public void updateRestartStrategyPanel(){
@@ -915,7 +915,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	public DetailedCommandPanel getThis(){
 		return this;
 	}
-	
+
 	public ISolver getSolver(){
 		return (ISolver)problem;
 	}
