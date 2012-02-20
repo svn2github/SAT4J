@@ -329,6 +329,8 @@ public class Lanceur extends AbstractLauncher {
 			if (filename == null && rargs.length > 0) {
 				filename = rargs[others++];
 			}
+			
+			
 
 			if (cmd.hasOption("r")) {
 				asolver.setSearchListener(new MultiTracing(

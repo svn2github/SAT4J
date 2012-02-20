@@ -95,7 +95,6 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		solver.setNeedToReduceDB(true);
 	}
 	
-
 	public RestartStrategy getRestartStrategy() {
 		return restart;
 	}
@@ -144,6 +143,10 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 
 	public void onBackjumpToRootLevel() {
 		restart.onBackjumpToRootLevel();
+	}
+	
+	public SearchParams getSearchParams(){
+		return restart.getSearchParams();
 	}
 
 

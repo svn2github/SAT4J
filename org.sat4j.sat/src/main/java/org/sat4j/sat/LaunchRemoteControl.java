@@ -67,13 +67,35 @@ public class LaunchRemoteControl {
 //		
 //		IPBCDCLSolver pbSolver = SolverFactory.newDefault();
 		
-		String filename;
+		String filename="";
+		String ramdisk="";
+//		
+//		if(args.length>0){
+//			filename = args[0];
+//		}
+//		else
+//			filename="";
 		
-		if(args.length>0){
-			filename = args[0];
+		switch(args.length){
+		case 1: 
+			filename=args[0];
+			break;
+		case 2: 
+			if(args[0].equals("-r")){
+				ramdisk=args[1];
+			}
+			break;
+		case 3: 
+			if(args[0].equals("-r")){
+				ramdisk=args[1];
+				filename=args[2];
+			}
+			else{
+				ramdisk=args[2];
+				filename=args[0];
+			}
+			break;
 		}
-		else
-			filename="";
 		
 //		pbSolver.setTimeout(3600);
 //		pbSolver.setVerbose(true);
@@ -101,7 +123,7 @@ public class LaunchRemoteControl {
 //		RandomWalkDecorator rw = new RandomWalkDecorator((VarOrderHeap)((Solver)pbSolver).getOrder(), 0);
 //		pbSolver.setOrder(rw);
 		
-		RemoteControlFrame frame = new RemoteControlFrame(filename);
+		RemoteControlFrame frame = new RemoteControlFrame(filename, ramdisk);
 		
 
 //		try{

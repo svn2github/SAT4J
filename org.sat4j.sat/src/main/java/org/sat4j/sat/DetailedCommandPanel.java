@@ -107,6 +107,8 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private static final long serialVersionUID = 1L;
 
 	private static final EmptyBorder border5 = new EmptyBorder(5,5,5,5);
+	
+	private String ramdisk;
 
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
@@ -225,8 +227,12 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 
 	private boolean shouldStop;
 
-
+	
 	public DetailedCommandPanel(String filename){
+		this(filename,"");
+	}
+
+	public DetailedCommandPanel(String filename, String ramdisk){
 		super();
 
 		this.telecomStrategy = new RemoteControlStrategy();
@@ -236,6 +242,8 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		this.telecomStrategy.setLogger(this);
 
 		this.instancePath=filename;
+		
+		this.ramdisk = ramdisk;
 
 		this.setPreferredSize(new Dimension(700,950));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -568,15 +576,22 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 
 		//pbSolver.setNeedToReduceDB(true);
 
-
-
+		
+		String whereToWriteFiles = instancePath;
+		
+		if(ramdisk.length()>0){
+			String[] instancePathSplit= instancePath.split("/");
+			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
+			
+		}
+		System.out.println(whereToWriteFiles);
 		solver.setSearchListener(new MultiTracing(this,
-				new ConflictLevelTracing(instancePath
+				new ConflictLevelTracing(whereToWriteFiles
 						+ "-conflict-level"), new DecisionTracing(
-								instancePath + "-decision-indexes"),
-								new LearnedClausesSizeTracing(instancePath
+								whereToWriteFiles + "-decision-indexes"),
+								new LearnedClausesSizeTracing(whereToWriteFiles
 										+ "-learned-clauses-size"),
-										new ConflictDepthTracing(instancePath
+										new ConflictDepthTracing(whereToWriteFiles
 												+ "-conflict-depth")));
 
 		double proba=0;
@@ -660,7 +675,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		boolean shouldInit = isNotSameRestart;
 
 		RestartStrategy restart = new NoRestarts();
-		SearchParams params = new SearchParams();
+		SearchParams params = telecomStrategy.getSearchParams();
 
 		if(choix.equals("LubyRestarts")){
 			boolean factorChanged = false;
@@ -694,6 +709,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 			restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
 			assert restart!=null;
 			telecomStrategy.setRestartStrategy(restart);
+			telecomStrategy.init(params);
 
 		}
 		catch(ClassNotFoundException e){

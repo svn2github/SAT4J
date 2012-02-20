@@ -70,19 +70,26 @@ public class RemoteControlFrame extends JFrame implements ILog{
 	
 	private DetailedCommandPanel commandePanel;
 	private String filename;
+	
+	private String ramdisk;
 
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
 	private ICDCL solver;
 
 
-	public RemoteControlFrame(String filename){	
+	public RemoteControlFrame(String filename, String ramdisk){
 		super("Remote Control");
 		
 		this.filename=filename;
+		this.ramdisk=ramdisk;
 		initLookAndFeel();
 
 		createAndShowGUI();
+	}
+	
+	public RemoteControlFrame(String filename){	
+		this(filename, "");
 	}
 
 
@@ -101,7 +108,7 @@ public class RemoteControlFrame extends JFrame implements ILog{
 		
 		createMenuBar();
 		
-		commandePanel = new DetailedCommandPanel(filename);
+		commandePanel = new DetailedCommandPanel(filename,ramdisk);
 		
 		JScrollPane scrollPane = new JScrollPane(commandePanel);
 		
