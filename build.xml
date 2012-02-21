@@ -152,6 +152,37 @@
                 </antcall>
 	</target>
 
+	<target name="remote" depends="core,pseudo" description="Build a jar file suitable for build the incredible sat4j remote control">
+		<echo>Building the Java SAT Solvers toolkit</echo>
+                <antcall target="build">
+		   <param name="package" value="sat"/>
+		   <param name="src" value="org.sat4j.sat/src/main/java" />
+                   <param name="jarname" value="org.sat4j.sat"/>
+		</antcall>
+                <antcall target="source-package">
+                   <param name="package" value="sat"/>
+		   <param name="src" value="org.sat4j.sat/src/main/java" />
+                   <param name="jarname" value="org.sat4j.sat"/>
+                </antcall>
+                <echo>Create All-In-One auto-executable package</echo>
+                <jar destfile="${dist}/${release}/sat4j-remotecontrol.jar" basedir="${build}">
+                       <manifest>
+                                <attribute name="Built-By" value="Stephanie Roussel"/>
+                                <attribute name="Main-Class" value="org.sat4j.sat.LaunchRemoteControl"/>
+                       </manifest>
+		   <zipgroupfileset dir="${dist}/${release}">
+                           <include name="org.sat4j.core.jar"/>
+                           <include name="org.sat4j.pb.jar"/>
+			   <include name="org.sat4j.sat.jar"/>
+		   </zipgroupfileset>
+                   <zipgroupfileset dir="${lib}">
+                           <include name="commons-cli.jar"/>
+                           <include name="commons-beanutils.jar"/>
+                           <include name="commons-logging.jar"/>
+		   </zipgroupfileset>
+               </jar>
+	</target>
+    
 	<target name="core" depends="prepare" description="Build a jar file suitable for embedding SAT technology into a Java application from current source tree">
 		<echo>Building core library to be embedded into Java applications</echo>
                 <antcall target="build">
