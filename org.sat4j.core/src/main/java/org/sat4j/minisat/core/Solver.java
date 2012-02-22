@@ -90,6 +90,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	private static final double CLAUSE_RESCALE_BOUND = 1 / CLAUSE_RESCALE_FACTOR;
 
+	protected ICDCLLogger out;
+
 	/**
 	 * Set of original constraints.
 	 */
@@ -211,11 +213,17 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
 			IOrder order, RestartStrategy restarter) {
+		this(learner, dsf, params, order, restarter, ICDCLLogger.CONSOLE);
+	}
+
+	public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
+			IOrder order, RestartStrategy restarter, ICDCLLogger logger) {
 		this.learner = learner;
 		this.order = order;
 		this.params = params;
 		setDataStructureFactory(dsf);
 		this.restarter = restarter;
+		this.out = logger;
 	}
 
 	/*
@@ -1401,10 +1409,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 					learnts.set(j++, learnts.get(i));
 				}
 				if (verbose) {
-					System.out.println(getLogPrefix()
-							+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
+					out.log(getLogPrefix() + "cleaning " + (learnts.size() - j) //$NON-NLS-1$
 							+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-					System.out.flush();
+					// out.flush();
 				}
 				learnts.shrinkTo(j);
 			}
@@ -1472,10 +1479,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				learnts.set(j++, learnts.get(i));
 			}
 			if (verbose) {
-				System.out.println(getLogPrefix()
-						+ "cleaning " + (learnts.size() - j) //$NON-NLS-1$
+				out.log(getLogPrefix() + "cleaning " + (learnts.size() - j) //$NON-NLS-1$
 						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-				System.out.flush();
+				// out.flush();
 			}
 			learnts.shrinkTo(j);
 		}
@@ -1558,11 +1564,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				}
 			}
 			if (verbose) {
-				System.out
-						.println(getLogPrefix()
-								+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-								+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
-				System.out.flush();
+				out.log(getLogPrefix()
+						+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
+						+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
+				// out.flush();
 			}
 			learnts.shrinkTo(j);
 
@@ -2169,4 +2174,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		this.needToReduceDB = needToReduceDB;
 	}
 
+	public void setLogger(ICDCLLogger out) {
+		this.out = out;
+	}
+
+	public ICDCLLogger getLogger() {
+		return out;
+	}
 }

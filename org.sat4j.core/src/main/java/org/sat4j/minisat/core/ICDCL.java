@@ -49,28 +49,28 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 * @param dsf
 	 *            the internal factory
 	 */
-	public abstract void setDataStructureFactory(D dsf);
+	void setDataStructureFactory(D dsf);
 
 	/**
 	 * @since 2.1
 	 */
-	public abstract void setSearchListener(SearchListener sl);
+	void setSearchListener(SearchListener sl);
 
 	/**
 	 * @since 2.2
 	 */
-	public abstract SearchListener getSearchListener();
+	SearchListener getSearchListener();
 
 	/**
 	 * @since 2.2
 	 */
-	public abstract void setLearner(LearningStrategy<D> learner);
+	void setLearner(LearningStrategy<D> learner);
 
-	public abstract void setSearchParams(SearchParams sp);
+	void setSearchParams(SearchParams sp);
 
-	public abstract void setRestartStrategy(RestartStrategy restarter);
+	void setRestartStrategy(RestartStrategy restarter);
 
-	public abstract RestartStrategy getRestartStrategy();
+	RestartStrategy getRestartStrategy();
 
 	/**
 	 * Setup the reason simplification strategy. By default, there is no reason
@@ -81,7 +81,7 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 *            the name of the simplifier (one of NO_SIMPLIFICATION,
 	 *            SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION).
 	 */
-	public abstract void setSimplifier(String simp);
+	void setSimplifier(String simp);
 
 	/**
 	 * Setup the reason simplification strategy. By default, there is no reason
@@ -92,19 +92,22 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 * 
 	 * @param simp
 	 */
-	public abstract void setSimplifier(ISimplifier simp);
+	void setSimplifier(ISimplifier simp);
 
 	/**
 	 * @param lcds
 	 * @since 2.1
 	 */
-	public abstract void setLearnedConstraintsDeletionStrategy(
+	void setLearnedConstraintsDeletionStrategy(
 			LearnedConstraintsDeletionStrategy lcds);
 
-	public abstract IOrder getOrder();
+	IOrder getOrder();
 
-	public abstract void setOrder(IOrder h);
+	void setOrder(IOrder h);
 
-	public abstract void setNeedToReduceDB(boolean needToReduceDB);
+	void setNeedToReduceDB(boolean needToReduceDB);
 
+	void setLogger(ICDCLLogger out);
+
+	ICDCLLogger getLogger();
 }
