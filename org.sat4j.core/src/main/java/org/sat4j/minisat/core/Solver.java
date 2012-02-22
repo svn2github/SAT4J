@@ -1,10 +1,10 @@
 /*******************************************************************************
- * SAT4J: a SATisfiability library for Java Copyright (C) 2004-2008 Daniel Le Berre
+ * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2012 Artois University and CNRS
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ *  http://www.eclipse.org/legal/epl-v10.html
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU Lesser General Public License Version 2.1 or later (the
@@ -15,37 +15,17 @@
  * the provisions above and replace them with the notice and other provisions
  * required by the LGPL. If you do not delete the provisions above, a recipient
  * may use your version of this file under the terms of the EPL or the LGPL.
- * 
+ *
  * Based on the original MiniSat specification from:
- * 
+ *
  * An extensible SAT solver. Niklas Een and Niklas Sorensson. Proceedings of the
  * Sixth International Conference on Theory and Applications of Satisfiability
  * Testing, LNCS 2919, pp 502-518, 2003.
  *
  * See www.minisat.se for the original solver in C++.
- * 
- * The reason simplification methods are coming from MiniSAT 1.14 released under 
- * the MIT license:
- * MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
  *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+ * Contributors:
+ *   CRIL - initial API and implementation
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
