@@ -149,7 +149,7 @@ public abstract class AbstractLauncher implements Serializable {
 	}
 
 	public void displayLicense() {
-		log("SAT4J: a SATisfiability library for Java (c) 2004-2010 Daniel Le Berre"); //$NON-NLS-1$
+		log("SAT4J: a SATisfiability library for Java (c) 2004-2012 Artois University and CNRS"); //$NON-NLS-1$
 		log("This is free software under the dual EPL/GNU LGPL licenses."); //$NON-NLS-1$
 		log("See www.sat4j.org for details."); //$NON-NLS-1$
 	}
