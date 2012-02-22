@@ -43,8 +43,13 @@ public class DecisionTracing extends SearchListenerAdapter {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private int counter;
+	private int maxP;
+
 	private final String filename;
-	private PrintStream out;
+	private PrintStream outPos;
+	private PrintStream outNeg;
+	private PrintStream outRestart;
 
 	public DecisionTracing(String filename) {
 		this.filename = filename;
@@ -52,21 +57,46 @@ public class DecisionTracing extends SearchListenerAdapter {
 
 	private void updateWriter() {
 		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
+			outPos = new PrintStream(
+					new FileOutputStream(filename + "-pos.dat"));
+			outNeg = new PrintStream(
+					new FileOutputStream(filename + "-neg.dat"));
+			outRestart = new PrintStream(new FileOutputStream(filename
+					+ "-restart.dat"));
 		} catch (FileNotFoundException e) {
-			out = System.out;
+			outPos = System.out;
+			outNeg = System.out;
+			outRestart = System.out;
 		}
+		counter = 0;
+		maxP = 0;
 	}
 
 	@Override
 	public void assuming(int p) {
-		out.println(Math.abs(p));
+		if (p > 0) {
+			outPos.println(counter + "\t" + p);
+		} else {
+			outNeg.println(counter + "\t" + -p);
+		}
+		if (Math.abs(p) > maxP) {
+			maxP = Math.abs(p);
+		}
+
+		counter++;
+
+	}
+
+	@Override
+	public void restarting() {
+		outRestart.println(counter + "\t" + maxP);
 	}
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
-
+		outPos.close();
+		outNeg.close();
+		outRestart.close();
 	}
 
 	@Override

@@ -42,10 +42,14 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 	/**
 	 * 
 	 */
+	private int counter;
+	private int maxDlevel;
+
 	private static final long serialVersionUID = 1L;
 
 	private final String filename;
 	private PrintStream out;
+	private PrintStream outRestart;
 
 	public ConflictLevelTracing(String filename) {
 		this.filename = filename;
@@ -55,19 +59,33 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 	private void updateWriter() {
 		try {
 			out = new PrintStream(new FileOutputStream(filename + ".dat"));
+			outRestart = new PrintStream(new FileOutputStream(filename
+					+ "-restart.dat"));
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
+		counter = 0;
+		maxDlevel = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
 		out.println(dlevel);
+		if (dlevel > maxDlevel) {
+			maxDlevel = dlevel;
+		}
+		counter++;
+	}
+
+	@Override
+	public void restarting() {
+		outRestart.println(counter + "\t" + maxDlevel);
 	}
 
 	@Override
 	public void end(Lbool result) {
 		out.close();
+		outRestart.close();
 	}
 
 	@Override
