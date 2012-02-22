@@ -619,7 +619,7 @@ public class Lanceur extends AbstractLauncher {
 				|| exitCode == ExitCode.OPTIMUM_FOUND
 				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
 			out.print(SOLUTION_PREFIX);
-			getReader().decode(solver.model(), out);
+			getReader().decode(problem.model(), out);
 			out.println();
 			IOptimizationProblem optproblem = (IOptimizationProblem) solver;
 			if (!optproblem.hasNoObjectiveFunction()) {
