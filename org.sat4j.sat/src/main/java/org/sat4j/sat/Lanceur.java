@@ -59,6 +59,7 @@ import org.sat4j.ExitCode;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.DataStructureFactory;
+import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
@@ -68,7 +69,10 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
+import org.sat4j.pb.core.IPBCDCLSolver;
+import org.sat4j.pb.core.PBSolver;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -78,7 +82,6 @@ import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
@@ -129,12 +132,19 @@ public class Lanceur extends AbstractLauncher {
 	private boolean incomplete = false;
 
 	private boolean isModeOptimization = false;
+	
+	private IProblem problem;
+	private ICDCL cdclSolver;
 
+
+	private boolean launchRemoteControl;
+	
+	static AbstractLauncher lanceur;
 
 	public static void main(final String[] args) {
-		AbstractLauncher lanceur = new Lanceur();
+		lanceur = new Lanceur();
 		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
+		
 	}
 
 	protected ASolverFactory<ISolver> factory;
@@ -147,7 +157,6 @@ public class Lanceur extends AbstractLauncher {
 	@SuppressWarnings("nls")
 	private Options createCLIOptions() {
 		Options options = new Options();
-
 		options.addOption("l", "library", true,
 				"specifies the name of the library used (minisat by default)");
 		options.addOption("s", "solver", true,
@@ -173,6 +182,8 @@ public class Lanceur extends AbstractLauncher {
 				"uses solver in optimize mode instead of sat mode (default)");
 		options.addOption("rw", "randomWalk", true,
 				"specifies the random walk probability ");
+		options.addOption("remote", "remoteControl", false,
+				"launches remote control");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -193,8 +204,6 @@ public class Lanceur extends AbstractLauncher {
 		op.setArgName("filename");
 		op = options.getOption("r");
 		op.setArgName("searchlistener");
-		op = options.getOption("opt");
-		op.setArgName("optimizeMode");
 		op = options.getOption("rw");
 		op.setArgName("number");
 		return options;
@@ -209,7 +218,7 @@ public class Lanceur extends AbstractLauncher {
 	 */
 	@SuppressWarnings({ "nls", "unchecked" })
 	@Override
-	protected ISolver configureSolver(String[] args) {
+	protected ICDCL configureSolver(String[] args) {
 		Options options = createCLIOptions();
 		if (args.length == 0) {
 			HelpFormatter helpf = new HelpFormatter();
@@ -246,18 +255,19 @@ public class Lanceur extends AbstractLauncher {
 				factory = org.sat4j.minisat.SolverFactory.instance();
 			}
 
-			ISolver asolver;
+			ICDCL asolver;
 			if (cmd.hasOption("s")) {
 				log("Available solvers: "
 						+ Arrays.asList(factory.solverNames()));
 				String solvername = cmd.getOptionValue("s");
 				if (solvername == null) {
-					asolver = factory.defaultSolver();
-				} else {
-					asolver = factory.createSolverByName(solvername);
+					asolver = (Solver)factory.defaultSolver();
+				}
+				else {
+					asolver = (Solver)factory.createSolverByName(solvername);
 				}
 			} else {
-				asolver = factory.defaultSolver();
+				asolver = (Solver)factory.defaultSolver();
 			}
 
 
@@ -267,7 +277,7 @@ public class Lanceur extends AbstractLauncher {
 				((Solver)asolver).setOrder(order);
 			}
 
-			
+
 
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
@@ -278,7 +288,8 @@ public class Lanceur extends AbstractLauncher {
 				asolver = configureFromString(configuredSolver, asolver);
 			}
 
-			
+			launchRemoteControl=(cmd.hasOption("remote"));
+
 
 			String timeout = cmd.getOptionValue("t");
 			if (timeout == null) {
@@ -317,20 +328,20 @@ public class Lanceur extends AbstractLauncher {
 					k = myk.intValue();
 				}
 			}
-			
+
 			if(cmd.hasOption("opt")){
 				assert asolver instanceof IPBSolver;
 				isModeOptimization = true;
-				asolver = new PseudoOptDecorator((IPBSolver)asolver);
+				problem = new PseudoOptDecorator((IPBCDCLSolver)asolver);
 			}
-			
+
 			int others = 0;
 			String[] rargs = cmd.getArgs();
 			if (filename == null && rargs.length > 0) {
 				filename = rargs[others++];
 			}
-			
-			
+
+
 
 			if (cmd.hasOption("r")) {
 				asolver.setSearchListener(new MultiTracing(
@@ -342,7 +353,7 @@ public class Lanceur extends AbstractLauncher {
 												new ConflictDepthTracing(filename
 														+ "-conflict-depth")));
 			}
-			
+
 			// use remaining data to configure the solver
 			while (others < rargs.length) {
 				String[] param = rargs[others].split("="); //$NON-NLS-1$
@@ -397,7 +408,7 @@ public class Lanceur extends AbstractLauncher {
 		showParams();
 		showSimplifiers();
 		stringUsage();
-		
+
 	}
 
 	@Override
@@ -406,8 +417,8 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private final ISolver configureFromString(String solverconfig,
-			ISolver theSolver) {
+	private final ICDCL configureFromString(String solverconfig,
+			ICDCL theSolver) {
 		// AFAIK, there is no easy way to solve parameterized problems
 		// when building the solver at runtime.
 		StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -419,42 +430,43 @@ public class Lanceur extends AbstractLauncher {
 			couple = token.split("=");
 			pf.setProperty(couple[0], couple[1]);
 		}
-		Solver aSolver = (Solver) theSolver;
+		
+		Solver aSolver = (Solver)theSolver;
 		DataStructureFactory dsf = setupObject("DSF", pf);
 		if (dsf != null) {
-			aSolver.setDataStructureFactory(dsf);
+			theSolver.setDataStructureFactory(dsf);
 		}
 		LearningStrategy learning = setupObject(LEARNING, pf);
 		if (learning != null) {
-			aSolver.setLearner(learning);
+			theSolver.setLearner(learning);
 			learning.setSolver(aSolver);
 		}
 		IOrder order = setupObject(ORDERS, pf);
 		if (order != null) {
-			aSolver.setOrder(order);
+			theSolver.setOrder(order);
 		}
 		IPhaseSelectionStrategy pss = setupObject(PHASE, pf);
 		if (pss != null) {
-			aSolver.getOrder().setPhaseSelectionStrategy(pss);
+			theSolver.getOrder().setPhaseSelectionStrategy(pss);
 		}
 		RestartStrategy restarter = setupObject(RESTARTS, pf);
 		if (restarter != null) {
-			aSolver.setRestartStrategy(restarter);
+			theSolver.setRestartStrategy(restarter);
 		}
 		String simp = pf.getProperty(SIMP);
 		if (simp != null) {
 			log("read " + simp);
 			log("configuring " + SIMP);
-			aSolver.setSimplifier(simp);
+			theSolver.setSimplifier(simp);
 		}
 		SearchParams params = setupObject(PARAMS, pf);
 		if (params != null) {
-			aSolver.setSearchParams(params);
+			theSolver.setSearchParams(params);
 		}
 		String memory = pf.getProperty("MEMORY");
 		if ("GLUCOSE".equalsIgnoreCase(memory)) {
 			log("configuring MEMORY");
-			aSolver.setLearnedConstraintsDeletionStrategy(aSolver.glucose);
+			theSolver.setLearnedConstraintsDeletionStrategy(aSolver.glucose);
 		}
 		return theSolver;
 	}
@@ -470,7 +482,7 @@ public class Lanceur extends AbstractLauncher {
 			String configline = pf.getProperty(component);
 			String qualification = qualif.get(component);
 
-			
+
 			if (configline == null) {
 				return null;
 			}
@@ -482,7 +494,7 @@ public class Lanceur extends AbstractLauncher {
 				}
 				configline =qualification +"."+ configline;
 			}
-			
+
 			log("configuring " + component);
 			String[] config = configline.split("/");
 			T comp = (T) Class.forName(config[0]).newInstance();
@@ -733,9 +745,9 @@ public class Lanceur extends AbstractLauncher {
 		}
 		log("Available orders (" + ORDERS + "): " + classNames);
 	}
-	
+
 	protected void showParams(){
-		
+
 		Set<String> keySet = null;
 		try {
 			keySet = BeanUtils.describe(Class.forName(PARAMS_NAME).newInstance()).keySet();
@@ -753,9 +765,57 @@ public class Lanceur extends AbstractLauncher {
 		}
 		log("Available search params (" + PARAMS + "): [SearchParams" + keySet + "]");
 	}
-	
+
 	protected void showSimplifiers(){
 		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
+	}
+
+	@Override
+	public void run(String[] args){
+		try {
+			displayHeader();
+			cdclSolver = configureSolver(args);
+			solver = cdclSolver;
+			if (solver == null) {
+				usage();
+				return;
+			}
+			if (!silent)
+				solver.setVerbose(true);
+			String instanceName = getInstanceName(args);
+			if (instanceName == null) {
+				usage();
+				return;
+			}
+			beginTime = System.currentTimeMillis();
+			System.out.println(launchRemoteControl);
+			if(!launchRemoteControl){
+				readProblem(instanceName);
+				try {
+					if(problem!=null){
+						solve(problem);
+					}
+					else{
+						solve(solver);
+					}
+				} catch (TimeoutException e) {
+					log("timeout"); //$NON-NLS-1$
+				}
+				System.exit(lanceur.getExitCode().value());
+			}
+			else{
+				RemoteControlFrame frame = new RemoteControlFrame(filename, "",cdclSolver);
+			}
+		} catch (FileNotFoundException e) {
+			System.err.println("FATAL " + e.getLocalizedMessage());
+		} catch (IOException e) {
+			System.err.println("FATAL " + e.getLocalizedMessage());
+		} catch (ContradictionException e) {
+			exitCode = ExitCode.UNSATISFIABLE;
+			log("(trivial inconsistency)"); //$NON-NLS-1$
+		} catch (ParseFormatException e) {
+			System.err.println("FATAL " + e.getLocalizedMessage());
+		}
 	}
 
 }
