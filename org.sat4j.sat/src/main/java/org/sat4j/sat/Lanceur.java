@@ -142,19 +142,19 @@ public class Lanceur extends AbstractLauncher {
 	private boolean incomplete = false;
 
 	private boolean isModeOptimization = false;
-	
+
 	private IProblem problem;
 	private ICDCL cdclSolver;
 
 
 	private boolean launchRemoteControl;
-	
+
 	static AbstractLauncher lanceur;
 
 	public static void main(final String[] args) {
 		lanceur = new Lanceur();
 		lanceur.run(args);
-		
+
 	}
 
 	protected ASolverFactory<ISolver> factory;
@@ -440,7 +440,7 @@ public class Lanceur extends AbstractLauncher {
 			couple = token.split("=");
 			pf.setProperty(couple[0], couple[1]);
 		}
-		
+
 		Solver aSolver = (Solver)theSolver;
 		DataStructureFactory dsf = setupObject("DSF", pf);
 		if (dsf != null) {
@@ -633,25 +633,27 @@ public class Lanceur extends AbstractLauncher {
 		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME); 
 		Set<String> keySet;
 		for(String name: resultRTSI){
-			try {
-				keySet = BeanUtils.describe(Class.forName(PACKAGE_RESTARTS+"."+name).newInstance()).keySet();
-				keySet.remove("class");
-				if(keySet.size()>0){
-					classNames.add(name + keySet);
+			if(!name.contains("Remote")){
+				try {
+					keySet = BeanUtils.describe(Class.forName(PACKAGE_RESTARTS+"."+name).newInstance()).keySet();
+					keySet.remove("class");
+					if(keySet.size()>0){
+						classNames.add(name + keySet);
+					}
+					else{
+						classNames.add(name);
+					}
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-				else{
-					classNames.add(name);
-				}
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 		log("Available restart strategies (" + RESTARTS + "): " + classNames);
@@ -662,25 +664,28 @@ public class Lanceur extends AbstractLauncher {
 		Vector<String> resultRTSI = RTSI.find(PHASE_NAME); 
 		Set<String> keySet;
 		for(String name: resultRTSI){
-			try {
-				keySet = BeanUtils.describe(Class.forName(PACKAGE_PHASE+"."+name).newInstance()).keySet();
-				keySet.remove("class");
-				if(keySet.size()>0){
-					classNames.add(name + keySet);
+			if(!name.contains("Remote")){
+				try {
+
+					keySet = BeanUtils.describe(Class.forName(PACKAGE_PHASE+"."+name).newInstance()).keySet();
+					keySet.remove("class");
+					if(keySet.size()>0){
+						classNames.add(name + keySet);
+					}
+					else{
+						classNames.add(name);
+					}
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-				else{
-					classNames.add(name);
-				}
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 		log("Available phase strategies (" + PHASE + "): " + classNames);
@@ -721,36 +726,38 @@ public class Lanceur extends AbstractLauncher {
 	protected void showAvailableOrders() {
 		Vector<String> classNames = new Vector<String>();
 		Vector<String> resultRTSI = RTSI.find(ORDER_NAME); 
-		Set<String> keySet;
+		Set<String> keySet=null;
 		for(String name: resultRTSI){
-			try {
-				if(name.contains("Objective")){
-					String namePackage = PACKAGE_ORDERS.replaceFirst("minisat", "pb");
-					keySet = BeanUtils.describe(Class.forName(namePackage+"."+name).newInstance()).keySet();
-				}
-				else{
-					keySet = BeanUtils.describe(Class.forName(PACKAGE_ORDERS+"."+name).newInstance()).keySet();
-				}
-				keySet.remove("class");
+			if(!name.contains("Remote")){
+				try {
+					if(name.contains("Objective")){
+						String namePackage = PACKAGE_ORDERS.replaceFirst("minisat", "pb");
+						keySet = BeanUtils.describe(Class.forName(namePackage+"."+name).newInstance()).keySet();
+					}
+					else{
+						keySet = BeanUtils.describe(Class.forName(PACKAGE_ORDERS+"."+name).newInstance()).keySet();
+					}
+					keySet.remove("class");
 
-				if(keySet.size()>0){
-					classNames.add(name + keySet);
-				}
-				else {
-					classNames.add(name);
-				}
+					if(keySet.size()>0){
+						classNames.add(name + keySet);
+					}
+					else {
+						classNames.add(name);
+					}
 
 
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				//classNames.add(name);	
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					//classNames.add(name);	
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		log("Available orders (" + ORDERS + "): " + classNames);
