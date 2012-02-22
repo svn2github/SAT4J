@@ -1,24 +1,33 @@
 #!/bin/bash
-echo set multiplot>$1.gnuplot
-echo set size 0.5, 0.5>>$1.gnuplot
-echo set origin 0.0, 0.5>>$1.gnuplot
-echo set title '"'Decision level at which the conflict occurs'"'>>$1.gnuplot
-echo plot '"'$1-conflict-level.dat'"'>>$1.gnuplot
-echo set size 0.5, 0.5>>$1.gnuplot
-echo set origin 0.0, 0.0>>$1.gnuplot
-echo set title '"'Index of the decision variables'"'>>$1.gnuplot
-echo plot '"'$1-decision-indexes.dat'"'>>$1.gnuplot
-echo set size 0.5, 0.5>>$1.gnuplot
-echo set origin 0.5, 0.5>>$1.gnuplot
-echo set title '"'Depth of the search when the conflict occurs'"'>>$1.gnuplot
-echo plot '"'$1-conflict-depth.dat'"'>>$1.gnuplot
-echo set size 0.5, 0.5>>$1.gnuplot
-echo set origin 0.5, 0.0>>$1.gnuplot
-echo set title '"'Size of the clause learned \(after minimization if any\)'"'>>$1.gnuplot
+if [ $# == 2 ] ; then
+    #echo "2 arguments : $1 et $2"
+    pathToFichier="$2/$1"
+else
+    pathToFichier="$1"
+fi
+nbLignes=10000
+echo $pathToFichier
+echo set terminal x11>$pathToFichier.gnuplot
+echo set multiplot>>$pathToFichier.gnuplot
+echo set size 0.5, 0.5>>$pathToFichier.gnuplot
+echo set origin 0.0, 0.5>>$pathToFichier.gnuplot
+echo set title '"'Decision level at which the conflict occurs'"'>>$pathToFichier.gnuplot
+echo plot  '"'$pathToFichier-conflict-level-restart.dat'"' with impulses ls 3,'"'$pathToFichier-conflict-level.dat'"' ls 1 >>$pathToFichier.gnuplot
+echo set size 0.5, 0.5>>$pathToFichier.gnuplot
+echo set origin 0.0, 0.0>>$pathToFichier.gnuplot
+echo set title '"'Index of the decision variables'"'>>$pathToFichier.gnuplot
+echo plot '"'$pathToFichier-decision-indexes-restart.dat'"' with impulses ls 3, '"'$pathToFichier-decision-indexes-pos.dat'"' ls 2, '"'$pathToFichier-decision-indexes-neg.dat'"' ls 1 >>$pathToFichier.gnuplot
+echo set size 0.5, 0.5>>$pathToFichier.gnuplot
+echo set origin 0.5, 0.5>>$pathToFichier.gnuplot
+echo set title '"'Depth of the search when the conflict occurs'"'>>$pathToFichier.gnuplot
+echo plot '"'$pathToFichier-conflict-depth.dat'"' >>$pathToFichier.gnuplot
+echo set size 0.5, 0.5>>$pathToFichier.gnuplot
+echo set origin 0.5, 0.0>>$pathToFichier.gnuplot
+echo set title '"'Size of the clause learned \(after minimization if any\)'"'>>$pathToFichier.gnuplot
 #echo set logscale y>>$1.gnuplot
-echo plot '"'$1-learned-clauses-size.dat'"'>>$1.gnuplot
-echo set nologscale y>>$1.gnuplot
-echo unset multiplot>>$1.gnuplot
-echo "pause 2">>$1.gnuplot
-echo reread>>$1.gnuplot
-gnuplot $1.gnuplot
+echo plot '"'$pathToFichier-learned-clauses-size.dat'"' >>$pathToFichier.gnuplot
+echo set nologscale y>>$pathToFichier.gnuplot
+echo unset multiplot>>$pathToFichier.gnuplot
+echo "pause 2">>$pathToFichier.gnuplot
+echo reread>>$pathToFichier.gnuplot
+gnuplot $pathToFichier.gnuplot
