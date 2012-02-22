@@ -123,7 +123,10 @@ public class LaunchRemoteControl {
 //		RandomWalkDecorator rw = new RandomWalkDecorator((VarOrderHeap)((Solver)pbSolver).getOrder(), 0);
 //		pbSolver.setOrder(rw);
 		
-		RemoteControlFrame frame = new RemoteControlFrame(filename, ramdisk);
+		IPBCDCLSolver pbSolver = SolverFactory.newDefault();
+		
+		
+		RemoteControlFrame frame = new RemoteControlFrame(filename, ramdisk,pbSolver);
 		
 
 //		try{

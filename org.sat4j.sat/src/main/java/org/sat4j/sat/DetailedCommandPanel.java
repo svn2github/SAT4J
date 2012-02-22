@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -62,10 +63,11 @@ import javax.swing.event.ChangeListener;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
+import org.sat4j.minisat.core.ICDCLLogger;
+import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
-import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.LubyRestarts;
@@ -101,7 +103,7 @@ import org.sat4j.tools.MultiTracing;
  * @author sroussel
  *
  */
-public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
+public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchListener{
 
 
 	private static final long serialVersionUID = 1L;
@@ -115,6 +117,8 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private ICDCL solver;
 	private Reader reader;
 	private IProblem problem;
+
+	private boolean useCustomizedSolver;
 
 	private Thread solveurThread;
 
@@ -138,6 +142,9 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private final static String CHOIX_SOLVER  = "Choose solver: ";
 	private String selectedSolver;
 	private JComboBox listeSolvers;
+
+	private JCheckBox useCustomizedSolverCB;
+	private final static String USE_CUSTOMIZED_SOLVER = "Use customized solver";
 
 	private JButton startStopButton;
 	private static final String START = "Start";
@@ -220,32 +227,59 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	private final static String CLEAN_100000 = "100000";
 	private final static String CLEAN_500000 = "500000";
 
+	private JCheckBox cleanUseOriginalStrategyCB;
+	private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
+
+
+
+	private JPanel phasePanel;
+	private final static String PHASE_PANEL = "Phase Strategy";
+
+	private String currentPhaseSelectionStrategy;
+
+	private JComboBox phaseList;
+	private JLabel phaseListLabel;
+	private final static String PHASE_STRATEGY = "Choose phase strategy :";
+
+	private JButton phaseApplyButton;
+	private final static String PHASE_APPLY = "Apply";
+
+	private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
+
 
 	private JTextArea console;
 	private JScrollPane scrollPane;
-
-
-	private boolean shouldStop;
-
 
 	public DetailedCommandPanel(String filename){
 		this(filename,"");
 	}
 
 	public DetailedCommandPanel(String filename, String ramdisk){
+		this(filename,ramdisk,null);
+	}
+
+	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
 		super();
 
-		this.telecomStrategy = new RemoteControlStrategy();
-
-		this.randomWalk = null;
-
-		this.telecomStrategy.setLogger(this);
-
+		this.telecomStrategy = new RemoteControlStrategy(this);
 		this.instancePath=filename;
-
 		this.ramdisk = ramdisk;
+		this.solver=solver;
 
-		this.setPreferredSize(new Dimension(700,950));
+		this.useCustomizedSolver=(this.solver!=null);
+
+		if(solver!=null){
+			if(solver.getOrder() instanceof RandomWalkDecorator){
+				randomWalk = (RandomWalkDecorator)solver.getOrder();
+			}
+			else{
+				randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+			}
+		}
+
+
+		this.setPreferredSize(new Dimension(700,1150));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
@@ -254,6 +288,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		createRestartPanel();
 		createRWPanel();
 		createCleanPanel();
+		createPhasePanel();
 
 		console = new JTextArea();
 
@@ -275,13 +310,16 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		this.add(restartPanel);
 		this.add(rwPanel);
 		this.add(cleanPanel);
+		this.add(phasePanel);
 		this.add(scrollPane);
 
 		setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
 		setCleanPanelEnabled(false);
-
+		setPhasePanelEnabled(false);
 	}
+
+
 
 	public void createInstancePanel(){
 		instancePanel = new JPanel();
@@ -346,6 +384,9 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 					setRestartPanelEnabled(true);
 					setRWPanelEnabled(true);
 					setCleanPanelEnabled(true);
+					setCleanPanelOriginalStrategyEnabled(true);
+					setPhasePanelEnabled(true);
+					setChoixSolverPanelEnabled(false);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -354,11 +395,12 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 					//assert solveurThread!=null;
 					((ISolver)problem).expireTimeout();
 					log("Asked the solver to stop");
-					shouldStop=true;
 					setInstancePanelEnabled(true);
+					setChoixSolverPanelEnabled(true);
 					setRestartPanelEnabled(false);
 					setRWPanelEnabled(false);
 					setCleanPanelEnabled(false);
+					setPhasePanelEnabled(false);
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -368,6 +410,25 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		JPanel tmpPanel2 = new JPanel();
 		tmpPanel2.add(startStopButton);
 
+
+		useCustomizedSolverCB = new JCheckBox(USE_CUSTOMIZED_SOLVER);
+		JPanel tmpPanel3 = new JPanel();
+		tmpPanel3.add(useCustomizedSolverCB);
+
+		useCustomizedSolverCB.setSelected(useCustomizedSolver);
+
+		useCustomizedSolverCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				useCustomizedSolver=!useCustomizedSolver;
+				useCustomizedSolverCB.setEnabled(useCustomizedSolver);
+				listeSolvers.setEnabled(!useCustomizedSolver);
+				choixSolverPanel.repaint();
+			}
+		});
+
+		setChoixSolverPanelEnabled(useCustomizedSolver);
+
+		choixSolverPanel.add(tmpPanel3,BorderLayout.NORTH);
 		choixSolverPanel.add(tmpPanel1,BorderLayout.CENTER);
 		choixSolverPanel.add(tmpPanel2,BorderLayout.SOUTH);
 
@@ -522,9 +583,67 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		tmpPanel2.add(manualCleanLabel);
 		tmpPanel2.add(cleanButton);
 
+		JPanel tmpPanel3 = new JPanel();
+		cleanUseOriginalStrategyCB = new JCheckBox(USE_ORIGINAL_STRATEGY);
+		cleanUseOriginalStrategyCB.setSelected(true);
+
+		cleanUseOriginalStrategyCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasClickedOnUseOriginalStrategy();
+			}
+		});
+
+		tmpPanel3.add(cleanUseOriginalStrategyCB);
+
+		cleanPanel.add(tmpPanel3,BorderLayout.NORTH);
 		cleanPanel.add(tmpPanel2,BorderLayout.CENTER);
 		cleanPanel.add(tmpPanel1,BorderLayout.SOUTH);
 
+	}
+
+	public void createPhasePanel(){
+		phasePanel = new JPanel();
+
+		phasePanel.setName(PHASE_PANEL);
+		phasePanel.setBorder(new CompoundBorder(new TitledBorder(null, phasePanel.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), border5));
+
+		phasePanel.setLayout(new BorderLayout());
+
+		JPanel tmpPanel1 = new JPanel();
+		tmpPanel1.setLayout(new FlowLayout());
+
+		phaseListLabel = new JLabel(PHASE_STRATEGY);
+
+		phaseList = new JComboBox(getListOfPhaseStrategies().toArray());	
+		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+
+		//		phaseList.addActionListener(new ActionListener() {
+		//			public void actionPerformed(ActionEvent e) {
+		//				modifyRestartParamPanel();
+		//			}
+		//		});
+
+		tmpPanel1.add(phaseListLabel);
+		tmpPanel1.add(phaseList);
+
+
+
+
+		phaseApplyButton = new JButton(PHASE_APPLY);
+
+		phaseApplyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasClickedOnApplyPhase();
+			}
+		});
+
+		JPanel tmpPanel2 = new JPanel();
+		tmpPanel2.add(phaseApplyButton);
+
+		phasePanel.add(tmpPanel1,BorderLayout.CENTER);
+		phasePanel.add(tmpPanel2,BorderLayout.SOUTH);
 	}
 
 	public void initFactorParam(){
@@ -542,39 +661,55 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	}
 
 	public void launchSolver(){
-		selectedSolver = (String)listeSolvers.getSelectedItem();
-		String[] partsSelectedSolver = selectedSolver.split("\\.");
 
-		assert partsSelectedSolver.length==2;
-		assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
+		if(!useCustomizedSolver)
+		{
+			selectedSolver = (String)listeSolvers.getSelectedItem();
+			String[] partsSelectedSolver = selectedSolver.split("\\.");
 
-		ASolverFactory factory;
+			assert partsSelectedSolver.length==2;
+			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
 
-		if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
-			factory = org.sat4j.minisat.SolverFactory.instance();
+			ASolverFactory factory;
+
+			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
+				factory = org.sat4j.minisat.SolverFactory.instance();
+			}
+			else{
+				factory = org.sat4j.pb.SolverFactory.instance();
+			}
+			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
+			//log(solver.toString());
+
+
+
+			telecomStrategy.setSolver(solver);
+			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+
+			solver.setRestartStrategy(telecomStrategy);
+
+
+			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+
+			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+
+			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+			phasePanel.repaint();
+
+			updateRestartStrategyPanel();
+
+			//pbSolver.setNeedToReduceDB(true);
+
+			double proba=0;
+			if(probaRWField.getText()!=null){
+				proba = Double.parseDouble(probaRWField.getText());
+			}
+			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+
+			solver.setOrder(randomWalk);
 		}
-		else{
-			factory = org.sat4j.pb.SolverFactory.instance();
-		}
-		solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
-		//log(solver.toString());
-
-		solver.setVerbose(true);
-
-		telecomStrategy.setSolver(solver);
-		telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
-		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-
-		solver.setRestartStrategy(telecomStrategy);
-
-		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
-
-		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy);
-
-		updateRestartStrategyPanel();
-
-		//pbSolver.setNeedToReduceDB(true);
 
 
 		String whereToWriteFiles = instancePath;
@@ -584,7 +719,9 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
 
 		}
-		System.out.println(whereToWriteFiles);
+
+		solver.setVerbose(true);
+
 		solver.setSearchListener(new MultiTracing(this,
 				new ConflictLevelTracing(whereToWriteFiles
 						+ "-conflict-level"), new DecisionTracing(
@@ -594,15 +731,7 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 										new ConflictDepthTracing(whereToWriteFiles
 												+ "-conflict-depth")));
 
-		double proba=0;
-		if(probaRWField.getText()!=null){
-			proba = Double.parseDouble(probaRWField.getText());
-		}
-		randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-
-		solver.setOrder(randomWalk);
-
-
+		solver.setLogger(this);
 
 		reader = createReader(solver, instancePath);
 
@@ -630,11 +759,10 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		log("# Started solver " + solver.getClass().getSimpleName());
 		log("# on instance " + instancePath);
 		log("# Optimisation = " + optimisation);
-		log("# Restart strategy = " + telecomStrategy.getRestartStrategy().getClass().getSimpleName());
-		log("# Random walk probability = " +proba);
-		log("# Number of conflicts before cleaning = " + nbConflicts);
+		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
+		log("# Random walk probability = " +randomWalk.getProbability());
+		//log("# Number of conflicts before cleaning = " + nbConflicts);
 
-		shouldStop=false;
 
 		solveurThread = new Thread() {
 			public void run() {
@@ -740,6 +868,29 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		log("Set probability to " + proba);
 	}
 
+	public void hasClickedOnApplyPhase(){
+		String phaseName = (String)phaseList.getSelectedItem();
+		currentPhaseSelectionStrategy = phaseName;
+		IPhaseSelectionStrategy phase = null;
+		try{
+			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
+		}
+		catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
+		catch(IllegalAccessException e){
+			e.printStackTrace();
+		}
+		catch(InstantiationException e){
+			e.printStackTrace();
+		}
+
+		telecomStrategy.setPhaseSelectionStrategy(phase);
+		solver.getOrder().init();
+
+		log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
+	}
+
 	public void hasChangedCleaningValue(){
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
 		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
@@ -752,6 +903,15 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		//log("Has clicked on " + CLEAN);
 	}
 
+	public void hasClickedOnUseOriginalStrategy(){
+		int nbConflicts = cleanValues[cleanSlider.getValue()];
+		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
+
+		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy);
+
+		setCleanPanelOriginalStrategyEnabled(false);
+	}
+
 
 
 	public List<String> getListOfRestartStrategies(){
@@ -761,7 +921,22 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		//		finalResult.add(RESTART_NO_STRATEGY);
 
 		for(String s:resultRTSI){
-			if(!s.contains("Telecommande")){
+			if(!s.contains("Remote")){
+				finalResult.add(s);
+			}
+		}
+
+		return finalResult;
+	}
+
+	public List<String> getListOfPhaseStrategies(){
+		List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
+		List<String> finalResult = new ArrayList<String>();
+
+		//		finalResult.add(RESTART_NO_STRATEGY);
+
+		for(String s:resultRTSI){
+			if(!s.contains("Remote")){
 				finalResult.add(s);
 			}
 		}
@@ -877,8 +1052,9 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 	}
 
 	public void setChoixSolverPanelEnabled(boolean enabled){
-		listeSolvers.setEnabled(enabled);
-		choixSolver.setEnabled(enabled);
+		listeSolvers.setEnabled(enabled && !useCustomizedSolver);
+		choixSolver.setEnabled(enabled && !useCustomizedSolver);
+		useCustomizedSolverCB.setEnabled(enabled && useCustomizedSolver);
 		choixSolverPanel.repaint();
 	}
 
@@ -909,7 +1085,24 @@ public class DetailedCommandPanel extends JPanel implements ILog,SearchListener{
 		deleteClauseLabel.setEnabled(enabled);
 		cleanSlider.setEnabled(enabled);
 		cleanButton.setEnabled(enabled);
+		cleanUseOriginalStrategyCB.setEnabled(enabled);
 		cleanPanel.repaint();
+	}
+
+	public void setCleanPanelOriginalStrategyEnabled(boolean enabled){
+		cleanUseOriginalStrategyCB.setEnabled(enabled);
+		manualCleanLabel.setEnabled(!enabled);
+		deleteClauseLabel.setEnabled(!enabled);
+		cleanSlider.setEnabled(!enabled);
+		cleanButton.setEnabled(!enabled);
+		cleanPanel.repaint();
+	}
+
+	public void setPhasePanelEnabled(boolean enabled){
+		phaseList.setEnabled(enabled);
+		phaseListLabel.setEnabled(enabled);
+		phaseApplyButton.setEnabled(enabled);
+		restartPanel.repaint();
 	}
 
 	public DetailedCommandPanel getThis(){

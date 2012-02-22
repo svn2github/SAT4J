@@ -30,9 +30,12 @@ package org.sat4j.sat;
 import org.sat4j.minisat.core.ConflictTimer;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
+import org.sat4j.minisat.core.ICDCLLogger;
+import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.specs.IVec;
 
@@ -43,36 +46,35 @@ import org.sat4j.specs.IVec;
  * @author sroussel
  *
  */
-public class RemoteControlStrategy implements RestartStrategy, LearnedConstraintsDeletionStrategy{
+public class RemoteControlStrategy implements RestartStrategy, LearnedConstraintsDeletionStrategy, IPhaseSelectionStrategy{
 
 
 	private static final long serialVersionUID = 1L;
 
 	private RestartStrategy restart;
-	
-	private ILog logger;
+	private IPhaseSelectionStrategy phaseSelectionStrategy;
+
+	private ICDCLLogger logger;
 
 
 	private boolean hasClickedOnRestart;
 	private boolean hasClickedOnClean;
-	
+
 	private int conflictNumber;
 	private int nbClausesAtWhichWeShouldClean;
 
 	private ICDCL solver;
 
-	public RemoteControlStrategy(ILog log){
+	public RemoteControlStrategy(ICDCLLogger log){
 		hasClickedOnClean = false;
 		hasClickedOnRestart = false;
 		restart=new NoRestarts();
+		phaseSelectionStrategy=new RSATPhaseSelectionStrategy();
 		this.logger=log;
 	}
-	
+
 	public RemoteControlStrategy(){
-		hasClickedOnClean = false;
-		hasClickedOnRestart = false;
-		restart=new NoRestarts();
-		this.logger=null;
+		this(null);
 	}
 
 
@@ -94,11 +96,20 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		this.hasClickedOnClean = hasClickedOnClean;
 		solver.setNeedToReduceDB(true);
 	}
-	
+
 	public RestartStrategy getRestartStrategy() {
 		return restart;
 	}
-	
+
+	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
+		return phaseSelectionStrategy;
+	}
+
+	public void setPhaseSelectionStrategy(
+			IPhaseSelectionStrategy phaseSelectionStrategy) {
+		this.phaseSelectionStrategy = phaseSelectionStrategy;
+	}
+
 	public void setRestartStrategy(RestartStrategy restart) {
 		this.restart = restart;
 	}
@@ -111,11 +122,11 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		this.nbClausesAtWhichWeShouldClean = nbClausesAtWhichWeShouldClean;
 	}
 
-	public ILog getLogger() {
+	public ICDCLLogger getLogger() {
 		return logger;
 	}
 
-	public void setLogger(ILog logger) {
+	public void setLogger(ICDCLLogger logger) {
 		this.logger = logger;
 	}
 
@@ -144,7 +155,7 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 	public void onBackjumpToRootLevel() {
 		restart.onBackjumpToRootLevel();
 	}
-	
+
 	public SearchParams getSearchParams(){
 		return restart.getSearchParams();
 	}
@@ -214,12 +225,39 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		// TODO Auto-generated method stub
 
 	}
-	
+
+
+	public void updateVar(int p) {
+		phaseSelectionStrategy.updateVar(p);
+	}
+
+	public void init(int nlength) {
+		phaseSelectionStrategy.init(nlength);
+	}
+
+	public void init(int var, int p) {
+		phaseSelectionStrategy.init(var, p);
+	}
+
+	public void assignLiteral(int p) {
+		phaseSelectionStrategy.assignLiteral(p);
+	}
+
+	public int select(int var) {
+		return phaseSelectionStrategy.select(var);
+	}
+
+	public void updateVarAtDecisionLevel(int q) {
+		phaseSelectionStrategy.updateVarAtDecisionLevel(q);
+	}
+
+
 	@Override
 	public String toString(){
-		return "RemoteControlStrategy [restartStrategy = "+ restart+", learnedClausesDeletionStrategy = clean after "+ nbClausesAtWhichWeShouldClean + " conflicts]";
+		return "RemoteControlStrategy [restartStrategy = "+ restart+", learnedClausesDeletionStrategy = clean after "+ nbClausesAtWhichWeShouldClean + " conflicts, phaseSelectionStrategy = " +phaseSelectionStrategy + "]";
 	}
-	
-	
+
+
+
 
 }

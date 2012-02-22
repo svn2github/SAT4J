@@ -42,6 +42,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
 import org.sat4j.minisat.core.ICDCL;
+import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 
 /**
@@ -51,7 +52,7 @@ import org.sat4j.minisat.orders.RandomWalkDecorator;
  * @author sroussel
  *
  */
-public class RemoteControlFrame extends JFrame implements ILog{
+public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 
 	/**
@@ -78,18 +79,27 @@ public class RemoteControlFrame extends JFrame implements ILog{
 	private ICDCL solver;
 
 
-	public RemoteControlFrame(String filename, String ramdisk){
+	public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
 		super("Remote Control");
 		
 		this.filename=filename;
 		this.ramdisk=ramdisk;
+		this.solver=solver;
 		initLookAndFeel();
 
 		createAndShowGUI();
 	}
 	
+	public RemoteControlFrame(String filename, String ramdisk){	
+		this(filename, ramdisk,null);
+	}
+	
 	public RemoteControlFrame(String filename){	
-		this(filename, "");
+		this(filename, "",null);
+	}
+	
+	public RemoteControlFrame(String filename, ICDCL solver){	
+		this(filename, "",solver);
 	}
 
 
@@ -108,7 +118,7 @@ public class RemoteControlFrame extends JFrame implements ILog{
 		
 		createMenuBar();
 		
-		commandePanel = new DetailedCommandPanel(filename,ramdisk);
+		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver);
 		
 		JScrollPane scrollPane = new JScrollPane(commandePanel);
 		
