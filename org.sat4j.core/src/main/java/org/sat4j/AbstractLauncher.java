@@ -82,7 +82,7 @@ public abstract class AbstractLauncher implements Serializable {
 
 	protected ISolver solver;
 
-	private boolean silent = false;
+	public boolean silent = false;
 
 	protected AbstractLauncher() {
 		Runtime.getRuntime().addShutdownHook(shutdownHook);
