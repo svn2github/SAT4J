@@ -229,7 +229,7 @@ public class VarOrderHeap implements IOrder, Serializable {
 	}
 
 	public void assignLiteral(int p) {
-		// do nothing
+		phaseStrategy.assignLiteral(p);
 	}
 
 	public void updateVarAtDecisionLevel(int q) {
