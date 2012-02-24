@@ -50,4 +50,14 @@ public interface Propagatable {
 	 */
 	boolean propagate(UnitPropagationListener s, int p);
 
+	/**
+	 * Allow to access a constraint view of the propagatable to avoid casting.
+	 * In most cases, the constraint will implement directly propagatable thus
+	 * will return itself. It will also also the implementation of more
+	 * sophisticated watching strategy.
+	 * 
+	 * @return the constraint associated to that propagatable.
+	 * @since 2.3.2
+	 */
+	Constr toConstraint();
 }

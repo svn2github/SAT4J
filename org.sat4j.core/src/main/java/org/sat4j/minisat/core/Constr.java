@@ -43,7 +43,7 @@ import org.sat4j.specs.IVecInt;
  * 
  * @author leberre
  */
-public interface Constr extends Propagatable, IConstr {
+public interface Constr extends IConstr {
 
 	/**
 	 * Remove a constraint from the solver.

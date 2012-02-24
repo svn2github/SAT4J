@@ -35,6 +35,7 @@ import java.io.Serializable;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
@@ -52,7 +53,7 @@ import org.sat4j.specs.IVecInt;
  * @see UnitClause
  * @since 2.1
  */
-public abstract class HTClause implements Constr, Serializable {
+public abstract class HTClause implements Propagatable, Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -293,5 +294,9 @@ public abstract class HTClause implements Constr, Serializable {
 
 	public boolean canBePropagatedMultipleTimes() {
 		return false;
+	}
+
+	public Constr toConstraint() {
+		return this;
 	}
 }

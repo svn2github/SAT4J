@@ -33,6 +33,7 @@ import java.io.Serializable;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
@@ -41,7 +42,7 @@ import org.sat4j.specs.IVecInt;
  * 
  * @author leberre
  */
-public abstract class WLClause implements Constr, Serializable {
+public abstract class WLClause implements Propagatable, Constr, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -243,5 +244,9 @@ public abstract class WLClause implements Constr, Serializable {
 
 	public boolean canBePropagatedMultipleTimes() {
 		return false;
+	}
+
+	public Constr toConstraint() {
+		return this;
 	}
 }

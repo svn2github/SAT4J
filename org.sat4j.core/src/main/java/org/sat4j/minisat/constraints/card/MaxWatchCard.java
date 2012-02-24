@@ -36,12 +36,14 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
-public final class MaxWatchCard implements Constr, Undoable, Serializable {
+public final class MaxWatchCard implements Propagatable, Constr, Undoable,
+		Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -435,5 +437,9 @@ public final class MaxWatchCard implements Constr, Undoable, Serializable {
 
 	public boolean canBePropagatedMultipleTimes() {
 		return true;
+	}
+
+	public Constr toConstraint() {
+		return this;
 	}
 }
