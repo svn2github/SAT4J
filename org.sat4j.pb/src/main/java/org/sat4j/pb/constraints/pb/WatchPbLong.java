@@ -36,12 +36,14 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
-public abstract class WatchPbLong implements Constr, Undoable, Serializable {
+public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
+		Serializable {
 
 	/**
 	 * 
@@ -595,22 +597,20 @@ public abstract class WatchPbLong implements Constr, Undoable, Serializable {
 	}
 
 	public void remove(UnitPropagationListener upl) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public boolean propagate(UnitPropagationListener s, int p) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public void undo(int p) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public boolean canBePropagatedMultipleTimes() {
 		return true;
 	}
 
+	public Constr toConstraint() {
+		return this;
+	}
 }
