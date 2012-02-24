@@ -1022,8 +1022,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 						lvoc.watch(p, lwatched.get(j));
 					}
 					qhead = ltrail.size(); // propQ.clear();
-					// FIXME enlever le transtypage
-					return (Constr) lwatched.get(i);
+					return lwatched.get(i).toConstraint();
 				}
 			}
 		}
