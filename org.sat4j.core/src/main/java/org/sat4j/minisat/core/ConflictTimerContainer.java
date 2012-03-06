@@ -55,6 +55,11 @@ public class ConflictTimerContainer implements Serializable, ConflictTimer {
 		return this;
 	}
 
+	ConflictTimerContainer remove(ConflictTimer timer) {
+		timers.remove(timer);
+		return this;
+	}
+
 	public void reset() {
 		Iterator<ConflictTimer> it = timers.iterator();
 		while (it.hasNext()) {
