@@ -38,7 +38,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -93,8 +96,21 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
+import org.sat4j.tools.HeuristicsTracing;
 import org.sat4j.tools.LearnedClausesSizeTracing;
+import org.sat4j.tools.LearnedTracing;
 import org.sat4j.tools.MultiTracing;
+
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.dataset.FileDataSet;
+import com.panayotis.gnuplot.layout.AutoGraphLayout;
+import com.panayotis.gnuplot.plot.AbstractPlot;
+import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.panayotis.gnuplot.plot.Graph;
+import com.panayotis.gnuplot.style.NamedPlotColor;
+import com.panayotis.gnuplot.style.PlotStyle;
+import com.panayotis.gnuplot.style.Style;
+import com.panayotis.gnuplot.terminal.CustomTerminal;
 
 
 /**
@@ -253,6 +269,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JTextArea console;
 	private JScrollPane scrollPane;
 
+	private boolean isPlotActivated;
+
+
 	public DetailedCommandPanel(String filename){
 		this(filename,"");
 	}
@@ -268,6 +287,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.instancePath=filename;
 		this.ramdisk = ramdisk;
 		this.solver=solver;
+
+		this.isPlotActivated=false;
 
 		this.useCustomizedSolver=(this.solver!=null);
 
@@ -731,11 +752,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 								new LearnedClausesSizeTracing(whereToWriteFiles
 										+ "-learned-clauses-size"),
 										new ConflictDepthTracing(whereToWriteFiles
-												+ "-conflict-depth")));
+												+ "-conflict-depth"), 
+												new HeuristicsTracing(whereToWriteFiles + "-heuristics"),
+												 new LearnedTracing(whereToWriteFiles + "-learned")));
 
 		solver.setLogger(this);
 
 		reader = createReader(solver, instancePath);
+
 
 		try{
 			problem = reader.parseInstance(instancePath);
@@ -775,7 +799,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				//				while(!shouldStop){
 				try{
 					stringWriter = new StringWriter();
-
 					if(problem.isSatisfiable()){
 						log("Satisfiable !");
 						log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
@@ -794,6 +817,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		};
 		solveurThread.start();
 
+
+		if(isPlotActivated){
+			traceGnuplot();
+		}
 
 	}
 
@@ -1104,6 +1131,59 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		phaseListLabel.setEnabled(enabled);
 		phaseApplyButton.setEnabled(enabled);
 		restartPanel.repaint();
+	}
+
+
+	public void activateGnuplotTracing(){
+		isPlotActivated=true;
+	}
+
+	public void traceGnuplot(){
+		try {
+
+			PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
+			out.println("set terminal x11");
+			out.println("set multiplot");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.0, 0.5");
+			out.println("set title \"Decision level at which the conflict occurs\"");
+			out.println("plot \"" + instancePath+ "-conflict-level-restart.dat\" with impulses ls 3,\""+ instancePath +"-conflict-level.dat\" ls 1 ");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.0, 0.0");
+			out.println("set title \"Index of the decision variables\"");
+			out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3,\"" 
+					+ instancePath+ "-decision-indexes-pos.dat\" ls 2,\""
+					+ instancePath+ "-decision-indexes-neg.dat\" ls 1");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.66, 0.5");
+			out.println("set title \"Depth of the search when the conflict occurs\"");
+			out.println("plot \"" + instancePath+ "-conflict-depth.dat\"");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.33, 0.5");
+			out.println("set title \"Size of the clause learned (after minimization if any)\"");
+			out.println("plot \"" + instancePath+ "-learned-clauses-size.dat\"");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.33, 0.0");
+			out.println("set title \"Value of variables activity\"");
+			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines");
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.66, 0.0");
+			out.println("set title \"Value of clauses activity\"");
+			out.println("plot \"" + instancePath+ "-learned.dat\"");
+			out.println("set nologscale y");
+			out.println("unset multiplot");
+			out.println("pause 2");
+			out.println("reread");
+			out.close();
+			
+			String[] cmd = new String[2];
+			cmd[0]="/usr/local/bin/gnuplot";
+			cmd[1]=instancePath+"-gnuplot.gnuplot";
+			
+			Runtime.getRuntime().exec(cmd);
+		} catch (IOException e) { 
+			e.printStackTrace();
+		}
 	}
 
 	public DetailedCommandPanel getThis(){

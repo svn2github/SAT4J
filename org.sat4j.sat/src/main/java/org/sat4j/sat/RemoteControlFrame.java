@@ -35,7 +35,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -70,6 +72,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 	private JMenuBar barreMenu;
 	private JMenu menu;
+	private JCheckBoxMenuItem activateTracing;
 	
 	private DetailedCommandPanel commandePanel;
 	private String filename;
@@ -154,6 +157,15 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 				clickOnAboutSolver();
 			}
 		});
+		
+		activateTracing = new JCheckBoxMenuItem("Activate GNUPLOT tracing");
+		menu.add(activateTracing);
+		
+		activateTracing.addActionListener(new ActionListener() {		
+			public void actionPerformed(ActionEvent e) {
+				activateGnuplotTracing();
+			}
+		});
 
 //		JMenuItem reinitialiserItem = new JMenuItem("RŽinitialiser");
 //		menu.add(reinitialiserItem);
@@ -169,6 +181,13 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String[] cmdarray = new String[]{"killall","gnuplot"};
+				try{
+					Runtime.getRuntime().exec(cmdarray);
+				}
+				catch(IOException ex){
+					ex.printStackTrace();
+				}
 				System.exit(NORMAL);
 			}
 		});
@@ -178,6 +197,11 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	
 	public void log(String message){
 		commandePanel.log(message);
+	}
+	
+	public void activateGnuplotTracing(){
+		if(activateTracing.isSelected())
+			commandePanel.activateGnuplotTracing();
 	}
 
 
