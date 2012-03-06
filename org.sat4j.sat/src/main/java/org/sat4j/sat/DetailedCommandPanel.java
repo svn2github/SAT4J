@@ -876,6 +876,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		IPhaseSelectionStrategy phase = null;
 		try{
 			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
+			telecomStrategy.setPhaseSelectionStrategy(phase);
+			phase.init(solver.nVars());
+			log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
 		}
 		catch(ClassNotFoundException e){
 			e.printStackTrace();
@@ -887,10 +890,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			e.printStackTrace();
 		}
 
-		telecomStrategy.setPhaseSelectionStrategy(phase);
-		solver.getOrder().init();
-
-		log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
 	}
 
 	public void hasChangedCleaningValue(){
