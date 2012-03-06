@@ -876,8 +876,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		IPhaseSelectionStrategy phase = null;
 		try{
 			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
-			telecomStrategy.setPhaseSelectionStrategy(phase);
 			phase.init(solver.nVars());
+			telecomStrategy.setPhaseSelectionStrategy(phase);
 			log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
 		}
 		catch(ClassNotFoundException e){
