@@ -139,4 +139,15 @@ public interface IOrder {
 	 *            a literal
 	 */
 	void updateVarAtDecisionLevel(int q);
+
+	/**
+	 * Read-Only access to the value of the heuristics for each variable. Note
+	 * that for efficiency reason, the real array storing the value of the
+	 * heuristics is returned. DO NOT CHANGE THE VALUES IN THAT ARRAY.
+	 * 
+	 * @return the value of the heuristics for each variable (using Dimacs
+	 *         index).
+	 * @since 2.3.2
+	 */
+	double[] getVariableHeuristics();
 }

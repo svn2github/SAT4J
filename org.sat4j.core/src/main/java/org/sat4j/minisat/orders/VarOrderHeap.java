@@ -238,4 +238,8 @@ public class VarOrderHeap implements IOrder, Serializable {
 		phaseStrategy.updateVarAtDecisionLevel(q);
 
 	}
+
+	public double[] getVariableHeuristics() {
+		return activity;
+	}
 }

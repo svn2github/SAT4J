@@ -153,6 +153,15 @@ public class MultiTracing implements SearchListener {
 	}
 
 	public void init(ISolverService solverService) {
+		for (SearchListener sl : listeners) {
+			sl.init(solverService);
+		}
+	}
+
+	public void cleaning() {
+		for (SearchListener sl : listeners) {
+			sl.cleaning();
+		}
 	}
 
 }

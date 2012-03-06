@@ -88,4 +88,7 @@ final class VoidTracing implements SearchListener {
 
 	public void init(ISolverService solverService) {
 	}
+
+	public void cleaning() {
+	}
 }

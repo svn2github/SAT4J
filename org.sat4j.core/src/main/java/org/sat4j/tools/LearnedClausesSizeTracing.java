@@ -34,14 +34,12 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
-import org.sat4j.specs.SearchListener;
 
 /**
  * @since 2.3.2
  */
-public class LearnedClausesSizeTracing implements SearchListener {
+public class LearnedClausesSizeTracing extends SearchListenerAdapter {
 
 	/**
 	 * 
@@ -64,68 +62,18 @@ public class LearnedClausesSizeTracing implements SearchListener {
 		}
 	}
 
-	public void adding(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void assuming(int p) {
-
-	}
-
-	public void backtracking(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void beginLoop() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-
-	}
-
-	public void conflictFound(int p) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void delete(int[] clause) {
-		// TODO Auto-generated method stub
-
-	}
-
+	@Override
 	public void end(Lbool result) {
 		out.close();
 	}
 
+	@Override
 	public void learn(IConstr c) {
 		out.println(c.size());
 	}
 
-	public void propagating(int p, IConstr reason) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void solutionFound() {
-		// TODO Auto-generated method stub
-
-	}
-
+	@Override
 	public void start() {
 		updateWriter();
 	}
-
-	public void restarting() {
-	}
-
-	public void backjump(int backjumpLevel) {
-	}
-
-	public void init(ISolverService solverService) {
-	}
-
 }

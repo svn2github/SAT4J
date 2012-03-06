@@ -86,4 +86,7 @@ public abstract class SearchListenerAdapter implements SearchListener {
 	public void backjump(int backjumpLevel) {
 	}
 
+	public void cleaning() {
+	}
+
 }

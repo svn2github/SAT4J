@@ -147,4 +147,11 @@ public class TextOutputTracing<T> implements SearchListener {
 	public void init(ISolverService solverService) {
 	}
 
+	/**
+	 * @since 2.3.2
+	 */
+	public void cleaning() {
+		System.out.println("cleaning");
+	}
+
 }

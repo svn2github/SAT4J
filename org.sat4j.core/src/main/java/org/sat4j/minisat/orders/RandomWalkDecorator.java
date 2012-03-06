@@ -139,4 +139,8 @@ public class RandomWalkDecorator implements IOrder {
 		return decorated.toString() + " with random walks " + p;
 	}
 
+	public double[] getVariableHeuristics() {
+		return decorated.getVariableHeuristics();
+	}
+
 }

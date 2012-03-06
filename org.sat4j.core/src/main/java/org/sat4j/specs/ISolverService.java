@@ -84,4 +84,31 @@ public interface ISolverService {
 	 *            a literal in Dimacs format.
 	 */
 	void suggestNextLiteralToBranchOn(int l);
+
+	/**
+	 * Read-Only access to the value of the heuristics for each variable. Note
+	 * that for efficiency reason, the real array storing the value of the
+	 * heuristics is returned. DO NOT CHANGE THE VALUES IN THAT ARRAY.
+	 * 
+	 * @return the value of the heuristics for each variable (using Dimacs
+	 *         index).
+	 */
+	double[] getVariableHeuristics();
+
+	/**
+	 * Read-Only access to the list of constraints learned and not deleted so
+	 * far in the solver. Note that for efficiency reason, the real list of
+	 * constraints managed by the solver is returned. DO NOT MODIFY THAT LIST
+	 * NOR ITS CONSTRAINTS.
+	 * 
+	 * @return the constraints learned and kept so far by the solver.
+	 */
+	IVec<? extends IConstr> getLearnedConstraints();
+
+	/**
+	 * Read-Only access to the number of variables declared in the solver.
+	 * 
+	 * @return the maximum variable id (Dimacs format) reserved in the solver.
+	 */
+	int nVars();
 }

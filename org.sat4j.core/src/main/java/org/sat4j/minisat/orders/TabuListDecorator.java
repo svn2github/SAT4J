@@ -142,4 +142,8 @@ public class TabuListDecorator implements IOrder {
 		return decorated.toString() + " with tabu list of size " + tabuSize;
 	}
 
+	public double[] getVariableHeuristics() {
+		return decorated.getVariableHeuristics();
+	}
+
 }

@@ -148,4 +148,9 @@ public interface SearchListener extends Serializable {
 	 * @param backjumpLevel
 	 */
 	void backjump(int backjumpLevel);
+
+	/**
+	 * The solver is going to delete some learned clauses.
+	 */
+	void cleaning();
 }

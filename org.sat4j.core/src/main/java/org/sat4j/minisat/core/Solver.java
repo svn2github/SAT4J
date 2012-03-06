@@ -1305,6 +1305,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	protected void reduceDB() {
 		stats.reduceddb++;
+		slistener.cleaning();
 		learnedConstraintsDeletionStrategy.reduce(learnts);
 		System.gc();
 	}
@@ -2159,5 +2160,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	public ICDCLLogger getLogger() {
 		return out;
+	}
+
+	public double[] getVariableHeuristics() {
+		return order.getVariableHeuristics();
+	}
+
+	public IVec<Constr> getLearnedConstraints() {
+		return learnts;
 	}
 }
