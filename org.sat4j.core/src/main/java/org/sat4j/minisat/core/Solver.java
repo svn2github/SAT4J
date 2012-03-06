@@ -1602,6 +1602,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 */
 	public void setLearnedConstraintsDeletionStrategy(
 			LearnedConstraintsDeletionStrategy lcds) {
+		if (conflictCount != null) {
+			conflictCount.add(lcds.getTimer());
+			assert learnedConstraintsDeletionStrategy != null;
+			conflictCount.remove(learnedConstraintsDeletionStrategy.getTimer());
+		}
 		learnedConstraintsDeletionStrategy = lcds;
 	}
 
