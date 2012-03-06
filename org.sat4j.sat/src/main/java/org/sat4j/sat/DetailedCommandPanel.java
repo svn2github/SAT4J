@@ -1162,8 +1162,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void backjump(int backjumpLevel) {
 	}
 
-
-
-
-
+	public void cleaning() {
+	}
 }
