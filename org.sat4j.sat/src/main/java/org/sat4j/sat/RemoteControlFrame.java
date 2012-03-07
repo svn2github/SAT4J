@@ -35,7 +35,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -181,13 +180,15 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 		quit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] cmdarray = new String[]{"killall","gnuplot"};
-				try{
-					Runtime.getRuntime().exec(cmdarray);
-				}
-				catch(IOException ex){
-					ex.printStackTrace();
-				}
+//				String[] cmdarray = new String[]{"killall","gnuplot"};
+//				try{
+//					Runtime.getRuntime().exec(cmdarray);
+//				}
+//				catch(IOException ex){
+//					ex.printStackTrace();
+//				}
+//				System.exit(NORMAL);
+				commandePanel.stopGnuplot();
 				System.exit(NORMAL);
 			}
 		});

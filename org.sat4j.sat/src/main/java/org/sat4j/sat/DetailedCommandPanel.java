@@ -39,7 +39,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -100,17 +99,6 @@ import org.sat4j.tools.HeuristicsTracing;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.LearnedTracing;
 import org.sat4j.tools.MultiTracing;
-
-import com.panayotis.gnuplot.JavaPlot;
-import com.panayotis.gnuplot.dataset.FileDataSet;
-import com.panayotis.gnuplot.layout.AutoGraphLayout;
-import com.panayotis.gnuplot.plot.AbstractPlot;
-import com.panayotis.gnuplot.plot.DataSetPlot;
-import com.panayotis.gnuplot.plot.Graph;
-import com.panayotis.gnuplot.style.NamedPlotColor;
-import com.panayotis.gnuplot.style.PlotStyle;
-import com.panayotis.gnuplot.style.Style;
-import com.panayotis.gnuplot.terminal.CustomTerminal;
 
 
 /**
@@ -270,6 +258,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JScrollPane scrollPane;
 
 	private boolean isPlotActivated;
+	
+	private Process gnuplotProcess;
 
 
 	public DetailedCommandPanel(String filename){
@@ -1180,9 +1170,15 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			cmd[0]="/usr/local/bin/gnuplot";
 			cmd[1]=instancePath+"-gnuplot.gnuplot";
 			
-			Runtime.getRuntime().exec(cmd);
+			gnuplotProcess = Runtime.getRuntime().exec(cmd);
 		} catch (IOException e) { 
 			e.printStackTrace();
+		}
+	}
+	
+	public void stopGnuplot(){
+		if(gnuplotProcess!=null){
+			gnuplotProcess.destroy();
 		}
 	}
 
