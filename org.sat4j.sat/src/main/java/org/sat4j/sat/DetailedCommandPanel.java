@@ -1180,11 +1180,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("set title \"Depth of the search when the conflict occurs\"");
 			out.println("plot \"" + instancePath+ "-conflict-depth.dat\" title \"Depth\","+nbVariables/2+" ls 2 title \"#Var/2\"");
 			//bottom middle: variable activity
+			out.println("set logscale x");
+			out.println("set xrange [0.5:1.0e+100]");
 			out.println("set size 0.33, 0.5");
 			out.println("set origin 0.33, 0.0");
 			out.println("set title \"Value of variables activity\"");
 			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
-			
+			out.println("set nologscale x");
 			out.println("set nologscale y");
 			out.println("unset multiplot");
 			out.println("pause 2");
