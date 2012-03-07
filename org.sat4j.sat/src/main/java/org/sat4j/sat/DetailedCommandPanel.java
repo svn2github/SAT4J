@@ -36,10 +36,13 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -258,7 +261,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JScrollPane scrollPane;
 
 	private boolean isPlotActivated;
-	
+
 	private Process gnuplotProcess;
 
 
@@ -744,7 +747,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 										new ConflictDepthTracing(whereToWriteFiles
 												+ "-conflict-depth"), 
 												new HeuristicsTracing(whereToWriteFiles + "-heuristics"),
-												 new LearnedTracing(whereToWriteFiles + "-learned")));
+												new LearnedTracing(whereToWriteFiles + "-learned")));
 
 		solver.setLogger(this);
 
@@ -809,6 +812,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 		if(isPlotActivated){
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			traceGnuplot();
 		}
 
@@ -1129,53 +1137,90 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void traceGnuplot(){
+		
+		int nbVariables = solver.nVars();
+		System.out.println(nbVariables);
+		int yVar = (nbVariables/1000+1)*1000;
+		
 		try {
 
 			PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
 			out.println("set terminal x11");
 			out.println("set multiplot");
+			out.println("set autoscale");
+			out.println("set ytics auto");
+			//top left: Decision Level when conflict
 			out.println("set size 0.33, 0.5");
 			out.println("set origin 0.0, 0.5");
 			out.println("set title \"Decision level at which the conflict occurs\"");
-			out.println("plot \"" + instancePath+ "-conflict-level-restart.dat\" with impulses ls 3,\""+ instancePath +"-conflict-level.dat\" ls 1 ");
+			out.println("plot \"" + instancePath+ "-conflict-level-restart.dat\" with impulses ls 3 title \"Restart\",\""+ instancePath +"-conflict-level.dat\" ls 1 title \"Conflict level\"");
+			//top right: size of learned clause
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.66, 0.5");
+			out.println("set title \"Size of the clause learned (after minimization if any)\"");
+			out.println("plot \"" + instancePath+ "-learned-clauses-size.dat\" title \"Size\"");
+			//top middle: clause activity
+			out.println("set size 0.33, 0.5");
+			out.println("set origin 0.33, 0.5");
+			out.println("set title \"Value of clauses activity\"");
+			out.println("plot \"" + instancePath+ "-learned.dat\" title \"Activity\"");
+			// for bottom graphs, y range should be O-maxVar
+			out.println("set yrange [0:"+nbVariables+"]");
+			out.println("set ytics add ("+ nbVariables +")");
+			//bottom left: index decision variable
 			out.println("set size 0.33, 0.5");
 			out.println("set origin 0.0, 0.0");
 			out.println("set title \"Index of the decision variables\"");
-			out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3,\"" 
-					+ instancePath+ "-decision-indexes-pos.dat\" ls 2,\""
-					+ instancePath+ "-decision-indexes-neg.dat\" ls 1");
+			out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3 title \"Restart\",\"" 
+					+ instancePath+ "-decision-indexes-pos.dat\" ls 2 title \"Positive decision\",\""
+					+ instancePath+ "-decision-indexes-neg.dat\" ls 1 title \"Negative Decision\"");
+			//bottom right: depth search when conflict
 			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.66, 0.5");
+			out.println("set origin 0.66, 0.0");
 			out.println("set title \"Depth of the search when the conflict occurs\"");
-			out.println("plot \"" + instancePath+ "-conflict-depth.dat\"");
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.33, 0.5");
-			out.println("set title \"Size of the clause learned (after minimization if any)\"");
-			out.println("plot \"" + instancePath+ "-learned-clauses-size.dat\"");
+			out.println("plot \"" + instancePath+ "-conflict-depth.dat\" title \"Depth\","+nbVariables/2+" ls 2 title \"#Var/2\"");
+			//bottom middle: variable activity
 			out.println("set size 0.33, 0.5");
 			out.println("set origin 0.33, 0.0");
 			out.println("set title \"Value of variables activity\"");
-			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines");
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.66, 0.0");
-			out.println("set title \"Value of clauses activity\"");
-			out.println("plot \"" + instancePath+ "-learned.dat\"");
+			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
+			
 			out.println("set nologscale y");
 			out.println("unset multiplot");
 			out.println("pause 2");
 			out.println("reread");
 			out.close();
-			
+
 			String[] cmd = new String[2];
 			cmd[0]="/usr/local/bin/gnuplot";
 			cmd[1]=instancePath+"-gnuplot.gnuplot";
-			
+
 			gnuplotProcess = Runtime.getRuntime().exec(cmd);
+
+			
+			
+			Thread errorStreamThread = new Thread(){
+				public void run(){
+					BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
+					String s;
+					try{
+					while( (s=gnuInt.readLine())!=null){
+						System.out.println(s);
+					}
+					}
+					catch(IOException e){
+						e.printStackTrace();
+					}
+				}
+			};
+			errorStreamThread.start();
+			
+
 		} catch (IOException e) { 
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void stopGnuplot(){
 		if(gnuplotProcess!=null){
 			gnuplotProcess.destroy();
