@@ -576,7 +576,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		simplifier.simplify(outLearnt);
 
 		Constr c = dsfactory.createUnregisteredClause(outLearnt);
-		slistener.learn(c);
+		// slistener.learn(c);
 		learnedConstraintsDeletionStrategy.onConflict(c);
 		results.reason = c;
 
