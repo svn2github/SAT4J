@@ -1272,14 +1272,19 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("set origin 0.0, 0.0");
 			out.println("set title \"Index of the decision variables\"");
 			out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3 title \"Restart\",\"" 
-					+ instancePath+ "-decision-indexes-pos.dat\" ls 2 title \"Positive decision\",\""
-					+ instancePath+ "-decision-indexes-neg.dat\" ls 1 title \"Negative Decision\"");
+					+ instancePath+ "-decision-indexes-pos.dat\" lt 2 title \"Positive decision\",\""
+					+ instancePath+ "-decision-indexes-neg.dat\" lt 1 title \"Negative Decision\"");
 			//bottom right: depth search when conflict
 			out.println("set size 0.33, 0.5");
 			out.println("set origin 0.66, 0.0");
-			out.println("set title \"Depth of the search when the conflict occurs\"");
-			out.println("plot \"" + instancePath+ "-conflict-depth.dat\" title \"Depth\","+nbVariables/2+" ls 2 title \"#Var/2\"");
+			out.println("set logscale y");
+			out.println("set yrange [1:"+nbVariables+"]");
+			out.println("set title \"Decision and trail levels when the conflict occurs\"");
+			out.println("plot \"" + instancePath+ "-conflict-depth.dat\" using 1 title \"Decision Level\" lt 1, \"" +
+					instancePath+ "-conflict-depth.dat\" using 2 title \"Trail Level\" lt 4,"
+					+nbVariables/2+" ls 2 title \"#Var/2\"");
 			//bottom middle: variable activity
+			out.println("set nologscale y");
 			out.println("set logscale x");
 			out.println("set xrange [0.5:1.0e+100]");
 			out.println("set size 0.33, 0.5");
@@ -1287,7 +1292,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("set title \"Value of variables activity\"");
 			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
 			out.println("set nologscale x");
-			out.println("set nologscale y");
 			out.println("unset multiplot");
 			out.println("pause 2");
 			out.println("reread");
