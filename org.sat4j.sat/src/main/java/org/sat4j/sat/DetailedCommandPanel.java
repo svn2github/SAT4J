@@ -1301,7 +1301,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			Thread errorStreamThread = new Thread(){
 				public void run(){
 					String[] cmd = new String[2];
-					cmd[0]="/usr/local/bin/gnuplot";
+					cmd[0]="gnuplot";
 					cmd[1]=instancePath+"-gnuplot.gnuplot";
 					
 					try{
