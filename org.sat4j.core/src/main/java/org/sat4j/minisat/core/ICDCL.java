@@ -96,6 +96,8 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 */
 	void setSimplifier(ISimplifier simp);
 
+	ISimplifier getSimplifier();
+
 	/**
 	 * @param lcds
 	 * @since 2.1

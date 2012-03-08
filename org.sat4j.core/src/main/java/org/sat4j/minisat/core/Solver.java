@@ -764,6 +764,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		simplifier = simp;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sat4j.minisat.core.ICDCL#getSimplifier()
+	 */
+	public ISimplifier getSimplifier() {
+		return simplifier;
+	}
+
 	// MiniSat -- Copyright (c) 2003-2005, Niklas Een, Niklas Sorensson
 	//
 	// Permission is hereby granted, free of charge, to any person obtaining a
