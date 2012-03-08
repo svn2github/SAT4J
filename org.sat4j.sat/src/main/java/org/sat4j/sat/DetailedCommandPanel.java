@@ -37,7 +37,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -52,12 +51,14 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
@@ -257,6 +258,23 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
 
 
+	private JPanel simplifierPanel;
+	private final static String SIMPLIFIER_PANEL = "Simplification strategy";
+	private final static String SIMPLIFICATION_APPLY = "Apply";
+	private final static String SIMPLIFICATION_NO = "No reason simplification";
+	private final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
+	private final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
+	private final static String NO_SIMPLIFICATION = "NO_SIMPLIFICATION";
+	private final static String SIMPLE_SIMPLIFICATION = "SIMPLE_SIMPLIFICATION";
+	private final static String EXPENSIVE_SIMPLIFICATION = "EXPENSIVE_SIMPLIFICATION";
+	private JButton simplificationApplyButton;
+	private ButtonGroup simplificationGroup;
+	private JRadioButton simplificationNoRadio;
+	private JRadioButton simplificationSimpleRadio;
+	private JRadioButton simplificationExpensiveRadio;
+
+
+
 	private JTextArea console;
 	private JScrollPane scrollPane;
 
@@ -295,7 +313,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		}
 
 
-		this.setPreferredSize(new Dimension(700,1150));
+		this.setPreferredSize(new Dimension(700,1300));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
@@ -305,6 +323,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		createRWPanel();
 		createCleanPanel();
 		createPhasePanel();
+		createSimplifierPanel();
 
 		console = new JTextArea();
 
@@ -327,12 +346,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.add(rwPanel);
 		this.add(cleanPanel);
 		this.add(phasePanel);
+		this.add(simplifierPanel);
 		this.add(scrollPane);
 
 		setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
 		setCleanPanelEnabled(false);
 		setPhasePanelEnabled(false);
+		setSimplifierPanelEnabled(false);
 	}
 
 
@@ -403,6 +424,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setCleanPanelOriginalStrategyEnabled(true);
 					setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
+					setSimplifierPanelEnabled(true);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -417,6 +439,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setRWPanelEnabled(false);
 					setCleanPanelEnabled(false);
 					setPhasePanelEnabled(false);
+					setSimplifierPanelEnabled(false);
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -662,6 +685,49 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		phasePanel.add(tmpPanel2,BorderLayout.SOUTH);
 	}
 
+	public void createSimplifierPanel(){
+		simplifierPanel = new JPanel();
+
+		simplifierPanel.setName(SIMPLIFIER_PANEL);
+		simplifierPanel.setBorder(new CompoundBorder(new TitledBorder(null, simplifierPanel.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), border5));
+
+		simplifierPanel.setLayout(new BorderLayout());
+
+		//		simplificationRadio = new Radio
+		simplificationGroup = new ButtonGroup();
+		simplificationExpensiveRadio = new JRadioButton(SIMPLIFICATION_EXPENSIVE);
+		simplificationNoRadio = new JRadioButton(SIMPLIFICATION_NO);
+		simplificationSimpleRadio = new JRadioButton(SIMPLIFICATION_SIMPLE);
+
+		JPanel tmpPanel1 = new JPanel();
+		tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
+
+		simplificationGroup.add(simplificationNoRadio);
+		simplificationGroup.add(simplificationSimpleRadio);
+		simplificationGroup.add(simplificationExpensiveRadio);
+
+
+		tmpPanel1.add(simplificationNoRadio);
+		tmpPanel1.add(simplificationSimpleRadio);
+		tmpPanel1.add(simplificationExpensiveRadio);
+
+		simplificationApplyButton = new JButton(SIMPLIFICATION_APPLY);
+
+		simplificationApplyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasClickedOnApplySimplification();
+			}
+		});
+
+		JPanel tmpPanel2 = new JPanel();
+		tmpPanel2.add(simplificationApplyButton);
+
+		simplifierPanel.add(tmpPanel1,BorderLayout.NORTH);
+		simplifierPanel.add(tmpPanel2,BorderLayout.SOUTH);
+
+	}
+
 	public void initFactorParam(){
 		//		lubyPanel = new JPanel();
 		//		//		lubyPanel.setLayout(new FlowLayout());
@@ -710,6 +776,17 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+			
+			
+			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+				simplificationExpensiveRadio.setSelected(true);
+			}
+			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+				simplificationSimpleRadio.setSelected(true);
+			}
+			else{
+				simplificationNoRadio.setSelected(true);
+			}
 
 			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
 			phasePanel.repaint();
@@ -939,6 +1016,22 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 
+	public void hasClickedOnApplySimplification(){
+		if(simplificationSimpleRadio.isSelected()){
+			solver.setSimplifier(SIMPLE_SIMPLIFICATION);
+			log("Told the solver to use " + SIMPLIFICATION_SIMPLE);
+		}
+		else if(simplificationExpensiveRadio.isSelected()){
+			solver.setSimplifier(EXPENSIVE_SIMPLIFICATION);
+			log("Told the solver to use " + SIMPLIFICATION_EXPENSIVE);
+		}
+		else{
+			solver.setSimplifier(NO_SIMPLIFICATION);
+			log("Told the solver to use " + SIMPLIFICATION_NO);
+		}
+
+	}
+
 
 	public List<String> getListOfRestartStrategies(){
 		List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
@@ -1131,17 +1224,24 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		restartPanel.repaint();
 	}
 
+	public void setSimplifierPanelEnabled(boolean enabled){
+		simplificationNoRadio.setEnabled(enabled);
+		simplificationExpensiveRadio.setEnabled(enabled);
+		simplificationSimpleRadio.setEnabled(enabled);
+		simplificationApplyButton.setEnabled(enabled);
+		simplifierPanel.repaint();
+	}
+
 
 	public void activateGnuplotTracing(){
 		isPlotActivated=true;
 	}
 
 	public void traceGnuplot(){
-		
+
 		int nbVariables = solver.nVars();
-		System.out.println(nbVariables);
 		int yVar = (nbVariables/1000+1)*1000;
-		
+
 		try {
 
 			PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
@@ -1199,16 +1299,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			gnuplotProcess = Runtime.getRuntime().exec(cmd);
 
-			
-			
+
+
 			Thread errorStreamThread = new Thread(){
 				public void run(){
 					BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
 					String s;
 					try{
-					while( (s=gnuInt.readLine())!=null){
-						System.out.println(s);
-					}
+						while( (s=gnuInt.readLine())!=null){
+							System.out.println(s);
+						}
 					}
 					catch(IOException e){
 						e.printStackTrace();
@@ -1216,7 +1316,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				}
 			};
 			errorStreamThread.start();
-			
+
 
 		} catch (IOException e) { 
 			e.printStackTrace();
