@@ -160,6 +160,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private static final String START = "Start";
 	private static final String STOP = "Stop";
 
+	private JButton pauseButton;
+	private static final String PAUSE = "Pause";
+	private static final String RESUME = "Resume";
+	private boolean isInterrupted;
 
 	private final static String RESTART_PANEL = "Restart strategy";	
 	private final static String RESTART = "Restart";
@@ -417,6 +421,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			public void actionPerformed(ActionEvent e) {
 				if(startStopButton.getText().equals(START)){
 					launchSolver();
+					pauseButton.setEnabled(true);
 					setInstancePanelEnabled(false);
 					setRestartPanelEnabled(true);
 					setRWPanelEnabled(true);
@@ -432,6 +437,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 					//assert solveurThread!=null;
 					((ISolver)problem).expireTimeout();
+					pauseButton.setEnabled(false);
 					log("Asked the solver to stop");
 					setInstancePanelEnabled(true);
 					setChoixSolverPanelEnabled(true);
@@ -446,8 +452,28 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		});
 
+		pauseButton = new JButton(PAUSE);
+		pauseButton.setEnabled(false);
+
+		pauseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(pauseButton.getText().equals(PAUSE)){
+					pauseButton.setText(RESUME);
+					telecomStrategy.setInterrupted(true);
+				}
+				else{
+					pauseButton.setText(PAUSE);
+					telecomStrategy.setInterrupted(false);
+				}
+
+			}
+		});
+
+
 		JPanel tmpPanel2 = new JPanel();
+		tmpPanel2.setLayout(new FlowLayout());
 		tmpPanel2.add(startStopButton);
+		tmpPanel2.add(pauseButton);
 
 
 		useCustomizedSolverCB = new JCheckBox(USE_CUSTOMIZED_SOLVER);
@@ -776,8 +802,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-			
-			
+
+
 			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
 				simplificationExpensiveRadio.setSelected(true);
 			}
@@ -1153,6 +1179,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
+
 	public void updateRestartStrategyPanel(){
 		listeRestarts.setSelectedItem(currentRestart);
 
@@ -1238,108 +1265,111 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				stopGnuplot();
 			}
 		}
+		else if(!b){
+			stopGnuplot();
+		}
 	}
 
 	public void traceGnuplot(){
 
 		int nbVariables = solver.nVars();
-		int yVar = (nbVariables/1000+1)*1000;
 
-		try {
+		if(gnuplotProcess==null)
+			try {
 
-			PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
-			out.println("set terminal x11");
-			out.println("set multiplot");
-			out.println("set autoscale");
-			out.println("set nologscale x");
-			out.println("set nologscale y");
-			out.println("set ytics auto");
-			//top left: Decision Level when conflict
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.0, 0.5");
-			out.println("set title \"Decision level at which the conflict occurs\"");
-			out.println("plot \"" + instancePath+ "-conflict-level-restart.dat\" with impulses ls 3 title \"Restart\",\""+ instancePath +"-conflict-level.dat\" ls 1 title \"Conflict level\"");
-			//top right: size of learned clause
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.66, 0.5");
-			out.println("set title \"Size of the clause learned (after minimization if any)\"");
-			out.println("plot \"" + instancePath+ "-learned-clauses-size.dat\" title \"Size\"");
-			//top middle: clause activity
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.33, 0.5");
-			out.println("set title \"Value of clauses activity\"");
-			out.println("plot \"" + instancePath+ "-learned.dat\" title \"Activity\"");
-			// for bottom graphs, y range should be O-maxVar
-			out.println("set yrange [0:"+nbVariables+"]");
-			out.println("set ytics add ("+ nbVariables +")");
-			//bottom left: index decision variable
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.0, 0.0");
-			out.println("set title \"Index of the decision variables\"");
-			out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3 title \"Restart\",\"" 
-					+ instancePath+ "-decision-indexes-pos.dat\" lt 2 title \"Positive decision\",\""
-					+ instancePath+ "-decision-indexes-neg.dat\" lt 1 title \"Negative Decision\"");
-			//bottom right: depth search when conflict
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.66, 0.0");
-			out.println("set logscale y");
-			out.println("set yrange [1:"+nbVariables+"]");
-			out.println("set title \"Decision and trail levels when the conflict occurs\"");
-			out.println("plot \"" + instancePath+ "-conflict-depth.dat\" using 1 title \"Decision Level\" lt 1, \"" +
-					instancePath+ "-conflict-depth.dat\" using 2 title \"Trail Level\" lt 4,"
-					+nbVariables/2+" ls 2 title \"#Var/2\"");
-			//bottom middle: variable activity
-			out.println("set nologscale y");
-			out.println("set logscale x");
-			out.println("set xrange [0.5:1.0e+100]");
-			out.println("set size 0.33, 0.5");
-			out.println("set origin 0.33, 0.0");
-			out.println("set title \"Value of variables activity\"");
-			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
-			out.println("unset multiplot");
-			out.println("pause 2");
-			out.println("reread");
-			out.close();
-
-			
-
-			
+				PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
+				out.println("set terminal x11");
+				out.println("set multiplot");
+				out.println("set autoscale");
+				out.println("set nologscale x");
+				out.println("set nologscale y");
+				out.println("set ytics auto");
+				//top left: Decision Level when conflict
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.0, 0.5");
+				out.println("set title \"Decision level at which the conflict occurs\"");
+				out.println("plot \"" + instancePath+ "-conflict-level-restart.dat\" with impulses ls 3 title \"Restart\",\""+ instancePath +"-conflict-level.dat\" ls 1 title \"Conflict level\"");
+				//top right: size of learned clause
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.66, 0.5");
+				out.println("set title \"Size of the clause learned (after minimization if any)\"");
+				out.println("plot \"" + instancePath+ "-learned-clauses-size.dat\" title \"Size\"");
+				//top middle: clause activity
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.33, 0.5");
+				out.println("set title \"Value of clauses activity\"");
+				out.println("plot \"" + instancePath+ "-learned.dat\" title \"Activity\"");
+				// for bottom graphs, y range should be O-maxVar
+				out.println("set yrange [0:"+nbVariables+"]");
+				out.println("set ytics add ("+ nbVariables +")");
+				//bottom left: index decision variable
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.0, 0.0");
+				out.println("set title \"Index of the decision variables\"");
+				out.println("plot \"" + instancePath+ "-decision-indexes-restart.dat\" with impulses ls 3 title \"Restart\",\"" 
+						+ instancePath+ "-decision-indexes-pos.dat\" lt 2 title \"Positive decision\",\""
+						+ instancePath+ "-decision-indexes-neg.dat\" lt 1 title \"Negative Decision\"");
+				//bottom right: depth search when conflict
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.66, 0.0");
+				out.println("set logscale y");
+				out.println("set yrange [1:"+nbVariables+"]");
+				out.println("set title \"Decision and trail levels when the conflict occurs\"");
+				out.println("plot \"" + instancePath+ "-conflict-depth.dat\" using 1 title \"Decision Level\" lt 1, \"" +
+						instancePath+ "-conflict-depth.dat\" using 2 title \"Trail Level\" lt 4,"
+						+nbVariables/2+" ls 2 title \"#Var/2\"");
+				//bottom middle: variable activity
+				out.println("set nologscale y");
+				out.println("set logscale x");
+				out.println("set xrange [0.5:1.0e+100]");
+				out.println("set size 0.33, 0.5");
+				out.println("set origin 0.33, 0.0");
+				out.println("set title \"Value of variables activity\"");
+				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
+				out.println("unset multiplot");
+				out.println("pause 2");
+				out.println("reread");
+				out.close();
 
 
 
-			Thread errorStreamThread = new Thread(){
-				public void run(){
-					String[] cmd = new String[2];
-					cmd[0]="gnuplot";
-					cmd[1]=instancePath+"-gnuplot.gnuplot";
-					
-					try{
-						try {
-							Thread.sleep(8000);
-						} catch (InterruptedException e) {
+
+
+
+
+				Thread errorStreamThread = new Thread(){
+					public void run(){
+						String[] cmd = new String[2];
+						cmd[0]="gnuplot";
+						cmd[1]=instancePath+"-gnuplot.gnuplot";
+
+						try{
+							try {
+								Thread.sleep(8000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+
+							gnuplotProcess = Runtime.getRuntime().exec(cmd);
+
+							BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
+							String s;
+
+							while( (s=gnuInt.readLine())!=null){
+								System.out.println(s);
+							}
+						}
+						catch(IOException e){
 							e.printStackTrace();
 						}
-
-						gnuplotProcess = Runtime.getRuntime().exec(cmd);
-						
-						BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
-						String s;
-
-						while( (s=gnuInt.readLine())!=null){
-							System.out.println(s);
-						}
 					}
-					catch(IOException e){
-						e.printStackTrace();
-					}
-				}
-			};
-			errorStreamThread.start();
+				};
+				errorStreamThread.start();
 
 
-		} catch (IOException e) { 
-			e.printStackTrace();
-		}
+			} catch (IOException e) { 
+				e.printStackTrace();
+			}
 	}
 
 	public void stopGnuplot(){

@@ -58,7 +58,8 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 
 	private ICDCLLogger logger;
 
-
+	private boolean isInterrupted;
+	
 	private boolean hasClickedOnRestart;
 	private boolean hasClickedOnClean;
 
@@ -73,6 +74,7 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		restart=new NoRestarts();
 		phaseSelectionStrategy=new RSATPhaseSelectionStrategy();
 		this.logger=log;
+		this.isInterrupted=false;
 	}
 
 	public RemoteControlStrategy(){
@@ -242,6 +244,13 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 	}
 
 	public void assignLiteral(int p) {
+		while(isInterrupted){
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		phaseSelectionStrategy.assignLiteral(p);
 	}
 
@@ -260,6 +269,16 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 	}
 
 
+	
+	public void setInterrupted(boolean b){
+		this.isInterrupted=b;
+		if(isInterrupted){
+			logger.log("Solver paused");
+		}
+		else{
+			logger.log("Resume solving");
+		}
+	}
 
 
 }
