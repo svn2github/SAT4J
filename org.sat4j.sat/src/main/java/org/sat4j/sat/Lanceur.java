@@ -79,10 +79,8 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
-import org.sat4j.pb.core.PBSolver;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -145,6 +143,8 @@ public class Lanceur extends AbstractLauncher {
 
 	private IProblem problem;
 	private ICDCL cdclSolver;
+	
+	private boolean modeTracing = false;
 
 
 	private boolean launchRemoteControl;
@@ -354,6 +354,7 @@ public class Lanceur extends AbstractLauncher {
 
 
 			if (cmd.hasOption("r")) {
+				modeTracing=true;
 				asolver.setSearchListener(new MultiTracing(
 						new ConflictLevelTracing(filename
 								+ "-conflict-level"), new DecisionTracing(
@@ -822,6 +823,7 @@ public class Lanceur extends AbstractLauncher {
 			}
 			else{
 				RemoteControlFrame frame = new RemoteControlFrame(filename, "",cdclSolver);
+				frame.activateGnuplotTracing(modeTracing);
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("FATAL " + e.getLocalizedMessage());
