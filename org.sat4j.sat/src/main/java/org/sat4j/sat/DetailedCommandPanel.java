@@ -889,11 +889,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 		if(isPlotActivated){
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			traceGnuplot();
 		}
 
@@ -1297,19 +1292,30 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("reread");
 			out.close();
 
-			String[] cmd = new String[2];
-			cmd[0]="/usr/local/bin/gnuplot";
-			cmd[1]=instancePath+"-gnuplot.gnuplot";
+			
 
-			gnuplotProcess = Runtime.getRuntime().exec(cmd);
+			
 
 
 
 			Thread errorStreamThread = new Thread(){
 				public void run(){
-					BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
-					String s;
+					String[] cmd = new String[2];
+					cmd[0]="/usr/local/bin/gnuplot";
+					cmd[1]=instancePath+"-gnuplot.gnuplot";
+					
 					try{
+						try {
+							Thread.sleep(6000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+
+						gnuplotProcess = Runtime.getRuntime().exec(cmd);
+						
+						BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
+						String s;
+
 						while( (s=gnuInt.readLine())!=null){
 							System.out.println(s);
 						}
