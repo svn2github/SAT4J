@@ -1306,7 +1306,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					
 					try{
 						try {
-							Thread.sleep(6000);
+							Thread.sleep(8000);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
