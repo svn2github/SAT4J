@@ -1228,8 +1228,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 
-	public void activateGnuplotTracing(){
-		isPlotActivated=true;
+	public void activateGnuplotTracing(boolean b){
+		isPlotActivated=b;
+		if(startStopButton.getText().equals(STOP)){
+			if(b){
+				traceGnuplot();
+			}
+			else{
+				stopGnuplot();
+			}
+		}
 	}
 
 	public void traceGnuplot(){
@@ -1243,6 +1251,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("set terminal x11");
 			out.println("set multiplot");
 			out.println("set autoscale");
+			out.println("set nologscale x");
+			out.println("set nologscale y");
 			out.println("set ytics auto");
 			//top left: Decision Level when conflict
 			out.println("set size 0.33, 0.5");
@@ -1286,7 +1296,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			out.println("set origin 0.33, 0.0");
 			out.println("set title \"Value of variables activity\"");
 			out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
-			out.println("set nologscale x");
 			out.println("unset multiplot");
 			out.println("pause 2");
 			out.println("reread");
