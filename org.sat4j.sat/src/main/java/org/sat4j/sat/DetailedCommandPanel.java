@@ -1400,7 +1400,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set title \"Value of variables activity\"");
 				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
 				out.println("unset multiplot");
-				out.println("pause 2");
+				out.println("pause 0.5");
 				out.println("reread");
 				out.close();
 
