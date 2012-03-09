@@ -1430,175 +1430,186 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		};
 	}
 
+	private LearnedConstraintsDeletionStrategy activityBased(
+			final ConflictTimer timer) {
+		return new LearnedConstraintsDeletionStrategy() {
+
+			private static final long serialVersionUID = 1L;
+
+			private final ConflictTimer freeMem = timer;
+
+			public void reduce(IVec<Constr> learnedConstrs) {
+				sortOnActivity();
+				int i, j;
+				for (i = j = 0; i < learnts.size() / 2; i++) {
+					Constr c = learnts.get(i);
+					if (c.locked() || c.size() == 2) {
+						learnts.set(j++, learnts.get(i));
+					} else {
+						c.remove(Solver.this);
+					}
+				}
+				for (; i < learnts.size(); i++) {
+					learnts.set(j++, learnts.get(i));
+				}
+				if (verbose) {
+					out.log(getLogPrefix() + "cleaning " + (learnts.size() - j) //$NON-NLS-1$
+							+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+					// out.flush();
+				}
+				learnts.shrinkTo(j);
+			}
+
+			public ConflictTimer getTimer() {
+				return freeMem;
+			}
+
+			@Override
+			public String toString() {
+				return "Memory based learned constraints deletion strategy";
+			}
+
+			public void init() {
+				// do nothing
+			}
+
+			public void onConflict(Constr constr) {
+				// do nothing
+
+			}
+
+			public void onConflictAnalysis(Constr reason) {
+				if (reason.learnt())
+					claBumpActivity(reason);
+			}
+		};
+	}
+
 	/**
 	 * @since 2.1
 	 */
-	public final LearnedConstraintsDeletionStrategy memory_based = new LearnedConstraintsDeletionStrategy() {
-
+	public final LearnedConstraintsDeletionStrategy memory_based = activityBased(new ConflictTimerAdapter(
+			500) {
 		private static final long serialVersionUID = 1L;
-
 		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
 
-		private final ConflictTimer freeMem = new ConflictTimerAdapter(500) {
+		@Override
+		public void run() {
+			long freemem = Runtime.getRuntime().freeMemory();
+			// System.out.println("c Free memory "+freemem);
+			if (freemem < memorybound) {
+				// Reduce the set of learnt clauses
+				needToReduceDB = true;
+			}
+		}
+	});
+
+	private LearnedConstraintsDeletionStrategy lbdBased(
+			final ConflictTimer timer) {
+		return new LearnedConstraintsDeletionStrategy() {
+
 			private static final long serialVersionUID = 1L;
+			private int[] flags = new int[0];
+			private int flag = 0;
+			// private int wall = 0;
+
+			private final ConflictTimer clauseManagement = timer;
+
+			public void reduce(IVec<Constr> learnedConstrs) {
+				sortOnActivity();
+				int i, j;
+				for (i = j = learnedConstrs.size() / 2; i < learnedConstrs
+						.size(); i++) {
+					Constr c = learnedConstrs.get(i);
+					if (c.locked() || c.getActivity() <= 2.0) {
+						learnedConstrs.set(j++, learnts.get(i));
+					} else {
+						c.remove(Solver.this);
+					}
+				}
+				if (verbose) {
+					out.log(getLogPrefix()
+							+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
+							+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
+					// out.flush();
+				}
+				learnts.shrinkTo(j);
+
+			}
+
+			public ConflictTimer getTimer() {
+				return clauseManagement;
+			}
 
 			@Override
-			public void run() {
-				long freemem = Runtime.getRuntime().freeMemory();
-				// System.out.println("c Free memory "+freemem);
-				if (freemem < memorybound) {
-					// Reduce the set of learnt clauses
-					needToReduceDB = true;
+			public String toString() {
+				return "Glucose learned constraints deletion strategy";
+			}
+
+			public void init() {
+				final int howmany = voc.nVars();
+				// wall = constrs.size() > 10000 ? constrs.size() : 10000;
+				if (flags.length <= howmany) {
+					flags = new int[howmany + 1];
 				}
+				flag = 0;
+				clauseManagement.reset();
+			}
+
+			public void onConflict(Constr constr) {
+				int nblevel = 1;
+				flag++;
+				int currentLevel;
+				for (int i = 1; i < constr.size(); i++) {
+					currentLevel = voc.getLevel(constr.get(i));
+					if (flags[currentLevel] != flag) {
+						flags[currentLevel] = flag;
+						nblevel++;
+					}
+				}
+				constr.incActivity(nblevel);
+			}
+
+			public void onConflictAnalysis(Constr reason) {
+				// do nothing
 			}
 		};
-
-		public void reduce(IVec<Constr> learnedConstrs) {
-			sortOnActivity();
-			int i, j;
-			for (i = j = 0; i < learnts.size() / 2; i++) {
-				Constr c = learnts.get(i);
-				if (c.locked() || c.size() == 2) {
-					learnts.set(j++, learnts.get(i));
-				} else {
-					c.remove(Solver.this);
-				}
-			}
-			for (; i < learnts.size(); i++) {
-				learnts.set(j++, learnts.get(i));
-			}
-			if (verbose) {
-				out.log(getLogPrefix() + "cleaning " + (learnts.size() - j) //$NON-NLS-1$
-						+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-				// out.flush();
-			}
-			learnts.shrinkTo(j);
-		}
-
-		public ConflictTimer getTimer() {
-			return freeMem;
-		}
-
-		@Override
-		public String toString() {
-			return "Memory based learned constraints deletion strategy";
-		}
-
-		public void init() {
-			// do nothing
-		}
-
-		public void onConflict(Constr constr) {
-			// do nothing
-
-		}
-
-		public void onConflictAnalysis(Constr reason) {
-			if (reason.learnt())
-				claBumpActivity(reason);
-		}
-	};
+	}
 
 	/**
 	 * @since 2.1
 	 */
-	public final LearnedConstraintsDeletionStrategy glucose = new LearnedConstraintsDeletionStrategy() {
-
+	public final LearnedConstraintsDeletionStrategy glucose = lbdBased(new ConflictTimerAdapter(
+			1000) {
 		private static final long serialVersionUID = 1L;
-		private int[] flags = new int[0];
-		private int flag = 0;
-		// private int wall = 0;
+		private int nbconflict = 0;
+		private static final int MAX_CLAUSE = 5000;
+		private static final int INC_CLAUSE = 1000;
+		private int nextbound = MAX_CLAUSE;
 
-		private final ConflictTimer clauseManagement = new ConflictTimerAdapter(
-				1000) {
-			private static final long serialVersionUID = 1L;
-			private int nbconflict = 0;
-			private static final int MAX_CLAUSE = 5000;
-			private static final int INC_CLAUSE = 1000;
-			private int nextbound = MAX_CLAUSE;
-
-			@Override
-			public void run() {
-				nbconflict += bound();
-				if (nbconflict >= nextbound) {
-					nextbound += INC_CLAUSE;
-					// if (nextbound > wall) {
-					// nextbound = wall;
-					// }
-					nbconflict = 0;
-					needToReduceDB = true;
-				}
+		@Override
+		public void run() {
+			nbconflict += bound();
+			if (nbconflict >= nextbound) {
+				nextbound += INC_CLAUSE;
+				// if (nextbound > wall) {
+				// nextbound = wall;
+				// }
+				nbconflict = 0;
+				needToReduceDB = true;
 			}
-
-			@Override
-			public void reset() {
-				super.reset();
-				nextbound = MAX_CLAUSE;
-				if (nbconflict >= nextbound) {
-					nbconflict = 0;
-					needToReduceDB = true;
-				}
-			}
-		};
-
-		public void reduce(IVec<Constr> learnedConstrs) {
-			sortOnActivity();
-			int i, j;
-			for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
-				Constr c = learnedConstrs.get(i);
-				if (c.locked() || c.getActivity() <= 2.0) {
-					learnedConstrs.set(j++, learnts.get(i));
-				} else {
-					c.remove(Solver.this);
-				}
-			}
-			if (verbose) {
-				out.log(getLogPrefix()
-						+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-						+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
-				// out.flush();
-			}
-			learnts.shrinkTo(j);
-
-		}
-
-		public ConflictTimer getTimer() {
-			return clauseManagement;
 		}
 
 		@Override
-		public String toString() {
-			return "Glucose learned constraints deletion strategy";
-		}
-
-		public void init() {
-			final int howmany = voc.nVars();
-			// wall = constrs.size() > 10000 ? constrs.size() : 10000;
-			if (flags.length <= howmany) {
-				flags = new int[howmany + 1];
+		public void reset() {
+			super.reset();
+			nextbound = MAX_CLAUSE;
+			if (nbconflict >= nextbound) {
+				nbconflict = 0;
+				needToReduceDB = true;
 			}
-			flag = 0;
-			clauseManagement.reset();
 		}
-
-		public void onConflict(Constr constr) {
-			int nblevel = 1;
-			flag++;
-			int currentLevel;
-			for (int i = 1; i < constr.size(); i++) {
-				currentLevel = voc.getLevel(constr.get(i));
-				if (flags[currentLevel] != flag) {
-					flags[currentLevel] = flag;
-					nblevel++;
-				}
-			}
-			constr.incActivity(nblevel);
-		}
-
-		public void onConflictAnalysis(Constr reason) {
-			// do nothing
-		}
-	};
+	});
 
 	protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
@@ -2182,5 +2193,21 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	public IVec<Constr> getLearnedConstraints() {
 		return learnts;
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void setLearnedConstraintsDeletionStrategy(ConflictTimer timer,
+			LearnedConstraintsEvaluationType evaluation) {
+		switch (evaluation) {
+		case ACTIVITY:
+			learnedConstraintsDeletionStrategy = activityBased(timer);
+			break;
+		case LBD:
+			lbdBased(timer);
+			break;
+		}
+
 	}
 }
