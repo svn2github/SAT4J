@@ -64,7 +64,7 @@ public class ConflictDepthTracing extends SearchListenerAdapter {
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(dlevel + " " + trailLevel);
+		out.println(trailLevel);
 	}
 
 	@Override

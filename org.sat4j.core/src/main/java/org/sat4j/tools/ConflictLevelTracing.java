@@ -34,6 +34,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
 /**
@@ -45,13 +46,14 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 	 * 
 	 */
 	private int counter;
-	private int maxDlevel;
+	// private int maxDlevel;
 
 	private static final long serialVersionUID = 1L;
 
 	private final String filename;
 	private PrintStream out;
 	private PrintStream outRestart;
+	private int nVar;
 
 	public ConflictLevelTracing(String filename) {
 		this.filename = filename;
@@ -67,21 +69,22 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 			out = System.out;
 		}
 		counter = 0;
-		maxDlevel = 0;
+		// maxDlevel = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
 		out.println(dlevel);
-		if (dlevel > maxDlevel) {
-			maxDlevel = dlevel;
-		}
+		// if (dlevel > maxDlevel) {
+		// maxDlevel = dlevel;
+		// }
 		counter++;
 	}
 
 	@Override
 	public void restarting() {
-		outRestart.println(counter + "\t" + maxDlevel);
+		outRestart.println(counter + "\t" + nVar);
+		// outRestart.println(counter);
 	}
 
 	@Override
@@ -93,5 +96,10 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 	@Override
 	public void start() {
 		updateWriter();
+	}
+
+	@Override
+	public void init(ISolverService solverService) {
+		nVar = solverService.nVars();
 	}
 }

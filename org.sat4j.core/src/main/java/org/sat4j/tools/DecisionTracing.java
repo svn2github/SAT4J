@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
 /**
@@ -52,6 +53,7 @@ public class DecisionTracing extends SearchListenerAdapter {
 	private PrintStream outPos;
 	private PrintStream outNeg;
 	private PrintStream outRestart;
+	private int nVar;
 
 	public DecisionTracing(String filename) {
 		this.filename = filename;
@@ -91,7 +93,7 @@ public class DecisionTracing extends SearchListenerAdapter {
 
 	@Override
 	public void restarting() {
-		outRestart.println(counter + "\t" + maxP);
+		outRestart.println(counter + "\t" + nVar);
 	}
 
 	@Override
@@ -105,4 +107,10 @@ public class DecisionTracing extends SearchListenerAdapter {
 	public void start() {
 		updateWriter();
 	}
+
+	@Override
+	public void init(ISolverService solverService) {
+		this.nVar = solverService.nVars();
+	}
+
 }
