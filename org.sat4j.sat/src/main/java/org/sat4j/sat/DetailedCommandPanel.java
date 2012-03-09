@@ -75,6 +75,7 @@ import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SimplificationType;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
@@ -1039,15 +1040,15 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void hasClickedOnApplySimplification(){
 		if(simplificationSimpleRadio.isSelected()){
-			solver.setSimplifier(SIMPLE_SIMPLIFICATION);
+			solver.setSimplifier(SimplificationType.SIMPLE_SIMPLIFICATION);
 			log("Told the solver to use " + SIMPLIFICATION_SIMPLE);
 		}
 		else if(simplificationExpensiveRadio.isSelected()){
-			solver.setSimplifier(EXPENSIVE_SIMPLIFICATION);
+			solver.setSimplifier(SimplificationType.EXPENSIVE_SIMPLIFICATION);
 			log("Told the solver to use " + SIMPLIFICATION_EXPENSIVE);
 		}
 		else{
-			solver.setSimplifier(NO_SIMPLIFICATION);
+			solver.setSimplifier(SimplificationType.NO_SIMPLIFICATION);
 			log("Told the solver to use " + SIMPLIFICATION_NO);
 		}
 

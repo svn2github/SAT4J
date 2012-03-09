@@ -75,6 +75,7 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SimplificationType;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
@@ -468,7 +469,7 @@ public class Lanceur extends AbstractLauncher {
 		if (simp != null) {
 			log("read " + simp);
 			log("configuring " + SIMP);
-			theSolver.setSimplifier(simp);
+			theSolver.setSimplifier(SimplificationType.valueOf(simp));
 		}
 		SearchParams params = setupObject(PARAMS, pf);
 		if (params != null) {
