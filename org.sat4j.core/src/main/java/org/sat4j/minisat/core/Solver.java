@@ -2200,6 +2200,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 */
 	public void setLearnedConstraintsDeletionStrategy(ConflictTimer timer,
 			LearnedConstraintsEvaluationType evaluation) {
+		if (conflictCount != null) {
+			conflictCount.add(timer);
+			conflictCount.remove(learnedConstraintsDeletionStrategy.getTimer());
+		}
 		switch (evaluation) {
 		case ACTIVITY:
 			learnedConstraintsDeletionStrategy = activityBased(timer);
