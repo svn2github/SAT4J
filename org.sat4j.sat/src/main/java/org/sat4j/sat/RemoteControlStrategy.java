@@ -48,7 +48,7 @@ import org.sat4j.specs.IVec;
  * @author sroussel
  *
  */
-public class RemoteControlStrategy implements RestartStrategy, LearnedConstraintsDeletionStrategy, IPhaseSelectionStrategy{
+public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionStrategy{
 
 
 	private static final long serialVersionUID = 1L;
@@ -56,15 +56,18 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 	private RestartStrategy restart;
 	private IPhaseSelectionStrategy phaseSelectionStrategy;
 
+
 	private ICDCLLogger logger;
 
 	private boolean isInterrupted;
-	
+
 	private boolean hasClickedOnRestart;
 	private boolean hasClickedOnClean;
 
 	private int conflictNumber;
 	private int nbClausesAtWhichWeShouldClean;
+	
+	private boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
 
 	private ICDCL solver;
 
@@ -75,6 +78,7 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 		phaseSelectionStrategy=new RSATPhaseSelectionStrategy();
 		this.logger=log;
 		this.isInterrupted=false;
+		this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = false;
 	}
 
 	public RemoteControlStrategy(){
@@ -98,7 +102,24 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 
 	public void setHasClickedOnClean(boolean hasClickedOnClean) {
 		this.hasClickedOnClean = hasClickedOnClean;
-		solver.setNeedToReduceDB(true);
+		clickedOnClean();
+	}
+	
+
+	public boolean isUseTelecomStrategyAsLearnedConstraintsDeletionStrategy() {
+		return useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
+	}
+
+	public void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(
+			boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
+		this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
+	}
+
+	public void clickedOnClean(){
+		if(hasClickedOnClean){
+			solver.setNeedToReduceDB(true);
+			hasClickedOnClean=false;
+		}
 	}
 
 	public RestartStrategy getRestartStrategy() {
@@ -181,54 +202,62 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 
 	public void newConflict() {
 		restart.newConflict();
-	}
-
-	public void init() {
-
-	}
-
-	public ConflictTimer getTimer() {
-		return this;
-	}
-
-	public void reduce(IVec<Constr> learnts) {
-		//System.out.println("je suis lˆ ??");
-		//assert hasClickedOnClean;
-
-		int i, j;
-		for (i = j = 0; i < learnts.size() / 2; i++) {
-			Constr c = learnts.get(i);
-			if (c.locked() || c.size() == 2) {
-				learnts.set(j++, learnts.get(i));
-			} else {
-				c.remove(getSolver());
+		conflictNumber++;
+		if(useTelecomStrategyAsLearnedConstraintsDeletionStrategy){
+			if(conflictNumber>nbClausesAtWhichWeShouldClean){
+				//hasClickedOnClean=true;
+				conflictNumber=0;
+				solver.setNeedToReduceDB(true);
 			}
 		}
-		for (; i < learnts.size(); i++) {
-			learnts.set(j++, learnts.get(i));
-		}
-		if (true) {
-			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
-					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		learnts.shrinkTo(j);
-
-		hasClickedOnClean=false;
 	}
 
-	public void onConflict(Constr outLearnt) {
-		conflictNumber++;
-		if(conflictNumber>nbClausesAtWhichWeShouldClean){
-			//hasClickedOnClean=true;
-			conflictNumber=0;
-			solver.setNeedToReduceDB(true);
-		}
-	}
+	//	public void init() {
+	//
+	//	}
+	//
+	//	public ConflictTimer getTimer() {
+	//		return this;
+	//	}
 
-	public void onConflictAnalysis(Constr reason) {
-		// TODO Auto-generated method stub
+	//	public void reduce(IVec<Constr> learnts) {
+	//		//System.out.println("je suis lˆ ??");
+	//		//assert hasClickedOnClean;
+	//
+	//		int i, j;
+	//		for (i = j = 0; i < learnts.size() / 2; i++) {
+	//			Constr c = learnts.get(i);
+	//			if (c.locked() || c.size() == 2) {
+	//				learnts.set(j++, learnts.get(i));
+	//			} else {
+	//				c.remove(getSolver());
+	//			}
+	//		}
+	//		for (; i < learnts.size(); i++) {
+	//			learnts.set(j++, learnts.get(i));
+	//		}
+	//		if (true) {
+	//			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
+	//					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+	//		}
+	//		learnts.shrinkTo(j);
+	//
+	//		hasClickedOnClean=false;
+	//	}
 
-	}
+	//	public void onConflict(Constr outLearnt) {
+	//		conflictNumber++;
+	//		if(conflictNumber>nbClausesAtWhichWeShouldClean){
+	//			//hasClickedOnClean=true;
+	//			conflictNumber=0;
+	//			solver.setNeedToReduceDB(true);
+	//		}
+	//	}
+	//
+	//	public void onConflictAnalysis(Constr reason) {
+	//		// TODO Auto-generated method stub
+	//
+	//	}
 
 
 	public void updateVar(int p) {
@@ -269,7 +298,7 @@ public class RemoteControlStrategy implements RestartStrategy, LearnedConstraint
 	}
 
 
-	
+
 	public void setInterrupted(boolean b){
 		this.isInterrupted=b;
 		if(isInterrupted){

@@ -73,6 +73,7 @@ import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
+import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SimplificationType;
@@ -212,7 +213,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
 
 	private JSlider cleanSlider;
+	
+	private final static String EVALUATION_TYPE = "Clauses evaluation type";
+	private final static String ACTIVITY_BASED = "Activity";
+	private final static String LBD_BASED = "LBD";
+	private JLabel evaluationLabel;
+	private ButtonGroup evaluationGroup;
+	private JRadioButton activityRadio;
+	private JRadioButton lbdRadio;
 
+	private JButton cleanAndEvaluationApplyButton;
 
 	private JButton cleanButton;
 	private final static String CLEAN = "Clean now";
@@ -269,9 +279,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String SIMPLIFICATION_NO = "No reason simplification";
 	private final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
 	private final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
-	private final static String NO_SIMPLIFICATION = "NO_SIMPLIFICATION";
-	private final static String SIMPLE_SIMPLIFICATION = "SIMPLE_SIMPLIFICATION";
-	private final static String EXPENSIVE_SIMPLIFICATION = "EXPENSIVE_SIMPLIFICATION";
+	
 	private JButton simplificationApplyButton;
 	private ButtonGroup simplificationGroup;
 	private JRadioButton simplificationNoRadio;
@@ -308,17 +316,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		this.useCustomizedSolver=(this.solver!=null);
 
-		if(solver!=null){
-			if(solver.getOrder() instanceof RandomWalkDecorator){
-				randomWalk = (RandomWalkDecorator)solver.getOrder();
-			}
-			else{
-				randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-			}
-		}
 
-
-		this.setPreferredSize(new Dimension(700,1300));
+		this.setPreferredSize(new Dimension(750,1350));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
@@ -603,14 +602,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 		cleanSlider = new JSlider(JSlider.HORIZONTAL,CLEAN_MIN,CLEAN_MAX,CLEAN_INIT);
-
-		cleanSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				if (!cleanSlider.getValueIsAdjusting()) {
-					hasChangedCleaningValue();
-				}
-			}
-		});
+		
 		cleanSlider.setMajorTickSpacing(CLEAN_SPACE);
 		cleanSlider.setPaintTicks(true);
 
@@ -633,7 +625,41 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		tmpPanel1.add(deleteClauseLabel);
 		tmpPanel1.add(cleanSlider);
 
+		JPanel tmpPanel4 = new JPanel();
+		
+		evaluationLabel = new JLabel(EVALUATION_TYPE);
+		evaluationGroup = new ButtonGroup();
+		activityRadio = new JRadioButton(ACTIVITY_BASED);
+		lbdRadio = new JRadioButton(LBD_BASED);
+		
+		evaluationGroup.add(activityRadio);
+		evaluationGroup.add(lbdRadio);
 
+		tmpPanel4.add(evaluationLabel);
+		tmpPanel4.add(activityRadio);
+		tmpPanel4.add(lbdRadio);
+		
+		
+		cleanAndEvaluationApplyButton = new JButton("Apply changes");
+		cleanAndEvaluationApplyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasChangedCleaningValue();
+			}
+		});
+		
+		JPanel tmpPanel5 = new JPanel();
+		tmpPanel5.add(cleanAndEvaluationApplyButton);
+		
+		JPanel tmpPanel = new JPanel();
+		tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "", 
+				TitledBorder.LEFT, TitledBorder.TOP), border5));
+		
+		tmpPanel.setLayout(new BorderLayout());
+		
+		tmpPanel.add(tmpPanel1,BorderLayout.NORTH);
+		tmpPanel.add(tmpPanel4,BorderLayout.CENTER);
+		tmpPanel.add(tmpPanel5,BorderLayout.SOUTH);
+		
 		JPanel tmpPanel2 = new JPanel();
 
 		manualCleanLabel = new JLabel(MANUAL_CLEAN);
@@ -645,6 +671,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				hasClickedOnClean();
 			}
 		});
+		
 
 		tmpPanel2.add(manualCleanLabel);
 		tmpPanel2.add(cleanButton);
@@ -663,7 +690,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		cleanPanel.add(tmpPanel3,BorderLayout.NORTH);
 		cleanPanel.add(tmpPanel2,BorderLayout.CENTER);
-		cleanPanel.add(tmpPanel1,BorderLayout.SOUTH);
+		cleanPanel.add(tmpPanel,BorderLayout.SOUTH);
 
 	}
 
@@ -799,10 +826,22 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		solver.setRestartStrategy(telecomStrategy);
 
 
-		double proba=0;
-		probaRWField.setText("0");
-		rwPanel.repaint();
-		randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+//		if(randomWalk==null){
+//			double proba=0;
+//			probaRWField.setText("0");
+//			rwPanel.repaint();
+//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+//		}
+		
+		if(solver.getOrder() instanceof RandomWalkDecorator){
+			randomWalk = (RandomWalkDecorator)solver.getOrder();
+			randomWalk.setProbability(0);
+			probaRWField.setText("0");
+			rwPanel.repaint();
+		}
+		else{
+			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+		}
 
 		solver.setOrder(randomWalk);
 
@@ -899,8 +938,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					stringWriter = new StringWriter();
 					if(problem.isSatisfiable()){
 						log("Satisfiable !");
-						log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-						reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+						if(problem instanceof OptToPBSATAdapter){
+							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+						}
+						else
+							reader.decode(problem.model(),new PrintWriter(stringWriter));
 						log(stringWriter.toString());
 					}
 					else{
@@ -1021,6 +1064,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
 		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
 		log("Changed number of conflicts before cleaning to " + nbConflicts);
+		if(activityRadio.isSelected()){
+			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.ACTIVITY);
+			log("Changed clauses evaluation type to activity");
+		}
+		else{
+			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.LBD);
+			log("Changed clauses evaluation type to lbd");
+		}
 	}
 
 	public void hasClickedOnClean(){
@@ -1032,8 +1083,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void hasClickedOnUseOriginalStrategy(){
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
 		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
+		
+		telecomStrategy.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(true);
 
-		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy);
+		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy,LearnedConstraintsEvaluationType.ACTIVITY);
+		activityRadio.setSelected(true);
+		
+		log("Solver now cleans clauses every " + cleanValues[cleanSlider.getValue()] + "conflicts and bases evaluation of clauses on activity");
 
 		setCleanPanelOriginalStrategyEnabled(false);
 	}
@@ -1228,6 +1284,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		deleteClauseLabel.setEnabled(enabled);
 		cleanSlider.setEnabled(enabled);
 		cleanButton.setEnabled(enabled);
+		evaluationLabel.setEnabled(enabled);
+		activityRadio.setEnabled(enabled);
+		lbdRadio.setEnabled(enabled);
+		cleanAndEvaluationApplyButton.setEnabled(enabled);
 		cleanUseOriginalStrategyCB.setEnabled(enabled);
 		cleanPanel.repaint();
 	}
@@ -1236,6 +1296,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		cleanUseOriginalStrategyCB.setEnabled(enabled);
 		manualCleanLabel.setEnabled(!enabled);
 		deleteClauseLabel.setEnabled(!enabled);
+		activityRadio.setEnabled(!enabled);
+		evaluationLabel.setEnabled(!enabled);
+		lbdRadio.setEnabled(!enabled);
+		cleanAndEvaluationApplyButton.setEnabled(!enabled);
 		cleanSlider.setEnabled(!enabled);
 		cleanButton.setEnabled(!enabled);
 		cleanPanel.repaint();
@@ -1299,9 +1363,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				//top middle: clause activity
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.33, 0.5");
+				out.println("set logscale y");
+				out.println("set yrange[0.5:1.0e+50]");
 				out.println("set title \"Value of clauses activity\"");
 				out.println("plot \"" + instancePath+ "-learned.dat\" title \"Activity\"");
 				// for bottom graphs, y range should be O-maxVar
+				out.println("set nologscale y");
+				out.println("set autoscale y");
 				out.println("set yrange [0:"+nbVariables+"]");
 				out.println("set ytics add ("+ nbVariables +")");
 				//bottom left: index decision variable
@@ -1353,7 +1421,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 							}
 
 							gnuplotProcess = Runtime.getRuntime().exec(cmd);
-							
+
 							log("Gnuplot should have started now.");
 
 							BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
@@ -1369,8 +1437,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					}
 				};
 				errorStreamThread.start();
-				
-				
+
+
 
 
 			} catch (IOException e) { 
