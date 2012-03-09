@@ -2205,7 +2205,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			learnedConstraintsDeletionStrategy = activityBased(timer);
 			break;
 		case LBD:
-			lbdBased(timer);
+			learnedConstraintsDeletionStrategy = lbdBased(timer);
 			break;
 		}
 
