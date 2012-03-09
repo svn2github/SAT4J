@@ -492,7 +492,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		});
 
-		setChoixSolverPanelEnabled(useCustomizedSolver);
+		setChoixSolverPanelEnabled(true);
 
 		choixSolverPanel.add(tmpPanel3,BorderLayout.NORTH);
 		choixSolverPanel.add(tmpPanel1,BorderLayout.CENTER);
@@ -789,47 +789,48 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
 			//log(solver.toString());
-
-
-
-			telecomStrategy.setSolver(solver);
-			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
-			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-
-			solver.setRestartStrategy(telecomStrategy);
-
-
-			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
-
-			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-
-
-			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-				simplificationExpensiveRadio.setSelected(true);
-			}
-			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-				simplificationSimpleRadio.setSelected(true);
-			}
-			else{
-				simplificationNoRadio.setSelected(true);
-			}
-
-			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-			phasePanel.repaint();
-
-			updateRestartStrategyPanel();
-
-			//pbSolver.setNeedToReduceDB(true);
-
-			double proba=0;
-			if(probaRWField.getText()!=null){
-				proba = Double.parseDouble(probaRWField.getText());
-			}
-			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-
-			solver.setOrder(randomWalk);
 		}
+
+
+		telecomStrategy.setSolver(solver);
+		telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+
+		solver.setRestartStrategy(telecomStrategy);
+
+
+		double proba=0;
+		probaRWField.setText("0");
+		rwPanel.repaint();
+		randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+
+		solver.setOrder(randomWalk);
+
+		telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+
+		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+
+
+		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+			simplificationExpensiveRadio.setSelected(true);
+		}
+		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+			simplificationSimpleRadio.setSelected(true);
+		}
+		else{
+			simplificationNoRadio.setSelected(true);
+		}
+
+		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+		phasePanel.repaint();
+
+		updateRestartStrategyPanel();
+
+		//pbSolver.setNeedToReduceDB(true);
+
+
+
 
 
 		String whereToWriteFiles = instancePath;
@@ -1334,7 +1335,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 
-
+				log("Gnuplot will start in a few seconds.");
 
 
 
@@ -1352,6 +1353,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 							}
 
 							gnuplotProcess = Runtime.getRuntime().exec(cmd);
+							
+							log("Gnuplot should have started now.");
 
 							BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
 							String s;
@@ -1366,6 +1369,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					}
 				};
 				errorStreamThread.start();
+				
+				
 
 
 			} catch (IOException e) { 
@@ -1376,7 +1381,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void stopGnuplot(){
 		if(gnuplotProcess!=null){
 			gnuplotProcess.destroy();
+			log("Gnuplot should be deactivated...");
 		}
+		gnuplotProcess=null;
 	}
 
 	public DetailedCommandPanel getThis(){

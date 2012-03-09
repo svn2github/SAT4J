@@ -209,9 +209,11 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	
 	public void activateGnuplotTracing(boolean b){
 		if(b){
+			log("Activated gnuplot");
 			activateTracing.setText(DEACTIVATE);
 		}
 		else{
+			log("Deactivated Gnuplot.");
 			activateTracing.setText(ACTIVATE);
 		}
 		commandePanel.activateGnuplotTracing(b);
