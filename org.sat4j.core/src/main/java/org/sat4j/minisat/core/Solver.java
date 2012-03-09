@@ -742,10 +742,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 * 
 	 * @see org.sat4j.minisat.core.ICDCL#setSimplifier(java.lang.String)
 	 */
-	public void setSimplifier(String simp) {
+	public void setSimplifier(SimplificationType simp) {
 		Field f;
 		try {
-			f = Solver.class.getDeclaredField(simp);
+			f = Solver.class.getDeclaredField(simp.toString());
 			simplifier = (ISimplifier) f.get(this);
 		} catch (Exception e) {
 			e.printStackTrace();

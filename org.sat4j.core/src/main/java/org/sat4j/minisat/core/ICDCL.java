@@ -80,10 +80,10 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES.
 	 * 
 	 * @param simp
-	 *            the name of the simplifier (one of NO_SIMPLIFICATION,
-	 *            SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION).
+	 *            a simplification type.
+	 * 
 	 */
-	void setSimplifier(String simp);
+	void setSimplifier(SimplificationType simp);
 
 	/**
 	 * Setup the reason simplification strategy. By default, there is no reason
