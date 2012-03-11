@@ -1485,11 +1485,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		};
 	}
 
-	/**
-	 * @since 2.1
-	 */
-	public final LearnedConstraintsDeletionStrategy memory_based = activityBased(new ConflictTimerAdapter(
-			500) {
+	private final ConflictTimer memoryTimer = new ConflictTimerAdapter(500) {
 		private static final long serialVersionUID = 1L;
 		final long memorybound = Runtime.getRuntime().freeMemory() / 10;
 
@@ -1502,7 +1498,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				needToReduceDB = true;
 			}
 		}
-	});
+	};
+
+	/**
+	 * @since 2.1
+	 */
+	public final LearnedConstraintsDeletionStrategy memory_based = activityBased(memoryTimer);
 
 	private LearnedConstraintsDeletionStrategy lbdBased(
 			final ConflictTimer timer) {
@@ -1576,11 +1577,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		};
 	}
 
-	/**
-	 * @since 2.1
-	 */
-	public final LearnedConstraintsDeletionStrategy glucose = lbdBased(new ConflictTimerAdapter(
-			1000) {
+	private final ConflictTimer lbdTimer = new ConflictTimerAdapter(1000) {
 		private static final long serialVersionUID = 1L;
 		private int nbconflict = 0;
 		private static final int MAX_CLAUSE = 5000;
@@ -1609,7 +1606,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				needToReduceDB = true;
 			}
 		}
-	});
+	};
+
+	/**
+	 * @since 2.1
+	 */
+	public final LearnedConstraintsDeletionStrategy glucose = lbdBased(lbdTimer);
 
 	protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
