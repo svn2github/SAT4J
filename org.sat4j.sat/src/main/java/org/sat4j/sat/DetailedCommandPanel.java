@@ -1358,13 +1358,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set origin 0.66, 0.0");
 				out.println("set title \"Decision level at which the conflict occurs\"");
 				out.println("set y2range[0:"+nbVariables+"]");
-				out.println("plot \"< tail -20000 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\""
+				out.println("plot \"< tail -200 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\""
 				+ "< tail -20000 "+instancePath +"-conflict-level.dat\" lc 4 title \"Conflict level\" axis x1y1");
 				//top left: size of learned clause
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0, 0.5");
 				out.println("set title \"Size of the clause learned (after minimization if any)\"");
-				out.println("plot \"< tail -20000 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\"" + 
+				out.println("plot \"< tail -200 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\"" + 
 						"< tail -20000 "+instancePath+ "-learned-clauses-size.dat\" lc rgb \"blue\" title \"Size\" axis x1y1");
 				//top middle: clause activity
 				out.println("set size 0.33, 0.5");
@@ -1382,9 +1382,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.0, 0.0");
 				out.println("set title \"Index of the decision variables\"");
-				out.println("plot \"< tail -20000 " + instancePath+ "-decision-indexes-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
-						+ "< tail -20000 "+instancePath+ "-decision-indexes-neg.dat\" lt 2 lc rgb \"red\" title \"Negative decision\",\""
-						+ "< tail -20000 "+instancePath+ "-decision-indexes-pos.dat\" lt 1 lc rgb \"green\" title \"Positive Decision\"");
+				out.println("plot \"< tail -200 " + instancePath+ "-decision-indexes-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
+						+ "< tail -10000 "+instancePath+ "-decision-indexes-neg.dat\" lt 2 lc rgb \"red\" title \"Negative decision\",\""
+						+ "< tail -10000 "+instancePath+ "-decision-indexes-pos.dat\" lt 1 lc rgb \"green\" title \"Positive Decision\"");
 				//top right: depth search when conflict
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.66, 0.5");
