@@ -1358,21 +1358,21 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set origin 0.66, 0.0");
 				out.println("set title \"Decision level at which the conflict occurs\"");
 				out.println("set y2range[0:"+nbVariables+"]");
-				out.println("plot \"< tail -200 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\""
-				+ "< tail -20000 "+instancePath +"-conflict-level.dat\" lc 4 title \"Conflict level\" axis x1y1");
+				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\""
+				+ "< tail -10000 "+instancePath +"-conflict-level.dat\" lc 4 title \"Conflict level\" axis x1y1");
 				//top left: size of learned clause
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0, 0.5");
 				out.println("set title \"Size of the clause learned (after minimization if any)\"");
-				out.println("plot \"< tail -200 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\"" + 
-						"< tail -20000 "+instancePath+ "-learned-clauses-size.dat\" lc rgb \"blue\" title \"Size\" axis x1y1");
+				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\"" + 
+						"< tail -10000 "+instancePath+ "-learned-clauses-size.dat\" lc rgb \"blue\" title \"Size\" axis x1y1");
 				//top middle: clause activity
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.33, 0.5");
 //				out.println("set logscale y");
 //				out.println("set yrange[0.5:1.0e+50]");
 				out.println("set title \"Value of learned clauses evaluation\"");
-				out.println("plot \"< tail -20000 " + instancePath+ "-learned.dat\" title \"Evaluation\" lc rgb \"blue\"");
+				out.println("plot \"< tail -10000 " + instancePath+ "-learned.dat\" title \"Evaluation\" lc rgb \"blue\"");
 				// for bottom graphs, y range should be O-maxVar
 				out.println("set nologscale y");
 				out.println("set autoscale y");
@@ -1382,7 +1382,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.0, 0.0");
 				out.println("set title \"Index of the decision variables\"");
-				out.println("plot \"< tail -200 " + instancePath+ "-decision-indexes-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
+				out.println("plot \"< tail -20 " + instancePath+ "-decision-indexes-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
 						+ "< tail -10000 "+instancePath+ "-decision-indexes-neg.dat\" lt 2 lc rgb \"red\" title \"Negative decision\",\""
 						+ "< tail -10000 "+instancePath+ "-decision-indexes-pos.dat\" lt 1 lc rgb \"green\" title \"Positive Decision\"");
 				//top right: depth search when conflict
@@ -1392,8 +1392,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 //				out.println("set yrange [1:"+nbVariables+"]");
 				out.println("set title \"Trail level when the conflict occurs\"");
 //				out.println("set autoscale y2");
-				out.println("plot \"< tail -20000 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
-						+ "< tail -20000 "+instancePath+ "-conflict-depth.dat\" title \"Trail Level\" lc rgb \"red\","
+				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
+						+ "< tail -10000 "+instancePath+ "-conflict-depth.dat\" title \"Trail Level\" lc rgb \"red\","
 						+ nbVariables/2+" lc rgb \"green\" title \"#Var/2\"");
 				//bottom middle: variable activity
 				out.println("set nologscale y");
