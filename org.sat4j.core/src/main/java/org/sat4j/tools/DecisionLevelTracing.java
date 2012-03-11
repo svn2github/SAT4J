@@ -33,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.Lbool;
 
 /**
@@ -48,6 +49,8 @@ public class DecisionLevelTracing extends SearchListenerAdapter {
 	private final String filename;
 	private PrintStream out;
 
+	private int counter;
+
 	public DecisionLevelTracing(String filename) {
 		this.filename = filename;
 		updateWriter();
@@ -59,6 +62,12 @@ public class DecisionLevelTracing extends SearchListenerAdapter {
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
+		counter = 0;
+	}
+
+	@Override
+	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+		counter++;
 	}
 
 	@Override
@@ -73,7 +82,7 @@ public class DecisionLevelTracing extends SearchListenerAdapter {
 
 	@Override
 	public void backjump(int backjumpLevel) {
-		out.println(backjumpLevel);
+		out.println(counter + "\t" + backjumpLevel);
 	}
 
 }

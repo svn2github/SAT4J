@@ -74,7 +74,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(dlevel);
+		out.println(counter + "\t" + dlevel);
 		// if (dlevel > maxDlevel) {
 		// maxDlevel = dlevel;
 		// }

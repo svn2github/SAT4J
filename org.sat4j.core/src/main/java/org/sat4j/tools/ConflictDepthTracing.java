@@ -49,6 +49,8 @@ public class ConflictDepthTracing extends SearchListenerAdapter {
 	private final String filename;
 	private PrintStream out;
 
+	private int counter;
+
 	public ConflictDepthTracing(String filename) {
 		this.filename = filename;
 		updateWriter();
@@ -60,11 +62,13 @@ public class ConflictDepthTracing extends SearchListenerAdapter {
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
+		counter = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(trailLevel);
+		out.println(counter + "\t" + trailLevel);
+		counter++;
 	}
 
 	@Override

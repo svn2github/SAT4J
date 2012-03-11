@@ -49,6 +49,8 @@ public class LearnedClausesSizeTracing extends SearchListenerAdapter {
 	private final String filename;
 	private PrintStream out;
 
+	private int counter;
+
 	public LearnedClausesSizeTracing(String filename) {
 		this.filename = filename;
 		updateWriter();
@@ -60,6 +62,12 @@ public class LearnedClausesSizeTracing extends SearchListenerAdapter {
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
+		counter++;
+	}
+
+	@Override
+	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+		counter++;
 	}
 
 	@Override
@@ -69,7 +77,7 @@ public class LearnedClausesSizeTracing extends SearchListenerAdapter {
 
 	@Override
 	public void learn(IConstr c) {
-		out.println(c.size());
+		out.println(counter + "\t" + c.size());
 	}
 
 	@Override
