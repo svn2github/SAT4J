@@ -170,8 +170,12 @@ public class GnuplotPreferences {
 			if(useRestart || i!=0){
 				comma=",";
 			}
+			String style="";
+			if(dataFilesArray[i].getStyle().length()>0){
+				style = " with " + dataFilesArray[i].getStyle();
+			}
 			s+= comma + "\"" + tailString + dataFilesArray[i].getFilename() 
-					+ "\" lc rgb \"#"+rgb + "\" title \"" + dataFilesArray[i].getTitle() + "\" axis x1y1";
+					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dataFilesArray[i].getTitle() + "\" axis x1y1";
 		}
 		
 		for(int i=0; i<functions.length;i++){

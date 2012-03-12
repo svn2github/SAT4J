@@ -6,15 +6,21 @@ public class GnuplotDataFile{
 	private String filename;
 	private Color color;
 	private String title;
+	private String style;
 	
 	public GnuplotDataFile(String filename){
 		this(filename, Color.red, filename);
 	}
 	
 	public GnuplotDataFile(String filename, Color color, String title) {
+		this(filename,color,title,"");
+	}
+	
+	public GnuplotDataFile(String filename, Color color, String title, String style) {
 		this.filename = filename;
 		this.color = color;
 		this.title = title;
+		this.style=style;
 	}
 
 	public String getFilename() {
@@ -39,6 +45,14 @@ public class GnuplotDataFile{
 	
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
 	}
 	
 	
