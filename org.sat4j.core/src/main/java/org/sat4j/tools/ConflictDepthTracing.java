@@ -80,4 +80,9 @@ public class ConflictDepthTracing extends SearchListenerAdapter {
 	public void start() {
 		updateWriter();
 	}
+
+	@Override
+	public void restarting() {
+		out.println("#" + counter + "\t" + "1/0");
+	}
 }

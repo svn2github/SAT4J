@@ -54,6 +54,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 	private PrintStream out;
 	private PrintStream outRestart;
 	private int nVar;
+	private int dlevel;
 
 	public ConflictLevelTracing(String filename) {
 		this.filename = filename;
@@ -78,13 +79,16 @@ public class ConflictLevelTracing extends SearchListenerAdapter {
 		// if (dlevel > maxDlevel) {
 		// maxDlevel = dlevel;
 		// }
+		this.dlevel = dlevel;
 		counter++;
+		outRestart.println("#" + counter + "\t" + "1/0");
 	}
 
 	@Override
 	public void restarting() {
-		outRestart.println(counter + "\t" + nVar);
-		// outRestart.println(counter);
+		outRestart.println(counter + "\t " + nVar);
+		// out.println(dlevel);
+		out.println("#" + counter + "\t" + "1/0");
 	}
 
 	@Override

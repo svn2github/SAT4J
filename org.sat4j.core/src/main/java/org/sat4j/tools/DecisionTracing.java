@@ -47,7 +47,6 @@ public class DecisionTracing extends SearchListenerAdapter {
 	private static final long serialVersionUID = 1L;
 
 	private int counter;
-	private int maxP;
 
 	private final String filename;
 	private PrintStream outPos;
@@ -73,20 +72,18 @@ public class DecisionTracing extends SearchListenerAdapter {
 			outRestart = System.out;
 		}
 		counter = 0;
-		maxP = 0;
 	}
 
 	@Override
 	public void assuming(int p) {
 		if (p > 0) {
 			outPos.println(counter + "\t" + p);
+			outNeg.println("#" + counter + "\t" + "1/0");
 		} else {
 			outNeg.println(counter + "\t" + -p);
+			outPos.println("#" + counter + "\t" + "1/0");
 		}
-		if (Math.abs(p) > maxP) {
-			maxP = Math.abs(p);
-		}
-
+		outRestart.println("#" + counter + "\t" + "1/0");
 		counter++;
 
 	}
@@ -94,6 +91,8 @@ public class DecisionTracing extends SearchListenerAdapter {
 	@Override
 	public void restarting() {
 		outRestart.println(counter + "\t" + nVar);
+		outNeg.println("#" + counter + "\t" + "1/0");
+		outPos.println("#" + counter + "\t" + "1/0");
 	}
 
 	@Override
