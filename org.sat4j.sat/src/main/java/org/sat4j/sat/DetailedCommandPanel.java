@@ -30,6 +30,7 @@
 package org.sat4j.sat;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -66,8 +67,6 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
@@ -213,7 +212,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
 
 	private JSlider cleanSlider;
-	
+
 	private final static String EVALUATION_TYPE = "Clauses evaluation type";
 	private final static String ACTIVITY_BASED = "Activity";
 	private final static String LBD_BASED = "LBD";
@@ -279,7 +278,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String SIMPLIFICATION_NO = "No reason simplification";
 	private final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
 	private final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
-	
+
 	private JButton simplificationApplyButton;
 	private ButtonGroup simplificationGroup;
 	private JRadioButton simplificationNoRadio;
@@ -295,6 +294,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private Process gnuplotProcess;
 
+	private GnuplotPreferences gnuplotPreferences;
+
 
 	public DetailedCommandPanel(String filename){
 		this(filename,"");
@@ -306,6 +307,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
 		super();
+
+		this.gnuplotPreferences = new GnuplotPreferences();
 
 		this.telecomStrategy = new RemoteControlStrategy(this);
 		this.instancePath=filename;
@@ -602,7 +605,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 		cleanSlider = new JSlider(JSlider.HORIZONTAL,CLEAN_MIN,CLEAN_MAX,CLEAN_INIT);
-		
+
 		cleanSlider.setMajorTickSpacing(CLEAN_SPACE);
 		cleanSlider.setPaintTicks(true);
 
@@ -626,40 +629,40 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		tmpPanel1.add(cleanSlider);
 
 		JPanel tmpPanel4 = new JPanel();
-		
+
 		evaluationLabel = new JLabel(EVALUATION_TYPE);
 		evaluationGroup = new ButtonGroup();
 		activityRadio = new JRadioButton(ACTIVITY_BASED);
 		lbdRadio = new JRadioButton(LBD_BASED);
-		
+
 		evaluationGroup.add(activityRadio);
 		evaluationGroup.add(lbdRadio);
 
 		tmpPanel4.add(evaluationLabel);
 		tmpPanel4.add(activityRadio);
 		tmpPanel4.add(lbdRadio);
-		
-		
+
+
 		cleanAndEvaluationApplyButton = new JButton("Apply changes");
 		cleanAndEvaluationApplyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				hasChangedCleaningValue();
 			}
 		});
-		
+
 		JPanel tmpPanel5 = new JPanel();
 		tmpPanel5.add(cleanAndEvaluationApplyButton);
-		
+
 		JPanel tmpPanel = new JPanel();
 		tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "", 
 				TitledBorder.LEFT, TitledBorder.TOP), border5));
-		
+
 		tmpPanel.setLayout(new BorderLayout());
-		
+
 		tmpPanel.add(tmpPanel1,BorderLayout.NORTH);
 		tmpPanel.add(tmpPanel4,BorderLayout.CENTER);
 		tmpPanel.add(tmpPanel5,BorderLayout.SOUTH);
-		
+
 		JPanel tmpPanel2 = new JPanel();
 
 		manualCleanLabel = new JLabel(MANUAL_CLEAN);
@@ -671,7 +674,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				hasClickedOnClean();
 			}
 		});
-		
+
 
 		tmpPanel2.add(manualCleanLabel);
 		tmpPanel2.add(cleanButton);
@@ -826,13 +829,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		solver.setRestartStrategy(telecomStrategy);
 
 
-//		if(randomWalk==null){
-//			double proba=0;
-//			probaRWField.setText("0");
-//			rwPanel.repaint();
-//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-//		}
-		
+		//		if(randomWalk==null){
+		//			double proba=0;
+		//			probaRWField.setText("0");
+		//			rwPanel.repaint();
+		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+		//		}
+
 		if(solver.getOrder() instanceof RandomWalkDecorator){
 			randomWalk = (RandomWalkDecorator)solver.getOrder();
 			randomWalk.setProbability(0);
@@ -1083,12 +1086,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void hasClickedOnUseOriginalStrategy(){
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
 		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
-		
+
 		telecomStrategy.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(true);
 
 		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy,LearnedConstraintsEvaluationType.ACTIVITY);
 		activityRadio.setSelected(true);
-		
+
 		log("Solver now cleans clauses every " + cleanValues[cleanSlider.getValue()] + " conflicts and bases evaluation of clauses on activity");
 
 		setCleanPanelOriginalStrategyEnabled(false);
@@ -1345,56 +1348,57 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 				PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
 				out.println("set terminal x11");
-				
-//				out.println("set border lc rgb \"white\"");
 				out.println("set multiplot");
-//				out.println("set object 1 rectangle from screen 0,0 to screen 1,1 fillcolor rgb \"black\" behind");
 				out.println("set autoscale");
 				out.println("set nologscale x");
 				out.println("set nologscale y");
 				out.println("set ytics auto");
+				
 				//bottom right: Decision Level when conflict
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.66, 0.0");
 				out.println("set title \"Decision level at which the conflict occurs\"");
 				out.println("set y2range[0:"+nbVariables+"]");
-				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\""
-				+ "< tail -10000 "+instancePath +"-conflict-level.dat\" lc 4 title \"Conflict level\" axis x1y1");
+				GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.red,"Conflict Level");
+				out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, instancePath+ "-conflict-level-restart.dat", true));
+				
 				//top left: size of learned clause
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0, 0.5");
 				out.println("set title \"Size of the clause learned (after minimization if any)\"");
-				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\" axis x1y2,\"" + 
-						"< tail -10000 "+instancePath+ "-learned-clauses-size.dat\" lc rgb \"blue\" title \"Size\" axis x1y1");
+				GnuplotDataFile learnedClausesDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size.dat",Color.blue,"Size");
+				out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF, instancePath+ "-conflict-level-restart.dat", true));
+				
 				//top middle: clause activity
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.33, 0.5");
-//				out.println("set logscale y");
-//				out.println("set yrange[0.5:1.0e+50]");
 				out.println("set title \"Value of learned clauses evaluation\"");
-				out.println("plot \"< tail -10000 " + instancePath+ "-learned.dat\" title \"Evaluation\" lc rgb \"blue\"");
+				GnuplotDataFile learnedDF = new GnuplotDataFile(instancePath+ "-learned.dat",Color.blue,"Evaluation");
+				out.println(gnuplotPreferences.generatePlotLine(learnedDF, false));
+				
 				// for bottom graphs, y range should be O-maxVar
 				out.println("set nologscale y");
 				out.println("set autoscale y");
-				out.println("set yrange [0:"+nbVariables+"]");
-				out.println("set ytics add ("+ nbVariables +")");
+				out.println("set yrange [1:"+nbVariables+"]");
+				out.println("set ytics add (1,"+ nbVariables +")");
+				
 				//bottom left: index decision variable
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.0, 0.0");
 				out.println("set title \"Index of the decision variables\"");
-				out.println("plot \"< tail -20 " + instancePath+ "-decision-indexes-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
-						+ "< tail -10000 "+instancePath+ "-decision-indexes-neg.dat\" lt 2 lc rgb \"red\" title \"Negative decision\",\""
-						+ "< tail -10000 "+instancePath+ "-decision-indexes-pos.dat\" lt 1 lc rgb \"green\" title \"Positive Decision\"");
+				GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
+				GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
+				out.println(gnuplotPreferences.generatePlotLine(new GnuplotDataFile[]{positiveDF,negativeDF},instancePath+ "-decision-indexes-restart.dat" , true));
+				
 				//top right: depth search when conflict
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.66, 0.5");
-//				out.println("set logscale y");
-//				out.println("set yrange [1:"+nbVariables+"]");
 				out.println("set title \"Trail level when the conflict occurs\"");
-//				out.println("set autoscale y2");
-				out.println("plot \"< tail -10 " + instancePath+ "-conflict-level-restart.dat\" with impulses lc rgb \"#4F4F4F\" title \"Restart\",\"" 
-						+ "< tail -10000 "+instancePath+ "-conflict-depth.dat\" title \"Trail Level\" lc rgb \"red\","
-						+ nbVariables/2+" lc rgb \"green\" title \"#Var/2\"");
+				GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.red, "Trail level");
+				GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
+				out.println(gnuplotPreferences.generatePlotLine(new GnuplotDataFile[]{trailLevelDF}, 
+						new GnuplotFunction[]{nbVar2}, instancePath+ "-conflict-level-restart.dat",true));
+				
 				//bottom middle: variable activity
 				out.println("set nologscale y");
 				out.println("set logscale x");
@@ -1402,9 +1406,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set size 0.33, 0.5");
 				out.println("set origin 0.33, 0.0");
 				out.println("set title \"Value of variables activity\"");
-				out.println("plot \""+instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
+				GnuplotDataFile heuristicsDF = new GnuplotDataFile(instancePath+ "-heuristics.dat",Color.red,"Activity");
+				out.println(gnuplotPreferences.generatePlotLine(heuristicsDF,false));
+//				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
 				out.println("unset multiplot");
-				out.println("pause 0.5");
+				double pauseTime = gnuplotPreferences.getRefreshTime()/1000;
+				out.println("pause " + pauseTime);
 				out.println("reread");
 				out.close();
 
@@ -1416,17 +1423,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 				Thread errorStreamThread = new Thread(){
 					public void run(){
-						String[] cmd = new String[]{"gnuplot","-bg","black","-xrm","gnuplot*borderColor:white",instancePath+"-gnuplot.gnuplot"};
-						
-
+				
 						try{
 							try {
-								Thread.sleep(8000);
+								Thread.sleep(gnuplotPreferences.getTimeBeforeLaunching());
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 
-							gnuplotProcess = Runtime.getRuntime().exec(cmd);
+							gnuplotProcess = Runtime.getRuntime().exec(
+									gnuplotPreferences.createCommandLine(instancePath+"-gnuplot.gnuplot"));
 
 							log("Gnuplot should have started now.");
 
@@ -1458,6 +1464,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			log("Gnuplot should be deactivated...");
 		}
 		gnuplotProcess=null;
+	}
+
+	public GnuplotPreferences getGnuplotPreferences() {
+		return gnuplotPreferences;
+	}
+
+	public void setGnuplotPreferences(GnuplotPreferences gnuplotPreferences) {
+		this.gnuplotPreferences = gnuplotPreferences;
 	}
 
 	public DetailedCommandPanel getThis(){

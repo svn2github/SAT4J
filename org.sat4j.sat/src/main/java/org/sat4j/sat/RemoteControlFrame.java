@@ -84,6 +84,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
 	private ICDCL solver;
+	private GnuplotPreferencesFrame gnuplotFrame;
 	
 	private final static String ACTIVATE  = "Activate Gnuplot Tracing";
 	private final static String DEACTIVATE  = "Deactivate Gnuplot Tracing";
@@ -133,6 +134,9 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		createMenuBar();
 		
 		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver);
+		
+		gnuplotFrame = new GnuplotPreferencesFrame(
+				commandePanel.getGnuplotPreferences());
 		
 		JScrollPane scrollPane = new JScrollPane(commandePanel);
 		
@@ -211,6 +215,20 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 				System.exit(NORMAL);
 			}
 		});
+		
+		JMenu preferences = new JMenu("Preferences");
+		JMenuItem gnuplotPreferencesItem = new JMenuItem("Gnuplot preferences");
+		
+		gnuplotPreferencesItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gnuplotFrame.setVisible(true);
+			}
+		});
+		
+		preferences.add(gnuplotPreferencesItem);
+
+		barreMenu.add(preferences);
+		
 		this.setJMenuBar(barreMenu);
 		
 	}
