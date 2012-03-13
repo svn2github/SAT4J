@@ -20,7 +20,23 @@ public class GnuplotPreferences {
 	private boolean displayRestarts;
 	private Color restartColor;
 	private boolean slidingWindows;
+	
+	private boolean displayDecisionIndexes;
+	private boolean displaySpeed;
+	private boolean displayConflictsTrail;
+	private boolean displayConflictsDecision;
+	private boolean displayVariablesEvaluation;
+	private boolean displayClausesEvaluation;
+	private boolean displayClausesSize;
 
+
+	public boolean isDisplayClausesSize() {
+		return displayClausesSize;
+	}
+
+	public void setDisplayClausesSize(boolean displayClausesSize) {
+		this.displayClausesSize = displayClausesSize;
+	}
 
 	public GnuplotPreferences() {
 		this.backgroundColor=Color.black;
@@ -31,6 +47,15 @@ public class GnuplotPreferences {
 		this.displayRestarts=true;
 		this.restartColor=new Color(0x4F4F4F);
 		this.slidingWindows=true;
+		
+		
+		this.displayDecisionIndexes=true;
+		this.displayConflictsTrail=true;
+		this.displaySpeed=false;
+		this.displayConflictsDecision=true;
+		this.displayVariablesEvaluation=true;
+		this.displayClausesEvaluation=true;
+		this.displayClausesSize=true;
 	}
 
 	public Color getBackgroundColor() {
@@ -98,6 +123,54 @@ public class GnuplotPreferences {
 
 	public void setSlidingWindows(boolean slidingWindows) {
 		this.slidingWindows = slidingWindows;
+	}
+	
+	public boolean isDisplayDecisionIndexes() {
+		return displayDecisionIndexes;
+	}
+
+	public void setDisplayDecisionIndexes(boolean displayDecisionIndexes) {
+		this.displayDecisionIndexes = displayDecisionIndexes;
+	}
+
+	public boolean isDisplaySpeed() {
+		return displaySpeed;
+	}
+
+	public void setDisplaySpeed(boolean displaySpeed) {
+		this.displaySpeed = displaySpeed;
+	}
+
+	public boolean isDisplayConflictsTrail() {
+		return displayConflictsTrail;
+	}
+
+	public void setDisplayConflictsTrail(boolean displayConflictsTrail) {
+		this.displayConflictsTrail = displayConflictsTrail;
+	}
+
+	public boolean isDisplayConflictsDecision() {
+		return displayConflictsDecision;
+	}
+
+	public void setDisplayConflictsDecision(boolean displayConflictsDecision) {
+		this.displayConflictsDecision = displayConflictsDecision;
+	}
+
+	public boolean isDisplayVariablesEvaluation() {
+		return displayVariablesEvaluation;
+	}
+
+	public void setDisplayVariablesEvaluation(boolean displayVariablesEvaluation) {
+		this.displayVariablesEvaluation = displayVariablesEvaluation;
+	}
+
+	public boolean isDisplayClausesEvaluation() {
+		return displayClausesEvaluation;
+	}
+
+	public void setDisplayClausesEvaluation(boolean displayClausesEvaluation) {
+		this.displayClausesEvaluation = displayClausesEvaluation;
 	}
 
 	@Override
@@ -200,10 +273,14 @@ public class GnuplotPreferences {
 	}
 	
 	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2, boolean slidingThisWindow){
+		return generatePlotLineOnDifferenteAxes(dfArray1, dfArray2, slidingThisWindow, nbLinesRead);
+	}
+	
+	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2, boolean slidingThisWindow, int nbLines){
 		String s = "plot ";
 		String tailString = "";
 		if(slidingWindows && slidingThisWindow){
-			tailString = "< tail -" +nbLinesRead+ " ";
+			tailString = "< tail -" +nbLines+ " ";
 		}
 		for(int i=0; i<dfArray1.length;i++){
 			String rgb = Integer.toHexString(dfArray1[i].getColor().getRGB());
