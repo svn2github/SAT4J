@@ -32,6 +32,7 @@ package org.sat4j.tools;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
@@ -55,6 +56,10 @@ public class MultiTracing implements SearchListener {
 
 	public MultiTracing(SearchListener... listeners) {
 		this.listeners.addAll(Arrays.asList(listeners));
+	}
+
+	public MultiTracing(List<SearchListener> listenersList) {
+		this.listeners.addAll(listenersList);
 	}
 
 	public void assuming(int p) {
