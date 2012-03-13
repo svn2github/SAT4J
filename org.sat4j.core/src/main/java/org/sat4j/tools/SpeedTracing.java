@@ -21,7 +21,7 @@ public class SpeedTracing extends SearchListenerAdapter {
 
 	private long begin, end;
 	private int counter;
-	private int index;
+	private long index;
 
 	private int nVar;
 
@@ -56,11 +56,11 @@ public class SpeedTracing extends SearchListenerAdapter {
 	public void propagating(int p, IConstr reason) {
 		end = System.currentTimeMillis();
 		if (end - begin >= 2000) {
-			long tmp = (end - begin) / 1000;
+			long tmp = (end - begin);
 			index += tmp;
-			out.println(index + "\t" + counter / tmp);
-			outClean.println(index + "\t" + 0);
-			outRestart.println(index + "\t" + 0);
+			out.println(index / 1000.0 + "\t" + counter / tmp * 1000);
+			outClean.println(index / 1000.0 + "\t" + 0);
+			outRestart.println(index / 1000.0 + "\t" + 0);
 			begin = System.currentTimeMillis();
 			counter = 0;
 		}
@@ -76,19 +76,22 @@ public class SpeedTracing extends SearchListenerAdapter {
 	@Override
 	public void cleaning() {
 		end = System.currentTimeMillis();
-		int indexClean = index + (int) (end - begin) / 1000;
-		outClean.println(indexClean + "\t" + nVar);
+		long indexClean = index + (end - begin);
+		out.println(indexClean / 1000.0 + "\t" + counter / (end - begin) * 1000);
+		outClean.println(indexClean / 1000.0 + "\t" + nVar);
 		outRestart.println("#ignore");
-		out.println("# ignore");
+		// out.println("# ignore");
 	}
 
 	@Override
 	public void restarting() {
 		end = System.currentTimeMillis();
-		int indexRestart = index + (int) (end - begin) / 1000;
-		outRestart.println(indexRestart + "\t" + nVar);
+		long indexRestart = index + (end - begin);
+		out.println(indexRestart / 1000.0 + "\t" + counter / (end - begin)
+				* 1000);
+		outRestart.println(indexRestart / 1000.0 + "\t" + nVar);
 		outClean.println("#ignore");
-		out.println("# ignore");
+		// out.println("# ignore");
 	}
 
 	@Override
