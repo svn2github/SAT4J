@@ -142,18 +142,25 @@ public class GnuplotPreferences {
 	public String generatePlotLine(GnuplotDataFile file, String restartFile, boolean slidingThisWindows){
 		return generatePlotLine(new GnuplotDataFile[]{file},restartFile,slidingThisWindows);
 	}
+	
+	public String generatePlotLine(GnuplotDataFile file, String restartFile, boolean slidingThisWindows,int nbLinesToShow){
+		return generatePlotLine(new GnuplotDataFile[]{file},new GnuplotFunction[]{},restartFile,slidingThisWindows,nbLinesToShow);
+	}
 
 	public String generatePlotLine(GnuplotDataFile[] dataFilesArray,String restartFileName, boolean slidingThisWindows){
 		return generatePlotLine(dataFilesArray, new GnuplotFunction[]{}, restartFileName, slidingThisWindows);
 	}
 	
-	
 	public String generatePlotLine(GnuplotDataFile[] dataFilesArray,GnuplotFunction[] functions, String restartFileName, boolean slidingThisWindows){
+		return generatePlotLine(dataFilesArray, functions, restartFileName, slidingThisWindows,nbLinesRead);
+	}
+	
+	public String generatePlotLine(GnuplotDataFile[] dataFilesArray,GnuplotFunction[] functions, String restartFileName, boolean slidingThisWindows, int nbLinesTosShow){
 		String s = "plot ";
 		String restartString;
 		String tailString = "";
 		if(slidingWindows && slidingThisWindows){
-			tailString = "< tail -" +nbLinesRead+ " ";
+			tailString = "< tail -" +nbLinesTosShow+ " ";
 		}
 		boolean useRestart = displayRestarts && restartFileName.length()>0; 
 		if(useRestart){
@@ -190,6 +197,50 @@ public class GnuplotPreferences {
 		}
 
 		return s;
+	}
+	
+	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2, boolean slidingThisWindow){
+		String s = "plot ";
+		String tailString = "";
+		if(slidingWindows && slidingThisWindow){
+			tailString = "< tail -" +nbLinesRead+ " ";
+		}
+		for(int i=0; i<dfArray1.length;i++){
+			String rgb = Integer.toHexString(dfArray1[i].getColor().getRGB());
+			rgb = rgb.substring(2, rgb.length());
+			String comma = "";
+			if(i!=0){
+				comma=",";
+			}
+			String style="";
+			if(dfArray1[i].getStyle().length()>0){
+				style = " with " + dfArray1[i].getStyle();
+			}
+			s+= comma + "\"" + tailString + dfArray1[i].getFilename() 
+					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dfArray1[i].getTitle() + "\" axis x1y1";
+		}
+		
+		for(int i=0; i<dfArray2.length;i++){
+			String rgb = Integer.toHexString(dfArray2[i].getColor().getRGB());
+			rgb = rgb.substring(2, rgb.length());
+			String comma = "";
+			if(dfArray1.length>0 || i!=0){
+				comma=",";
+			}
+			String style="";
+			if(dfArray2[i].getStyle().length()>0){
+				style = " with " + dfArray2[i].getStyle();
+			}
+			s+= comma + "\"" + tailString + dfArray2[i].getFilename() 
+					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dfArray2[i].getTitle() + "\" axis x1y2";
+		}
+		
+
+		return s;
+	}
+	
+	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile df1, GnuplotDataFile df2, boolean slidingThisWindow){
+		return generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{df1}, new GnuplotDataFile[]{df2}, slidingThisWindow);
 	}
 
 

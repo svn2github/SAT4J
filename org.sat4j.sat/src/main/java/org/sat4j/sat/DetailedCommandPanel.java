@@ -1397,14 +1397,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set origin "+left + "," + bottom);
 				out.println("set title \"Index of the decision variables\"");
 				GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
-				out.println(gnuplotPreferences.generatePlotLine(new GnuplotDataFile[]{negativeDF},instancePath+ "-decision-indexes-restart.dat" , true));
+				out.println(gnuplotPreferences.generatePlotLine(negativeDF,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*3));
 				
 				//verybottom left: index decision variable
 				out.println("set size "+width + "," + height);
 				out.println("set origin "+left + "," + verybottom);
 				out.println("set title \"Index of the decision variables\"");
 				GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
-				out.println(gnuplotPreferences.generatePlotLine(new GnuplotDataFile[]{positiveDF},instancePath+ "-decision-indexes-restart.dat" , true));
+				out.println(gnuplotPreferences.generatePlotLine(positiveDF,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*3));
 
 				//top right: depth search when conflict
 				out.println("set size "+width + "," + height);
@@ -1431,9 +1431,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set nologscale y");
 				out.println("set size "+width + "," + height);
 				out.println("set origin "+middle + "," + verybottom);
-				out.println("set title \"Number of decisions per second\"");
+				out.println("set title \"Number of propagations per second\"");
 				GnuplotDataFile speedDF = new GnuplotDataFile(instancePath+"-speed.dat",Color.cyan,"Speed","lines");
-				out.println(gnuplotPreferences.generatePlotLine(speedDF,false));
+				GnuplotDataFile cleanDF = new GnuplotDataFile(instancePath +"-speed-clean.dat",Color.orange, "Clean", "impulses");
+				GnuplotDataFile restartDF = new GnuplotDataFile(instancePath +"-speed-restart.dat",Color.gray, "Restart", "impulses");
+				out.println(gnuplotPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{speedDF}, new GnuplotDataFile[]{cleanDF,restartDF}, false));
 				out.println("unset multiplot");
 				double pauseTime = gnuplotPreferences.getRefreshTime()/1000;
 				out.println("pause " + pauseTime);
