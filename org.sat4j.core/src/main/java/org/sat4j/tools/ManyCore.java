@@ -116,6 +116,29 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		}
 	}
 
+	/**
+	 * Create a parallel solver from a list of solvers ; do not check if number
+	 * of solvers is greater than the number of processor cores
+	 * 
+	 * @param checkNumberOfSolvers
+	 *            tells if number of processor cores must be checked
+	 * 
+	 * @param solverObjects
+	 *            the solvers
+	 */
+	public ManyCore(boolean checkNumberOfSolvers, S... solverObjects) {
+		availableSolvers = new String[solverObjects.length];
+		for (int i = 0; i < solverObjects.length; i++) {
+			availableSolvers[i] = "solver" + i;
+		}
+		numberOfSolvers = (checkNumberOfSolvers) ? (computeNumberOfSolversInParallel(solverObjects.length))
+				: (solverObjects.length);
+		solvers = new ArrayList<S>(numberOfSolvers);
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers.add(solverObjects[i]);
+		}
+	}
+
 	public void addAllClauses(IVec<IVecInt> clauses)
 			throws ContradictionException {
 		for (int i = 0; i < numberOfSolvers; i++) {
@@ -381,7 +404,11 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	}
 
 	public int nextFreeVarId(boolean reserve) {
-		return solvers.get(0).nextFreeVarId(reserve);
+		int res = -1;
+		for (int i = 0; i < numberOfSolvers; ++i) {
+			res = solvers.get(i).nextFreeVarId(reserve);
+		}
+		return res;
 	}
 
 	public IConstr addBlockingClause(IVecInt literals)
