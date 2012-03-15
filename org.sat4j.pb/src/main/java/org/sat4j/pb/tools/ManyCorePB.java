@@ -52,8 +52,12 @@ public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
 		super(factory, solverNames);
 	}
 
-	public ManyCorePB(IPBSolver... solverNames) {
-		super(solverNames);
+	public ManyCorePB(IPBSolver... iSolver) {
+		super(iSolver);
+	}
+
+	public ManyCorePB(boolean checkNumberOfSolvers, IPBSolver... solvers) {
+		super(checkNumberOfSolvers, solvers);
 	}
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
