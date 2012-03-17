@@ -228,7 +228,7 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 		}
 
 		public void init() {
-			inObjectiveFunction = new boolean[nVars()];
+			inObjectiveFunction = new boolean[nVars() + 1];
 			if (objf == null) {
 				throw new IllegalStateException(
 						"The strategy does not make sense if there is no objective function");
