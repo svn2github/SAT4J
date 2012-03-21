@@ -310,8 +310,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		return isSatisfiable(VecInt.EMPTY, false);
 	}
 
-	public boolean isSatisfiable(IVecInt assumps, boolean globalTimeout)
-			throws TimeoutException {
+	public synchronized boolean isSatisfiable(IVecInt assumps,
+			boolean globalTimeout) throws TimeoutException {
 		remainingSolvers = numberOfSolvers;
 		solved = false;
 		for (int i = 0; i < numberOfSolvers; i++) {
