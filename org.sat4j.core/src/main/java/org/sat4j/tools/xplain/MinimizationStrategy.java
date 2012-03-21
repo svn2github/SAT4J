@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.tools.xplain;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.sat4j.specs.ISolver;
@@ -42,7 +43,7 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * @since 2.1
  */
-public interface MinimizationStrategy {
+public interface MinimizationStrategy extends Serializable {
 
 	/**
 	 * 

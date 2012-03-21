@@ -62,6 +62,11 @@ import org.sat4j.specs.TimeoutException;
  */
 public class QuickXplain2001Strategy implements MinimizationStrategy {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private boolean computationCanceled;
 
 	public void cancelExplanationComputation() {
