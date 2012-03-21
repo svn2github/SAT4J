@@ -1568,7 +1568,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void conflictFound(int p) {
 	}
 
-	public void solutionFound() {
+	public void solutionFound(int [] model) {
 		log("Found a solution !! ");
 	}
 
