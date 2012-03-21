@@ -68,7 +68,7 @@ public abstract class SearchListenerAdapter implements SearchListener {
 	public void conflictFound(int p) {
 	}
 
-	public void solutionFound() {
+	public void solutionFound(int[] model) {
 	}
 
 	public void beginLoop() {

@@ -117,9 +117,9 @@ public class MultiTracing implements SearchListener {
 
 	}
 
-	public void solutionFound() {
+	public void solutionFound(int[] model) {
 		for (SearchListener sl : listeners) {
-			sl.solutionFound();
+			sl.solutionFound(model);
 		}
 
 	}

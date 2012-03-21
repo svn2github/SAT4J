@@ -114,7 +114,7 @@ public class TextOutputTracing<T> implements SearchListener {
 		System.out.println("conflict during propagation");
 	}
 
-	public void solutionFound() {
+	public void solutionFound(int[] model) {
 		System.out.println("solution found ");
 	}
 

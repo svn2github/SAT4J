@@ -181,7 +181,7 @@ public class DotSearchTracing<T> extends SearchListenerAdapter {
 	}
 
 	@Override
-	public final void solutionFound() {
+	public final void solutionFound(int[] model) {
 		saveLine(lineTab("\"" + currentNodeName
 				+ "\" [label=\"\", shape=box, color=\"green\", style=filled]"));
 	}

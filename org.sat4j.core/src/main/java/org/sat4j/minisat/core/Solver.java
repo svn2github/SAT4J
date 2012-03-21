@@ -1134,32 +1134,40 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				// if (nofLearnts.obj >= 0 && learnts.size() > nofLearnts.obj) {
 				assert nAssigns() <= voc.realnVars();
 				if (nAssigns() == voc.realnVars()) {
-					slistener.solutionFound();
 					modelFound();
-					return Lbool.TRUE;
-				}
-				if (restarter.shouldRestart()) {
-					// Reached bound on number of conflicts
-					// Force a restart
-					cancelUntil(rootLevel);
-					return Lbool.UNDEFINED;
-				}
-				if (needToReduceDB) {
-					reduceDB();
-					needToReduceDB = false;
-					// Runtime.getRuntime().gc();
-				}
-				// New variable decision
-				stats.decisions++;
-				int p = order.select();
-				if (p == ILits.UNDEFINED) {
-					confl = preventTheSameDecisionsToBeMade();
-					lastConflictMeansUnsat = false;
+					slistener.solutionFound(model);
+					if (sharedConflict != null) {
+						// listener called ISolverService.backtrack()
+						confl = sharedConflict;
+						sharedConflict = null;
+					} else {
+						cancelUntil(rootLevel);
+						return Lbool.TRUE;
+					}
 				} else {
-					assert p > 1;
-					slistener.assuming(toDimacs(p));
-					boolean ret = assume(p);
-					assert ret;
+					if (restarter.shouldRestart()) {
+						// Reached bound on number of conflicts
+						// Force a restart
+						cancelUntil(rootLevel);
+						return Lbool.UNDEFINED;
+					}
+					if (needToReduceDB) {
+						reduceDB();
+						needToReduceDB = false;
+						// Runtime.getRuntime().gc();
+					}
+					// New variable decision
+					stats.decisions++;
+					int p = order.select();
+					if (p == ILits.UNDEFINED) {
+						confl = preventTheSameDecisionsToBeMade();
+						lastConflictMeansUnsat = false;
+					} else {
+						assert p > 1;
+						slistener.assuming(toDimacs(p));
+						boolean ret = assume(p);
+						assert ret;
+					}
 				}
 			}
 			if (confl != null) {
@@ -1260,7 +1268,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			fullmodel = new int[tempmodel.size()];
 			tempmodel.moveTo(fullmodel);
 		}
-		cancelUntil(rootLevel);
 	}
 
 	public int[] primeImplicant() {
@@ -2135,11 +2142,17 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		expireTimeout();
 	}
 
+	private Constr sharedConflict;
+
 	/**
 	 * @since 2.3.2
 	 */
 	public void backtrack(int[] reason) {
-		throw new UnsupportedOperationException("Not implemented yet!");
+		IVecInt clause = new VecInt(reason.length);
+		for (int d : reason) {
+			clause.push(LiteralsUtils.toInternal(d));
+		}
+		sharedConflict = dsfactory.createUnregisteredClause(clause);
 	}
 
 	/**

@@ -115,8 +115,11 @@ public interface SearchListener extends Serializable {
 	/**
 	 * a solution is found.
 	 * 
+	 * @param model
+	 *            the model found
+	 * 
 	 */
-	void solutionFound();
+	void solutionFound(int[] model);
 
 	/**
 	 * starts a propagation

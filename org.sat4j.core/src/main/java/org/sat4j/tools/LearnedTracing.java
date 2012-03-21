@@ -22,7 +22,7 @@ public class LearnedTracing extends SearchListenerAdapter {
 	}
 
 	@Override
-	public void solutionFound() {
+	public void solutionFound(int[] model) {
 		trace();
 	}
 

@@ -20,7 +20,7 @@ public class HeuristicsTracing extends SearchListenerAdapter {
 	}
 
 	@Override
-	public void solutionFound() {
+	public void solutionFound(int[] model) {
 		trace();
 	}
 
