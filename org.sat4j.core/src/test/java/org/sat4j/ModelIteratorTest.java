@@ -47,6 +47,7 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Minimal4CardinalityModel;
 import org.sat4j.tools.Minimal4InclusionModel;
 import org.sat4j.tools.ModelIterator;
+import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SolutionCounter;
 
 /**
@@ -78,6 +79,32 @@ public class ModelIteratorTest {
 				counter++;
 			}
 			assertEquals(6, counter);
+		} catch (ContradictionException e) {
+			fail();
+		} catch (TimeoutException e) {
+			fail();
+		}
+	}
+
+	@Test
+	public void testInnerModelIterator() {
+		try {
+			ISolver solver = SolverFactory.newDefault();
+			SearchEnumeratorListener enumerator = new SearchEnumeratorListener();
+			solver.setSearchListener(enumerator);
+			solver.newVar(3);
+			IVecInt clause = new VecInt();
+			clause.push(1);
+			clause.push(2);
+			clause.push(3);
+			solver.addClause(clause);
+			clause.clear();
+			clause.push(-1);
+			clause.push(-2);
+			clause.push(-3);
+			solver.addClause(clause);
+			assertFalse(solver.isSatisfiable());
+			assertEquals(6, enumerator.getNumberOfSolutionFound());
 		} catch (ContradictionException e) {
 			fail();
 		} catch (TimeoutException e) {
