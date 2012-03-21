@@ -38,6 +38,7 @@ public class HeuristicsTracing extends SearchListenerAdapter {
 			for (int i = 1; i <= n; i++) {
 				out.printf("%g %d\n", heuristics[i], i);
 			}
+			out.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

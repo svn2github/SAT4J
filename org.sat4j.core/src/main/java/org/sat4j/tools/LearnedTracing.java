@@ -41,6 +41,7 @@ public class LearnedTracing extends SearchListenerAdapter {
 			for (int i = 0; i < n; i++) {
 				out.printf("%d %g\n", i, constrs.get(i).getActivity());
 			}
+			out.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
