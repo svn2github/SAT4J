@@ -40,7 +40,7 @@ import java.io.Serializable;
  * @author daniel
  * @since 2.1
  */
-public interface SearchListener extends Serializable {
+public interface SearchListener<S extends ISolverService> extends Serializable {
 
 	/**
 	 * Provide access to the solver's controllable interface.
@@ -49,7 +49,7 @@ public interface SearchListener extends Serializable {
 	 *            a way to safely control the solver.
 	 * @since 2.3.2
 	 */
-	void init(ISolverService solverService);
+	void init(S solverService);
 
 	/**
 	 * decision variable

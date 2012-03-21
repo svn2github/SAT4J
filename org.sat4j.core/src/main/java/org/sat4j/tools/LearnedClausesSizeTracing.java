@@ -34,12 +34,14 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
 /**
  * @since 2.3.2
  */
-public class LearnedClausesSizeTracing extends SearchListenerAdapter {
+public class LearnedClausesSizeTracing extends
+		SearchListenerAdapter<ISolverService> {
 
 	/**
 	 * 

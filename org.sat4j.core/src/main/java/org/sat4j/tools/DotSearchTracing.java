@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.sat4j.core.Vec;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
 /**
@@ -53,7 +54,7 @@ import org.sat4j.specs.Lbool;
  * @author daniel
  * @since 2.2
  */
-public class DotSearchTracing<T> extends SearchListenerAdapter {
+public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
 
 	/**
      * 

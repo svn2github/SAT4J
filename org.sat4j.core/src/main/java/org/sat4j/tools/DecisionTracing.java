@@ -39,7 +39,7 @@ import org.sat4j.specs.Lbool;
 /**
  * @since 2.2
  */
-public class DecisionTracing extends SearchListenerAdapter {
+public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 
 	/**
 	 * 

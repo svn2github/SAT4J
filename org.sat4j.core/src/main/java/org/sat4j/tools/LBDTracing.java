@@ -35,9 +35,10 @@ import java.io.PrintStream;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
-public class LBDTracing extends SearchListenerAdapter {
+public class LBDTracing extends SearchListenerAdapter<ISolverService> {
 
 	/**
 	 * 

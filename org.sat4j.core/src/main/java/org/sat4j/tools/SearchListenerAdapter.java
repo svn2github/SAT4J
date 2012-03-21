@@ -34,14 +34,15 @@ import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
-public abstract class SearchListenerAdapter implements SearchListener {
+public abstract class SearchListenerAdapter<S extends ISolverService>
+		implements SearchListener<S> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void init(ISolverService solverService) {
+	public void init(S solverService) {
 	}
 
 	public void assuming(int p) {

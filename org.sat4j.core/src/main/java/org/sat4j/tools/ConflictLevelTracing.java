@@ -40,7 +40,7 @@ import org.sat4j.specs.Lbool;
 /**
  * @since 2.2
  */
-public class ConflictLevelTracing extends SearchListenerAdapter {
+public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> {
 
 	/**
 	 * 

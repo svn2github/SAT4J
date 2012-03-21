@@ -40,7 +40,8 @@ import org.sat4j.specs.Lbool;
  * @author leberre
  * 
  */
-public class SearchEnumeratorListener extends SearchListenerAdapter {
+public class SearchEnumeratorListener extends
+		SearchListenerAdapter<ISolverService> {
 
 	/**
 	 * 
