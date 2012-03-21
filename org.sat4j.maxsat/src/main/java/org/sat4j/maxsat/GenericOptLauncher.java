@@ -53,6 +53,7 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
+	
 	/**
      * 
      */
@@ -70,6 +71,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 		options.addOption("k", "kind", true,
 				"kind of problem: minone, maxsat, etc.");
 		options.addOption("i", "incomplete", false,
+				"incomplete mode for maxsat");
+		options.addOption("c", "clean databases", false,
 				"incomplete mode for maxsat");
 		options.addOption("l", "lower bounding", false,
 				"search solution by lower bounding instead of by upper bounding");
@@ -143,6 +146,9 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				}
 				if (cmd.hasOption("i")) {
 					setIncomplete(true);
+				}
+				if (cmd.hasOption("c")) {
+					asolver.setDBSimplificationAllowed(true);
 				}
 				String timeout = cmd.getOptionValue("t");
 				if (timeout == null) {
