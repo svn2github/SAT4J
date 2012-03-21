@@ -404,7 +404,6 @@ public final class VecInt implements IVecInt {
 		ndest.myarray = myarray;
 		ndest.nbelem = nbelem;
 		myarray = tmp;
-		nbelem = s;
 		nbelem = 0;
 	}
 
