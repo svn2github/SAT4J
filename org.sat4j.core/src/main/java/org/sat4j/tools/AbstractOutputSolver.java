@@ -246,6 +246,6 @@ public abstract class AbstractOutputSolver implements ISolver {
 		return false;
 	}
 
-	public void setSolverHot(boolean value) {
+	public void setKeepSolverHot(boolean value) {
 	}
 }

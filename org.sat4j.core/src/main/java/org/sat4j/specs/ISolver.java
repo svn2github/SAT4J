@@ -478,9 +478,9 @@ public interface ISolver extends IProblem, Serializable {
 	 * calls. If the value is true, then the solver will be "hot" on reuse, i.e.
 	 * the heuristics will not be reset. Else the heuristics will be reset.
 	 * 
-	 * @param value
+	 * @param keepHot
 	 *            true to keep the heuristics values across calls, false either.
 	 * @since 2.3.2
 	 */
-	void setSolverHot(boolean value);
+	void setKeepSolverHot(boolean keepHot);
 }

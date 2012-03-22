@@ -2251,7 +2251,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		return keepHot;
 	}
 
-	public void setSolverHot(boolean keepHot) {
+	public void setKeepSolverHot(boolean keepHot) {
 		this.keepHot = keepHot;
 	}
 }

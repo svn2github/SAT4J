@@ -478,8 +478,8 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 	/**
 	 * @since 2.3.2
 	 */
-	public void setSolverHot(boolean value) {
-		solver.setSolverHot(value);
+	public void setKeepSolverHot(boolean value) {
+		solver.setKeepSolverHot(value);
 	}
 
 }

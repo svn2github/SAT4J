@@ -492,9 +492,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		return solvers.get(0).isSolverKeptHot();
 	}
 
-	public void setSolverHot(boolean value) {
+	public void setKeepSolverHot(boolean value) {
 		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setSolverHot(value);
+			solvers.get(i).setKeepSolverHot(value);
 		}
 
 	}
