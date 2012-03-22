@@ -73,7 +73,9 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 		options.addOption("i", "incomplete", false,
 				"incomplete mode for maxsat");
 		options.addOption("c", "clean databases", false,
-				"incomplete mode for maxsat");
+				"clean up the database at root level");
+		options.addOption("k", "Kepp Hot", false,
+				"Keep heuristics accross calls to the SAT solver");
 		options.addOption("l", "lower bounding", false,
 				"search solution by lower bounding instead of by upper bounding");
 		return options;
@@ -149,6 +151,9 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				}
 				if (cmd.hasOption("c")) {
 					asolver.setDBSimplificationAllowed(true);
+				}
+				if (cmd.hasOption("k")) {
+					asolver.setSolverHot(true);
 				}
 				String timeout = cmd.getOptionValue("t");
 				if (timeout == null) {
