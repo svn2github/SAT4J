@@ -365,7 +365,7 @@ public interface ISolver extends IProblem, Serializable {
 	 *            a Search Listener.
 	 * @since 2.1
 	 */
-	void setSearchListener(SearchListener sl);
+	<S extends ISolverService> void setSearchListener(SearchListener<S> sl);
 
 	/**
 	 * Get the current SearchListener.
@@ -373,7 +373,7 @@ public interface ISolver extends IProblem, Serializable {
 	 * @return a Search Listener.
 	 * @since 2.2
 	 */
-	SearchListener getSearchListener();
+	<S extends ISolverService> SearchListener<S> getSearchListener();
 
 	/**
 	 * To know if the solver is in verbose mode (output allowed) or not.
