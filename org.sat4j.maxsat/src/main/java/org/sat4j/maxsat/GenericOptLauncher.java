@@ -153,7 +153,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 					asolver.setDBSimplificationAllowed(true);
 				}
 				if (cmd.hasOption("k")) {
-					asolver.setSolverHot(true);
+					asolver.setKeepSolverHot(true);
 				}
 				String timeout = cmd.getOptionValue("t");
 				if (timeout == null) {
