@@ -461,4 +461,26 @@ public interface ISolver extends IProblem, Serializable {
 	 * @since 2.3.1
 	 */
 	int realNumberOfVariables();
+
+	/**
+	 * Ask to the solver if it is in "hot" mode, meaning that the heuristics is
+	 * not reset after call is isSatisfiable(). This is only useful in case of
+	 * repeated calls to the solver with same set of variables.
+	 * 
+	 * @return true iff the solver keep the heuristics value unchanged across
+	 *         calls.
+	 * @since 2.3.2
+	 */
+	boolean isSolverKeptHot();
+
+	/**
+	 * Changed the behavior of the SAT solver heuristics between successive
+	 * calls. If the value is true, then the solver will be "hot" on reuse, i.e.
+	 * the heuristics will not be reset. Else the heuristics will be reset.
+	 * 
+	 * @param value
+	 *            true to keep the heuristics values across calls, false either.
+	 * @since 2.3.2
+	 */
+	void setSolverHot(boolean value);
 }

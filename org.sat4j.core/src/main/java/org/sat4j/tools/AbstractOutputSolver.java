@@ -36,6 +36,7 @@ import java.util.Map;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
@@ -175,14 +176,15 @@ public abstract class AbstractOutputSolver implements ISolver {
 	/**
 	 * @since 2.2
 	 */
-	public SearchListener getSearchListener() {
+	public <S extends ISolverService> SearchListener<S> getSearchListener() {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @since 2.1
 	 */
-	public void setSearchListener(SearchListener sl) {
+	public <S extends ISolverService> void setSearchListener(
+			SearchListener<S> sl) {
 	}
 
 	/**
@@ -223,5 +225,27 @@ public abstract class AbstractOutputSolver implements ISolver {
 
 	public int[] primeImplicant() {
 		throw new UnsupportedOperationException();
+	}
+
+	public int nConstraints() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int newVar(int howmany) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int nVars() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean isSolverKeptHot() {
+		return false;
+	}
+
+	public void setSolverHot(boolean value) {
 	}
 }

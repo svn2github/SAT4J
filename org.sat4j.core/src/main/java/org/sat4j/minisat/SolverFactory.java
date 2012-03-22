@@ -34,6 +34,7 @@ import org.sat4j.minisat.constraints.MixedDataStructureDanielHT;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.constraints.MixedDataStructureSingleWL;
 import org.sat4j.minisat.core.DataStructureFactory;
+import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
@@ -107,7 +108,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 		return newMiniLearningHeap(new MixedDataStructureDanielWL());
 	}
 
-	public static Solver<DataStructureFactory> newMiniLearningHeapEZSimp() {
+	public static ICDCL<DataStructureFactory> newMiniLearningHeapEZSimp() {
 		Solver<DataStructureFactory> solver = newMiniLearningHeap();
 		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
 		return solver;
@@ -132,8 +133,8 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 		return solver;
 	}
 
-	public static Solver<DataStructureFactory> newMiniLearningHeapRsatExpSimpLuby() {
-		Solver<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
+	public static ICDCL<DataStructureFactory> newMiniLearningHeapRsatExpSimpLuby() {
+		ICDCL<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
 		solver.setRestartStrategy(new LubyRestarts(512));
 		return solver;
 	}
@@ -154,7 +155,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * 
 	 * @since 2.2
 	 */
-	public static Solver<DataStructureFactory> newGreedySolver() {
+	public static ICDCL<DataStructureFactory> newGreedySolver() {
 		MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
 		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
 				learning, new MixedDataStructureDanielWL(),
@@ -169,8 +170,8 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	/**
 	 * @since 2.2
 	 */
-	public static Solver<DataStructureFactory> newDefaultAutoErasePhaseSaving() {
-		Solver<DataStructureFactory> solver = newBestWL();
+	public static ICDCL<DataStructureFactory> newDefaultAutoErasePhaseSaving() {
+		ICDCL<DataStructureFactory> solver = newBestWL();
 		solver.setOrder(new VarOrderHeap(new PhaseCachingAutoEraseStrategy()));
 		return solver;
 	}
@@ -178,8 +179,8 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	/**
 	 * @since 2.2.3
 	 */
-	public static Solver<DataStructureFactory> newDefaultMS21PhaseSaving() {
-		Solver<DataStructureFactory> solver = newBestWL();
+	public static ICDCL<DataStructureFactory> newDefaultMS21PhaseSaving() {
+		ICDCL<DataStructureFactory> solver = newBestWL();
 		solver.setOrder(new VarOrderHeap(
 				new RSATLastLearnedClausesPhaseSelectionStrategy()));
 		return solver;
@@ -196,7 +197,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * 
 	 * @since 2.1
 	 */
-	public static Solver<DataStructureFactory> newBestHT() {
+	public static ICDCL<DataStructureFactory> newBestHT() {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureDanielHT());
 	}
 
@@ -204,7 +205,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * 
 	 * @since 2.2
 	 */
-	public static Solver<DataStructureFactory> newBestSingleWL() {
+	public static ICDCL<DataStructureFactory> newBestSingleWL() {
 		return newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
 	}
 
@@ -212,7 +213,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * 
 	 * @since 2.2
 	 */
-	public static Solver<DataStructureFactory> newBest17() {
+	public static ICDCL<DataStructureFactory> newBest17() {
 		Solver<DataStructureFactory> solver = newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION_WLONLY);
 		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
@@ -252,7 +253,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 *         negation is not watched at all. It is not necessarily a watched
 	 *         literal.)
 	 */
-	public static Solver<DataStructureFactory> newMiniLearningPure() {
+	public static ICDCL<DataStructureFactory> newMiniLearningPure() {
 		return newMiniLearning(new MixedDataStructureDanielWL(),
 				new PureOrder());
 	}
@@ -282,7 +283,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	/**
 	 * @return a default MiniLearning without restarts.
 	 */
-	public static Solver<DataStructureFactory> newMiniLearningHeapEZSimpNoRestarts() {
+	public static ICDCL<DataStructureFactory> newMiniLearningHeapEZSimpNoRestarts() {
 		LimitedLearning<DataStructureFactory> learning = new PercentLengthLearning<DataStructureFactory>(
 				10);
 		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
@@ -297,7 +298,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	/**
 	 * @return a default MiniLearning with restarts beginning at 1000 conflicts.
 	 */
-	public static Solver<DataStructureFactory> newMiniLearningHeapEZSimpLongRestarts() {
+	public static ICDCL<DataStructureFactory> newMiniLearningHeapEZSimpLongRestarts() {
 		LimitedLearning<DataStructureFactory> learning = new PercentLengthLearning<DataStructureFactory>(
 				10);
 		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
@@ -319,13 +320,13 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * @return a SAT solver very close to the original MiniSAT sat solver
 	 *         including easy reason simplification.
 	 */
-	public static Solver<DataStructureFactory> newMiniSATHeapEZSimp() {
+	public static ICDCL<DataStructureFactory> newMiniSATHeapEZSimp() {
 		Solver<DataStructureFactory> solver = newMiniSATHeap();
 		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
 		return solver;
 	}
 
-	public static Solver<DataStructureFactory> newMiniSATHeapExpSimp() {
+	public static ICDCL<DataStructureFactory> newMiniSATHeapExpSimp() {
 		Solver<DataStructureFactory> solver = newMiniSATHeap();
 		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
 		return solver;
@@ -345,7 +346,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 	 * @return MiniSAT with VSIDS heuristics, FirstUIP clause generator for
 	 *         backjumping but no learning.
 	 */
-	public static Solver<MixedDataStructureDanielWL> newBackjumping() {
+	public static ICDCL<MixedDataStructureDanielWL> newBackjumping() {
 		NoLearningButHeuristics<MixedDataStructureDanielWL> learning = new NoLearningButHeuristics<MixedDataStructureDanielWL>();
 		Solver<MixedDataStructureDanielWL> solver = new Solver<MixedDataStructureDanielWL>(
 				learning, new MixedDataStructureDanielWL(), new VarOrderHeap(),

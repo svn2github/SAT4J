@@ -36,6 +36,7 @@ import java.util.Map;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
@@ -370,7 +371,8 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 	/**
 	 * @since 2.1
 	 */
-	public void setSearchListener(SearchListener sl) {
+	public <S extends ISolverService> void setSearchListener(
+			SearchListener<S> sl) {
 		solver.setSearchListener(sl);
 	}
 
@@ -391,7 +393,7 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 	/**
 	 * @since 2.2
 	 */
-	public SearchListener getSearchListener() {
+	public <S extends ISolverService> SearchListener<S> getSearchListener() {
 		return solver.getSearchListener();
 	}
 
@@ -464,6 +466,20 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 	 */
 	public void registerLiteral(int p) {
 		solver.registerLiteral(p);
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public boolean isSolverKeptHot() {
+		return solver.isSolverKeptHot();
+	}
+
+	/**
+	 * @since 2.3.2
+	 */
+	public void setSolverHot(boolean value) {
+		solver.setSolverHot(value);
 	}
 
 }

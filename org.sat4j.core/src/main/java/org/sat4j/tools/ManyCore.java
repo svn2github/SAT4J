@@ -41,6 +41,7 @@ import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
@@ -390,7 +391,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		}
 	}
 
-	public void setSearchListener(SearchListener sl) {
+	public <I extends ISolverService> void setSearchListener(
+			SearchListener<I> sl) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.get(i).setSearchListener(sl);
 		}
@@ -399,7 +401,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	/**
 	 * @since 2.2
 	 */
-	public SearchListener getSearchListener() {
+	public <I extends ISolverService> SearchListener<I> getSearchListener() {
 		return solvers.get(0).getSearchListener();
 	}
 
@@ -482,6 +484,17 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 	public void registerLiteral(int p) {
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.get(i).registerLiteral(p);
+		}
+
+	}
+
+	public boolean isSolverKeptHot() {
+		return solvers.get(0).isSolverKeptHot();
+	}
+
+	public void setSolverHot(boolean value) {
+		for (int i = 0; i < numberOfSolvers; i++) {
+			solvers.get(i).setSolverHot(value);
 		}
 
 	}

@@ -30,7 +30,6 @@
 package org.sat4j.minisat.core;
 
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.SearchListener;
 
 /**
  * Abstraction for Conflict Driven Clause Learning Solver.
@@ -52,16 +51,6 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	 *            the internal factory
 	 */
 	void setDataStructureFactory(D dsf);
-
-	/**
-	 * @since 2.1
-	 */
-	void setSearchListener(SearchListener sl);
-
-	/**
-	 * @since 2.2
-	 */
-	SearchListener getSearchListener();
 
 	/**
 	 * @since 2.2

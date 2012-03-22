@@ -41,7 +41,7 @@ import org.sat4j.specs.SearchListener;
  * @author leberre
  * 
  */
-final class VoidTracing implements SearchListener {
+final class VoidTracing implements SearchListener<ISolverService> {
 	private static final long serialVersionUID = 1L;
 
 	public void assuming(int p) {

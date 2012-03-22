@@ -155,6 +155,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	private boolean verbose = false;
 
+	private boolean keepHot = false;
+
 	private String prefix = "c ";
 	private int declaredMaxVarId = 0;
 
@@ -241,7 +243,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 * org.sat4j.minisat.core.ICDCL#setSearchListener(org.sat4j.specs.SearchListener
 	 * )
 	 */
-	public void setSearchListener(SearchListener sl) {
+	public <S extends ISolverService> void setSearchListener(
+			SearchListener<S> sl) {
 		slistener = sl;
 	}
 
@@ -250,7 +253,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 * 
 	 * @see org.sat4j.minisat.core.ICDCL#getSearchListener()
 	 */
-	public SearchListener getSearchListener() {
+	public <S extends ISolverService> SearchListener<S> getSearchListener() {
 		return slistener;
 	}
 
@@ -1644,6 +1647,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	public boolean isSatisfiable(IVecInt assumps, boolean global)
 			throws TimeoutException {
 		Lbool status = Lbool.UNDEFINED;
+		boolean alreadylaunched = conflictCount != null;
 		final int howmany = voc.nVars();
 		if (mseen.length <= howmany) {
 			mseen = new boolean[howmany + 1];
@@ -1658,7 +1662,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		model = null; // forget about previous model
 		userbooleanmodel = null;
 		unsatExplanationInTermsOfAssumptions = null;
-		order.init();
+		if (!alreadylaunched || !keepHot) {
+			order.init();
+		}
 		learnedConstraintsDeletionStrategy.init();
 		int learnedLiteralsLimit = trail.size();
 
@@ -1720,9 +1726,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		rootLevel = decisionLevel();
 		// moved initialization here if new literals are added in the
 		// assumptions.
-		order.init(); // duplicated on purpose
+		if (!alreadylaunched || !keepHot) {
+			order.init(); // duplicated on purpose
+		}
 		learner.init();
-		boolean alreadylaunched = conflictCount != null;
+
 		if (!alreadylaunched) {
 			conflictCount = new ConflictTimerContainer();
 			conflictCount.add(restarter);
@@ -1986,6 +1994,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		stb.append(isDBSimplificationAllowed);
 		stb.append("\n");
 		stb.append(prefix);
+		if (isSolverKeptHot()) {
+			stb.append("Heuristics kept accross calls (keep the solver \"hot\")\n");
+		}
+		stb.append(prefix);
 		stb.append("--- End Solver configuration ---"); //$NON-NLS-1$
 		return stb.toString();
 	}
@@ -2233,5 +2245,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		if (conflictCount != null) {
 			learnedConstraintsDeletionStrategy.init();
 		}
+	}
+
+	public boolean isSolverKeptHot() {
+		return keepHot;
+	}
+
+	public void setSolverHot(boolean keepHot) {
+		this.keepHot = keepHot;
 	}
 }
