@@ -286,6 +286,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JRadioButton simplificationSimpleRadio;
 	private JRadioButton simplificationExpensiveRadio;
 
+	
+	private JPanel hotSolverPanel;
+	private final static String HOT_SOLVER_PANEL = "Hot solver";
+	private JCheckBox keepSolverHotCB;
+	private final static String KEEP_SOLVER_HOT = "Keep solver hot";
+	private JButton applyHotSolver;
+	private final static String HOT_APPLY = "Apply";
 
 
 	private JTextArea console;
@@ -332,6 +339,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		createCleanPanel();
 		createPhasePanel();
 		createSimplifierPanel();
+		createHotSolverPanel();
 
 		console = new JTextArea();
 
@@ -355,6 +363,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.add(cleanPanel);
 		this.add(phasePanel);
 		this.add(simplifierPanel);
+		this.add(hotSolverPanel);
 		this.add(scrollPane);
 
 		setRestartPanelEnabled(false);
@@ -362,6 +371,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		setCleanPanelEnabled(false);
 		setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
+		setKeepSolverHotPanelEnabled(false);
 	}
 
 
@@ -434,6 +444,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
 					setSimplifierPanelEnabled(true);
+					setKeepSolverHotPanelEnabled(true);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -450,6 +461,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setCleanPanelEnabled(false);
 					setPhasePanelEnabled(false);
 					setSimplifierPanelEnabled(false);
+					setKeepSolverHotPanelEnabled(false);
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -784,6 +796,39 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		simplifierPanel.add(tmpPanel1,BorderLayout.NORTH);
 		simplifierPanel.add(tmpPanel2,BorderLayout.SOUTH);
 
+	}
+	
+	public void createHotSolverPanel(){
+		hotSolverPanel = new JPanel();
+		hotSolverPanel.setName(HOT_SOLVER_PANEL);
+		
+		hotSolverPanel.setBorder(new CompoundBorder(new TitledBorder(null, hotSolverPanel.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), border5));
+
+		hotSolverPanel.setLayout(new BorderLayout());
+		
+		keepSolverHotCB = new JCheckBox(KEEP_SOLVER_HOT);
+		hotSolverPanel.add(keepSolverHotCB,BorderLayout.CENTER);
+		
+		JPanel tmpPanel = new JPanel();
+		
+		applyHotSolver = new JButton(HOT_APPLY);
+		tmpPanel.add(applyHotSolver);
+		hotSolverPanel.add(tmpPanel,BorderLayout.SOUTH);
+		
+		
+		applyHotSolver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				solver.setKeepSolverHot(keepSolverHotCB.isSelected());
+				if(keepSolverHotCB.isSelected()){
+					log("Keep hot solver is now activated");
+				}
+				else{
+					log("Keep hot solver is now desactivated");
+				}
+			}
+		});
+		
 	}
 
 	public void initFactorParam(){
@@ -1337,6 +1382,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		simplificationSimpleRadio.setEnabled(enabled);
 		simplificationApplyButton.setEnabled(enabled);
 		simplifierPanel.repaint();
+	}
+	
+	public void setKeepSolverHotPanelEnabled(boolean enabled){
+		keepSolverHotCB.setEnabled(enabled);
+		applyHotSolver.setEnabled(enabled);
+		hotSolverPanel.repaint();
 	}
 
 
