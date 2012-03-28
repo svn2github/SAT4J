@@ -35,12 +35,16 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
+import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -229,12 +233,44 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 		barreMenu.add(preferences);
 		
+		
+		barreMenu.add(Box.createHorizontalGlue());
+		
+		//...create the rightmost menu...
+		JLabel version = new JLabel(getVersion());
+		barreMenu.add(version);
+		
 		this.setJMenuBar(barreMenu);
 		
 	}
 	
 	public void log(String message){
 		commandePanel.log(message);
+	}
+	
+	private String getVersion(){
+		URL url = RemoteControlFrame.class.getResource("/sat4j.version"); //$NON-NLS-1$
+		String s="";
+		if (url == null) {
+			s = "no version file found!!!"; //$NON-NLS-1$			
+		} else {
+			BufferedReader in = null;
+			try {
+				in = new BufferedReader(new InputStreamReader(url.openStream()));
+				s = "version " + in.readLine(); //$NON-NLS-1$
+			} catch (IOException e) {
+				s = "c ERROR: " + e.getMessage();
+			} finally {
+				if (in != null) {
+					try {
+						in.close();
+					} catch (IOException e) {
+						s = "c ERROR: " + e.getMessage();
+					}
+				}
+			}
+		}
+		return s;
 	}
 	
 	public void activateGnuplotTracing(boolean b){
