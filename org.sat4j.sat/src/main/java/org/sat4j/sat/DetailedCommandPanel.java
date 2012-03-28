@@ -62,6 +62,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
@@ -328,7 +329,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.useCustomizedSolver=(this.solver!=null);
 
 
-		this.setPreferredSize(new Dimension(750,1350));
+		this.setPreferredSize(new Dimension(750,800));
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 
@@ -355,15 +356,49 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		restartPropertiesPanel.setPreferredSize(new Dimension(100,50));
 
+		
+		JTabbedPane tabbedPane = new JTabbedPane();
+		
+		JPanel solverBigPanel = new JPanel();
+		solverBigPanel.setLayout(new BoxLayout(solverBigPanel, BoxLayout.Y_AXIS));
+		solverBigPanel.add(instancePanel);
+		solverBigPanel.add(choixSolverPanel);
+		
+		tabbedPane.addTab("Solver", null, solverBigPanel, "instance & solver options");
 
-		this.add(instancePanel);
-		this.add(choixSolverPanel);
-		this.add(restartPanel);
-		this.add(rwPanel);
-		this.add(cleanPanel);
-		this.add(phasePanel);
-		this.add(simplifierPanel);
-		this.add(hotSolverPanel);
+		
+		JPanel restartBigPanel = new JPanel();
+		restartBigPanel.setLayout(new BoxLayout(restartBigPanel, BoxLayout.Y_AXIS));
+		restartBigPanel.add(restartPanel);
+		//restartBigPanel.add(hotSolverPanel);
+		
+		tabbedPane.addTab("Restart",null,restartBigPanel, "restart strategy & options");
+	
+		JPanel rwPhaseBigPanel = new JPanel();
+		rwPhaseBigPanel.setLayout(new BoxLayout(rwPhaseBigPanel, BoxLayout.Y_AXIS));
+		rwPhaseBigPanel.add(rwPanel);
+		rwPhaseBigPanel.add(phasePanel);
+		rwPhaseBigPanel.add(hotSolverPanel);
+		
+		tabbedPane.addTab("Heuristics",null,rwPhaseBigPanel, "random walk and phase strategy");
+		
+		JPanel clausesBigPanel = new JPanel();
+		clausesBigPanel.setLayout(new BoxLayout(clausesBigPanel, BoxLayout.Y_AXIS));
+		clausesBigPanel.add(cleanPanel);
+		clausesBigPanel.add(simplifierPanel);
+		
+		tabbedPane.addTab("Learned Constraints",null,clausesBigPanel, "deletion and simplification strategy");
+		
+//		this.add(instancePanel);
+//		this.add(choixSolverPanel);
+		//this.add(restartPanel);
+//		this.add(rwPanel);
+//		this.add(cleanPanel);
+//		this.add(phasePanel);
+	//	this.add(simplifierPanel);
+		//this.add(hotSolverPanel);
+		
+		this.add(tabbedPane);
 		this.add(scrollPane);
 
 		setRestartPanelEnabled(false);
