@@ -175,14 +175,14 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		menu = new JMenu("File");
 		barreMenu.add(menu);
 		
-		JMenuItem aboutSolver = new JMenuItem("About Solver");
-		menu.add(aboutSolver);
-		
-		aboutSolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				clickOnAboutSolver();
-			}
-		});
+//		JMenuItem aboutSolver = new JMenuItem("About Solver");
+//		menu.add(aboutSolver);
+//		
+//		aboutSolver.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				clickOnAboutSolver();
+//			}
+//		});
 		
 		activateTracing = new JMenuItem(ACTIVATE);
 		menu.add(activateTracing);

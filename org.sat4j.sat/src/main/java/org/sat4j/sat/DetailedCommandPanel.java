@@ -68,6 +68,8 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
@@ -136,6 +138,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private Thread solveurThread;
 
 	private StringWriter stringWriter;
+
+	private MyTabbedPane tabbedPane;
+
+	private JPanel aboutSolverPanel;
+	private JTextArea textArea;
 
 	private JPanel instancePanel;
 	private final static String INSTANCE_PANEL = "Instance";
@@ -287,7 +294,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JRadioButton simplificationSimpleRadio;
 	private JRadioButton simplificationExpensiveRadio;
 
-	
+
 	private JPanel hotSolverPanel;
 	private final static String HOT_SOLVER_PANEL = "Hot solver";
 	private JCheckBox keepSolverHotCB;
@@ -356,50 +363,85 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		restartPropertiesPanel.setPreferredSize(new Dimension(100,50));
 
-		
-		JTabbedPane tabbedPane = new JTabbedPane();
-		
+
+		tabbedPane = new MyTabbedPane();
+
 		JPanel solverBigPanel = new JPanel();
 		solverBigPanel.setLayout(new BoxLayout(solverBigPanel, BoxLayout.Y_AXIS));
 		solverBigPanel.add(instancePanel);
 		solverBigPanel.add(choixSolverPanel);
-		
+
 		tabbedPane.addTab("Solver", null, solverBigPanel, "instance & solver options");
 
-		
+
 		JPanel restartBigPanel = new JPanel();
 		restartBigPanel.setLayout(new BoxLayout(restartBigPanel, BoxLayout.Y_AXIS));
 		restartBigPanel.add(restartPanel);
 		//restartBigPanel.add(hotSolverPanel);
-		
+
 		tabbedPane.addTab("Restart",null,restartBigPanel, "restart strategy & options");
-	
+
 		JPanel rwPhaseBigPanel = new JPanel();
 		rwPhaseBigPanel.setLayout(new BoxLayout(rwPhaseBigPanel, BoxLayout.Y_AXIS));
 		rwPhaseBigPanel.add(rwPanel);
 		rwPhaseBigPanel.add(phasePanel);
 		rwPhaseBigPanel.add(hotSolverPanel);
-		
+
 		tabbedPane.addTab("Heuristics",null,rwPhaseBigPanel, "random walk and phase strategy");
-		
+
 		JPanel clausesBigPanel = new JPanel();
 		clausesBigPanel.setLayout(new BoxLayout(clausesBigPanel, BoxLayout.Y_AXIS));
 		clausesBigPanel.add(cleanPanel);
 		clausesBigPanel.add(simplifierPanel);
-		
+
 		tabbedPane.addTab("Learned Constraints",null,clausesBigPanel, "deletion and simplification strategy");
-		
-//		this.add(instancePanel);
-//		this.add(choixSolverPanel);
-		//this.add(restartPanel);
-//		this.add(rwPanel);
-//		this.add(cleanPanel);
-//		this.add(phasePanel);
-	//	this.add(simplifierPanel);
-		//this.add(hotSolverPanel);
-		
+
+		aboutSolverPanel = new JPanel();
+		textArea = new JTextArea("No solver is running at the moment");
+		textArea.setColumns(50);
+		aboutSolverPanel.add(textArea);
+
+		tabbedPane.addTab("About Solver",null,aboutSolverPanel, "information about solver");
+
+		//		System.out.println("tabcount = " + tabbedPane.getTabCount());
+		//
+		//		tabbedPane.addChangeListener(new ChangeListener() {
+		//
+		//			public void stateChanged(ChangeEvent e) {
+		//				JTabbedPane pane = (JTabbedPane)e.getSource();
+		//
+		//				int sel = pane.getSelectedIndex();
+		//				if(sel==pane.getTabCount()-1){
+		//					aboutSolverPanel = new JPanel();
+		//					if(getSolver()!=null){
+		//						JTextArea textArea = new JTextArea(getSolver().toString());
+		//						aboutSolverPanel.add(textArea);
+		//						aboutSolverPanel.repaint();
+		//						aboutSolverPanel.paintAll(aboutSolverPanel.getGraphics());
+		//					}
+		//					else{
+		//						JTextArea textArea = new JTextArea("No solver is running at the moment");
+		//						aboutSolverPanel.add(textArea);
+		//						aboutSolverPanel.repaint();
+		//					}
+		//				}
+		//			}
+		//		});
+
+
+		//				this.add(instancePanel);
+		//				this.add(choixSolverPanel);
+		//				this.add(restartPanel);
+		//				this.add(rwPanel);
+		//				this.add(cleanPanel);
+		//				this.add(phasePanel);
+		//				this.add(simplifierPanel);
+		//				this.add(hotSolverPanel);
+
 		this.add(tabbedPane);
 		this.add(scrollPane);
+
+
 
 		setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
@@ -832,26 +874,26 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		simplifierPanel.add(tmpPanel2,BorderLayout.SOUTH);
 
 	}
-	
+
 	public void createHotSolverPanel(){
 		hotSolverPanel = new JPanel();
 		hotSolverPanel.setName(HOT_SOLVER_PANEL);
-		
+
 		hotSolverPanel.setBorder(new CompoundBorder(new TitledBorder(null, hotSolverPanel.getName(), 
 				TitledBorder.LEFT, TitledBorder.TOP), border5));
 
 		hotSolverPanel.setLayout(new BorderLayout());
-		
+
 		keepSolverHotCB = new JCheckBox(KEEP_SOLVER_HOT);
 		hotSolverPanel.add(keepSolverHotCB,BorderLayout.CENTER);
-		
+
 		JPanel tmpPanel = new JPanel();
-		
+
 		applyHotSolver = new JButton(HOT_APPLY);
 		tmpPanel.add(applyHotSolver);
 		hotSolverPanel.add(tmpPanel,BorderLayout.SOUTH);
-		
-		
+
+
 		applyHotSolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				solver.setKeepSolverHot(keepSolverHotCB.isSelected());
@@ -863,7 +905,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				}
 			}
 		});
-		
+
 	}
 
 	public void initFactorParam(){
@@ -989,7 +1031,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			listeners.add(new HeuristicsTracing(whereToWriteFiles + "-heuristics"));
 		}
 		listeners.add(this);
-		
+
 		solver.setSearchListener(new MultiTracing(listeners));
 
 		solver.setLogger(this);
@@ -1418,7 +1460,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		simplificationApplyButton.setEnabled(enabled);
 		simplifierPanel.repaint();
 	}
-	
+
 	public void setKeepSolverHotPanelEnabled(boolean enabled){
 		keepSolverHotCB.setEnabled(enabled);
 		applyHotSolver.setEnabled(enabled);
@@ -1668,8 +1710,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void restarting() {
-		//log("Restarting");
-		//System.out.println("Restarting");
 	}
 
 	public void backjump(int backjumpLevel) {
@@ -1677,4 +1717,51 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void cleaning() {
 	}
+
+	public class MyTabbedPane extends JTabbedPane {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void setSelectedIndex(int index){
+			if(this.getTabCount()==5){
+				if(index==this.getTabCount()-1){
+					System.out.println("je suis lˆ");
+					if(solver!=null && startStopButton.getText().equals(STOP)){
+						String s = solver.toString();
+						String res = solver.toString();
+						int j=0;
+						for(int i=0;i<s.length();i++){
+							if(s.charAt(i)!='\n'){
+								j++;
+							}
+							else{
+								j=0;
+							}
+							if(j>80){
+								res = new StringBuffer(res).insert(i, '\n').toString();
+								j=0;
+							}
+						}
+						textArea.setText(res);
+						textArea.setEditable(false);
+						textArea.repaint();
+						aboutSolverPanel.paint(aboutSolverPanel.getGraphics());
+						aboutSolverPanel.repaint();
+					}
+					else{
+						textArea.setText("No solver is running at the moment");
+						textArea.repaint();
+						textArea.setEditable(false);
+						aboutSolverPanel.paint(aboutSolverPanel.getGraphics());
+						aboutSolverPanel.repaint();
+					}
+					
+					System.out.println(textArea.getText());
+				}
+			}
+
+			super.setSelectedIndex(index);
+		};
+	} 
+	
 }
