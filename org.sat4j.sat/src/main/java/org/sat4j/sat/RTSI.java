@@ -24,6 +24,9 @@
  *
  * See www.minisat.se for the original solver in C++.
  *
+ * That class was initially written in 2001 by Daniel Le Berre for JavaWorld JavaTips 113.
+ * http://www.javaworld.com/javaworld/javatips/jw-javatip113.html
+ * 
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
