@@ -1725,7 +1725,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		public void setSelectedIndex(int index){
 			if(this.getTabCount()==5){
 				if(index==this.getTabCount()-1){
-					System.out.println("je suis lˆ");
+					//System.out.println("je suis lˆ");
 					if(solver!=null && startStopButton.getText().equals(STOP)){
 						String s = solver.toString();
 						String res = solver.toString();
@@ -1756,7 +1756,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 						aboutSolverPanel.repaint();
 					}
 					
-					System.out.println(textArea.getText());
+					//System.out.println(textArea.getText());
 				}
 			}
 
