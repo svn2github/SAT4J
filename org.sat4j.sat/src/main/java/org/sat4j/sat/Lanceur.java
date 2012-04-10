@@ -99,7 +99,6 @@ import org.sat4j.tools.DotSearchTracing;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
 
-
 public class Lanceur extends AbstractLauncher {
 
 	/**
@@ -128,9 +127,7 @@ public class Lanceur extends AbstractLauncher {
 	private final static String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
 	private final static String PARAMS_NAME = "org.sat4j.minisat.core.SearchParams";
 
-
-
-	private final static Map<String,String> qualif = new HashMap<String,String>();
+	private final static Map<String, String> qualif = new HashMap<String, String>();
 	static {
 		qualif.put(ORDERS, PACKAGE_ORDERS);
 		qualif.put(LEARNING, PACKAGE_LEARNING);
@@ -144,9 +141,8 @@ public class Lanceur extends AbstractLauncher {
 
 	private IProblem problem;
 	private ICDCL cdclSolver;
-	
-	private boolean modeTracing = false;
 
+	private boolean modeTracing = false;
 
 	private boolean launchRemoteControl;
 
@@ -163,7 +159,6 @@ public class Lanceur extends AbstractLauncher {
 	private String filename;
 
 	private int k = -1;
-
 
 	@SuppressWarnings("nls")
 	private Options createCLIOptions() {
@@ -237,22 +232,21 @@ public class Lanceur extends AbstractLauncher {
 			HelpFormatter helpf = new HelpFormatter();
 			helpf.printHelp("java -jar sat4j.jar", options, true);
 
-			//			log("Available solvers: "
-			//					+ Arrays.asList(factory.solverNames()));
-			//			showAvailableLearning();
-			//			showAvailableOrders();
-			//			showAvailablePhase();
-			//			showAvailableRestarts();
+			// log("Available solvers: "
+			// + Arrays.asList(factory.solverNames()));
+			// showAvailableLearning();
+			// showAvailableOrders();
+			// showAvailablePhase();
+			// showAvailableRestarts();
 			return null;
 		}
 		try {
 			CommandLine cmd = new PosixParser().parse(options, args);
 
 			String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-			if(cmd.hasOption("opt")){
-				framework="pb";
-			}
-			else if (framework == null) { //$NON-NLS-1$
+			if (cmd.hasOption("opt")) {
+				framework = "pb";
+			} else if (framework == null) { //$NON-NLS-1$
 				framework = "minisat";
 			}
 
@@ -274,23 +268,20 @@ public class Lanceur extends AbstractLauncher {
 						+ Arrays.asList(factory.solverNames()));
 				String solvername = cmd.getOptionValue("s");
 				if (solvername == null) {
-					asolver = (Solver)factory.defaultSolver();
-				}
-				else {
-					asolver = (Solver)factory.createSolverByName(solvername);
+					asolver = (Solver) factory.defaultSolver();
+				} else {
+					asolver = (Solver) factory.createSolverByName(solvername);
 				}
 			} else {
-				asolver = (Solver)factory.defaultSolver();
+				asolver = (Solver) factory.defaultSolver();
 			}
 
-
-			if (cmd.hasOption("rw")){
+			if (cmd.hasOption("rw")) {
 				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
-				IOrder order = new RandomWalkDecorator((VarOrderHeap)((Solver)asolver).getOrder(), proba);
-				((Solver)asolver).setOrder(order);
+				IOrder order = new RandomWalkDecorator(
+						(VarOrderHeap) ((Solver) asolver).getOrder(), proba);
+				((Solver) asolver).setOrder(order);
 			}
-
-
 
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
@@ -301,8 +292,7 @@ public class Lanceur extends AbstractLauncher {
 				asolver = configureFromString(configuredSolver, asolver);
 			}
 
-			launchRemoteControl=(cmd.hasOption("remote"));
-
+			launchRemoteControl = (cmd.hasOption("remote"));
 
 			String timeout = cmd.getOptionValue("t");
 			if (timeout == null) {
@@ -334,7 +324,7 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("m")) {
 				setSilent(true);
 			}
-			
+
 			if (cmd.hasOption("H")) {
 				asolver.setKeepSolverHot(true);
 			}
@@ -346,10 +336,10 @@ public class Lanceur extends AbstractLauncher {
 				}
 			}
 
-			if(cmd.hasOption("opt")){
+			if (cmd.hasOption("opt")) {
 				assert asolver instanceof IPBSolver;
 				isModeOptimization = true;
-				problem = new PseudoOptDecorator((IPBCDCLSolver)asolver);
+				problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
 			}
 
 			int others = 0;
@@ -358,18 +348,14 @@ public class Lanceur extends AbstractLauncher {
 				filename = rargs[others++];
 			}
 
-
-
 			if (cmd.hasOption("r")) {
-				modeTracing=true;
+				modeTracing = true;
 				asolver.setSearchListener(new MultiTracing(
-						new ConflictLevelTracing(filename
-								+ "-conflict-level"), new DecisionTracing(
-										filename + "-decision-indexes"),
-										new LearnedClausesSizeTracing(filename
-												+ "-learned-clauses-size"),
-												new ConflictDepthTracing(filename
-														+ "-conflict-depth")));
+						new ConflictLevelTracing(filename + "-conflict-level"),
+						new DecisionTracing(filename + "-decision-indexes"),
+						new LearnedClausesSizeTracing(filename
+								+ "-learned-clauses-size"),
+						new ConflictDepthTracing(filename + "-conflict-depth")));
 			}
 
 			// use remaining data to configure the solver
@@ -413,11 +399,11 @@ public class Lanceur extends AbstractLauncher {
 	@Override
 	public void usage() {
 		factory = org.sat4j.minisat.SolverFactory.instance();
-		//log("SAT");
+		// log("SAT");
 		showAvailableSolvers(factory, "sat");
 		log("-------------------");
 		factory = (ASolverFactory) org.sat4j.pb.SolverFactory.instance();
-		//log("PB");
+		// log("PB");
 		showAvailableSolvers(factory, "pb");
 		showAvailableRestarts();
 		showAvailableOrders();
@@ -435,8 +421,7 @@ public class Lanceur extends AbstractLauncher {
 	}
 
 	@SuppressWarnings("unchecked")
-	private final ICDCL configureFromString(String solverconfig,
-			ICDCL theSolver) {
+	private final ICDCL configureFromString(String solverconfig, ICDCL theSolver) {
 		// AFAIK, there is no easy way to solve parameterized problems
 		// when building the solver at runtime.
 		StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -449,7 +434,7 @@ public class Lanceur extends AbstractLauncher {
 			pf.setProperty(couple[0], couple[1]);
 		}
 
-		Solver aSolver = (Solver)theSolver;
+		Solver aSolver = (Solver) theSolver;
 		DataStructureFactory dsf = setupObject("DSF", pf);
 		if (dsf != null) {
 			theSolver.setDataStructureFactory(dsf);
@@ -500,17 +485,17 @@ public class Lanceur extends AbstractLauncher {
 			String configline = pf.getProperty(component);
 			String qualification = qualif.get(component);
 
-
 			if (configline == null) {
 				return null;
 			}
-			if (qualification != null) { 
+			if (qualification != null) {
 				log("read " + qualification + "." + configline);
-				if(configline.contains("Objective") && qualification.contains("minisat")){
-					//log(qualification);
-					qualification = qualification.replaceFirst("minisat", "pb");	
+				if (configline.contains("Objective")
+						&& qualification.contains("minisat")) {
+					// log(qualification);
+					qualification = qualification.replaceFirst("minisat", "pb");
 				}
-				configline =qualification +"."+ configline;
+				configline = qualification + "." + configline;
 			}
 
 			log("configuring " + component);
@@ -555,10 +540,9 @@ public class Lanceur extends AbstractLauncher {
 		return theSolver;
 	}
 
-
 	@Override
 	protected void solve(IProblem problem) throws TimeoutException {
-		if(isModeOptimization){
+		if (isModeOptimization) {
 			boolean isSatisfiable = false;
 
 			IOptimizationProblem optproblem = (IOptimizationProblem) problem;
@@ -583,7 +567,7 @@ public class Lanceur extends AbstractLauncher {
 							/ 1000.0);
 					getLogWriter().println(
 							CURRENT_OPTIMUM_VALUE_PREFIX
-							+ optproblem.getObjectiveValue());
+									+ optproblem.getObjectiveValue());
 					optproblem.discardCurrentSolution();
 				}
 				if (isSatisfiable) {
@@ -595,20 +579,19 @@ public class Lanceur extends AbstractLauncher {
 				assert isSatisfiable;
 				setExitCode(ExitCode.OPTIMUM_FOUND);
 			}
-		}
-		else{
+		} else {
 			exitCode = problem.isSatisfiable() ? ExitCode.SATISFIABLE
 					: ExitCode.UNSATISFIABLE;
 		}
 	}
 
 	protected void displayResult() {
-		if(isModeOptimization){
+		if (isModeOptimization) {
 			displayAnswer();
 
 			log("Total wall clock time (in seconds): " //$NON-NLS-1$
-					+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);}
-		else{
+					+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);
+		} else {
 			super.displayResult();
 		}
 	}
@@ -629,26 +612,29 @@ public class Lanceur extends AbstractLauncher {
 			out.print(SOLUTION_PREFIX);
 			getReader().decode(problem.model(), out);
 			out.println();
-			IOptimizationProblem optproblem = (IOptimizationProblem) solver;
-			if (!optproblem.hasNoObjectiveFunction()) {
-				log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+			if (isModeOptimization) {
+				IOptimizationProblem optproblem = (IOptimizationProblem) solver;
+				if (!optproblem.hasNoObjectiveFunction()) {
+					log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+				}
 			}
 		}
 	}
 
 	protected void showAvailableRestarts() {
 		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME); 
+		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
 		Set<String> keySet;
-		for(String name: resultRTSI){
-			if(!name.contains("Remote")){
+		for (String name : resultRTSI) {
+			if (!name.contains("Remote")) {
 				try {
-					keySet = BeanUtils.describe(Class.forName(PACKAGE_RESTARTS+"."+name).newInstance()).keySet();
+					keySet = BeanUtils.describe(
+							Class.forName(PACKAGE_RESTARTS + "." + name)
+									.newInstance()).keySet();
 					keySet.remove("class");
-					if(keySet.size()>0){
+					if (keySet.size() > 0) {
 						classNames.add(name + keySet);
-					}
-					else{
+					} else {
 						classNames.add(name);
 					}
 				} catch (IllegalAccessException e) {
@@ -669,18 +655,19 @@ public class Lanceur extends AbstractLauncher {
 
 	protected void showAvailablePhase() {
 		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(PHASE_NAME); 
+		Vector<String> resultRTSI = RTSI.find(PHASE_NAME);
 		Set<String> keySet;
-		for(String name: resultRTSI){
-			if(!name.contains("Remote")){
+		for (String name : resultRTSI) {
+			if (!name.contains("Remote")) {
 				try {
 
-					keySet = BeanUtils.describe(Class.forName(PACKAGE_PHASE+"."+name).newInstance()).keySet();
+					keySet = BeanUtils.describe(
+							Class.forName(PACKAGE_PHASE + "." + name)
+									.newInstance()).keySet();
 					keySet.remove("class");
-					if(keySet.size()>0){
+					if (keySet.size() > 0) {
 						classNames.add(name + keySet);
-					}
-					else{
+					} else {
 						classNames.add(name);
 					}
 				} catch (IllegalAccessException e) {
@@ -701,16 +688,17 @@ public class Lanceur extends AbstractLauncher {
 
 	protected void showAvailableLearning() {
 		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(LEARNING_NAME); 
+		Vector<String> resultRTSI = RTSI.find(LEARNING_NAME);
 		Set<String> keySet;
-		for(String name: resultRTSI){
+		for (String name : resultRTSI) {
 			try {
-				keySet = BeanUtils.describe(Class.forName(PACKAGE_LEARNING+"."+name).newInstance()).keySet();
+				keySet = BeanUtils.describe(
+						Class.forName(PACKAGE_LEARNING + "." + name)
+								.newInstance()).keySet();
 				keySet.remove("class");
-				if(keySet.size()>0){
+				if (keySet.size() > 0) {
 					classNames.add(name + keySet);
-				}
-				else{
+				} else {
 					classNames.add(name);
 				}
 			} catch (IllegalAccessException e) {
@@ -720,12 +708,12 @@ public class Lanceur extends AbstractLauncher {
 			} catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			} catch (InstantiationException e) {
-				classNames.add(name);	
+				classNames.add(name);
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-			}
-			catch (NoClassDefFoundError cnfex) {
-				//System.out.println("Warning : no classDefFoundError : " + classname);
+			} catch (NoClassDefFoundError cnfex) {
+				// System.out.println("Warning : no classDefFoundError : " +
+				// classname);
 			}
 		}
 		log("Available learning (" + LEARNING + "): " + classNames);
@@ -733,27 +721,29 @@ public class Lanceur extends AbstractLauncher {
 
 	protected void showAvailableOrders() {
 		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(ORDER_NAME); 
-		Set<String> keySet=null;
-		for(String name: resultRTSI){
-			if(!name.contains("Remote")){
+		Vector<String> resultRTSI = RTSI.find(ORDER_NAME);
+		Set<String> keySet = null;
+		for (String name : resultRTSI) {
+			if (!name.contains("Remote")) {
 				try {
-					if(name.contains("Objective")){
-						String namePackage = PACKAGE_ORDERS.replaceFirst("minisat", "pb");
-						keySet = BeanUtils.describe(Class.forName(namePackage+"."+name).newInstance()).keySet();
-					}
-					else{
-						keySet = BeanUtils.describe(Class.forName(PACKAGE_ORDERS+"."+name).newInstance()).keySet();
+					if (name.contains("Objective")) {
+						String namePackage = PACKAGE_ORDERS.replaceFirst(
+								"minisat", "pb");
+						keySet = BeanUtils.describe(
+								Class.forName(namePackage + "." + name)
+										.newInstance()).keySet();
+					} else {
+						keySet = BeanUtils.describe(
+								Class.forName(PACKAGE_ORDERS + "." + name)
+										.newInstance()).keySet();
 					}
 					keySet.remove("class");
 
-					if(keySet.size()>0){
+					if (keySet.size() > 0) {
 						classNames.add(name + keySet);
-					}
-					else {
+					} else {
 						classNames.add(name);
 					}
-
 
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
@@ -762,7 +752,7 @@ public class Lanceur extends AbstractLauncher {
 				} catch (NoSuchMethodException e) {
 					e.printStackTrace();
 				} catch (InstantiationException e) {
-					//classNames.add(name);	
+					// classNames.add(name);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -771,11 +761,12 @@ public class Lanceur extends AbstractLauncher {
 		log("Available orders (" + ORDERS + "): " + classNames);
 	}
 
-	protected void showParams(){
+	protected void showParams() {
 
 		Set<String> keySet = null;
 		try {
-			keySet = BeanUtils.describe(Class.forName(PARAMS_NAME).newInstance()).keySet();
+			keySet = BeanUtils.describe(
+					Class.forName(PARAMS_NAME).newInstance()).keySet();
 			keySet.remove("class");
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -788,15 +779,16 @@ public class Lanceur extends AbstractLauncher {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		log("Available search params (" + PARAMS + "): [SearchParams" + keySet + "]");
+		log("Available search params (" + PARAMS + "): [SearchParams" + keySet
+				+ "]");
 	}
 
-	protected void showSimplifiers(){
+	protected void showSimplifiers() {
 		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
 	}
 
 	@Override
-	public void run(String[] args){
+	public void run(String[] args) {
 		try {
 			displayHeader();
 			cdclSolver = configureSolver(args);
@@ -814,22 +806,21 @@ public class Lanceur extends AbstractLauncher {
 			}
 			beginTime = System.currentTimeMillis();
 			System.out.println(launchRemoteControl);
-			if(!launchRemoteControl){
+			if (!launchRemoteControl) {
 				readProblem(instanceName);
 				try {
-					if(problem!=null){
+					if (problem != null) {
 						solve(problem);
-					}
-					else{
+					} else {
 						solve(solver);
 					}
 				} catch (TimeoutException e) {
 					log("timeout"); //$NON-NLS-1$
 				}
 				System.exit(lanceur.getExitCode().value());
-			}
-			else{
-				RemoteControlFrame frame = new RemoteControlFrame(filename, "",cdclSolver);
+			} else {
+				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
+						cdclSolver);
 				frame.activateGnuplotTracing(modeTracing);
 			}
 		} catch (FileNotFoundException e) {
