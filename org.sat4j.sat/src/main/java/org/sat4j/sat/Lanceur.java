@@ -613,7 +613,7 @@ public class Lanceur extends AbstractLauncher {
 			getReader().decode(problem.model(), out);
 			out.println();
 			if (isModeOptimization) {
-				IOptimizationProblem optproblem = (IOptimizationProblem) solver;
+				IOptimizationProblem optproblem = (IOptimizationProblem) problem;
 				if (!optproblem.hasNoObjectiveFunction()) {
 					log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
 				}
