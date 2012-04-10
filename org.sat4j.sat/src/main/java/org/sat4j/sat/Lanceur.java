@@ -195,6 +195,8 @@ public class Lanceur extends AbstractLauncher {
 				"specifies the random walk probability ");
 		options.addOption("remote", "remoteControl", false,
 				"launches remote control");
+		options.addOption("H", "hot", false,
+				"keep the solver hot (do not reset heuristics) when a model is found");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -331,6 +333,10 @@ public class Lanceur extends AbstractLauncher {
 
 			if (cmd.hasOption("m")) {
 				setSilent(true);
+			}
+			
+			if (cmd.hasOption("H")) {
+				asolver.setKeepSolverHot(true);
 			}
 
 			if (cmd.hasOption("k")) {
