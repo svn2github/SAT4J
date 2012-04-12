@@ -294,11 +294,12 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("rw")) {
 				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
 				IOrder order = asolver.getOrder();
-				if (isModeOptimization) {
-					order = new RandomWalkDecoratorObjective((VarOrderHeapObjective) order,proba); 
+				if (isModeOptimization
+						&& order instanceof VarOrderHeapObjective) {
+					order = new RandomWalkDecoratorObjective(
+							(VarOrderHeapObjective) order, proba);
 				} else {
-				order = new RandomWalkDecorator((VarOrderHeap)
-						order, proba);
+					order = new RandomWalkDecorator((VarOrderHeap) order, proba);
 				}
 				asolver.setOrder(order);
 			}
