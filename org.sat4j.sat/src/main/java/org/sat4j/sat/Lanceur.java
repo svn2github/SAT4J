@@ -82,6 +82,8 @@ import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
+import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
+import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -243,8 +245,12 @@ public class Lanceur extends AbstractLauncher {
 		try {
 			CommandLine cmd = new PosixParser().parse(options, args);
 
-			String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
 			if (cmd.hasOption("opt")) {
+				isModeOptimization = true;
+			}
+
+			String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
+			if (isModeOptimization) {
 				framework = "pb";
 			} else if (framework == null) { //$NON-NLS-1$
 				framework = "minisat";
@@ -276,13 +282,6 @@ public class Lanceur extends AbstractLauncher {
 				asolver = (Solver) factory.defaultSolver();
 			}
 
-			if (cmd.hasOption("rw")) {
-				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
-				IOrder order = new RandomWalkDecorator(
-						(VarOrderHeap) ((Solver) asolver).getOrder(), proba);
-				((Solver) asolver).setOrder(order);
-			}
-
 			if (cmd.hasOption("S")) {
 				String configuredSolver = cmd.getOptionValue("S");
 				if (configuredSolver == null) {
@@ -290,6 +289,18 @@ public class Lanceur extends AbstractLauncher {
 					return null;
 				}
 				asolver = configureFromString(configuredSolver, asolver);
+			}
+
+			if (cmd.hasOption("rw")) {
+				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
+				IOrder order = asolver.getOrder();
+				if (isModeOptimization) {
+					order = new RandomWalkDecoratorObjective((VarOrderHeapObjective) order,proba); 
+				} else {
+				order = new RandomWalkDecorator((VarOrderHeap)
+						order, proba);
+				}
+				asolver.setOrder(order);
 			}
 
 			launchRemoteControl = (cmd.hasOption("remote"));
@@ -336,9 +347,8 @@ public class Lanceur extends AbstractLauncher {
 				}
 			}
 
-			if (cmd.hasOption("opt")) {
+			if (isModeOptimization) {
 				assert asolver instanceof IPBSolver;
-				isModeOptimization = true;
 				problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
 			}
 
