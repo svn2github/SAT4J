@@ -68,8 +68,6 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
@@ -132,6 +130,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private ICDCL solver;
 	private Reader reader;
 	private IProblem problem;
+	private boolean optimizationMode;
 
 	private boolean useCustomizedSolver;
 
@@ -162,6 +161,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CHOIX_SOLVER  = "Choose solver: ";
 	private String selectedSolver;
 	private JComboBox listeSolvers;
+	
+	private final static String OPTMIZATION_MODE = "Use optimization mode";
+	private JCheckBox optimisationModeCB;
 
 	private JCheckBox useCustomizedSolverCB;
 	private final static String USE_CUSTOMIZED_SOLVER = "Use customized solver";
@@ -501,11 +503,24 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		choixSolver = new JLabel(CHOIX_SOLVER);
 		updateListOfSolvers();
 
+		
+		optimisationModeCB = new JCheckBox(OPTMIZATION_MODE);
+		
 
 		JPanel tmpPanel1 = new JPanel();
 		tmpPanel1.add(choixSolver);
 		tmpPanel1.add(listeSolvers);
+		tmpPanel1.add(optimisationModeCB);
 
+		optimizationMode=false;
+		
+		optimisationModeCB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				optimizationMode = optimisationModeCB.isSelected();
+				log("use optimization mode: " + optimizationMode);
+			}
+		});
+		
 		startStopButton = new JButton(START);
 
 		startStopButton.addActionListener(new ActionListener() {
@@ -1395,6 +1410,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		listeSolvers.setEnabled(enabled && !useCustomizedSolver);
 		choixSolver.setEnabled(enabled && !useCustomizedSolver);
 		useCustomizedSolverCB.setEnabled(enabled && useCustomizedSolver);
+		optimisationModeCB.setEnabled(enabled);
+		// TODO regarder si le customized solver etait en mode optimisation ou pas
 		choixSolverPanel.repaint();
 	}
 
@@ -1696,7 +1713,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void conflictFound(int p) {
 	}
 
-	public void solutionFound(int [] model) {
+	public void solutionFound(int[] model) {
+		//if(problem.)
 		log("Found a solution !! ");
 	}
 
