@@ -1351,9 +1351,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void log(String message){
-		console.append(message +"\n");
-		//		scrollPane.getVerticalScrollBar().setValue(
-		//	               scrollPane.getVerticalScrollBar().getMaximum()+1);
+		logsameline(message+"\n");
+	}
+	public void logsameline(String message){
+		console.append(message);
 		console.setCaretPosition(console.getDocument().getLength() );
 		console.repaint();
 		this.repaint();
@@ -1716,6 +1717,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public void solutionFound(int[] model) {
 		//if(problem.)
 		log("Found a solution !! ");
+		logsameline(stringWriter.toString());
+		stringWriter.getBuffer().delete(0, stringWriter.getBuffer().length());
 	}
 
 	public void beginLoop() {
