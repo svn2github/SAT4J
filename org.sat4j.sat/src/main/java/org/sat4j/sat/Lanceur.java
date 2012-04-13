@@ -194,6 +194,8 @@ public class Lanceur extends AbstractLauncher {
 				"launches remote control");
 		options.addOption("H", "hot", false,
 				"keep the solver hot (do not reset heuristics) when a model is found");
+		options.addOption("y", "simplify", false,
+				"simplify the set of clauses is possible");
 		Option op = options.getOption("l");
 		op.setArgName("libname");
 		op = options.getOption("s");
@@ -349,6 +351,10 @@ public class Lanceur extends AbstractLauncher {
 				}
 			}
 
+			if (cmd.hasOption("y")) {
+				asolver.setDBSimplificationAllowed(true);
+			}
+			
 			if (isModeOptimization) {
 				assert asolver instanceof IPBSolver;
 				problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
