@@ -270,10 +270,11 @@ public class Lanceur extends AbstractLauncher {
 
 			ICDCL asolver;
 			if (cmd.hasOption("s")) {
-				log("Available solvers: "
-						+ Arrays.asList(factory.solverNames()));
 				String solvername = cmd.getOptionValue("s");
 				if (solvername == null) {
+					log("No solver for option s. Launching default solver.");
+					log("Available solvers: "
+							+ Arrays.asList(factory.solverNames()));
 					asolver = (Solver) factory.defaultSolver();
 				} else {
 					asolver = (Solver) factory.createSolverByName(solvername);
