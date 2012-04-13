@@ -817,7 +817,6 @@ public class Lanceur extends AbstractLauncher {
 				return;
 			}
 			beginTime = System.currentTimeMillis();
-			System.out.println(launchRemoteControl);
 			if (!launchRemoteControl) {
 				readProblem(instanceName);
 				try {
