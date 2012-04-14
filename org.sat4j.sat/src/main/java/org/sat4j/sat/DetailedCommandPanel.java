@@ -1523,11 +1523,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
 				out.println("set terminal x11");
 				out.println("set multiplot");
-				out.println("set autoscale");
+				out.println("set autoscale x");
+				out.println("set autoscale y");
 				out.println("set nologscale x");
 				out.println("set nologscale y");
 				out.println("set ytics auto");
 
+				GnuplotFunction f = new GnuplotFunction("2", Color.black, "");
+				
 				//bottom right: Decision Level when conflict
 				if(gnuplotPreferences.isDisplayConflictsDecision()){
 					out.println("set size "+width + "," + height);
@@ -1535,28 +1538,41 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set title \"Decision level at which the conflict occurs\"");
 					out.println("set y2range[0:"+nbVariables+"]");
 					GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.magenta,"Conflict Level");
-					out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, instancePath+ "-conflict-level-restart.dat", true));
+					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
+					out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
 				}
 
 				//top left: size of learned clause
 				if(gnuplotPreferences.isDisplayClausesSize()){
+					out.println("unset autoscale");
+					out.println("set autoscale x");
+					out.println("set autoscale y"); 
+					out.println("set y2range[0:"+nbVariables+"]");
+//					out.println("set autoscale y2");
+//					out.println("set nologscale x");
+//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + top);
 					out.println("set title \"Size of the clause learned (after minimization if any)\"");
 					GnuplotDataFile learnedClausesDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size.dat",Color.blue,"Size");
-					out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF, instancePath+ "-conflict-level-restart.dat", true));
+					//out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF, true));
+					out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF,f, instancePath+ "-conflict-level-restart.dat", true));
 				}
 
 				//top middle: clause activity
 				if(gnuplotPreferences.isDisplayConflictsDecision()){
+					out.println("set autoscale x");
+					out.println("set autoscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+middle + "," + top);
 					out.println("set title \"Value of learned clauses evaluation\"");
 					GnuplotDataFile learnedDF = new GnuplotDataFile(instancePath+ "-learned.dat",Color.blue,"Evaluation");
-					out.println(gnuplotPreferences.generatePlotLine(learnedDF, false));
+					out.println(gnuplotPreferences.generatePlotLine(learnedDF,f,"", false));
 				}
 
 				// for bottom graphs, y range should be O-maxVar
+				out.println("set autoscale x");
+				out.println("set nologscale x");
 				out.println("set nologscale y");
 				out.println("set autoscale y");
 				out.println("set yrange [1:"+nbVariables+"]");
@@ -1564,49 +1580,71 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 				//bottom left: index decision variable
 				if(gnuplotPreferences.isDisplayDecisionIndexes()){
+					out.println("unset autoscale");
+					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;}");
+					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"]};");
+//					out.println("set nologscale x");
+//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + bottom);
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
-					out.println(gnuplotPreferences.generatePlotLine(negativeDF,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*3));
+//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
+					out.println(gnuplotPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*4));
 
 					//verybottom left: index decision variable
+					out.println("unset autoscale");
+					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"+nbVariables+"];}");
+//					out.println("set autoscale y");
+				
+//					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
+//					out.println("set nologscale x");
+//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + verybottom);
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
-					out.println(gnuplotPreferences.generatePlotLine(positiveDF,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*3));
+//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
+					out.println(gnuplotPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, gnuplotPreferences.getNbLinesRead()*4));
 				}
 
 				//top right: depth search when conflict
 				if(gnuplotPreferences.isDisplayConflictsTrail()){
+					out.println("set autoscale x");
+					out.println("set autoscale y");
+					out.println("set nologscale x");
+					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+right + "," + top);
 					out.println("set title \"Trail level when the conflict occurs\"");
 					GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.magenta, "Trail level");
 					GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
-					out.println(gnuplotPreferences.generatePlotLine(new GnuplotDataFile[]{trailLevelDF}, 
-							new GnuplotFunction[]{nbVar2}, instancePath+ "-conflict-level-restart.dat",true));
+//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
+					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF, 
+							nbVar2, instancePath+ "-conflict-level-restart.dat",true));
 				}
 
 				//bottom middle: variable activity
-				out.println("set nologscale y");
-				out.println("set logscale x");
 				if(gnuplotPreferences.isDisplayVariablesEvaluation()){
-					out.println("set xrange [0.5:1.0e+100]");
+					out.println("unset autoscale");
+					out.println("set autoscale y");
+					out.println("set nologscale x");
+					out.println("set nologscale y");
+					out.println("set yrange [1:"+nbVariables+"]");
+					out.println("set xrange [0.5:*]");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+middle + "," + bottom);
 					out.println("set title \"Value of variables activity\"");
 					GnuplotDataFile heuristicsDF = new GnuplotDataFile(instancePath+ "-heuristics.dat",Color.red,"Activity","lines");
-					out.println(gnuplotPreferences.generatePlotLine(heuristicsDF,false));
+					out.println(gnuplotPreferences.generatePlotLine(heuristicsDF, f,"",false));
 				}
 				//				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
 
-				out.println("set autoscale");
-				out.println("set nologscale x");
-				out.println("set nologscale y");
-
+				
 				if(gnuplotPreferences.isDisplaySpeed()){
+					out.println("set autoscale x");
+					out.println("set nologscale x");
+					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+middle + "," + verybottom);
 					out.println("set title \"Number of propagations per second\"");
@@ -1644,7 +1682,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 							BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
 							String s;
 
-							while( (s=gnuInt.readLine())!=null){
+							while((s=gnuInt.readLine())!=null){
 								System.out.println(s);
 							}
 						}
