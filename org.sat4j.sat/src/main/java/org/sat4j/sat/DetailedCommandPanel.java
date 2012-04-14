@@ -1683,7 +1683,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 							String s;
 
 							while((s=gnuInt.readLine())!=null){
-								System.out.println(s);
+								if(s.trim().length()>0 && !s.toLowerCase().contains("warning") && !s.toLowerCase().contains("plot"))
+									System.out.println(s);
 							}
 						}
 						catch(IOException e){
