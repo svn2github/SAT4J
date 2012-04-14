@@ -71,19 +71,19 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 			outNeg = System.out;
 			outRestart = System.out;
 		}
-		counter = 0;
+		counter = 1;
 	}
 
 	@Override
 	public void assuming(int p) {
 		if (p > 0) {
 			outPos.println(counter + "\t" + p);
-			outNeg.println("#" + counter + "\t" + "1/0");
+			outNeg.println("#" + counter + "\t" + "0");
 		} else {
 			outNeg.println(counter + "\t" + -p);
-			outPos.println("#" + counter + "\t" + "1/0");
+			outPos.println("#" + counter + "\t" + "0");
 		}
-		outRestart.println("#" + counter + "\t" + "1/0");
+		outRestart.println("#" + counter + "\t" + "0");
 		counter++;
 
 	}
@@ -91,8 +91,9 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 	@Override
 	public void restarting() {
 		outRestart.println(counter + "\t" + nVar);
-		outNeg.println("#" + counter + "\t" + "1/0");
-		outPos.println("#" + counter + "\t" + "1/0");
+		outNeg.println("#" + counter + "\t" + "0");
+		outPos.println("#" + counter + "\t" + "0");
+		// counter++;
 	}
 
 	@Override

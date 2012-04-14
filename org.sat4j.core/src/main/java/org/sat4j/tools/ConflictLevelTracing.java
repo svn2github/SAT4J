@@ -69,7 +69,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		} catch (FileNotFoundException e) {
 			out = System.out;
 		}
-		counter = 0;
+		counter = 1;
 		// maxDlevel = 0;
 	}
 
@@ -80,8 +80,8 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		// maxDlevel = dlevel;
 		// }
 		this.dlevel = dlevel;
-		counter++;
 		outRestart.println("#" + counter + "\t" + "1/0");
+		counter++;
 	}
 
 	@Override
@@ -89,6 +89,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		outRestart.println(counter + "\t " + nVar);
 		// out.println(dlevel);
 		out.println("#" + counter + "\t" + "1/0");
+		// counter++;
 	}
 
 	@Override
