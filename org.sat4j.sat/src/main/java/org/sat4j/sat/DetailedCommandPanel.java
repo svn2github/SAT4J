@@ -72,6 +72,7 @@ import javax.swing.border.TitledBorder;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
+import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -86,6 +87,8 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
+import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
+import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -130,7 +133,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private ICDCL solver;
 	private Reader reader;
 	private IProblem problem;
-	private boolean optimizationMode;
+	private boolean optimizationMode=false;
 
 	private boolean useCustomizedSolver;
 
@@ -238,6 +241,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CLEAN = "Clean now";
 	private final static String MANUAL_CLEAN = "Manual clean: ";
 	private JLabel manualCleanLabel;
+	
+	private JLabel speedLabel;
+	private JLabel speedNameLabel;
+	private final static String SPEED = "Speed :";
+	private JLabel speedUnitLabel;
+	private final static String SPEED_UNIT = " propagations per second";
 
 	private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
 	private final static String DELETE_CLAUSES = "Automated clean: ";
@@ -505,14 +514,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		
 		optimisationModeCB = new JCheckBox(OPTMIZATION_MODE);
-		
+		optimisationModeCB.setSelected(optimizationMode);
 
 		JPanel tmpPanel1 = new JPanel();
 		tmpPanel1.add(choixSolver);
 		tmpPanel1.add(listeSolvers);
 		tmpPanel1.add(optimisationModeCB);
-
-		optimizationMode=false;
 		
 		optimisationModeCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -780,7 +787,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		});
 
-
+		
 		tmpPanel2.add(manualCleanLabel);
 		tmpPanel2.add(cleanButton);
 
@@ -796,8 +803,25 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		tmpPanel3.add(cleanUseOriginalStrategyCB);
 
+		
+		JPanel tmpPanel6 = new JPanel();
+		speedLabel = new JLabel("");
+		speedNameLabel = new JLabel(SPEED);
+		speedUnitLabel = new JLabel(SPEED_UNIT);
+		
+		tmpPanel6.add(speedNameLabel);
+		tmpPanel6.add(speedLabel);
+		tmpPanel6.add(speedUnitLabel);
+		
+		JPanel tmpPanel7 = new JPanel();
+		tmpPanel7.setLayout(new BorderLayout());
+		
+		tmpPanel7.add(tmpPanel2,BorderLayout.SOUTH);
+		tmpPanel7.add(tmpPanel6,BorderLayout.CENTER);
+		
+		
 		cleanPanel.add(tmpPanel3,BorderLayout.NORTH);
-		cleanPanel.add(tmpPanel2,BorderLayout.CENTER);
+		cleanPanel.add(tmpPanel7,BorderLayout.CENTER);
 		cleanPanel.add(tmpPanel,BorderLayout.SOUTH);
 
 	}
@@ -936,6 +960,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//		lubyPanel.add(factorField);
 
 	}
+	
+	public void setOptimisationMode(boolean optimizationMode){
+		this.optimizationMode = optimizationMode;
+		optimisationModeCB.setSelected(optimizationMode);
+	}
 
 	public void launchSolver(){
 
@@ -974,6 +1003,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
 		//		}
 
+		
+		IOrder order = solver.getOrder();
+//		if(order instanceof RandomWalkDecoratorObjective && )
+		
 		if(solver.getOrder() instanceof RandomWalkDecorator){
 			randomWalk = (RandomWalkDecorator)solver.getOrder();
 			randomWalk.setProbability(0);
@@ -983,8 +1016,38 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		else{
 			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
 		}
-
+//		
+//		if (optimizationMode
+//				&& order instanceof VarOrderHeapObjective) {
+//			randomWalk = new RandomWalkDecoratorObjective(
+//					(VarOrderHeapObjective) order, 0);
+//		} else {
+//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
+//		}
+		
 		solver.setOrder(randomWalk);
+		
+//		if(solver.getOrder() instanceof VarOrderHeapObjective){
+//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
+//			randomWalk.setProbability(0);
+//			probaRWField.setText("0");
+//			rwPanel.repaint();
+//		}
+//		else
+//		if(solver.getOrder() instanceof RandomWalkDecorator){
+//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+//			randomWalk.setProbability(0);
+//			probaRWField.setText("0");
+//			rwPanel.repaint();
+//		}
+//		else if(!optimizationMode){
+//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+//		}
+//		else {
+//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
+//		}
+
+//		solver.setOrder(randomWalk);
 
 		telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
 		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
@@ -1448,6 +1511,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		lbdRadio.setEnabled(enabled);
 		cleanAndEvaluationApplyButton.setEnabled(enabled);
 		cleanUseOriginalStrategyCB.setEnabled(enabled);
+		speedLabel.setEnabled(enabled);
+		speedUnitLabel.setEnabled(enabled);
+		speedNameLabel.setEnabled(enabled);
 		cleanPanel.repaint();
 	}
 
@@ -1725,14 +1791,32 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public ISolver getSolver(){
 		return (ISolver)problem;
 	}
+	
+	private long begin, end;
+	private int counter;
+	private long index;
+
+	private int nVar;
 
 	public void init(ISolverService solverService) {
+		nVar = solverService.nVars();
 	}
 
 	public void assuming(int p) {
 	}
 
 	public void propagating(int p, IConstr reason) {
+		end = System.currentTimeMillis();
+		if (end - begin >= 2000) {
+			long tmp = (end - begin);
+			index += tmp;
+			speedLabel.setText(counter / tmp * 1000+"");
+			speedLabel.invalidate();
+			
+			begin = System.currentTimeMillis();
+			counter = 0;
+		}
+		counter++;
 	}
 
 	public void backtracking(int p) {
@@ -1770,12 +1854,17 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void restarting() {
+		end = System.currentTimeMillis();
+		speedLabel.setText(counter / (end - begin)
+				* 1000+"");
 	}
 
 	public void backjump(int backjumpLevel) {
 	}
 
 	public void cleaning() {
+		end = System.currentTimeMillis();
+		speedLabel.setText(counter / (end - begin) * 1000+"");
 	}
 
 	public class MyTabbedPane extends JTabbedPane {
