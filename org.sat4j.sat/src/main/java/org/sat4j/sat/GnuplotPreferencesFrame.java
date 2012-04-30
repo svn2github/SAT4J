@@ -70,7 +70,7 @@ public class GnuplotPreferencesFrame extends JFrame {
 	private JCheckBox displayDecisionIndexesCB;
 	private final static String DECISION_INDEX = "Show index of decision variables";
 	private JCheckBox displaySpeedCB;
-	private final static String SPEED = "Show number of assignments per second";
+	private final static String SPEED = "Show number of propagations per second";
 	private JCheckBox displayConflictsTrailCB;
 	private final static String CONFLICTS_TRAIL = "Show trail level when a conflict occurs";
 	private JCheckBox displayConflictsDecisionCB;
