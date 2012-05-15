@@ -1159,17 +1159,23 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 						needToReduceDB = false;
 						// Runtime.getRuntime().gc();
 					}
-					// New variable decision
-					stats.decisions++;
-					int p = order.select();
-					if (p == ILits.UNDEFINED) {
-						confl = preventTheSameDecisionsToBeMade();
-						lastConflictMeansUnsat = false;
+					if (sharedConflict != null) {
+						// listener called ISolverService.backtrack()
+						confl = sharedConflict;
+						sharedConflict = null;
 					} else {
-						assert p > 1;
-						slistener.assuming(toDimacs(p));
-						boolean ret = assume(p);
-						assert ret;
+						// New variable decision
+						stats.decisions++;
+						int p = order.select();
+						if (p == ILits.UNDEFINED) {
+							confl = preventTheSameDecisionsToBeMade();
+							lastConflictMeansUnsat = false;
+						} else {
+							assert p > 1;
+							slistener.assuming(toDimacs(p));
+							boolean ret = assume(p);
+							assert ret;
+						}
 					}
 				}
 			}
