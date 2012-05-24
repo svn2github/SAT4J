@@ -45,5 +45,11 @@ public enum LearnedConstraintsEvaluationType {
 	/**
 	 * The clauses are evaluated using Glucose's Literal Block Distance.
 	 */
-	LBD;
+	LBD,
+
+	/**
+	 * LBD updated also when the unit propagation is performed on the unit
+	 * clauses.
+	 */
+	LBD2;
 }

@@ -172,6 +172,9 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
 		// TODO incActivity
 	}
 
+	public void setActivity(double d) {
+	}
+
 	/**
 	 * D?termine si la contrainte est apprise
 	 * 

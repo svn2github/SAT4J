@@ -84,4 +84,8 @@ public class OriginalBinaryClause extends BinaryClause {
 	public void incActivity(double claInc) {
 
 	}
+
+	public void setActivity(double claInc) {
+		// do nothing
+	}
 }

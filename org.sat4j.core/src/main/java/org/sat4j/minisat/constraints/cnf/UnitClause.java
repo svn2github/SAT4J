@@ -65,6 +65,10 @@ public class UnitClause implements Constr {
 		// silent to prevent problems with xplain trick.
 	}
 
+	public void setActivity(double claInc) {
+		// do nothing
+	}
+
 	public boolean locked() {
 		throw new UnsupportedOperationException();
 	}

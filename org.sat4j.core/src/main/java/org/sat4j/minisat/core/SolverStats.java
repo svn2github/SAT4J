@@ -74,6 +74,8 @@ public class SolverStats implements Serializable {
 
 	public int shortcuts;
 
+	protected long updateLBD;
+
 	public void reset() {
 		starts = 0;
 		decisions = 0;
@@ -90,6 +92,7 @@ public class SolverStats implements Serializable {
 		reducedliterals = 0;
 		changedreason = 0;
 		reduceddb = 0;
+		updateLBD = 0;
 	}
 
 	public void printStat(PrintWriter out, String prefix) {
@@ -111,6 +114,8 @@ public class SolverStats implements Serializable {
 		out.println(prefix + "reason swapping (by a shorter reason)\t: "
 				+ changedreason);
 		out.println(prefix + "Calls to reduceDB\t: " + reduceddb);
+		out.println(prefix + "Number of update (reduction) of LBD\t: "
+				+ updateLBD);
 	}
 
 	public Map<String, Number> toMap() {

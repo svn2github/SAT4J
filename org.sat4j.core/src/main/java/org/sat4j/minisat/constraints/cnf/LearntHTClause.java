@@ -96,4 +96,8 @@ public class LearntHTClause extends HTClause {
 	public void incActivity(double claInc) {
 		activity += claInc;
 	}
+
+	public void setActivity(double d) {
+		activity = d;
+	}
 }

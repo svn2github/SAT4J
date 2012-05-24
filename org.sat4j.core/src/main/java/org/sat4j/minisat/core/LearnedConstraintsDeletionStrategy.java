@@ -41,13 +41,40 @@ import org.sat4j.specs.IVec;
  */
 public interface LearnedConstraintsDeletionStrategy extends Serializable {
 
+	/**
+	 * 
+	 */
 	void init();
 
 	ConflictTimer getTimer();
 
+	/**
+	 * Hook method called when the solver wants to reduce the set of learned
+	 * clauses.
+	 * 
+	 * @param learnedConstrs
+	 */
 	void reduce(IVec<Constr> learnedConstrs);
 
-	void onConflict(Constr outLearnt);
+	/**
+	 * Hook method called when a new clause has just been derived during
+	 * conflict analysis.
+	 * 
+	 * @param outLearnt
+	 */
+	void onClauseLearning(Constr outLearnt);
 
+	/**
+	 * Hook method called on constraints participating to the conflict analysis.
+	 * 
+	 * @param reason
+	 */
 	void onConflictAnalysis(Constr reason);
+
+	/**
+	 * Hook method called when a unit clause is propagated thanks to from.
+	 * 
+	 * @param from
+	 */
+	void onPropagation(Constr from);
 }

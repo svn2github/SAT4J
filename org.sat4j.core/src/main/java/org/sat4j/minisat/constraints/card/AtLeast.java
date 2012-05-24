@@ -217,8 +217,10 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
 	 * @see org.sat4j.minisat.datatype.Constr#getActivity()
 	 */
 	public double getActivity() {
-		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public void setActivity(double d) {
 	}
 
 	/*
@@ -227,8 +229,6 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
 	 * @see org.sat4j.minisat.datatype.Constr#incActivity(double)
 	 */
 	public void incActivity(double claInc) {
-		// TODO Auto-generated method stub
-
 	}
 
 	/*

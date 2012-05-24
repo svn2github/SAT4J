@@ -120,8 +120,17 @@ public interface Constr extends IConstr {
 	void rescaleBy(double d);
 
 	/**
+	 * Set the activity at a specific value
+	 * 
+	 * @param d
+	 *            the new activity
+	 * @since 2.3.1
+	 */
+	void setActivity(double d);
+
+	/**
 	 * Method called when the constraint is to be asserted. It means that the
-	 * constraint was learnt during the search and it should now propagate some
+	 * constraint was learned during the search and it should now propagate some
 	 * truth values. In the clausal case, only one literal should be propagated.
 	 * In other cases, it might be different.
 	 * 
@@ -129,4 +138,5 @@ public interface Constr extends IConstr {
 	 *            a UnitPropagationListener to use for unit propagation.
 	 */
 	void assertConstraint(UnitPropagationListener s);
+
 }

@@ -157,6 +157,10 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
 		return activity;
 	}
 
+	public void setActivity(double d) {
+		activity = d;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer stb = new StringBuffer();

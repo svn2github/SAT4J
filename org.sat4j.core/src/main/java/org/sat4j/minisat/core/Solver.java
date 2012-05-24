@@ -505,6 +505,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		voc.setLevel(p, decisionLevel());
 		voc.setReason(p, from);
 		trail.push(p);
+		if (from != null && from.learnt()) {
+			learnedConstraintsDeletionStrategy.onPropagation(from);
+		}
 		return true;
 	}
 
@@ -580,7 +583,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 		Constr c = dsfactory.createUnregisteredClause(outLearnt);
 		// slistener.learn(c);
-		learnedConstraintsDeletionStrategy.onConflict(c);
+		learnedConstraintsDeletionStrategy.onClauseLearning(c);
 		results.reason = c;
 
 		assert outBtlevel > -1;
@@ -1426,7 +1429,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 			}
 
-			public void onConflict(Constr outLearnt) {
+			public void onClauseLearning(Constr outLearnt) {
 				// TODO Auto-generated method stub
 
 			}
@@ -1442,6 +1445,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 			public ConflictTimer getTimer() {
 				return aTimer;
+			}
+
+			public void onPropagation(Constr from) {
+				// TODO Auto-generated method stub
+
 			}
 		};
 	}
@@ -1489,7 +1497,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				// do nothing
 			}
 
-			public void onConflict(Constr constr) {
+			public void onClauseLearning(Constr constr) {
 				// do nothing
 
 			}
@@ -1497,6 +1505,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			public void onConflictAnalysis(Constr reason) {
 				if (reason.learnt())
 					claBumpActivity(reason);
+			}
+
+			public void onPropagation(Constr from) {
+				// do nothing
 			}
 		};
 	}
@@ -1521,76 +1533,109 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 */
 	public final LearnedConstraintsDeletionStrategy memory_based = activityBased(memoryTimer);
 
-	private LearnedConstraintsDeletionStrategy lbdBased(
-			final ConflictTimer timer) {
-		return new LearnedConstraintsDeletionStrategy() {
+	private class GlucoseLCDS implements LearnedConstraintsDeletionStrategy {
 
-			private static final long serialVersionUID = 1L;
-			private int[] flags = new int[0];
-			private int flag = 0;
-			// private int wall = 0;
+		private static final long serialVersionUID = 1L;
+		private int[] flags = new int[0];
+		private int flag = 0;
+		// private int wall = 0;
 
-			private final ConflictTimer clauseManagement = timer;
+		private final ConflictTimer clauseManagement;
 
-			public void reduce(IVec<Constr> learnedConstrs) {
-				sortOnActivity();
-				int i, j;
-				for (i = j = learnedConstrs.size() / 2; i < learnedConstrs
-						.size(); i++) {
-					Constr c = learnedConstrs.get(i);
-					if (c.locked() || c.getActivity() <= 2.0) {
-						learnedConstrs.set(j++, learnts.get(i));
-					} else {
-						c.remove(Solver.this);
-					}
+		GlucoseLCDS(ConflictTimer timer) {
+			clauseManagement = timer;
+		}
+
+		public void reduce(IVec<Constr> learnedConstrs) {
+			sortOnActivity();
+			int i, j;
+			for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
+				Constr c = learnedConstrs.get(i);
+				if (c.locked() || c.getActivity() <= 2.0) {
+					learnedConstrs.set(j++, learnts.get(i));
+				} else {
+					c.remove(Solver.this);
 				}
-				if (verbose) {
-					out.log(getLogPrefix()
-							+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-							+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
-					// out.flush();
+			}
+			if (verbose) {
+				out.log(getLogPrefix()
+						+ "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
+						+ " clauses out of " + learnedConstrs.size() + " with flag " + flag + "/" + stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
+				// out.flush();
+			}
+			learnts.shrinkTo(j);
+
+		}
+
+		public ConflictTimer getTimer() {
+			return clauseManagement;
+		}
+
+		@Override
+		public String toString() {
+			return "Glucose learned constraints deletion strategy";
+		}
+
+		public void init() {
+			final int howmany = voc.nVars();
+			// wall = constrs.size() > 10000 ? constrs.size() : 10000;
+			if (flags.length <= howmany) {
+				flags = new int[howmany + 1];
+			}
+			flag = 0;
+			clauseManagement.reset();
+		}
+
+		public void onClauseLearning(Constr constr) {
+			int nblevel = computeLBD(constr);
+			constr.incActivity(nblevel);
+		}
+
+		protected int computeLBD(Constr constr) {
+			int nblevel = 1;
+			flag++;
+			int currentLevel;
+			for (int i = 1; i < constr.size(); i++) {
+				currentLevel = voc.getLevel(constr.get(i));
+				if (flags[currentLevel] != flag) {
+					flags[currentLevel] = flag;
+					nblevel++;
 				}
-				learnts.shrinkTo(j);
-
 			}
+			return nblevel;
+		}
 
-			public ConflictTimer getTimer() {
-				return clauseManagement;
-			}
+		public void onConflictAnalysis(Constr reason) {
 
-			@Override
-			public String toString() {
-				return "Glucose learned constraints deletion strategy";
-			}
+		}
 
-			public void init() {
-				final int howmany = voc.nVars();
-				// wall = constrs.size() > 10000 ? constrs.size() : 10000;
-				if (flags.length <= howmany) {
-					flags = new int[howmany + 1];
+		public void onPropagation(Constr from) {
+
+		}
+	}
+
+	private class Glucose2LCDS extends GlucoseLCDS {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		Glucose2LCDS(ConflictTimer timer) {
+			super(timer);
+		}
+
+		@Override
+		public void onPropagation(Constr from) {
+			if (from.getActivity() > 2.0) {
+				int nblevel = computeLBD(from);
+				if (nblevel < from.getActivity()) {
+					stats.updateLBD++;
+					from.setActivity(nblevel);
 				}
-				flag = 0;
-				clauseManagement.reset();
 			}
+		}
 
-			public void onConflict(Constr constr) {
-				int nblevel = 1;
-				flag++;
-				int currentLevel;
-				for (int i = 1; i < constr.size(); i++) {
-					currentLevel = voc.getLevel(constr.get(i));
-					if (flags[currentLevel] != flag) {
-						flags[currentLevel] = flag;
-						nblevel++;
-					}
-				}
-				constr.incActivity(nblevel);
-			}
-
-			public void onConflictAnalysis(Constr reason) {
-				// do nothing
-			}
-		};
 	}
 
 	private final ConflictTimer lbdTimer = new ConflictTimerAdapter(1000) {
@@ -1627,7 +1672,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	/**
 	 * @since 2.1
 	 */
-	public final LearnedConstraintsDeletionStrategy glucose = lbdBased(lbdTimer);
+	public final LearnedConstraintsDeletionStrategy glucose = new Glucose2LCDS(
+			lbdTimer);
 
 	protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = glucose;
 
@@ -2245,7 +2291,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			learnedConstraintsDeletionStrategy = activityBased(timer);
 			break;
 		case LBD:
-			learnedConstraintsDeletionStrategy = lbdBased(timer);
+			learnedConstraintsDeletionStrategy = new GlucoseLCDS(timer);
+			break;
+		case LBD2:
+			learnedConstraintsDeletionStrategy = new Glucose2LCDS(timer);
 			break;
 		}
 		if (conflictCount != null) {

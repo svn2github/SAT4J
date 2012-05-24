@@ -66,4 +66,8 @@ public class LearntBinaryClause extends BinaryClause {
 	public void incActivity(double claInc) {
 		activity += claInc;
 	}
+
+	public void setActivity(double d) {
+		activity = d;
+	}
 }

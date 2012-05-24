@@ -180,7 +180,6 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 	 * @see Constr#getActivity()
 	 */
 	public double getActivity() {
-		// TODO getActivity
 		return 0;
 	}
 
@@ -192,7 +191,9 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 	 * @see Constr#incActivity(double claInc)
 	 */
 	public void incActivity(double claInc) {
-		// TODO incActivity
+	}
+
+	public void setActivity(double d) {
 	}
 
 	/**
