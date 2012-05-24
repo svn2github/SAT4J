@@ -239,7 +239,7 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 			clauseManagement.reset();
 		}
 
-		public void onConflict(Constr constr) {
+		public void onClauseLearning(Constr constr) {
 			boolean fullObj = true;
 
 			for (int i = 0; i < constr.size(); i++) {
@@ -254,6 +254,11 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 		}
 
 		public void onConflictAnalysis(Constr reason) {
+			// do nothing
+		}
+
+		@Override
+		public void onPropagation(Constr from) {
 			// do nothing
 		}
 	};
