@@ -63,13 +63,20 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     private BigInteger falsifiedWeight = BigInteger.ZERO;
 
     protected int nbnewvar;
+	private boolean maxVarIdFixed = false;
 
-        
     public WeightedMaxSatDecorator(IPBSolver solver) {
         super(solver);
         solver.setObjectiveFunction(obj);
     }
 
+	@Override
+	public int newVar(int howmany) {
+		int res = super.newVar(howmany);
+		maxVarIdFixed = true;
+		return res;
+	}
+        
     @Override
     public void setExpectedNumberOfClauses(int nb) {
         lits.ensure(nb);
@@ -83,6 +90,13 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
         this.top = top;
     }
 
+	protected void checkMaxVarId() {
+		if (!maxVarIdFixed) {
+			throw new IllegalStateException(
+					"Please call newVar(int) before adding constraints!!!");
+		}
+	}
+	
 	/**
 	 * Add a soft clause to the solver.
 	 * 
@@ -98,7 +112,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 	 * @see #setTopWeight(int)
 	 */
     @Override
-    public IConstr addClause(IVecInt literals) throws ContradictionException {
+    public IConstr addClause(IVecInt literals) throws ContradictionException {	
 		return addSoftClause(1, literals);
 	}
 
@@ -148,6 +162,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 
 	public IConstr addSoftClause(BigInteger weight, IVecInt literals)
 		throws ContradictionException {
+		checkMaxVarId();
         if (weight.compareTo(top)<0) {
 
             if (literals.size() == 1) {
@@ -235,6 +250,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 	 * @since 2.3
 	 */
 	public IConstr addSoftAtLeast(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
+		checkMaxVarId();
 		if (weight.compareTo(top)<0) {
 			coefs.push(weight);
             int newvar = nextFreeVarId(true);
@@ -288,6 +304,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 	 * @since 2.3
 	 */
 	public IConstr addSoftAtMost(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
+		checkMaxVarId();
 		if (weight.compareTo(top)<0) {
 			coefs.push(weight);
             int newvar = nextFreeVarId(true);
