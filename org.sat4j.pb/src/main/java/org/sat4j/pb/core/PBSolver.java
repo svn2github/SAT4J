@@ -257,7 +257,6 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
 			// do nothing
 		}
 
-		@Override
 		public void onPropagation(Constr from) {
 			// do nothing
 		}
