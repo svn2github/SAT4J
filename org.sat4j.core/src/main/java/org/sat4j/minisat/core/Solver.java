@@ -2053,8 +2053,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		stb.append(prefix);
 		if (isSolverKeptHot()) {
 			stb.append("Heuristics kept accross calls (keep the solver \"hot\")\n");
+			stb.append(prefix);
 		}
-		stb.append(prefix);
 		stb.append("--- End Solver configuration ---"); //$NON-NLS-1$
 		return stb.toString();
 	}
