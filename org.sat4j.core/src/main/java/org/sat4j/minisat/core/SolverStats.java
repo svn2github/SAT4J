@@ -74,7 +74,7 @@ public class SolverStats implements Serializable {
 
 	public int shortcuts;
 
-	protected long updateLBD;
+	public long updateLBD;
 
 	public void reset() {
 		starts = 0;
