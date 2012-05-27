@@ -1626,6 +1626,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		}
 
 		@Override
+		public String toString() {
+			return "Glucose 2 learned constraints deletion strategy";
+		}
+
+		@Override
 		public void onPropagation(Constr from) {
 			if (from.getActivity() > 2.0) {
 				int nblevel = computeLBD(from);
