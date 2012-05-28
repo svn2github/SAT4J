@@ -57,6 +57,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	@Override
 	public IConstr addAtLeast(IVecInt literals, int degree)
 			throws ContradictionException {
+		checkMaxVarId();
 		IVecInt coeffs = new VecInt(literals.size(), 1);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
@@ -74,6 +75,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	@Override
 	public IConstr addAtMost(IVecInt literals, int degree)
 			throws ContradictionException {
+		checkMaxVarId();
 		IVecInt coeffs = new VecInt(literals.size(), 1);
 		int newvar = createNewVar(literals);
 		literals.push(newvar);
@@ -91,6 +93,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 	@Override
 	public IConstr addExactly(IVecInt literals, int n)
 			throws ContradictionException {
+		checkMaxVarId();
 		int newvar = createNewVar(literals);
 
 		// at most
@@ -115,6 +118,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
+		checkMaxVarId();
 		int newvar = createNewVar(lits);
 		lits.push(newvar);
 		if (moreThan && d.signum() >= 0) {
