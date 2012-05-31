@@ -72,6 +72,7 @@ import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
+import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
@@ -484,16 +485,22 @@ public class Lanceur extends AbstractLauncher {
 		if (params != null) {
 			theSolver.setSearchParams(params);
 		}
-		String memory = pf.getProperty("MEMORY");
-		if ("GLUCOSE".equalsIgnoreCase(memory)) {
-			log("configuring MEMORY");
-			theSolver.setLearnedConstraintsDeletionStrategy(aSolver.glucose);
+		String memory = pf.getProperty("CLEANING");
+		if (memory!=null) {
+		try {
+			log("configuring CLEANING");
+			LearnedConstraintsEvaluationType memoryType = LearnedConstraintsEvaluationType.valueOf(memory);
+			theSolver.setLearnedConstraintsDeletionStrategy(memoryType);
+		} catch (IllegalArgumentException iae) {
+			log("wrong memory management setting: "+memory);
+			showAvailableConstraintsCleaningStrategies();
+		}
 		}
 		return theSolver;
 	}
 
 	private void stringUsage() {
-		log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS");
+		log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS, CLEANING");
 		log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
 	}
 
@@ -803,6 +810,10 @@ public class Lanceur extends AbstractLauncher {
 
 	protected void showSimplifiers() {
 		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
+	}
+	
+	protected void showAvailableConstraintsCleaningStrategies() {
+		log("Available learned constraints cleaning strategies"+Arrays.asList(LearnedConstraintsEvaluationType.values()));
 	}
 
 	@Override
