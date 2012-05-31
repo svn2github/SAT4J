@@ -2307,6 +2307,31 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		}
 	}
 
+	/**
+	 * @since 2.3.2
+	 */
+	public void setLearnedConstraintsDeletionStrategy(
+			LearnedConstraintsEvaluationType evaluation) {
+		if (conflictCount != null) {
+			conflictCount.remove(learnedConstraintsDeletionStrategy.getTimer());
+		}
+		switch (evaluation) {
+		case ACTIVITY:
+			learnedConstraintsDeletionStrategy = activityBased(memoryTimer);
+			break;
+		case LBD:
+			learnedConstraintsDeletionStrategy = new GlucoseLCDS(lbdTimer);
+			break;
+		case LBD2:
+			learnedConstraintsDeletionStrategy = new Glucose2LCDS(lbdTimer);
+			break;
+		}
+		if (conflictCount != null) {
+			conflictCount.add(learnedConstraintsDeletionStrategy.getTimer());
+			learnedConstraintsDeletionStrategy.init();
+		}
+	}
+
 	public boolean isSolverKeptHot() {
 		return keepHot;
 	}
