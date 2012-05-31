@@ -105,6 +105,15 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 	void setLearnedConstraintsDeletionStrategy(ConflictTimer timer,
 			LearnedConstraintsEvaluationType evaluation);
 
+	/**
+	 * 
+	 * @param evaluation
+	 *            the strategy used to evaluate learned clauses.
+	 * @since 2.3.2
+	 */
+	void setLearnedConstraintsDeletionStrategy(
+			LearnedConstraintsEvaluationType evaluation);
+
 	IOrder getOrder();
 
 	void setOrder(IOrder h);
