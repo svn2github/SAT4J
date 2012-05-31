@@ -154,6 +154,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private String instancePath;
 	private JButton browseButton;
 	private final static String BROWSE = "Browse";
+	
+	private String whereToWriteFiles;
 
 
 	private final static String MINISAT_PREFIX = "minisat";
@@ -230,10 +232,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String EVALUATION_TYPE = "Clauses evaluation type";
 	private final static String ACTIVITY_BASED = "Activity";
 	private final static String LBD_BASED = "LBD";
+	private final static String LBD2_BASED = "LBD 2";
 	private JLabel evaluationLabel;
 	private ButtonGroup evaluationGroup;
 	private JRadioButton activityRadio;
 	private JRadioButton lbdRadio;
+	private JRadioButton lbd2Radio;
 
 	private JButton cleanAndEvaluationApplyButton;
 
@@ -334,6 +338,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
 		super();
+		
+		
 
 		this.gnuplotPreferences = new GnuplotPreferences();
 
@@ -460,6 +466,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
+		
+		updateWriter();
 	}
 
 
@@ -746,13 +754,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		evaluationGroup = new ButtonGroup();
 		activityRadio = new JRadioButton(ACTIVITY_BASED);
 		lbdRadio = new JRadioButton(LBD_BASED);
+		lbd2Radio = new JRadioButton(LBD2_BASED);
 
 		evaluationGroup.add(activityRadio);
 		evaluationGroup.add(lbdRadio);
+		evaluationGroup.add(lbd2Radio);
 
 		tmpPanel4.add(evaluationLabel);
 		tmpPanel4.add(activityRadio);
 		tmpPanel4.add(lbdRadio);
+		tmpPanel4.add(lbd2Radio);
 
 
 		cleanAndEvaluationApplyButton = new JButton("Apply changes");
@@ -1076,7 +1087,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 
-		String whereToWriteFiles = instancePath;
+		whereToWriteFiles = instancePath;
 
 		if(ramdisk.length()>0){
 			String[] instancePathSplit= instancePath.split("/");
@@ -1287,9 +1298,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.ACTIVITY);
 			log("Changed clauses evaluation type to activity");
 		}
-		else{
+		else if(lbdRadio.isSelected()){
 			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.LBD);
 			log("Changed clauses evaluation type to lbd");
+		}
+		else if(lbd2Radio.isSelected()){
+			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.LBD2);
+			log("Changed clauses evaluation type to lbd2");
 		}
 	}
 
@@ -1509,6 +1524,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		evaluationLabel.setEnabled(enabled);
 		activityRadio.setEnabled(enabled);
 		lbdRadio.setEnabled(enabled);
+		lbd2Radio.setEnabled(enabled);
 		cleanAndEvaluationApplyButton.setEnabled(enabled);
 		cleanUseOriginalStrategyCB.setEnabled(enabled);
 		speedLabel.setEnabled(enabled);
@@ -1524,6 +1540,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		activityRadio.setEnabled(!enabled);
 		evaluationLabel.setEnabled(!enabled);
 		lbdRadio.setEnabled(!enabled);
+		lbd2Radio.setEnabled(!enabled);
 		cleanAndEvaluationApplyButton.setEnabled(!enabled);
 		cleanSlider.setEnabled(!enabled);
 		cleanButton.setEnabled(!enabled);
@@ -1793,13 +1810,26 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 	
 	private long begin, end;
-	private int counter;
-	private long index;
+	private int propagationsCounter;
+//	private long index;
 
-	private int nVar;
+//	private int nVar;
+	private int conflictCounter;
+	
+	private PrintStream outSolutionFound;
+	
+	private void updateWriter() {
+		try {
+			outSolutionFound = new PrintStream(new FileOutputStream(whereToWriteFiles + "_solutions.dat"));
+		} catch (FileNotFoundException e) {
+			outSolutionFound = System.out;
+		}
+		
+	}
 
 	public void init(ISolverService solverService) {
-		nVar = solverService.nVars();
+//		nVar = solverService.nVars();
+		conflictCounter=0;
 	}
 
 	public void assuming(int p) {
@@ -1809,14 +1839,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		end = System.currentTimeMillis();
 		if (end - begin >= 2000) {
 			long tmp = (end - begin);
-			index += tmp;
-			speedLabel.setText(counter / tmp * 1000+"");
+//			index += tmp;
+			speedLabel.setText(propagationsCounter / tmp * 1000+"");
 			speedLabel.invalidate();
 			
 			begin = System.currentTimeMillis();
-			counter = 0;
+			propagationsCounter = 0;
 		}
-		counter++;
+		propagationsCounter++;
 	}
 
 	public void backtracking(int p) {
@@ -1832,6 +1862,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+		conflictCounter++;
 	}
 
 	public void conflictFound(int p) {
@@ -1842,6 +1873,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		log("Found a solution !! ");
 		logsameline(stringWriter.toString());
 		stringWriter.getBuffer().delete(0, stringWriter.getBuffer().length());
+		outSolutionFound.println(conflictCounter + "\t");
 	}
 
 	public void beginLoop() {
@@ -1855,7 +1887,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void restarting() {
 		end = System.currentTimeMillis();
-		speedLabel.setText(counter / (end - begin)
+		speedLabel.setText(propagationsCounter / (end - begin)
 				* 1000+"");
 	}
 
@@ -1864,7 +1896,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void cleaning() {
 		end = System.currentTimeMillis();
-		speedLabel.setText(counter / (end - begin) * 1000+"");
+		speedLabel.setText(propagationsCounter / (end - begin) * 1000+"");
 	}
 
 	public class MyTabbedPane extends JTabbedPane {
