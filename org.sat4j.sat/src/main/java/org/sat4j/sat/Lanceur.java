@@ -355,7 +355,7 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("y")) {
 				asolver.setDBSimplificationAllowed(true);
 			}
-			
+
 			if (isModeOptimization) {
 				assert asolver instanceof IPBSolver;
 				problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
@@ -486,15 +486,16 @@ public class Lanceur extends AbstractLauncher {
 			theSolver.setSearchParams(params);
 		}
 		String memory = pf.getProperty("CLEANING");
-		if (memory!=null) {
-		try {
-			log("configuring CLEANING");
-			LearnedConstraintsEvaluationType memoryType = LearnedConstraintsEvaluationType.valueOf(memory);
-			theSolver.setLearnedConstraintsDeletionStrategy(memoryType);
-		} catch (IllegalArgumentException iae) {
-			log("wrong memory management setting: "+memory);
-			showAvailableConstraintsCleaningStrategies();
-		}
+		if (memory != null) {
+			try {
+				log("configuring CLEANING");
+				LearnedConstraintsEvaluationType memoryType = LearnedConstraintsEvaluationType
+						.valueOf(memory);
+				theSolver.setLearnedConstraintsDeletionStrategy(memoryType);
+			} catch (IllegalArgumentException iae) {
+				log("wrong memory management setting: " + memory);
+				showAvailableConstraintsCleaningStrategies();
+			}
 		}
 		return theSolver;
 	}
@@ -811,9 +812,10 @@ public class Lanceur extends AbstractLauncher {
 	protected void showSimplifiers() {
 		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
 	}
-	
+
 	protected void showAvailableConstraintsCleaningStrategies() {
-		log("Available learned constraints cleaning strategies"+Arrays.asList(LearnedConstraintsEvaluationType.values()));
+		log("Available learned constraints cleaning strategies"
+				+ Arrays.asList(LearnedConstraintsEvaluationType.values()));
 	}
 
 	@Override
