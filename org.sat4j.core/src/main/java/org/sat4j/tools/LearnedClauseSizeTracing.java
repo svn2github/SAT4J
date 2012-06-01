@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
@@ -48,29 +44,22 @@ public class LearnedClauseSizeTracing extends
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String filename;
-	private PrintStream out;
+	private final IVisualizationTool visuTool;
+	private int counter;
 
-	public LearnedClauseSizeTracing(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
-
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-		}
+	public LearnedClauseSizeTracing(IVisualizationTool visuTool) {
+		this.visuTool = visuTool;
+		counter = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(confl.size());
+		visuTool.addPoint(counter, confl.size());
+		counter++;
 	}
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
+		visuTool.end();
 	}
 }

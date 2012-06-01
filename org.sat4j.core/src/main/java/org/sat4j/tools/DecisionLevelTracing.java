@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
@@ -47,22 +43,13 @@ public class DecisionLevelTracing extends SearchListenerAdapter<ISolverService> 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String filename;
-	private PrintStream out;
-
 	private int counter;
 
-	public DecisionLevelTracing(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
+	private final IVisualizationTool visuTool;
 
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-		}
+	public DecisionLevelTracing(IVisualizationTool visuTool) {
+		this.visuTool = visuTool;
+		visuTool.init();
 		counter = 0;
 	}
 
@@ -73,17 +60,17 @@ public class DecisionLevelTracing extends SearchListenerAdapter<ISolverService> 
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
+		visuTool.end();
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
+		visuTool.init();
 	}
 
 	@Override
 	public void backjump(int backjumpLevel) {
-		out.println(counter + "\t" + backjumpLevel);
+		visuTool.addPoint(counter, backjumpLevel);
 	}
 
 }

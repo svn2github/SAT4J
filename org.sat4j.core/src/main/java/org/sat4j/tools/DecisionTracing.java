@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
@@ -48,64 +44,55 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 
 	private int counter;
 
-	private final String filename;
-	private PrintStream outPos;
-	private PrintStream outNeg;
-	private PrintStream outRestart;
+	private final IVisualizationTool positiveVisu;
+	private final IVisualizationTool negativeVisu;
+	private final IVisualizationTool restartVisu;
+
+	// private final String filename;
+	// private PrintStream outPos;
+	// private PrintStream outNeg;
+	// private PrintStream outRestart;
 	private int nVar;
 
-	public DecisionTracing(String filename) {
-		this.filename = filename;
-	}
+	public DecisionTracing(IVisualizationTool positiveVisu,
+			IVisualizationTool negativeVisu, IVisualizationTool restartVisu) {
+		this.positiveVisu = positiveVisu;
+		this.negativeVisu = negativeVisu;
+		this.restartVisu = restartVisu;
 
-	private void updateWriter() {
-		try {
-			outPos = new PrintStream(
-					new FileOutputStream(filename + "-pos.dat"));
-			outNeg = new PrintStream(
-					new FileOutputStream(filename + "-neg.dat"));
-			outRestart = new PrintStream(new FileOutputStream(filename
-					+ "-restart.dat"));
-		} catch (FileNotFoundException e) {
-			outPos = System.out;
-			outNeg = System.out;
-			outRestart = System.out;
-		}
 		counter = 1;
 	}
 
 	@Override
 	public void assuming(int p) {
 		if (p > 0) {
-			outPos.println(counter + "\t" + p);
-			outNeg.println("#" + counter + "\t" + "0");
+			positiveVisu.addPoint(counter, p);
+			negativeVisu.addInvisiblePoint(counter, 0);
 		} else {
-			outNeg.println(counter + "\t" + -p);
-			outPos.println("#" + counter + "\t" + "0");
+			negativeVisu.addPoint(counter, -p);
+			positiveVisu.addInvisiblePoint(counter, 0);
 		}
-		outRestart.println("#" + counter + "\t" + "0");
+		restartVisu.addInvisiblePoint(counter, 0);
 		counter++;
-
 	}
 
 	@Override
 	public void restarting() {
-		outRestart.println(counter + "\t" + nVar);
-		outNeg.println("#" + counter + "\t" + "0");
-		outPos.println("#" + counter + "\t" + "0");
-		// counter++;
+		restartVisu.addPoint(counter, nVar);
+		positiveVisu.addInvisiblePoint(counter, 0);
+		negativeVisu.addInvisiblePoint(counter, 0);
 	}
 
 	@Override
 	public void end(Lbool result) {
-		outPos.close();
-		outNeg.close();
-		outRestart.close();
+		positiveVisu.end();
+		negativeVisu.end();
+		restartVisu.end();
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
+		counter = 1;
 	}
 
 	@Override

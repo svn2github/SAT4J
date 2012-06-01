@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
@@ -43,10 +39,9 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String filename;
-	private PrintStream out;
-	private PrintStream outClean;
-	private PrintStream outRestart;
+	private final IVisualizationTool visuTool;
+	private final IVisualizationTool cleanVisuTool;
+	private final IVisualizationTool restartVisuTool;
 
 	private long begin, end;
 	private int counter;
@@ -54,23 +49,16 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
 	private int nVar;
 
-	public SpeedTracing(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
+	public SpeedTracing(IVisualizationTool visuTool,
+			IVisualizationTool cleanVisuTool, IVisualizationTool restartVisuTool) {
+		this.visuTool = visuTool;
+		this.cleanVisuTool = cleanVisuTool;
+		this.restartVisuTool = restartVisuTool;
 
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-			outClean = new PrintStream(new FileOutputStream(filename
-					+ "-clean.dat"));
-			outRestart = new PrintStream(new FileOutputStream(filename
-					+ "-restart.dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-			outClean = System.out;
-			outRestart = System.out;
-		}
+		visuTool.init();
+		cleanVisuTool.init();
+		restartVisuTool.init();
+
 		begin = System.currentTimeMillis();
 		counter = 0;
 		index = 0;
@@ -87,9 +75,9 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 		if (end - begin >= 2000) {
 			long tmp = (end - begin);
 			index += tmp;
-			out.println(index / 1000.0 + "\t" + counter / tmp * 1000);
-			outClean.println(index / 1000.0 + "\t" + 0);
-			outRestart.println(index / 1000.0 + "\t" + 0);
+			visuTool.addPoint(index / 1000.0, counter / tmp * 1000);
+			cleanVisuTool.addPoint(index / 1000.0, 0);
+			restartVisuTool.addPoint(index / 1000.0, 0);
 			begin = System.currentTimeMillis();
 			counter = 0;
 		}
@@ -98,17 +86,18 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
-		outClean.close();
+		visuTool.end();
+		cleanVisuTool.end();
+		restartVisuTool.end();
 	}
 
 	@Override
 	public void cleaning() {
 		end = System.currentTimeMillis();
 		long indexClean = index + (end - begin);
-		out.println(indexClean / 1000.0 + "\t" + counter / (end - begin) * 1000);
-		outClean.println(indexClean / 1000.0 + "\t" + nVar);
-		outRestart.println("#ignore");
+		visuTool.addPoint(indexClean / 1000.0, counter / (end - begin) * 1000);
+		cleanVisuTool.addPoint(indexClean / 1000.0, nVar);
+		restartVisuTool.addInvisiblePoint(indexClean, 0);
 		// out.println("# ignore");
 	}
 
@@ -116,16 +105,20 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 	public void restarting() {
 		end = System.currentTimeMillis();
 		long indexRestart = index + (end - begin);
-		out.println(indexRestart / 1000.0 + "\t" + counter / (end - begin)
-				* 1000);
-		outRestart.println(indexRestart / 1000.0 + "\t" + nVar);
-		outClean.println("#ignore");
-		// out.println("# ignore");
+		visuTool.addPoint(indexRestart / 1000.0, counter / (end - begin) * 1000);
+		restartVisuTool.addPoint(indexRestart / 1000.0, nVar);
+		cleanVisuTool.addInvisiblePoint(indexRestart, 0);
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
+		visuTool.init();
+		cleanVisuTool.init();
+		restartVisuTool.init();
+
+		begin = System.currentTimeMillis();
+		counter = 0;
+		index = 0;
 	}
 
 	@Override

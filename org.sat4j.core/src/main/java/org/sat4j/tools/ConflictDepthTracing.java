@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
@@ -47,43 +43,42 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String filename;
-	private PrintStream out;
+	// private final String filename;
+	// private PrintStream out;
 
 	private int counter;
 
-	public ConflictDepthTracing(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
+	private final IVisualizationTool conflictDepthVisu;
 
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-		}
+	// public ConflictDepthTracing(String filename) {
+	// this.filename = filename;
+	// updateWriter();
+	// }
+
+	public ConflictDepthTracing(IVisualizationTool conflictDepthVisu) {
+		this.conflictDepthVisu = conflictDepthVisu;
 		counter = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(counter + "\t" + trailLevel);
+		conflictDepthVisu.addPoint(counter, trailLevel);
 		counter++;
 	}
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
+		conflictDepthVisu.end();
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
+		conflictDepthVisu.init();
+		counter = 0;
 	}
 
 	@Override
 	public void restarting() {
-		out.println("#" + counter + "\t" + "1/0");
+		conflictDepthVisu.addInvisiblePoint(counter, 0);
 	}
 }

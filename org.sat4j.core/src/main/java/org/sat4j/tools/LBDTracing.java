@@ -29,10 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
@@ -44,36 +40,29 @@ public class LBDTracing extends SearchListenerAdapter<ISolverService> {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private final String filename;
-	private PrintStream out;
 
-	public LBDTracing(String filename) {
-		this.filename = filename;
-	}
+	private final IVisualizationTool visuTool;
+	private int counter;
 
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-		} catch (FileNotFoundException e) {
-			System.err.println(e);
-			out = System.out;
-		}
+	public LBDTracing(IVisualizationTool visuTool) {
+		this.visuTool = visuTool;
+		counter = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(((Constr) confl).getActivity());
+		visuTool.addPoint(counter, (((Constr) confl).getActivity()));
 
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
-
+		visuTool.init();
+		counter = 0;
 	}
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
+		visuTool.end();
 	}
 }

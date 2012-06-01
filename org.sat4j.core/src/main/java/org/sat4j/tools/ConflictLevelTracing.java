@@ -29,8 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import org.sat4j.specs.IConstr;
@@ -50,57 +48,46 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 
 	private static final long serialVersionUID = 1L;
 
-	private final String filename;
+	// private final String filename;
 	private PrintStream out;
 	private PrintStream outRestart;
 	private int nVar;
-	private int dlevel;
 
-	public ConflictLevelTracing(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
+	private final IVisualizationTool visuTool;
+	private final IVisualizationTool restartVisuTool;
 
-	private void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-			outRestart = new PrintStream(new FileOutputStream(filename
-					+ "-restart.dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-		}
+	public ConflictLevelTracing(IVisualizationTool visuTool,
+			IVisualizationTool restartVisuTool) {
+		this.visuTool = visuTool;
+		this.restartVisuTool = restartVisuTool;
+
 		counter = 1;
-		// maxDlevel = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		out.println(counter + "\t" + dlevel);
-		// if (dlevel > maxDlevel) {
-		// maxDlevel = dlevel;
-		// }
-		this.dlevel = dlevel;
-		outRestart.println("#" + counter + "\t" + "1/0");
+		visuTool.addPoint(counter, dlevel);
+		restartVisuTool.addInvisiblePoint(counter, dlevel);
 		counter++;
 	}
 
 	@Override
 	public void restarting() {
-		outRestart.println(counter + "\t " + nVar);
-		// out.println(dlevel);
-		out.println("#" + counter + "\t" + "1/0");
-		// counter++;
+		restartVisuTool.addPoint(counter, nVar);
+		visuTool.addInvisiblePoint(counter, nVar);
 	}
 
 	@Override
 	public void end(Lbool result) {
-		out.close();
-		outRestart.close();
+		visuTool.end();
+		restartVisuTool.end();
 	}
 
 	@Override
 	public void start() {
-		updateWriter();
+		visuTool.init();
+		restartVisuTool.init();
+		counter = 1;
 	}
 
 	@Override
