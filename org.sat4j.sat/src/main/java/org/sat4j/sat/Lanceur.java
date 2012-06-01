@@ -99,6 +99,7 @@ import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
 import org.sat4j.tools.DotSearchTracing;
+import org.sat4j.tools.FileBasedVisualizationTool;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
 
@@ -370,11 +371,16 @@ public class Lanceur extends AbstractLauncher {
 			if (cmd.hasOption("r")) {
 				modeTracing = true;
 				asolver.setSearchListener(new MultiTracing(
-						new ConflictLevelTracing(filename + "-conflict-level"),
-						new DecisionTracing(filename + "-decision-indexes"),
-						new LearnedClausesSizeTracing(filename
-								+ "-learned-clauses-size"),
-						new ConflictDepthTracing(filename + "-conflict-depth")));
+						new ConflictLevelTracing(
+								new FileBasedVisualizationTool(filename + "-conflict-level"), 
+								new FileBasedVisualizationTool(filename + "-conflict-level-restart")),
+						new DecisionTracing(
+								new FileBasedVisualizationTool(filename + "-decision-indexes-pos"),
+								new FileBasedVisualizationTool(filename + "-decision-indexes-neg"),
+								new FileBasedVisualizationTool(filename + "-decision-indexes-restart")),
+						new LearnedClausesSizeTracing(new FileBasedVisualizationTool(filename 
+								+ "-learned-clauses-size")),
+						new ConflictDepthTracing(new FileBasedVisualizationTool(filename + "-conflict-depth"))));
 			}
 
 			// use remaining data to configure the solver
@@ -852,6 +858,7 @@ public class Lanceur extends AbstractLauncher {
 				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
 						cdclSolver);
 				frame.activateGnuplotTracing(modeTracing);
+				frame.setOptimisationMode(isModeOptimization);
 			}
 		} catch (FileNotFoundException e) {
 			System.err.println("FATAL " + e.getLocalizedMessage());

@@ -101,9 +101,11 @@ import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.ChartBasedVisualizationTool;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
+import org.sat4j.tools.FileBasedVisualizationTool;
 import org.sat4j.tools.HeuristicsTracing;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.LearnedTracing;
@@ -154,7 +156,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private String instancePath;
 	private JButton browseButton;
 	private final static String BROWSE = "Browse";
-	
+
 	private String whereToWriteFiles;
 
 
@@ -166,7 +168,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CHOIX_SOLVER  = "Choose solver: ";
 	private String selectedSolver;
 	private JComboBox listeSolvers;
-	
+
 	private final static String OPTMIZATION_MODE = "Use optimization mode";
 	private JCheckBox optimisationModeCB;
 
@@ -245,7 +247,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String CLEAN = "Clean now";
 	private final static String MANUAL_CLEAN = "Manual clean: ";
 	private JLabel manualCleanLabel;
-	
+
 	private JLabel speedLabel;
 	private JLabel speedNameLabel;
 	private final static String SPEED = "Speed :";
@@ -338,8 +340,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
 		super();
-		
-		
+
+
 
 		this.gnuplotPreferences = new GnuplotPreferences();
 
@@ -466,7 +468,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
-		
+
 		updateWriter();
 	}
 
@@ -520,7 +522,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		choixSolver = new JLabel(CHOIX_SOLVER);
 		updateListOfSolvers();
 
-		
+
 		optimisationModeCB = new JCheckBox(OPTMIZATION_MODE);
 		optimisationModeCB.setSelected(optimizationMode);
 
@@ -528,14 +530,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		tmpPanel1.add(choixSolver);
 		tmpPanel1.add(listeSolvers);
 		tmpPanel1.add(optimisationModeCB);
-		
+
 		optimisationModeCB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				optimizationMode = optimisationModeCB.isSelected();
 				log("use optimization mode: " + optimizationMode);
 			}
 		});
-		
+
 		startStopButton = new JButton(START);
 
 		startStopButton.addActionListener(new ActionListener() {
@@ -798,7 +800,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		});
 
-		
+
 		tmpPanel2.add(manualCleanLabel);
 		tmpPanel2.add(cleanButton);
 
@@ -814,23 +816,23 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		tmpPanel3.add(cleanUseOriginalStrategyCB);
 
-		
+
 		JPanel tmpPanel6 = new JPanel();
 		speedLabel = new JLabel("");
 		speedNameLabel = new JLabel(SPEED);
 		speedUnitLabel = new JLabel(SPEED_UNIT);
-		
+
 		tmpPanel6.add(speedNameLabel);
 		tmpPanel6.add(speedLabel);
 		tmpPanel6.add(speedUnitLabel);
-		
+
 		JPanel tmpPanel7 = new JPanel();
 		tmpPanel7.setLayout(new BorderLayout());
-		
+
 		tmpPanel7.add(tmpPanel2,BorderLayout.SOUTH);
 		tmpPanel7.add(tmpPanel6,BorderLayout.CENTER);
-		
-		
+
+
 		cleanPanel.add(tmpPanel3,BorderLayout.NORTH);
 		cleanPanel.add(tmpPanel7,BorderLayout.CENTER);
 		cleanPanel.add(tmpPanel,BorderLayout.SOUTH);
@@ -971,7 +973,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//		lubyPanel.add(factorField);
 
 	}
-	
+
 	public void setOptimisationMode(boolean optimizationMode){
 		this.optimizationMode = optimizationMode;
 		optimisationModeCB.setSelected(optimizationMode);
@@ -1014,10 +1016,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
 		//		}
 
-		
+
 		IOrder order = solver.getOrder();
-//		if(order instanceof RandomWalkDecoratorObjective && )
-		
+		//		if(order instanceof RandomWalkDecoratorObjective && )
+
 		if(solver.getOrder() instanceof RandomWalkDecorator){
 			randomWalk = (RandomWalkDecorator)solver.getOrder();
 			randomWalk.setProbability(0);
@@ -1027,38 +1029,38 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		else{
 			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
 		}
-//		
-//		if (optimizationMode
-//				&& order instanceof VarOrderHeapObjective) {
-//			randomWalk = new RandomWalkDecoratorObjective(
-//					(VarOrderHeapObjective) order, 0);
-//		} else {
-//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
-//		}
-		
-		solver.setOrder(randomWalk);
-		
-//		if(solver.getOrder() instanceof VarOrderHeapObjective){
-//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
-//			randomWalk.setProbability(0);
-//			probaRWField.setText("0");
-//			rwPanel.repaint();
-//		}
-//		else
-//		if(solver.getOrder() instanceof RandomWalkDecorator){
-//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-//			randomWalk.setProbability(0);
-//			probaRWField.setText("0");
-//			rwPanel.repaint();
-//		}
-//		else if(!optimizationMode){
-//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-//		}
-//		else {
-//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
-//		}
+		//		
+		//		if (optimizationMode
+		//				&& order instanceof VarOrderHeapObjective) {
+		//			randomWalk = new RandomWalkDecoratorObjective(
+		//					(VarOrderHeapObjective) order, 0);
+		//		} else {
+		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
+		//		}
 
-//		solver.setOrder(randomWalk);
+		solver.setOrder(randomWalk);
+
+		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
+		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
+		//			randomWalk.setProbability(0);
+		//			probaRWField.setText("0");
+		//			rwPanel.repaint();
+		//		}
+		//		else
+		//		if(solver.getOrder() instanceof RandomWalkDecorator){
+		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+		//			randomWalk.setProbability(0);
+		//			probaRWField.setText("0");
+		//			rwPanel.repaint();
+		//		}
+		//		else if(!optimizationMode){
+		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+		//		}
+		//		else {
+		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
+		//		}
+
+		//		solver.setOrder(randomWalk);
 
 		telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
 		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
@@ -1084,8 +1086,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//pbSolver.setNeedToReduceDB(true);
 
 
-
-
+		
 
 		whereToWriteFiles = instancePath;
 
@@ -1098,27 +1099,86 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		solver.setVerbose(true);
 
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
-		if(gnuplotPreferences.isDisplayClausesEvaluation()){
-			listeners.add(new LearnedTracing(whereToWriteFiles + "-learned"));
+
+		boolean fileBased=true;
+
+		if(fileBased){
+			if(gnuplotPreferences.isDisplayClausesEvaluation()){
+				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
+			}
+			if(gnuplotPreferences.isDisplayClausesSize()){
+				listeners.add(new LearnedClausesSizeTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size")));
+			}
+			if(gnuplotPreferences.isDisplayConflictsDecision()){
+				listeners.add(new ConflictLevelTracing(
+						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
+						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+			}
+			if(gnuplotPreferences.isDisplayConflictsTrail()){
+				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth")));
+			}
+
+			if(gnuplotPreferences.isDisplayDecisionIndexes()){
+				listeners.add(new DecisionTracing(
+						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
+						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
+						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+			}
+
+			if(gnuplotPreferences.isDisplaySpeed()){
+				listeners.add(new SpeedTracing(
+						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
+						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
+						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
+			}
+			if(gnuplotPreferences.isDisplayVariablesEvaluation()){
+				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+			}
 		}
-		if(gnuplotPreferences.isDisplayClausesSize()){
-			listeners.add(new LearnedClausesSizeTracing(whereToWriteFiles+ "-learned-clauses-size"));
+
+		else{
+			
+			SolverVisualisation visu = new SolverVisualisation();
+
+			visu.setnVar(solver.nVars());
+			//		if(gnuplotPreferences.isDisplayClausesEvaluation()){
+			//			listeners.add(new LearnedTracing(whereToWriteFiles + "-learned"));
+			//		}
+			//		if(gnuplotPreferences.isDisplayClausesSize()){
+			//			listeners.add(new LearnedClausesSizeTracing(whereToWriteFiles+ "-learned-clauses-size"));
+			//		}
+			//		if(gnuplotPreferences.isDisplayConflictsDecision()){
+			//			listeners.add(new ConflictLevelTracing(
+			//					new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
+			//					new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+			//		}
+			//		if(gnuplotPreferences.isDisplayConflictsTrail()){
+			//			listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth")));
+			//		}
+			if(gnuplotPreferences.isDisplayConflictsTrail()){
+				listeners.add(new ConflictDepthTracing(
+						new ChartBasedVisualizationTool(visu.getConflictDepthTrace())));
+			}
+			//		if(gnuplotPreferences.isDisplayDecisionIndexes()){
+			//			listeners.add(new DecisionTracing(
+			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
+			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
+			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+			//		}
+			if(gnuplotPreferences.isDisplayDecisionIndexes()){
+				listeners.add(new DecisionTracing(
+						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
+						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
+						new ChartBasedVisualizationTool(visu.getRestartDecisionTrace())));
+			}
+			//		if(gnuplotPreferences.isDisplaySpeed()){
+			//			listeners.add(new SpeedTracing(whereToWriteFiles + "-speed"));
+			//		}
+			if(gnuplotPreferences.isDisplayVariablesEvaluation()){
+				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+			}
 		}
-		if(gnuplotPreferences.isDisplayConflictsDecision()){
-			listeners.add(new ConflictLevelTracing(whereToWriteFiles + "-conflict-level"));
-		}
-		if(gnuplotPreferences.isDisplayConflictsTrail()){
-			listeners.add(new ConflictDepthTracing(whereToWriteFiles+ "-conflict-depth"));
-		}
-		if(gnuplotPreferences.isDisplayDecisionIndexes()){
-			listeners.add(new DecisionTracing(whereToWriteFiles + "-decision-indexes"));
-		}
-		if(gnuplotPreferences.isDisplaySpeed()){
-			listeners.add(new SpeedTracing(whereToWriteFiles + "-speed"));
-		}
-		if(gnuplotPreferences.isDisplayVariablesEvaluation()){
-			listeners.add(new HeuristicsTracing(whereToWriteFiles + "-heuristics"));
-		}
+
 		listeners.add(this);
 
 		solver.setSearchListener(new MultiTracing(listeners));
@@ -1613,7 +1673,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				out.println("set ytics auto");
 
 				GnuplotFunction f = new GnuplotFunction("2", Color.black, "");
-				
+
 				//bottom right: Decision Level when conflict
 				if(gnuplotPreferences.isDisplayConflictsDecision()){
 					out.println("set size "+width + "," + height);
@@ -1631,9 +1691,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set autoscale x");
 					out.println("set autoscale y"); 
 					out.println("set y2range[0:"+nbVariables+"]");
-//					out.println("set autoscale y2");
-//					out.println("set nologscale x");
-//					out.println("set nologscale y");
+					//					out.println("set autoscale y2");
+					//					out.println("set nologscale x");
+					//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + top);
 					out.println("set title \"Size of the clause learned (after minimization if any)\"");
@@ -1666,28 +1726,28 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("unset autoscale");
 					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;}");
 					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"]};");
-//					out.println("set nologscale x");
-//					out.println("set nologscale y");
+					//					out.println("set nologscale x");
+					//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + bottom);
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
-//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
+					//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
 					out.println(gnuplotPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, gnuplotPreferences.getNbLinesRead()*4));
 
 					//verybottom left: index decision variable
 					out.println("unset autoscale");
 					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"+nbVariables+"];}");
-//					out.println("set autoscale y");
-				
-//					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
-//					out.println("set nologscale x");
-//					out.println("set nologscale y");
+					//					out.println("set autoscale y");
+
+					//					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
+					//					out.println("set nologscale x");
+					//					out.println("set nologscale y");
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+left + "," + verybottom);
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
-//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
+					//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
 					out.println(gnuplotPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, gnuplotPreferences.getNbLinesRead()*4));
 				}
 
@@ -1702,7 +1762,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set title \"Trail level when the conflict occurs\"");
 					GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.magenta, "Trail level");
 					GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
-//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
+					//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
 					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF, 
 							nbVar2, instancePath+ "-conflict-level-restart.dat",true));
 				}
@@ -1723,7 +1783,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				}
 				//				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
 
-				
+
 				if(gnuplotPreferences.isDisplaySpeed()){
 					out.println("set autoscale x");
 					out.println("set nologscale x");
@@ -1808,27 +1868,27 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	public ISolver getSolver(){
 		return (ISolver)problem;
 	}
-	
+
 	private long begin, end;
 	private int propagationsCounter;
-//	private long index;
+	//	private long index;
 
-//	private int nVar;
+	//	private int nVar;
 	private int conflictCounter;
-	
+
 	private PrintStream outSolutionFound;
-	
+
 	private void updateWriter() {
 		try {
 			outSolutionFound = new PrintStream(new FileOutputStream(whereToWriteFiles + "_solutions.dat"));
 		} catch (FileNotFoundException e) {
 			outSolutionFound = System.out;
 		}
-		
+
 	}
 
 	public void init(ISolverService solverService) {
-//		nVar = solverService.nVars();
+		//		nVar = solverService.nVars();
 		conflictCounter=0;
 	}
 
@@ -1839,10 +1899,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		end = System.currentTimeMillis();
 		if (end - begin >= 2000) {
 			long tmp = (end - begin);
-//			index += tmp;
+			//			index += tmp;
 			speedLabel.setText(propagationsCounter / tmp * 1000+"");
 			speedLabel.invalidate();
-			
+
 			begin = System.currentTimeMillis();
 			propagationsCounter = 0;
 		}
@@ -1936,7 +1996,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 						aboutSolverPanel.paint(aboutSolverPanel.getGraphics());
 						aboutSolverPanel.repaint();
 					}
-					
+
 					//System.out.println(textArea.getText());
 				}
 			}
@@ -1944,5 +2004,5 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			super.setSelectedIndex(index);
 		};
 	} 
-	
+
 }

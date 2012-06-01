@@ -43,8 +43,9 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
-import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.DecisionTracing;
+import org.sat4j.tools.FileBasedVisualizationTool;
+import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
 
 /**
@@ -129,15 +130,22 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 		}
 		if (trace) {
 			String fileName = args[args.length - 1];
-			theSolver
-					.setSearchListener(new MultiTracing(
-							new ConflictLevelTracing(fileName
-									+ "-conflict-level"), new DecisionTracing(
-									fileName + "-decision-indexes"),
-							new LearnedClausesSizeTracing(fileName
-									+ "-learned-clauses-size"),
-							new ConflictDepthTracing(fileName
-									+ "-conflict-depth")));
+			theSolver.setSearchListener(new MultiTracing(
+					new ConflictLevelTracing(new FileBasedVisualizationTool(
+							fileName + "-conflict-level"),
+							new FileBasedVisualizationTool(fileName
+									+ "-conflict-level-restart")),
+					new DecisionTracing(new FileBasedVisualizationTool(fileName
+							+ "-decision-indexes-pos"),
+							new FileBasedVisualizationTool(fileName
+									+ "-decision-indexes-neg"),
+							new FileBasedVisualizationTool(fileName
+									+ "-decision-indexes-restart")),
+					new LearnedClausesSizeTracing(
+							new FileBasedVisualizationTool(fileName
+									+ "-learned-clauses-size")),
+					new ConflictDepthTracing(new FileBasedVisualizationTool(
+							fileName + "-conflict-depth"))));
 		}
 		// theSolver.setSearchListener(new TextOutputTracing(null));
 		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
