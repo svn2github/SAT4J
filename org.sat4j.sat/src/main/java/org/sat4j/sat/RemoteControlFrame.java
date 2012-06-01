@@ -284,6 +284,10 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		}
 		commandePanel.activateGnuplotTracing(b);
 	}
+	
+	public void setOptimisationMode(boolean optimizationMode){
+		commandePanel.setOptimisationMode(optimizationMode);
+	}
 
 
 
