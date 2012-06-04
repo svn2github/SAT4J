@@ -143,9 +143,13 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 									+ "-decision-indexes-restart")),
 					new LearnedClausesSizeTracing(
 							new FileBasedVisualizationTool(fileName
+									+ "-learned-clauses-size"),
+							new FileBasedVisualizationTool(fileName
 									+ "-learned-clauses-size")),
 					new ConflictDepthTracing(new FileBasedVisualizationTool(
-							fileName + "-conflict-depth"))));
+							fileName + "-conflict-depth"),
+							new FileBasedVisualizationTool(fileName
+									+ "-conflict-depth-restart"))));
 		}
 		// theSolver.setSearchListener(new TextOutputTracing(null));
 		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$

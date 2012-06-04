@@ -370,17 +370,21 @@ public class Lanceur extends AbstractLauncher {
 
 			if (cmd.hasOption("r")) {
 				modeTracing = true;
-				asolver.setSearchListener(new MultiTracing(
-						new ConflictLevelTracing(
-								new FileBasedVisualizationTool(filename + "-conflict-level"), 
-								new FileBasedVisualizationTool(filename + "-conflict-level-restart")),
-						new DecisionTracing(
-								new FileBasedVisualizationTool(filename + "-decision-indexes-pos"),
-								new FileBasedVisualizationTool(filename + "-decision-indexes-neg"),
-								new FileBasedVisualizationTool(filename + "-decision-indexes-restart")),
-						new LearnedClausesSizeTracing(new FileBasedVisualizationTool(filename 
-								+ "-learned-clauses-size")),
-						new ConflictDepthTracing(new FileBasedVisualizationTool(filename + "-conflict-depth"))));
+				if(!cmd.hasOption("remote"))
+					asolver.setSearchListener(new MultiTracing(
+							new ConflictLevelTracing(
+									new FileBasedVisualizationTool(filename + "-conflict-level"), 
+									new FileBasedVisualizationTool(filename + "-conflict-level-restart")),
+									new DecisionTracing(
+											new FileBasedVisualizationTool(filename + "-decision-indexes-pos"),
+											new FileBasedVisualizationTool(filename + "-decision-indexes-neg"),
+											new FileBasedVisualizationTool(filename + "-decision-indexes-restart")),
+											new LearnedClausesSizeTracing(
+													new FileBasedVisualizationTool(filename + "-learned-clauses-size"),
+													new FileBasedVisualizationTool(filename + "-learned-clauses-size-restart")),
+													new ConflictDepthTracing(
+															new FileBasedVisualizationTool(filename + "-conflict-depth"), 
+															new FileBasedVisualizationTool(filename + "-conflict-depth-restart"))));
 			}
 
 			// use remaining data to configure the solver
@@ -599,7 +603,7 @@ public class Lanceur extends AbstractLauncher {
 							/ 1000.0);
 					getLogWriter().println(
 							CURRENT_OPTIMUM_VALUE_PREFIX
-									+ optproblem.getObjectiveValue());
+							+ optproblem.getObjectiveValue());
 					optproblem.discardCurrentSolution();
 				}
 				if (isSatisfiable) {
@@ -662,7 +666,7 @@ public class Lanceur extends AbstractLauncher {
 				try {
 					keySet = BeanUtils.describe(
 							Class.forName(PACKAGE_RESTARTS + "." + name)
-									.newInstance()).keySet();
+							.newInstance()).keySet();
 					keySet.remove("class");
 					if (keySet.size() > 0) {
 						classNames.add(name + keySet);
@@ -695,7 +699,7 @@ public class Lanceur extends AbstractLauncher {
 
 					keySet = BeanUtils.describe(
 							Class.forName(PACKAGE_PHASE + "." + name)
-									.newInstance()).keySet();
+							.newInstance()).keySet();
 					keySet.remove("class");
 					if (keySet.size() > 0) {
 						classNames.add(name + keySet);
@@ -726,7 +730,7 @@ public class Lanceur extends AbstractLauncher {
 			try {
 				keySet = BeanUtils.describe(
 						Class.forName(PACKAGE_LEARNING + "." + name)
-								.newInstance()).keySet();
+						.newInstance()).keySet();
 				keySet.remove("class");
 				if (keySet.size() > 0) {
 					classNames.add(name + keySet);
@@ -763,11 +767,11 @@ public class Lanceur extends AbstractLauncher {
 								"minisat", "pb");
 						keySet = BeanUtils.describe(
 								Class.forName(namePackage + "." + name)
-										.newInstance()).keySet();
+								.newInstance()).keySet();
 					} else {
 						keySet = BeanUtils.describe(
 								Class.forName(PACKAGE_ORDERS + "." + name)
-										.newInstance()).keySet();
+								.newInstance()).keySet();
 					}
 					keySet.remove("class");
 
