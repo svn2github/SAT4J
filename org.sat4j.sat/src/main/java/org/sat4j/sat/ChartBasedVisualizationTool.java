@@ -1,6 +1,8 @@
-package org.sat4j.tools;
+package org.sat4j.sat;
 
 import info.monitorenter.gui.chart.ITrace2D;
+
+import org.sat4j.tools.IVisualizationTool;
 
 
 public class ChartBasedVisualizationTool implements IVisualizationTool {
