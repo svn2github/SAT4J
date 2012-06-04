@@ -43,12 +43,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
 import org.sat4j.minisat.core.ICDCL;
@@ -90,8 +92,11 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	private ICDCL solver;
 	private GnuplotPreferencesFrame gnuplotFrame;
 	
-	private final static String ACTIVATE  = "Activate Gnuplot Tracing";
-	private final static String DEACTIVATE  = "Deactivate Gnuplot Tracing";
+	private final static String ACTIVATE  = "Activate Tracing";
+	private final static String DEACTIVATE  = "Deactivate Tracing";
+	
+	private JRadioButtonMenuItem gnuplotBasedRadio;
+	private JRadioButtonMenuItem jChartBasedRadio;
 
 	public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
 		super("Remote Control");
@@ -192,7 +197,34 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 				activateGnuplotTracing(activateTracing.getText().equals(ACTIVATE));
 			}
 		});
+		
+		menu.addSeparator();
 
+		gnuplotBasedRadio = new JRadioButtonMenuItem("Trace with Gnuplot");
+		jChartBasedRadio = new JRadioButtonMenuItem("Trace with Java");
+		
+		ButtonGroup visuGroup = new ButtonGroup();
+		visuGroup.add(gnuplotBasedRadio);
+		visuGroup.add(jChartBasedRadio);
+		
+		menu.add(gnuplotBasedRadio);
+		
+		gnuplotBasedRadio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				commandePanel.setGnuplotBased(true);
+				commandePanel.setChartBased(false);
+			}
+		});
+		
+		menu.add(jChartBasedRadio);
+		
+		jChartBasedRadio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				commandePanel.setGnuplotBased(false);
+				commandePanel.setChartBased(true);
+			}
+		});
+		
 //		JMenuItem reinitialiserItem = new JMenuItem("RŽinitialiser");
 //		menu.add(reinitialiserItem);
 //
@@ -201,6 +233,8 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 //				reinitialiser();
 //			}
 //		});
+		
+		menu.addSeparator();
 
 		JMenuItem quit = new JMenuItem("Exit");
 		menu.add(quit);
@@ -275,11 +309,11 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	
 	public void activateGnuplotTracing(boolean b){
 		if(b){
-			log("Activated gnuplot");
+			log("Activated tracing");
 			activateTracing.setText(DEACTIVATE);
 		}
 		else{
-			log("Deactivated Gnuplot.");
+			log("Deactivated tracing.");
 			activateTracing.setText(ACTIVATE);
 		}
 		commandePanel.activateGnuplotTracing(b);

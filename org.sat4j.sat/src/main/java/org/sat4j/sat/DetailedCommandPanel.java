@@ -60,6 +60,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -325,7 +326,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private Process gnuplotProcess;
 
 	private GnuplotPreferences gnuplotPreferences;
-
+	
+	private boolean gnuplotBased = false;
+	private boolean chartBased = false;
 
 	public DetailedCommandPanel(String filename){
 		this(filename,"");
@@ -1097,14 +1100,15 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
 
-		boolean fileBased=false;
 
-		if(fileBased){
+		if(gnuplotBased){
 			if(gnuplotPreferences.isDisplayClausesEvaluation()){
 				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
 			}
 			if(gnuplotPreferences.isDisplayClausesSize()){
-				listeners.add(new LearnedClausesSizeTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size")));
+				listeners.add(new LearnedClausesSizeTracing(
+						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
+						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
 			}
 			if(gnuplotPreferences.isDisplayConflictsDecision()){
 				listeners.add(new ConflictLevelTracing(
@@ -1112,7 +1116,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
 			}
 			if(gnuplotPreferences.isDisplayConflictsTrail()){
-				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth")));
+				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
+						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
 			}
 
 			if(gnuplotPreferences.isDisplayDecisionIndexes()){
@@ -1133,41 +1138,44 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		}
 
-		else{
+		else if(chartBased){
 
 			SolverVisualisation visu = new SolverVisualisation();
 
 			visu.setnVar(solver.nVars());
-			if(gnuplotPreferences.isDisplayClausesEvaluation()){
+//			if(gnuplotPreferences.isDisplayClausesEvaluation()){
 				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
-			}
-			if(gnuplotPreferences.isDisplayClausesSize()){
-				listeners.add(new LearnedClausesSizeTracing(new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace())));
-			}
-			if(gnuplotPreferences.isDisplayConflictsDecision()){
+//			}
+//			if(gnuplotPreferences.isDisplayClausesSize()){
+				listeners.add(new LearnedClausesSizeTracing(
+						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
+						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
+//			}
+//			if(gnuplotPreferences.isDisplayConflictsDecision()){
 				listeners.add(new ConflictLevelTracing(
 						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
 						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
-			}
-			if(gnuplotPreferences.isDisplayConflictsTrail()){
+//			}
+//			if(gnuplotPreferences.isDisplayConflictsTrail()){
 				listeners.add(new ConflictDepthTracing(
-						new ChartBasedVisualizationTool(visu.getConflictDepthTrace())));
-			}
-			if(gnuplotPreferences.isDisplayDecisionIndexes()){
+						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
+						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
+//			}
+//			if(gnuplotPreferences.isDisplayDecisionIndexes()){
 				listeners.add(new DecisionTracing(
 						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
 						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-						new ChartBasedVisualizationTool(visu.getRestartDecisionTrace())));
-			}
-			if(gnuplotPreferences.isDisplaySpeed()){
+						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
+//			}
+//			if(gnuplotPreferences.isDisplaySpeed()){
 				listeners.add(new SpeedTracing(
 						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
 						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
 						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
-			}
-			if(gnuplotPreferences.isDisplayVariablesEvaluation()){
+//			}
+//			if(gnuplotPreferences.isDisplayVariablesEvaluation()){
 				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
-			}
+//			}
 		}
 
 		listeners.add(this);
@@ -1240,10 +1248,28 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		solveurThread.start();
 
 
-		if(isPlotActivated){
+		if(isPlotActivated && gnuplotBased){
 			traceGnuplot();
 		}
 
+	}
+	
+	
+
+	public boolean isGnuplotBased() {
+		return gnuplotBased;
+	}
+
+	public void setGnuplotBased(boolean gnuplotBased) {
+		this.gnuplotBased = gnuplotBased;
+	}
+
+	public boolean isChartBased() {
+		return chartBased;
+	}
+
+	public void setChartBased(boolean chartBased) {
+		this.chartBased = chartBased;
 	}
 
 	public void hasClickedOnRestart(){
@@ -1670,7 +1696,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+right + "," + bottom);
 					out.println("set title \"Decision level at which the conflict occurs\"");
-					out.println("set y2range[0:"+nbVariables+"]");
+					out.println("set autoscale ymax"); 
+//					out.println("set y2range[0:"+nbVariables+"]");
 					GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.magenta,"Conflict Level");
 					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
 					out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
@@ -1680,8 +1707,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				if(gnuplotPreferences.isDisplayClausesSize()){
 					out.println("unset autoscale");
 					out.println("set autoscale x");
-					out.println("set autoscale y"); 
-					out.println("set y2range[0:"+nbVariables+"]");
+					out.println("set autoscale ymax"); 
+//					out.println("set y2range[0:"+nbVariables+"]");
 					//					out.println("set autoscale y2");
 					//					out.println("set nologscale x");
 					//					out.println("set nologscale y");
