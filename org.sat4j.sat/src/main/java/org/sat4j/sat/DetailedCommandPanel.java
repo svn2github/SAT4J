@@ -1083,7 +1083,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//pbSolver.setNeedToReduceDB(true);
 
 
-		
+
 
 		whereToWriteFiles = instancePath;
 
@@ -1097,7 +1097,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
 
-		boolean fileBased=true;
+		boolean fileBased=false;
 
 		if(fileBased){
 			if(gnuplotPreferences.isDisplayClausesEvaluation()){
@@ -1134,45 +1134,39 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		}
 
 		else{
-			
+
 			SolverVisualisation visu = new SolverVisualisation();
 
 			visu.setnVar(solver.nVars());
-			//		if(gnuplotPreferences.isDisplayClausesEvaluation()){
-			//			listeners.add(new LearnedTracing(whereToWriteFiles + "-learned"));
-			//		}
-			//		if(gnuplotPreferences.isDisplayClausesSize()){
-			//			listeners.add(new LearnedClausesSizeTracing(whereToWriteFiles+ "-learned-clauses-size"));
-			//		}
-			//		if(gnuplotPreferences.isDisplayConflictsDecision()){
-			//			listeners.add(new ConflictLevelTracing(
-			//					new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
-			//					new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
-			//		}
-			//		if(gnuplotPreferences.isDisplayConflictsTrail()){
-			//			listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth")));
-			//		}
+			if(gnuplotPreferences.isDisplayClausesEvaluation()){
+				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
+			}
+			if(gnuplotPreferences.isDisplayClausesSize()){
+				listeners.add(new LearnedClausesSizeTracing(new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace())));
+			}
+			if(gnuplotPreferences.isDisplayConflictsDecision()){
+				listeners.add(new ConflictLevelTracing(
+						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
+						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
+			}
 			if(gnuplotPreferences.isDisplayConflictsTrail()){
 				listeners.add(new ConflictDepthTracing(
 						new ChartBasedVisualizationTool(visu.getConflictDepthTrace())));
 			}
-			//		if(gnuplotPreferences.isDisplayDecisionIndexes()){
-			//			listeners.add(new DecisionTracing(
-			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
-			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
-			//					new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
-			//		}
 			if(gnuplotPreferences.isDisplayDecisionIndexes()){
 				listeners.add(new DecisionTracing(
 						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
 						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
 						new ChartBasedVisualizationTool(visu.getRestartDecisionTrace())));
 			}
-			//		if(gnuplotPreferences.isDisplaySpeed()){
-			//			listeners.add(new SpeedTracing(whereToWriteFiles + "-speed"));
-			//		}
+			if(gnuplotPreferences.isDisplaySpeed()){
+				listeners.add(new SpeedTracing(
+						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
+						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
+						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
+			}
 			if(gnuplotPreferences.isDisplayVariablesEvaluation()){
-				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
 			}
 		}
 

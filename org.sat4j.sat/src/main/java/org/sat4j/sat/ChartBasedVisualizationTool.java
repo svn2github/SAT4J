@@ -16,10 +16,10 @@ public class ChartBasedVisualizationTool implements IVisualizationTool {
 	}
 
 	public void addPoint(double x, double y) {
-		if(i==4){
+//		if(i==4){
 			trace.addPoint(x, y);
 			i=0;
-		}
+//		}
 		i++;
 	}
 
