@@ -47,38 +47,51 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	// private PrintStream out;
 
 	private int counter;
+	private int nVar;
 
 	private final IVisualizationTool conflictDepthVisu;
+	private final IVisualizationTool conflictDepthRestartVisu;
 
 	// public ConflictDepthTracing(String filename) {
 	// this.filename = filename;
 	// updateWriter();
 	// }
 
-	public ConflictDepthTracing(IVisualizationTool conflictDepthVisu) {
+	public ConflictDepthTracing(IVisualizationTool conflictDepthVisu,
+			IVisualizationTool conflictDepthRestartVisu) {
 		this.conflictDepthVisu = conflictDepthVisu;
+		this.conflictDepthRestartVisu = conflictDepthRestartVisu;
 		counter = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
 		conflictDepthVisu.addPoint(counter, trailLevel);
+		conflictDepthRestartVisu.addInvisiblePoint(counter, trailLevel);
 		counter++;
 	}
 
 	@Override
 	public void end(Lbool result) {
 		conflictDepthVisu.end();
+		conflictDepthRestartVisu.end();
 	}
 
 	@Override
 	public void start() {
 		conflictDepthVisu.init();
+		conflictDepthRestartVisu.init();
 		counter = 0;
 	}
 
 	@Override
 	public void restarting() {
-		conflictDepthVisu.addInvisiblePoint(counter, 0);
+		conflictDepthRestartVisu.addPoint(counter, nVar);
+		conflictDepthVisu.addInvisiblePoint(counter, nVar);
+	}
+
+	@Override
+	public void init(ISolverService solverService) {
+		nVar = solverService.nVars();
 	}
 }

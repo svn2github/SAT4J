@@ -49,6 +49,8 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
 	private int nVar;
 
+	private double maxY;
+
 	public SpeedTracing(IVisualizationTool visuTool,
 			IVisualizationTool cleanVisuTool, IVisualizationTool restartVisuTool) {
 		this.visuTool = visuTool;
@@ -62,20 +64,21 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 		begin = System.currentTimeMillis();
 		counter = 0;
 		index = 0;
-	}
-
-	@Override
-	public void assuming(int p) {
-
+		maxY = 0;
 	}
 
 	@Override
 	public void propagating(int p, IConstr reason) {
 		end = System.currentTimeMillis();
+		double y;
 		if (end - begin >= 2000) {
 			long tmp = (end - begin);
 			index += tmp;
-			visuTool.addPoint(index / 1000.0, counter / tmp * 1000);
+			y = counter / tmp * 1000;
+			if (y > maxY) {
+				maxY = y;
+			}
+			visuTool.addPoint(index / 1000.0, y);
 			cleanVisuTool.addPoint(index / 1000.0, 0);
 			restartVisuTool.addPoint(index / 1000.0, 0);
 			begin = System.currentTimeMillis();
@@ -96,7 +99,7 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 		end = System.currentTimeMillis();
 		long indexClean = index + (end - begin);
 		visuTool.addPoint(indexClean / 1000.0, counter / (end - begin) * 1000);
-		cleanVisuTool.addPoint(indexClean / 1000.0, nVar);
+		cleanVisuTool.addPoint(indexClean / 1000.0, maxY);
 		restartVisuTool.addInvisiblePoint(indexClean, 0);
 		// out.println("# ignore");
 	}
@@ -105,8 +108,12 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 	public void restarting() {
 		end = System.currentTimeMillis();
 		long indexRestart = index + (end - begin);
-		visuTool.addPoint(indexRestart / 1000.0, counter / (end - begin) * 1000);
-		restartVisuTool.addPoint(indexRestart / 1000.0, nVar);
+		double y = counter / (end - begin) * 1000;
+		visuTool.addPoint(indexRestart / 1000.0, y);
+		if (y > maxY) {
+			maxY = y;
+		}
+		restartVisuTool.addPoint(indexRestart / 1000.0, maxY);
 		cleanVisuTool.addInvisiblePoint(indexRestart, 0);
 	}
 

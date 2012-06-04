@@ -45,31 +45,46 @@ public class LearnedClausesSizeTracing extends
 	private static final long serialVersionUID = 1L;
 
 	private final IVisualizationTool visuTool;
+	private final IVisualizationTool restartTool;
 	private int counter;
+	private int maxSize;
 
-	public LearnedClausesSizeTracing(IVisualizationTool visuTool) {
+	public LearnedClausesSizeTracing(IVisualizationTool visuTool,
+			IVisualizationTool restartTool) {
 		this.visuTool = visuTool;
+		this.restartTool = restartTool;
 		counter = 0;
+		maxSize = 0;
 	}
 
 	@Override
 	public void end(Lbool result) {
 		visuTool.end();
+		restartTool.end();
 	}
 
 	@Override
 	public void learn(IConstr c) {
-		visuTool.addPoint(counter, c.size());
+		int s = c.size();
+		if (s > maxSize) {
+			maxSize = s;
+		}
+		visuTool.addPoint(counter, s);
+		restartTool.addInvisiblePoint(counter, maxSize);
 		counter++;
 	}
 
 	@Override
 	public void start() {
 		visuTool.init();
+		restartTool.init();
+		counter = 0;
+		maxSize = 0;
 	}
 
 	@Override
 	public void restarting() {
 		visuTool.addInvisiblePoint(counter, 0);
+		restartTool.addPoint(counter, maxSize);
 	}
 }

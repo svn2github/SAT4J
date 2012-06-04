@@ -29,8 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.PrintStream;
-
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
@@ -49,9 +47,8 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 	private static final long serialVersionUID = 1L;
 
 	// private final String filename;
-	private PrintStream out;
-	private PrintStream outRestart;
 	private int nVar;
+	private int maxDLevel;
 
 	private final IVisualizationTool visuTool;
 	private final IVisualizationTool restartVisuTool;
@@ -62,18 +59,22 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		this.restartVisuTool = restartVisuTool;
 
 		counter = 1;
+		maxDLevel = 0;
 	}
 
 	@Override
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+		if (dlevel > maxDLevel) {
+			maxDLevel = dlevel;
+		}
 		visuTool.addPoint(counter, dlevel);
-		restartVisuTool.addInvisiblePoint(counter, dlevel);
+		restartVisuTool.addInvisiblePoint(counter, maxDLevel);
 		counter++;
 	}
 
 	@Override
 	public void restarting() {
-		restartVisuTool.addPoint(counter, nVar);
+		restartVisuTool.addPoint(counter, maxDLevel);
 		visuTool.addInvisiblePoint(counter, nVar);
 	}
 
@@ -88,6 +89,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		visuTool.init();
 		restartVisuTool.init();
 		counter = 1;
+		maxDLevel = 0;
 	}
 
 	@Override
