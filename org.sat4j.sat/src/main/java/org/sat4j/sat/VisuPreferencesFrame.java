@@ -29,12 +29,13 @@ import javax.swing.border.TitledBorder;
  *   CustomDialog.java
  *   images/middle.gif
  */
-public class GnuplotPreferencesFrame extends JFrame {
+public class VisuPreferencesFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	private GnuplotPreferences preferences;
+	private VisuPreferences preferences;
 	private JPanel mainPanel;
+	private JPanel generalOptionsPanel;
 	private JPanel gnuplotOptionsPanel;
 	private JPanel graphPanel;
 
@@ -85,11 +86,11 @@ public class GnuplotPreferencesFrame extends JFrame {
 	private JButton okButton;
 	private final static String OK = "OK";
 
-	public GnuplotPreferencesFrame(){
-		this(new GnuplotPreferences());
+	public VisuPreferencesFrame(){
+		this(new VisuPreferences());
 	}
 
-	public GnuplotPreferencesFrame(GnuplotPreferences pref){
+	public VisuPreferencesFrame(VisuPreferences pref){
 		super("Gnuplot preferences");
 		this.preferences = pref;
 		createAndShowGUI();
@@ -112,14 +113,14 @@ public class GnuplotPreferencesFrame extends JFrame {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
 		
-		gnuplotOptionsPanel = new JPanel();
+		generalOptionsPanel = new JPanel();
 		
-		gnuplotOptionsPanel.setName("Gnuplot options");
-		gnuplotOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(null, gnuplotOptionsPanel.getName(), 
+		generalOptionsPanel.setName("General options");
+		generalOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(null, generalOptionsPanel.getName(), 
 				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
 
-		gnuplotOptionsPanel.setLayout(new GridLayout(0, 2,5,5));
-
+		generalOptionsPanel.setLayout(new GridLayout(0, 2,5,5));
+		
 		backgroundColorLabel = new JLabel(BACKGROUND_COLOR);
 		bgButton = new JButton("");
 		bgButton.setOpaque(true);
@@ -135,8 +136,8 @@ public class GnuplotPreferencesFrame extends JFrame {
 			}
 		});
 
-		gnuplotOptionsPanel.add(backgroundColorLabel);
-		gnuplotOptionsPanel.add(bgButton);
+		generalOptionsPanel.add(backgroundColorLabel);
+		generalOptionsPanel.add(bgButton);
 
 		borderColorLabel = new JLabel(BORDER_COLOR);
 		borderButton=new JButton("");
@@ -153,8 +154,41 @@ public class GnuplotPreferencesFrame extends JFrame {
 			}
 		});
 
-		gnuplotOptionsPanel.add(borderColorLabel);
-		gnuplotOptionsPanel.add(borderButton);
+		generalOptionsPanel.add(borderColorLabel);
+		generalOptionsPanel.add(borderButton);
+		
+		restartColorLabel = new JLabel(RESTART_COLOR);
+		restartButton = new JButton("");
+		restartButton.setOpaque(true);
+		restartButton.setBorderPainted(false);
+		restartButton.setBackground(preferences.getRestartColor());
+		
+//		restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
+//		restartButton.setEnabled(displayRestartsCheckBox.isSelected());
+
+		restartButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Color color = JColorChooser.showDialog(getFrame(), "Restart Color", 
+						restartButton.getBackground());
+				preferences.setRestartColor(color);
+				restartButton.setBackground(color);
+			}
+		});
+
+		generalOptionsPanel.add(restartColorLabel);
+		generalOptionsPanel.add(restartButton);
+		
+		
+		
+		gnuplotOptionsPanel = new JPanel();
+		
+		gnuplotOptionsPanel.setName("Gnuplot options");
+		gnuplotOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(null, gnuplotOptionsPanel.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
+
+		gnuplotOptionsPanel.setLayout(new GridLayout(0, 2,5,5));
+
+		
 
 		slidingWindows = new JCheckBox(SLIDING_WINDOWS);
 		slidingWindows.setSelected(preferences.isSlidingWindows());
@@ -205,26 +239,7 @@ public class GnuplotPreferencesFrame extends JFrame {
 		gnuplotOptionsPanel.add(displayRestartsCheckBox);
 		gnuplotOptionsPanel.add(new JLabel());
 
-		restartColorLabel = new JLabel(RESTART_COLOR);
-		restartButton = new JButton("");
-		restartButton.setOpaque(true);
-		restartButton.setBorderPainted(false);
-		restartButton.setBackground(preferences.getRestartColor());
 		
-		restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
-		restartButton.setEnabled(displayRestartsCheckBox.isSelected());
-
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(getFrame(), "Restart Color", 
-						restartButton.getBackground());
-				preferences.setRestartColor(color);
-				restartButton.setBackground(color);
-			}
-		});
-
-		gnuplotOptionsPanel.add(restartColorLabel);
-		gnuplotOptionsPanel.add(restartButton);
 
 		okButton = new JButton(OK);
 		okButton.addActionListener(new ActionListener() {
@@ -306,7 +321,13 @@ public class GnuplotPreferencesFrame extends JFrame {
 		});
 		
 		
-		mainPanel.add(gnuplotOptionsPanel,BorderLayout.NORTH);
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+		
+		topPanel.add(generalOptionsPanel);
+		topPanel.add(gnuplotOptionsPanel);
+		
+		mainPanel.add(topPanel,BorderLayout.NORTH);
 		mainPanel.add(graphPanel,BorderLayout.CENTER);
 		mainPanel.add(okButton,BorderLayout.SOUTH);
 	}

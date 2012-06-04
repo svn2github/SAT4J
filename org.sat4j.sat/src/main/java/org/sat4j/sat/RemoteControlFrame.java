@@ -90,7 +90,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
 	private ICDCL solver;
-	private GnuplotPreferencesFrame gnuplotFrame;
+	private VisuPreferencesFrame gnuplotFrame;
 	
 	private final static String ACTIVATE  = "Activate Tracing";
 	private final static String DEACTIVATE  = "Deactivate Tracing";
@@ -144,7 +144,10 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		
 		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver);
 		
-		gnuplotFrame = new GnuplotPreferencesFrame(
+		commandePanel.setChartBased(true);
+		commandePanel.activateGnuplotTracing(true);
+		
+		gnuplotFrame = new VisuPreferencesFrame(
 				commandePanel.getGnuplotPreferences());
 		
 		JScrollPane scrollPane = new JScrollPane(commandePanel);
@@ -189,7 +192,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 //			}
 //		});
 		
-		activateTracing = new JMenuItem(ACTIVATE);
+		activateTracing = new JMenuItem(DEACTIVATE);
 		menu.add(activateTracing);
 		
 		activateTracing.addActionListener(new ActionListener() {		
@@ -213,8 +216,10 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 			public void actionPerformed(ActionEvent e) {
 				commandePanel.setGnuplotBased(true);
 				commandePanel.setChartBased(false);
+				log("Use gnuplot tracing");
 			}
 		});
+		jChartBasedRadio.setSelected(true);
 		
 		menu.add(jChartBasedRadio);
 		
@@ -222,6 +227,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 			public void actionPerformed(ActionEvent e) {
 				commandePanel.setGnuplotBased(false);
 				commandePanel.setChartBased(true);
+				log("Use java tracing");
 			}
 		});
 		

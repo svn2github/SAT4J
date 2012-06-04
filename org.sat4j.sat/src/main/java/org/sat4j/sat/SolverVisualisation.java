@@ -63,10 +63,13 @@ public class SolverVisualisation {
 	private ITrace2D speedCleanTrace;
 	private ITrace2D speedRestartTrace;
 	
-	public SolverVisualisation(){
+	private VisuPreferences pref;
+	
+	public SolverVisualisation(VisuPreferences pref){
 		
 		visuFrame = new JFrame("Visualisation");
 		
+		this.pref=pref;
 		
 		Container c = visuFrame.getContentPane();
 		c.setLayout(new GridLayout(3,3,5,5));
@@ -77,7 +80,8 @@ public class SolverVisualisation {
 		
 		initTraces();
 		
-		visuFrame.setBackground(Color.WHITE);
+		visuFrame.setBackground(pref.getBackgroundColor());
+		visuFrame.setForeground(pref.getBorderColor());
 		
 		visuFrame.setSize(800,400);
 		
@@ -128,24 +132,32 @@ public class SolverVisualisation {
 	
 	public void addChartsToFrame(){
 		
-		variablesEvaluationPanel = new MyChartPanel(variablesEvaluationChart, "Variables evaluation");
-		clausesEvaluationPanel = new MyChartPanel(clausesEvaluationChart, "Clauses evaluation");
-		learnedClausesSizePanel = new MyChartPanel(learnedClausesSizeChart, "Size of learned clauses");
-		decisionLevelWhenConflictPanel = new MyChartPanel(decisionLevelWhenConflictChart, "Decision level when conflict");
-		trailLevelWhenConflictPanel = new MyChartPanel(trailLevelWhenConflictChart, "Trail level when conflict");
-		positiveDecisionVariablePanel = new MyChartPanel(positiveDecisionVariableChart, "Positive decision phases");
-		negativeDecisionVariablePanel = new MyChartPanel(negativeDecisionVariableChart, "Negative decision phases");
-		propagationPerSecondPanel = new MyChartPanel(propagationPerSecondChart, "Number of propagations per second");
+		variablesEvaluationPanel = new MyChartPanel(variablesEvaluationChart, "Variables evaluation", pref.getBackgroundColor(), pref.getBorderColor());
+		clausesEvaluationPanel = new MyChartPanel(clausesEvaluationChart, "Clauses evaluation",pref.getBackgroundColor(), pref.getBorderColor());
+		learnedClausesSizePanel = new MyChartPanel(learnedClausesSizeChart, "Size of learned clauses",pref.getBackgroundColor(), pref.getBorderColor());
+		decisionLevelWhenConflictPanel = new MyChartPanel(decisionLevelWhenConflictChart, "Decision level when conflict",pref.getBackgroundColor(), pref.getBorderColor());
+		trailLevelWhenConflictPanel = new MyChartPanel(trailLevelWhenConflictChart, "Trail level when conflict",pref.getBackgroundColor(), pref.getBorderColor());
+		positiveDecisionVariablePanel = new MyChartPanel(positiveDecisionVariableChart, "Positive decision phases",pref.getBackgroundColor(), pref.getBorderColor());
+		negativeDecisionVariablePanel = new MyChartPanel(negativeDecisionVariableChart, "Negative decision phases",pref.getBackgroundColor(), pref.getBorderColor());
+		propagationPerSecondPanel = new MyChartPanel(propagationPerSecondChart, "Number of propagations per second",pref.getBackgroundColor(), pref.getBorderColor());
 		
 		
-		visuFrame.add(learnedClausesSizePanel);
-		visuFrame.add(clausesEvaluationPanel);
-		visuFrame.add(trailLevelWhenConflictPanel);
-		visuFrame.add(negativeDecisionVariablePanel);
-		visuFrame.add(variablesEvaluationPanel);
-		visuFrame.add(decisionLevelWhenConflictPanel);
-		visuFrame.add(positiveDecisionVariablePanel);
-		visuFrame.add(propagationPerSecondPanel);
+		if(pref.isDisplayClausesSize())
+			visuFrame.add(learnedClausesSizePanel);
+		if(pref.isDisplayClausesEvaluation())
+			visuFrame.add(clausesEvaluationPanel);
+		if(pref.isDisplayConflictsTrail())
+			visuFrame.add(trailLevelWhenConflictPanel);
+		if(pref.isDisplayDecisionIndexes())
+			visuFrame.add(negativeDecisionVariablePanel);
+		if(pref.isDisplayVariablesEvaluation())
+			visuFrame.add(variablesEvaluationPanel);
+		if(pref.isDisplayConflictsDecision())
+			visuFrame.add(decisionLevelWhenConflictPanel);
+		if(pref.isDisplayDecisionIndexes())
+			visuFrame.add(positiveDecisionVariablePanel);
+		if(pref.isDisplaySpeed())
+			visuFrame.add(propagationPerSecondPanel);
 //		visuFrame.add(solutionValueChart);
 	}
 	

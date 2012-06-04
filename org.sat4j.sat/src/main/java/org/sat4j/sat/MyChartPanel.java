@@ -17,6 +17,10 @@ public class MyChartPanel extends JPanel {
 //	private String titleText;
 	
 	public MyChartPanel(Chart2D chart, String title){
+		this(chart,title,Color.WHITE,Color.BLACK);
+	}
+	
+	public MyChartPanel(Chart2D chart, String title, Color bg, Color fg){
 		super();
 //		this.chart = chart;
 //		this.titleText = title;
@@ -24,12 +28,14 @@ public class MyChartPanel extends JPanel {
 		
 		Font f = this.titleLabel.getFont();
 		
-//		chart.setBackground(Color.BLACK);
-//		chart.setForeground(Color.white);
+		chart.setBackground(bg);
+		chart.setForeground(fg);
 
 		// bold
 		this.titleLabel.setFont(f.deriveFont(f.getStyle() ^ Font.BOLD));
 		
+		this.titleLabel.setBackground(bg);
+		this.titleLabel.setForeground(fg);
 		
 //		this.setBorder(new CompoundBorder(new TitledBorder(null, "", 
 //				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(2, 2, 2, 2)));

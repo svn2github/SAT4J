@@ -3,7 +3,7 @@ package org.sat4j.sat;
 import java.awt.Color;
 import java.util.List;
 
-public class GnuplotPreferences {
+public class VisuPreferences {
 
 	private Color backgroundColor;
 	private Color borderColor;
@@ -38,14 +38,14 @@ public class GnuplotPreferences {
 		this.displayClausesSize = displayClausesSize;
 	}
 
-	public GnuplotPreferences() {
-		this.backgroundColor=Color.black;
-		this.borderColor=Color.white;
+	public VisuPreferences() {
+		this.backgroundColor=Color.white;
+		this.borderColor=Color.black;
 		this.nbLinesRead=11000;
 		this.refreshTime=500;
 		this.timeBeforeLaunching=8000;
 		this.displayRestarts=true;
-		this.restartColor=new Color(0x4F4F4F);
+		this.restartColor=Color.LIGHT_GRAY;
 		this.slidingWindows=true;
 		
 		
