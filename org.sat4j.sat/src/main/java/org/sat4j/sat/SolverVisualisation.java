@@ -164,11 +164,11 @@ public class SolverVisualisation {
 	public void initTraces(){
 		//positiveDecisionTrace = new Trace2DLtd(5000, "Positive decision");
 		positiveDecisionTrace = new Trace2DSimple("Positive decision");
-		positiveDecisionTrace.setTracePainter(new TracePainterDisc());
+		positiveDecisionTrace.setTracePainter(new TracePainterPlus());
 		positiveDecisionTrace.setColor(new Color(0f,0.78f,0.09f));
 		
 		negativeDecisionTrace = new Trace2DSimple("Negative decision");
-		negativeDecisionTrace.setTracePainter(new TracePainterDisc());
+		negativeDecisionTrace.setTracePainter(new TracePainterPlus());
 		negativeDecisionTrace.setColor(Color.RED);
 
 		
@@ -205,7 +205,7 @@ public class SolverVisualisation {
 		
 		
 		conflictDepthTrace = new Trace2DLtd(2000,"Trail level");
-		conflictDepthTrace.setTracePainter(new TracePainterDisc());
+		conflictDepthTrace.setTracePainter(new TracePainterPlus());
 		conflictDepthTrace.setColor(Color.MAGENTA);
 		trailLevelWhenConflictChart.setName("Trail level when the conflict occurs");
 		trailLevelWhenConflictChart.addTrace(conflictDepthTrace);
@@ -220,7 +220,7 @@ public class SolverVisualisation {
 		trailLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
 		
 		conflictLevelTrace = new Trace2DSimple("Decision level");
-		conflictLevelTrace.setTracePainter(new TracePainterDisc());
+		conflictLevelTrace.setTracePainter(new TracePainterPlus());
 		conflictLevelTrace.setColor(Color.MAGENTA);
 		decisionLevelWhenConflictChart.setName("Decision level chen the conflict occurs");
 		decisionLevelWhenConflictChart.addTrace(conflictLevelTrace);
@@ -235,7 +235,7 @@ public class SolverVisualisation {
 		decisionLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
 		
 		learnedClausesSizeTrace = new Trace2DSimple("Size");
-		learnedClausesSizeTrace.setTracePainter(new TracePainterDisc());
+		learnedClausesSizeTrace.setTracePainter(new TracePainterPlus());
 		learnedClausesSizeTrace.setColor(Color.BLUE);
 		learnedClausesSizeChart.setName("Learned clauses size");
 		learnedClausesSizeChart.addTrace(learnedClausesSizeTrace);
@@ -248,13 +248,13 @@ public class SolverVisualisation {
 		learnedClausesSizeChart.addTrace(learnedClausesSizeRestartTrace);
 		
 		clausesEvaluationTrace = new Trace2DSimple("Evaluation");
-		clausesEvaluationTrace.setTracePainter(new TracePainterDisc());
+		clausesEvaluationTrace.setTracePainter(new TracePainterPlus());
 		clausesEvaluationTrace.setColor(Color.BLUE);
 		clausesEvaluationTrace.setName("Clauses evaluation");
 		clausesEvaluationChart.addTrace(clausesEvaluationTrace);
 		
 		heuristicsTrace = new Trace2DSimple("Evaluation");
-		heuristicsTrace.setTracePainter(new TracePainterDisc());
+		heuristicsTrace.setTracePainter(new TracePainterPlus());
 		heuristicsTrace.setColor(Color.ORANGE);
 		variablesEvaluationChart.setName("Variables evaluation");
 		variablesEvaluationChart.addTrace(heuristicsTrace);
