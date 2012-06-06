@@ -47,13 +47,29 @@ public interface ISolverService {
 	/**
 	 * Ask the SAT solver to backtrack. It is mandatory to provide a reason for
 	 * backtracking, in terms of literals (which should be falsified under
-	 * current assignment).
+	 * current assignment). The reason is not added to the clauses of the
+	 * solver: only the result of the analysis is stored in the learned clauses.
+	 * Note that these clauses may be removed latter.
 	 * 
 	 * @param reason
 	 *            a set of literals, in Dimacs format, currently falsified, i.e.
 	 *            for (int l : reason) assert truthValue(l) == Lbool.FALSE
 	 */
 	void backtrack(int[] reason);
+
+	/**
+	 * Add a new clause in the SAT solver. The new clause may contain new
+	 * variables. The clause may be falsified, in that case, the difference with
+	 * backtrack() is that the new clause is appended to the solver as a regular
+	 * clause. Thus it will not be removed by aggressive clause deletion. The
+	 * clause may be assertive at a given decision level. In that case, the
+	 * solver should backtrack to the proper decision level. In other cases, the
+	 * search should simply proceed.
+	 * 
+	 * @param literals
+	 *            a set of literals in Dimacs format.
+	 */
+	void addClause(int[] literals);
 
 	/**
 	 * To access the truth value of a specific literal under current assignment.

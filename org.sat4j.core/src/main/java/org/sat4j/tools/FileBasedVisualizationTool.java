@@ -30,22 +30,18 @@ public class FileBasedVisualizationTool implements IVisualizationTool {
 		this.filename = filename;
 	}
 
-	@Override
 	public void addPoint(double x, double y) {
 		out.println(x + "\t" + y);
 	}
 
-	@Override
 	public void addInvisiblePoint(double x, double y) {
 		out.println("#" + x + "\t" + "1/0");
 	}
 
-	@Override
 	public void init() {
 		updateWriter();
 	}
 
-	@Override
 	public void end() {
 		out.close();
 	}

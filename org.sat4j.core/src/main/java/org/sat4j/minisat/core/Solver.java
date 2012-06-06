@@ -2312,22 +2312,19 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 */
 	public void setLearnedConstraintsDeletionStrategy(
 			LearnedConstraintsEvaluationType evaluation) {
-		if (conflictCount != null) {
-			conflictCount.remove(learnedConstraintsDeletionStrategy.getTimer());
-		}
+		ConflictTimer timer = learnedConstraintsDeletionStrategy.getTimer();
 		switch (evaluation) {
 		case ACTIVITY:
-			learnedConstraintsDeletionStrategy = activityBased(memoryTimer);
+			learnedConstraintsDeletionStrategy = activityBased(timer);
 			break;
 		case LBD:
-			learnedConstraintsDeletionStrategy = new GlucoseLCDS(lbdTimer);
+			learnedConstraintsDeletionStrategy = new GlucoseLCDS(timer);
 			break;
 		case LBD2:
-			learnedConstraintsDeletionStrategy = new Glucose2LCDS(lbdTimer);
+			learnedConstraintsDeletionStrategy = new Glucose2LCDS(timer);
 			break;
 		}
 		if (conflictCount != null) {
-			conflictCount.add(learnedConstraintsDeletionStrategy.getTimer());
 			learnedConstraintsDeletionStrategy.init();
 		}
 	}
@@ -2338,5 +2335,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
 	public void setKeepSolverHot(boolean keepHot) {
 		this.keepHot = keepHot;
+	}
+
+	public void addClause(int[] literals) {
+		throw new UnsupportedOperationException("Not implemented yet");
+
 	}
 }
