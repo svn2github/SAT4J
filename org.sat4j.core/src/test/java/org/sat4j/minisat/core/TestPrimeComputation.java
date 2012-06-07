@@ -75,6 +75,21 @@ public class TestPrimeComputation {
 	}
 
 	@Test
+	public void testImplicantPascal() throws ContradictionException,
+			TimeoutException {
+		IVecInt clause = new VecInt();
+		clause.push(1).push(-2).push(3).push(-4);
+		solver.addClause(clause);
+		assertTrue(solver.isSatisfiable());
+		int[] model = solver.model();
+		System.out.println(new VecInt(model));
+		assertEquals(4, model.length);
+		int[] implicant = solver.primeImplicant();
+		System.out.println(new VecInt(implicant));
+		assertEquals(1, implicant.length);
+	}
+
+	@Test
 	public void testOtherImplicant() throws ContradictionException,
 			TimeoutException {
 		IVecInt clause = new VecInt();
