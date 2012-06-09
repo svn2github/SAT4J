@@ -72,19 +72,74 @@ public interface ILits {
 	 */
 	boolean belongsToPool(int x);
 
-	public abstract void resetPool();
+	/**
+	 * reset the vocabulary.
+	 */
+	void resetPool();
 
-	public abstract void ensurePool(int howmany);
+	/**
+	 * Make sure that all data structures are ready to manage howmany boolean
+	 * variables.
+	 * 
+	 * @param howmany
+	 *            the new capacity (in boolean variables) of the vocabulary.
+	 */
+	void ensurePool(int howmany);
 
-	public abstract void unassign(int lit);
+	/**
+	 * Unassigns a boolean variable (truth value if UNDEF).
+	 * 
+	 * @param lit
+	 *            a literal in internal format.
+	 */
+	void unassign(int lit);
 
-	public abstract void satisfies(int lit);
+	/**
+	 * Satisfies a boolean variable (truth value is TRUE).
+	 * 
+	 * @param lit
+	 *            a literal in internal format.
+	 */
+	void satisfies(int lit);
 
-	public abstract boolean isSatisfied(int lit);
+	/**
+	 * Removes a variable from the formula. All occurrences of that variables
+	 * are removed. It is equivalent in our implementation to falsify the two
+	 * phases of that variable.
+	 * 
+	 * @param var
+	 *            a variable in Dimacs format.
+	 * @since 2.3.2
+	 */
+	void forgets(int var);
 
-	public abstract boolean isFalsified(int lit);
+	/**
+	 * Check if a literal is satisfied.
+	 * 
+	 * @param lit
+	 *            a literal in internal format.
+	 * @return true if that literal is satisfied.
+	 */
+	boolean isSatisfied(int lit);
 
-	public abstract boolean isUnassigned(int lit);
+	/**
+	 * Check if a literal is falsified.
+	 * 
+	 * @param lit
+	 *            a literal in internal format.
+	 * @return true if the literal is falsified. Note that a forgotten variable
+	 *         will also see its literals as falsified.
+	 */
+	boolean isFalsified(int lit);
+
+	/**
+	 * Check if a literal is assigned a truth value.
+	 * 
+	 * @param lit
+	 *            a literal in internal format.
+	 * @return true if the literal is neither satisfied nor falsified.
+	 */
+	boolean isUnassigned(int lit);
 
 	/**
 	 * @param lit
@@ -120,28 +175,88 @@ public interface ILits {
 	 */
 	int nextFreeVarId(boolean reserve);
 
-	public abstract int not(int lit);
+	/**
+	 * Reset a literal in the vocabulary.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 */
+	void reset(int lit);
 
-	public abstract void reset(int lit);
+	/**
+	 * Returns the level at which that literal has been assigned a value, else
+	 * -1.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @return -1 if the literal is unassigned, or the decision level of the
+	 *         literal.
+	 */
+	int getLevel(int lit);
 
-	public abstract int getLevel(int lit);
+	/**
+	 * Sets the decision level of a literal.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @param l
+	 *            a decision level, or -1
+	 */
+	void setLevel(int lit, int l);
 
-	public abstract void setLevel(int lit, int l);
+	/**
+	 * Returns the reason of the assignment of a literal.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @return the constraint that propagated that literal, else null.
+	 */
+	Constr getReason(int lit);
 
-	public abstract Constr getReason(int lit);
+	/**
+	 * Sets the reason of the assignment of a literal.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @param r
+	 *            the constraint that forces the assignment of that literal,
+	 *            null if there are none.
+	 */
+	void setReason(int lit, Constr r);
 
-	public abstract void setReason(int lit, Constr r);
+	/**
+	 * Retrieve the methods to call when the solver backtracks. Useful for
+	 * counter based data structures.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @return a list of methods to call on bactracking.
+	 */
+	IVec<Undoable> undos(int lit);
 
-	public abstract IVec<Undoable> undos(int lit);
-
-	public abstract void watch(int lit, Propagatable c);
+	/**
+	 * Record a new constraint to watch when a literal is satisfied.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @param c
+	 *            a constraint that contains the negation of that literal.
+	 */
+	void watch(int lit, Propagatable c);
 
 	/**
 	 * @param lit
-	 *            a literal
+	 *            a literal in internal representation.
 	 * @return the list of all the constraints that watch the negation of lit
 	 */
 	public abstract IVec<Propagatable> watches(int lit);
 
-	public abstract String valueToString(int lit);
+	/**
+	 * Returns a textual representation of the truth value of that literal.
+	 * 
+	 * @param lit
+	 *            a literal in internal representation.
+	 * @return one of T for true, F for False or ? for unassigned.
+	 */
+	String valueToString(int lit);
 }
