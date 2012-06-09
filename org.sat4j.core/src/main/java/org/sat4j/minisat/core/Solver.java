@@ -30,6 +30,7 @@
 package org.sat4j.minisat.core;
 
 import static org.sat4j.core.LiteralsUtils.toDimacs;
+import static org.sat4j.core.LiteralsUtils.toInternal;
 import static org.sat4j.core.LiteralsUtils.var;
 
 import java.io.PrintStream;
@@ -998,7 +999,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	 * @return null if not conflict is found, else a conflicting constraint.
 	 */
 	public Constr propagate() {
-		IVec<Propagatable> lwatched = watched;
 		IVecInt ltrail = trail;
 		ILits lvoc = voc;
 		SolverStats lstats = stats;
@@ -1011,34 +1011,43 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			int p = ltrail.get(qhead++);
 			lslistener.propagating(toDimacs(p), null);
 			lorder.assignLiteral(p);
-			// p is the literal to propagate
-			// Moved original MiniSAT code to dsfactory to avoid
-			// watches manipulation in counter Based clauses for instance.
-			assert p > 1;
-			lwatched.clear();
-			lvoc.watches(p).moveTo(lwatched);
-			final int size = lwatched.size();
-			for (int i = 0; i < size; i++) {
-				lstats.inspects++;
-				// try shortcut
-				// shortcut = shortcuts.get(i);
-				// if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut))
-				// {
-				// voc.watch(p, watched.get(i), shortcut);
-				// stats.shortcuts++;
-				// continue;
-				// }
-				if (!lwatched.get(i).propagate(this, p)) {
-					// Constraint is conflicting: copy remaining watches to
-					// watches[p]
-					// and return constraint
-					final int sizew = lwatched.size();
-					for (int j = i + 1; j < sizew; j++) {
-						lvoc.watch(p, lwatched.get(j));
-					}
-					qhead = ltrail.size(); // propQ.clear();
-					return lwatched.get(i).toConstraint();
+			Constr confl = reduceClausesForFalsifiedLiteral(p);
+			if (confl != null) {
+				return confl;
+			}
+		}
+		return null;
+	}
+
+	private Constr reduceClausesForFalsifiedLiteral(int p) {
+		// p is the literal to propagate
+		// Moved original MiniSAT code to dsfactory to avoid
+		// watches manipulation in counter Based clauses for instance.
+		assert p > 1;
+		IVec<Propagatable> lwatched = watched;
+		lwatched.clear();
+		voc.watches(p).moveTo(lwatched);
+		final int size = lwatched.size();
+		for (int i = 0; i < size; i++) {
+			stats.inspects++;
+			// try shortcut
+			// shortcut = shortcuts.get(i);
+			// if (shortcut != ILits.UNDEFINED && voc.isSatisfied(shortcut))
+			// {
+			// voc.watch(p, watched.get(i), shortcut);
+			// stats.shortcuts++;
+			// continue;
+			// }
+			if (!lwatched.get(i).propagate(this, p)) {
+				// Constraint is conflicting: copy remaining watches to
+				// watches[p]
+				// and return constraint
+				final int sizew = lwatched.size();
+				for (int j = i + 1; j < sizew; j++) {
+					voc.watch(p, lwatched.get(j));
 				}
+				qhead = trail.size(); // propQ.clear();
+				return lwatched.get(i).toConstraint();
 			}
 		}
 		return null;
@@ -1076,6 +1085,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 			undoOne();
 		}
 		trailLim.pop();
+		qhead = trail.size();
 	}
 
 	/**
@@ -1101,7 +1111,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		while (decisionLevel() > level) {
 			cancel();
 		}
-		qhead = trail.size();
 	}
 
 	private final Pair analysisResult = new Pair();
@@ -1197,6 +1206,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 					}
 					return Lbool.UNDEFINED;
 				}
+				int conflictTrailLevel = trail.size();
 				// analyze conflict
 				try {
 					analyze(confl, analysisResult);
@@ -1217,6 +1227,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 					return Lbool.FALSE;
 				}
 				record(analysisResult.reason);
+				restarter.newLearnedClause(analysisResult.reason,
+						conflictTrailLevel);
 				analysisResult.reason = null;
 				decayActivities();
 			}
@@ -1282,31 +1294,64 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 		}
 	}
 
+	private Constr forget(int var) {
+		voc.forgets(var);
+		Constr confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
+				.toInternal(var));
+		if (confl != null)
+			return confl;
+		confl = reduceClausesForFalsifiedLiteral(LiteralsUtils.toInternal(-var));
+		return confl;
+	}
+
+	private boolean setAndPropagate(int p) {
+		return assume(p) && propagate() == null;
+	}
+
 	public int[] primeImplicant() {
-		IVecInt currentD = new VecInt(decisions.size());
-		decisions.copyTo(currentD);
-		IVecInt assumptions = new VecInt(implied.size() + decisions.size());
-		implied.copyTo(assumptions);
-		decisions.copyTo(assumptions);
-		IVecInt prime = new VecInt(assumptions.size());
+		IVecInt prime = new VecInt(implied.size() + decisions.size());
 		implied.copyTo(prime);
-		for (int i = 0; i < currentD.size(); i++) {
-			int p = currentD.get(i);
-			assumptions.remove(p);
-			assumptions.push(-p);
-			try {
-				if (isSatisfiable(assumptions)) {
-					assumptions.pop();
-					assumptions.push(-p);
-				} else {
-					prime.push(p);
-					assumptions.pop();
-					assumptions.push(p);
-				}
-			} catch (TimeoutException e) {
-				throw new IllegalStateException("Should not timeout here", e);
-			}
+		for (IteratorInt it = implied.iterator(); it.hasNext();) {
+			assume(toInternal(it.next()));
 		}
+		Constr confl = propagate();
+		assert confl == null;
+		int d;
+		boolean ok;
+		int rightlevel;
+		for (int i = 0; i < decisions.size(); i++) {
+			d = decisions.get(i);
+			if (voc.isSatisfied(toInternal(d))) {
+				// d has been propagated
+				prime.push(d);
+			} else if (!setAndPropagate(toInternal(-d))) {
+				// conflict, literal is necessary
+				prime.push(d);
+				cancel();
+				assume(toInternal(d));
+			} else {
+				ok = true;
+				rightlevel = currentDecisionLevel();
+				for (int j = i + 1; j < decisions.size(); j++) {
+					if (!setAndPropagate(toInternal(decisions.get(j)))) {
+						ok = false;
+						break;
+					}
+				}
+				cancelUntil(rightlevel);
+				if (ok) {
+					// it is not a necessary literal
+					forget(Math.abs(d));
+				} else {
+					prime.push(d);
+					cancel();
+					assume(toInternal(d));
+				}
+			}
+			confl = propagate();
+			assert confl == null;
+		}
+		cancelUntil(0);
 		int[] implicant = new int[prime.size()];
 		prime.copyTo(implicant);
 		return implicant;
