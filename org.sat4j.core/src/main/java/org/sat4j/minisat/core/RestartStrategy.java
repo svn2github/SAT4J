@@ -78,4 +78,6 @@ public interface RestartStrategy extends Serializable, ConflictTimer {
 	void onBackjumpToRootLevel();
 
 	SearchParams getSearchParams();
+
+	void newLearnedClause(Constr learned, int trailLevel);
 }
