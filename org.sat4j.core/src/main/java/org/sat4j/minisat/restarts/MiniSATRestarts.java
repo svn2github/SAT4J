@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.minisat.restarts;
 
+import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 
@@ -87,5 +88,8 @@ public final class MiniSATRestarts implements RestartStrategy {
 
 	public SearchParams getSearchParams() {
 		return params;
+	}
+
+	public void newLearnedClause(Constr learned, int trailLevel) {
 	}
 }
