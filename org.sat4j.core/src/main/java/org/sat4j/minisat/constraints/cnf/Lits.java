@@ -168,6 +168,11 @@ public final class Lits implements Serializable, ILits {
 		falsified[lit ^ 1] = true;
 	}
 
+	public void forgets(int var) {
+		falsified[var << 1] = true;
+		falsified[(var << 1) ^ 1] = true;
+	}
+
 	public boolean isSatisfied(int lit) {
 		return falsified[lit ^ 1];
 	}
