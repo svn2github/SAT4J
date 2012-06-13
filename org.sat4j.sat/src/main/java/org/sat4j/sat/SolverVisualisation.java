@@ -290,6 +290,10 @@ public class SolverVisualisation {
 		speedTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 		
 	}
+	
+	public void setVisible(boolean b){
+		visuFrame.setVisible(b);
+	}
 
 	public ITrace2D getPositiveDecisionTrace() {
 		return positiveDecisionTrace;
