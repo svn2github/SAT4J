@@ -68,6 +68,10 @@ public class SolverVisualisation {
 	private RemoteControlFrame listeningFrame;
 	
 	public SolverVisualisation(VisuPreferences pref){
+		this(pref,true);
+	}
+	
+	public SolverVisualisation(VisuPreferences pref,boolean isVisible){
 		
 		visuFrame = new JFrame("Visualisation");
 		
@@ -107,7 +111,7 @@ public class SolverVisualisation {
 				);
 		
 		
-		visuFrame.setVisible(true); 
+		visuFrame.setVisible(isVisible); 
 		
 		
 	}

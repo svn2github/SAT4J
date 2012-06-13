@@ -29,17 +29,14 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
-import org.sat4j.minisat.core.ConflictTimer;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
-import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.restarts.NoRestarts;
-import org.sat4j.specs.IVec;
 
 /**
  * 
@@ -195,7 +192,6 @@ public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionSt
 		this.solver = solver;
 	}
 
-
 	public void reset() {
 		restart.newConflict();
 	}
@@ -205,6 +201,7 @@ public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionSt
 		conflictNumber++;
 		if(useTelecomStrategyAsLearnedConstraintsDeletionStrategy){
 			if(conflictNumber>nbClausesAtWhichWeShouldClean){
+//				logger.log("we should clean now because " + conflictNumber + " > " +  nbClausesAtWhichWeShouldClean);
 				//hasClickedOnClean=true;
 				conflictNumber=0;
 				solver.setNeedToReduceDB(true);

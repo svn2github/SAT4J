@@ -88,6 +88,8 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
+import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
+import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -135,7 +137,15 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private IProblem problem;
 	private boolean optimizationMode=false;
 
-	private boolean useCustomizedSolver;
+	private String solverInLine;
+	private String[] commandLines;
+	
+	private boolean firstStart;
+	
+	private SolverVisualisation visu;
+
+	//	private boolean useCustomizedSolver;
+	private StartSolverEnum startConfig;
 
 	private Thread solveurThread;
 
@@ -170,8 +180,22 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String OPTMIZATION_MODE = "Use optimization mode";
 	private JCheckBox optimisationModeCB;
 
-	private JCheckBox useCustomizedSolverCB;
-	private final static String USE_CUSTOMIZED_SOLVER = "Use customized solver";
+	//	private JCheckBox useCustomizedSolverCB;
+	//	private final static String USE_CUSTOMIZED_SOLVER = "Use customized solver";
+
+	private JRadioButton solverLineParamLineRadio;
+	private JRadioButton solverLineParamRemoteRadio;
+	private JRadioButton solverListParamListRadio;
+	private JRadioButton solverListParamRemoteRadio;
+	private ButtonGroup solverConfigGroup;
+
+	private final static String SOLVER_LINE_PARAM_LINE_CONFIG = "Start customized solver as given in command line";
+	private final static String SOLVER_LINE_PARAM_REMOTE_CONFIG = "Start customized solver as given in command line with configuration given in the remote";
+	private final static String SOLVER_LIST_PARAM_LIST_CONFIG = "Start solver as chosen in list with its default configuration";
+	private final static String SOLVER_LIST_PARAM_REMOTE_CONFIG = "Start solver as chosen in list with configuration given in the remote";
+
+	private JLabel chooseStartConfigLabel;
+	private final static String CHOOSE_START_CONFIG = "Choose start configuration : ";
 
 	private JButton startStopButton;
 	private static final String START = "Start";
@@ -180,7 +204,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private JButton pauseButton;
 	private static final String PAUSE = "Pause";
 	private static final String RESUME = "Resume";
-	private boolean isInterrupted;
+	//	private boolean isInterrupted;
 
 	private final static String RESTART_PANEL = "Restart strategy";	
 	private final static String RESTART = "Restart";
@@ -326,7 +350,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private Process gnuplotProcess;
 
 	private VisuPreferences visuPreferences;
-	
+
 	private boolean gnuplotBased = false;
 	private boolean chartBased = false;
 
@@ -340,19 +364,27 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
 		super();
-
-
+		
+		
+		
 
 		this.visuPreferences = new VisuPreferences();
 
 		this.telecomStrategy = new RemoteControlStrategy(this);
 		this.instancePath=filename;
 		this.ramdisk = ramdisk;
+		
+		
 		this.solver=solver;
 
 		this.isPlotActivated=false;
 
-		this.useCustomizedSolver=(this.solver!=null);
+		if(this.solver!=null)
+			startConfig=StartSolverEnum.SOLVER_LINE_PARAM_LINE;
+		else 
+			startConfig=StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
+
+		this.firstStart=true;
 
 
 		this.setPreferredSize(new Dimension(750,800));
@@ -421,41 +453,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		aboutSolverPanel.add(textArea);
 
 		tabbedPane.addTab("About Solver",null,aboutSolverPanel, "information about solver");
-
-		//		System.out.println("tabcount = " + tabbedPane.getTabCount());
-		//
-		//		tabbedPane.addChangeListener(new ChangeListener() {
-		//
-		//			public void stateChanged(ChangeEvent e) {
-		//				JTabbedPane pane = (JTabbedPane)e.getSource();
-		//
-		//				int sel = pane.getSelectedIndex();
-		//				if(sel==pane.getTabCount()-1){
-		//					aboutSolverPanel = new JPanel();
-		//					if(getSolver()!=null){
-		//						JTextArea textArea = new JTextArea(getSolver().toString());
-		//						aboutSolverPanel.add(textArea);
-		//						aboutSolverPanel.repaint();
-		//						aboutSolverPanel.paintAll(aboutSolverPanel.getGraphics());
-		//					}
-		//					else{
-		//						JTextArea textArea = new JTextArea("No solver is running at the moment");
-		//						aboutSolverPanel.add(textArea);
-		//						aboutSolverPanel.repaint();
-		//					}
-		//				}
-		//			}
-		//		});
-
-
-		//				this.add(instancePanel);
-		//				this.add(choixSolverPanel);
-		//				this.add(restartPanel);
-		//				this.add(rwPanel);
-		//				this.add(cleanPanel);
-		//				this.add(phasePanel);
-		//				this.add(simplifierPanel);
-		//				this.add(hotSolverPanel);
 
 		this.add(tabbedPane);
 		this.add(scrollPane);
@@ -543,7 +540,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		startStopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(startStopButton.getText().equals(START)){
-					launchSolver();
+//					launchSolver();
+					launchSolverWithConfigs();
 					pauseButton.setEnabled(true);
 					setInstancePanelEnabled(false);
 					setRestartPanelEnabled(true);
@@ -565,12 +563,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					log("Asked the solver to stop");
 					setInstancePanelEnabled(true);
 					setChoixSolverPanelEnabled(true);
-					setRestartPanelEnabled(false);
-					setRWPanelEnabled(false);
-					setCleanPanelEnabled(false);
-					setPhasePanelEnabled(false);
-					setSimplifierPanelEnabled(false);
-					setKeepSolverHotPanelEnabled(false);
+					//					setRestartPanelEnabled(false);
+					//					setRWPanelEnabled(false);
+					//					setCleanPanelEnabled(false);
+					//					setPhasePanelEnabled(false);
+					//					setSimplifierPanelEnabled(false);
+					//					setKeepSolverHotPanelEnabled(false);
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
 				}
@@ -600,26 +598,76 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		tmpPanel2.add(startStopButton);
 		tmpPanel2.add(pauseButton);
 
+		solverLineParamLineRadio = new JRadioButton(SOLVER_LINE_PARAM_LINE_CONFIG);
+		solverLineParamRemoteRadio = new JRadioButton(SOLVER_LINE_PARAM_REMOTE_CONFIG);
+		solverListParamRemoteRadio = new JRadioButton(SOLVER_LIST_PARAM_REMOTE_CONFIG);
+		solverListParamListRadio = new JRadioButton(SOLVER_LIST_PARAM_LIST_CONFIG);
 
-		useCustomizedSolverCB = new JCheckBox(USE_CUSTOMIZED_SOLVER);
+		solverConfigGroup = new ButtonGroup();
+		solverConfigGroup.add(solverLineParamLineRadio);
+		solverConfigGroup.add(solverLineParamRemoteRadio);
+		solverConfigGroup.add(solverListParamListRadio);
+		solverConfigGroup.add(solverListParamRemoteRadio);
+
+		chooseStartConfigLabel = new JLabel(CHOOSE_START_CONFIG);
+
 		JPanel tmpPanel3 = new JPanel();
-		tmpPanel3.add(useCustomizedSolverCB);
+		tmpPanel3.setLayout(new BoxLayout(tmpPanel3, BoxLayout.Y_AXIS));
 
-		useCustomizedSolverCB.setSelected(useCustomizedSolver);
+		tmpPanel3.add(chooseStartConfigLabel);
+		tmpPanel3.add(solverLineParamLineRadio);
+		tmpPanel3.add(solverLineParamRemoteRadio);
+		tmpPanel3.add(solverListParamListRadio);
+		tmpPanel3.add(solverListParamRemoteRadio);
 
-		useCustomizedSolverCB.addActionListener(new ActionListener() {
+
+		solverLineParamLineRadio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				useCustomizedSolver=!useCustomizedSolver;
-				useCustomizedSolverCB.setEnabled(useCustomizedSolver);
-				listeSolvers.setEnabled(!useCustomizedSolver);
-				choixSolverPanel.repaint();
+				if(solverLineParamLineRadio.isSelected()){
+					startConfig = StartSolverEnum.SOLVER_LINE_PARAM_LINE;
+				}
 			}
 		});
 
+		solverLineParamRemoteRadio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(solverLineParamRemoteRadio.isSelected()){
+					startConfig = StartSolverEnum.SOLVER_LINE_PARAM_REMOTE;
+				}
+			}
+		});
+
+		solverListParamListRadio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(solverListParamListRadio.isSelected()){
+					startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
+				}
+			}
+		});
+
+		solverListParamRemoteRadio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(solverListParamRemoteRadio.isSelected()){
+					startConfig = StartSolverEnum.SOLVER_LIST_PARAM_REMOTE;
+				}
+			}
+		});
+
+
 		setChoixSolverPanelEnabled(true);
 
-		choixSolverPanel.add(tmpPanel3,BorderLayout.NORTH);
-		choixSolverPanel.add(tmpPanel1,BorderLayout.CENTER);
+		if(solverInLine==null){
+			solverLineParamLineRadio.setEnabled(false);
+			solverLineParamRemoteRadio.setEnabled(false);
+		}
+
+		if(firstStart){
+			solverLineParamRemoteRadio.setEnabled(false);
+			solverListParamRemoteRadio.setEnabled(false);
+		}
+
+		choixSolverPanel.add(tmpPanel1,BorderLayout.NORTH);
+		choixSolverPanel.add(tmpPanel3,BorderLayout.CENTER);
 		choixSolverPanel.add(tmpPanel2,BorderLayout.SOUTH);
 
 	}
@@ -979,10 +1027,308 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		optimisationModeCB.setSelected(optimizationMode);
 	}
 
-	public void launchSolver(){
+//	public void launchSolver(){
+//
+//
+//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE))
+//		{
+//			selectedSolver = (String)listeSolvers.getSelectedItem();
+//			String[] partsSelectedSolver = selectedSolver.split("\\.");
+//
+//			assert partsSelectedSolver.length==2;
+//			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
+//
+//			ASolverFactory factory;
+//
+//			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
+//				factory = org.sat4j.minisat.SolverFactory.instance();
+//			}
+//			else{
+//				factory = org.sat4j.pb.SolverFactory.instance();
+//			}
+//			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
+//			//log(solver.toString());
+//		}
+//
+//
+//		if(firstStart || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
+//			telecomStrategy.setSolver(solver);
+//			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+//			solver.setRestartStrategy(telecomStrategy);
+//
+//		}
+//
+//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+//
+//
+//
+//
+//
+//		//		if(randomWalk==null){
+//		//			double proba=0;
+//		//			probaRWField.setText("0");
+//		//			rwPanel.repaint();
+//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+//		//		}
+//
+//
+//		IOrder order = solver.getOrder();
+//		//		if(order instanceof RandomWalkDecoratorObjective && )
+//
+//
+//		if(solver.getOrder() instanceof RandomWalkDecorator){
+//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+//			if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
+//				randomWalk.setProbability(0);
+//				probaRWField.setText("0");
+//				rwPanel.repaint();
+//			}
+//			else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
+//				if(solverInLine.getOrder() instanceof RandomWalkDecorator)
+//					randomWalk = (RandomWalkDecorator)solverInLine.getOrder();
+//				else
+//					randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+//			}
+//			else{
+//				double proba = Double.parseDouble(probaRWField.getText());
+//				randomWalk.setProbability(proba);
+//			}
+//		}
+//		else{
+//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+//		}
+//		//		
+//		//		if (optimizationMode
+//		//				&& order instanceof VarOrderHeapObjective) {
+//		//			randomWalk = new RandomWalkDecoratorObjective(
+//		//					(VarOrderHeapObjective) order, 0);
+//		//		} else {
+//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
+//		//		}
+//
+//		solver.setOrder(randomWalk);
+//
+//		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
+//		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
+//		//			randomWalk.setProbability(0);
+//		//			probaRWField.setText("0");
+//		//			rwPanel.repaint();
+//		//		}
+//		//		else
+//		//		if(solver.getOrder() instanceof RandomWalkDecorator){
+//		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+//		//			randomWalk.setProbability(0);
+//		//			probaRWField.setText("0");
+//		//			rwPanel.repaint();
+//		//		}
+//		//		else if(!optimizationMode){
+//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+//		//		}
+//		//		else {
+//		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
+//		//		}
+//
+//		//		solver.setOrder(randomWalk);
+//
+//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE))
+//
+//			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+//		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+//
+//		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+//
+//
+//		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+//			simplificationExpensiveRadio.setSelected(true);
+//		}
+//		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+//			simplificationSimpleRadio.setSelected(true);
+//		}
+//		else{
+//			simplificationNoRadio.setSelected(true);
+//		}
+//
+//		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+//		phasePanel.repaint();
+//
+//		updateRestartStrategyPanel();
+//
+//		//pbSolver.setNeedToReduceDB(true);
+//
+//
+//
+//
+//		whereToWriteFiles = instancePath;
+//
+//		if(ramdisk.length()>0){
+//			String[] instancePathSplit= instancePath.split("/");
+//			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
+//
+//		}
+//
+//		solver.setVerbose(true);
+//
+//		List<SearchListener> listeners = new ArrayList<SearchListener>();
+//
+//
+//		if(gnuplotBased){
+//			if(visuPreferences.isDisplayClausesEvaluation()){
+//				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
+//			}
+//			if(visuPreferences.isDisplayClausesSize()){
+//				listeners.add(new LearnedClausesSizeTracing(
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
+//			}
+//			if(visuPreferences.isDisplayConflictsDecision()){
+//				listeners.add(new ConflictLevelTracing(
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+//			}
+//			if(visuPreferences.isDisplayConflictsTrail()){
+//				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
+//			}
+//
+//			if(visuPreferences.isDisplayDecisionIndexes()){
+//				listeners.add(new DecisionTracing(
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+//			}
+//
+//			if(visuPreferences.isDisplaySpeed()){
+//				listeners.add(new SpeedTracing(
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
+//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
+//			}
+//			if(visuPreferences.isDisplayVariablesEvaluation()){
+//				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+//			}
+//		}
+//
+//		else if(chartBased){
+//
+//			SolverVisualisation visu = new SolverVisualisation(visuPreferences);
+//
+//			visu.setnVar(solver.nVars());
+//			if(visuPreferences.isDisplayClausesEvaluation()){
+//				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
+//			}
+//			if(visuPreferences.isDisplayClausesSize()){
+//				listeners.add(new LearnedClausesSizeTracing(
+//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
+//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
+//			}
+//			if(visuPreferences.isDisplayConflictsDecision()){
+//				listeners.add(new ConflictLevelTracing(
+//						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
+//						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
+//			}
+//			if(visuPreferences.isDisplayConflictsTrail()){
+//				listeners.add(new ConflictDepthTracing(
+//						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
+//						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
+//			}
+//			if(visuPreferences.isDisplayDecisionIndexes()){
+//				listeners.add(new DecisionTracing(
+//						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
+//						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
+//						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
+//			}
+//			if(visuPreferences.isDisplaySpeed()){
+//				listeners.add(new SpeedTracing(
+//						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
+//						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
+//						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
+//			}
+//			if(visuPreferences.isDisplayVariablesEvaluation()){
+//				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
+//			}
+//		}
+//
+//		listeners.add(this);
+//
+//		solver.setSearchListener(new MultiTracing(listeners));
+//
+//		solver.setLogger(this);
+//
+//		reader = createReader(solver, instancePath);
+//
+//
+//		try{
+//			problem = reader.parseInstance(instancePath);
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (ParseFormatException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ContradictionException e) {
+//			log("Unsatisfiable (trivial)!");
+//		}
+//
+//		boolean optimisation=false;
+//		if(reader instanceof PBInstanceReader){
+//			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
+//			if(optimisation){
+//				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
+//			}
+//		}
+//
+//
+//		log("# Started solver " + solver.getClass().getSimpleName());
+//		log("# on instance " + instancePath);
+//		log("# Optimisation = " + optimisation);
+//		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
+//		log("# Random walk probability = " +randomWalk.getProbability());
+//		//log("# Number of conflicts before cleaning = " + nbConflicts);
+//
+//
+//		solveurThread = new Thread() {
+//			public void run() {
+//				//Thread thisThread = Thread.currentThread();
+//				//				if(shouldStop){
+//				//					System.out.println("coucou");
+//				//				}
+//				//				while(!shouldStop){
+//				try{
+//					stringWriter = new StringWriter();
+//					if(problem.isSatisfiable()){
+//						log("Satisfiable !");
+//						if(problem instanceof OptToPBSATAdapter){
+//							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+//							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+//						}
+//						else
+//							reader.decode(problem.model(),new PrintWriter(stringWriter));
+//						log(stringWriter.toString());
+//					}
+//					else{
+//						log("Unsatisfiable !");
+//					}
+//				} catch (TimeoutException e) {
+//					log("Timeout, sorry!");      
+//				}
+//				//log("Solver has stopped");
+//				//				}
+//			}
+//		};
+//		solveurThread.start();
+//
+//
+//		if(isPlotActivated && gnuplotBased){
+//			traceGnuplot();
+//		}
+//
+//	}
 
-		if(!useCustomizedSolver)
-		{
+
+	public void launchSolverWithConfigs(){
+
+
+		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
 			selectedSolver = (String)listeSolvers.getSelectedItem();
 			String[] partsSelectedSolver = selectedSolver.split("\\.");
 
@@ -998,93 +1344,186 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				factory = org.sat4j.pb.SolverFactory.instance();
 			}
 			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
-			//log(solver.toString());
-		}
 
+			telecomStrategy.setSolver(solver);
+			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+			solver.setRestartStrategy(telecomStrategy);
 
-		telecomStrategy.setSolver(solver);
-		telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
-		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
 
-		solver.setRestartStrategy(telecomStrategy);
+			IOrder order = solver.getOrder();
+			
+			double proba = 0;
 
-
-		//		if(randomWalk==null){
-		//			double proba=0;
-		//			probaRWField.setText("0");
-		//			rwPanel.repaint();
-		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-		//		}
-
-
-		IOrder order = solver.getOrder();
-		//		if(order instanceof RandomWalkDecoratorObjective && )
-
-		if(solver.getOrder() instanceof RandomWalkDecorator){
-			randomWalk = (RandomWalkDecorator)solver.getOrder();
-			randomWalk.setProbability(0);
-			probaRWField.setText("0");
+			if(optimizationMode){
+				if(order instanceof RandomWalkDecoratorObjective){
+					randomWalk = (RandomWalkDecorator)order;
+					proba = randomWalk.getProbability();
+				}
+				else if(order instanceof VarOrderHeapObjective){
+					randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) order, 0);
+				}
+			}
+			else if(solver.getOrder() instanceof RandomWalkDecorator){
+				randomWalk = (RandomWalkDecorator)order;
+				proba = randomWalk.getProbability();
+			}
+			else{
+				randomWalk = new RandomWalkDecorator((VarOrderHeap)order, 0);
+			}
+			
+			randomWalk.setProbability(proba);
+			probaRWField.setText(proba+"");
 			rwPanel.repaint();
-		}
-		else{
-			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-		}
-		//		
-		//		if (optimizationMode
-		//				&& order instanceof VarOrderHeapObjective) {
-		//			randomWalk = new RandomWalkDecoratorObjective(
-		//					(VarOrderHeapObjective) order, 0);
-		//		} else {
-		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
-		//		}
 
-		solver.setOrder(randomWalk);
+			solver.setOrder(randomWalk);
+			
+			
+			
+			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
-		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
-		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
-		//			randomWalk.setProbability(0);
-		//			probaRWField.setText("0");
-		//			rwPanel.repaint();
-		//		}
-		//		else
-		//		if(solver.getOrder() instanceof RandomWalkDecorator){
-		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-		//			randomWalk.setProbability(0);
-		//			probaRWField.setText("0");
-		//			rwPanel.repaint();
-		//		}
-		//		else if(!optimizationMode){
-		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-		//		}
-		//		else {
-		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
-		//		}
-
-		//		solver.setOrder(randomWalk);
-
-		telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
-
-		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
 
-		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-			simplificationExpensiveRadio.setSelected(true);
-		}
-		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-			simplificationSimpleRadio.setSelected(true);
-		}
-		else{
-			simplificationNoRadio.setSelected(true);
+			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+				simplificationExpensiveRadio.setSelected(true);
+			}
+			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+				simplificationSimpleRadio.setSelected(true);
+			}
+			else{
+				simplificationNoRadio.setSelected(true);
+			}
+
+			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+			phasePanel.repaint();
+
+			updateRestartStrategyPanel();
+
 		}
 
-		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-		phasePanel.repaint();
+		else if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
+			selectedSolver = (String)listeSolvers.getSelectedItem();
+			String[] partsSelectedSolver = selectedSolver.split("\\.");
 
-		updateRestartStrategyPanel();
+			assert partsSelectedSolver.length==2;
+			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
 
-		//pbSolver.setNeedToReduceDB(true);
+			ASolverFactory factory;
 
+			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
+				factory = org.sat4j.minisat.SolverFactory.instance();
+			}
+			else{
+				factory = org.sat4j.pb.SolverFactory.instance();
+			}
+			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
+
+			telecomStrategy.setSolver(solver);
+			
+			solver.setRestartStrategy(telecomStrategy);
+			solver.setOrder(randomWalk);
+			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+			
+			
+			hasClickedOnRestart();
+			
+			hasClickedOnApplyRW();
+			
+			hasClickedOnApplyPhase();
+			
+			hasClickedOnApplySimplification();
+			
+			updateRestartStrategyPanel();
+
+		}
+		
+		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
+			
+			telecomStrategy.setSolver(solver);
+			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+			solver.setRestartStrategy(telecomStrategy);
+
+			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+			
+			updateRestartStrategyPanel();
+
+			IOrder order = solver.getOrder();
+			
+			double proba = 0;
+
+			if(optimizationMode){
+				if(order instanceof RandomWalkDecoratorObjective){
+					randomWalk = (RandomWalkDecorator)order;
+					proba = randomWalk.getProbability();
+				}
+				else if(order instanceof VarOrderHeapObjective){
+					randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) order, 0);
+				}
+			}
+			else if(solver.getOrder() instanceof RandomWalkDecorator){
+				randomWalk = (RandomWalkDecorator)order;
+				proba = randomWalk.getProbability();
+			}
+			else{
+				randomWalk = new RandomWalkDecorator((VarOrderHeap)order, 0);
+			}
+			
+			randomWalk.setProbability(proba);
+			probaRWField.setText(proba+"");
+			rwPanel.repaint();
+
+			solver.setOrder(randomWalk);
+			
+			
+			
+			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+
+			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+			
+			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+			
+
+			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+				simplificationExpensiveRadio.setSelected(true);
+			}
+			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+				simplificationSimpleRadio.setSelected(true);
+			}
+			else{
+				simplificationNoRadio.setSelected(true);
+			}
+
+			
+			phasePanel.repaint();
+
+			
+			
+		}
+		
+		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_REMOTE)){
+//			solver = solverInLine;
+			
+			solver.setRestartStrategy(telecomStrategy);
+			solver.setOrder(randomWalk);
+			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+			
+			
+			hasClickedOnRestart();
+			
+			hasClickedOnApplyRW();
+			
+			hasClickedOnApplyPhase();
+			
+			hasClickedOnApplySimplification();
+			
+			updateRestartStrategyPanel();
+
+			
+			
+		}
 
 
 
@@ -1098,6 +1537,83 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		solver.setVerbose(true);
 
+		initSearchListeners();
+
+		solver.setLogger(this);
+
+		reader = createReader(solver, instancePath);
+
+
+		try{
+			problem = reader.parseInstance(instancePath);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (ParseFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ContradictionException e) {
+			log("Unsatisfiable (trivial)!");
+		}
+
+		boolean optimisation=false;
+		if(reader instanceof PBInstanceReader){
+			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
+			if(optimisation){
+				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
+			}
+		}
+
+
+		log("# Started solver " + solver.getClass().getSimpleName());
+		log("# on instance " + instancePath);
+		log("# Optimisation = " + optimisation);
+		log("# Restart strategy = " + telecomStrategy.getRestartStrategy().getClass().getSimpleName());
+		log("# Random walk probability = " +randomWalk.getProbability());
+		//log("# Number of conflicts before cleaning = " + nbConflicts);
+
+
+		solveurThread = new Thread() {
+			public void run() {
+				//Thread thisThread = Thread.currentThread();
+				//				if(shouldStop){
+				//					System.out.println("coucou");
+				//				}
+				//				while(!shouldStop){
+				try{
+					stringWriter = new StringWriter();
+					if(problem.isSatisfiable()){
+						log("Satisfiable !");
+						if(problem instanceof OptToPBSATAdapter){
+							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+						}
+						else
+							reader.decode(problem.model(),new PrintWriter(stringWriter));
+						log(stringWriter.toString());
+					}
+					else{
+						log("Unsatisfiable !");
+					}
+				} catch (TimeoutException e) {
+					log("Timeout, sorry!");      
+				}
+				//log("Solver has stopped");
+				//				}
+			}
+		};
+		solveurThread.start();
+
+
+		if(isPlotActivated && gnuplotBased){
+			traceGnuplot();
+		}
+		
+
+	}
+
+	
+	public void initSearchListeners(){
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
 
 
@@ -1140,7 +1656,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		else if(chartBased){
 
-			SolverVisualisation visu = new SolverVisualisation(visuPreferences);
+			if(visu != null){
+				visu.setVisible(false);
+			}
+			
+			visu = new SolverVisualisation(visuPreferences,isPlotActivated);
+			
 
 			visu.setnVar(solver.nVars());
 			if(visuPreferences.isDisplayClausesEvaluation()){
@@ -1181,80 +1702,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		listeners.add(this);
 
 		solver.setSearchListener(new MultiTracing(listeners));
-
-		solver.setLogger(this);
-
-		reader = createReader(solver, instancePath);
-
-
-		try{
-			problem = reader.parseInstance(instancePath);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (ParseFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ContradictionException e) {
-			log("Unsatisfiable (trivial)!");
-		}
-
-		boolean optimisation=false;
-		if(reader instanceof PBInstanceReader){
-			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
-			if(optimisation){
-				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
-			}
-		}
-
-
-		log("# Started solver " + solver.getClass().getSimpleName());
-		log("# on instance " + instancePath);
-		log("# Optimisation = " + optimisation);
-		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
-		log("# Random walk probability = " +randomWalk.getProbability());
-		//log("# Number of conflicts before cleaning = " + nbConflicts);
-
-
-		solveurThread = new Thread() {
-			public void run() {
-				//Thread thisThread = Thread.currentThread();
-				//				if(shouldStop){
-				//					System.out.println("coucou");
-				//				}
-				//				while(!shouldStop){
-				try{
-					stringWriter = new StringWriter();
-					if(problem.isSatisfiable()){
-						log("Satisfiable !");
-						if(problem instanceof OptToPBSATAdapter){
-							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
-						}
-						else
-							reader.decode(problem.model(),new PrintWriter(stringWriter));
-						log(stringWriter.toString());
-					}
-					else{
-						log("Unsatisfiable !");
-					}
-				} catch (TimeoutException e) {
-					log("Timeout, sorry!");      
-				}
-				//log("Solver has stopped");
-				//				}
-			}
-		};
-		solveurThread.start();
-
-
-		if(isPlotActivated && gnuplotBased){
-			traceGnuplot();
-		}
-
 	}
-	
-	
+
 
 	public boolean isGnuplotBased() {
 		return gnuplotBased;
@@ -1333,7 +1782,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		//		if(shouldInit)
 		//			telecomStrategy.setRestartStrategy(restart,params);
 
-		//log("Has clicked on " + RESTART + " with "+ choix);
+		log("Set " + RESTART + " to "+ choix);
 	}
 
 	public void hasClickedOnApplyRW(){
@@ -1563,9 +2012,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	public void setChoixSolverPanelEnabled(boolean enabled){
-		listeSolvers.setEnabled(enabled && !useCustomizedSolver);
-		choixSolver.setEnabled(enabled && !useCustomizedSolver);
-		useCustomizedSolverCB.setEnabled(enabled && useCustomizedSolver);
+		listeSolvers.setEnabled(enabled);
+		choixSolver.setEnabled(enabled);
+		solverLineParamLineRadio.setEnabled(enabled);
+		solverLineParamRemoteRadio.setEnabled(enabled);
+		solverListParamListRadio.setEnabled(enabled);
+		solverListParamRemoteRadio.setEnabled(enabled);
 		optimisationModeCB.setEnabled(enabled);
 		// TODO regarder si le customized solver etait en mode optimisation ou pas
 		choixSolverPanel.repaint();
@@ -1648,16 +2100,22 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void activateGnuplotTracing(boolean b){
 		isPlotActivated=b;
-		if(startStopButton.getText().equals(STOP)){
-			if(b){
+		if(solver!=null)
+			initSearchListeners();
+		if(startStopButton.getText().equals(STOP) && b){
+			if(this.gnuplotBased){
 				traceGnuplot();
+				this.visu.setVisible(false);
 			}
 			else{
 				stopGnuplot();
+				this.visu.setVisible(true);
 			}
 		}
 		else if(!b){
 			stopGnuplot();
+			if(this.visu!=null)
+				this.visu.setVisible(false);
 		}
 	}
 
@@ -1697,7 +2155,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set origin "+right + "," + bottom);
 					out.println("set title \"Decision level at which the conflict occurs\"");
 					out.println("set autoscale ymax"); 
-//					out.println("set y2range[0:"+nbVariables+"]");
+					out.println("set y2range [0:]");
 					GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.magenta,"Conflict Level");
 					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
 					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
@@ -1708,7 +2166,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("unset autoscale");
 					out.println("set autoscale x");
 					out.println("set autoscale ymax"); 
-//					out.println("set y2range[0:"+nbVariables+"]");
+					out.println("set y2range [0:]");
+					//					out.println("set y2range[0:"+nbVariables+"]");
 					//					out.println("set autoscale y2");
 					//					out.println("set nologscale x");
 					//					out.println("set nologscale y");
@@ -1755,7 +2214,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 					//verybottom left: index decision variable
 					out.println("unset autoscale");
-					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"+nbVariables+"];}");
+					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"+nbVariables+"]; set y2range [0:]; }");
 					//					out.println("set autoscale y");
 
 					//					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
@@ -1778,6 +2237,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+right + "," + top);
 					out.println("set title \"Trail level when the conflict occurs\"");
+					out.println("set y2range [0:]");
 					GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.magenta, "Trail level");
 					GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
 					//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
@@ -1809,6 +2269,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set size "+width + "," + height);
 					out.println("set origin "+middle + "," + verybottom);
 					out.println("set title \"Number of propagations per second\"");
+					out.println("set y2range [0:]");
 					GnuplotDataFile speedDF = new GnuplotDataFile(instancePath+"-speed.dat",Color.cyan,"Speed","lines");
 					GnuplotDataFile cleanDF = new GnuplotDataFile(instancePath +"-speed-clean.dat",Color.orange, "Clean", "impulses");
 					GnuplotDataFile restartDF = new GnuplotDataFile(instancePath +"-speed-restart.dat",Color.gray, "Restart", "impulses");

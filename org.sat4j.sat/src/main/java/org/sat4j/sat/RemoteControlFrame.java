@@ -216,6 +216,8 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 			public void actionPerformed(ActionEvent e) {
 				commandePanel.setGnuplotBased(true);
 				commandePanel.setChartBased(false);
+				commandePanel.activateGnuplotTracing(activateTracing.getText().equals(DEACTIVATE));
+//				activateTracing(is)
 				log("Use gnuplot tracing");
 			}
 		});
@@ -227,6 +229,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 			public void actionPerformed(ActionEvent e) {
 				commandePanel.setGnuplotBased(false);
 				commandePanel.setChartBased(true);
+				commandePanel.activateGnuplotTracing(activateTracing.getText().equals(DEACTIVATE));
 				log("Use java tracing");
 			}
 		});
