@@ -90,7 +90,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
 	private ICDCL solver;
-	private VisuPreferencesFrame gnuplotFrame;
+	private VisuPreferencesFrame visuFrame;
 	
 	private final static String ACTIVATE  = "Activate Tracing";
 	private final static String DEACTIVATE  = "Deactivate Tracing";
@@ -128,7 +128,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	
 	public void setActivateGnuplot(boolean b){
 		activateTracing.setSelected(b);
-		activateGnuplotTracing(b);
+		activateTracing(b);
 	}
 
 	public void initLookAndFeel(){
@@ -147,7 +147,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		commandePanel.setChartBased(true);
 		commandePanel.activateGnuplotTracing(true);
 		
-		gnuplotFrame = new VisuPreferencesFrame(
+		visuFrame = new VisuPreferencesFrame(
 				commandePanel.getGnuplotPreferences());
 		
 		JScrollPane scrollPane = new JScrollPane(commandePanel);
@@ -197,7 +197,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		
 		activateTracing.addActionListener(new ActionListener() {		
 			public void actionPerformed(ActionEvent e) {
-				activateGnuplotTracing(activateTracing.getText().equals(ACTIVATE));
+				activateTracing(activateTracing.getText().equals(ACTIVATE));
 			}
 		});
 		
@@ -261,11 +261,11 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		});
 		
 		JMenu preferences = new JMenu("Preferences");
-		JMenuItem gnuplotPreferencesItem = new JMenuItem("Gnuplot preferences");
+		JMenuItem gnuplotPreferencesItem = new JMenuItem("Visualisation preferences");
 		
 		gnuplotPreferencesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				gnuplotFrame.setVisible(true);
+				visuFrame.setVisible(true);
 			}
 		});
 		
@@ -313,7 +313,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		return s;
 	}
 	
-	public void activateGnuplotTracing(boolean b){
+	public void activateTracing(boolean b){
 		if(b){
 			log("Activated tracing");
 			activateTracing.setText(DEACTIVATE);
@@ -328,7 +328,6 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	public void setOptimisationMode(boolean optimizationMode){
 		commandePanel.setOptimisationMode(optimizationMode);
 	}
-
 
 
 

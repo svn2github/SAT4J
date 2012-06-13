@@ -91,7 +91,7 @@ public class VisuPreferencesFrame extends JFrame {
 	}
 
 	public VisuPreferencesFrame(VisuPreferences pref){
-		super("Gnuplot preferences");
+		super("Visualisation preferences");
 		this.preferences = pref;
 		createAndShowGUI();
 	}

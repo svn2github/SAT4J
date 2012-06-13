@@ -6,12 +6,13 @@ import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyHighestValues;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
-import info.monitorenter.gui.chart.traces.painters.TracePainterDisc;
 import info.monitorenter.gui.chart.traces.painters.TracePainterVerticalBar;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
@@ -64,6 +65,7 @@ public class SolverVisualisation {
 	private ITrace2D speedRestartTrace;
 	
 	private VisuPreferences pref;
+	private RemoteControlFrame listeningFrame;
 	
 	public SolverVisualisation(VisuPreferences pref){
 		
@@ -72,7 +74,17 @@ public class SolverVisualisation {
 		this.pref=pref;
 		
 		Container c = visuFrame.getContentPane();
-		c.setLayout(new GridLayout(3,3,5,5));
+		
+		int nbGraphs = pref.getNumberOfDisplayedGraphs();
+		int[] nbLinesTab = new int[]{1,2,3,2};
+	
+		int nbLines = 3;
+		if(nbGraphs<5)
+			nbLines = nbLinesTab[nbGraphs-1];
+		
+		int nbCols = (nbGraphs-1)/3 + 1;
+		
+		c.setLayout(new GridLayout(nbLines,nbCols,5,5));
 		
 		initCharts();
 		
@@ -86,13 +98,15 @@ public class SolverVisualisation {
 		visuFrame.setSize(800,400);
 		
 		// Enable the termination button [cross on the upper right edge]: 
-//		visuFrame.addWindowListener(
-//				new WindowAdapter(){
-//					public void windowClosing(WindowEvent e){
-//						System.exit(0);
-//					}
-//				}
-//				);
+		visuFrame.addWindowListener(
+				new WindowAdapter(){
+					public void windowClosing(WindowEvent e){
+						
+					}
+				}
+				);
+		
+		
 		visuFrame.setVisible(true); 
 		
 		
@@ -204,7 +218,7 @@ public class SolverVisualisation {
 		//negativeDecisionVariableChart.addTrace(restartDecisionTrace);
 		
 		
-		conflictDepthTrace = new Trace2DLtd(2000,"Trail level");
+		conflictDepthTrace = new Trace2DLtd(15000,"Trail level");
 		conflictDepthTrace.setTracePainter(new TracePainterPlus());
 		conflictDepthTrace.setColor(Color.MAGENTA);
 		trailLevelWhenConflictChart.setName("Trail level when the conflict occurs");

@@ -57,6 +57,27 @@ public class VisuPreferences {
 		this.displayClausesEvaluation=true;
 		this.displayClausesSize=true;
 	}
+	
+	public int getNumberOfDisplayedGraphs(){
+		int n=0;
+		
+		if(displayClausesEvaluation)
+			n++;
+		if(displayConflictsTrail)
+			n++;
+		if(displayConflictsDecision)
+			n++;
+		if(displayDecisionIndexes)
+			n+=2;
+		if(displaySpeed)
+			n++;
+		if(displayVariablesEvaluation)
+			n++;
+		if(displayClausesSize)
+			n++;
+		
+		return n;
+	}
 
 	public Color getBackgroundColor() {
 		return backgroundColor;
@@ -98,7 +119,6 @@ public class VisuPreferences {
 	public void setNbLinesRead(int nbLinesRead) {
 		this.nbLinesRead = nbLinesRead;
 	}
-
 
 
 	public boolean isDisplayRestarts() {
