@@ -309,5 +309,9 @@ public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionSt
 		}
 	}
 
+	public void newLearnedClause(Constr learned, int trailLevel) {
+		restart.newLearnedClause(learned, trailLevel);	
+	}
+
 
 }
