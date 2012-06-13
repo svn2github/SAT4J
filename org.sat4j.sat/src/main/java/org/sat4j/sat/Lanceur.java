@@ -861,7 +861,7 @@ public class Lanceur extends AbstractLauncher {
 			} else {
 				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
 						cdclSolver);
-				frame.activateGnuplotTracing(modeTracing);
+				frame.activateTracing(modeTracing);
 				frame.setOptimisationMode(isModeOptimization);
 			}
 		} catch (FileNotFoundException e) {
