@@ -52,11 +52,13 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 
 	private final IVisualizationTool visuTool;
 	private final IVisualizationTool restartVisuTool;
+	private final IVisualizationTool cleanTool;
 
 	public ConflictLevelTracing(IVisualizationTool visuTool,
-			IVisualizationTool restartVisuTool) {
+			IVisualizationTool restartVisuTool, IVisualizationTool cleanTool) {
 		this.visuTool = visuTool;
 		this.restartVisuTool = restartVisuTool;
+		this.cleanTool = cleanTool;
 
 		counter = 1;
 		maxDLevel = 0;
@@ -69,18 +71,21 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 		}
 		visuTool.addPoint(counter, dlevel);
 		restartVisuTool.addInvisiblePoint(counter, maxDLevel);
+		cleanTool.addInvisiblePoint(counter, maxDLevel);
 		counter++;
 	}
 
 	@Override
 	public void restarting() {
 		restartVisuTool.addPoint(counter, maxDLevel);
+		cleanTool.addPoint(counter, 0);
 		visuTool.addInvisiblePoint(counter, nVar);
 	}
 
 	@Override
 	public void end(Lbool result) {
 		visuTool.end();
+		cleanTool.end();
 		restartVisuTool.end();
 	}
 
@@ -88,6 +93,7 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 	public void start() {
 		visuTool.init();
 		restartVisuTool.init();
+		cleanTool.init();
 		counter = 1;
 		maxDLevel = 0;
 	}
@@ -95,5 +101,12 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 	@Override
 	public void init(ISolverService solverService) {
 		nVar = solverService.nVars();
+	}
+
+	@Override
+	public void cleaning() {
+		restartVisuTool.addPoint(counter, 0);
+		cleanTool.addPoint(counter, maxDLevel);
+		visuTool.addInvisiblePoint(counter, nVar);
 	}
 }

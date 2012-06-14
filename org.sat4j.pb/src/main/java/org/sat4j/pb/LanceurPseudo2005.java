@@ -134,13 +134,17 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 					new ConflictLevelTracing(new FileBasedVisualizationTool(
 							fileName + "-conflict-level"),
 							new FileBasedVisualizationTool(fileName
-									+ "-conflict-level-restart")),
+									+ "-conflict-level-restart"),
+							new FileBasedVisualizationTool(fileName
+									+ "-conflict-level-clean")),
 					new DecisionTracing(new FileBasedVisualizationTool(fileName
 							+ "-decision-indexes-pos"),
 							new FileBasedVisualizationTool(fileName
 									+ "-decision-indexes-neg"),
 							new FileBasedVisualizationTool(fileName
-									+ "-decision-indexes-restart")),
+									+ "-decision-indexes-restart"),
+							new FileBasedVisualizationTool(fileName
+									+ "-decision-indexes-clean")),
 					new LearnedClausesSizeTracing(
 							new FileBasedVisualizationTool(fileName
 									+ "-learned-clauses-size"),
@@ -151,7 +155,9 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 					new ConflictDepthTracing(new FileBasedVisualizationTool(
 							fileName + "-conflict-depth"),
 							new FileBasedVisualizationTool(fileName
-									+ "-conflict-depth-restart"))));
+									+ "-conflict-depth-restart"),
+							new FileBasedVisualizationTool(fileName
+									+ "-conflict-depth-clean"))));
 		}
 		// theSolver.setSearchListener(new TextOutputTracing(null));
 		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$

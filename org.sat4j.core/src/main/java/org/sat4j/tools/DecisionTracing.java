@@ -47,6 +47,7 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 	private final IVisualizationTool positiveVisu;
 	private final IVisualizationTool negativeVisu;
 	private final IVisualizationTool restartVisu;
+	private final IVisualizationTool cleanVisu;
 
 	// private final String filename;
 	// private PrintStream outPos;
@@ -55,10 +56,12 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 	private int nVar;
 
 	public DecisionTracing(IVisualizationTool positiveVisu,
-			IVisualizationTool negativeVisu, IVisualizationTool restartVisu) {
+			IVisualizationTool negativeVisu, IVisualizationTool restartVisu,
+			IVisualizationTool cleanVisu) {
 		this.positiveVisu = positiveVisu;
 		this.negativeVisu = negativeVisu;
 		this.restartVisu = restartVisu;
+		this.cleanVisu = cleanVisu;
 
 		counter = 1;
 	}
@@ -73,12 +76,14 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 			positiveVisu.addInvisiblePoint(counter, 0);
 		}
 		restartVisu.addInvisiblePoint(counter, 0);
+		cleanVisu.addInvisiblePoint(counter, 0);
 		counter++;
 	}
 
 	@Override
 	public void restarting() {
 		restartVisu.addPoint(counter, nVar);
+		cleanVisu.addPoint(counter, 0);
 		positiveVisu.addInvisiblePoint(counter, 0);
 		negativeVisu.addInvisiblePoint(counter, 0);
 	}
@@ -88,6 +93,7 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 		positiveVisu.end();
 		negativeVisu.end();
 		restartVisu.end();
+		cleanVisu.end();
 	}
 
 	@Override
@@ -101,7 +107,15 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 		this.positiveVisu.init();
 		this.negativeVisu.init();
 		this.restartVisu.init();
+		this.cleanVisu.init();
+	}
 
+	@Override
+	public void cleaning() {
+		restartVisu.addPoint(counter, 0);
+		cleanVisu.addPoint(counter, nVar);
+		positiveVisu.addInvisiblePoint(counter, 0);
+		negativeVisu.addInvisiblePoint(counter, 0);
 	}
 
 }

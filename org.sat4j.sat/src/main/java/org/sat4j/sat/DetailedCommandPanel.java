@@ -1639,18 +1639,21 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				if(visuPreferences.isDisplayConflictsDecision()){
 					listeners.add(new ConflictLevelTracing(
 							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
-							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-clean")));
 				}
 				if(visuPreferences.isDisplayConflictsTrail()){
 					listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
-							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-clean")));
 				}
 
 				if(visuPreferences.isDisplayDecisionIndexes()){
 					listeners.add(new DecisionTracing(
 							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
 							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
-							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-clean")));
 				}
 
 				if(visuPreferences.isDisplaySpeed()){
@@ -1687,18 +1690,21 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				if(visuPreferences.isDisplayConflictsDecision()){
 					listeners.add(new ConflictLevelTracing(
 							new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
-							new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
+							new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace()),
+							new ChartBasedVisualizationTool(visu.getConflictLevelCleanTrace())));
 				}
 				if(visuPreferences.isDisplayConflictsTrail()){
 					listeners.add(new ConflictDepthTracing(
 							new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
-							new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
+							new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace()),
+							new ChartBasedVisualizationTool(visu.getConflictDepthCleanTrace())));
 				}
 				if(visuPreferences.isDisplayDecisionIndexes()){
 					listeners.add(new DecisionTracing(
 							new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
 							new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-							new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
+							new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace())),
+							new ChartBasedVisualizationTool(new TraceComposite(visu.getCleanPosDecisionTrace(),visu.getCleanNegDecisionTrace()))));
 				}
 				if(visuPreferences.isDisplaySpeed()){
 					listeners.add(new SpeedTracing(
@@ -2171,8 +2177,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set autoscale ymax"); 
 					out.println("set y2range [0:]");
 					GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.magenta,"Conflict Level");
+					GnuplotDataFile conflictLevelRestartDF = new GnuplotDataFile(instancePath+ "-conflict-level-restart.dat",Color.gray,"Restart","impulses");
+					GnuplotDataFile conflictLevelCleanDF = new GnuplotDataFile(instancePath+ "-conflict-level-clean.dat",Color.orange,"Clean","impulses");
 					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
-					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
+					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{conflictLevelDF}, new GnuplotDataFile[]{conflictLevelRestartDF,conflictLevelCleanDF}, true));
+//					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
 				}
 
 				//top left: size of learned clause
@@ -2225,8 +2234,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set origin "+left + "," + bottom);
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
+					GnuplotDataFile decisionRestartDF = new GnuplotDataFile(instancePath+ "-decision-indexes-restart.dat",Color.gray,"Restart","impulses");
+					GnuplotDataFile decisionCleanDF = new GnuplotDataFile(instancePath+ "-decision-indexes-clean.dat",Color.orange,"Clean","impulses");
 					//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
-					out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, visuPreferences.getNbLinesRead()*4));
+					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{negativeDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
+//					out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, visuPreferences.getNbLinesRead()*4));
 
 					//verybottom left: index decision variable
 					out.println("unset autoscale");
@@ -2241,7 +2253,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
 					//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
-					out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, visuPreferences.getNbLinesRead()*4));
+//					out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, visuPreferences.getNbLinesRead()*4));
+					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{positiveDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
 				}
 
 				//top right: depth search when conflict
@@ -2256,7 +2269,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set y2range [0:]");
 					GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.magenta, "Trail level");
 					GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
+					GnuplotDataFile trailLevelRestartDF = new GnuplotDataFile(instancePath+ "-conflict-depth-restart.dat",Color.gray,"Restart","impulses");
+					GnuplotDataFile trailLevelCleanDF = new GnuplotDataFile(instancePath+ "-conflict-depth-clean.dat",Color.orange,"Clean","impulses");
 					//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
+					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{trailLevelDF}, new GnuplotDataFile[]{trailLevelRestartDF,trailLevelCleanDF}, new GnuplotFunction[]{nbVar2}, true));
 					out.println(visuPreferences.generatePlotLine(trailLevelDF, 
 							nbVar2, instancePath+ "-conflict-level-restart.dat",true));
 				}

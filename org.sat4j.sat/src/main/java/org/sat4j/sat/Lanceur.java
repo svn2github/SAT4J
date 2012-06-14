@@ -374,18 +374,21 @@ public class Lanceur extends AbstractLauncher {
 					asolver.setSearchListener(new MultiTracing(
 							new ConflictLevelTracing(
 									new FileBasedVisualizationTool(filename + "-conflict-level"), 
-									new FileBasedVisualizationTool(filename + "-conflict-level-restart")),
+									new FileBasedVisualizationTool(filename + "-conflict-level-restart"),
+									new FileBasedVisualizationTool(filename + "-conflict-level-clean")),
 									new DecisionTracing(
 											new FileBasedVisualizationTool(filename + "-decision-indexes-pos"),
 											new FileBasedVisualizationTool(filename + "-decision-indexes-neg"),
-											new FileBasedVisualizationTool(filename + "-decision-indexes-restart")),
+											new FileBasedVisualizationTool(filename + "-decision-indexes-restart"),
+											new FileBasedVisualizationTool(filename + "-decision-indexes-clean")),
 											new LearnedClausesSizeTracing(
 													new FileBasedVisualizationTool(filename + "-learned-clauses-size"),
 													new FileBasedVisualizationTool(filename + "-learned-clauses-size-restart"),
 													new FileBasedVisualizationTool(filename + "-learned-clauses-size-clean")),
 													new ConflictDepthTracing(
 															new FileBasedVisualizationTool(filename + "-conflict-depth"), 
-															new FileBasedVisualizationTool(filename + "-conflict-depth-restart"))));
+															new FileBasedVisualizationTool(filename + "-conflict-depth-restart"),
+															new FileBasedVisualizationTool(filename + "-conflict-depth-clean"))));
 			}
 
 			// use remaining data to configure the solver

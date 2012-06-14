@@ -51,6 +51,7 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 
 	private final IVisualizationTool conflictDepthVisu;
 	private final IVisualizationTool conflictDepthRestartVisu;
+	private final IVisualizationTool conflictDepthCleanVisu;
 
 	// public ConflictDepthTracing(String filename) {
 	// this.filename = filename;
@@ -58,9 +59,11 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	// }
 
 	public ConflictDepthTracing(IVisualizationTool conflictDepthVisu,
-			IVisualizationTool conflictDepthRestartVisu) {
+			IVisualizationTool conflictDepthRestartVisu,
+			IVisualizationTool conflictDepthCleanVisu) {
 		this.conflictDepthVisu = conflictDepthVisu;
 		this.conflictDepthRestartVisu = conflictDepthRestartVisu;
+		this.conflictDepthCleanVisu = conflictDepthCleanVisu;
 		counter = 0;
 	}
 
@@ -68,6 +71,7 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
 		conflictDepthVisu.addPoint(counter, trailLevel);
 		conflictDepthRestartVisu.addInvisiblePoint(counter, trailLevel);
+		conflictDepthCleanVisu.addInvisiblePoint(counter, trailLevel);
 		counter++;
 	}
 
@@ -75,23 +79,33 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	public void end(Lbool result) {
 		conflictDepthVisu.end();
 		conflictDepthRestartVisu.end();
+		conflictDepthCleanVisu.end();
 	}
 
 	@Override
 	public void start() {
 		conflictDepthVisu.init();
 		conflictDepthRestartVisu.init();
+		conflictDepthCleanVisu.init();
 		counter = 0;
 	}
 
 	@Override
 	public void restarting() {
 		conflictDepthRestartVisu.addPoint(counter, nVar);
+		conflictDepthCleanVisu.addPoint(counter, 0);
 		conflictDepthVisu.addInvisiblePoint(counter, nVar);
 	}
 
 	@Override
 	public void init(ISolverService solverService) {
 		nVar = solverService.nVars();
+	}
+
+	@Override
+	public void cleaning() {
+		conflictDepthRestartVisu.addPoint(counter, 0);
+		conflictDepthCleanVisu.addPoint(counter, nVar);
+		conflictDepthVisu.addInvisiblePoint(counter, nVar);
 	}
 }

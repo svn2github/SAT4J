@@ -46,6 +46,8 @@ public class SolverVisualisation {
 	private ITrace2D negativeDecisionTrace;
 	private ITrace2D restartPosDecisionTrace;
 	private ITrace2D restartNegDecisionTrace;
+	private ITrace2D cleanPosDecisionTrace;
+	private ITrace2D cleanNegDecisionTrace;
 	
 	private ITrace2D learnedClausesSizeTrace;
 	private ITrace2D learnedClausesSizeRestartTrace;
@@ -53,11 +55,13 @@ public class SolverVisualisation {
 	
 	private ITrace2D conflictDepthTrace;
 	private ITrace2D conflictDepthRestartTrace;
+	private ITrace2D conflictDepthCleanTrace;
 	
 	private ITrace2D clausesEvaluationTrace;
 	
 	private ITrace2D conflictLevelTrace;
 	private ITrace2D conflictLevelRestartTrace;
+	private ITrace2D conflictLevelCleanTrace;
 	
 	private ITrace2D heuristicsTrace;
 	
@@ -198,9 +202,18 @@ public class SolverVisualisation {
 		restartNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,negativeDecisionVariableChart));
 		restartNegDecisionTrace.setColor(Color.LIGHT_GRAY);
 		
+		cleanPosDecisionTrace = new Trace2DSimple("Clean");
+		cleanPosDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,positiveDecisionVariableChart));
+		cleanPosDecisionTrace.setColor(Color.ORANGE);
+		
+		cleanNegDecisionTrace = new Trace2DSimple("Clean");
+		cleanNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,negativeDecisionVariableChart));
+		cleanNegDecisionTrace.setColor(Color.ORANGE);
+		
 		
 		positiveDecisionVariableChart.addTrace(positiveDecisionTrace);
 		positiveDecisionVariableChart.addTrace(restartPosDecisionTrace);
+		positiveDecisionVariableChart.addTrace(cleanPosDecisionTrace);
 		//positiveDecisionVariableChart.set
 		positiveDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 		
@@ -212,6 +225,7 @@ public class SolverVisualisation {
 		//positiveDecisionVariableChart.addTrace(restartDecisionTrace);
 		
 		negativeDecisionVariableChart.addTrace(restartNegDecisionTrace);
+		negativeDecisionVariableChart.addTrace(cleanNegDecisionTrace);
 		negativeDecisionVariableChart.addTrace(negativeDecisionTrace);
 		negativeDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 //		negativeDecisionVariableChart.addTrace(restartDecisionTrace);
@@ -231,9 +245,12 @@ public class SolverVisualisation {
 		conflictDepthRestartTrace = new Trace2DSimple("Restart");
 		conflictDepthRestartTrace.setTracePainter(new TracePainterVerticalBar(2,trailLevelWhenConflictChart));
 		conflictDepthRestartTrace.setColor(Color.LIGHT_GRAY);
-//		conflictLevelRestartTrace.setZIndex(ITrace2D.Z_INDEX_MIN);
-		//conflictLevelRestartTrace.get
 		trailLevelWhenConflictChart.addTrace(conflictDepthRestartTrace);
+		
+		conflictDepthCleanTrace = new Trace2DSimple("Clean");
+		conflictDepthCleanTrace.setTracePainter(new TracePainterVerticalBar(2,trailLevelWhenConflictChart));
+		conflictDepthCleanTrace.setColor(Color.ORANGE);
+		trailLevelWhenConflictChart.addTrace(conflictDepthCleanTrace);
 		trailLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
 		
 		conflictLevelTrace = new Trace2DSimple("Decision level");
@@ -246,9 +263,13 @@ public class SolverVisualisation {
 		conflictLevelRestartTrace = new Trace2DSimple("Restart");
 		conflictLevelRestartTrace.setTracePainter(new TracePainterVerticalBar(2,decisionLevelWhenConflictChart));
 		conflictLevelRestartTrace.setColor(Color.LIGHT_GRAY);
-//		conflictLevelRestartTrace.setZIndex(ITrace2D.Z_INDEX_MIN);
-		//conflictLevelRestartTrace.get
 		decisionLevelWhenConflictChart.addTrace(conflictLevelRestartTrace);
+		
+		conflictLevelCleanTrace = new Trace2DSimple("Clean");
+		conflictLevelCleanTrace.setTracePainter(new TracePainterVerticalBar(2,decisionLevelWhenConflictChart));
+		conflictLevelCleanTrace.setColor(Color.ORANGE);
+		decisionLevelWhenConflictChart.addTrace(conflictLevelCleanTrace);
+		
 		decisionLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
 		
 		learnedClausesSizeTrace = new Trace2DSimple("Size");
@@ -432,6 +453,38 @@ public class SolverVisualisation {
 	public void setLearnedClausesSizeCleanTrace(
 			ITrace2D learnedClausesSizeCleanTrace) {
 		this.learnedClausesSizeCleanTrace = learnedClausesSizeCleanTrace;
+	}
+	
+	public ITrace2D getConflictLevelCleanTrace() {
+		return conflictLevelCleanTrace;
+	}
+
+	public void setConflictLevelCleanTrace(ITrace2D conflictLevelCleanTrace) {
+		this.conflictLevelCleanTrace = conflictLevelCleanTrace;
+	}
+
+	public ITrace2D getConflictDepthCleanTrace() {
+		return conflictDepthCleanTrace;
+	}
+
+	public void setConflictDepthCleanTrace(ITrace2D conflictDepthCleanTrace) {
+		this.conflictDepthCleanTrace = conflictDepthCleanTrace;
+	}
+	
+	public ITrace2D getCleanPosDecisionTrace() {
+		return cleanPosDecisionTrace;
+	}
+
+	public void setCleanPosDecisionTrace(ITrace2D cleanPosDecisionTrace) {
+		this.cleanPosDecisionTrace = cleanPosDecisionTrace;
+	}
+
+	public ITrace2D getCleanNegDecisionTrace() {
+		return cleanNegDecisionTrace;
+	}
+
+	public void setCleanNegDecisionTrace(ITrace2D cleanNegDecisionTrace) {
+		this.cleanNegDecisionTrace = cleanNegDecisionTrace;
 	}
 
 	public int getnVar() {

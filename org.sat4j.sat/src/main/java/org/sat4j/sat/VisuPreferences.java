@@ -313,16 +313,42 @@ public class VisuPreferences {
 	}
 	
 	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2, boolean slidingThisWindow, int nbLines){		
+		return generatePlotLineOnDifferenteAxes(dfArray1, dfArray2,new GnuplotFunction[]{},  slidingThisWindow, nbLines);
+	}
+	
+	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2,GnuplotFunction[] functions, boolean slidingThisWindow){
+		return generatePlotLineOnDifferenteAxes(dfArray1, dfArray2,new GnuplotFunction[]{},  slidingThisWindow, nbLinesRead);
+	}
+	
+	public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1, GnuplotDataFile[] dfArray2,GnuplotFunction[] functions, boolean slidingThisWindows, int nbLines){
 		String s = "plot ";
 		String tailString = "";
-		if(slidingWindows && slidingThisWindow){
+		if(slidingWindows && slidingThisWindows){
 			tailString = "< tail -" +nbLines+ " ";
 		}
+		
+		
+		for(int i=0; i<dfArray2.length;i++){
+			String rgb = Integer.toHexString(dfArray2[i].getColor().getRGB());
+			rgb = rgb.substring(2, rgb.length());
+			String comma = "";
+			if(i!=0){
+				comma=",";
+			}
+			
+			String style="";
+			if(dfArray2[i].getStyle().length()>0){
+				style = " with " + dfArray2[i].getStyle();
+			}
+			s+= comma + "\"" + tailString + dfArray2[i].getFilename() 
+					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dfArray2[i].getTitle() + "\" axis x1y2";
+		}
+		
 		for(int i=0; i<dfArray1.length;i++){
 			String rgb = Integer.toHexString(dfArray1[i].getColor().getRGB());
 			rgb = rgb.substring(2, rgb.length());
 			String comma = "";
-			if(i!=0){
+			if(dfArray2.length>0 || i!=0){
 				comma=",";
 			}
 			String style="";
@@ -333,21 +359,16 @@ public class VisuPreferences {
 					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dfArray1[i].getTitle() + "\" axis x1y1";
 		}
 		
-		for(int i=0; i<dfArray2.length;i++){
-			String rgb = Integer.toHexString(dfArray2[i].getColor().getRGB());
+		for(int i=0; i<functions.length;i++){
+			String rgb = Integer.toHexString(functions[i].getColor().getRGB());
 			rgb = rgb.substring(2, rgb.length());
 			String comma = "";
-			if(dfArray1.length>0 || i!=0){
+			if(dfArray1.length>0 || dfArray2.length>0 || i!=0){
 				comma=",";
 			}
-			String style="";
-			if(dfArray2[i].getStyle().length()>0){
-				style = " with " + dfArray2[i].getStyle();
-			}
-			s+= comma + "\"" + tailString + dfArray2[i].getFilename() 
-					+ "\"" + style + " lc rgb \"#"+rgb + "\" title \"" + dfArray2[i].getTitle() + "\" axis x1y2";
+			s+= comma + functions[i].getFunctionExpression() + " lc rgb \"#"+rgb 
+					+ "\" title \"" + functions[i].getFunctionLegend()+ "\" axis x1y1";
 		}
-		
 
 		return s;
 	}
