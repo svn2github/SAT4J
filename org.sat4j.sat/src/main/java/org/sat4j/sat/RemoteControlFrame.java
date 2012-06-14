@@ -89,7 +89,8 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 
 	private RemoteControlStrategy telecomStrategy;
 	private RandomWalkDecorator randomWalk;
-	private ICDCL solver;
+//	private ICDCL solver;
+	private String[] args;
 	private VisuPreferencesFrame visuFrame;
 	
 	private final static String ACTIVATE  = "Activate Tracing";
@@ -98,29 +99,44 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 	private JRadioButtonMenuItem gnuplotBasedRadio;
 	private JRadioButtonMenuItem jChartBasedRadio;
 
-	public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
+	public RemoteControlFrame(String filename, String ramdisk, String[] args){
 		super("Remote Control");
 		
 		this.filename=filename;
 		this.ramdisk=ramdisk;
-		this.solver=solver;
+//		this.solver=solver;
+		this.args=args;
 		initLookAndFeel();
 
 		createAndShowGUI();
 	}
 	
+//	public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
+//		super("Remote Control");
+//		
+//		this.filename=filename;
+//		this.ramdisk=ramdisk;
+//		this.solver=solver;
+//		initLookAndFeel();
+//
+//		createAndShowGUI();
+//	}
+	
 	public RemoteControlFrame(String filename, String ramdisk){	
-		this(filename, ramdisk,null);
+		this(filename, ramdisk,new String[]{});
 	}
 	
 	public RemoteControlFrame(String filename){	
-		this(filename, "",null);
+		this(filename, "",new String[]{});
 	}
 	
-	public RemoteControlFrame(String filename, ICDCL solver){	
-		this(filename, "",solver);
-	}
+//	public RemoteControlFrame(String filename, ICDCL solver){	
+//		this(filename, "",solver);
+//	}
 
+	public RemoteControlFrame(String filename, String[] args){	
+		this(filename, "",args);
+	}
 
 	public void reinitialiser(){
 	}
@@ -142,7 +158,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		
 		createMenuBar();
 		
-		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver,this);
+		commandePanel = new DetailedCommandPanel(filename,ramdisk,args,this);
 		
 		commandePanel.setChartBased(true);
 		commandePanel.activateGnuplotTracing(true);

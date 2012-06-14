@@ -91,6 +91,8 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
+import org.sat4j.pb.tools.RTSI;
+import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -137,7 +139,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private IProblem problem;
 	private boolean optimizationMode=false;
 
-	private String solverInLine;
 	private String[] commandLines;
 
 	private boolean firstStart;
@@ -353,7 +354,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private boolean gnuplotBased = false;
 	private boolean chartBased = false;
-	
+
 	private RemoteControlFrame frame;
 
 	public DetailedCommandPanel(String filename, RemoteControlFrame frame){
@@ -364,19 +365,21 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this(filename,ramdisk,null,frame);
 	}
 
-	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver, RemoteControlFrame frame){
+	public DetailedCommandPanel(String filename, String ramdisk, String[] args, RemoteControlFrame frame){
 		super();
 
 		this.frame = frame;
-		
+
 		this.visuPreferences = new VisuPreferences();
 
 		this.telecomStrategy = new RemoteControlStrategy(this);
 		this.instancePath=filename;
 		this.ramdisk = ramdisk;
 
-
-		this.solver=solver;
+		console = new JTextArea();
+		
+		this.commandLines = args;
+		this.solver=Solvers.configureSolver(args, this);
 
 		this.isPlotActivated=false;
 
@@ -401,7 +404,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		createSimplifierPanel();
 		createHotSolverPanel();
 
-		console = new JTextArea();
+		
 
 		scrollPane = new JScrollPane(console);
 
@@ -574,7 +577,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
 					frame.setActivateTracingEditable(true);
-					
+
 				}
 			}
 		});
@@ -660,7 +663,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		setChoixSolverPanelEnabled(true);
 
-		if(solverInLine==null){
+		if(solver==null){
 			solverLineParamLineRadio.setEnabled(false);
 			solverLineParamRemoteRadio.setEnabled(false);
 		}
@@ -1448,6 +1451,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
 
+			this.solver=Solvers.configureSolver(commandLines, this);
+
 			telecomStrategy.setSolver(solver);
 			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
 			solver.setRestartStrategy(telecomStrategy);
@@ -1511,7 +1516,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		}
 
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_REMOTE)){
-			//			solver = solverInLine;
+
+			this.solver=Solvers.configureSolver(commandLines, this);
 
 			solver.setRestartStrategy(telecomStrategy);
 			solver.setOrder(randomWalk);
@@ -1978,9 +1984,11 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		logsameline(message+"\n");
 	}
 	public void logsameline(String message){
-		console.append(message);
-		console.setCaretPosition(console.getDocument().getLength() );
-		console.repaint();
+		if(console!=null){
+			console.append(message);
+			console.setCaretPosition(console.getDocument().getLength() );
+			console.repaint();
+		}
 		this.repaint();
 	}
 
@@ -2181,7 +2189,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					GnuplotDataFile conflictLevelCleanDF = new GnuplotDataFile(instancePath+ "-conflict-level-clean.dat",Color.orange,"Clean","impulses");
 					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
 					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{conflictLevelDF}, new GnuplotDataFile[]{conflictLevelRestartDF,conflictLevelCleanDF}, true));
-//					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
+					//					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
 				}
 
 				//top left: size of learned clause
@@ -2238,7 +2246,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					GnuplotDataFile decisionCleanDF = new GnuplotDataFile(instancePath+ "-decision-indexes-clean.dat",Color.orange,"Clean","impulses");
 					//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
 					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{negativeDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
-//					out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, visuPreferences.getNbLinesRead()*4));
+					//					out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, visuPreferences.getNbLinesRead()*4));
 
 					//verybottom left: index decision variable
 					out.println("unset autoscale");
@@ -2253,7 +2261,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set title \"Index of the decision variables\"");
 					GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
 					//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
-//					out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, visuPreferences.getNbLinesRead()*4));
+					//					out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, visuPreferences.getNbLinesRead()*4));
 					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{positiveDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
 				}
 

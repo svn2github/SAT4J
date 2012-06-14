@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -68,15 +67,10 @@ import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;
+import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IOrder;
-import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
-import org.sat4j.minisat.core.LearningStrategy;
-import org.sat4j.minisat.core.RestartStrategy;
-import org.sat4j.minisat.core.SearchParams;
-import org.sat4j.minisat.core.SimplificationType;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
@@ -86,6 +80,7 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
+import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -103,7 +98,7 @@ import org.sat4j.tools.FileBasedVisualizationTool;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
 
-public class Lanceur extends AbstractLauncher {
+public class Lanceur extends AbstractLauncher implements ICDCLLogger {
 
 	/**
 	 * 
@@ -112,33 +107,8 @@ public class Lanceur extends AbstractLauncher {
 
 	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
 
-	private final static String PACKAGE_ORDERS = "org.sat4j.minisat.orders";
-	private final static String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
-	private final static String PACKAGE_RESTARTS = "org.sat4j.minisat.restarts";
-	private final static String PACKAGE_PHASE = "org.sat4j.minisat.orders";
-	private final static String PACKAGE_PARAMS = "org.sat4j.minisat.core";
 
-	private final static String ORDERS = "ORDERS";
-	private final static String LEARNING = "LEARNING";
-	private final static String RESTARTS = "RESTARTS";
-	private final static String PHASE = "PHASE";
-	private final static String PARAMS = "PARAMS";
-	private final static String SIMP = "SIMP";
-
-	private final static String RESTART_STRATEGY_NAME = "org.sat4j.minisat.core.RestartStrategy";
-	private final static String ORDER_NAME = "org.sat4j.minisat.core.IOrder";
-	private final static String LEARNING_NAME = "org.sat4j.minisat.core.LearningStrategy";
-	private final static String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
-	private final static String PARAMS_NAME = "org.sat4j.minisat.core.SearchParams";
-
-	private final static Map<String, String> qualif = new HashMap<String, String>();
-	static {
-		qualif.put(ORDERS, PACKAGE_ORDERS);
-		qualif.put(LEARNING, PACKAGE_LEARNING);
-		qualif.put(RESTARTS, PACKAGE_RESTARTS);
-		qualif.put(PHASE, PACKAGE_PHASE);
-		qualif.put(PARAMS, PACKAGE_PARAMS);
-	}
+	
 	private boolean incomplete = false;
 
 	private boolean isModeOptimization = false;
@@ -164,64 +134,6 @@ public class Lanceur extends AbstractLauncher {
 
 	private int k = -1;
 
-	@SuppressWarnings("nls")
-	private Options createCLIOptions() {
-		Options options = new Options();
-		options.addOption("l", "library", true,
-				"specifies the name of the library used (minisat by default)");
-		options.addOption("s", "solver", true,
-				"specifies the name of a prebuilt solver from the library");
-		options.addOption("S", "Solver", true,
-				"setup a solver using a solver config string");
-		options.addOption("t", "timeout", true,
-				"specifies the timeout (in seconds)");
-		options.addOption("T", "timeoutms", true,
-				"specifies the timeout (in milliseconds)");
-		options.addOption("C", "conflictbased", false,
-				"conflict based timeout (for deterministic behavior)");
-		options.addOption("d", "dot", true,
-				"creates a sat4j.dot file in current directory representing the search");
-		options.addOption("f", "filename", true,
-				"specifies the file to use (in conjunction with -d for instance)");
-		options.addOption("m", "mute", false, "Set launcher in silent mode");
-		options.addOption("k", "kleast", true,
-				"limit the search to models having at least k variables set to false");
-		options.addOption("r", "trace", false,
-				"traces the behavior of the solver");
-		options.addOption("opt", "optimize", false,
-				"uses solver in optimize mode instead of sat mode (default)");
-		options.addOption("rw", "randomWalk", true,
-				"specifies the random walk probability ");
-		options.addOption("remote", "remoteControl", false,
-				"launches remote control");
-		options.addOption("H", "hot", false,
-				"keep the solver hot (do not reset heuristics) when a model is found");
-		options.addOption("y", "simplify", false,
-				"simplify the set of clauses is possible");
-		Option op = options.getOption("l");
-		op.setArgName("libname");
-		op = options.getOption("s");
-		op.setArgName("solvername");
-		op = options.getOption("S");
-		op.setArgName("solverStringDefinition");
-		op = options.getOption("t");
-		op.setArgName("number");
-		op = options.getOption("T");
-		op.setArgName("number");
-		op = options.getOption("C");
-		op.setArgName("number");
-		op = options.getOption("k");
-		op.setArgName("number");
-		op = options.getOption("d");
-		op.setArgName("filename");
-		op = options.getOption("f");
-		op.setArgName("filename");
-		op = options.getOption("r");
-		op.setArgName("searchlistener");
-		op = options.getOption("rw");
-		op.setArgName("number");
-		return options;
-	}
 
 	/**
 	 * Configure the solver according to the command line parameters.
@@ -233,19 +145,8 @@ public class Lanceur extends AbstractLauncher {
 	@SuppressWarnings({ "nls", "unchecked" })
 	@Override
 	protected ICDCL configureSolver(String[] args) {
-		Options options = createCLIOptions();
-		if (args.length == 0) {
-			HelpFormatter helpf = new HelpFormatter();
-			helpf.printHelp("java -jar sat4j.jar", options, true);
-
-			// log("Available solvers: "
-			// + Arrays.asList(factory.solverNames()));
-			// showAvailableLearning();
-			// showAvailableOrders();
-			// showAvailablePhase();
-			// showAvailableRestarts();
-			return null;
-		}
+		Options options = Solvers.createCLIOptions();
+		
 		try {
 			CommandLine cmd = new PosixParser().parse(options, args);
 
@@ -272,58 +173,13 @@ public class Lanceur extends AbstractLauncher {
 				factory = org.sat4j.minisat.SolverFactory.instance();
 			}
 
-			ICDCL asolver;
-			if (cmd.hasOption("s")) {
-				String solvername = cmd.getOptionValue("s");
-				if (solvername == null) {
-					log("No solver for option s. Launching default solver.");
-					log("Available solvers: "
-							+ Arrays.asList(factory.solverNames()));
-					asolver = (Solver) factory.defaultSolver();
-				} else {
-					asolver = (Solver) factory.createSolverByName(solvername);
-				}
-			} else {
-				asolver = (Solver) factory.defaultSolver();
-			}
+			ICDCL asolver = Solvers.configureSolver(args, this);
+			
 
-			if (cmd.hasOption("S")) {
-				String configuredSolver = cmd.getOptionValue("S");
-				if (configuredSolver == null) {
-					stringUsage();
-					return null;
-				}
-				asolver = configureFromString(configuredSolver, asolver);
-			}
-
-			if (cmd.hasOption("rw")) {
-				double proba = Double.parseDouble(cmd.getOptionValue("rw"));
-				IOrder order = asolver.getOrder();
-				if (isModeOptimization
-						&& order instanceof VarOrderHeapObjective) {
-					order = new RandomWalkDecoratorObjective(
-							(VarOrderHeapObjective) order, proba);
-				} else {
-					order = new RandomWalkDecorator((VarOrderHeap) order, proba);
-				}
-				asolver.setOrder(order);
-			}
 
 			launchRemoteControl = (cmd.hasOption("remote"));
 
-			String timeout = cmd.getOptionValue("t");
-			if (timeout == null) {
-				timeout = cmd.getOptionValue("T");
-				if (timeout != null) {
-					asolver.setTimeoutMs(Long.parseLong(timeout));
-				}
-			} else {
-				if (cmd.hasOption("C")) {
-					asolver.setTimeoutOnConflicts(Integer.parseInt(timeout));
-				} else {
-					asolver.setTimeout(Integer.parseInt(timeout));
-				}
-			}
+			
 			filename = cmd.getOptionValue("f");
 
 			if (cmd.hasOption("d")) {
@@ -342,10 +198,6 @@ public class Lanceur extends AbstractLauncher {
 				setSilent(true);
 			}
 
-			if (cmd.hasOption("H")) {
-				asolver.setKeepSolverHot(true);
-			}
-
 			if (cmd.hasOption("k")) {
 				Integer myk = Integer.valueOf(cmd.getOptionValue("k"));
 				if (myk != null) {
@@ -353,9 +205,7 @@ public class Lanceur extends AbstractLauncher {
 				}
 			}
 
-			if (cmd.hasOption("y")) {
-				asolver.setDBSimplificationAllowed(true);
-			}
+			
 
 			if (isModeOptimization) {
 				assert asolver instanceof IPBSolver;
@@ -429,139 +279,13 @@ public class Lanceur extends AbstractLauncher {
 		log("This software uses some libraries from the Jakarta Commons project. See jakarta.apache.org for details."); //$NON-NLS-1$
 	}
 
-	@Override
-	public void usage() {
-		factory = org.sat4j.minisat.SolverFactory.instance();
-		// log("SAT");
-		showAvailableSolvers(factory, "sat");
-		log("-------------------");
-		factory = (ASolverFactory) org.sat4j.pb.SolverFactory.instance();
-		// log("PB");
-		showAvailableSolvers(factory, "pb");
-		showAvailableRestarts();
-		showAvailableOrders();
-		showAvailableLearning();
-		showAvailablePhase();
-		showParams();
-		showSimplifiers();
-		stringUsage();
-
-	}
-
+	
 	@Override
 	protected String getInstanceName(String[] args) {
 		return filename;
 	}
 
-	@SuppressWarnings("unchecked")
-	private final ICDCL configureFromString(String solverconfig, ICDCL theSolver) {
-		// AFAIK, there is no easy way to solve parameterized problems
-		// when building the solver at runtime.
-		StringTokenizer stk = new StringTokenizer(solverconfig, ",");
-		Properties pf = new Properties();
-		String token;
-		String[] couple;
-		while (stk.hasMoreElements()) {
-			token = stk.nextToken();
-			couple = token.split("=");
-			pf.setProperty(couple[0], couple[1]);
-		}
-
-		Solver aSolver = (Solver) theSolver;
-		DataStructureFactory dsf = setupObject("DSF", pf);
-		if (dsf != null) {
-			theSolver.setDataStructureFactory(dsf);
-		}
-		LearningStrategy learning = setupObject(LEARNING, pf);
-		if (learning != null) {
-			theSolver.setLearner(learning);
-			learning.setSolver(aSolver);
-		}
-		IOrder order = setupObject(ORDERS, pf);
-		if (order != null) {
-			theSolver.setOrder(order);
-		}
-		IPhaseSelectionStrategy pss = setupObject(PHASE, pf);
-		if (pss != null) {
-			theSolver.getOrder().setPhaseSelectionStrategy(pss);
-		}
-		RestartStrategy restarter = setupObject(RESTARTS, pf);
-		if (restarter != null) {
-			theSolver.setRestartStrategy(restarter);
-		}
-		String simp = pf.getProperty(SIMP);
-		if (simp != null) {
-			log("read " + simp);
-			log("configuring " + SIMP);
-			theSolver.setSimplifier(SimplificationType.valueOf(simp));
-		}
-		SearchParams params = setupObject(PARAMS, pf);
-		if (params != null) {
-			theSolver.setSearchParams(params);
-		}
-		String memory = pf.getProperty("CLEANING");
-		if (memory != null) {
-			try {
-				log("configuring CLEANING");
-				LearnedConstraintsEvaluationType memoryType = LearnedConstraintsEvaluationType
-						.valueOf(memory);
-				theSolver.setLearnedConstraintsDeletionStrategy(memoryType);
-			} catch (IllegalArgumentException iae) {
-				log("wrong memory management setting: " + memory);
-				showAvailableConstraintsCleaningStrategies();
-			}
-		}
-		return theSolver;
-	}
-
-	private void stringUsage() {
-		log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS, CLEANING");
-		log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
-	}
-
-	@SuppressWarnings("unchecked")
-	private final <T> T setupObject(String component, Properties pf) {
-		try {
-			String configline = pf.getProperty(component);
-			String qualification = qualif.get(component);
-
-			if (configline == null) {
-				return null;
-			}
-			if (qualification != null) {
-				log("read " + qualification + "." + configline);
-				if (configline.contains("Objective")
-						&& qualification.contains("minisat")) {
-					// log(qualification);
-					qualification = qualification.replaceFirst("minisat", "pb");
-				}
-				configline = qualification + "." + configline;
-			}
-
-			log("configuring " + component);
-			String[] config = configline.split("/");
-			T comp = (T) Class.forName(config[0]).newInstance();
-			for (int i = 1; i < config.length; i++) {
-				String[] param = config[i].split(":"); //$NON-NLS-1$
-				assert param.length == 2;
-				try {
-					// Check first that the property really exists
-					BeanUtils.getProperty(comp, param[0]);
-					BeanUtils.setProperty(comp, param[0], param[1]);
-				} catch (Exception e) {
-					log("Problem with component " + config[0] + " " + e);
-				}
-			}
-			return comp;
-		} catch (InstantiationException e) {
-			log("Problem with component " + component + " " + e);
-		} catch (IllegalAccessException e) {
-			log("Problem with component " + component + " " + e);
-		} catch (ClassNotFoundException e) {
-			log("Problem with component " + component + " " + e);
-		}
-		return null;
-	}
+	
 
 	@Override
 	protected IProblem readProblem(String problemname)
@@ -661,176 +385,7 @@ public class Lanceur extends AbstractLauncher {
 		}
 	}
 
-	protected void showAvailableRestarts() {
-		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
-		Set<String> keySet;
-		for (String name : resultRTSI) {
-			if (!name.contains("Remote")) {
-				try {
-					keySet = BeanUtils.describe(
-							Class.forName(PACKAGE_RESTARTS + "." + name)
-							.newInstance()).keySet();
-					keySet.remove("class");
-					if (keySet.size() > 0) {
-						classNames.add(name + keySet);
-					} else {
-						classNames.add(name);
-					}
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		log("Available restart strategies (" + RESTARTS + "): " + classNames);
-	}
 
-	protected void showAvailablePhase() {
-		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(PHASE_NAME);
-		Set<String> keySet;
-		for (String name : resultRTSI) {
-			if (!name.contains("Remote")) {
-				try {
-
-					keySet = BeanUtils.describe(
-							Class.forName(PACKAGE_PHASE + "." + name)
-							.newInstance()).keySet();
-					keySet.remove("class");
-					if (keySet.size() > 0) {
-						classNames.add(name + keySet);
-					} else {
-						classNames.add(name);
-					}
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		log("Available phase strategies (" + PHASE + "): " + classNames);
-	}
-
-	protected void showAvailableLearning() {
-		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(LEARNING_NAME);
-		Set<String> keySet;
-		for (String name : resultRTSI) {
-			try {
-				keySet = BeanUtils.describe(
-						Class.forName(PACKAGE_LEARNING + "." + name)
-						.newInstance()).keySet();
-				keySet.remove("class");
-				if (keySet.size() > 0) {
-					classNames.add(name + keySet);
-				} else {
-					classNames.add(name);
-				}
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				classNames.add(name);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (NoClassDefFoundError cnfex) {
-				// System.out.println("Warning : no classDefFoundError : " +
-				// classname);
-			}
-		}
-		log("Available learning (" + LEARNING + "): " + classNames);
-	}
-
-	protected void showAvailableOrders() {
-		Vector<String> classNames = new Vector<String>();
-		Vector<String> resultRTSI = RTSI.find(ORDER_NAME);
-		Set<String> keySet = null;
-		for (String name : resultRTSI) {
-			if (!name.contains("Remote")) {
-				try {
-					if (name.contains("Objective")) {
-						String namePackage = PACKAGE_ORDERS.replaceFirst(
-								"minisat", "pb");
-						keySet = BeanUtils.describe(
-								Class.forName(namePackage + "." + name)
-								.newInstance()).keySet();
-					} else {
-						keySet = BeanUtils.describe(
-								Class.forName(PACKAGE_ORDERS + "." + name)
-								.newInstance()).keySet();
-					}
-					keySet.remove("class");
-
-					if (keySet.size() > 0) {
-						classNames.add(name + keySet);
-					} else {
-						classNames.add(name);
-					}
-
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					// classNames.add(name);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		log("Available orders (" + ORDERS + "): " + classNames);
-	}
-
-	protected void showParams() {
-
-		Set<String> keySet = null;
-		try {
-			keySet = BeanUtils.describe(
-					Class.forName(PARAMS_NAME).newInstance()).keySet();
-			keySet.remove("class");
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		log("Available search params (" + PARAMS + "): [SearchParams" + keySet
-				+ "]");
-	}
-
-	protected void showSimplifiers() {
-		log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
-	}
-
-	protected void showAvailableConstraintsCleaningStrategies() {
-		log("Available learned constraints cleaning strategies"
-				+ Arrays.asList(LearnedConstraintsEvaluationType.values()));
-	}
 
 	@Override
 	public void run(String[] args) {
@@ -863,8 +418,10 @@ public class Lanceur extends AbstractLauncher {
 				}
 				System.exit(lanceur.getExitCode().value());
 			} else {
+//				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
+//						cdclSolver);
 				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
-						cdclSolver);
+						args);
 				frame.activateTracing(modeTracing);
 				frame.setOptimisationMode(isModeOptimization);
 			}
@@ -878,6 +435,11 @@ public class Lanceur extends AbstractLauncher {
 		} catch (ParseFormatException e) {
 			System.err.println("FATAL " + e.getLocalizedMessage());
 		}
+	}
+
+	@Override
+	public void usage() {
+		Solvers.usage(this);
 	}
 
 }

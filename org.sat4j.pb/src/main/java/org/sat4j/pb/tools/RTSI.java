@@ -30,7 +30,7 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.sat;
+package org.sat4j.pb.tools;
 
 import java.io.File;
 import java.io.FilenameFilter;
