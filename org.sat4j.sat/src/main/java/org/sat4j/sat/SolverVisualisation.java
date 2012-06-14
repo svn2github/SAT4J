@@ -49,6 +49,7 @@ public class SolverVisualisation {
 	
 	private ITrace2D learnedClausesSizeTrace;
 	private ITrace2D learnedClausesSizeRestartTrace;
+	private ITrace2D learnedClausesSizeCleanTrace;
 	
 	private ITrace2D conflictDepthTrace;
 	private ITrace2D conflictDepthRestartTrace;
@@ -65,7 +66,6 @@ public class SolverVisualisation {
 	private ITrace2D speedRestartTrace;
 	
 	private VisuPreferences pref;
-	private RemoteControlFrame listeningFrame;
 	
 	public SolverVisualisation(VisuPreferences pref){
 		this(pref,true);
@@ -149,7 +149,6 @@ public class SolverVisualisation {
 	}
 	
 	public void addChartsToFrame(){
-		
 		variablesEvaluationPanel = new MyChartPanel(variablesEvaluationChart, "Variables evaluation", pref.getBackgroundColor(), pref.getBorderColor());
 		clausesEvaluationPanel = new MyChartPanel(clausesEvaluationChart, "Clauses evaluation",pref.getBackgroundColor(), pref.getBorderColor());
 		learnedClausesSizePanel = new MyChartPanel(learnedClausesSizeChart, "Size of learned clauses",pref.getBackgroundColor(), pref.getBorderColor());
@@ -264,6 +263,11 @@ public class SolverVisualisation {
 		learnedClausesSizeRestartTrace.setTracePainter(new TracePainterVerticalBar(2,learnedClausesSizeChart));
 		learnedClausesSizeRestartTrace.setColor(Color.LIGHT_GRAY);
 		learnedClausesSizeChart.addTrace(learnedClausesSizeRestartTrace);
+		
+		learnedClausesSizeCleanTrace = new Trace2DSimple("Clean");
+		learnedClausesSizeCleanTrace.setTracePainter(new TracePainterVerticalBar(2,learnedClausesSizeChart));
+		learnedClausesSizeCleanTrace.setColor(Color.ORANGE);
+		learnedClausesSizeChart.addTrace(learnedClausesSizeCleanTrace);
 		
 		clausesEvaluationTrace = new Trace2DSimple("Evaluation");
 		clausesEvaluationTrace.setTracePainter(new TracePainterPlus());
@@ -419,6 +423,15 @@ public class SolverVisualisation {
 	public void setLearnedClausesSizeRestartTrace(
 			ITrace2D learnedClausesSizeRestartTrace) {
 		this.learnedClausesSizeRestartTrace = learnedClausesSizeRestartTrace;
+	}
+	
+	public ITrace2D getLearnedClausesSizeCleanTrace() {
+		return learnedClausesSizeCleanTrace;
+	}
+
+	public void setLearnedClausesSizeCleanTrace(
+			ITrace2D learnedClausesSizeCleanTrace) {
+		this.learnedClausesSizeCleanTrace = learnedClausesSizeCleanTrace;
 	}
 
 	public int getnVar() {

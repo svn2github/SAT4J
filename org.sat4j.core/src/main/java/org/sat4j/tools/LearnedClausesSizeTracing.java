@@ -46,13 +46,15 @@ public class LearnedClausesSizeTracing extends
 
 	private final IVisualizationTool visuTool;
 	private final IVisualizationTool restartTool;
+	private final IVisualizationTool cleanTool;
 	private int counter;
 	private int maxSize;
 
 	public LearnedClausesSizeTracing(IVisualizationTool visuTool,
-			IVisualizationTool restartTool) {
+			IVisualizationTool restartTool, IVisualizationTool cleanTool) {
 		this.visuTool = visuTool;
 		this.restartTool = restartTool;
+		this.cleanTool = cleanTool;
 		counter = 0;
 		maxSize = 0;
 	}
@@ -61,6 +63,7 @@ public class LearnedClausesSizeTracing extends
 	public void end(Lbool result) {
 		visuTool.end();
 		restartTool.end();
+		cleanTool.end();
 	}
 
 	@Override
@@ -70,7 +73,8 @@ public class LearnedClausesSizeTracing extends
 			maxSize = s;
 		}
 		visuTool.addPoint(counter, s);
-		restartTool.addInvisiblePoint(counter, maxSize);
+		restartTool.addInvisiblePoint(counter, 0);
+		cleanTool.addInvisiblePoint(counter, 0);
 		counter++;
 	}
 
@@ -78,6 +82,7 @@ public class LearnedClausesSizeTracing extends
 	public void start() {
 		visuTool.init();
 		restartTool.init();
+		cleanTool.init();
 		counter = 0;
 		maxSize = 0;
 	}
@@ -86,5 +91,13 @@ public class LearnedClausesSizeTracing extends
 	public void restarting() {
 		visuTool.addInvisiblePoint(counter, 0);
 		restartTool.addPoint(counter, maxSize);
+		cleanTool.addPoint(counter, 0);
+	}
+
+	@Override
+	public void cleaning() {
+		visuTool.addInvisiblePoint(counter, 0);
+		restartTool.addPoint(counter, 0);
+		cleanTool.addPoint(counter, maxSize);
 	}
 }

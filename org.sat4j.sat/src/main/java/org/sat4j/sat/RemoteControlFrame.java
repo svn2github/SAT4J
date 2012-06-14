@@ -142,7 +142,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		
 		createMenuBar();
 		
-		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver);
+		commandePanel = new DetailedCommandPanel(filename,ramdisk,solver,this);
 		
 		commandePanel.setChartBased(true);
 		commandePanel.activateGnuplotTracing(true);
@@ -176,6 +176,15 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 			JOptionPane.showMessageDialog(this,
 				    "No solver is running at the moment. Please start solver.");
 		}
+	}
+	
+	public void setActivateTracingEditableUnderCondition(boolean b){
+		if(activateTracing.getText().equals(ACTIVATE))
+			this.activateTracing.setEnabled(b);
+	}
+	
+	public void setActivateTracingEditable(boolean b){
+			this.activateTracing.setEnabled(b);
 	}
 
 	public void createMenuBar(){
@@ -324,8 +333,13 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		else{
 			log("Deactivated tracing.");
 			activateTracing.setText(ACTIVATE);
+			commandePanel.activateGnuplotTracing(b);
 		}
-		commandePanel.activateGnuplotTracing(b);
+		if(commandePanel.getStartStopText().equals("Stop") && activateTracing.getText().equals(ACTIVATE)){
+			activateTracing.setEnabled(false);
+		}
+		else 
+			activateTracing.setEnabled(true);
 	}
 	
 	public void setOptimisationMode(boolean optimizationMode){

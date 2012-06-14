@@ -67,8 +67,8 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 	}
 
 	/**
-     * 
-     */
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -145,7 +145,9 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher {
 							new FileBasedVisualizationTool(fileName
 									+ "-learned-clauses-size"),
 							new FileBasedVisualizationTool(fileName
-									+ "-learned-clauses-size")),
+									+ "-learned-clauses-size-restart"),
+							new FileBasedVisualizationTool(fileName
+									+ "-learned-clauses-size-clean")),
 					new ConflictDepthTracing(new FileBasedVisualizationTool(
 							fileName + "-conflict-depth"),
 							new FileBasedVisualizationTool(fileName

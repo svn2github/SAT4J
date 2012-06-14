@@ -381,7 +381,8 @@ public class Lanceur extends AbstractLauncher {
 											new FileBasedVisualizationTool(filename + "-decision-indexes-restart")),
 											new LearnedClausesSizeTracing(
 													new FileBasedVisualizationTool(filename + "-learned-clauses-size"),
-													new FileBasedVisualizationTool(filename + "-learned-clauses-size-restart")),
+													new FileBasedVisualizationTool(filename + "-learned-clauses-size-restart"),
+													new FileBasedVisualizationTool(filename + "-learned-clauses-size-clean")),
 													new ConflictDepthTracing(
 															new FileBasedVisualizationTool(filename + "-conflict-depth"), 
 															new FileBasedVisualizationTool(filename + "-conflict-depth-restart"))));

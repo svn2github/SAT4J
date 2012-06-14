@@ -24,7 +24,7 @@ public class ChartBasedVisualizationTool implements IVisualizationTool {
 	}
 
 	public void addInvisiblePoint(double x, double y) {
-		
+//		trace.addPoint(x, 0);
 	}
 
 	public void init() {

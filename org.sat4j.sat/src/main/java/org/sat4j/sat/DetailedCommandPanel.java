@@ -139,9 +139,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private String solverInLine;
 	private String[] commandLines;
-	
+
 	private boolean firstStart;
-	
+
 	private SolverVisualisation visu;
 
 	//	private boolean useCustomizedSolver;
@@ -353,28 +353,29 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private boolean gnuplotBased = false;
 	private boolean chartBased = false;
+	
+	private RemoteControlFrame frame;
 
-	public DetailedCommandPanel(String filename){
-		this(filename,"");
+	public DetailedCommandPanel(String filename, RemoteControlFrame frame){
+		this(filename,"",frame);
 	}
 
-	public DetailedCommandPanel(String filename, String ramdisk){
-		this(filename,ramdisk,null);
+	public DetailedCommandPanel(String filename, String ramdisk, RemoteControlFrame frame){
+		this(filename,ramdisk,null,frame);
 	}
 
-	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver){
+	public DetailedCommandPanel(String filename, String ramdisk, ICDCL solver, RemoteControlFrame frame){
 		super();
-		
-		
-		
 
+		this.frame = frame;
+		
 		this.visuPreferences = new VisuPreferences();
 
 		this.telecomStrategy = new RemoteControlStrategy(this);
 		this.instancePath=filename;
 		this.ramdisk = ramdisk;
-		
-		
+
+
 		this.solver=solver;
 
 		this.isPlotActivated=false;
@@ -540,7 +541,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		startStopButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(startStopButton.getText().equals(START)){
-//					launchSolver();
+					//					launchSolver();
 					launchSolverWithConfigs();
 					pauseButton.setEnabled(true);
 					setInstancePanelEnabled(false);
@@ -554,6 +555,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setKeepSolverHotPanelEnabled(true);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
+					frame.setActivateTracingEditableUnderCondition(false);
 				}
 				else {
 
@@ -571,6 +573,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					//					setKeepSolverHotPanelEnabled(false);
 					startStopButton.setText(START);
 					getThis().paintAll(getThis().getGraphics());
+					frame.setActivateTracingEditable(true);
+					
 				}
 			}
 		});
@@ -672,6 +676,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
+	public String getStartStopText(){
+		return startStopButton.getText();
+	}
 
 	public void createRestartPanel(){
 		restartPanel = new JPanel();
@@ -1027,302 +1034,302 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		optimisationModeCB.setSelected(optimizationMode);
 	}
 
-//	public void launchSolver(){
-//
-//
-//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE))
-//		{
-//			selectedSolver = (String)listeSolvers.getSelectedItem();
-//			String[] partsSelectedSolver = selectedSolver.split("\\.");
-//
-//			assert partsSelectedSolver.length==2;
-//			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
-//
-//			ASolverFactory factory;
-//
-//			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
-//				factory = org.sat4j.minisat.SolverFactory.instance();
-//			}
-//			else{
-//				factory = org.sat4j.pb.SolverFactory.instance();
-//			}
-//			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
-//			//log(solver.toString());
-//		}
-//
-//
-//		if(firstStart || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
-//			telecomStrategy.setSolver(solver);
-//			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
-//			solver.setRestartStrategy(telecomStrategy);
-//
-//		}
-//
-//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-//
-//
-//
-//
-//
-//		//		if(randomWalk==null){
-//		//			double proba=0;
-//		//			probaRWField.setText("0");
-//		//			rwPanel.repaint();
-//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-//		//		}
-//
-//
-//		IOrder order = solver.getOrder();
-//		//		if(order instanceof RandomWalkDecoratorObjective && )
-//
-//
-//		if(solver.getOrder() instanceof RandomWalkDecorator){
-//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-//			if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
-//				randomWalk.setProbability(0);
-//				probaRWField.setText("0");
-//				rwPanel.repaint();
-//			}
-//			else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
-//				if(solverInLine.getOrder() instanceof RandomWalkDecorator)
-//					randomWalk = (RandomWalkDecorator)solverInLine.getOrder();
-//				else
-//					randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-//			}
-//			else{
-//				double proba = Double.parseDouble(probaRWField.getText());
-//				randomWalk.setProbability(proba);
-//			}
-//		}
-//		else{
-//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-//		}
-//		//		
-//		//		if (optimizationMode
-//		//				&& order instanceof VarOrderHeapObjective) {
-//		//			randomWalk = new RandomWalkDecoratorObjective(
-//		//					(VarOrderHeapObjective) order, 0);
-//		//		} else {
-//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
-//		//		}
-//
-//		solver.setOrder(randomWalk);
-//
-//		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
-//		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
-//		//			randomWalk.setProbability(0);
-//		//			probaRWField.setText("0");
-//		//			rwPanel.repaint();
-//		//		}
-//		//		else
-//		//		if(solver.getOrder() instanceof RandomWalkDecorator){
-//		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-//		//			randomWalk.setProbability(0);
-//		//			probaRWField.setText("0");
-//		//			rwPanel.repaint();
-//		//		}
-//		//		else if(!optimizationMode){
-//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-//		//		}
-//		//		else {
-//		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
-//		//		}
-//
-//		//		solver.setOrder(randomWalk);
-//
-//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE))
-//
-//			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-//		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
-//
-//		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-//
-//
-//		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-//			simplificationExpensiveRadio.setSelected(true);
-//		}
-//		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-//			simplificationSimpleRadio.setSelected(true);
-//		}
-//		else{
-//			simplificationNoRadio.setSelected(true);
-//		}
-//
-//		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-//		phasePanel.repaint();
-//
-//		updateRestartStrategyPanel();
-//
-//		//pbSolver.setNeedToReduceDB(true);
-//
-//
-//
-//
-//		whereToWriteFiles = instancePath;
-//
-//		if(ramdisk.length()>0){
-//			String[] instancePathSplit= instancePath.split("/");
-//			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
-//
-//		}
-//
-//		solver.setVerbose(true);
-//
-//		List<SearchListener> listeners = new ArrayList<SearchListener>();
-//
-//
-//		if(gnuplotBased){
-//			if(visuPreferences.isDisplayClausesEvaluation()){
-//				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
-//			}
-//			if(visuPreferences.isDisplayClausesSize()){
-//				listeners.add(new LearnedClausesSizeTracing(
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
-//			}
-//			if(visuPreferences.isDisplayConflictsDecision()){
-//				listeners.add(new ConflictLevelTracing(
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
-//			}
-//			if(visuPreferences.isDisplayConflictsTrail()){
-//				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
-//			}
-//
-//			if(visuPreferences.isDisplayDecisionIndexes()){
-//				listeners.add(new DecisionTracing(
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
-//			}
-//
-//			if(visuPreferences.isDisplaySpeed()){
-//				listeners.add(new SpeedTracing(
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
-//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
-//			}
-//			if(visuPreferences.isDisplayVariablesEvaluation()){
-//				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
-//			}
-//		}
-//
-//		else if(chartBased){
-//
-//			SolverVisualisation visu = new SolverVisualisation(visuPreferences);
-//
-//			visu.setnVar(solver.nVars());
-//			if(visuPreferences.isDisplayClausesEvaluation()){
-//				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
-//			}
-//			if(visuPreferences.isDisplayClausesSize()){
-//				listeners.add(new LearnedClausesSizeTracing(
-//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
-//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
-//			}
-//			if(visuPreferences.isDisplayConflictsDecision()){
-//				listeners.add(new ConflictLevelTracing(
-//						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
-//						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
-//			}
-//			if(visuPreferences.isDisplayConflictsTrail()){
-//				listeners.add(new ConflictDepthTracing(
-//						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
-//						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
-//			}
-//			if(visuPreferences.isDisplayDecisionIndexes()){
-//				listeners.add(new DecisionTracing(
-//						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
-//						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-//						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
-//			}
-//			if(visuPreferences.isDisplaySpeed()){
-//				listeners.add(new SpeedTracing(
-//						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
-//						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
-//						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
-//			}
-//			if(visuPreferences.isDisplayVariablesEvaluation()){
-//				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
-//			}
-//		}
-//
-//		listeners.add(this);
-//
-//		solver.setSearchListener(new MultiTracing(listeners));
-//
-//		solver.setLogger(this);
-//
-//		reader = createReader(solver, instancePath);
-//
-//
-//		try{
-//			problem = reader.parseInstance(instancePath);
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (ParseFormatException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ContradictionException e) {
-//			log("Unsatisfiable (trivial)!");
-//		}
-//
-//		boolean optimisation=false;
-//		if(reader instanceof PBInstanceReader){
-//			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
-//			if(optimisation){
-//				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
-//			}
-//		}
-//
-//
-//		log("# Started solver " + solver.getClass().getSimpleName());
-//		log("# on instance " + instancePath);
-//		log("# Optimisation = " + optimisation);
-//		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
-//		log("# Random walk probability = " +randomWalk.getProbability());
-//		//log("# Number of conflicts before cleaning = " + nbConflicts);
-//
-//
-//		solveurThread = new Thread() {
-//			public void run() {
-//				//Thread thisThread = Thread.currentThread();
-//				//				if(shouldStop){
-//				//					System.out.println("coucou");
-//				//				}
-//				//				while(!shouldStop){
-//				try{
-//					stringWriter = new StringWriter();
-//					if(problem.isSatisfiable()){
-//						log("Satisfiable !");
-//						if(problem instanceof OptToPBSATAdapter){
-//							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-//							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
-//						}
-//						else
-//							reader.decode(problem.model(),new PrintWriter(stringWriter));
-//						log(stringWriter.toString());
-//					}
-//					else{
-//						log("Unsatisfiable !");
-//					}
-//				} catch (TimeoutException e) {
-//					log("Timeout, sorry!");      
-//				}
-//				//log("Solver has stopped");
-//				//				}
-//			}
-//		};
-//		solveurThread.start();
-//
-//
-//		if(isPlotActivated && gnuplotBased){
-//			traceGnuplot();
-//		}
-//
-//	}
+	//	public void launchSolver(){
+	//
+	//
+	//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE))
+	//		{
+	//			selectedSolver = (String)listeSolvers.getSelectedItem();
+	//			String[] partsSelectedSolver = selectedSolver.split("\\.");
+	//
+	//			assert partsSelectedSolver.length==2;
+	//			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
+	//
+	//			ASolverFactory factory;
+	//
+	//			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
+	//				factory = org.sat4j.minisat.SolverFactory.instance();
+	//			}
+	//			else{
+	//				factory = org.sat4j.pb.SolverFactory.instance();
+	//			}
+	//			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
+	//			//log(solver.toString());
+	//		}
+	//
+	//
+	//		if(firstStart || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
+	//			telecomStrategy.setSolver(solver);
+	//			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
+	//			solver.setRestartStrategy(telecomStrategy);
+	//
+	//		}
+	//
+	//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+	//
+	//
+	//
+	//
+	//
+	//		//		if(randomWalk==null){
+	//		//			double proba=0;
+	//		//			probaRWField.setText("0");
+	//		//			rwPanel.repaint();
+	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
+	//		//		}
+	//
+	//
+	//		IOrder order = solver.getOrder();
+	//		//		if(order instanceof RandomWalkDecoratorObjective && )
+	//
+	//
+	//		if(solver.getOrder() instanceof RandomWalkDecorator){
+	//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+	//			if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
+	//				randomWalk.setProbability(0);
+	//				probaRWField.setText("0");
+	//				rwPanel.repaint();
+	//			}
+	//			else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
+	//				if(solverInLine.getOrder() instanceof RandomWalkDecorator)
+	//					randomWalk = (RandomWalkDecorator)solverInLine.getOrder();
+	//				else
+	//					randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+	//			}
+	//			else{
+	//				double proba = Double.parseDouble(probaRWField.getText());
+	//				randomWalk.setProbability(proba);
+	//			}
+	//		}
+	//		else{
+	//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+	//		}
+	//		//		
+	//		//		if (optimizationMode
+	//		//				&& order instanceof VarOrderHeapObjective) {
+	//		//			randomWalk = new RandomWalkDecoratorObjective(
+	//		//					(VarOrderHeapObjective) order, 0);
+	//		//		} else {
+	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
+	//		//		}
+	//
+	//		solver.setOrder(randomWalk);
+	//
+	//		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
+	//		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
+	//		//			randomWalk.setProbability(0);
+	//		//			probaRWField.setText("0");
+	//		//			rwPanel.repaint();
+	//		//		}
+	//		//		else
+	//		//		if(solver.getOrder() instanceof RandomWalkDecorator){
+	//		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
+	//		//			randomWalk.setProbability(0);
+	//		//			probaRWField.setText("0");
+	//		//			rwPanel.repaint();
+	//		//		}
+	//		//		else if(!optimizationMode){
+	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
+	//		//		}
+	//		//		else {
+	//		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
+	//		//		}
+	//
+	//		//		solver.setOrder(randomWalk);
+	//
+	//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE))
+	//
+	//			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
+	//		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+	//
+	//		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
+	//
+	//
+	//		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
+	//			simplificationExpensiveRadio.setSelected(true);
+	//		}
+	//		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
+	//			simplificationSimpleRadio.setSelected(true);
+	//		}
+	//		else{
+	//			simplificationNoRadio.setSelected(true);
+	//		}
+	//
+	//		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+	//		phasePanel.repaint();
+	//
+	//		updateRestartStrategyPanel();
+	//
+	//		//pbSolver.setNeedToReduceDB(true);
+	//
+	//
+	//
+	//
+	//		whereToWriteFiles = instancePath;
+	//
+	//		if(ramdisk.length()>0){
+	//			String[] instancePathSplit= instancePath.split("/");
+	//			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
+	//
+	//		}
+	//
+	//		solver.setVerbose(true);
+	//
+	//		List<SearchListener> listeners = new ArrayList<SearchListener>();
+	//
+	//
+	//		if(gnuplotBased){
+	//			if(visuPreferences.isDisplayClausesEvaluation()){
+	//				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
+	//			}
+	//			if(visuPreferences.isDisplayClausesSize()){
+	//				listeners.add(new LearnedClausesSizeTracing(
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
+	//			}
+	//			if(visuPreferences.isDisplayConflictsDecision()){
+	//				listeners.add(new ConflictLevelTracing(
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+	//			}
+	//			if(visuPreferences.isDisplayConflictsTrail()){
+	//				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
+	//			}
+	//
+	//			if(visuPreferences.isDisplayDecisionIndexes()){
+	//				listeners.add(new DecisionTracing(
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+	//			}
+	//
+	//			if(visuPreferences.isDisplaySpeed()){
+	//				listeners.add(new SpeedTracing(
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
+	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
+	//			}
+	//			if(visuPreferences.isDisplayVariablesEvaluation()){
+	//				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+	//			}
+	//		}
+	//
+	//		else if(chartBased){
+	//
+	//			SolverVisualisation visu = new SolverVisualisation(visuPreferences);
+	//
+	//			visu.setnVar(solver.nVars());
+	//			if(visuPreferences.isDisplayClausesEvaluation()){
+	//				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
+	//			}
+	//			if(visuPreferences.isDisplayClausesSize()){
+	//				listeners.add(new LearnedClausesSizeTracing(
+	//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
+	//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
+	//			}
+	//			if(visuPreferences.isDisplayConflictsDecision()){
+	//				listeners.add(new ConflictLevelTracing(
+	//						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
+	//						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
+	//			}
+	//			if(visuPreferences.isDisplayConflictsTrail()){
+	//				listeners.add(new ConflictDepthTracing(
+	//						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
+	//						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
+	//			}
+	//			if(visuPreferences.isDisplayDecisionIndexes()){
+	//				listeners.add(new DecisionTracing(
+	//						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
+	//						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
+	//						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
+	//			}
+	//			if(visuPreferences.isDisplaySpeed()){
+	//				listeners.add(new SpeedTracing(
+	//						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
+	//						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
+	//						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
+	//			}
+	//			if(visuPreferences.isDisplayVariablesEvaluation()){
+	//				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
+	//			}
+	//		}
+	//
+	//		listeners.add(this);
+	//
+	//		solver.setSearchListener(new MultiTracing(listeners));
+	//
+	//		solver.setLogger(this);
+	//
+	//		reader = createReader(solver, instancePath);
+	//
+	//
+	//		try{
+	//			problem = reader.parseInstance(instancePath);
+	//		} catch (FileNotFoundException e) {
+	//			e.printStackTrace();
+	//		} catch (ParseFormatException e) {
+	//			e.printStackTrace();
+	//		} catch (IOException e) {
+	//			e.printStackTrace();
+	//		} catch (ContradictionException e) {
+	//			log("Unsatisfiable (trivial)!");
+	//		}
+	//
+	//		boolean optimisation=false;
+	//		if(reader instanceof PBInstanceReader){
+	//			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
+	//			if(optimisation){
+	//				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
+	//			}
+	//		}
+	//
+	//
+	//		log("# Started solver " + solver.getClass().getSimpleName());
+	//		log("# on instance " + instancePath);
+	//		log("# Optimisation = " + optimisation);
+	//		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
+	//		log("# Random walk probability = " +randomWalk.getProbability());
+	//		//log("# Number of conflicts before cleaning = " + nbConflicts);
+	//
+	//
+	//		solveurThread = new Thread() {
+	//			public void run() {
+	//				//Thread thisThread = Thread.currentThread();
+	//				//				if(shouldStop){
+	//				//					System.out.println("coucou");
+	//				//				}
+	//				//				while(!shouldStop){
+	//				try{
+	//					stringWriter = new StringWriter();
+	//					if(problem.isSatisfiable()){
+	//						log("Satisfiable !");
+	//						if(problem instanceof OptToPBSATAdapter){
+	//							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
+	//							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
+	//						}
+	//						else
+	//							reader.decode(problem.model(),new PrintWriter(stringWriter));
+	//						log(stringWriter.toString());
+	//					}
+	//					else{
+	//						log("Unsatisfiable !");
+	//					}
+	//				} catch (TimeoutException e) {
+	//					log("Timeout, sorry!");      
+	//				}
+	//				//log("Solver has stopped");
+	//				//				}
+	//			}
+	//		};
+	//		solveurThread.start();
+	//
+	//
+	//		if(isPlotActivated && gnuplotBased){
+	//			traceGnuplot();
+	//		}
+	//
+	//	}
 
 
 	public void launchSolverWithConfigs(){
@@ -1352,7 +1359,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
 
 			IOrder order = solver.getOrder();
-			
+
 			double proba = 0;
 
 			if(optimizationMode){
@@ -1371,15 +1378,15 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			else{
 				randomWalk = new RandomWalkDecorator((VarOrderHeap)order, 0);
 			}
-			
+
 			randomWalk.setProbability(proba);
 			probaRWField.setText(proba+"");
 			rwPanel.repaint();
 
 			solver.setOrder(randomWalk);
-			
-			
-			
+
+
+
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
 			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
@@ -1421,36 +1428,36 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
 
 			telecomStrategy.setSolver(solver);
-			
+
 			solver.setRestartStrategy(telecomStrategy);
 			solver.setOrder(randomWalk);
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-			
-			
+
+
 			hasClickedOnRestart();
-			
+
 			hasClickedOnApplyRW();
-			
+
 			hasClickedOnApplyPhase();
-			
+
 			hasClickedOnApplySimplification();
-			
+
 			updateRestartStrategyPanel();
 
 		}
-		
+
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
-			
+
 			telecomStrategy.setSolver(solver);
 			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
 			solver.setRestartStrategy(telecomStrategy);
 
 			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-			
+
 			updateRestartStrategyPanel();
 
 			IOrder order = solver.getOrder();
-			
+
 			double proba = 0;
 
 			if(optimizationMode){
@@ -1469,22 +1476,22 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			else{
 				randomWalk = new RandomWalkDecorator((VarOrderHeap)order, 0);
 			}
-			
+
 			randomWalk.setProbability(proba);
 			probaRWField.setText(proba+"");
 			rwPanel.repaint();
 
 			solver.setOrder(randomWalk);
-			
-			
-			
+
+
+
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
 			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-			
+
 			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-			
+
 
 			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
 				simplificationExpensiveRadio.setSelected(true);
@@ -1496,33 +1503,33 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				simplificationNoRadio.setSelected(true);
 			}
 
-			
+
 			phasePanel.repaint();
 
-			
-			
+
+
 		}
-		
+
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_REMOTE)){
-//			solver = solverInLine;
-			
+			//			solver = solverInLine;
+
 			solver.setRestartStrategy(telecomStrategy);
 			solver.setOrder(randomWalk);
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-			
-			
+
+
 			hasClickedOnRestart();
-			
+
 			hasClickedOnApplyRW();
-			
+
 			hasClickedOnApplyPhase();
-			
+
 			hasClickedOnApplySimplification();
-			
+
 			updateRestartStrategyPanel();
 
-			
-			
+
+
 		}
 
 
@@ -1608,100 +1615,107 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		if(isPlotActivated && gnuplotBased){
 			traceGnuplot();
 		}
-		
+
 
 	}
 
-	
+
 	public void initSearchListeners(){
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
 
 
-		if(gnuplotBased){
-			if(visuPreferences.isDisplayClausesEvaluation()){
-				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
-			}
-			if(visuPreferences.isDisplayClausesSize()){
-				listeners.add(new LearnedClausesSizeTracing(
-						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
-						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
-			}
-			if(visuPreferences.isDisplayConflictsDecision()){
-				listeners.add(new ConflictLevelTracing(
-						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
-						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
-			}
-			if(visuPreferences.isDisplayConflictsTrail()){
-				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
-						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
+		if(isPlotActivated)
+		{
+			if(gnuplotBased){
+				if(visuPreferences.isDisplayClausesEvaluation()){
+					listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
+				}
+				if(visuPreferences.isDisplayClausesSize()){
+					listeners.add(new LearnedClausesSizeTracing(
+							new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
+							new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-clean")));
+				}
+				if(visuPreferences.isDisplayConflictsDecision()){
+					listeners.add(new ConflictLevelTracing(
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
+				}
+				if(visuPreferences.isDisplayConflictsTrail()){
+					listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
+				}
+
+				if(visuPreferences.isDisplayDecisionIndexes()){
+					listeners.add(new DecisionTracing(
+							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+				}
+
+				if(visuPreferences.isDisplaySpeed()){
+					listeners.add(new SpeedTracing(
+							new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
+							new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
+							new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
+				}
+				if(visuPreferences.isDisplayVariablesEvaluation()){
+					listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
+				}
 			}
 
-			if(visuPreferences.isDisplayDecisionIndexes()){
-				listeners.add(new DecisionTracing(
-						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
-						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
-						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
+			else if(chartBased){
+
+				if(visu != null){
+					visu.setVisible(false);
+				}
+
+				visu = new SolverVisualisation(visuPreferences,isPlotActivated);
+
+
+				visu.setnVar(solver.nVars());
+				if(visuPreferences.isDisplayClausesEvaluation()){
+					listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
+				}
+				if(visuPreferences.isDisplayClausesSize()){
+					listeners.add(new LearnedClausesSizeTracing(
+							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
+							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace()),
+							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeCleanTrace())
+							));
+				}
+				if(visuPreferences.isDisplayConflictsDecision()){
+					listeners.add(new ConflictLevelTracing(
+							new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
+							new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
+				}
+				if(visuPreferences.isDisplayConflictsTrail()){
+					listeners.add(new ConflictDepthTracing(
+							new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
+							new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
+				}
+				if(visuPreferences.isDisplayDecisionIndexes()){
+					listeners.add(new DecisionTracing(
+							new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
+							new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
+							new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
+				}
+				if(visuPreferences.isDisplaySpeed()){
+					listeners.add(new SpeedTracing(
+							new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
+							new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
+							new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
+				}
+				if(visuPreferences.isDisplayVariablesEvaluation()){
+					listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
+				}
 			}
 
-			if(visuPreferences.isDisplaySpeed()){
-				listeners.add(new SpeedTracing(
-						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
-						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
-						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
-			}
-			if(visuPreferences.isDisplayVariablesEvaluation()){
-				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
-			}
 		}
-
-		else if(chartBased){
-
-			if(visu != null){
-				visu.setVisible(false);
-			}
-			
-			visu = new SolverVisualisation(visuPreferences,isPlotActivated);
-			
-
-			visu.setnVar(solver.nVars());
-			if(visuPreferences.isDisplayClausesEvaluation()){
-				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
-			}
-			if(visuPreferences.isDisplayClausesSize()){
-				listeners.add(new LearnedClausesSizeTracing(
-						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
-						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
-			}
-			if(visuPreferences.isDisplayConflictsDecision()){
-				listeners.add(new ConflictLevelTracing(
-						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
-						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
-			}
-			if(visuPreferences.isDisplayConflictsTrail()){
-				listeners.add(new ConflictDepthTracing(
-						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
-						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
-			}
-			if(visuPreferences.isDisplayDecisionIndexes()){
-				listeners.add(new DecisionTracing(
-						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
-						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
-			}
-			if(visuPreferences.isDisplaySpeed()){
-				listeners.add(new SpeedTracing(
-						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
-						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
-						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
-			}
-			if(visuPreferences.isDisplayVariablesEvaluation()){
-				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
-			}
-		}
-
 		listeners.add(this);
 
 		solver.setSearchListener(new MultiTracing(listeners));
+
 	}
 
 
@@ -2175,8 +2189,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					out.println("set origin "+left + "," + top);
 					out.println("set title \"Size of the clause learned (after minimization if any)\"");
 					GnuplotDataFile learnedClausesDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size.dat",Color.blue,"Size");
+					GnuplotDataFile learnedClausesRestartDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size-restart.dat",Color.gray,"Restart","impulses");
+					GnuplotDataFile learnedClausesCleanDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size-clean.dat",Color.orange,"Clean","impulses");
 					//out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF, true));
-					out.println(visuPreferences.generatePlotLine(learnedClausesDF,f, instancePath+ "-conflict-level-restart.dat", true));
+					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{learnedClausesDF}, new GnuplotDataFile[]{learnedClausesCleanDF,learnedClausesRestartDF}, true));
 				}
 
 				//top middle: clause activity
