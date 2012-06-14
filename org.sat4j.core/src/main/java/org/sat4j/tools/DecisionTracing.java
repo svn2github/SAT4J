@@ -98,6 +98,10 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 	@Override
 	public void init(ISolverService solverService) {
 		this.nVar = solverService.nVars();
+		this.positiveVisu.init();
+		this.negativeVisu.init();
+		this.restartVisu.init();
+
 	}
 
 }
