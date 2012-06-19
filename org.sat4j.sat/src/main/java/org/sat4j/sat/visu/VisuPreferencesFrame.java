@@ -1,5 +1,5 @@
 
-package org.sat4j.sat;
+package org.sat4j.sat.visu;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -1,4 +1,4 @@
-package org.sat4j.sat;
+package org.sat4j.sat.visu;
 
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.IAxis.AxisTitle;
@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-public class SolverVisualisation {
+public class JChartBasedSolverVisualisation implements SolverVisualisation{
 
 	private JFrame visuFrame;
 	
@@ -71,15 +71,21 @@ public class SolverVisualisation {
 	
 	private VisuPreferences pref;
 	
-	public SolverVisualisation(VisuPreferences pref){
+	public JChartBasedSolverVisualisation(VisuPreferences pref){
 		this(pref,true);
 	}
 	
-	public SolverVisualisation(VisuPreferences pref,boolean isVisible){
-		
-		visuFrame = new JFrame("Visualisation");
+	public JChartBasedSolverVisualisation(VisuPreferences pref,boolean isVisible){
 		
 		this.pref=pref;
+		
+		init();
+		
+		
+	}
+	
+	public void init(){
+		visuFrame = new JFrame("Visualisation");
 		
 		Container c = visuFrame.getContentPane();
 		
@@ -115,9 +121,7 @@ public class SolverVisualisation {
 				);
 		
 		
-		visuFrame.setVisible(isVisible); 
-		
-		
+//		visuFrame.setVisible(false); 
 	}
 	
 	public void initCharts(){
@@ -493,6 +497,16 @@ public class SolverVisualisation {
 
 	public void setnVar(int nVar) {
 		this.nVar = nVar;
+	}
+
+	public void start() {
+//		init();
+		
+		visuFrame.setVisible(true);
+	}
+
+	public void end() {
+		visuFrame.setVisible(false);
 	}
 	
 	

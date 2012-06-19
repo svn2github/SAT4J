@@ -56,6 +56,7 @@ import javax.swing.JScrollPane;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
+import org.sat4j.sat.visu.VisuPreferencesFrame;
 
 /**
  * 
@@ -174,7 +175,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		this.addWindowListener(new WindowAdapter() {
 			
 			public void windowClosing(WindowEvent e) {
-				commandePanel.stopGnuplot();
+				commandePanel.stopVisu();
 				System.exit(NORMAL);				
 			}
 			
@@ -283,7 +284,7 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 //					ex.printStackTrace();
 //				}
 //				System.exit(NORMAL);
-				commandePanel.stopGnuplot();
+				commandePanel.stopVisu();
 				System.exit(NORMAL);
 			}
 		});
@@ -345,11 +346,15 @@ public class RemoteControlFrame extends JFrame implements ICDCLLogger{
 		if(b){
 			log("Activated tracing");
 			activateTracing.setText(DEACTIVATE);
+//			commandePanel.startVisu();
+			commandePanel.setPlotActivated(true);
 		}
 		else{
 			log("Deactivated tracing.");
 			activateTracing.setText(ACTIVATE);
-			commandePanel.activateGnuplotTracing(b);
+			commandePanel.stopVisu();
+			commandePanel.setPlotActivated(false);
+//			commandePanel.activateGnuplotTracing(b);
 		}
 		if(commandePanel.getStartStopText().equals("Stop") && activateTracing.getText().equals(ACTIVATE)){
 			activateTracing.setEnabled(false);

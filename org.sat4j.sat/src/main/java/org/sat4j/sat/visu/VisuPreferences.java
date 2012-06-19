@@ -1,4 +1,4 @@
-package org.sat4j.sat;
+package org.sat4j.sat.visu;
 
 import java.awt.Color;
 import java.util.List;

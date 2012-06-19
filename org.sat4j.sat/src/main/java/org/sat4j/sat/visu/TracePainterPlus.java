@@ -1,11 +1,11 @@
-package org.sat4j.sat;
+package org.sat4j.sat.visu;
 
 import info.monitorenter.gui.chart.ITracePoint2D;
 import info.monitorenter.gui.chart.traces.painters.ATracePainter;
 
 import java.awt.Graphics;
 
-public class TracePainterCross extends ATracePainter {
+public class TracePainterPlus extends ATracePainter {
 
 	/**
 	 * 
@@ -13,25 +13,25 @@ public class TracePainterCross extends ATracePainter {
 	private static final long serialVersionUID = 1L;
 	
 	
-	/** The implementation for rendering the point as a cross. */
-	private final PointPainterCross m_pointPainter;
+	/** The implementation for rendering the point as a plus. */
+	private final PointPainterPlus m_pointPainter;
 
 	/**
-	 * Creates an instance with a default cross size of 4.
+	 * Creates an instance with a default plus size of 4.
 	 * <p>
 	 */
-	public TracePainterCross() {
-		this.m_pointPainter = new PointPainterCross(6);
+	public TracePainterPlus() {
+		this.m_pointPainter = new PointPainterPlus(6);
 	}
 
 	/**
-	 * Creates an instance with the given cross size.
+	 * Creates an instance with the given plus size.
 	 * 
-	 * @param crossSize
-	 *          the cross size in pixel to use.
+	 * @param plusSize
+	 *          the plus size in pixel to use.
 	 */
-	public TracePainterCross(final int crossSize) {
-		this.m_pointPainter = new PointPainterCross(crossSize);
+	public TracePainterPlus(final int plusSize) {
+		this.m_pointPainter = new PointPainterPlus(plusSize);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class TracePainterCross extends ATracePainter {
 		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
-		final TracePainterCross other = (TracePainterCross) obj;
+		final TracePainterPlus other = (TracePainterPlus) obj;
 		if (this.m_pointPainter == null) {
 			if (other.m_pointPainter != null) {
 				return false;
@@ -76,13 +76,13 @@ public class TracePainterCross extends ATracePainter {
 	}
 
 	/**
-	 * Returns the size of the cross to paint in pixel.
+	 * Returns the size of the plus to paint in pixel.
 	 * <p>
 	 * 
-	 * @return the size of the cross to paint in pixel.
+	 * @return the size of the plus to paint in pixel.
 	 */
-	public int getCrossSize() {
-		return this.m_pointPainter.getCrossSize();
+	public int getPlusSize() {
+		return this.m_pointPainter.getPlusSize();
 	}
 
 	/**
@@ -109,14 +109,14 @@ public class TracePainterCross extends ATracePainter {
 	}
 
 	/**
-	 * Sets the size of the crosses to paint in pixel.
+	 * Sets the size of the plus to paint in pixel.
 	 * <p>
 	 * 
-	 * @param crossSize
-	 *          the size of the crosses to paint in pixel.
+	 * @param plusSize
+	 *          the diameter of the plus to paint in pixel.
 	 */
 	public void setPlusSize(final int plusSize) {
-		this.m_pointPainter.setCrossSize(plusSize);
+		this.m_pointPainter.setPlusSize(plusSize);
 	}
 
 	/**
@@ -128,4 +128,3 @@ public class TracePainterCross extends ATracePainter {
 		this.m_pointPainter.startPaintIteration(g2d);
 	}
 }
-

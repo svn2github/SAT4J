@@ -96,6 +96,12 @@ import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
+import org.sat4j.sat.visu.ChartBasedVisualizationTool;
+import org.sat4j.sat.visu.GnuplotBasedSolverVisualisation;
+import org.sat4j.sat.visu.JChartBasedSolverVisualisation;
+import org.sat4j.sat.visu.SolverVisualisation;
+import org.sat4j.sat.visu.TraceComposite;
+import org.sat4j.sat.visu.VisuPreferences;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IProblem;
@@ -128,7 +134,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private static final long serialVersionUID = 1L;
 
-	private static final EmptyBorder border5 = new EmptyBorder(5,5,5,5);
+	public static final EmptyBorder border5 = new EmptyBorder(5,5,5,5);
 
 	private String ramdisk;
 
@@ -143,7 +149,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private boolean firstStart;
 
-	private SolverVisualisation visu;
+//	private JChartBasedSolverVisualisation visu;
 
 	//	private boolean useCustomizedSolver;
 	private StartSolverEnum startConfig;
@@ -207,35 +213,37 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private static final String RESUME = "Resume";
 	//	private boolean isInterrupted;
 
-	private final static String RESTART_PANEL = "Restart strategy";	
-	private final static String RESTART = "Restart";
+//	private final static String RESTART_PANEL = "Restart strategy";	
+//	private final static String RESTART = "Restart";
 
-	private JPanel restartPanel;
+	private RestartCommandComponent restartPanel;
 
-	private JPanel restartPropertiesPanel;
-	private JPanel restartButtonPanel;
-
-	private JLabel chooseRestartStrategyLabel;
-	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
-
-	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
-	private JLabel noParameterLabel;
-
-	private JComboBox listeRestarts;
-	private String currentRestart;
+//	private JPanel restartPropertiesPanel;
+//	private JPanel restartButtonPanel;
+//
+//	private JLabel chooseRestartStrategyLabel;
+//	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
+//
+//	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
+//	private JLabel noParameterLabel;
+//
+//	private JComboBox listeRestarts;
+	
 	//	private final static String RESTART_NO_STRATEGY = "No strategy";
-	private final static String RESTART_DEFAULT = "NoRestarts";
-	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
-	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
+//	private final static String RESTART_DEFAULT = "NoRestarts";
+//	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
+//	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
 
+	
+//	private String currentRestart;
 
 	//	private JPanel lubyPanel;
-	private JLabel factorLabel;
-	private final static String FACTOR = "Factor: ";
-	private JTextField factorField;
+//	private JLabel factorLabel;
+//	private final static String FACTOR = "Factor: ";
+//	private JTextField factorField;
 
 
-	private JButton restartButton;
+//	private JButton restartButton;
 
 	private JPanel rwPanel;
 
@@ -348,8 +356,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	private boolean isPlotActivated;
 
-	private Process gnuplotProcess;
-
+	private SolverVisualisation solverVisu;
 	private VisuPreferences visuPreferences;
 
 	private boolean gnuplotBased = false;
@@ -379,7 +386,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		console = new JTextArea();
 		
 		this.commandLines = args;
-		this.solver=Solvers.configureSolver(args, this);
+		if(args.length>0)
+			this.solver=Solvers.configureSolver(args, this);
 
 		this.isPlotActivated=false;
 
@@ -397,7 +405,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		createInstancePanel();
 		createChoixSolverPanel();
-		createRestartPanel();
+		
+		restartPanel = new RestartCommandComponent("Restart", telecomStrategy, this);
+		
 		createRWPanel();
 		createCleanPanel();
 		createPhasePanel();
@@ -414,9 +424,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				scrollPane.getVerticalScrollBar().getMaximum());
 		//	scrollPane.setAutoscrolls(true);
 
-		initFactorParam();
+		
 
-		restartPropertiesPanel.setPreferredSize(new Dimension(100,50));
+		
 
 
 		tabbedPane = new MyTabbedPane();
@@ -463,12 +473,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 
-		setRestartPanelEnabled(false);
+		restartPanel.setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
 		setCleanPanelEnabled(false);
 		setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
+		
+		this.solverVisu = new JChartBasedSolverVisualisation(visuPreferences);
 
 		updateWriter();
 	}
@@ -548,7 +560,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					launchSolverWithConfigs();
 					pauseButton.setEnabled(true);
 					setInstancePanelEnabled(false);
-					setRestartPanelEnabled(true);
+					restartPanel.setRestartPanelEnabled(true);
 					setRWPanelEnabled(true);
 					setCleanPanelEnabled(true);
 					setCleanPanelOriginalStrategyEnabled(true);
@@ -683,59 +695,59 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		return startStopButton.getText();
 	}
 
-	public void createRestartPanel(){
-		restartPanel = new JPanel();
-
-		restartPanel.setName(RESTART_PANEL);
-		restartPanel.setBorder(new CompoundBorder(new TitledBorder(null, restartPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		restartPanel.setLayout(new BorderLayout());
-
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
-
-		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
-
-		listeRestarts = new JComboBox(getListOfRestartStrategies().toArray());	
-		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-		listeRestarts.setSelectedItem(RESTART_DEFAULT);
-
-		listeRestarts.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				modifyRestartParamPanel();
-			}
-		});
-
-		tmpPanel1.add(chooseRestartStrategyLabel);
-		tmpPanel1.add(listeRestarts);
-
-		noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
-
-		Font newLabelFont=new Font(noParameterLabel.getFont().getName(),Font.ITALIC,noParameterLabel.getFont().getSize());
-
-		noParameterLabel.setFont(newLabelFont);
-
-		restartPropertiesPanel = new JPanel();
-		restartPropertiesPanel.add(noParameterLabel);
-
-
-		restartButton = new JButton(RESTART);
-
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnRestart();
-			}
-		});
-
-		restartButtonPanel = new JPanel();
-		restartButtonPanel.add(restartButton);
-
-		restartPanel.add(tmpPanel1,BorderLayout.NORTH);
-		restartPanel.add(restartPropertiesPanel,BorderLayout.CENTER);
-		restartPanel.add(restartButtonPanel,BorderLayout.SOUTH);
-
-	}
+//	public void createRestartPanel(){
+//		restartPanel = new JPanel();
+//
+//		restartPanel.setName(RESTART_PANEL);
+//		restartPanel.setBorder(new CompoundBorder(new TitledBorder(null, restartPanel.getName(), 
+//				TitledBorder.LEFT, TitledBorder.TOP), border5));
+//
+//		restartPanel.setLayout(new BorderLayout());
+//
+//		JPanel tmpPanel1 = new JPanel();
+//		tmpPanel1.setLayout(new FlowLayout());
+//
+//		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
+//
+//		listeRestarts = new JComboBox(getListOfRestartStrategies().toArray());	
+//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+//		listeRestarts.setSelectedItem(RESTART_DEFAULT);
+//
+//		listeRestarts.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				modifyRestartParamPanel();
+//			}
+//		});
+//
+//		tmpPanel1.add(chooseRestartStrategyLabel);
+//		tmpPanel1.add(listeRestarts);
+//
+//		noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
+//
+//		Font newLabelFont=new Font(noParameterLabel.getFont().getName(),Font.ITALIC,noParameterLabel.getFont().getSize());
+//
+//		noParameterLabel.setFont(newLabelFont);
+//
+//		restartPropertiesPanel = new JPanel();
+//		restartPropertiesPanel.add(noParameterLabel);
+//
+//
+//		restartButton = new JButton(RESTART);
+//
+//		restartButton.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				hasClickedOnRestart();
+//			}
+//		});
+//
+//		restartButtonPanel = new JPanel();
+//		restartButtonPanel.add(restartButton);
+//
+//		restartPanel.add(tmpPanel1,BorderLayout.NORTH);
+//		restartPanel.add(restartPropertiesPanel,BorderLayout.CENTER);
+//		restartPanel.add(restartButtonPanel,BorderLayout.SOUTH);
+//
+//	}
 
 	public void createRWPanel(){
 		rwPanel = new JPanel();
@@ -1018,19 +1030,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
-	public void initFactorParam(){
-		//		lubyPanel = new JPanel();
-		//		//		lubyPanel.setLayout(new FlowLayout());
-
-		factorLabel = new JLabel(FACTOR);
-		factorField = new JTextField(LubyRestarts.DEFAULT_LUBY_FACTOR+"",5);
-		//factorField.setMargin(new Insets(0, 0, 0, 0));
-		//factorLabel.setLabelFor(factorField);
-
-		//		lubyPanel.add(factorLabel);
-		//		lubyPanel.add(factorField);
-
-	}
+	
 
 	public void setOptimisationMode(boolean optimizationMode){
 		this.optimizationMode = optimizationMode;
@@ -1359,7 +1359,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
 			solver.setRestartStrategy(telecomStrategy);
 
-			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+			restartPanel.setCurrentRestart(telecomStrategy.getRestartStrategy().getClass().getSimpleName());
 
 			IOrder order = solver.getOrder();
 
@@ -1409,7 +1409,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
 			phasePanel.repaint();
 
-			updateRestartStrategyPanel();
+			
 
 		}
 
@@ -1437,7 +1437,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
 
-			hasClickedOnRestart();
+			restartPanel.hasClickedOnRestart();
 
 			hasClickedOnApplyRW();
 
@@ -1445,7 +1445,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			hasClickedOnApplySimplification();
 
-			updateRestartStrategyPanel();
 
 		}
 
@@ -1457,9 +1456,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
 			solver.setRestartStrategy(telecomStrategy);
 
-			currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
+			restartPanel.setCurrentRestart(telecomStrategy.getRestartStrategy().getClass().getSimpleName());
 
-			updateRestartStrategyPanel();
 
 			IOrder order = solver.getOrder();
 
@@ -1524,7 +1522,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
 
-			hasClickedOnRestart();
+			restartPanel.hasClickedOnRestart();
 
 			hasClickedOnApplyRW();
 
@@ -1532,7 +1530,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			hasClickedOnApplySimplification();
 
-			updateRestartStrategyPanel();
 
 
 
@@ -1549,9 +1546,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		}
 
 		solver.setVerbose(true);
-
+		
 		initSearchListeners();
-
+		
 		solver.setLogger(this);
 
 		reader = createReader(solver, instancePath);
@@ -1618,8 +1615,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		solveurThread.start();
 
 
-		if(isPlotActivated && gnuplotBased){
-			traceGnuplot();
+		if(isPlotActivated){
+			solverVisu.setnVar(solver.nVars());
+			startVisu();
 		}
 
 
@@ -1633,6 +1631,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		if(isPlotActivated)
 		{
 			if(gnuplotBased){
+				solverVisu = new GnuplotBasedSolverVisualisation(visuPreferences, solver.nVars(), instancePath, this);
 				if(visuPreferences.isDisplayClausesEvaluation()){
 					listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
 				}
@@ -1675,51 +1674,57 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			else if(chartBased){
 
-				if(visu != null){
-					visu.setVisible(false);
+				if(solverVisu != null){
+					solverVisu.end();
 				}
+				
+				solverVisu = new JChartBasedSolverVisualisation(visuPreferences);
 
-				visu = new SolverVisualisation(visuPreferences,isPlotActivated);
+//				visu = new JChartBasedSolverVisualisation(visuPreferences,isPlotActivated);
 
-
-				visu.setnVar(solver.nVars());
+				
+				((JChartBasedSolverVisualisation)solverVisu).setnVar(solver.nVars());
 				if(visuPreferences.isDisplayClausesEvaluation()){
-					listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
+					listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getClausesEvaluationTrace())));
 				}
 				if(visuPreferences.isDisplayClausesSize()){
 					listeners.add(new LearnedClausesSizeTracing(
-							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
-							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace()),
-							new ChartBasedVisualizationTool(visu.getLearnedClausesSizeCleanTrace())
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getLearnedClausesSizeTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getLearnedClausesSizeRestartTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getLearnedClausesSizeCleanTrace())
 							));
 				}
 				if(visuPreferences.isDisplayConflictsDecision()){
 					listeners.add(new ConflictLevelTracing(
-							new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
-							new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace()),
-							new ChartBasedVisualizationTool(visu.getConflictLevelCleanTrace())));
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictLevelTrace()), 
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictLevelRestartTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictLevelCleanTrace())));
 				}
 				if(visuPreferences.isDisplayConflictsTrail()){
 					listeners.add(new ConflictDepthTracing(
-							new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
-							new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace()),
-							new ChartBasedVisualizationTool(visu.getConflictDepthCleanTrace())));
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictDepthTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictDepthRestartTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getConflictDepthCleanTrace())));
 				}
 				if(visuPreferences.isDisplayDecisionIndexes()){
 					listeners.add(new DecisionTracing(
-							new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
-							new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-							new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace())),
-							new ChartBasedVisualizationTool(new TraceComposite(visu.getCleanPosDecisionTrace(),visu.getCleanNegDecisionTrace()))));
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getPositiveDecisionTrace()),
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getNegativeDecisionTrace()),
+							new ChartBasedVisualizationTool(new TraceComposite(
+									((JChartBasedSolverVisualisation)solverVisu).getRestartPosDecisionTrace(),
+									((JChartBasedSolverVisualisation)solverVisu).getRestartNegDecisionTrace())),
+							new ChartBasedVisualizationTool(new TraceComposite(
+									((JChartBasedSolverVisualisation)solverVisu).getCleanPosDecisionTrace(),
+									((JChartBasedSolverVisualisation)solverVisu).getCleanNegDecisionTrace()))));
 				}
 				if(visuPreferences.isDisplaySpeed()){
 					listeners.add(new SpeedTracing(
-							new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
-							new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
-							new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getSpeedTrace()), 
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getSpeedCleanTrace()), 
+							new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getSpeedRestartTrace())));
 				}
 				if(visuPreferences.isDisplayVariablesEvaluation()){
-					listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
+					listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getHeuristicsTrace())));
 				}
 			}
 
@@ -1747,68 +1752,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.chartBased = chartBased;
 	}
 
-	public void hasClickedOnRestart(){
-		telecomStrategy.setHasClickedOnRestart(true);
-		String choix = (String)listeRestarts.getSelectedItem();
+	
 
-		boolean isNotSameRestart = !choix.equals(currentRestart);
-		boolean shouldInit = isNotSameRestart;
+	public boolean isPlotActivated() {
+		return isPlotActivated;
+	}
 
-		RestartStrategy restart = new NoRestarts();
-		SearchParams params = telecomStrategy.getSearchParams();
-
-		if(choix.equals("LubyRestarts")){
-			boolean factorChanged = false;
-			int factor = LubyRestarts.DEFAULT_LUBY_FACTOR;
-			if(factorField.getText()!=null){
-				factor = Integer.parseInt(factorField.getText());
-			}
-			// if the current restart is a LubyRestart
-			if(isNotSameRestart){
-				restart = new LubyRestarts(factor);
-				telecomStrategy.setRestartStrategy(restart);
-			}
-			else{
-				factorChanged = !(factor==((LubyRestarts)telecomStrategy.getRestartStrategy()).getFactor());
-			}
-			// if the factor has changed
-			if(factorChanged){
-				restart = telecomStrategy.getRestartStrategy();
-				((LubyRestarts)restart).setFactor(factor);
-			}
-			shouldInit = isNotSameRestart || factorChanged;
-
-			if(shouldInit){
-				restart.init(params);
-				log("Init restart");
-			}
-
-		}
-
-		else try{
-			restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
-			assert restart!=null;
-			telecomStrategy.setRestartStrategy(restart);
-			telecomStrategy.init(params);
-
-		}
-		catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}
-		catch(IllegalAccessException e){
-			e.printStackTrace();
-		}
-		catch(InstantiationException e){
-			e.printStackTrace();
-		}
-
-		currentRestart = choix;
-
-
-		//		if(shouldInit)
-		//			telecomStrategy.setRestartStrategy(restart,params);
-
-		log("Set " + RESTART + " to "+ choix);
+	public void setPlotActivated(boolean isPlotActivated) {
+		this.isPlotActivated = isPlotActivated;
 	}
 
 	public void hasClickedOnApplyRW(){
@@ -1898,20 +1849,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 
-	public List<String> getListOfRestartStrategies(){
-		List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
-		List<String> finalResult = new ArrayList<String>();
-
-		//		finalResult.add(RESTART_NO_STRATEGY);
-
-		for(String s:resultRTSI){
-			if(!s.contains("Remote")){
-				finalResult.add(s);
-			}
-		}
-
-		return finalResult;
-	}
+	
 
 	public List<String> getListOfPhaseStrategies(){
 		List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
@@ -1964,21 +1902,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		return result;
 	}
 
-	public void modifyRestartParamPanel(){
-		restartPropertiesPanel.removeAll();
-		if(listeRestarts.getSelectedItem().equals("LubyRestarts")){
-			restartPropertiesPanel.add(factorLabel);
-			restartPropertiesPanel.add(factorField);
-		}
-		else{
-			restartPropertiesPanel.add(noParameterLabel);
-		}
-		setRestartPropertiesPanelEnabled(true);
-		restartPropertiesPanel.repaint();
-		restartPanel.repaint();
-		restartPanel.paintAll(restartPanel.getGraphics());
-		this.repaint();
-	}
+	
 
 	public void log(String message){
 		logsameline(message+"\n");
@@ -2026,12 +1950,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
-
-	public void updateRestartStrategyPanel(){
-		listeRestarts.setSelectedItem(currentRestart);
-
-	}
-
 	public void setInstancePanelEnabled(boolean enabled){
 		instanceLabel.setEnabled(enabled);
 		instancePathField.setEnabled(enabled);
@@ -2051,20 +1969,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		choixSolverPanel.repaint();
 	}
 
-	public void setRestartPanelEnabled(boolean enabled){
-		listeRestarts.setEnabled(enabled);
-		restartButton.setEnabled(enabled);
-		chooseRestartStrategyLabel.setEnabled(enabled);
-		setRestartPropertiesPanelEnabled(enabled);
-		restartPanel.repaint();
-	}
-
-	public void setRestartPropertiesPanelEnabled(boolean enabled){
-		for(Component c:restartPropertiesPanel.getComponents()){
-			c.setEnabled(enabled);
-		}
-		restartPropertiesPanel.repaint();
-	}
+	
 
 	public void setRWPanelEnabled(boolean enabled){
 		probaRWLabel.setEnabled(enabled);
@@ -2125,251 +2030,37 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		hotSolverPanel.repaint();
 	}
 
+	public void setSolverVisualisation(SolverVisualisation visu){
+		this.solverVisu = visu;
+	}
 
 	public void activateGnuplotTracing(boolean b){
 		isPlotActivated=b;
 		if(solver!=null)
 			initSearchListeners();
-		if(startStopButton.getText().equals(STOP) && b){
-			if(this.gnuplotBased){
-				traceGnuplot();
-				this.visu.setVisible(false);
-			}
-			else{
-				stopGnuplot();
-				this.visu.setVisible(true);
-			}
-		}
-		else if(!b){
-			stopGnuplot();
-			if(this.visu!=null)
-				this.visu.setVisible(false);
-		}
+//		if(startStopButton.getText().equals(STOP) && b){
+//			if(this.gnuplotBased){
+//				
+//				this.visu.setVisible(false);
+//			}
+//			else{
+//				stopGnuplot();
+//				this.visu.setVisible(true);
+//			}
+//		}
+//		else if(!b){
+//			stopGnuplot();
+//			if(this.visu!=null)
+//				this.visu.setVisible(false);
+//		}
+	}
+	
+	public void startVisu(){
+		solverVisu.start();
 	}
 
-	public void traceGnuplot(){
-
-		int nbVariables = solver.nVars();
-
-		if(gnuplotProcess==null)
-			try {
-
-				double verybottom=0.0;
-				double bottom=0.33;
-				double top=0.66;
-				double left=0.0;
-				double middle=0.33;
-				double right=0.66;
-
-				double width=0.33;
-				double height=0.33;
-
-
-
-				PrintStream out = new PrintStream(new FileOutputStream(instancePath+"-gnuplot.gnuplot"));
-				out.println("set terminal x11");
-				out.println("set multiplot");
-				out.println("set autoscale x");
-				out.println("set autoscale y");
-				out.println("set nologscale x");
-				out.println("set nologscale y");
-				out.println("set ytics auto");
-
-				GnuplotFunction f = new GnuplotFunction("2", Color.black, "");
-
-				//bottom right: Decision Level when conflict
-				if(visuPreferences.isDisplayConflictsDecision()){
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+right + "," + bottom);
-					out.println("set title \"Decision level at which the conflict occurs\"");
-					out.println("set autoscale ymax"); 
-					out.println("set y2range [0:]");
-					GnuplotDataFile conflictLevelDF = new GnuplotDataFile(instancePath+ "-conflict-level.dat",Color.magenta,"Conflict Level");
-					GnuplotDataFile conflictLevelRestartDF = new GnuplotDataFile(instancePath+ "-conflict-level-restart.dat",Color.gray,"Restart","impulses");
-					GnuplotDataFile conflictLevelCleanDF = new GnuplotDataFile(instancePath+ "-conflict-level-clean.dat",Color.orange,"Clean","impulses");
-					//out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF, true));
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{conflictLevelDF}, new GnuplotDataFile[]{conflictLevelRestartDF,conflictLevelCleanDF}, true));
-					//					out.println(visuPreferences.generatePlotLine(conflictLevelDF,f, instancePath+ "-conflict-level-restart.dat", true));
-				}
-
-				//top left: size of learned clause
-				if(visuPreferences.isDisplayClausesSize()){
-					out.println("unset autoscale");
-					out.println("set autoscale x");
-					out.println("set autoscale ymax"); 
-					out.println("set y2range [0:]");
-					//					out.println("set y2range[0:"+nbVariables+"]");
-					//					out.println("set autoscale y2");
-					//					out.println("set nologscale x");
-					//					out.println("set nologscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+left + "," + top);
-					out.println("set title \"Size of the clause learned (after minimization if any)\"");
-					GnuplotDataFile learnedClausesDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size.dat",Color.blue,"Size");
-					GnuplotDataFile learnedClausesRestartDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size-restart.dat",Color.gray,"Restart","impulses");
-					GnuplotDataFile learnedClausesCleanDF = new GnuplotDataFile(instancePath+ "-learned-clauses-size-clean.dat",Color.orange,"Clean","impulses");
-					//out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF, true));
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{learnedClausesDF}, new GnuplotDataFile[]{learnedClausesCleanDF,learnedClausesRestartDF}, true));
-				}
-
-				//top middle: clause activity
-				if(visuPreferences.isDisplayConflictsDecision()){
-					out.println("set autoscale x");
-					out.println("set autoscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+middle + "," + top);
-					out.println("set title \"Value of learned clauses evaluation\"");
-					GnuplotDataFile learnedDF = new GnuplotDataFile(instancePath+ "-learned.dat",Color.blue,"Evaluation");
-					out.println(visuPreferences.generatePlotLine(learnedDF,f,"", false));
-				}
-
-				// for bottom graphs, y range should be O-maxVar
-				out.println("set autoscale x");
-				out.println("set nologscale x");
-				out.println("set nologscale y");
-				out.println("set autoscale y");
-				out.println("set yrange [1:"+nbVariables+"]");
-				out.println("set ytics add (1,"+ nbVariables +")");
-
-				//bottom left: index decision variable
-				if(visuPreferences.isDisplayDecisionIndexes()){
-					out.println("unset autoscale");
-					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;}");
-					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"]};");
-					//					out.println("set nologscale x");
-					//					out.println("set nologscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+left + "," + bottom);
-					out.println("set title \"Index of the decision variables\"");
-					GnuplotDataFile negativeDF = new GnuplotDataFile(instancePath+ "-decision-indexes-neg.dat", Color.red,"Negative Decision");
-					GnuplotDataFile decisionRestartDF = new GnuplotDataFile(instancePath+ "-decision-indexes-restart.dat",Color.gray,"Restart","impulses");
-					GnuplotDataFile decisionCleanDF = new GnuplotDataFile(instancePath+ "-decision-indexes-clean.dat",Color.orange,"Clean","impulses");
-					//					out.println(gnuplotPreferences.generatePlotLine(negativeDF, true));
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{negativeDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
-					//					out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+ "-decision-indexes-restart.dat" , true, visuPreferences.getNbLinesRead()*4));
-
-					//verybottom left: index decision variable
-					out.println("unset autoscale");
-					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"+nbVariables+"]; set y2range [0:]; }");
-					//					out.println("set autoscale y");
-
-					//					out.println("if(system(\"head "+ instancePath+ "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
-					//					out.println("set nologscale x");
-					//					out.println("set nologscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+left + "," + verybottom);
-					out.println("set title \"Index of the decision variables\"");
-					GnuplotDataFile positiveDF = new GnuplotDataFile(instancePath+ "-decision-indexes-pos.dat", Color.green,"Positive Decision");
-					//					out.println(gnuplotPreferences.generatePlotLine(positiveDF, true));
-					//					out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+ "-decision-indexes-restart.dat", true, visuPreferences.getNbLinesRead()*4));
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{positiveDF}, new GnuplotDataFile[]{decisionRestartDF,decisionCleanDF}, true, visuPreferences.getNbLinesRead()*4));
-				}
-
-				//top right: depth search when conflict
-				if(visuPreferences.isDisplayConflictsTrail()){
-					out.println("set autoscale x");
-					out.println("set autoscale y");
-					out.println("set nologscale x");
-					out.println("set nologscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+right + "," + top);
-					out.println("set title \"Trail level when the conflict occurs\"");
-					out.println("set y2range [0:]");
-					GnuplotDataFile trailLevelDF = new GnuplotDataFile(instancePath+ "-conflict-depth.dat", Color.magenta, "Trail level");
-					GnuplotFunction nbVar2 = new GnuplotFunction(""+nbVariables/2, Color.green, "#Var/2");
-					GnuplotDataFile trailLevelRestartDF = new GnuplotDataFile(instancePath+ "-conflict-depth-restart.dat",Color.gray,"Restart","impulses");
-					GnuplotDataFile trailLevelCleanDF = new GnuplotDataFile(instancePath+ "-conflict-depth-clean.dat",Color.orange,"Clean","impulses");
-					//					out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{trailLevelDF}, new GnuplotDataFile[]{trailLevelRestartDF,trailLevelCleanDF}, new GnuplotFunction[]{nbVar2}, true));
-					out.println(visuPreferences.generatePlotLine(trailLevelDF, 
-							nbVar2, instancePath+ "-conflict-level-restart.dat",true));
-				}
-
-				//bottom middle: variable activity
-				if(visuPreferences.isDisplayVariablesEvaluation()){
-					out.println("unset autoscale");
-					out.println("set autoscale y");
-					out.println("set nologscale x");
-					out.println("set nologscale y");
-					out.println("set yrange [1:"+nbVariables+"]");
-					out.println("set xrange [0.5:*]");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+middle + "," + bottom);
-					out.println("set title \"Value of variables activity\"");
-					GnuplotDataFile heuristicsDF = new GnuplotDataFile(instancePath+ "-heuristics.dat",Color.red,"Activity","lines");
-					out.println(visuPreferences.generatePlotLine(heuristicsDF, f,"",false));
-				}
-				//				out.println("plot \"" + instancePath+ "-heuristics.dat\" with lines title \"Activity\"");
-
-
-				if(visuPreferences.isDisplaySpeed()){
-					out.println("set autoscale x");
-					out.println("set nologscale x");
-					out.println("set nologscale y");
-					out.println("set size "+width + "," + height);
-					out.println("set origin "+middle + "," + verybottom);
-					out.println("set title \"Number of propagations per second\"");
-					out.println("set y2range [0:]");
-					GnuplotDataFile speedDF = new GnuplotDataFile(instancePath+"-speed.dat",Color.cyan,"Speed","lines");
-					GnuplotDataFile cleanDF = new GnuplotDataFile(instancePath +"-speed-clean.dat",Color.orange, "Clean", "impulses");
-					GnuplotDataFile restartDF = new GnuplotDataFile(instancePath +"-speed-restart.dat",Color.gray, "Restart", "impulses");
-					out.println(visuPreferences.generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{speedDF}, new GnuplotDataFile[]{cleanDF,restartDF}, true,50));
-				}
-				out.println("unset multiplot");
-				double pauseTime = visuPreferences.getRefreshTime()/1000;
-				out.println("pause " + pauseTime);
-				out.println("reread");
-				out.close();
-
-
-				log("Gnuplot will start in a few seconds.");
-
-
-
-				Thread errorStreamThread = new Thread(){
-					public void run(){
-
-						try{
-							try {
-								Thread.sleep(visuPreferences.getTimeBeforeLaunching());
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-
-							gnuplotProcess = Runtime.getRuntime().exec(
-									visuPreferences.createCommandLine(instancePath+"-gnuplot.gnuplot"));
-
-							log("Gnuplot should have started now.");
-
-							BufferedReader gnuInt = new BufferedReader(new InputStreamReader(gnuplotProcess.getErrorStream()));
-							String s;
-
-							while((s=gnuInt.readLine())!=null){
-								if(s.trim().length()>0 && !s.toLowerCase().contains("warning") && !s.toLowerCase().contains("plot"))
-									System.out.println(s);
-							}
-						}
-						catch(IOException e){
-							e.printStackTrace();
-						}
-					}
-				};
-				errorStreamThread.start();
-
-
-
-
-			} catch (IOException e) { 
-				e.printStackTrace();
-			}
-	}
-
-	public void stopGnuplot(){
-		if(gnuplotProcess!=null){
-			gnuplotProcess.destroy();
-			log("Gnuplot should be deactivated...");
-		}
-		gnuplotProcess=null;
+	public void stopVisu(){
+		solverVisu.end();
 	}
 
 	public VisuPreferences getGnuplotPreferences() {

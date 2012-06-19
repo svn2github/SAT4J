@@ -1,4 +1,4 @@
-package org.sat4j.sat;
+package org.sat4j.sat.visu;
 
 import info.monitorenter.gui.chart.Chart2D;
 
