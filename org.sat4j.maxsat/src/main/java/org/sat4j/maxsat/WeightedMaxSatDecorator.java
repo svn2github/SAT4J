@@ -31,6 +31,7 @@ package org.sat4j.maxsat;
 
 import java.math.BigInteger;
 
+import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
@@ -64,10 +65,16 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 
     protected int nbnewvar;
 	private boolean maxVarIdFixed = false;
+	private final boolean equivalence;
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
+        this(solver,false);
+    }
+    
+    public WeightedMaxSatDecorator(IPBSolver solver, boolean equivalence) {
         super(solver);
         solver.setObjectiveFunction(obj);
+        this.equivalence = equivalence;
     }
 
 	@Override
@@ -208,6 +215,18 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
             int newvar = nextFreeVarId(true);
 			literals.push(newvar);
             lits.push(newvar);
+            if (equivalence) {
+    			ConstrGroup constrs = new ConstrGroup();
+    			constrs.add(super.addClause(literals));
+    			IVecInt clause = new VecInt(2);
+    			clause.push(-newvar);
+    			for (int i = 0; i < literals.size() - 1; i++) {
+    				clause.push(-literals.get(i));
+    				constrs.add(super.addClause(clause));
+    			}
+    			clause.pop();
+    			return constrs;
+    		}
         }
         return super.addClause(literals);
     }
