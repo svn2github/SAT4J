@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.opt;
 
+import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
@@ -49,8 +50,15 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
      */
 	private static final long serialVersionUID = 1L;
 
+	private final boolean equivalence;
+
 	public MaxSatDecorator(ISolver solver) {
+		this(solver, false);
+	}
+
+	public MaxSatDecorator(ISolver solver, boolean equivalence) {
 		super(solver);
+		this.equivalence = equivalence;
 	}
 
 	@Override
@@ -64,6 +72,18 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 		int newvar = nextFreeVarId(true);
 		lits.push(newvar);
 		literals.push(newvar);
+		if (equivalence) {
+			ConstrGroup constrs = new ConstrGroup();
+			constrs.add(super.addClause(literals));
+			IVecInt clause = new VecInt(2);
+			clause.push(-newvar);
+			for (int i = 0; i < literals.size() - 1; i++) {
+				clause.push(-literals.get(i));
+				constrs.add(super.addClause(clause));
+			}
+			clause.pop();
+			return constrs;
+		}
 		return super.addClause(literals);
 	}
 
