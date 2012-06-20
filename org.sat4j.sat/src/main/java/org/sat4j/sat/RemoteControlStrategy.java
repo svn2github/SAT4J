@@ -163,7 +163,7 @@ public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionSt
 	public boolean shouldRestart() {
 		if(hasClickedOnRestart){
 			hasClickedOnRestart=false;
-			logger.log("Told the solver to restart with strategy " + restart);
+			logger.log("Told the solver to restart");
 			return true;
 		}
 		return restart.shouldRestart();

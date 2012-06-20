@@ -39,6 +39,10 @@ public class RestartCommandComponent extends CommandComponent{
 	private JComboBox listeRestarts;
 	private JButton restartButton;
 	
+	private JButton changeRestartMode;
+	
+//	private JPanel changeButtonPanel;
+	
 	private JLabel factorLabel;
 	private final static String FACTOR = "Factor: ";
 	private JTextField factorField;
@@ -51,6 +55,8 @@ public class RestartCommandComponent extends CommandComponent{
 	
 	private final static String RESTART = "Restart";
 	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
+	private final static String CHANGE_RESTART_STRATEGY = "Apply";
+	private final static String MANUAL_RESTART = "Manual Restart";
 	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
 	private final static String RESTART_DEFAULT = "NoRestarts";
 	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
@@ -88,6 +94,16 @@ public class RestartCommandComponent extends CommandComponent{
 
 		tmpPanel1.add(chooseRestartStrategyLabel);
 		tmpPanel1.add(listeRestarts);
+		
+		changeRestartMode = new JButton(CHANGE_RESTART_STRATEGY);
+		
+		changeRestartMode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasClickedOnChange();
+			}
+		});
+		
+		tmpPanel1.add(changeRestartMode);
 
 		noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
 
@@ -98,6 +114,7 @@ public class RestartCommandComponent extends CommandComponent{
 		restartPropertiesPanel = new JPanel();
 		restartPropertiesPanel.add(noParameterLabel);
 
+		
 
 		restartButton = new JButton(RESTART);
 
@@ -108,6 +125,10 @@ public class RestartCommandComponent extends CommandComponent{
 		});
 
 		restartButtonPanel = new JPanel();
+		restartButtonPanel.setName(MANUAL_RESTART);
+		restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(null, restartButtonPanel.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+
 		restartButtonPanel.add(restartButton);
 		
 		restartPropertiesPanel.setPreferredSize(new Dimension(100,50));
@@ -167,8 +188,9 @@ public class RestartCommandComponent extends CommandComponent{
 		listeRestarts.setSelectedItem(currentRestart);
 	}
 	
-	public void hasClickedOnRestart(){
+	public void hasClickedOnChange(){
 		telecomStrategy.setHasClickedOnRestart(true);
+	
 		String choix = (String)listeRestarts.getSelectedItem();
 
 		boolean isNotSameRestart = !choix.equals(currentRestart);
@@ -229,6 +251,11 @@ public class RestartCommandComponent extends CommandComponent{
 		//			telecomStrategy.setRestartStrategy(restart,params);
 
 		logger.log("Set " + RESTART + " to "+ choix);
+	}
+	
+	public void hasClickedOnRestart(){
+		telecomStrategy.setHasClickedOnRestart(true);
+		
 	}
 	
 	public List<String> getListOfRestartStrategies(){
