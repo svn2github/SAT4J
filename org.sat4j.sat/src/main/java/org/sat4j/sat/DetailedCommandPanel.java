@@ -257,61 +257,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private final static String RW_APPLY = "Apply";
 
 
-	private JPanel cleanPanel;
-	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
-
-	private JSlider cleanSlider;
-
-	private final static String EVALUATION_TYPE = "Clauses evaluation type";
-	private final static String ACTIVITY_BASED = "Activity";
-	private final static String LBD_BASED = "LBD";
-	private final static String LBD2_BASED = "LBD 2";
-	private JLabel evaluationLabel;
-	private ButtonGroup evaluationGroup;
-	private JRadioButton activityRadio;
-	private JRadioButton lbdRadio;
-	private JRadioButton lbd2Radio;
-
-	private JButton cleanAndEvaluationApplyButton;
-
-	private JButton cleanButton;
-	private final static String CLEAN = "Clean now";
-	private final static String MANUAL_CLEAN = "Manual clean: ";
-	private JLabel manualCleanLabel;
-
-	private JLabel speedLabel;
-	private JLabel speedNameLabel;
-	private final static String SPEED = "Speed :";
-	private JLabel speedUnitLabel;
-	private final static String SPEED_UNIT = " propagations per second";
-
-	private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
-	private final static String DELETE_CLAUSES = "Automated clean: ";
-
-	private Hashtable<Integer, JLabel> cleanValuesTable;
-	private final JLabel clean5000Label = new JLabel(CLEAN_5000);
-	private final JLabel clean10000Label = new JLabel(CLEAN_10000);
-	private final JLabel clean20000Label = new JLabel(CLEAN_20000);
-	private final JLabel clean50000Label = new JLabel(CLEAN_50000);
-	private final JLabel clean100000Label = new JLabel(CLEAN_100000);
-	private final JLabel clean500000Label = new JLabel(CLEAN_500000);
-	private final static int[] cleanValues ={5000,10000,20000,50000,100000,500000};
-	private final static int CLEAN_MIN = 0;
-	private final static int CLEAN_MAX = 5;
-	private final static int CLEAN_INIT = 1;
-	private final static int CLEAN_SPACE = 1;
-
-	private final static String CLEAN_5000 = "5000";
-	private final static String CLEAN_10000 = "10000";
-	private final static String CLEAN_20000 = "20000";
-	private final static String CLEAN_50000 = "50000";
-	private final static String CLEAN_100000 = "100000";
-	private final static String CLEAN_500000 = "500000";
-
-	private JCheckBox cleanUseOriginalStrategyCB;
-	private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
-
-
+	private CleanCommandComponent cleanPanel;
+	
 
 	private JPanel phasePanel;
 	private final static String PHASE_PANEL = "Phase Strategy";
@@ -409,7 +356,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		restartPanel = new RestartCommandComponent("Restart", telecomStrategy, this);
 		
 		createRWPanel();
-		createCleanPanel();
+		
+		cleanPanel = new CleanCommandComponent("Clean",telecomStrategy,this);
+		
 		createPhasePanel();
 		createSimplifierPanel();
 		createHotSolverPanel();
@@ -475,7 +424,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 		restartPanel.setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
-		setCleanPanelEnabled(false);
+		cleanPanel.setCleanPanelEnabled(false);
 		setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
@@ -562,8 +511,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setInstancePanelEnabled(false);
 					restartPanel.setRestartPanelEnabled(true);
 					setRWPanelEnabled(true);
-					setCleanPanelEnabled(true);
-					setCleanPanelOriginalStrategyEnabled(true);
+					cleanPanel.setCleanPanelEnabled(true);
+					cleanPanel.setCleanPanelOriginalStrategyEnabled(true);
 					setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
 					setSimplifierPanelEnabled(true);
@@ -786,128 +735,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
-	public void createCleanPanel(){
-		cleanPanel = new JPanel();
-
-		cleanPanel.setName(CLEAN_PANEL);
-		cleanPanel.setBorder(new CompoundBorder(new TitledBorder(null, cleanPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		cleanPanel.setLayout(new BorderLayout());
-
-
-		cleanSlider = new JSlider(JSlider.HORIZONTAL,CLEAN_MIN,CLEAN_MAX,CLEAN_INIT);
-
-		cleanSlider.setMajorTickSpacing(CLEAN_SPACE);
-		cleanSlider.setPaintTicks(true);
-
-		//Create the label table
-		cleanValuesTable = new Hashtable<Integer, JLabel>();
-		cleanValuesTable.put(new Integer(0),clean5000Label);
-		cleanValuesTable.put(new Integer(1),clean10000Label);
-		cleanValuesTable.put(new Integer(2),clean20000Label);
-		cleanValuesTable.put(new Integer(3),clean50000Label);
-		cleanValuesTable.put(new Integer(4),clean100000Label);
-		cleanValuesTable.put(new Integer(5),clean500000Label);
-		cleanSlider.setLabelTable(cleanValuesTable);
-
-		cleanSlider.setPaintLabels(true);
-		cleanSlider.setSnapToTicks(true);
-
-		cleanSlider.setPreferredSize(new Dimension(400,50));
-
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.add(deleteClauseLabel);
-		tmpPanel1.add(cleanSlider);
-
-		JPanel tmpPanel4 = new JPanel();
-
-		evaluationLabel = new JLabel(EVALUATION_TYPE);
-		evaluationGroup = new ButtonGroup();
-		activityRadio = new JRadioButton(ACTIVITY_BASED);
-		lbdRadio = new JRadioButton(LBD_BASED);
-		lbd2Radio = new JRadioButton(LBD2_BASED);
-
-		evaluationGroup.add(activityRadio);
-		evaluationGroup.add(lbdRadio);
-		evaluationGroup.add(lbd2Radio);
-
-		tmpPanel4.add(evaluationLabel);
-		tmpPanel4.add(activityRadio);
-		tmpPanel4.add(lbdRadio);
-		tmpPanel4.add(lbd2Radio);
-
-
-		cleanAndEvaluationApplyButton = new JButton("Apply changes");
-		cleanAndEvaluationApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasChangedCleaningValue();
-			}
-		});
-
-		JPanel tmpPanel5 = new JPanel();
-		tmpPanel5.add(cleanAndEvaluationApplyButton);
-
-		JPanel tmpPanel = new JPanel();
-		tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "", 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		tmpPanel.setLayout(new BorderLayout());
-
-		tmpPanel.add(tmpPanel1,BorderLayout.NORTH);
-		tmpPanel.add(tmpPanel4,BorderLayout.CENTER);
-		tmpPanel.add(tmpPanel5,BorderLayout.SOUTH);
-
-		JPanel tmpPanel2 = new JPanel();
-
-		manualCleanLabel = new JLabel(MANUAL_CLEAN);
-
-		cleanButton = new JButton(CLEAN);
-
-		cleanButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnClean();
-			}
-		});
-
-
-		tmpPanel2.add(manualCleanLabel);
-		tmpPanel2.add(cleanButton);
-
-		JPanel tmpPanel3 = new JPanel();
-		cleanUseOriginalStrategyCB = new JCheckBox(USE_ORIGINAL_STRATEGY);
-		cleanUseOriginalStrategyCB.setSelected(true);
-
-		cleanUseOriginalStrategyCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnUseOriginalStrategy();
-			}
-		});
-
-		tmpPanel3.add(cleanUseOriginalStrategyCB);
-
-
-		JPanel tmpPanel6 = new JPanel();
-		speedLabel = new JLabel("");
-		speedNameLabel = new JLabel(SPEED);
-		speedUnitLabel = new JLabel(SPEED_UNIT);
-
-		tmpPanel6.add(speedNameLabel);
-		tmpPanel6.add(speedLabel);
-		tmpPanel6.add(speedUnitLabel);
-
-		JPanel tmpPanel7 = new JPanel();
-		tmpPanel7.setLayout(new BorderLayout());
-
-		tmpPanel7.add(tmpPanel2,BorderLayout.SOUTH);
-		tmpPanel7.add(tmpPanel6,BorderLayout.CENTER);
-
-
-		cleanPanel.add(tmpPanel3,BorderLayout.NORTH);
-		cleanPanel.add(tmpPanel7,BorderLayout.CENTER);
-		cleanPanel.add(tmpPanel,BorderLayout.SOUTH);
-
-	}
+	
 
 	public void createPhasePanel(){
 		phasePanel = new JPanel();
@@ -1037,304 +865,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		optimisationModeCB.setSelected(optimizationMode);
 	}
 
-	//	public void launchSolver(){
-	//
-	//
-	//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE))
-	//		{
-	//			selectedSolver = (String)listeSolvers.getSelectedItem();
-	//			String[] partsSelectedSolver = selectedSolver.split("\\.");
-	//
-	//			assert partsSelectedSolver.length==2;
-	//			assert (partsSelectedSolver[0].equals(MINISAT_PREFIX) || partsSelectedSolver[0].equals(PB_PREFIX)) ;
-	//
-	//			ASolverFactory factory;
-	//
-	//			if(partsSelectedSolver[0].equals(MINISAT_PREFIX)){
-	//				factory = org.sat4j.minisat.SolverFactory.instance();
-	//			}
-	//			else{
-	//				factory = org.sat4j.pb.SolverFactory.instance();
-	//			}
-	//			solver = (ICDCL)factory.createSolverByName(partsSelectedSolver[1]);
-	//			//log(solver.toString());
-	//		}
-	//
-	//
-	//		if(firstStart || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
-	//			telecomStrategy.setSolver(solver);
-	//			telecomStrategy.setRestartStrategy(solver.getRestartStrategy());
-	//			solver.setRestartStrategy(telecomStrategy);
-	//
-	//		}
-	//
-	//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-	//
-	//
-	//
-	//
-	//
-	//		//		if(randomWalk==null){
-	//		//			double proba=0;
-	//		//			probaRWField.setText("0");
-	//		//			rwPanel.repaint();
-	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), proba);
-	//		//		}
-	//
-	//
-	//		IOrder order = solver.getOrder();
-	//		//		if(order instanceof RandomWalkDecoratorObjective && )
-	//
-	//
-	//		if(solver.getOrder() instanceof RandomWalkDecorator){
-	//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-	//			if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
-	//				randomWalk.setProbability(0);
-	//				probaRWField.setText("0");
-	//				rwPanel.repaint();
-	//			}
-	//			else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
-	//				if(solverInLine.getOrder() instanceof RandomWalkDecorator)
-	//					randomWalk = (RandomWalkDecorator)solverInLine.getOrder();
-	//				else
-	//					randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-	//			}
-	//			else{
-	//				double proba = Double.parseDouble(probaRWField.getText());
-	//				randomWalk.setProbability(proba);
-	//			}
-	//		}
-	//		else{
-	//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-	//		}
-	//		//		
-	//		//		if (optimizationMode
-	//		//				&& order instanceof VarOrderHeapObjective) {
-	//		//			randomWalk = new RandomWalkDecoratorObjective(
-	//		//					(VarOrderHeapObjective) order, 0);
-	//		//		} else {
-	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap) order, 0);
-	//		//		}
-	//
-	//		solver.setOrder(randomWalk);
-	//
-	//		//		if(solver.getOrder() instanceof VarOrderHeapObjective){
-	//		//			randomWalk = (RandomWalkDecoratorObjective)solver.getOrder();
-	//		//			randomWalk.setProbability(0);
-	//		//			probaRWField.setText("0");
-	//		//			rwPanel.repaint();
-	//		//		}
-	//		//		else
-	//		//		if(solver.getOrder() instanceof RandomWalkDecorator){
-	//		//			randomWalk = (RandomWalkDecorator)solver.getOrder();
-	//		//			randomWalk.setProbability(0);
-	//		//			probaRWField.setText("0");
-	//		//			rwPanel.repaint();
-	//		//		}
-	//		//		else if(!optimizationMode){
-	//		//			randomWalk = new RandomWalkDecorator((VarOrderHeap)((Solver)solver).getOrder(), 0);
-	//		//		}
-	//		//		else {
-	//		//			randomWalk = new RandomWalkDecoratorObjective((VarOrderHeapObjective) ((Solver)solver).getOrder(), 0);
-	//		//		}
-	//
-	//		//		solver.setOrder(randomWalk);
-	//
-	//		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT) || startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE))
-	//
-	//			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-	//		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
-	//
-	//		solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-	//
-	//
-	//		if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-	//			simplificationExpensiveRadio.setSelected(true);
-	//		}
-	//		else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-	//			simplificationSimpleRadio.setSelected(true);
-	//		}
-	//		else{
-	//			simplificationNoRadio.setSelected(true);
-	//		}
-	//
-	//		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-	//		phasePanel.repaint();
-	//
-	//		updateRestartStrategyPanel();
-	//
-	//		//pbSolver.setNeedToReduceDB(true);
-	//
-	//
-	//
-	//
-	//		whereToWriteFiles = instancePath;
-	//
-	//		if(ramdisk.length()>0){
-	//			String[] instancePathSplit= instancePath.split("/");
-	//			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
-	//
-	//		}
-	//
-	//		solver.setVerbose(true);
-	//
-	//		List<SearchListener> listeners = new ArrayList<SearchListener>();
-	//
-	//
-	//		if(gnuplotBased){
-	//			if(visuPreferences.isDisplayClausesEvaluation()){
-	//				listeners.add(new LearnedTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-learned")));
-	//			}
-	//			if(visuPreferences.isDisplayClausesSize()){
-	//				listeners.add(new LearnedClausesSizeTracing(
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size"), 
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-learned-clauses-size-restart")));
-	//			}
-	//			if(visuPreferences.isDisplayConflictsDecision()){
-	//				listeners.add(new ConflictLevelTracing(
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level"), 
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-level-restart")));
-	//			}
-	//			if(visuPreferences.isDisplayConflictsTrail()){
-	//				listeners.add(new ConflictDepthTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth"),
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-conflict-depth-restart")));
-	//			}
-	//
-	//			if(visuPreferences.isDisplayDecisionIndexes()){
-	//				listeners.add(new DecisionTracing(
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-pos"),
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-neg"),
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-decision-indexes-restart")));
-	//			}
-	//
-	//			if(visuPreferences.isDisplaySpeed()){
-	//				listeners.add(new SpeedTracing(
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed"),
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-clean"), 
-	//						new FileBasedVisualizationTool(whereToWriteFiles + "-speed-restart")));
-	//			}
-	//			if(visuPreferences.isDisplayVariablesEvaluation()){
-	//				listeners.add(new HeuristicsTracing(new FileBasedVisualizationTool(whereToWriteFiles + "-heuristics")));
-	//			}
-	//		}
-	//
-	//		else if(chartBased){
-	//
-	//			SolverVisualisation visu = new SolverVisualisation(visuPreferences);
-	//
-	//			visu.setnVar(solver.nVars());
-	//			if(visuPreferences.isDisplayClausesEvaluation()){
-	//				listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(visu.getClausesEvaluationTrace())));
-	//			}
-	//			if(visuPreferences.isDisplayClausesSize()){
-	//				listeners.add(new LearnedClausesSizeTracing(
-	//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeTrace()),
-	//						new ChartBasedVisualizationTool(visu.getLearnedClausesSizeRestartTrace())));
-	//			}
-	//			if(visuPreferences.isDisplayConflictsDecision()){
-	//				listeners.add(new ConflictLevelTracing(
-	//						new ChartBasedVisualizationTool(visu.getConflictLevelTrace()), 
-	//						new ChartBasedVisualizationTool(visu.getConflictLevelRestartTrace())));
-	//			}
-	//			if(visuPreferences.isDisplayConflictsTrail()){
-	//				listeners.add(new ConflictDepthTracing(
-	//						new ChartBasedVisualizationTool(visu.getConflictDepthTrace()),
-	//						new ChartBasedVisualizationTool(visu.getConflictDepthRestartTrace())));
-	//			}
-	//			if(visuPreferences.isDisplayDecisionIndexes()){
-	//				listeners.add(new DecisionTracing(
-	//						new ChartBasedVisualizationTool(visu.getPositiveDecisionTrace()),
-	//						new ChartBasedVisualizationTool(visu.getNegativeDecisionTrace()),
-	//						new ChartBasedVisualizationTool(new TraceComposite(visu.getRestartPosDecisionTrace(),visu.getRestartNegDecisionTrace()))));
-	//			}
-	//			if(visuPreferences.isDisplaySpeed()){
-	//				listeners.add(new SpeedTracing(
-	//						new ChartBasedVisualizationTool(visu.getSpeedTrace()), 
-	//						new ChartBasedVisualizationTool(visu.getSpeedCleanTrace()), 
-	//						new ChartBasedVisualizationTool(visu.getSpeedRestartTrace())));
-	//			}
-	//			if(visuPreferences.isDisplayVariablesEvaluation()){
-	//				listeners.add(new HeuristicsTracing(new ChartBasedVisualizationTool(visu.getHeuristicsTrace())));
-	//			}
-	//		}
-	//
-	//		listeners.add(this);
-	//
-	//		solver.setSearchListener(new MultiTracing(listeners));
-	//
-	//		solver.setLogger(this);
-	//
-	//		reader = createReader(solver, instancePath);
-	//
-	//
-	//		try{
-	//			problem = reader.parseInstance(instancePath);
-	//		} catch (FileNotFoundException e) {
-	//			e.printStackTrace();
-	//		} catch (ParseFormatException e) {
-	//			e.printStackTrace();
-	//		} catch (IOException e) {
-	//			e.printStackTrace();
-	//		} catch (ContradictionException e) {
-	//			log("Unsatisfiable (trivial)!");
-	//		}
-	//
-	//		boolean optimisation=false;
-	//		if(reader instanceof PBInstanceReader){
-	//			optimisation = ((PBInstanceReader)reader).hasObjectiveFunction();
-	//			if(optimisation){
-	//				problem = new OptToPBSATAdapter(new PseudoOptDecorator((IPBCDCLSolver)solver));
-	//			}
-	//		}
-	//
-	//
-	//		log("# Started solver " + solver.getClass().getSimpleName());
-	//		log("# on instance " + instancePath);
-	//		log("# Optimisation = " + optimisation);
-	//		log("# Restart strategy = " + solver.getRestartStrategy().getClass().getSimpleName());
-	//		log("# Random walk probability = " +randomWalk.getProbability());
-	//		//log("# Number of conflicts before cleaning = " + nbConflicts);
-	//
-	//
-	//		solveurThread = new Thread() {
-	//			public void run() {
-	//				//Thread thisThread = Thread.currentThread();
-	//				//				if(shouldStop){
-	//				//					System.out.println("coucou");
-	//				//				}
-	//				//				while(!shouldStop){
-	//				try{
-	//					stringWriter = new StringWriter();
-	//					if(problem.isSatisfiable()){
-	//						log("Satisfiable !");
-	//						if(problem instanceof OptToPBSATAdapter){
-	//							log(((OptToPBSATAdapter)problem).getCurrentObjectiveValue()+"");
-	//							reader.decode(((OptToPBSATAdapter)problem).model(new PrintWriter(stringWriter)), new PrintWriter(stringWriter));
-	//						}
-	//						else
-	//							reader.decode(problem.model(),new PrintWriter(stringWriter));
-	//						log(stringWriter.toString());
-	//					}
-	//					else{
-	//						log("Unsatisfiable !");
-	//					}
-	//				} catch (TimeoutException e) {
-	//					log("Timeout, sorry!");      
-	//				}
-	//				//log("Solver has stopped");
-	//				//				}
-	//			}
-	//		};
-	//		solveurThread.start();
-	//
-	//
-	//		if(isPlotActivated && gnuplotBased){
-	//			traceGnuplot();
-	//		}
-	//
-	//	}
-
-
+	
 	public void launchSolverWithConfigs(){
 
 
@@ -1735,6 +1266,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	}
 
+	
+	public void setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType type){
+		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, type);
+	}
 
 	public boolean isGnuplotBased() {
 		return gnuplotBased;
@@ -1791,45 +1326,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			e.printStackTrace();
 		}
 
-	}
+	} 
+	
+	
 
-	public void hasChangedCleaningValue(){
-		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
-		log("Changed number of conflicts before cleaning to " + nbConflicts);
-		if(activityRadio.isSelected()){
-			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.ACTIVITY);
-			log("Changed clauses evaluation type to activity");
-		}
-		else if(lbdRadio.isSelected()){
-			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.LBD);
-			log("Changed clauses evaluation type to lbd");
-		}
-		else if(lbd2Radio.isSelected()){
-			solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, LearnedConstraintsEvaluationType.LBD2);
-			log("Changed clauses evaluation type to lbd2");
-		}
-	}
+	
 
-	public void hasClickedOnClean(){
-		log("Told the solver to clean");
-		telecomStrategy.setHasClickedOnClean(true);
-		//log("Has clicked on " + CLEAN);
-	}
-
-	public void hasClickedOnUseOriginalStrategy(){
-		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
-
-		telecomStrategy.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(true);
-
-		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy,LearnedConstraintsEvaluationType.ACTIVITY);
-		activityRadio.setSelected(true);
-
-		log("Solver now cleans clauses every " + cleanValues[cleanSlider.getValue()] + " conflicts and bases evaluation of clauses on activity");
-
-		setCleanPanelOriginalStrategyEnabled(false);
-	}
+	
 
 
 	public void hasClickedOnApplySimplification(){
@@ -1978,36 +1481,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		rwPanel.repaint();
 	}
 
-	public void setCleanPanelEnabled(boolean enabled){
-		manualCleanLabel.setEnabled(enabled);
-		deleteClauseLabel.setEnabled(enabled);
-		cleanSlider.setEnabled(enabled);
-		cleanButton.setEnabled(enabled);
-		evaluationLabel.setEnabled(enabled);
-		activityRadio.setEnabled(enabled);
-		lbdRadio.setEnabled(enabled);
-		lbd2Radio.setEnabled(enabled);
-		cleanAndEvaluationApplyButton.setEnabled(enabled);
-		cleanUseOriginalStrategyCB.setEnabled(enabled);
-		speedLabel.setEnabled(enabled);
-		speedUnitLabel.setEnabled(enabled);
-		speedNameLabel.setEnabled(enabled);
-		cleanPanel.repaint();
-	}
-
-	public void setCleanPanelOriginalStrategyEnabled(boolean enabled){
-		cleanUseOriginalStrategyCB.setEnabled(enabled);
-		manualCleanLabel.setEnabled(!enabled);
-		deleteClauseLabel.setEnabled(!enabled);
-		activityRadio.setEnabled(!enabled);
-		evaluationLabel.setEnabled(!enabled);
-		lbdRadio.setEnabled(!enabled);
-		lbd2Radio.setEnabled(!enabled);
-		cleanAndEvaluationApplyButton.setEnabled(!enabled);
-		cleanSlider.setEnabled(!enabled);
-		cleanButton.setEnabled(!enabled);
-		cleanPanel.repaint();
-	}
+	
 
 	public void setPhasePanelEnabled(boolean enabled){
 		phaseList.setEnabled(enabled);
@@ -2110,9 +1584,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		if (end - begin >= 2000) {
 			long tmp = (end - begin);
 			//			index += tmp;
-			speedLabel.setText(propagationsCounter / tmp * 1000+"");
-			speedLabel.invalidate();
+			
 
+			cleanPanel.setSpeedLabeltext(propagationsCounter / tmp * 1000+"");
+			
 			begin = System.currentTimeMillis();
 			propagationsCounter = 0;
 		}
@@ -2157,7 +1632,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void restarting() {
 		end = System.currentTimeMillis();
-		speedLabel.setText(propagationsCounter / (end - begin)
+		cleanPanel.setSpeedLabeltext(propagationsCounter / (end - begin)
 				* 1000+"");
 	}
 
@@ -2166,7 +1641,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	public void cleaning() {
 		end = System.currentTimeMillis();
-		speedLabel.setText(propagationsCounter / (end - begin) * 1000+"");
+		cleanPanel.setSpeedLabeltext(propagationsCounter / (end - begin) * 1000+"");
 	}
 
 	public class MyTabbedPane extends JTabbedPane {
