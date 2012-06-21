@@ -36,13 +36,14 @@ import org.sat4j.minisat.restarts.LubyRestarts;
 
 public class TestLubyFunction {
 
-    @Test
-    public void testSomeKnownValues() {
-        int[] knowvalues = { 1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8 };
-        for (int i = 0; i < knowvalues.length; i++) {
-            assertEquals("Wrong value for "+i,knowvalues[i], LubyRestarts.luby(i + 1));
-        }
-    }
-
+	@Test
+	public void testSomeKnownValues() {
+		LubyRestarts lr = new LubyRestarts();
+		int[] knowvalues = { 1, 1, 2, 1, 1, 2, 4, 1, 1, 2, 1, 1, 2, 4, 8 };
+		assertEquals(1, lr.luby());
+		for (int i = 1; i < knowvalues.length; i++) {
+			assertEquals("Wrong value for " + i, knowvalues[i], lr.nextLuby());
+		}
+	}
 
 }
