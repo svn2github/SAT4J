@@ -260,21 +260,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private CleanCommandComponent cleanPanel;
 	
 
-	private JPanel phasePanel;
+	private PhaseCommandComponent phasePanel;
 	private final static String PHASE_PANEL = "Phase Strategy";
 
-	private String currentPhaseSelectionStrategy;
-
-	private JComboBox phaseList;
-	private JLabel phaseListLabel;
-	private final static String PHASE_STRATEGY = "Choose phase strategy :";
-
-	private JButton phaseApplyButton;
-	private final static String PHASE_APPLY = "Apply";
-
-	private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
-	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
-
+	
 
 	private JPanel simplifierPanel;
 	private final static String SIMPLIFIER_PANEL = "Simplification strategy";
@@ -358,8 +347,8 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		createRWPanel();
 		
 		cleanPanel = new CleanCommandComponent("Clean",telecomStrategy,this);
+		phasePanel = new PhaseCommandComponent(PHASE_PANEL,telecomStrategy,this);
 		
-		createPhasePanel();
 		createSimplifierPanel();
 		createHotSolverPanel();
 
@@ -425,7 +414,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		restartPanel.setRestartPanelEnabled(false);
 		setRWPanelEnabled(false);
 		cleanPanel.setCleanPanelEnabled(false);
-		setPhasePanelEnabled(false);
+		phasePanel.setPhasePanelEnabled(false);
 		setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
 		
@@ -513,7 +502,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					setRWPanelEnabled(true);
 					cleanPanel.setCleanPanelEnabled(true);
 					cleanPanel.setCleanPanelOriginalStrategyEnabled(true);
-					setPhasePanelEnabled(true);
+					phasePanel.setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
 					setSimplifierPanelEnabled(true);
 					setKeepSolverHotPanelEnabled(true);
@@ -737,50 +726,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	
 
-	public void createPhasePanel(){
-		phasePanel = new JPanel();
-
-		phasePanel.setName(PHASE_PANEL);
-		phasePanel.setBorder(new CompoundBorder(new TitledBorder(null, phasePanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		phasePanel.setLayout(new BorderLayout());
-
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
-
-		phaseListLabel = new JLabel(PHASE_STRATEGY);
-
-		phaseList = new JComboBox(getListOfPhaseStrategies().toArray());	
-		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
-		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-
-		//		phaseList.addActionListener(new ActionListener() {
-		//			public void actionPerformed(ActionEvent e) {
-		//				modifyRestartParamPanel();
-		//			}
-		//		});
-
-		tmpPanel1.add(phaseListLabel);
-		tmpPanel1.add(phaseList);
-
-
-
-
-		phaseApplyButton = new JButton(PHASE_APPLY);
-
-		phaseApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplyPhase();
-			}
-		});
-
-		JPanel tmpPanel2 = new JPanel();
-		tmpPanel2.add(phaseApplyButton);
-
-		phasePanel.add(tmpPanel1,BorderLayout.CENTER);
-		phasePanel.add(tmpPanel2,BorderLayout.SOUTH);
-	}
+	
 
 	public void createSimplifierPanel(){
 		simplifierPanel = new JPanel();
@@ -922,7 +868,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+			phasePanel.setPhaseListSelectedItem(telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
 
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
@@ -937,8 +883,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				simplificationNoRadio.setSelected(true);
 			}
 
-			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-			phasePanel.repaint();
+			
 
 			
 
@@ -972,7 +917,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			hasClickedOnApplyRW();
 
-			hasClickedOnApplyPhase();
+			phasePanel.hasClickedOnApplyPhase();
 
 			hasClickedOnApplySimplification();
 
@@ -1020,11 +965,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-			currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
-			phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+			phasePanel.setPhaseListSelectedItem(telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
 
 
 			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
@@ -1057,7 +1001,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 			hasClickedOnApplyRW();
 
-			hasClickedOnApplyPhase();
+			phasePanel.hasClickedOnApplyPhase();
 
 			hasClickedOnApplySimplification();
 
@@ -1267,6 +1211,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	
+	public int getNVar(){
+		if(solver!=null)
+			return solver.nVars();
+		return 0;
+	}
+	
 	public void setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType type){
 		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, type);
 	}
@@ -1306,27 +1256,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		log("Set probability to " + proba);
 	}
 
-	public void hasClickedOnApplyPhase(){
-		String phaseName = (String)phaseList.getSelectedItem();
-		currentPhaseSelectionStrategy = phaseName;
-		IPhaseSelectionStrategy phase = null;
-		try{
-			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
-			phase.init(solver.nVars()+1);
-			telecomStrategy.setPhaseSelectionStrategy(phase);
-			log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
-		}
-		catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}
-		catch(IllegalAccessException e){
-			e.printStackTrace();
-		}
-		catch(InstantiationException e){
-			e.printStackTrace();
-		}
-
-	} 
+	
 	
 	
 
@@ -1354,20 +1284,7 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	
 
-	public List<String> getListOfPhaseStrategies(){
-		List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
-		List<String> finalResult = new ArrayList<String>();
 
-		//		finalResult.add(RESTART_NO_STRATEGY);
-
-		for(String s:resultRTSI){
-			if(!s.contains("Remote")){
-				finalResult.add(s);
-			}
-		}
-
-		return finalResult;
-	}
 
 
 	public List<String> getListOfSolvers(){
@@ -1482,13 +1399,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	}
 
 	
-
-	public void setPhasePanelEnabled(boolean enabled){
-		phaseList.setEnabled(enabled);
-		phaseListLabel.setEnabled(enabled);
-		phaseApplyButton.setEnabled(enabled);
-		restartPanel.repaint();
-	}
 
 	public void setSimplifierPanelEnabled(boolean enabled){
 		simplificationNoRadio.setEnabled(enabled);

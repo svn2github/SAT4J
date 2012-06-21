@@ -1,0 +1,151 @@
+package org.sat4j.sat;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.TitledBorder;
+
+import org.sat4j.minisat.core.IPhaseSelectionStrategy;
+import org.sat4j.pb.tools.RTSI;
+
+public class PhaseCommandComponent extends CommandComponent{
+
+	
+	
+	private String currentPhaseSelectionStrategy;
+
+	private JComboBox phaseList;
+	private JLabel phaseListLabel;
+	private final static String PHASE_STRATEGY = "Choose phase strategy :";
+
+	private JButton phaseApplyButton;
+	private final static String PHASE_APPLY = "Apply";
+
+	private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
+
+	
+	private RemoteControlStrategy telecomStrategy;
+	
+	private DetailedCommandPanel detailedCommandPanel;
+	
+	public PhaseCommandComponent(String name, RemoteControlStrategy telecom, DetailedCommandPanel commandPanel){
+		this.telecomStrategy = telecom;
+		this.detailedCommandPanel = commandPanel;
+		this.setName(name);
+		createPanel();
+	}
+	
+	
+	@Override
+	public void createPanel() {
+		createPhasePanel();
+	}
+
+	
+	
+	
+	public void createPhasePanel(){
+		
+		
+		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+
+		this.setLayout(new BorderLayout());
+
+		JPanel tmpPanel1 = new JPanel();
+		tmpPanel1.setLayout(new FlowLayout());
+
+		phaseListLabel = new JLabel(PHASE_STRATEGY);
+
+		phaseList = new JComboBox(getListOfPhaseStrategies().toArray());	
+		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
+		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+
+		//		phaseList.addActionListener(new ActionListener() {
+		//			public void actionPerformed(ActionEvent e) {
+		//				modifyRestartParamPanel();
+		//			}
+		//		});
+
+		tmpPanel1.add(phaseListLabel);
+		tmpPanel1.add(phaseList);
+
+
+
+
+		phaseApplyButton = new JButton(PHASE_APPLY);
+
+		phaseApplyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				hasClickedOnApplyPhase();
+			}
+		});
+
+		JPanel tmpPanel2 = new JPanel();
+		tmpPanel2.add(phaseApplyButton);
+
+		this.add(tmpPanel1,BorderLayout.CENTER);
+		this.add(tmpPanel2,BorderLayout.SOUTH);
+	}
+	
+	
+	public void hasClickedOnApplyPhase(){
+		String phaseName = (String)phaseList.getSelectedItem();
+		currentPhaseSelectionStrategy = phaseName;
+		IPhaseSelectionStrategy phase = null;
+		try{
+			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
+			phase.init(this.detailedCommandPanel.getNVar()+1);
+			telecomStrategy.setPhaseSelectionStrategy(phase);
+			detailedCommandPanel.log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
+		}
+		catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
+		catch(IllegalAccessException e){
+			e.printStackTrace();
+		}
+		catch(InstantiationException e){
+			e.printStackTrace();
+		}
+
+	} 
+	
+	public void setPhasePanelEnabled(boolean enabled){
+		phaseList.setEnabled(enabled);
+		phaseListLabel.setEnabled(enabled);
+		phaseApplyButton.setEnabled(enabled);
+		repaint();
+	}
+	
+	public List<String> getListOfPhaseStrategies(){
+		List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
+		List<String> finalResult = new ArrayList<String>();
+
+		//		finalResult.add(RESTART_NO_STRATEGY);
+
+		for(String s:resultRTSI){
+			if(!s.contains("Remote")){
+				finalResult.add(s);
+			}
+		}
+
+		return finalResult;
+	}
+	
+	public void setPhaseListSelectedItem(String name){
+		currentPhaseSelectionStrategy = name;
+		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+		repaint();
+	}
+}
