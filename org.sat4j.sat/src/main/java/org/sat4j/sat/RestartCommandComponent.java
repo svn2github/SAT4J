@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.restarts.LubyRestarts;
@@ -30,7 +29,6 @@ public class RestartCommandComponent extends CommandComponent{
 	
 	private static final long serialVersionUID = 1L;
 	
-	
 	private JPanel restartPropertiesPanel;
 	private JPanel restartButtonPanel;
 
@@ -41,33 +39,28 @@ public class RestartCommandComponent extends CommandComponent{
 	
 	private JButton changeRestartMode;
 	
-//	private JPanel changeButtonPanel;
-	
 	private JLabel factorLabel;
 	private final static String FACTOR = "Factor: ";
 	private JTextField factorField;
 	
 	public String currentRestart;
 	
-	private RemoteControlStrategy telecomStrategy;
-	
-	private ICDCLLogger logger;
-	
 	private final static String RESTART = "Restart";
 	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
 	private final static String CHANGE_RESTART_STRATEGY = "Apply";
 	private final static String MANUAL_RESTART = "Manual Restart";
 	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
-	private final static String RESTART_DEFAULT = "NoRestarts";
 	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
 	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
-
-	public RestartCommandComponent(String name, RemoteControlStrategy strategy, ICDCLLogger logger) {
+	
+	private SolverController controller;
+	
+	public RestartCommandComponent(String name, SolverController controller, String initialRestartStrategy) {
 		this.setName(name);
-		this.telecomStrategy = strategy;
+		currentRestart = initialRestartStrategy;
+		this.controller = controller;
 		createPanel();
 		initFactorParam();
-		this.logger=logger;
 	}
 
 	
@@ -83,8 +76,8 @@ public class RestartCommandComponent extends CommandComponent{
 		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
 
 		listeRestarts = new JComboBox(getListOfRestartStrategies().toArray());	
-		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-		listeRestarts.setSelectedItem(RESTART_DEFAULT);
+		
+		listeRestarts.setSelectedItem(currentRestart);
 
 		listeRestarts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -189,7 +182,7 @@ public class RestartCommandComponent extends CommandComponent{
 	}
 	
 	public void hasClickedOnChange(){
-		telecomStrategy.setHasClickedOnRestart(true);
+		controller.shouldRestartNow();
 	
 		String choix = (String)listeRestarts.getSelectedItem();
 
@@ -197,7 +190,7 @@ public class RestartCommandComponent extends CommandComponent{
 		boolean shouldInit = isNotSameRestart;
 
 		RestartStrategy restart = new NoRestarts();
-		SearchParams params = telecomStrategy.getSearchParams();
+		SearchParams params = controller.getSearchParams();
 
 		if(choix.equals("LubyRestarts")){
 			boolean factorChanged = false;
@@ -208,21 +201,20 @@ public class RestartCommandComponent extends CommandComponent{
 			// if the current restart is a LubyRestart
 			if(isNotSameRestart){
 				restart = new LubyRestarts(factor);
-				telecomStrategy.setRestartStrategy(restart);
+				controller.setRestartStrategy(restart);
 			}
 			else{
-				factorChanged = !(factor==((LubyRestarts)telecomStrategy.getRestartStrategy()).getFactor());
+				factorChanged = !(factor==((LubyRestarts)controller.getRestartStrategy()).getFactor());
 			}
 			// if the factor has changed
 			if(factorChanged){
-				restart = telecomStrategy.getRestartStrategy();
+				restart = controller.getRestartStrategy();
 				((LubyRestarts)restart).setFactor(factor);
 			}
 			shouldInit = isNotSameRestart || factorChanged;
 
 			if(shouldInit){
-				restart.init(params);
-				logger.log("Init restart");
+				controller.init(params);
 			}
 
 		}
@@ -230,8 +222,8 @@ public class RestartCommandComponent extends CommandComponent{
 		else try{
 			restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
 			assert restart!=null;
-			telecomStrategy.setRestartStrategy(restart);
-			telecomStrategy.init(params);
+			controller.setRestartStrategy(restart);
+			controller.init(params);
 
 		}
 		catch(ClassNotFoundException e){
@@ -250,12 +242,11 @@ public class RestartCommandComponent extends CommandComponent{
 		//		if(shouldInit)
 		//			telecomStrategy.setRestartStrategy(restart,params);
 
-		logger.log("Set " + RESTART + " to "+ choix);
+		
 	}
 	
 	public void hasClickedOnRestart(){
-		telecomStrategy.setHasClickedOnRestart(true);
-		
+		controller.shouldRestartNow();	
 	}
 	
 	public List<String> getListOfRestartStrategies(){

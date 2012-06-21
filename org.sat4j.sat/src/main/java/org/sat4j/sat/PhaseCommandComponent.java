@@ -34,13 +34,13 @@ public class PhaseCommandComponent extends CommandComponent{
 	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
 
 	
-	private RemoteControlStrategy telecomStrategy;
+//	private RemoteControlStrategy telecomStrategy;
 	
-	private DetailedCommandPanel detailedCommandPanel;
+	private SolverController solverController;
 	
-	public PhaseCommandComponent(String name, RemoteControlStrategy telecom, DetailedCommandPanel commandPanel){
-		this.telecomStrategy = telecom;
-		this.detailedCommandPanel = commandPanel;
+	public PhaseCommandComponent(String name, SolverController commandPanel, String initialPhaseStrategyName){
+		this.currentPhaseSelectionStrategy = initialPhaseStrategyName;
+		this.solverController = commandPanel;
 		this.setName(name);
 		createPanel();
 	}
@@ -68,7 +68,6 @@ public class PhaseCommandComponent extends CommandComponent{
 		phaseListLabel = new JLabel(PHASE_STRATEGY);
 
 		phaseList = new JComboBox(getListOfPhaseStrategies().toArray());	
-		currentPhaseSelectionStrategy = telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName();
 		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
 
 		//		phaseList.addActionListener(new ActionListener() {
@@ -105,9 +104,9 @@ public class PhaseCommandComponent extends CommandComponent{
 		IPhaseSelectionStrategy phase = null;
 		try{
 			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
-			phase.init(this.detailedCommandPanel.getNVar()+1);
-			telecomStrategy.setPhaseSelectionStrategy(phase);
-			detailedCommandPanel.log("Told the solver to apply a new phase strategy :" + currentPhaseSelectionStrategy);
+			phase.init(this.solverController.getNVar()+1);
+			solverController.setPhaseSelectionStrategy(phase);
+			
 		}
 		catch(ClassNotFoundException e){
 			e.printStackTrace();

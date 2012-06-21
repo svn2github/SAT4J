@@ -30,25 +30,19 @@
 package org.sat4j.sat;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -60,9 +54,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -79,11 +71,8 @@ import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SimplificationType;
-import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
-import org.sat4j.minisat.restarts.LubyRestarts;
-import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
@@ -91,7 +80,6 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
-import org.sat4j.pb.tools.RTSI;
 import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -129,7 +117,7 @@ import org.sat4j.tools.SpeedTracing;
  * @author sroussel
  *
  */
-public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchListener{
+public class DetailedCommandPanel extends JPanel implements SolverController,SearchListener,ICDCLLogger{
 
 
 	private static final long serialVersionUID = 1L;
@@ -213,50 +201,17 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 	private static final String RESUME = "Resume";
 	//	private boolean isInterrupted;
 
-//	private final static String RESTART_PANEL = "Restart strategy";	
-//	private final static String RESTART = "Restart";
 
+	private final static String RESTART_PANEL = "Restart strategy";
 	private RestartCommandComponent restartPanel;
 
-//	private JPanel restartPropertiesPanel;
-//	private JPanel restartButtonPanel;
-//
-//	private JLabel chooseRestartStrategyLabel;
-//	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
-//
-//	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
-//	private JLabel noParameterLabel;
-//
-//	private JComboBox listeRestarts;
-	
-	//	private final static String RESTART_NO_STRATEGY = "No strategy";
-//	private final static String RESTART_DEFAULT = "NoRestarts";
-//	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
-//	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
-
-	
-//	private String currentRestart;
-
-	//	private JPanel lubyPanel;
-//	private JLabel factorLabel;
-//	private final static String FACTOR = "Factor: ";
-//	private JTextField factorField;
-
-
-//	private JButton restartButton;
-
-	private JPanel rwPanel;
-
-	private JLabel probaRWLabel;
-	private JTextField probaRWField;
-
-	private JButton applyRWButton;
 
 	private final static String RW_PANEL = "Random Walk";
-	private final static String RW_LABEL = "Probabilty : ";
-	private final static String RW_APPLY = "Apply";
+	private RandomWalkCommandComponent rwPanel;
 
+	
 
+	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
 	private CleanCommandComponent cleanPanel;
 	
 
@@ -265,18 +220,9 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 	
 
-	private JPanel simplifierPanel;
+	private SimplifierCommandComponent simplifierPanel;
 	private final static String SIMPLIFIER_PANEL = "Simplification strategy";
-	private final static String SIMPLIFICATION_APPLY = "Apply";
-	private final static String SIMPLIFICATION_NO = "No reason simplification";
-	private final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
-	private final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
-
-	private JButton simplificationApplyButton;
-	private ButtonGroup simplificationGroup;
-	private JRadioButton simplificationNoRadio;
-	private JRadioButton simplificationSimpleRadio;
-	private JRadioButton simplificationExpensiveRadio;
+	
 
 
 	private JPanel hotSolverPanel;
@@ -342,17 +288,13 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		createInstancePanel();
 		createChoixSolverPanel();
 		
-		restartPanel = new RestartCommandComponent("Restart", telecomStrategy, this);
+		restartPanel = new RestartCommandComponent(RESTART_PANEL, this, telecomStrategy.getRestartStrategy().getClass().getSimpleName());
+		rwPanel = new RandomWalkCommandComponent(RW_PANEL,this);
+		cleanPanel = new CleanCommandComponent(CLEAN_PANEL,this);
+		phasePanel = new PhaseCommandComponent(PHASE_PANEL,this,telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
+		simplifierPanel = new SimplifierCommandComponent(SIMPLIFIER_PANEL,this);
 		
-		createRWPanel();
-		
-		cleanPanel = new CleanCommandComponent("Clean",telecomStrategy,this);
-		phasePanel = new PhaseCommandComponent(PHASE_PANEL,telecomStrategy,this);
-		
-		createSimplifierPanel();
 		createHotSolverPanel();
-
-		
 
 		scrollPane = new JScrollPane(console);
 
@@ -361,11 +303,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		scrollPane.getVerticalScrollBar().setValue(
 				scrollPane.getVerticalScrollBar().getMaximum());
 		//	scrollPane.setAutoscrolls(true);
-
-		
-
-		
-
 
 		tabbedPane = new MyTabbedPane();
 
@@ -412,18 +349,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 
 
 		restartPanel.setRestartPanelEnabled(false);
-		setRWPanelEnabled(false);
+		rwPanel.setRWPanelEnabled(false);
 		cleanPanel.setCleanPanelEnabled(false);
 		phasePanel.setPhasePanelEnabled(false);
-		setSimplifierPanelEnabled(false);
+		simplifierPanel.setSimplifierPanelEnabled(false);
 		setKeepSolverHotPanelEnabled(false);
 		
 		this.solverVisu = new JChartBasedSolverVisualisation(visuPreferences);
 
 		updateWriter();
 	}
-
-
 
 	public void createInstancePanel(){
 		instancePanel = new JPanel();
@@ -456,9 +391,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		tmpPanel2.add(browseButton);
 
 		instancePanel.add(tmpPanel1,BorderLayout.CENTER);
-		instancePanel.add(tmpPanel2,BorderLayout.SOUTH);
-
-
 	}
 
 	public void createChoixSolverPanel(){
@@ -499,12 +431,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 					pauseButton.setEnabled(true);
 					setInstancePanelEnabled(false);
 					restartPanel.setRestartPanelEnabled(true);
-					setRWPanelEnabled(true);
+					rwPanel.setRWPanelEnabled(true);
 					cleanPanel.setCleanPanelEnabled(true);
 					cleanPanel.setCleanPanelOriginalStrategyEnabled(true);
 					phasePanel.setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
-					setSimplifierPanelEnabled(true);
+					simplifierPanel.setSimplifierPanelEnabled(true);
 					setKeepSolverHotPanelEnabled(true);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
@@ -610,7 +542,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		});
 
-
 		setChoixSolverPanelEnabled(true);
 
 		if(solver==null){
@@ -626,149 +557,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		choixSolverPanel.add(tmpPanel1,BorderLayout.NORTH);
 		choixSolverPanel.add(tmpPanel3,BorderLayout.CENTER);
 		choixSolverPanel.add(tmpPanel2,BorderLayout.SOUTH);
-
 	}
 
 	public String getStartStopText(){
 		return startStopButton.getText();
-	}
-
-//	public void createRestartPanel(){
-//		restartPanel = new JPanel();
-//
-//		restartPanel.setName(RESTART_PANEL);
-//		restartPanel.setBorder(new CompoundBorder(new TitledBorder(null, restartPanel.getName(), 
-//				TitledBorder.LEFT, TitledBorder.TOP), border5));
-//
-//		restartPanel.setLayout(new BorderLayout());
-//
-//		JPanel tmpPanel1 = new JPanel();
-//		tmpPanel1.setLayout(new FlowLayout());
-//
-//		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
-//
-//		listeRestarts = new JComboBox(getListOfRestartStrategies().toArray());	
-//		currentRestart = telecomStrategy.getRestartStrategy().getClass().getSimpleName();
-//		listeRestarts.setSelectedItem(RESTART_DEFAULT);
-//
-//		listeRestarts.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				modifyRestartParamPanel();
-//			}
-//		});
-//
-//		tmpPanel1.add(chooseRestartStrategyLabel);
-//		tmpPanel1.add(listeRestarts);
-//
-//		noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
-//
-//		Font newLabelFont=new Font(noParameterLabel.getFont().getName(),Font.ITALIC,noParameterLabel.getFont().getSize());
-//
-//		noParameterLabel.setFont(newLabelFont);
-//
-//		restartPropertiesPanel = new JPanel();
-//		restartPropertiesPanel.add(noParameterLabel);
-//
-//
-//		restartButton = new JButton(RESTART);
-//
-//		restartButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				hasClickedOnRestart();
-//			}
-//		});
-//
-//		restartButtonPanel = new JPanel();
-//		restartButtonPanel.add(restartButton);
-//
-//		restartPanel.add(tmpPanel1,BorderLayout.NORTH);
-//		restartPanel.add(restartPropertiesPanel,BorderLayout.CENTER);
-//		restartPanel.add(restartButtonPanel,BorderLayout.SOUTH);
-//
-//	}
-
-	public void createRWPanel(){
-		rwPanel = new JPanel();
-
-		rwPanel.setName(RW_PANEL);
-		rwPanel.setBorder(new CompoundBorder(new TitledBorder(null, rwPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		rwPanel.setLayout(new BorderLayout());
-
-		probaRWLabel = new JLabel(RW_LABEL);
-		probaRWField = new JTextField("0",10);
-
-		probaRWLabel.setLabelFor(probaRWField);
-
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
-
-		tmpPanel1.add(probaRWLabel);
-		tmpPanel1.add(probaRWField);
-
-		JPanel tmpPanel2 = new JPanel();
-		applyRWButton = new JButton(RW_APPLY);
-
-		applyRWButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplyRW();
-			}
-		});
-
-		tmpPanel2.add(applyRWButton);
-
-		rwPanel.add(tmpPanel1, BorderLayout.CENTER);
-		rwPanel.add(tmpPanel2, BorderLayout.SOUTH);
-
-
-	}
-
-	
-
-	
-
-	public void createSimplifierPanel(){
-		simplifierPanel = new JPanel();
-
-		simplifierPanel.setName(SIMPLIFIER_PANEL);
-		simplifierPanel.setBorder(new CompoundBorder(new TitledBorder(null, simplifierPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		simplifierPanel.setLayout(new BorderLayout());
-
-		//		simplificationRadio = new Radio
-		simplificationGroup = new ButtonGroup();
-		simplificationExpensiveRadio = new JRadioButton(SIMPLIFICATION_EXPENSIVE);
-		simplificationNoRadio = new JRadioButton(SIMPLIFICATION_NO);
-		simplificationSimpleRadio = new JRadioButton(SIMPLIFICATION_SIMPLE);
-
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
-
-		simplificationGroup.add(simplificationNoRadio);
-		simplificationGroup.add(simplificationSimpleRadio);
-		simplificationGroup.add(simplificationExpensiveRadio);
-
-
-		tmpPanel1.add(simplificationNoRadio);
-		tmpPanel1.add(simplificationSimpleRadio);
-		tmpPanel1.add(simplificationExpensiveRadio);
-
-		simplificationApplyButton = new JButton(SIMPLIFICATION_APPLY);
-
-		simplificationApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplySimplification();
-			}
-		});
-
-		JPanel tmpPanel2 = new JPanel();
-		tmpPanel2.add(simplificationApplyButton);
-
-		simplifierPanel.add(tmpPanel1,BorderLayout.NORTH);
-		simplifierPanel.add(tmpPanel2,BorderLayout.SOUTH);
-
 	}
 
 	public void createHotSolverPanel(){
@@ -801,20 +593,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				}
 			}
 		});
-
 	}
-
-	
 
 	public void setOptimisationMode(boolean optimizationMode){
 		this.optimizationMode = optimizationMode;
 		optimisationModeCB.setSelected(optimizationMode);
 	}
 
-	
 	public void launchSolverWithConfigs(){
-
-
 		if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)){
 			selectedSolver = (String)listeSolvers.getSelectedItem();
 			String[] partsSelectedSolver = selectedSolver.split("\\.");
@@ -860,33 +646,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 
 			randomWalk.setProbability(proba);
-			probaRWField.setText(proba+"");
-			rwPanel.repaint();
+			rwPanel.setProba(proba);
 
 			solver.setOrder(randomWalk);
 
-
-
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
 			phasePanel.setPhaseListSelectedItem(telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
-
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-
-
-			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-				simplificationExpensiveRadio.setSelected(true);
-			}
-			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-				simplificationSimpleRadio.setSelected(true);
-			}
-			else{
-				simplificationNoRadio.setSelected(true);
-			}
-
-			
-
-			
-
+			simplifierPanel.setSelectedSimplification(solver.getSimplifier().toString());
 		}
 
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)){
@@ -912,16 +679,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.setOrder(randomWalk);
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
-
 			restartPanel.hasClickedOnRestart();
-
-			hasClickedOnApplyRW();
-
+			rwPanel.hasClickedOnApplyRW();
 			phasePanel.hasClickedOnApplyPhase();
-
-			hasClickedOnApplySimplification();
-
-
+			simplifierPanel.hasClickedOnApplySimplification();
 		}
 
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)){
@@ -933,7 +694,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.setRestartStrategy(telecomStrategy);
 
 			restartPanel.setCurrentRestart(telecomStrategy.getRestartStrategy().getClass().getSimpleName());
-
 
 			IOrder order = solver.getOrder();
 
@@ -957,35 +717,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 
 			randomWalk.setProbability(proba);
-			probaRWField.setText(proba+"");
-			rwPanel.repaint();
-
+			rwPanel.setProba(proba);
 			solver.setOrder(randomWalk);
-
-
-
 			telecomStrategy.setPhaseSelectionStrategy(solver.getOrder().getPhaseSelectionStrategy());
-
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
-
 			phasePanel.setPhaseListSelectedItem(telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
-
-
-			if(solver.getSimplifier().toString().equals(SIMPLIFICATION_EXPENSIVE)){
-				simplificationExpensiveRadio.setSelected(true);
-			}
-			else if(solver.getSimplifier().toString().equals(SIMPLIFICATION_SIMPLE)){
-				simplificationSimpleRadio.setSelected(true);
-			}
-			else{
-				simplificationNoRadio.setSelected(true);
-			}
-
-
+			simplifierPanel.setSelectedSimplification(solver.getSimplifier().toString());
+			
 			phasePanel.repaint();
-
-
-
 		}
 
 		else if(startConfig.equals(StartSolverEnum.SOLVER_LINE_PARAM_REMOTE)){
@@ -996,38 +735,23 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			solver.setOrder(randomWalk);
 			solver.getOrder().setPhaseSelectionStrategy(telecomStrategy);
 
-
 			restartPanel.hasClickedOnRestart();
-
-			hasClickedOnApplyRW();
-
+			rwPanel.hasClickedOnApplyRW();
 			phasePanel.hasClickedOnApplyPhase();
-
-			hasClickedOnApplySimplification();
-
-
-
-
+			simplifierPanel.hasClickedOnApplySimplification();
 		}
-
-
 
 		whereToWriteFiles = instancePath;
 
 		if(ramdisk.length()>0){
 			String[] instancePathSplit= instancePath.split("/");
 			whereToWriteFiles = ramdisk+"/"+ instancePathSplit[instancePathSplit.length-1];
-
 		}
 
 		solver.setVerbose(true);
-		
 		initSearchListeners();
-		
 		solver.setLogger(this);
-
 		reader = createReader(solver, instancePath);
-
 
 		try{
 			problem = reader.parseInstance(instancePath);
@@ -1049,14 +773,12 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 			}
 		}
 
-
 		log("# Started solver " + solver.getClass().getSimpleName());
 		log("# on instance " + instancePath);
 		log("# Optimisation = " + optimisation);
 		log("# Restart strategy = " + telecomStrategy.getRestartStrategy().getClass().getSimpleName());
 		log("# Random walk probability = " +randomWalk.getProbability());
 		//log("# Number of conflicts before cleaning = " + nbConflicts);
-
 
 		solveurThread = new Thread() {
 			public void run() {
@@ -1089,19 +811,14 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		};
 		solveurThread.start();
 
-
 		if(isPlotActivated){
 			solverVisu.setnVar(solver.nVars());
 			startVisu();
 		}
-
-
 	}
-
 
 	public void initSearchListeners(){
 		List<SearchListener> listeners = new ArrayList<SearchListener>();
-
 
 		if(isPlotActivated)
 		{
@@ -1155,9 +872,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 				
 				solverVisu = new JChartBasedSolverVisualisation(visuPreferences);
 
-//				visu = new JChartBasedSolverVisualisation(visuPreferences,isPlotActivated);
-
-				
 				((JChartBasedSolverVisualisation)solverVisu).setnVar(solver.nVars());
 				if(visuPreferences.isDisplayClausesEvaluation()){
 					listeners.add(new LearnedTracing(new ChartBasedVisualizationTool(((JChartBasedSolverVisualisation)solverVisu).getClausesEvaluationTrace())));
@@ -1217,8 +931,56 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		return 0;
 	}
 	
+	public void setPhaseSelectionStrategy(IPhaseSelectionStrategy phase){
+		telecomStrategy.setPhaseSelectionStrategy(phase);
+		log("Told the solver to apply a new phase strategy :" + phase.getClass().getSimpleName());
+	}
+	
+	public void shouldRestartNow(){
+		telecomStrategy.setHasClickedOnRestart(true);
+	}
+	
+	public void setRestartStrategy(RestartStrategy strategy){
+		telecomStrategy.setRestartStrategy(strategy);
+		log("Set Restart to "+ strategy);
+	}
+
+	public RestartStrategy getRestartStrategy(){
+		return telecomStrategy.getRestartStrategy();
+	}
+	
+	public SearchParams getSearchParams(){
+		return telecomStrategy.getSearchParams();
+	}
+	
+	public void init(SearchParams params){
+		telecomStrategy.init(params);
+		log("Init restart with params");
+	}
+	
+	public void setNbClausesAtWhichWeShouldClean(int nbConflicts){
+		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
+		log("Changed number of conflicts before cleaning to " + nbConflicts);
+	}
+	
+	public void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(){
+		telecomStrategy.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(true);
+		log("Solver now cleans clauses every " + cleanPanel.getCleanSliderValue() + " conflicts and bases evaluation of clauses on activity");
+	}
+	
 	public void setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType type){
 		solver.setLearnedConstraintsDeletionStrategy(telecomStrategy, type);
+		log("Changed clauses evaluation type to " + type);
+	}
+	
+	public LearnedConstraintsEvaluationType getLearnedConstraintsEvaluationType(){
+		//TODO get the real evaluation !!
+		return LearnedConstraintsEvaluationType.ACTIVITY;
+	}
+	
+	public void shouldCleanNow(){
+		log("Told the solver to clean");
+		telecomStrategy.setHasClickedOnClean(true);
 	}
 
 	public boolean isGnuplotBased() {
@@ -1237,8 +999,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.chartBased = chartBased;
 	}
 
-	
-
 	public boolean isPlotActivated() {
 		return isPlotActivated;
 	}
@@ -1247,46 +1007,16 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		this.isPlotActivated = isPlotActivated;
 	}
 
-	public void hasClickedOnApplyRW(){
-		double proba=0;
-		if(probaRWField!=null)
-			proba = Double.parseDouble(probaRWField.getText());
-
+	public void setRandomWalkProba(double proba){
 		randomWalk.setProbability(proba);
 		log("Set probability to " + proba);
 	}
-
 	
-	
-	
-
-	
-
-	
-
-
-	public void hasClickedOnApplySimplification(){
-		if(simplificationSimpleRadio.isSelected()){
-			solver.setSimplifier(SimplificationType.SIMPLE_SIMPLIFICATION);
-			log("Told the solver to use " + SIMPLIFICATION_SIMPLE);
-		}
-		else if(simplificationExpensiveRadio.isSelected()){
-			solver.setSimplifier(SimplificationType.EXPENSIVE_SIMPLIFICATION);
-			log("Told the solver to use " + SIMPLIFICATION_EXPENSIVE);
-		}
-		else{
-			solver.setSimplifier(SimplificationType.NO_SIMPLIFICATION);
-			log("Told the solver to use " + SIMPLIFICATION_NO);
-		}
-
+	public void setSimplifier(SimplificationType type){
+		solver.setSimplifier(type);
+		log("Told the solver to use " + type);
 	}
-
-
 	
-
-
-
-
 	public List<String> getListOfSolvers(){
 		ASolverFactory factory;
 
@@ -1322,11 +1052,10 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		return result;
 	}
 
-	
-
 	public void log(String message){
 		logsameline(message+"\n");
 	}
+
 	public void logsameline(String message){
 		if(console!=null){
 			console.append(message);
@@ -1335,7 +1064,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		}
 		this.repaint();
 	}
-
 
 	public void openFileChooser(){
 		JFileChooser fc = new JFileChooser();
@@ -1389,24 +1117,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		choixSolverPanel.repaint();
 	}
 
-	
-
-	public void setRWPanelEnabled(boolean enabled){
-		probaRWLabel.setEnabled(enabled);
-		probaRWField.setEnabled(enabled);
-		applyRWButton.setEnabled(enabled);
-		rwPanel.repaint();
-	}
-
-	
-
-	public void setSimplifierPanelEnabled(boolean enabled){
-		simplificationNoRadio.setEnabled(enabled);
-		simplificationExpensiveRadio.setEnabled(enabled);
-		simplificationSimpleRadio.setEnabled(enabled);
-		simplificationApplyButton.setEnabled(enabled);
-		simplifierPanel.repaint();
-	}
 
 	public void setKeepSolverHotPanelEnabled(boolean enabled){
 		keepSolverHotCB.setEnabled(enabled);
@@ -1422,21 +1132,6 @@ public class DetailedCommandPanel extends JPanel implements ICDCLLogger,SearchLi
 		isPlotActivated=b;
 		if(solver!=null)
 			initSearchListeners();
-//		if(startStopButton.getText().equals(STOP) && b){
-//			if(this.gnuplotBased){
-//				
-//				this.visu.setVisible(false);
-//			}
-//			else{
-//				stopGnuplot();
-//				this.visu.setVisible(true);
-//			}
-//		}
-//		else if(!b){
-//			stopGnuplot();
-//			if(this.visu!=null)
-//				this.visu.setVisible(false);
-//		}
 	}
 	
 	public void startVisu(){

@@ -25,8 +25,7 @@ public class CleanCommandComponent extends CommandComponent{
 
 //	private ICDCLLogger logger;
 	
-	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
-
+	
 	private JSlider cleanSlider;
 
 	private final static String EVALUATION_TYPE = "Clauses evaluation type";
@@ -75,22 +74,17 @@ public class CleanCommandComponent extends CommandComponent{
 	private final static String CLEAN_100000 = "100000";
 	private final static String CLEAN_500000 = "500000";
 
-//	private ICDCL solver;
-	private RemoteControlStrategy telecomStrategy; 
-	private DetailedCommandPanel commandPanel;
+	private SolverController controller;
 	
 	private JCheckBox cleanUseOriginalStrategyCB;
 	private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
 
 
 	
-	public CleanCommandComponent(String name, RemoteControlStrategy telecomStrategy, DetailedCommandPanel commandPanel){
+	public CleanCommandComponent(String name, SolverController controller){
 		super();
 		setName(name);
-//		this.logger = logger;
-//		this.solver = solver;
-		this.telecomStrategy = telecomStrategy;
-		this.commandPanel = commandPanel;
+		this.controller = controller;
 		createPanel();
 	}
 	
@@ -218,39 +212,36 @@ public class CleanCommandComponent extends CommandComponent{
 	
 	public void hasChangedCleaningValue(){
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
-		commandPanel.log("Changed number of conflicts before cleaning to " + nbConflicts);
+		controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
 		if(activityRadio.isSelected()){
-			commandPanel.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
-			commandPanel.log("Changed clauses evaluation type to activity");
+			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
 		}
 		else if(lbdRadio.isSelected()){
-			commandPanel.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD);
-			commandPanel.log("Changed clauses evaluation type to lbd");
+			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD);
 		}
 		else if(lbd2Radio.isSelected()){
-			commandPanel.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD2);
-			commandPanel.log("Changed clauses evaluation type to lbd2");
+			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD2);
 		}
 	}
 	
 	public void hasClickedOnUseOriginalStrategy(){
 		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		telecomStrategy.setNbClausesAtWhichWeShouldClean(nbConflicts);
+		controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
 
-		telecomStrategy.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(true);
+		controller.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy();
 
-		commandPanel.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
+		controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
 		activityRadio.setSelected(true);
-
-		commandPanel.log("Solver now cleans clauses every " + cleanValues[cleanSlider.getValue()] + " conflicts and bases evaluation of clauses on activity");
 
 		setCleanPanelOriginalStrategyEnabled(false);
 	}
+
+	public int getCleanSliderValue(){
+		return  cleanValues[cleanSlider.getValue()];
+	}
 	
 	public void hasClickedOnClean(){
-		commandPanel.log("Told the solver to clean");
-		telecomStrategy.setHasClickedOnClean(true);
+		controller.shouldCleanNow();
 	}
 	
 	public void setCleanPanelEnabled(boolean enabled){
