@@ -39,50 +39,49 @@ import org.sat4j.minisat.core.SearchParams;
 public final class LubyRestarts implements RestartStrategy {
 
 	public static final int DEFAULT_LUBY_FACTOR = 32;
-	private static final int PRECOMPUTED_VALUES_IN_POOL = 32;
+
 	/**
      * 
      */
 	private static final long serialVersionUID = 1L;
 
-	private static int[] cachedValues = new int[] { 0, 1, 1, 2 };
+	// 21-06-2012 back from SAT 2012
+	// computing luby values the way presented by Donald Knuth in his invited
+	// talk at the SAT 2012 conference
+	// u1
+	private int un = 1;
+	// v1
+	private int vn = 1;
 
-	public static final int luby(int i) {
-		if (i >= Integer.MAX_VALUE / 2) {
-			throw new IllegalArgumentException("i is too big");
-		}
-		if (i >= cachedValues.length) {
-			int oldsize = cachedValues.length;
-			int newsize = i << 1;
-			int[] newContent = new int[newsize + 1];
-			System.arraycopy(cachedValues, 0, newContent, 0, oldsize);
-			int nextPowerOfTwo = 1;
-			while (nextPowerOfTwo <= oldsize) {
-				nextPowerOfTwo <<= 1;
-			}
-			int lastPowerOfTwo = nextPowerOfTwo >> 1;
-			for (int j = oldsize; j <= newsize; j++) {
-				if (j + 1 == nextPowerOfTwo) {
-					newContent[j] = lastPowerOfTwo;
-					lastPowerOfTwo = nextPowerOfTwo;
-					nextPowerOfTwo <<= 1;
-				} else {
-					newContent[j] = newContent[j - lastPowerOfTwo + 1];
-				}
-			}
-			cachedValues = newContent;
-
-		}
-		return cachedValues[i];
+	/**
+	 * returns the current value of the luby sequence.
+	 * 
+	 * @return the current value of the luby sequence.
+	 */
+	public int luby() {
+		return vn;
 	}
 
-	static {
-		luby(PRECOMPUTED_VALUES_IN_POOL);
+	/**
+	 * Computes and return the next value of the luby sequence. That method has
+	 * a side effect of the value returned by luby(). luby()!=nextLuby() but
+	 * nextLuby()==luby().
+	 * 
+	 * @return the new current value of the luby sequence.
+	 * @see #luby()
+	 */
+	public int nextLuby() {
+		if ((un & -un) == vn) {
+			un = un + 1;
+			vn = 1;
+		} else {
+			vn = vn << 1;
+		}
+		return vn;
 	}
 
 	private int factor;
 
-	private int count;
 	private int bound;
 	private int conflictcount;
 
@@ -108,8 +107,9 @@ public final class LubyRestarts implements RestartStrategy {
 	}
 
 	public void init(SearchParams params) {
-		count = 1;
-		bound = luby(count) * factor;
+		un = 1;
+		vn = 1;
+		bound = luby() * factor;
 	}
 
 	public long nextRestartNumberOfConflict() {
@@ -117,8 +117,7 @@ public final class LubyRestarts implements RestartStrategy {
 	}
 
 	public void onRestart() {
-		count++;
-		bound = luby(count) * factor;
+		bound = nextLuby() * factor;
 		conflictcount = 0;
 	}
 
