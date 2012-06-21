@@ -7,7 +7,7 @@
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
-	<property name="target" value="jsr14"/>
+	<property name="target" value="1.5"/>
         <property name="dist" value="dist"/>
         <property name="release" value="CUSTOM"/>
         <property name="tag" value="HEAD"/>
@@ -305,7 +305,7 @@
 		destdir="${build}"
 		source="1.5"
 		target="${target}"
-	>
+	        includeantruntime="false">
 			<classpath refid="somePath"/>
 		</javac>
 		<copy todir="${build}" failonerror="false">

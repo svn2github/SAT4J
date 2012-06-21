@@ -68,7 +68,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
   <properties>
     <!-- compiler params -->
     <javaSource>1.5</javaSource>
-    <javaTarget>jsr14</javaTarget>
+    <javaTarget>1.5</javaTarget>
     <testSource>1.5</testSource>
     <testTarget>1.5</testTarget>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
