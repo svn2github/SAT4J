@@ -33,4 +33,6 @@ public interface SolverController {
 	public void setRandomWalkProba(double proba);
 	
 	public void setSimplifier(SimplificationType type);
+	
+	public void setKeepSolverHot(boolean keepHot);
 }

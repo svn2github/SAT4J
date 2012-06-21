@@ -201,37 +201,23 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 	private static final String RESUME = "Resume";
 	//	private boolean isInterrupted;
 
-
 	private final static String RESTART_PANEL = "Restart strategy";
 	private RestartCommandComponent restartPanel;
-
 
 	private final static String RW_PANEL = "Random Walk";
 	private RandomWalkCommandComponent rwPanel;
 
-	
-
 	private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
 	private CleanCommandComponent cleanPanel;
 	
-
 	private PhaseCommandComponent phasePanel;
 	private final static String PHASE_PANEL = "Phase Strategy";
 
-	
-
 	private SimplifierCommandComponent simplifierPanel;
 	private final static String SIMPLIFIER_PANEL = "Simplification strategy";
-	
 
-
-	private JPanel hotSolverPanel;
+	private HotSolverCommandComponent hotSolverPanel;
 	private final static String HOT_SOLVER_PANEL = "Hot solver";
-	private JCheckBox keepSolverHotCB;
-	private final static String KEEP_SOLVER_HOT = "Keep solver hot";
-	private JButton applyHotSolver;
-	private final static String HOT_APPLY = "Apply";
-
 
 	private JTextArea console;
 	private JScrollPane scrollPane;
@@ -293,8 +279,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 		cleanPanel = new CleanCommandComponent(CLEAN_PANEL,this);
 		phasePanel = new PhaseCommandComponent(PHASE_PANEL,this,telecomStrategy.getPhaseSelectionStrategy().getClass().getSimpleName());
 		simplifierPanel = new SimplifierCommandComponent(SIMPLIFIER_PANEL,this);
-		
-		createHotSolverPanel();
+		hotSolverPanel = new HotSolverCommandComponent(HOT_SOLVER_PANEL, this);
 
 		scrollPane = new JScrollPane(console);
 
@@ -353,7 +338,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 		cleanPanel.setCleanPanelEnabled(false);
 		phasePanel.setPhasePanelEnabled(false);
 		simplifierPanel.setSimplifierPanelEnabled(false);
-		setKeepSolverHotPanelEnabled(false);
+		hotSolverPanel.setKeepSolverHotPanelEnabled(false);
 		
 		this.solverVisu = new JChartBasedSolverVisualisation(visuPreferences);
 
@@ -437,7 +422,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 					phasePanel.setPhasePanelEnabled(true);
 					setChoixSolverPanelEnabled(false);
 					simplifierPanel.setSimplifierPanelEnabled(true);
-					setKeepSolverHotPanelEnabled(true);
+					hotSolverPanel.setKeepSolverHotPanelEnabled(true);
 					startStopButton.setText(STOP);
 					getThis().paintAll(getThis().getGraphics());
 					frame.setActivateTracingEditableUnderCondition(false);
@@ -561,38 +546,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 
 	public String getStartStopText(){
 		return startStopButton.getText();
-	}
-
-	public void createHotSolverPanel(){
-		hotSolverPanel = new JPanel();
-		hotSolverPanel.setName(HOT_SOLVER_PANEL);
-
-		hotSolverPanel.setBorder(new CompoundBorder(new TitledBorder(null, hotSolverPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), border5));
-
-		hotSolverPanel.setLayout(new BorderLayout());
-
-		keepSolverHotCB = new JCheckBox(KEEP_SOLVER_HOT);
-		hotSolverPanel.add(keepSolverHotCB,BorderLayout.CENTER);
-
-		JPanel tmpPanel = new JPanel();
-
-		applyHotSolver = new JButton(HOT_APPLY);
-		tmpPanel.add(applyHotSolver);
-		hotSolverPanel.add(tmpPanel,BorderLayout.SOUTH);
-
-
-		applyHotSolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				solver.setKeepSolverHot(keepSolverHotCB.isSelected());
-				if(keepSolverHotCB.isSelected()){
-					log("Keep hot solver is now activated");
-				}
-				else{
-					log("Keep hot solver is now desactivated");
-				}
-			}
-		});
 	}
 
 	public void setOptimisationMode(boolean optimizationMode){
@@ -982,6 +935,16 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 		log("Told the solver to clean");
 		telecomStrategy.setHasClickedOnClean(true);
 	}
+	
+	public void setKeepSolverHot(boolean keepHot){
+		solver.setKeepSolverHot(keepHot);
+		if(keepHot){
+			log("Keep hot solver is now activated");
+		}
+		else{
+			log("Keep hot solver is now desactivated");
+		}
+	}
 
 	public boolean isGnuplotBased() {
 		return gnuplotBased;
@@ -1115,13 +1078,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 		optimisationModeCB.setEnabled(enabled);
 		// TODO regarder si le customized solver etait en mode optimisation ou pas
 		choixSolverPanel.repaint();
-	}
-
-
-	public void setKeepSolverHotPanelEnabled(boolean enabled){
-		keepSolverHotCB.setEnabled(enabled);
-		applyHotSolver.setEnabled(enabled);
-		hotSolverPanel.repaint();
 	}
 
 	public void setSolverVisualisation(SolverVisualisation visu){
