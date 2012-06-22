@@ -65,13 +65,14 @@ public class RestartCommandComponent extends CommandComponent{
 
 	
 	public void createPanel(){
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
 
 		this.setLayout(new BorderLayout());
 
 		JPanel tmpPanel1 = new JPanel();
 		tmpPanel1.setLayout(new FlowLayout());
+		
+		tmpPanel1.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
+				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
 
 		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
 
