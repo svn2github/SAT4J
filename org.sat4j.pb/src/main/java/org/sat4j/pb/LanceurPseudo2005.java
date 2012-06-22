@@ -37,7 +37,6 @@ import org.sat4j.AbstractOptimizationLauncher;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.pb.reader.OPBReader2006;
-import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
@@ -170,7 +169,7 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher implements
 	@Override
 	public void usage() {
 		out.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
-		Solvers.showAvailableSolvers(SolverFactory.instance(), this);
+		showAvailableSolvers(SolverFactory.instance());
 	}
 
 	@Override

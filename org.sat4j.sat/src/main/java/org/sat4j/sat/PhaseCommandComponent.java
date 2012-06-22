@@ -15,7 +15,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
-import org.sat4j.pb.tools.RTSI;
 
 public class PhaseCommandComponent extends CommandComponent{
 

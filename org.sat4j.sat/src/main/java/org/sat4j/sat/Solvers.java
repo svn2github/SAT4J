@@ -1,4 +1,4 @@
-package org.sat4j.pb.tools;
+package org.sat4j.sat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -173,7 +173,7 @@ public class Solvers {
 		return null;
 	}
 
-	public static Options createCLIOptions() {
+	private static Options createCLIOptions() {
 		Options options = new Options();
 		options.addOption("l", "library", true,
 				"specifies the name of the library used (minisat by default)");
@@ -230,6 +230,50 @@ public class Solvers {
 		op.setArgName("number");
 		return options;
 	}
+
+	// private static Map<String, String> createMapOptions(String args[]) {
+	// Map<String, String> options = new HashMap<String, String>();
+	//
+	// int i = 0;
+	// while (i < args.length) {
+	// if (args[i].equals("l") || args[i].equals("library")) {
+	// options.put("l", args[i + 1]);
+	// } else if (args[i].equals("s") || args[i].equals("solver")) {
+	// options.put("s", args[i + 1]);
+	// } else if (args[i].equals("S") || args[i].equals("Solver")) {
+	// options.put("S", args[i + 1]);
+	// } else if (args[i].equals("t") || args[i].equals("timeout")) {
+	// options.put("t", args[i + 1]);
+	// } else if (args[i].equals("T") || args[i].equals("timeoutms")) {
+	// options.put("T", args[i + 1]);
+	// } else if (args[i].equals("C") || args[i].equals("conflictbased")) {
+	// options.put("C", "true");
+	// } else if (args[i].equals("d") || args[i].equals("dot")) {
+	// options.put("d", args[i + 1]);
+	// } else if (args[i].equals("f") || args[i].equals("filename")) {
+	// options.put("f", args[i + 1]);
+	// } else if (args[i].equals("m") || args[i].equals("mute")) {
+	// options.put("m", "true");
+	// } else if (args[i].equals("k") || args[i].equals("kleast")) {
+	// options.put("k", args[i + 1]);
+	// }
+	//
+	// options.addOption("r", "trace", false,
+	// "traces the behavior of the solver");
+	// options.addOption("opt", "optimize", false,
+	// "uses solver in optimize mode instead of sat mode (default)");
+	// options.addOption("rw", "randomWalk", true,
+	// "specifies the random walk probability ");
+	// options.addOption("remote", "remoteControl", false,
+	// "launches remote control");
+	// options.addOption("H", "hot", false,
+	// "keep the solver hot (do not reset heuristics) when a model is found");
+	// options.addOption("y", "simplify", false,
+	// "simplify the set of clauses is possible");
+	// }
+	//
+	// return options;
+	// }
 
 	public static void stringUsage(ICDCLLogger logger) {
 		logger.log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS, CLEANING");

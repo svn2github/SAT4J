@@ -80,7 +80,6 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
-import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -1009,7 +1008,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 		for(String s:factory.solverNames()){
 			result.add(PB_PREFIX+"."+s);
 		}
-
 		Collections.sort(result);
 
 		return result;
@@ -1047,7 +1045,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 	}
 
 	public void updateListOfSolvers(){
-
 		if(instancePath.endsWith(".opb")){
 			listeSolvers = new JComboBox(getListOfPBSolvers().toArray());
 			listeSolvers.setSelectedItem("pb.Default");
@@ -1058,7 +1055,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 			listeSolvers.setSelectedItem("minisat.Default");
 			selectedSolver = "minisat.Default";
 		}
-
 	}
 
 	public void setInstancePanelEnabled(boolean enabled){
@@ -1116,9 +1112,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,Sea
 
 	private long begin, end;
 	private int propagationsCounter;
-	//	private long index;
-
-	//	private int nVar;
+	
 	private int conflictCounter;
 
 	private PrintStream outSolutionFound;

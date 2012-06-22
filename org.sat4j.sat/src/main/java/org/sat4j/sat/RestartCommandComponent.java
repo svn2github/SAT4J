@@ -22,7 +22,6 @@ import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.NoRestarts;
-import org.sat4j.pb.tools.RTSI;
 
 public class RestartCommandComponent extends CommandComponent{
 	

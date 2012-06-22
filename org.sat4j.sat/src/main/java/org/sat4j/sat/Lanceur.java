@@ -80,7 +80,6 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
-import org.sat4j.pb.tools.Solvers;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -107,8 +106,6 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
 
 	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
 
-
-	
 	private boolean incomplete = false;
 
 	private boolean isModeOptimization = false;
@@ -145,7 +142,7 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
 	@SuppressWarnings({ "nls", "unchecked" })
 	@Override
 	protected ICDCL configureSolver(String[] args) {
-		Options options = Solvers.createCLIOptions();
+		Options options = createCLIOptions();
 		
 		try {
 			CommandLine cmd = new PosixParser().parse(options, args);
@@ -440,6 +437,64 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
 	@Override
 	public void usage() {
 		Solvers.usage(this);
+	}
+	
+	public static Options createCLIOptions() {
+		Options options = new Options();
+		options.addOption("l", "library", true,
+				"specifies the name of the library used (minisat by default)");
+		options.addOption("s", "solver", true,
+				"specifies the name of a prebuilt solver from the library");
+		options.addOption("S", "Solver", true,
+				"setup a solver using a solver config string");
+		options.addOption("t", "timeout", true,
+				"specifies the timeout (in seconds)");
+		options.addOption("T", "timeoutms", true,
+				"specifies the timeout (in milliseconds)");
+		options.addOption("C", "conflictbased", false,
+				"conflict based timeout (for deterministic behavior)");
+		options.addOption("d", "dot", true,
+				"creates a sat4j.dot file in current directory representing the search");
+		options.addOption("f", "filename", true,
+				"specifies the file to use (in conjunction with -d for instance)");
+		options.addOption("m", "mute", false, "Set launcher in silent mode");
+		options.addOption("k", "kleast", true,
+				"limit the search to models having at least k variables set to false");
+		options.addOption("r", "trace", false,
+				"traces the behavior of the solver");
+		options.addOption("opt", "optimize", false,
+				"uses solver in optimize mode instead of sat mode (default)");
+		options.addOption("rw", "randomWalk", true,
+				"specifies the random walk probability ");
+		options.addOption("remote", "remoteControl", false,
+				"launches remote control");
+		options.addOption("H", "hot", false,
+				"keep the solver hot (do not reset heuristics) when a model is found");
+		options.addOption("y", "simplify", false,
+				"simplify the set of clauses is possible");
+		Option op = options.getOption("l");
+		op.setArgName("libname");
+		op = options.getOption("s");
+		op.setArgName("solvername");
+		op = options.getOption("S");
+		op.setArgName("solverStringDefinition");
+		op = options.getOption("t");
+		op.setArgName("number");
+		op = options.getOption("T");
+		op.setArgName("number");
+		op = options.getOption("C");
+		op.setArgName("number");
+		op = options.getOption("k");
+		op.setArgName("number");
+		op = options.getOption("d");
+		op.setArgName("filename");
+		op = options.getOption("f");
+		op.setArgName("filename");
+		op = options.getOption("r");
+		op.setArgName("searchlistener");
+		op = options.getOption("rw");
+		op.setArgName("number");
+		return options;
 	}
 
 }
