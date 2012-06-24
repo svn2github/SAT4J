@@ -65,7 +65,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 		options.addOption("t", "timeout", true,
 				"specifies the timeout (in seconds)");
 		options.addOption("p", "parallel", false,
-				"uses CP and RES pseudo-boolean solver in parallel");
+				"uses CP and RES pseudo-boolean solvers in parallel");
 		options.addOption("T", "timeoutms", true,
 				"specifies the timeout (in milliseconds)");
 		options.addOption("k", "kind", true,
@@ -74,8 +74,10 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				"incomplete mode for maxsat");
 		options.addOption("c", "clean databases", false,
 				"clean up the database at root level");
-		options.addOption("k", "Kepp Hot", false,
+		options.addOption("k", "Keep Hot", false,
 				"Keep heuristics accross calls to the SAT solver");
+		options.addOption("e", "Equivalence", false,
+				"Use an equivalence instead of an implication for the selector variables");
 		options.addOption("l", "lower bounding", false,
 				"search solution by lower bounding instead of by upper bounding");
 		return options;
@@ -122,6 +124,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 			try {
 				CommandLine cmd = new PosixParser().parse(options, args);
 				int problemindex = args.length - 1;
+				boolean equivalence = cmd.hasOption("e");
 				String kind = cmd.getOptionValue("k"); //$NON-NLS-1$
 				if (kind == null) { //$NON-NLS-1$
 					kind = "maxsat";
@@ -135,10 +138,10 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 					assert "maxsat".equalsIgnoreCase(kind);
 					if (cmd.hasOption("p")) {
 						wmsd = new WeightedMaxSatDecorator(
-								org.sat4j.pb.SolverFactory.newBoth());
+								org.sat4j.pb.SolverFactory.newBoth(),equivalence);
 					} else {
 						wmsd = new WeightedMaxSatDecorator(
-								SolverFactory.newDefault());
+								SolverFactory.newDefault(),equivalence);
 					}
 					if (cmd.hasOption("l")) {
 						asolver = new ConstraintRelaxingPseudoOptDecorator(wmsd);
