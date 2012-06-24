@@ -73,14 +73,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	private final boolean skipDuplicatedEntries;
 
 	private MinimizationStrategy xplainStrategy = new DeletionStrategy();
-	private boolean maxVarIdFixed = false;
-
-	@Override
-	public int newVar(int howmany) {
-		int res = super.newVar(howmany);
-		maxVarIdFixed = true;
-		return res;
-	}
 
 	public Xplain(T solver, boolean skipDuplicatedEntries) {
 		super(solver);
@@ -93,7 +85,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 
 	@Override
 	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		checkMaxVarId();
 		if (skipDuplicatedEntries) {
 			if (literals.equals(lastClause)) {
 				// System.err.println("c Duplicated entry: " + literals);
@@ -113,13 +104,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 		return lastConstr;
 	}
 
-	protected void checkMaxVarId() {
-		if (!maxVarIdFixed) {
-			throw new IllegalStateException(
-					"Please call newVar(int) before adding constraints!!!");
-		}
-	}
-
 	/**
 	 * 
 	 * @param literals
@@ -127,6 +111,12 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
 	 * @since 2.1
 	 */
 	protected int createNewVar(IVecInt literals) {
+		for (IteratorInt it = literals.iterator(); it.hasNext();) {
+			if (Math.abs(it.next()) > nextFreeVarId(false)) {
+				throw new IllegalStateException(
+						"Please call newVar(int) before adding constraints!!!");
+			}
+		}
 		if (pooledVarId) {
 			pooledVarId = false;
 			return lastCreatedVar;
