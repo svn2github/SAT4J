@@ -1309,13 +1309,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	}
 
 	public int[] primeImplicant() {
+		assert qhead == learnedLiterals.size();
+		if (learnedLiterals.size() > 0) {
+			qhead = 0;
+		}
 		IVecInt prime = new VecInt(implied.size() + decisions.size());
 		implied.copyTo(prime);
 		for (IteratorInt it = implied.iterator(); it.hasNext();) {
-			assume(toInternal(it.next()));
+			setAndPropagate(toInternal(it.next()));
 		}
-		Constr confl = propagate();
-		assert confl == null;
 		int d;
 		boolean ok;
 		int rightlevel;
@@ -1328,7 +1330,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				// conflict, literal is necessary
 				prime.push(d);
 				cancel();
-				assume(toInternal(d));
+				setAndPropagate(toInternal(d));
 			} else {
 				ok = true;
 				rightlevel = currentDecisionLevel();
@@ -1345,11 +1347,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				} else {
 					prime.push(d);
 					cancel();
-					assume(toInternal(d));
+					setAndPropagate(toInternal(d));
 				}
 			}
-			confl = propagate();
-			assert confl == null;
 		}
 		cancelUntil(0);
 		int[] implicant = new int[prime.size()];
@@ -1783,7 +1783,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 				undos.pop();
 			}
 		}
-
 		// push previously learned literals
 		for (IteratorInt iterator = learnedLiterals.iterator(); iterator
 				.hasNext();) {
