@@ -1309,7 +1309,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 	}
 
 	public int[] primeImplicant() {
-		assert qhead == learnedLiterals.size();
+		assert qhead == trail.size() || qhead == learnedLiterals.size();
 		if (learnedLiterals.size() > 0) {
 			qhead = 0;
 		}
