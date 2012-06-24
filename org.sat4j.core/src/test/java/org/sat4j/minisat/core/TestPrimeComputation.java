@@ -67,10 +67,8 @@ public class TestPrimeComputation {
 		clause.clear();
 		assertTrue(solver.isSatisfiable());
 		int[] model = solver.model();
-		System.out.println(new VecInt(model));
 		assertEquals(3, model.length);
 		int[] implicant = solver.primeImplicant();
-		System.out.println(new VecInt(implicant));
 		assertEquals(2, implicant.length);
 	}
 
@@ -82,10 +80,8 @@ public class TestPrimeComputation {
 		solver.addClause(clause);
 		assertTrue(solver.isSatisfiable());
 		int[] model = solver.model();
-		System.out.println(new VecInt(model));
 		assertEquals(4, model.length);
 		int[] implicant = solver.primeImplicant();
-		System.out.println(new VecInt(implicant));
 		assertEquals(1, implicant.length);
 	}
 
@@ -104,20 +100,16 @@ public class TestPrimeComputation {
 		clause.clear();
 		assertTrue(solver.isSatisfiable());
 		int[] model = solver.model();
-		System.out.println(new VecInt(model));
 		assertEquals(3, model.length);
 		int[] implicant = solver.primeImplicant();
-		System.out.println(new VecInt(implicant));
 		assertEquals(2, implicant.length);
 		clause.push(1).push(-2).push(-3);
 		solver.addBlockingClause(clause);
 		assertTrue(solver.isSatisfiable());
 		clause.clear();
 		model = solver.model();
-		System.out.println(new VecInt(model));
 		assertEquals(3, model.length);
 		implicant = solver.primeImplicant();
-		System.out.println(new VecInt(implicant));
 		assertEquals(1, implicant.length);
 	}
 
@@ -136,10 +128,8 @@ public class TestPrimeComputation {
 		clause.clear();
 		assertTrue(solver.isSatisfiable());
 		int[] model = solver.model();
-		System.out.println(new VecInt(model));
 		assertEquals(3, model.length);
 		int[] implicant = solver.primeImplicant();
-		System.out.println(new VecInt(implicant));
 		assertEquals(2, implicant.length);
 	}
 }
