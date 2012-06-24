@@ -82,14 +82,9 @@ public class TestSatAssumps {
 			}
 			assumpsArray[assumpsArray.length - 1] = varnr;
 			IVecInt assumps = new VecInt(assumpsArray);
-
-			System.out.println(assumps);
-
 			// Check
 			if (satSolver.isSatisfiable(assumps)) {
 				sol.add(varnr);
-			} else {
-				System.out.println("unsat: " + varnr);
 			}
 
 			assertEquals(satSolverOracle.isSatisfiable(assumps),
@@ -129,13 +124,9 @@ public class TestSatAssumps {
 			assumpsArray[assumpsArray.length - 1] = varnr;
 			IVecInt assumps = new VecInt(assumpsArray);
 
-			System.out.println(assumps);
-
 			// Check
 			if (satSolver.isSatisfiable(assumps)) {
 				sol.add(varnr);
-			} else {
-				System.out.println("unsat: " + varnr);
 			}
 
 			assertEquals(satSolverOracle.isSatisfiable(assumps),
@@ -167,8 +158,6 @@ public class TestSatAssumps {
 			assumpsArray[assumpsArray.length - 1] = -i;
 			IVecInt assumps = new VecInt(assumpsArray);
 
-			System.out.println(assumps);
-
 			// Check
 			assertEquals(satSolverOracle.isSatisfiable(assumps),
 					satSolver.isSatisfiable(assumps));
@@ -177,7 +166,6 @@ public class TestSatAssumps {
 				continue;
 			}
 			assumpsArray[assumpsArray.length - 1] = i;
-			System.out.println(assumps);
 			satSolverOracle = SolverFactory.newDefault();
 			readerOracle = new LecteurDimacs(satSolverOracle);
 			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
@@ -185,8 +173,6 @@ public class TestSatAssumps {
 					satSolver.isSatisfiable(assumps));
 			if (satSolver.isSatisfiable(assumps)) {
 				sol.add(i);
-			} else {
-				System.out.println("unsat: " + i);
 			}
 		}
 	}
