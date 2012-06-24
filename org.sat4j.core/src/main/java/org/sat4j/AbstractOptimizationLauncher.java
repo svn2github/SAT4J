@@ -55,8 +55,14 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 
 	private boolean incomplete = false;
 
+	private boolean displaySolutionLine = true;
+
 	protected void setIncomplete(boolean value) {
 		incomplete = value;
+	}
+
+	protected void setDisplaySolutionLine(boolean value) {
+		displaySolutionLine = value;
 	}
 
 	@Override
@@ -80,9 +86,11 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 		if (exitCode == ExitCode.SATISFIABLE
 				|| exitCode == ExitCode.OPTIMUM_FOUND
 				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
-			out.print(SOLUTION_PREFIX);
-			getReader().decode(solver.model(), out);
-			out.println();
+			if (displaySolutionLine) {
+				out.print(SOLUTION_PREFIX);
+				getReader().decode(solver.model(), out);
+				out.println();
+			}
 			IOptimizationProblem optproblem = (IOptimizationProblem) solver;
 			if (!optproblem.hasNoObjectiveFunction()) {
 				log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
