@@ -58,7 +58,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
      * 
      */
 	private static final long serialVersionUID = 1L;
-
+	
 	@SuppressWarnings("nls")
 	private Options createCLIOptions() {
 		Options options = new Options();
@@ -74,10 +74,12 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				"incomplete mode for maxsat");
 		options.addOption("c", "clean databases", false,
 				"clean up the database at root level");
-		options.addOption("k", "Keep Hot", false,
+		options.addOption("k", "keep Hot", false,
 				"Keep heuristics accross calls to the SAT solver");
-		options.addOption("e", "Equivalence", false,
+		options.addOption("e", "equivalence", false,
 				"Use an equivalence instead of an implication for the selector variables");
+		options.addOption("n", "no solution line", false,
+				"Do not display a solution line (useful if the solution is large)");
 		options.addOption("l", "lower bounding", false,
 				"search solution by lower bounding instead of by upper bounding");
 		return options;
@@ -124,6 +126,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 			try {
 				CommandLine cmd = new PosixParser().parse(options, args);
 				int problemindex = args.length - 1;
+			    setDisplaySolutionLine(!cmd.hasOption("n"));
 				boolean equivalence = cmd.hasOption("e");
 				String kind = cmd.getOptionValue("k"); //$NON-NLS-1$
 				if (kind == null) { //$NON-NLS-1$
