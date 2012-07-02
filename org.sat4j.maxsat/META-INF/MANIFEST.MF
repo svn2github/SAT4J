@@ -19,3 +19,4 @@ Implementation-Title: SAT4J
 Implementation-Version: 2.0 
 Implementation-Vendor: CRIL CNRS UMR 8188 - Universite d'Artois
 Class-Path: org.sat4j.pb.jar lib/commons-cli.jar
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -22,4 +22,4 @@ Implementation-Title: SAT4J
 Implementation-Version: 9.9.9.token 
 Implementation-Vendor: CRIL CNRS UMR 8188 - Universite d'Artois
 Class-Path: org.sat4j.core.jar
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
