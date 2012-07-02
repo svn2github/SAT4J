@@ -56,10 +56,6 @@ public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
 		super(iSolver);
 	}
 
-	public ManyCorePB(boolean checkNumberOfSolvers, IPBSolver... solvers) {
-		super(checkNumberOfSolvers, solvers);
-	}
-
 	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
 			boolean moreThan, BigInteger d) throws ContradictionException {
 		ConstrGroup group = new ConstrGroup(false);

@@ -49,8 +49,6 @@ import org.sat4j.specs.TimeoutException;
 
 public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
-	private static final long MINIMAL_MEMORY_REQUIREMENT = 500000000L;
-
 	private static final int NORMAL_SLEEP = 500;
 
 	private static final int FAST_SLEEP = 50;
@@ -72,21 +70,10 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
 	public ManyCore(ASolverFactory<S> factory, String... solverNames) {
 		availableSolvers = solverNames;
-		numberOfSolvers = computeNumberOfSolversInParallel(solverNames.length);
+		numberOfSolvers = solverNames.length;
 		solvers = new ArrayList<S>(numberOfSolvers);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.add(factory.createSolverByName(availableSolvers[i]));
-		}
-	}
-
-	private int computeNumberOfSolversInParallel(int upperBound) {
-		Runtime runtime = Runtime.getRuntime();
-		long memory = runtime.maxMemory();
-		int numberOfCores = runtime.availableProcessors();
-		if (memory > MINIMAL_MEMORY_REQUIREMENT) {
-			return upperBound < numberOfCores ? upperBound : numberOfCores;
-		} else {
-			return 1;
 		}
 	}
 
@@ -110,30 +97,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 		for (int i = 0; i < solverObjects.length; i++) {
 			availableSolvers[i] = "solver" + i;
 		}
-		numberOfSolvers = computeNumberOfSolversInParallel(solverObjects.length);
-		solvers = new ArrayList<S>(numberOfSolvers);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.add(solverObjects[i]);
-		}
-	}
-
-	/**
-	 * Create a parallel solver from a list of solvers ; do not check if number
-	 * of solvers is greater than the number of processor cores
-	 * 
-	 * @param checkNumberOfSolvers
-	 *            tells if number of processor cores must be checked
-	 * 
-	 * @param solverObjects
-	 *            the solvers
-	 */
-	public ManyCore(boolean checkNumberOfSolvers, S... solverObjects) {
-		availableSolvers = new String[solverObjects.length];
-		for (int i = 0; i < solverObjects.length; i++) {
-			availableSolvers[i] = "solver" + i;
-		}
-		numberOfSolvers = (checkNumberOfSolvers) ? (computeNumberOfSolversInParallel(solverObjects.length))
-				: (solverObjects.length);
+		numberOfSolvers = solverObjects.length;
 		solvers = new ArrayList<S>(numberOfSolvers);
 		for (int i = 0; i < numberOfSolvers; i++) {
 			solvers.add(solverObjects[i]);
