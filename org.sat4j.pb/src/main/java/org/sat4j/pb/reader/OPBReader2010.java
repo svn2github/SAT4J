@@ -94,7 +94,7 @@ public class OPBReader2010 extends OPBReader2007 {
 		if (!eol()) {
 			String rest = in.readLine();
 
-			if (rest.contains("#soft")) {
+			if (rest != null && rest.contains("#soft")) {
 				isWbo = true;
 				hasObjFunc = true;
 			}
@@ -190,8 +190,8 @@ public class OPBReader2010 extends OPBReader2007 {
 			throws ParseFormatException, ContradictionException {
 		super.parseInstance(input);
 		if (isWbo && softLimit != SAT4J_MAX_BIG_INTEGER) {
-			solver.addPseudoBoolean(getVars(), getCoeffs(), false, softLimit
-					.subtract(BigInteger.ONE));
+			solver.addPseudoBoolean(getVars(), getCoeffs(), false,
+					softLimit.subtract(BigInteger.ONE));
 		}
 		return solver;
 	}
