@@ -82,6 +82,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 				"Do not display a solution line (useful if the solution is large)");
 		options.addOption("l", "lower bounding", false,
 				"search solution by lower bounding instead of by upper bounding");
+		options.addOption("m", "mystery", false,
+				"mystery option");
 		return options;
 	}
 
@@ -139,7 +141,10 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
 					asolver = new MinCostDecorator(SolverFactory.newDefault());
 				} else {
 					assert "maxsat".equalsIgnoreCase(kind);
-					if (cmd.hasOption("p")) {
+					if (cmd.hasOption("m")) {
+						wmsd = new WeightedMaxSatDecorator(
+								org.sat4j.pb.SolverFactory.newSATUNSAT(),equivalence);
+					} else if (cmd.hasOption("p")) {
 						wmsd = new WeightedMaxSatDecorator(
 								org.sat4j.pb.SolverFactory.newBoth(),equivalence);
 					} else {
