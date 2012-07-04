@@ -21,7 +21,7 @@ public class BugSAT61 {
 	@Test
 	public void testDuplicatedConjuncts() throws ParseFormatException,
 			ContradictionException, TimeoutException {
-		IPBSolver solver = SolverFactory.newDefault();
+		IPBSolver solver = SolverFactory.newDefaultNonNormalized();
 		OPBReader2010 reader = new OPBReader2010(solver);
 		reader.parseInstance(new StringReader(DUPLICATED_CONJUNCTS));
 		assertTrue(solver.isSatisfiable());
@@ -30,7 +30,7 @@ public class BugSAT61 {
 	@Test
 	public void testNoDuplicatedConjuncts() throws ParseFormatException,
 			ContradictionException, TimeoutException {
-		IPBSolver solver = SolverFactory.newDefault();
+		IPBSolver solver = SolverFactory.newDefaultNonNormalized();
 		OPBReader2010 reader = new OPBReader2010(solver);
 		reader.parseInstance(new StringReader(NORMALIZED_CONJUNCTS));
 		assertTrue(solver.isSatisfiable());

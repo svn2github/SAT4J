@@ -690,7 +690,11 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 *      instance of ASolverFactory.
 	 */
 	public static IPBSolver newDefaultNonNormalized() {
-		return newPBResHTMixedConstraintsObjectiveExpSimp();
+		PBSolver solver = newDefault();
+		AbstractPBDataStructureFactory ds = new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure();
+		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+		solver.setDataStructureFactory(ds);
+		return solver;
 	}
 
 	@Override
