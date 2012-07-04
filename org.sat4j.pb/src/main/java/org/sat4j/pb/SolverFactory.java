@@ -41,6 +41,7 @@ import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.UserFixedPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.ArminRestarts;
+import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
@@ -582,6 +583,27 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 	 */
 	public static IPBSolver newBoth() {
 		return new ManyCorePB(newResolution(), newCuttingPlanes());
+	}
+
+	/**
+	 * Two solvers are running in //: one for solving SAT instances, the other
+	 * one for solving unsat instances.
+	 * 
+	 * @return a parallel solver for both SAT and UNSAT problems.
+	 */
+	public static IPBSolver newSATUNSAT() {
+		return new ManyCorePB(newSAT(), newUNSAT());
+	}
+
+	private static PBSolverResolution newSAT() {
+		PBSolverResolution solver = newResolutionGlucose();
+		solver.setRestartStrategy(new LubyRestarts(100));
+		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+		return solver;
+	}
+
+	private static PBSolverResolution newUNSAT() {
+		return newResolutionGlucose();
 	}
 
 	/**
