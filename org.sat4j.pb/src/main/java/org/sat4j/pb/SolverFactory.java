@@ -595,14 +595,24 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return new ManyCorePB(newSAT(), newUNSAT());
 	}
 
-	private static PBSolverResolution newSAT() {
+	/**
+	 * That solver is expected to perform better on satisfiable benchmarks.
+	 * 
+	 * @return a solver for satisfiable benchmarks.
+	 */
+	public static PBSolverResolution newSAT() {
 		PBSolverResolution solver = newResolutionGlucose();
 		solver.setRestartStrategy(new LubyRestarts(100));
 		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
 		return solver;
 	}
 
-	private static PBSolverResolution newUNSAT() {
+	/**
+	 * That solver is expected to perform better on unsatisfiable benchmarks.
+	 * 
+	 * @return a solver for unsatisfiable benchmarks.
+	 */
+	public static PBSolverResolution newUNSAT() {
 		return newResolutionGlucose();
 	}
 
