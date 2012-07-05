@@ -47,451 +47,464 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
+/**
+ * A class allowing to run several solvers in parallel.
+ * 
+ * Note that each solver will have its own copy of the CNF, so it is not a
+ * memory efficient implementation. There is no sharing of information yet
+ * between the solvers.
+ * 
+ * @author leberre
+ * 
+ * @param <S>
+ *            the type of the solver (ISolver of IPBSolver)
+ */
 public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
-	private static final int NORMAL_SLEEP = 500;
+    private static final int NORMAL_SLEEP = 500;
 
-	private static final int FAST_SLEEP = 50;
+    private static final int FAST_SLEEP = 50;
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final String[] availableSolvers; // = { };
+    private final String[] availableSolvers; // = { };
 
-	protected final List<S> solvers;
-	protected final int numberOfSolvers;
-	private int winnerId;
-	private boolean resultFound;
-	private volatile int remainingSolvers;
-	private volatile int sleepTime;
-	private volatile boolean solved;
+    protected final List<S> solvers;
+    protected final int numberOfSolvers;
+    private int winnerId;
+    private boolean resultFound;
+    private volatile int remainingSolvers;
+    private volatile int sleepTime;
+    private volatile boolean solved;
 
-	public ManyCore(ASolverFactory<S> factory, String... solverNames) {
-		availableSolvers = solverNames;
-		numberOfSolvers = solverNames.length;
-		solvers = new ArrayList<S>(numberOfSolvers);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.add(factory.createSolverByName(availableSolvers[i]));
-		}
-	}
+    public ManyCore(ASolverFactory<S> factory, String... solverNames) {
+        this.availableSolvers = solverNames;
+        this.numberOfSolvers = solverNames.length;
+        this.solvers = new ArrayList<S>(this.numberOfSolvers);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.add(factory
+                    .createSolverByName(this.availableSolvers[i]));
+        }
+    }
 
-	/**
-	 * Create a parallel solver from a list of solvers and a list of names.
-	 * 
-	 * @param names
-	 *            a String to describe each solver in the messages.
-	 * @param solverObjects
-	 *            the solvers
-	 */
-	public ManyCore(String[] names, S... solverObjects) {
-		this(solverObjects);
-		for (int i = 0; i < names.length; i++) {
-			availableSolvers[i] = names[i];
-		}
-	}
+    /**
+     * Create a parallel solver from a list of solvers and a list of names.
+     * 
+     * @param names
+     *            a String to describe each solver in the messages.
+     * @param solverObjects
+     *            the solvers
+     */
+    public ManyCore(String[] names, S... solverObjects) {
+        this(solverObjects);
+        for (int i = 0; i < names.length; i++) {
+            this.availableSolvers[i] = names[i];
+        }
+    }
 
-	public ManyCore(S... solverObjects) {
-		availableSolvers = new String[solverObjects.length];
-		for (int i = 0; i < solverObjects.length; i++) {
-			availableSolvers[i] = "solver" + i;
-		}
-		numberOfSolvers = solverObjects.length;
-		solvers = new ArrayList<S>(numberOfSolvers);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.add(solverObjects[i]);
-		}
-	}
+    public ManyCore(S... solverObjects) {
+        this.availableSolvers = new String[solverObjects.length];
+        for (int i = 0; i < solverObjects.length; i++) {
+            this.availableSolvers[i] = "solver" + i;
+        }
+        this.numberOfSolvers = solverObjects.length;
+        this.solvers = new ArrayList<S>(this.numberOfSolvers);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.add(solverObjects[i]);
+        }
+    }
 
-	public void addAllClauses(IVec<IVecInt> clauses)
-			throws ContradictionException {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).addAllClauses(clauses);
-		}
-	}
+    public void addAllClauses(IVec<IVecInt> clauses)
+            throws ContradictionException {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).addAllClauses(clauses);
+        }
+    }
 
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtLeast(literals, degree));
-		}
-		return group;
-	}
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtLeast(literals, degree));
+        }
+        return group;
+    }
 
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtMost(literals, degree));
-		}
-		return group;
-	}
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtMost(literals, degree));
+        }
+        return group;
+    }
 
-	public IConstr addExactly(IVecInt literals, int n)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addExactly(literals, n));
-		}
-		return group;
-	}
+    public IConstr addExactly(IVecInt literals, int n)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addExactly(literals, n));
+        }
+        return group;
+    }
 
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addClause(literals));
-		}
-		return group;
-	}
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addClause(literals));
+        }
+        return group;
+    }
 
-	public void clearLearntClauses() {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).clearLearntClauses();
-		}
-	}
+    public void clearLearntClauses() {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).clearLearntClauses();
+        }
+    }
 
-	public void expireTimeout() {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).expireTimeout();
-		}
-		sleepTime = FAST_SLEEP;
-	}
+    public void expireTimeout() {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).expireTimeout();
+        }
+        this.sleepTime = FAST_SLEEP;
+    }
 
-	public Map<String, Number> getStat() {
-		return solvers.get(winnerId).getStat();
-	}
+    public Map<String, Number> getStat() {
+        return this.solvers.get(this.winnerId).getStat();
+    }
 
-	public int getTimeout() {
-		return solvers.get(0).getTimeout();
-	}
+    public int getTimeout() {
+        return this.solvers.get(0).getTimeout();
+    }
 
-	public long getTimeoutMs() {
-		return solvers.get(0).getTimeoutMs();
-	}
+    public long getTimeoutMs() {
+        return this.solvers.get(0).getTimeoutMs();
+    }
 
-	public int newVar() {
-		throw new UnsupportedOperationException();
-	}
+    public int newVar() {
+        throw new UnsupportedOperationException();
+    }
 
-	public int newVar(int howmany) {
-		int result = 0;
-		for (int i = 0; i < numberOfSolvers; i++) {
-			result = solvers.get(i).newVar(howmany);
-		}
-		return result;
-	}
+    public int newVar(int howmany) {
+        int result = 0;
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            result = this.solvers.get(i).newVar(howmany);
+        }
+        return result;
+    }
 
-	@Deprecated
-	public void printStat(PrintStream out, String prefix) {
-		solvers.get(winnerId).printStat(out, prefix);
-	}
+    @Deprecated
+    public void printStat(PrintStream out, String prefix) {
+        this.solvers.get(this.winnerId).printStat(out, prefix);
+    }
 
-	public void printStat(PrintWriter out, String prefix) {
-		solvers.get(winnerId).printStat(out, prefix);
-	}
+    public void printStat(PrintWriter out, String prefix) {
+        this.solvers.get(this.winnerId).printStat(out, prefix);
+    }
 
-	public boolean removeConstr(IConstr c) {
-		if (c instanceof ConstrGroup) {
-			ConstrGroup group = (ConstrGroup) c;
-			boolean removed = true;
-			IConstr toRemove;
-			for (int i = 0; i < numberOfSolvers; i++) {
-				toRemove = group.getConstr(i);
-				if (toRemove != null) {
-					removed = removed & solvers.get(i).removeConstr(toRemove);
-				}
-			}
-			return removed;
-		}
-		throw new IllegalArgumentException(
-				"Can only remove a group of constraints!");
-	}
+    public boolean removeConstr(IConstr c) {
+        if (c instanceof ConstrGroup) {
+            ConstrGroup group = (ConstrGroup) c;
+            boolean removed = true;
+            IConstr toRemove;
+            for (int i = 0; i < this.numberOfSolvers; i++) {
+                toRemove = group.getConstr(i);
+                if (toRemove != null) {
+                    removed = removed
+                            & this.solvers.get(i).removeConstr(toRemove);
+                }
+            }
+            return removed;
+        }
+        throw new IllegalArgumentException(
+                "Can only remove a group of constraints!");
+    }
 
-	public void reset() {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).reset();
-		}
-	}
+    public void reset() {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).reset();
+        }
+    }
 
-	public void setExpectedNumberOfClauses(int nb) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setExpectedNumberOfClauses(nb);
-		}
-	}
+    public void setExpectedNumberOfClauses(int nb) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setExpectedNumberOfClauses(nb);
+        }
+    }
 
-	public void setTimeout(int t) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setTimeout(t);
-		}
-	}
+    public void setTimeout(int t) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setTimeout(t);
+        }
+    }
 
-	public void setTimeoutMs(long t) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setTimeoutMs(t);
-		}
-	}
+    public void setTimeoutMs(long t) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setTimeoutMs(t);
+        }
+    }
 
-	public void setTimeoutOnConflicts(int count) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setTimeoutOnConflicts(count);
-		}
-	}
+    public void setTimeoutOnConflicts(int count) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setTimeoutOnConflicts(count);
+        }
+    }
 
-	public String toString(String prefix) {
-		StringBuffer res = new StringBuffer();
-		res.append(prefix);
-		res.append("ManyCore solver with ");
-		res.append(numberOfSolvers);
-		res.append(" solvers running in parallel");
-		res.append("\n");
-		for (int i = 0; i < numberOfSolvers; i++) {
-			res.append(solvers.get(i).toString(prefix));
-			if (i < numberOfSolvers - 1) {
-				res.append("\n");
-			}
-		}
-		return res.toString();
-	}
+    public String toString(String prefix) {
+        StringBuffer res = new StringBuffer();
+        res.append(prefix);
+        res.append("ManyCore solver with ");
+        res.append(this.numberOfSolvers);
+        res.append(" solvers running in parallel");
+        res.append("\n");
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            res.append(this.solvers.get(i).toString(prefix));
+            if (i < this.numberOfSolvers - 1) {
+                res.append("\n");
+            }
+        }
+        return res.toString();
+    }
 
-	public int[] findModel() throws TimeoutException {
-		if (isSatisfiable()) {
-			return model();
-		}
-		// A zero length array would mean that the formula is a tautology.
-		return null;
-	}
+    public int[] findModel() throws TimeoutException {
+        if (isSatisfiable()) {
+            return model();
+        }
+        // A zero length array would mean that the formula is a tautology.
+        return null;
+    }
 
-	public int[] findModel(IVecInt assumps) throws TimeoutException {
-		if (isSatisfiable(assumps)) {
-			return model();
-		}
-		// A zero length array would mean that the formula is a tautology.
-		return null;
-	}
+    public int[] findModel(IVecInt assumps) throws TimeoutException {
+        if (isSatisfiable(assumps)) {
+            return model();
+        }
+        // A zero length array would mean that the formula is a tautology.
+        return null;
+    }
 
-	public boolean isSatisfiable() throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY, false);
-	}
+    public boolean isSatisfiable() throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY, false);
+    }
 
-	public synchronized boolean isSatisfiable(IVecInt assumps,
-			boolean globalTimeout) throws TimeoutException {
-		remainingSolvers = numberOfSolvers;
-		solved = false;
-		for (int i = 0; i < numberOfSolvers; i++) {
-			new Thread(new RunnableSolver(i, solvers.get(i), assumps,
-					globalTimeout, this)).start();
-		}
-		try {
-			sleepTime = NORMAL_SLEEP;
-			do {
-				wait(sleepTime);
-			} while (remainingSolvers > 0);
-		} catch (InterruptedException e) {
-			// TODO: handle exception
-		}
-		if (!solved) {
-			assert remainingSolvers == 0;
-			throw new TimeoutException();
-		}
-		return resultFound;
-	}
+    public synchronized boolean isSatisfiable(IVecInt assumps,
+            boolean globalTimeout) throws TimeoutException {
+        this.remainingSolvers = this.numberOfSolvers;
+        this.solved = false;
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            new Thread(new RunnableSolver(i, this.solvers.get(i), assumps,
+                    globalTimeout, this)).start();
+        }
+        try {
+            this.sleepTime = NORMAL_SLEEP;
+            do {
+                wait(this.sleepTime);
+            } while (this.remainingSolvers > 0);
+        } catch (InterruptedException e) {
+            // will happen when one solver found a solution
+        }
+        if (!this.solved) {
+            assert this.remainingSolvers == 0;
+            throw new TimeoutException();
+        }
+        return this.resultFound;
+    }
 
-	public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
-		throw new UnsupportedOperationException();
-	}
+    public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
+        throw new UnsupportedOperationException();
+    }
 
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		throw new UnsupportedOperationException();
-	}
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        throw new UnsupportedOperationException();
+    }
 
-	public int[] model() {
-		return solvers.get(winnerId).model();
-	}
+    public int[] model() {
+        return this.solvers.get(this.winnerId).model();
+    }
 
-	public boolean model(int var) {
-		return solvers.get(winnerId).model(var);
-	}
+    public boolean model(int var) {
+        return this.solvers.get(this.winnerId).model(var);
+    }
 
-	public int nConstraints() {
-		return solvers.get(0).nConstraints();
-	}
+    public int nConstraints() {
+        return this.solvers.get(0).nConstraints();
+    }
 
-	public int nVars() {
-		return solvers.get(0).nVars();
-	}
+    public int nVars() {
+        return this.solvers.get(0).nVars();
+    }
 
-	public void printInfos(PrintWriter out, String prefix) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).printInfos(out, prefix);
-		}
-	}
+    public void printInfos(PrintWriter out, String prefix) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).printInfos(out, prefix);
+        }
+    }
 
-	public synchronized void onFinishWithAnswer(boolean finished,
-			boolean result, int index) {
-		if (finished && !solved) {
-			winnerId = index;
-			solved = true;
-			resultFound = result;
-			for (int i = 0; i < numberOfSolvers; i++) {
-				if (i != winnerId)
-					solvers.get(i).expireTimeout();
-			}
-			sleepTime = FAST_SLEEP;
-			System.out.println(getLogPrefix() + " And the winner is "
-					+ availableSolvers[winnerId]);
-		}
-		remainingSolvers--;
-	}
+    public synchronized void onFinishWithAnswer(boolean finished,
+            boolean result, int index) {
+        if (finished && !this.solved) {
+            this.winnerId = index;
+            this.solved = true;
+            this.resultFound = result;
+            for (int i = 0; i < this.numberOfSolvers; i++) {
+                if (i != this.winnerId) {
+                    this.solvers.get(i).expireTimeout();
+                }
+            }
+            this.sleepTime = FAST_SLEEP;
+            System.out.println(getLogPrefix() + " And the winner is "
+                    + this.availableSolvers[this.winnerId]);
+        }
+        this.remainingSolvers--;
+    }
 
-	public boolean isDBSimplificationAllowed() {
-		return solvers.get(0).isDBSimplificationAllowed();
-	}
+    public boolean isDBSimplificationAllowed() {
+        return this.solvers.get(0).isDBSimplificationAllowed();
+    }
 
-	public void setDBSimplificationAllowed(boolean status) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(0).setDBSimplificationAllowed(status);
-		}
-	}
+    public void setDBSimplificationAllowed(boolean status) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(0).setDBSimplificationAllowed(status);
+        }
+    }
 
-	public <I extends ISolverService> void setSearchListener(
-			SearchListener<I> sl) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setSearchListener(sl);
-		}
-	}
+    public <I extends ISolverService> void setSearchListener(
+            SearchListener<I> sl) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setSearchListener(sl);
+        }
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public <I extends ISolverService> SearchListener<I> getSearchListener() {
-		return solvers.get(0).getSearchListener();
-	}
+    /**
+     * @since 2.2
+     */
+    public <I extends ISolverService> SearchListener<I> getSearchListener() {
+        return this.solvers.get(0).getSearchListener();
+    }
 
-	public int nextFreeVarId(boolean reserve) {
-		int res = -1;
-		for (int i = 0; i < numberOfSolvers; ++i) {
-			res = solvers.get(i).nextFreeVarId(reserve);
-		}
-		return res;
-	}
+    public int nextFreeVarId(boolean reserve) {
+        int res = -1;
+        for (int i = 0; i < this.numberOfSolvers; ++i) {
+            res = this.solvers.get(i).nextFreeVarId(reserve);
+        }
+        return res;
+    }
 
-	public IConstr addBlockingClause(IVecInt literals)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addBlockingClause(literals));
-		}
-		return group;
-	}
+    public IConstr addBlockingClause(IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addBlockingClause(literals));
+        }
+        return group;
+    }
 
-	public boolean removeSubsumedConstr(IConstr c) {
-		if (c instanceof ConstrGroup) {
-			ConstrGroup group = (ConstrGroup) c;
-			boolean removed = true;
-			IConstr toRemove;
-			for (int i = 0; i < numberOfSolvers; i++) {
-				toRemove = group.getConstr(i);
-				if (toRemove != null) {
-					removed = removed
-							& solvers.get(i).removeSubsumedConstr(toRemove);
-				}
-			}
-			return removed;
-		}
-		throw new IllegalArgumentException(
-				"Can only remove a group of constraints!");
-	}
+    public boolean removeSubsumedConstr(IConstr c) {
+        if (c instanceof ConstrGroup) {
+            ConstrGroup group = (ConstrGroup) c;
+            boolean removed = true;
+            IConstr toRemove;
+            for (int i = 0; i < this.numberOfSolvers; i++) {
+                toRemove = group.getConstr(i);
+                if (toRemove != null) {
+                    removed = removed
+                            & this.solvers.get(i)
+                                    .removeSubsumedConstr(toRemove);
+                }
+            }
+            return removed;
+        }
+        throw new IllegalArgumentException(
+                "Can only remove a group of constraints!");
+    }
 
-	public boolean isVerbose() {
-		return solvers.get(0).isVerbose();
-	}
+    public boolean isVerbose() {
+        return this.solvers.get(0).isVerbose();
+    }
 
-	public void setVerbose(boolean value) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setVerbose(value);
-		}
-	}
+    public void setVerbose(boolean value) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setVerbose(value);
+        }
+    }
 
-	public void setLogPrefix(String prefix) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setLogPrefix(prefix);
-		}
+    public void setLogPrefix(String prefix) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setLogPrefix(prefix);
+        }
 
-	}
+    }
 
-	public String getLogPrefix() {
-		return solvers.get(0).getLogPrefix();
-	}
+    public String getLogPrefix() {
+        return this.solvers.get(0).getLogPrefix();
+    }
 
-	public IVecInt unsatExplanation() {
-		return solvers.get(winnerId).unsatExplanation();
-	}
+    public IVecInt unsatExplanation() {
+        return this.solvers.get(this.winnerId).unsatExplanation();
+    }
 
-	public int[] primeImplicant() {
-		return solvers.get(winnerId).primeImplicant();
-	}
+    public int[] primeImplicant() {
+        return this.solvers.get(this.winnerId).primeImplicant();
+    }
 
-	public List<S> getSolvers() {
-		return new ArrayList<S>(this.solvers);
-	}
+    public List<S> getSolvers() {
+        return new ArrayList<S>(this.solvers);
+    }
 
-	public int[] modelWithInternalVariables() {
-		return solvers.get(winnerId).modelWithInternalVariables();
-	}
+    public int[] modelWithInternalVariables() {
+        return this.solvers.get(this.winnerId).modelWithInternalVariables();
+    }
 
-	public int realNumberOfVariables() {
-		return solvers.get(0).realNumberOfVariables();
-	}
+    public int realNumberOfVariables() {
+        return this.solvers.get(0).realNumberOfVariables();
+    }
 
-	public void registerLiteral(int p) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).registerLiteral(p);
-		}
+    public void registerLiteral(int p) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).registerLiteral(p);
+        }
 
-	}
+    }
 
-	public boolean isSolverKeptHot() {
-		return solvers.get(0).isSolverKeptHot();
-	}
+    public boolean isSolverKeptHot() {
+        return this.solvers.get(0).isSolverKeptHot();
+    }
 
-	public void setKeepSolverHot(boolean value) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setKeepSolverHot(value);
-		}
+    public void setKeepSolverHot(boolean value) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setKeepSolverHot(value);
+        }
 
-	}
-}
-
-interface OutcomeListener {
-	void onFinishWithAnswer(boolean finished, boolean result, int index);
+    }
 }
 
 class RunnableSolver implements Runnable {
 
-	private final int index;
-	private final ISolver solver;
-	private final OutcomeListener ol;
-	private final IVecInt assumps;
-	private final boolean globalTimeout;
+    private final int index;
+    private final ISolver solver;
+    private final OutcomeListener ol;
+    private final IVecInt assumps;
+    private final boolean globalTimeout;
 
-	public RunnableSolver(int i, ISolver solver, IVecInt assumps,
-			boolean globalTimeout, OutcomeListener ol) {
-		index = i;
-		this.solver = solver;
-		this.ol = ol;
-		this.assumps = assumps;
-		this.globalTimeout = globalTimeout;
-	}
+    public RunnableSolver(int i, ISolver solver, IVecInt assumps,
+            boolean globalTimeout, OutcomeListener ol) {
+        this.index = i;
+        this.solver = solver;
+        this.ol = ol;
+        this.assumps = assumps;
+        this.globalTimeout = globalTimeout;
+    }
 
-	public void run() {
-		try {
-			boolean result = solver.isSatisfiable(assumps, globalTimeout);
-			ol.onFinishWithAnswer(true, result, index);
-		} catch (Exception e) {
-			ol.onFinishWithAnswer(false, false, index);
-		}
-	}
+    public void run() {
+        try {
+            boolean result = this.solver.isSatisfiable(this.assumps,
+                    this.globalTimeout);
+            this.ol.onFinishWithAnswer(true, result, this.index);
+        } catch (Exception e) {
+            this.ol.onFinishWithAnswer(false, false, this.index);
+        }
+    }
 
 }
