@@ -35,22 +35,22 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 
 public class PuebloPBMinClauseCardConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+        AbstractPBClauseCardConstrDataStructure {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PuebloPBMinClauseCardConstrDataStructure() {
-		super(new UnitBinaryHTClausePBConstructor(),
-				new MinCardPBConstructor(), new PuebloMinWatchPBConstructor());
-	}
+    public PuebloPBMinClauseCardConstrDataStructure() {
+        super(new UnitBinaryHTClausePBConstructor(),
+                new MinCardPBConstructor(), new PuebloMinWatchPBConstructor());
+    }
 
-	@Override
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		return constructClause(v);
-	}
+    @Override
+    public Constr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), this.solver);
+        return constructClause(v);
+    }
 
 }

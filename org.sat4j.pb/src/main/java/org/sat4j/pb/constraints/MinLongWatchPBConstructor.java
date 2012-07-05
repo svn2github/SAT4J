@@ -41,30 +41,30 @@ import org.sat4j.specs.ContradictionException;
 
 public class MinLongWatchPBConstructor implements IPBConstructor {
 
-	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
-		if (dspb.isLongSufficient()) {
-			return MinWatchPbLong.normalizedWatchPbNew(voc, dspb);
-		}
-		return MinWatchPb.normalizedWatchPbNew(voc, dspb);
-	}
+    public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
+        if (dspb.isLongSufficient()) {
+            return MinWatchPbLong.normalizedWatchPbNew(voc, dspb);
+        }
+        return MinWatchPb.normalizedWatchPbNew(voc, dspb);
+    }
 
-	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException {
-		if (sumCoefs.bitLength() < Long.SIZE) {
-			return MinWatchPbLong.normalizedMinWatchPbNew(solver, voc, theLits,
-					coefs, degree, sumCoefs);
-		}
-		return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
-				degree, sumCoefs);
-	}
+    public Constr constructPB(UnitPropagationListener solver, ILits voc,
+            int[] theLits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException {
+        if (sumCoefs.bitLength() < Long.SIZE) {
+            return MinWatchPbLong.normalizedMinWatchPbNew(solver, voc, theLits,
+                    coefs, degree, sumCoefs);
+        }
+        return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
+                degree, sumCoefs);
+    }
 
-	// public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
-	// degree) {
-	// assert coefs.length > 1;
-	// BigInteger som = coefs[0].add(coefs[1]);
-	// som = som.add(degree);
-	// return som.bitLength() < Long.SIZE;
-	// }
+    // public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
+    // degree) {
+    // assert coefs.length > 1;
+    // BigInteger som = coefs[0].add(coefs[1]);
+    // som = som.add(degree);
+    // return som.bitLength() < Long.SIZE;
+    // }
 
 }

@@ -39,10 +39,10 @@ import org.sat4j.specs.ContradictionException;
 
 public interface IPBConstructor {
 
-	Constr constructLearntPB(ILits voc, IDataStructurePB dspb);
+    Constr constructLearntPB(ILits voc, IDataStructurePB dspb);
 
-	Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException;
+    Constr constructPB(UnitPropagationListener solver, ILits voc,
+            int[] theLits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException;
 
 }

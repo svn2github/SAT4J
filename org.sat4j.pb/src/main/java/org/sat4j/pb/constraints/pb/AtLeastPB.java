@@ -39,94 +39,96 @@ import org.sat4j.specs.IVecInt;
 
 public final class AtLeastPB extends AtLeast implements PBConstr {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final BigInteger degree;
+    private final BigInteger degree;
 
-	private AtLeastPB(ILits voc, IVecInt ps, int degree) {
-		super(voc, ps, degree);
-		this.degree = BigInteger.valueOf(degree);
-	}
+    private AtLeastPB(ILits voc, IVecInt ps, int degree) {
+        super(voc, ps, degree);
+        this.degree = BigInteger.valueOf(degree);
+    }
 
-	public static PBConstr atLeastNew(UnitPropagationListener s, ILits voc,
-			IVecInt ps, int n) throws ContradictionException {
-		int degree = niceParameters(s, voc, ps, n);
-		if (degree == 0)
-			return new UnitClausesPB(ps);
-		return new AtLeastPB(voc, ps, degree);
-	}
+    public static PBConstr atLeastNew(UnitPropagationListener s, ILits voc,
+            IVecInt ps, int n) throws ContradictionException {
+        int degree = niceParameters(s, voc, ps, n);
+        if (degree == 0) {
+            return new UnitClausesPB(ps);
+        }
+        return new AtLeastPB(voc, ps, degree);
+    }
 
-	public static AtLeastPB atLeastNew(ILits voc, IVecInt ps, int n) {
-		return new AtLeastPB(voc, ps, n);
-	}
+    public static AtLeastPB atLeastNew(ILits voc, IVecInt ps, int n) {
+        return new AtLeastPB(voc, ps, n);
+    }
 
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	public BigInteger getDegree() {
-		return degree;
-	}
+    public BigInteger getDegree() {
+        return this.degree;
+    }
 
-	public ILits getVocabulary() {
-		return voc;
-	}
+    public ILits getVocabulary() {
+        return this.voc;
+    }
 
-	public int[] getLits() {
-		int[] tmp = new int[size()];
-		System.arraycopy(lits, 0, tmp, 0, size());
-		return tmp;
-	}
+    public int[] getLits() {
+        int[] tmp = new int[size()];
+        System.arraycopy(this.lits, 0, tmp, 0, size());
+        return tmp;
+    }
 
-	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = new BigInteger[size()];
-		for (int i = 0; i < tmp.length; i++)
-			tmp[i] = BigInteger.ONE;
-		return tmp;
-	}
+    public BigInteger[] getCoefs() {
+        BigInteger[] tmp = new BigInteger[size()];
+        for (int i = 0; i < tmp.length; i++) {
+            tmp[i] = BigInteger.ONE;
+        }
+        return tmp;
+    }
 
-	/**
+    /**
      * 
      */
-	private boolean learnt = false;
+    private boolean learnt = false;
 
-	/**
-	 * D?termine si la contrainte est apprise
-	 * 
-	 * @return true si la contrainte est apprise, false sinon
-	 * @see org.sat4j.specs.IConstr#learnt()
-	 */
-	@Override
-	public boolean learnt() {
-		return learnt;
-	}
+    /**
+     * D?termine si la contrainte est apprise
+     * 
+     * @return true si la contrainte est apprise, false sinon
+     * @see org.sat4j.specs.IConstr#learnt()
+     */
+    @Override
+    public boolean learnt() {
+        return this.learnt;
+    }
 
-	@Override
-	public void setLearnt() {
-		learnt = true;
-	}
+    @Override
+    public void setLearnt() {
+        this.learnt = true;
+    }
 
-	@Override
-	public void register() {
-		assert learnt;
-		// countFalsified();
-	}
+    @Override
+    public void register() {
+        assert this.learnt;
+        // countFalsified();
+    }
 
-	@Override
-	public void assertConstraint(UnitPropagationListener s) {
-		for (int i = 0; i < size(); i++) {
-			if (getVocabulary().isUnassigned(get(i))) {
-				boolean ret = s.enqueue(get(i), this);
-				assert ret;
-			}
-		}
-	}
+    @Override
+    public void assertConstraint(UnitPropagationListener s) {
+        for (int i = 0; i < size(); i++) {
+            if (getVocabulary().isUnassigned(get(i))) {
+                boolean ret = s.enqueue(get(i), this);
+                assert ret;
+            }
+        }
+    }
 
-	public IVecInt computeAnImpliedClause() {
-		return null;
-	}
+    public IVecInt computeAnImpliedClause() {
+        return null;
+    }
 
 }

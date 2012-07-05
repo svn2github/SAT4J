@@ -38,35 +38,35 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
 public class DisjunctionRHS<T, C> {
-	private final IVecInt literals;
-	private final DependencyHelper<T, C> helper;
+    private final IVecInt literals;
+    private final DependencyHelper<T, C> helper;
 
-	private final IVec<IConstr> toName = new Vec<IConstr>();
+    private final IVec<IConstr> toName = new Vec<IConstr>();
 
-	public DisjunctionRHS(DependencyHelper<T, C> helper, IVecInt literals) {
-		this.literals = literals;
-		this.helper = helper;
-	}
+    public DisjunctionRHS(DependencyHelper<T, C> helper, IVecInt literals) {
+        this.literals = literals;
+        this.helper = helper;
+    }
 
-	public ImplicationNamer<T, C> implies(T... things)
-			throws ContradictionException {
-		IVecInt clause = new VecInt();
-		for (T t : things) {
-			clause.push(helper.getIntValue(t));
-		}
-		int p;
-		IConstr constr;
-		for (IteratorInt it = literals.iterator(); it.hasNext();) {
-			p = it.next();
-			clause.push(p);
-			constr = helper.solver.addClause(clause);
-			if (constr == null) {
-				throw new IllegalStateException(
-						"Constraints are not supposed to be null when using the helper");
-			}
-			toName.push(constr);
-			clause.remove(p);
-		}
-		return new ImplicationNamer<T, C>(helper, toName);
-	}
+    public ImplicationNamer<T, C> implies(T... things)
+            throws ContradictionException {
+        IVecInt clause = new VecInt();
+        for (T t : things) {
+            clause.push(this.helper.getIntValue(t));
+        }
+        int p;
+        IConstr constr;
+        for (IteratorInt it = this.literals.iterator(); it.hasNext();) {
+            p = it.next();
+            clause.push(p);
+            constr = this.helper.solver.addClause(clause);
+            if (constr == null) {
+                throw new IllegalStateException(
+                        "Constraints are not supposed to be null when using the helper");
+            }
+            this.toName.push(constr);
+            clause.remove(p);
+        }
+        return new ImplicationNamer<T, C>(this.helper, this.toName);
+    }
 }

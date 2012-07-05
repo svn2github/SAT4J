@@ -33,15 +33,15 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class PBCPLongMaxClauseCardConstrLearningTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractPseudoBooleanAndPigeonHoleTest {
 
-	public PBCPLongMaxClauseCardConstrLearningTest(String arg) {
-		super(arg);
-	}
+    public PBCPLongMaxClauseCardConstrLearningTest(String arg) {
+        super(arg);
+    }
 
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetPBCPMixedConstraintsLongMaxObjective();
-	}
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory.newCompetPBCPMixedConstraintsLongMaxObjective();
+    }
 
 }

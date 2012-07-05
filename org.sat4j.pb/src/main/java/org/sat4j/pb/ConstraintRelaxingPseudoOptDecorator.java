@@ -45,150 +45,150 @@ import org.sat4j.specs.TimeoutException;
  */
 
 public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
-		implements IOptimizationProblem {
+        implements IOptimizationProblem {
 
-	private static final long serialVersionUID = 1L;
-	private int[] bestModel;
-	private boolean[] bestFullModel;
-	private IConstr previousPBConstr;
-	private IConstr addedConstr = null;
-	private int maxValue = 0;
-	private Number objectiveValue;
-	private boolean optimumFound = false;
+    private static final long serialVersionUID = 1L;
+    private int[] bestModel;
+    private boolean[] bestFullModel;
+    private IConstr previousPBConstr;
+    private IConstr addedConstr = null;
+    private int maxValue = 0;
+    private Number objectiveValue;
+    private boolean optimumFound = false;
 
-	public ConstraintRelaxingPseudoOptDecorator(IPBSolver solver) {
-		super(solver);
-	}
+    public ConstraintRelaxingPseudoOptDecorator(IPBSolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public boolean isSatisfiable() throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY);
-	}
+    @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY);
+    }
 
-	@Override
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY, global);
-	}
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY, global);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps, true);
-		if (result) {
-			bestModel = super.model();
-			bestFullModel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				bestFullModel[i] = decorated().model(i + 1);
-			}
-			calculateObjective();
-		} else {
-			if (previousPBConstr != null) {
-				decorated().removeConstr(previousPBConstr);
-				previousPBConstr = null;
-			}
-		}
-		return result;
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        boolean result = super.isSatisfiable(assumps, true);
+        if (result) {
+            this.bestModel = super.model();
+            this.bestFullModel = new boolean[nVars()];
+            for (int i = 0; i < nVars(); i++) {
+                this.bestFullModel[i] = decorated().model(i + 1);
+            }
+            calculateObjective();
+        } else {
+            if (this.previousPBConstr != null) {
+                decorated().removeConstr(this.previousPBConstr);
+                this.previousPBConstr = null;
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		return isSatisfiable(assumps, true);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        return isSatisfiable(assumps, true);
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		boolean isSatisfiable;
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        boolean isSatisfiable;
 
-		if (this.optimumFound) {
-			return false;
-		}
-		maxValue = getObjectiveFunction().minValue().intValue();
-		while (true) {
-			if (addedConstr != null) {
-				this.decorated().removeConstr(addedConstr);
-			}
-			try {
-				forceObjectiveValueTo(this.maxValue++);
-			} catch (ContradictionException e) {
-				if (isVerbose()) {
-					System.out.println(decorated().getLogPrefix()
-							+ "no solution for objective value "
-							+ (this.maxValue - 1));
-				}
-				continue;
-			}
-			isSatisfiable = super.isSatisfiable(assumps, true);
-			if (isSatisfiable) {
-				optimumFound = true;
-				bestModel = super.model();
-				bestFullModel = new boolean[nVars()];
-				for (int i = 0; i < nVars(); i++) {
-					bestFullModel[i] = decorated().model(i + 1);
-				}
-				if (getObjectiveFunction() != null) {
-					calculateObjective();
-				}
-				this.decorated().removeConstr(addedConstr);
-				return true;
-			}
-			if (isVerbose()) {
-				System.out.println(decorated().getLogPrefix()
-						+ "no solution for objective value "
-						+ (this.maxValue - 1));
-			}
-		}
-	}
+        if (this.optimumFound) {
+            return false;
+        }
+        this.maxValue = getObjectiveFunction().minValue().intValue();
+        while (true) {
+            if (this.addedConstr != null) {
+                this.decorated().removeConstr(this.addedConstr);
+            }
+            try {
+                forceObjectiveValueTo(this.maxValue++);
+            } catch (ContradictionException e) {
+                if (isVerbose()) {
+                    System.out.println(decorated().getLogPrefix()
+                            + "no solution for objective value "
+                            + (this.maxValue - 1));
+                }
+                continue;
+            }
+            isSatisfiable = super.isSatisfiable(assumps, true);
+            if (isSatisfiable) {
+                this.optimumFound = true;
+                this.bestModel = super.model();
+                this.bestFullModel = new boolean[nVars()];
+                for (int i = 0; i < nVars(); i++) {
+                    this.bestFullModel[i] = decorated().model(i + 1);
+                }
+                if (getObjectiveFunction() != null) {
+                    calculateObjective();
+                }
+                this.decorated().removeConstr(this.addedConstr);
+                return true;
+            }
+            if (isVerbose()) {
+                System.out.println(decorated().getLogPrefix()
+                        + "no solution for objective value "
+                        + (this.maxValue - 1));
+            }
+        }
+    }
 
-	public boolean hasNoObjectiveFunction() {
-		return getObjectiveFunction() == null;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return getObjectiveFunction() == null;
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return false;
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return false;
+    }
 
-	@Deprecated
-	public Number calculateObjective() {
-		if (getObjectiveFunction() == null) {
-			throw new UnsupportedOperationException(
-					"The problem does not contain an objective function");
-		}
-		objectiveValue = getObjectiveFunction().calculateDegree(this);
-		return objectiveValue;
-	}
+    @Deprecated
+    public Number calculateObjective() {
+        if (getObjectiveFunction() == null) {
+            throw new UnsupportedOperationException(
+                    "The problem does not contain an objective function");
+        }
+        this.objectiveValue = getObjectiveFunction().calculateDegree(this);
+        return this.objectiveValue;
+    }
 
-	public Number getObjectiveValue() {
-		return objectiveValue;
-	}
+    public Number getObjectiveValue() {
+        return this.objectiveValue;
+    }
 
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		addedConstr = super.addPseudoBoolean(getObjectiveFunction().getVars(),
-				getObjectiveFunction().getCoeffs(), false,
-				BigInteger.valueOf(forcedValue.longValue()));
-	}
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        this.addedConstr = super.addPseudoBoolean(getObjectiveFunction()
+                .getVars(), getObjectiveFunction().getCoeffs(), false,
+                BigInteger.valueOf(forcedValue.longValue()));
+    }
 
-	@Deprecated
-	public void discard() {
-		discardCurrentSolution();
-	}
+    @Deprecated
+    public void discard() {
+        discardCurrentSolution();
+    }
 
-	public void discardCurrentSolution() {
-		// nothing to do here
-	}
+    public void discardCurrentSolution() {
+        // nothing to do here
+    }
 
-	public boolean isOptimal() {
-		return this.optimumFound;
-	}
+    public boolean isOptimal() {
+        return this.optimumFound;
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return prefix + "Pseudo Boolean Optimization by lower bound\n"
-				+ super.toString(prefix);
-	}
+    @Override
+    public String toString(String prefix) {
+        return prefix + "Pseudo Boolean Optimization by lower bound\n"
+                + super.toString(prefix);
+    }
 
 }

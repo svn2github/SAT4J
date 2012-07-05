@@ -33,16 +33,16 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class CompetPBResMinHTMixedConstraintsObjectiveLearningTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractPseudoBooleanAndPigeonHoleTest {
 
-	public CompetPBResMinHTMixedConstraintsObjectiveLearningTest(String arg) {
-		super(arg);
-		// TODO Auto-generated constructor stub
-	}
+    public CompetPBResMinHTMixedConstraintsObjectiveLearningTest(String arg) {
+        super(arg);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory.newCompetPBResMinHTMixedConstraintsObjective();
-	}
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory.newCompetPBResMinHTMixedConstraintsObjective();
+    }
 
 }

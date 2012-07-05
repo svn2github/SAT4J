@@ -43,118 +43,125 @@ import org.sat4j.specs.IVecInt;
 
 public abstract class Pseudos {
 
-	public static IDataStructurePB niceCheckedParameters(IVecInt ps,
-			IVec<BigInteger> bigCoefs, boolean moreThan, BigInteger bigDeg,
-			ILits voc) {
-		assert ps.size() != 0 && ps.size() == bigCoefs.size();
-		int[] lits = new int[ps.size()];
-		ps.copyTo(lits);
-		BigInteger[] bc = new BigInteger[bigCoefs.size()];
-		bigCoefs.copyTo(bc);
-		BigInteger bigDegree = Pseudos.niceCheckedParametersForCompetition(
-				lits, bc, moreThan, bigDeg);
+    public static IDataStructurePB niceCheckedParameters(IVecInt ps,
+            IVec<BigInteger> bigCoefs, boolean moreThan, BigInteger bigDeg,
+            ILits voc) {
+        assert ps.size() != 0 && ps.size() == bigCoefs.size();
+        int[] lits = new int[ps.size()];
+        ps.copyTo(lits);
+        BigInteger[] bc = new BigInteger[bigCoefs.size()];
+        bigCoefs.copyTo(bc);
+        BigInteger bigDegree = Pseudos.niceCheckedParametersForCompetition(
+                lits, bc, moreThan, bigDeg);
 
-		IDataStructurePB mpb = new MapPb(voc.nVars() * 2 + 2);
-		if (bigDegree.signum() > 0)
-			bigDegree = mpb.cuttingPlane(lits, bc, bigDegree);
-		if (bigDegree.signum() > 0)
-			bigDegree = mpb.saturation();
-		if (bigDegree.signum() <= 0)
-			return null;
-		return mpb;
-	}
+        IDataStructurePB mpb = new MapPb(voc.nVars() * 2 + 2);
+        if (bigDegree.signum() > 0) {
+            bigDegree = mpb.cuttingPlane(lits, bc, bigDegree);
+        }
+        if (bigDegree.signum() > 0) {
+            bigDegree = mpb.saturation();
+        }
+        if (bigDegree.signum() <= 0) {
+            return null;
+        }
+        return mpb;
+    }
 
-	public static BigInteger niceCheckedParametersForCompetition(int[] lits,
-			BigInteger[] bc, boolean moreThan, BigInteger bigDeg) {
-		BigInteger bigDegree = bigDeg;
-		if (!moreThan) {
-			for (int i = 0; i < lits.length; i++) {
-				bc[i] = bc[i].negate();
-			}
-			bigDegree = bigDegree.negate();
-		}
+    public static BigInteger niceCheckedParametersForCompetition(int[] lits,
+            BigInteger[] bc, boolean moreThan, BigInteger bigDeg) {
+        BigInteger bigDegree = bigDeg;
+        if (!moreThan) {
+            for (int i = 0; i < lits.length; i++) {
+                bc[i] = bc[i].negate();
+            }
+            bigDegree = bigDegree.negate();
+        }
 
-		for (int i = 0; i < bc.length; i++)
-			if (bc[i].signum() < 0) {
-				lits[i] = lits[i] ^ 1;
-				bc[i] = bc[i].negate();
-				bigDegree = bigDegree.add(bc[i]);
-			}
+        for (int i = 0; i < bc.length; i++) {
+            if (bc[i].signum() < 0) {
+                lits[i] = lits[i] ^ 1;
+                bc[i] = bc[i].negate();
+                bigDegree = bigDegree.add(bc[i]);
+            }
+        }
 
-		for (int i = 0; i < bc.length; i++)
-			if (bc[i].compareTo(bigDegree) > 0)
-				bc[i] = bigDegree;
+        for (int i = 0; i < bc.length; i++) {
+            if (bc[i].compareTo(bigDegree) > 0) {
+                bc[i] = bigDegree;
+            }
+        }
 
-		return bigDegree;
+        return bigDegree;
 
-	}
+    }
 
-	public static IDataStructurePB niceParameters(IVecInt ps,
-			IVec<BigInteger> bigCoefs, boolean moreThan, BigInteger bigDeg,
-			ILits voc) throws ContradictionException {
-		// Ajouter les simplifications quand la structure sera d?finitive
-		if (ps.size() == 0 && bigDeg.signum() > 0) {
-			throw new ContradictionException("Creating Empty clause ?");
-		} else if (ps.size() != bigCoefs.size()) {
-			throw new IllegalArgumentException(
-					"Contradiction dans la taille des tableaux ps=" + ps.size()
-							+ " coefs=" + bigCoefs.size() + ".");
-		}
-		return niceCheckedParameters(ps, bigCoefs, moreThan, bigDeg, voc);
-	}
+    public static IDataStructurePB niceParameters(IVecInt ps,
+            IVec<BigInteger> bigCoefs, boolean moreThan, BigInteger bigDeg,
+            ILits voc) throws ContradictionException {
+        // Ajouter les simplifications quand la structure sera d?finitive
+        if (ps.size() == 0 && bigDeg.signum() > 0) {
+            throw new ContradictionException("Creating Empty clause ?");
+        } else if (ps.size() != bigCoefs.size()) {
+            throw new IllegalArgumentException(
+                    "Contradiction dans la taille des tableaux ps=" + ps.size()
+                            + " coefs=" + bigCoefs.size() + ".");
+        }
+        return niceCheckedParameters(ps, bigCoefs, moreThan, bigDeg, voc);
+    }
 
-	public static BigInteger niceParametersForCompetition(int[] ps,
-			BigInteger[] bigCoefs, boolean moreThan, BigInteger bigDeg)
-			throws ContradictionException {
-		// Ajouter les simplifications quand la structure sera d?finitive
-		if (ps.length == 0 && bigDeg.signum() > 0) {
-			throw new ContradictionException("Creating Empty clause ?");
-		} else if (ps.length != bigCoefs.length) {
-			throw new IllegalArgumentException(
-					"Contradiction dans la taille des tableaux ps=" + ps.length
-							+ " coefs=" + bigCoefs.length + ".");
-		}
-		return niceCheckedParametersForCompetition(ps, bigCoefs, moreThan,
-				bigDeg);
-	}
+    public static BigInteger niceParametersForCompetition(int[] ps,
+            BigInteger[] bigCoefs, boolean moreThan, BigInteger bigDeg)
+            throws ContradictionException {
+        // Ajouter les simplifications quand la structure sera d?finitive
+        if (ps.length == 0 && bigDeg.signum() > 0) {
+            throw new ContradictionException("Creating Empty clause ?");
+        } else if (ps.length != bigCoefs.length) {
+            throw new IllegalArgumentException(
+                    "Contradiction dans la taille des tableaux ps=" + ps.length
+                            + " coefs=" + bigCoefs.length + ".");
+        }
+        return niceCheckedParametersForCompetition(ps, bigCoefs, moreThan,
+                bigDeg);
+    }
 
-	public static IVec<BigInteger> toVecBigInt(IVecInt vec) {
-		IVec<BigInteger> bigVec = new Vec<BigInteger>(vec.size());
-		for (int i = 0; i < vec.size(); ++i)
-			bigVec.push(BigInteger.valueOf(vec.get(i)));
-		return bigVec;
-	}
+    public static IVec<BigInteger> toVecBigInt(IVecInt vec) {
+        IVec<BigInteger> bigVec = new Vec<BigInteger>(vec.size());
+        for (int i = 0; i < vec.size(); ++i) {
+            bigVec.push(BigInteger.valueOf(vec.get(i)));
+        }
+        return bigVec;
+    }
 
-	public static BigInteger toBigInt(int i) {
-		return BigInteger.valueOf(i);
-	}
+    public static BigInteger toBigInt(int i) {
+        return BigInteger.valueOf(i);
+    }
 
-	public static ObjectiveFunction normalizeObjective(ObjectiveFunction initial) {
-		IVec<BigInteger> initCoeffs = initial.getCoeffs();
-		IVecInt initLits = initial.getVars();
-		assert initCoeffs.size() == initLits.size();
-		Map<Integer, BigInteger> reduced = new HashMap<Integer, BigInteger>();
-		int lit;
-		for (int i = 0; i < initLits.size(); i++) {
-			lit = initLits.get(i);
-			BigInteger oldCoef = reduced.get(lit);
-			if (oldCoef != null) {
-				reduced.put(lit, oldCoef.add(initCoeffs.get(i)));
-			} else {
-				reduced.put(lit, initCoeffs.get(i));
-			}
-		}
-		assert reduced.size() <= initLits.size();
-		if (reduced.size() < initLits.size()) {
-			IVecInt newLits = new VecInt(reduced.size());
-			IVec<BigInteger> newCoefs = new Vec<BigInteger>(reduced.size());
-			for (Map.Entry<Integer, BigInteger> entry : reduced.entrySet()) {
-				newLits.push(entry.getKey());
-				newCoefs.push(entry.getValue());
-			}
-			return new ObjectiveFunction(newLits, newCoefs);
-		}
-		return initial;
-	}
+    public static ObjectiveFunction normalizeObjective(ObjectiveFunction initial) {
+        IVec<BigInteger> initCoeffs = initial.getCoeffs();
+        IVecInt initLits = initial.getVars();
+        assert initCoeffs.size() == initLits.size();
+        Map<Integer, BigInteger> reduced = new HashMap<Integer, BigInteger>();
+        int lit;
+        for (int i = 0; i < initLits.size(); i++) {
+            lit = initLits.get(i);
+            BigInteger oldCoef = reduced.get(lit);
+            if (oldCoef != null) {
+                reduced.put(lit, oldCoef.add(initCoeffs.get(i)));
+            } else {
+                reduced.put(lit, initCoeffs.get(i));
+            }
+        }
+        assert reduced.size() <= initLits.size();
+        if (reduced.size() < initLits.size()) {
+            IVecInt newLits = new VecInt(reduced.size());
+            IVec<BigInteger> newCoefs = new Vec<BigInteger>(reduced.size());
+            for (Map.Entry<Integer, BigInteger> entry : reduced.entrySet()) {
+                newLits.push(entry.getKey());
+                newCoefs.push(entry.getValue());
+            }
+            return new ObjectiveFunction(newLits, newCoefs);
+        }
+        return initial;
+    }
 
 }

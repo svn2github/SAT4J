@@ -43,156 +43,160 @@ import org.sat4j.specs.IProblem;
  */
 public class OPBReader2010 extends OPBReader2007 {
 
-	public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger(
-			"100000000000000000000000000000000000000000");
+    public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger(
+            "100000000000000000000000000000000000000000");
 
-	private boolean isWbo = false;
+    private boolean isWbo = false;
 
-	private BigInteger softLimit = SAT4J_MAX_BIG_INTEGER;
+    private BigInteger softLimit = SAT4J_MAX_BIG_INTEGER;
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public OPBReader2010(IPBSolver solver) {
-		super(solver);
-	}
+    public OPBReader2010(IPBSolver solver) {
+        super(solver);
+    }
 
-	/**
-	 * read the first comment line to get the number of variables and the number
-	 * of constraints in the file calls metaData with the data that was read
-	 * 
-	 * @throws IOException
-	 * @throws ParseFormatException
-	 */
-	@Override
-	protected void readMetaData() throws IOException, ParseFormatException {
-		char c;
-		String s;
+    /**
+     * read the first comment line to get the number of variables and the number
+     * of constraints in the file calls metaData with the data that was read
+     * 
+     * @throws IOException
+     * @throws ParseFormatException
+     */
+    @Override
+    protected void readMetaData() throws IOException, ParseFormatException {
+        char c;
+        String s;
 
-		// get the number of variables and constraints
-		c = get();
-		if (c != '*')
-			throw new ParseFormatException(
-					"First line of input file should be a comment");
-		s = readWord();
-		if (eof() || !"#variable=".equals(s))
-			throw new ParseFormatException(
-					"First line should contain #variable= as first keyword");
+        // get the number of variables and constraints
+        c = get();
+        if (c != '*') {
+            throw new ParseFormatException(
+                    "First line of input file should be a comment");
+        }
+        s = readWord();
+        if (eof() || !"#variable=".equals(s)) {
+            throw new ParseFormatException(
+                    "First line should contain #variable= as first keyword");
+        }
 
-		nbVars = Integer.parseInt(readWord());
-		nbNewSymbols = nbVars + 1;
+        this.nbVars = Integer.parseInt(readWord());
+        this.nbNewSymbols = this.nbVars + 1;
 
-		s = readWord();
-		if (eof() || !"#constraint=".equals(s))
-			throw new ParseFormatException(
-					"First line should contain #constraint= as second keyword");
+        s = readWord();
+        if (eof() || !"#constraint=".equals(s)) {
+            throw new ParseFormatException(
+                    "First line should contain #constraint= as second keyword");
+        }
 
-		nbConstr = Integer.parseInt(readWord());
-		charAvailable = false;
-		if (!eol()) {
-			String rest = in.readLine();
+        this.nbConstr = Integer.parseInt(readWord());
+        this.charAvailable = false;
+        if (!eol()) {
+            String rest = this.in.readLine();
 
-			if (rest != null && rest.contains("#soft")) {
-				isWbo = true;
-				hasObjFunc = true;
-			}
-			if (rest != null && rest.indexOf("#product=") != -1) {
-				String[] splitted = rest.trim().split(" ");
-				if (splitted[0].equals("#product=")) {
-					Integer.parseInt(splitted[1]);
-				}
+            if (rest != null && rest.contains("#soft")) {
+                this.isWbo = true;
+                this.hasObjFunc = true;
+            }
+            if (rest != null && rest.indexOf("#product=") != -1) {
+                String[] splitted = rest.trim().split(" ");
+                if (splitted[0].equals("#product=")) {
+                    Integer.parseInt(splitted[1]);
+                }
 
-				// if (splitted[2].equals("sizeproduct="))
-				// readWord();
+                // if (splitted[2].equals("sizeproduct="))
+                // readWord();
 
-			}
-		}
-		// callback to transmit the data
-		metaData(nbVars, nbConstr);
-	}
+            }
+        }
+        // callback to transmit the data
+        metaData(this.nbVars, this.nbConstr);
+    }
 
-	@Override
-	protected void readObjective() throws IOException, ParseFormatException {
-		if (isWbo) {
-			readSoftLine();
-		} else {
-			super.readObjective();
-		}
-	}
+    @Override
+    protected void readObjective() throws IOException, ParseFormatException {
+        if (this.isWbo) {
+            readSoftLine();
+        } else {
+            super.readObjective();
+        }
+    }
 
-	private void readSoftLine() throws IOException, ParseFormatException {
-		String s = readWord();
-		if (s == null || !"soft:".equals(s)) {
-			throw new ParseFormatException("Did not find expected soft: line");
-		}
-		s = readWord().trim();
-		if (s != null && !";".equals(s)) {
-			softLimit = new BigInteger(s);
-		}
-		skipSpaces();
-		if (get() != ';') {
-			throw new ParseFormatException(
-					"soft: line should end with a semicolon");
-		}
-	}
+    private void readSoftLine() throws IOException, ParseFormatException {
+        String s = readWord();
+        if (s == null || !"soft:".equals(s)) {
+            throw new ParseFormatException("Did not find expected soft: line");
+        }
+        s = readWord().trim();
+        if (s != null && !";".equals(s)) {
+            this.softLimit = new BigInteger(s);
+        }
+        skipSpaces();
+        if (get() != ';') {
+            throw new ParseFormatException(
+                    "soft: line should end with a semicolon");
+        }
+    }
 
-	private boolean softConstraint;
+    private boolean softConstraint;
 
-	@Override
-	protected void beginConstraint() {
-		super.beginConstraint();
-		softConstraint = false;
-		try {
-			if (isWbo) {
-				skipSpaces();
-				char c = get();
-				putback(c);
-				if (c == '[') {
-					softConstraint = true;
-					String s = readWord();
-					if (!s.endsWith("]"))
-						throw new ParseFormatException(
-								"Expecting end of weight ");
-					BigInteger coeff = new BigInteger(s.substring(1,
-							s.length() - 1));
-					getCoeffs().push(coeff);
-					int varId = nbNewSymbols++;
-					getVars().push(varId);
-				}
+    @Override
+    protected void beginConstraint() {
+        super.beginConstraint();
+        this.softConstraint = false;
+        try {
+            if (this.isWbo) {
+                skipSpaces();
+                char c = get();
+                putback(c);
+                if (c == '[') {
+                    this.softConstraint = true;
+                    String s = readWord();
+                    if (!s.endsWith("]")) {
+                        throw new ParseFormatException(
+                                "Expecting end of weight ");
+                    }
+                    BigInteger coeff = new BigInteger(s.substring(1,
+                            s.length() - 1));
+                    getCoeffs().push(coeff);
+                    int varId = this.nbNewSymbols++;
+                    getVars().push(varId);
+                }
 
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Override
-	protected void endConstraint() throws ContradictionException {
-		if (softConstraint) {
-			int varId = getVars().last();
-			BigInteger constrWeight = d;
-			for (Iterator<BigInteger> it = coeffs.iterator(); it.hasNext();) {
-				constrWeight = constrWeight.add(it.next().abs());
-			}
-			if ("<=".equals(operator)) {
-				constrWeight = constrWeight.negate();
-			}
-			coeffs.push(constrWeight);
-			lits.push(varId);
-		}
-		super.endConstraint();
-	}
+    @Override
+    protected void endConstraint() throws ContradictionException {
+        if (this.softConstraint) {
+            int varId = getVars().last();
+            BigInteger constrWeight = this.d;
+            for (Iterator<BigInteger> it = this.coeffs.iterator(); it.hasNext();) {
+                constrWeight = constrWeight.add(it.next().abs());
+            }
+            if ("<=".equals(this.operator)) {
+                constrWeight = constrWeight.negate();
+            }
+            this.coeffs.push(constrWeight);
+            this.lits.push(varId);
+        }
+        super.endConstraint();
+    }
 
-	@Override
-	public IProblem parseInstance(final java.io.Reader input)
-			throws ParseFormatException, ContradictionException {
-		super.parseInstance(input);
-		if (isWbo && softLimit != SAT4J_MAX_BIG_INTEGER) {
-			solver.addPseudoBoolean(getVars(), getCoeffs(), false,
-					softLimit.subtract(BigInteger.ONE));
-		}
-		return solver;
-	}
+    @Override
+    public IProblem parseInstance(final java.io.Reader input)
+            throws ParseFormatException, ContradictionException {
+        super.parseInstance(input);
+        if (this.isWbo && this.softLimit != SAT4J_MAX_BIG_INTEGER) {
+            this.solver.addPseudoBoolean(getVars(), getCoeffs(), false,
+                    this.softLimit.subtract(BigInteger.ONE));
+        }
+        return this.solver;
+    }
 }

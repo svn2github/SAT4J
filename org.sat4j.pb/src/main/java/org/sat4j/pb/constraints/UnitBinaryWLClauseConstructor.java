@@ -41,29 +41,29 @@ import org.sat4j.specs.IVecInt;
 
 public class UnitBinaryWLClauseConstructor implements IClauseConstructor {
 
-	public Constr constructClause(UnitPropagationListener solver, ILits voc,
-			IVecInt v) {
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, voc, v);
-		}
-		return OriginalWLClause.brandNewClause(solver, voc, v);
-	}
+    public Constr constructClause(UnitPropagationListener solver, ILits voc,
+            IVecInt v) {
+        if (v == null) {
+            // tautological clause
+            return null;
+        }
+        if (v.size() == 1) {
+            return new UnitClause(v.last());
+        }
+        if (v.size() == 2) {
+            return OriginalBinaryClause.brandNewClause(solver, voc, v);
+        }
+        return OriginalWLClause.brandNewClause(solver, voc, v);
+    }
 
-	public Constr constructLearntClause(ILits voc, IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClause(literals, voc);
-		}
-		return new LearntWLClause(literals, voc);
-	}
+    public Constr constructLearntClause(ILits voc, IVecInt literals) {
+        if (literals.size() == 1) {
+            return new UnitClause(literals.last());
+        }
+        if (literals.size() == 2) {
+            return new LearntBinaryClause(literals, voc);
+        }
+        return new LearntWLClause(literals, voc);
+    }
 
 }

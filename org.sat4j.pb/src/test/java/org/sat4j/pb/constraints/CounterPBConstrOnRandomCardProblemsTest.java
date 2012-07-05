@@ -37,11 +37,11 @@ import org.sat4j.pb.IPBSolver;
 /**
  * @author leberre
  * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
+ *         To change the template for this generated type comment go to Window -
+ *         Preferences - Java - Code Generation - Code and Comments
  */
 public class CounterPBConstrOnRandomCardProblemsTest extends
-        AbstractPBRandomCardProblemsTest{
+        AbstractPBRandomCardProblemsTest {
 
     /**
      * @param arg0

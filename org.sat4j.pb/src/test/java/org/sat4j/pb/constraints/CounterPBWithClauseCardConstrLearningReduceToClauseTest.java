@@ -35,18 +35,18 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class CounterPBWithClauseCardConstrLearningReduceToClauseTest extends
-		AbstractEZPseudoBooleanAndPigeonHoleTest {
+        AbstractEZPseudoBooleanAndPigeonHoleTest {
 
-	public CounterPBWithClauseCardConstrLearningReduceToClauseTest(String arg) {
-		super(arg);
-	}
+    public CounterPBWithClauseCardConstrLearningReduceToClauseTest(String arg) {
+        super(arg);
+    }
 
-	/**
-	 * @see TestCase#setUp()
-	 */
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory.newPBCPMixedConstraintsReduceToClause();
-	}
+    /**
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory.newPBCPMixedConstraintsReduceToClause();
+    }
 
 }

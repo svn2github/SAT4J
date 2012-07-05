@@ -36,8 +36,8 @@ import org.sat4j.specs.IVecInt;
 
 public interface IClauseConstructor {
 
-	Constr constructClause(UnitPropagationListener solver, ILits voc, IVecInt v);
+    Constr constructClause(UnitPropagationListener solver, ILits voc, IVecInt v);
 
-	Constr constructLearntClause(ILits voc, IVecInt literals);
+    Constr constructLearntClause(ILits voc, IVecInt literals);
 
 }

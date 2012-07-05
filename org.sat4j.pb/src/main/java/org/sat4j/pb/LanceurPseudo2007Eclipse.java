@@ -42,70 +42,70 @@ import org.sat4j.specs.TimeoutException;
 
 public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
 
-	XplainPB quickxplain;
+    XplainPB quickxplain;
 
-	@Override
-	protected ISolver configureSolver(String[] args) {
-		IPBSolver theSolver;
-		if (args.length > 1) {
-			theSolver = SolverFactory.instance().createSolverByName(args[0]);
-		} else {
-			theSolver = SolverFactory.newDefault();
-		}
-		quickxplain = new XplainPB(theSolver);
-		theSolver = new PseudoOptDecorator(quickxplain);
-		if (args.length == 3) {
-			theSolver.setTimeout(Integer.valueOf(args[1]));
-		}
-		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return theSolver;
-	}
+    @Override
+    protected ISolver configureSolver(String[] args) {
+        IPBSolver theSolver;
+        if (args.length > 1) {
+            theSolver = SolverFactory.instance().createSolverByName(args[0]);
+        } else {
+            theSolver = SolverFactory.newDefault();
+        }
+        this.quickxplain = new XplainPB(theSolver);
+        theSolver = new PseudoOptDecorator(this.quickxplain);
+        if (args.length == 3) {
+            theSolver.setTimeout(Integer.valueOf(args[1]));
+        }
+        this.out.println(theSolver.toString(COMMENT_PREFIX));
+        return theSolver;
+    }
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public LanceurPseudo2007Eclipse() {
-	}
+    public LanceurPseudo2007Eclipse() {
+    }
 
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		return new OPBEclipseReader2007((IPBSolver) theSolver);
-	}
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        return new OPBEclipseReader2007((IPBSolver) theSolver);
+    }
 
-	/**
-	 * Lance le prouveur sur un fichier Dimacs
-	 * 
-	 * @param args
-	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
-	 *            compress?.
-	 */
-	public static void main(final String[] args) {
-		final AbstractLauncher lanceur = new LanceurPseudo2007Eclipse();
-		if (args.length == 0 || args.length > 2) {
-			lanceur.usage();
-			return;
-		}
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    /**
+     * Lance le prouveur sur un fichier Dimacs
+     * 
+     * @param args
+     *            doit contenir le nom d'un fichier Dimacs, eventuellement
+     *            compress?.
+     */
+    public static void main(final String[] args) {
+        final AbstractLauncher lanceur = new LanceurPseudo2007Eclipse();
+        if (args.length == 0 || args.length > 2) {
+            lanceur.usage();
+            return;
+        }
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 
-	@Override
-	protected void displayAnswer() {
-		super.displayAnswer();
-		ExitCode exitCode = getExitCode();
+    @Override
+    protected void displayAnswer() {
+        super.displayAnswer();
+        ExitCode exitCode = getExitCode();
 
-		if (exitCode == ExitCode.UNSATISFIABLE) {
-			try {
+        if (exitCode == ExitCode.UNSATISFIABLE) {
+            try {
 
-				Collection<IConstr> explanation = quickxplain.explain();
-				log("Explanation for inconsistency: " + explanation);
-			} catch (TimeoutException e) {
-				log("Timeout ! Need more time to complete");
-			}
-		}
+                Collection<IConstr> explanation = this.quickxplain.explain();
+                log("Explanation for inconsistency: " + explanation);
+            } catch (TimeoutException e) {
+                log("Timeout ! Need more time to complete");
+            }
+        }
 
-	}
+    }
 
 }

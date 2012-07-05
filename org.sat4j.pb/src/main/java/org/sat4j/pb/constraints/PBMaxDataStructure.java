@@ -43,36 +43,36 @@ import org.sat4j.specs.ContradictionException;
  */
 public class PBMaxDataStructure extends AbstractPBDataStructureFactory {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param literals
-	 * @param coefs
-	 * @param moreThan
-	 * @param degree
-	 * @return a counter-based PB constraint.
-	 * @throws ContradictionException
-	 */
-	@Override
-	protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		// return MaxWatchPb.maxWatchPbNew(solver, getVocabulary(), literals,
-		// coefs, moreThan, degree);
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, getVocabulary(),
-				literals, coefs, degree,
-				AbstractPBClauseCardConstrDataStructure
-						.sumOfCoefficients(coefs));
-	}
+    /**
+     * @param literals
+     * @param coefs
+     * @param moreThan
+     * @param degree
+     * @return a counter-based PB constraint.
+     * @throws ContradictionException
+     */
+    @Override
+    protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
+            BigInteger degree) throws ContradictionException {
+        // return MaxWatchPb.maxWatchPbNew(solver, getVocabulary(), literals,
+        // coefs, moreThan, degree);
+        return MaxWatchPb.normalizedMaxWatchPbNew(this.solver, getVocabulary(),
+                literals, coefs, degree,
+                AbstractPBClauseCardConstrDataStructure
+                        .sumOfCoefficients(coefs));
+    }
 
-	/**
-	 * @param literals
-	 * @param weightedLits
-	 * @param degree
-	 * @return a counter-based PB constraint.
-	 */
-	@Override
-	protected WatchPb learntConstraintFactory(IDataStructurePB dspb) {
-		return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
-	}
+    /**
+     * @param literals
+     * @param weightedLits
+     * @param degree
+     * @return a counter-based PB constraint.
+     */
+    @Override
+    protected WatchPb learntConstraintFactory(IDataStructurePB dspb) {
+        return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
+    }
 
 }

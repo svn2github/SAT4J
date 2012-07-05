@@ -33,34 +33,36 @@ import java.math.BigInteger;
 
 public final class ConflictMapClause extends ConflictMap {
 
-	public ConflictMapClause(PBConstr cpb, int level) {
-		super(cpb, level);
-	}
+    public ConflictMapClause(PBConstr cpb, int level) {
+        super(cpb, level);
+    }
 
-	public static IConflict createConflict(PBConstr cpb, int level) {
-		return new ConflictMapClause(cpb, level);
-	}
+    public static IConflict createConflict(PBConstr cpb, int level) {
+        return new ConflictMapClause(cpb, level);
+    }
 
-	/**
-	 * reduces the constraint defined by wpb until the result of the cutting
-	 * plane is a conflict. this reduction returns a clause.
-	 * 
-	 * @param litImplied
-	 * @param ind
-	 * @param reducedCoefs
-	 * @param wpb
-	 * @return BigInteger.ONE
-	 */
-	@Override
-	protected BigInteger reduceUntilConflict(int litImplied, int ind,
-			BigInteger[] reducedCoefs, IWatchPb wpb) {
-		for (int i = 0; i < reducedCoefs.length; i++)
-			if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i)))
-				reducedCoefs[i] = BigInteger.ONE;
-			else
-				reducedCoefs[i] = BigInteger.ZERO;
-		coefMultCons = weightedLits.get(litImplied ^ 1);
-		coefMult = BigInteger.ONE;
-		return BigInteger.ONE;
-	}
+    /**
+     * reduces the constraint defined by wpb until the result of the cutting
+     * plane is a conflict. this reduction returns a clause.
+     * 
+     * @param litImplied
+     * @param ind
+     * @param reducedCoefs
+     * @param wpb
+     * @return BigInteger.ONE
+     */
+    @Override
+    protected BigInteger reduceUntilConflict(int litImplied, int ind,
+            BigInteger[] reducedCoefs, IWatchPb wpb) {
+        for (int i = 0; i < reducedCoefs.length; i++) {
+            if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i))) {
+                reducedCoefs[i] = BigInteger.ONE;
+            } else {
+                reducedCoefs[i] = BigInteger.ZERO;
+            }
+        }
+        this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
+        this.coefMult = BigInteger.ONE;
+        return BigInteger.ONE;
+    }
 }

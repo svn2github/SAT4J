@@ -33,62 +33,65 @@ import java.math.BigInteger;
 
 public final class ConflictMapSwitchToClause extends ConflictMap {
 
-	public static int UPPERBOUND;
+    public static int UPPERBOUND;
 
-	public ConflictMapSwitchToClause(PBConstr cpb, int level) {
-		super(cpb, level);
-	}
+    public ConflictMapSwitchToClause(PBConstr cpb, int level) {
+        super(cpb, level);
+    }
 
-	public static IConflict createConflict(PBConstr cpb, int level) {
-		return new ConflictMapSwitchToClause(cpb, level);
-	}
+    public static IConflict createConflict(PBConstr cpb, int level) {
+        return new ConflictMapSwitchToClause(cpb, level);
+    }
 
-	/**
-	 * reduces the constraint defined by wpb until the result of the cutting
-	 * plane is a conflict. this reduction returns either a clause if .
-	 * 
-	 * @param litImplied
-	 * @param ind
-	 * @param reducedCoefs
-	 * @param wpb
-	 * @return BigInteger.ONE
-	 */
-	@Override
-	protected BigInteger reduceUntilConflict(int litImplied, int ind,
-			BigInteger[] reducedCoefs, IWatchPb wpb) {
-		BigInteger degreeCons = super.reduceUntilConflict(litImplied, ind,
-				reducedCoefs, wpb);
-		// updating of the degree of the conflict
-		int i = 0;
-		for (; i < reducedCoefs.length
-				&& reducedCoefs[i].equals(BigInteger.ZERO) && i != ind; i++) {
-		}
-		if (i < reducedCoefs.length) {
-			BigInteger bigCoef = reducedCoefs[i].multiply(coefMultCons);
-			if (weightedLits.containsKey(wpb.get(i)))
-				bigCoef = bigCoef.add(weightedLits.get(wpb.get(i)).multiply(
-						coefMult));
-			if (bigCoef.toString().length() > UPPERBOUND) {
-				// if we deal with really big integers
-				// reducing the constraint to a clause
-				numberOfReductions++;
-				hasBeenReduced = true;
-				degreeCons = reduceToClause(ind, wpb, reducedCoefs);
-				coefMultCons = weightedLits.get(litImplied ^ 1);
-				coefMult = BigInteger.ONE;
-			}
-		}
-		return degreeCons;
-	}
+    /**
+     * reduces the constraint defined by wpb until the result of the cutting
+     * plane is a conflict. this reduction returns either a clause if .
+     * 
+     * @param litImplied
+     * @param ind
+     * @param reducedCoefs
+     * @param wpb
+     * @return BigInteger.ONE
+     */
+    @Override
+    protected BigInteger reduceUntilConflict(int litImplied, int ind,
+            BigInteger[] reducedCoefs, IWatchPb wpb) {
+        BigInteger degreeCons = super.reduceUntilConflict(litImplied, ind,
+                reducedCoefs, wpb);
+        // updating of the degree of the conflict
+        int i = 0;
+        for (; i < reducedCoefs.length
+                && reducedCoefs[i].equals(BigInteger.ZERO) && i != ind; i++) {
+        }
+        if (i < reducedCoefs.length) {
+            BigInteger bigCoef = reducedCoefs[i].multiply(this.coefMultCons);
+            if (this.weightedLits.containsKey(wpb.get(i))) {
+                bigCoef = bigCoef.add(this.weightedLits.get(wpb.get(i))
+                        .multiply(this.coefMult));
+            }
+            if (bigCoef.toString().length() > UPPERBOUND) {
+                // if we deal with really big integers
+                // reducing the constraint to a clause
+                this.numberOfReductions++;
+                this.hasBeenReduced = true;
+                degreeCons = reduceToClause(ind, wpb, reducedCoefs);
+                this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
+                this.coefMult = BigInteger.ONE;
+            }
+        }
+        return degreeCons;
+    }
 
-	private BigInteger reduceToClause(int ind, IWatchPb wpb,
-			BigInteger[] reducedCoefs) {
-		for (int i = 0; i < reducedCoefs.length; i++)
-			if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i)))
-				reducedCoefs[i] = BigInteger.ONE;
-			else
-				reducedCoefs[i] = BigInteger.ZERO;
-		return BigInteger.ONE;
-	}
+    private BigInteger reduceToClause(int ind, IWatchPb wpb,
+            BigInteger[] reducedCoefs) {
+        for (int i = 0; i < reducedCoefs.length; i++) {
+            if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i))) {
+                reducedCoefs[i] = BigInteger.ONE;
+            } else {
+                reducedCoefs[i] = BigInteger.ZERO;
+            }
+        }
+        return BigInteger.ONE;
+    }
 
 }

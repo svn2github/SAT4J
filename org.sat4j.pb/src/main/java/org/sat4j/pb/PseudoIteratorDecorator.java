@@ -42,23 +42,23 @@ import org.sat4j.specs.IVecInt;
  */
 public class PseudoIteratorDecorator extends PseudoOptDecorator {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PseudoIteratorDecorator(IPBSolver solver) {
-		super(solver);
-	}
+    public PseudoIteratorDecorator(IPBSolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public void discardCurrentSolution() throws ContradictionException {
-		int[] last = super.model();
-		IVecInt clause = new VecInt(last.length);
-		for (int q : last) {
-			clause.push(-q);
-		}
-		addClause(clause);
-	}
+    @Override
+    public void discardCurrentSolution() throws ContradictionException {
+        int[] last = super.model();
+        IVecInt clause = new VecInt(last.length);
+        for (int q : last) {
+            clause.push(-q);
+        }
+        addClause(clause);
+    }
 
 }

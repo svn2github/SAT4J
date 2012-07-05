@@ -36,26 +36,27 @@ import org.sat4j.pb.tools.LexicoHelper;
 
 public class BugSAT35 {
 
-	private LexicoHelper<String, String> helper;
+    private LexicoHelper<String, String> helper;
 
-	@Test
-	public void buildHelperWithDefaultConstructor() {
-		helper = new LexicoHelper<String, String>(SolverFactory.newDefault());
-		assertNotNull(helper);
-	}
+    @Test
+    public void buildHelperWithDefaultConstructor() {
+        this.helper = new LexicoHelper<String, String>(
+                SolverFactory.newDefault());
+        assertNotNull(this.helper);
+    }
 
-	@Test
-	public void buildHelperWithExplanationParameterToTrueConstructor() {
-		helper = new LexicoHelper<String, String>(SolverFactory.newDefault(),
-				true);
-		assertNotNull(helper);
-	}
+    @Test
+    public void buildHelperWithExplanationParameterToTrueConstructor() {
+        this.helper = new LexicoHelper<String, String>(
+                SolverFactory.newDefault(), true);
+        assertNotNull(this.helper);
+    }
 
-	@Test
-	public void buildHelperWithExplanationParameterToFalseConstructor() {
-		helper = new LexicoHelper<String, String>(SolverFactory.newDefault(),
-				false);
-		assertNotNull(helper);
-	}
+    @Test
+    public void buildHelperWithExplanationParameterToFalseConstructor() {
+        this.helper = new LexicoHelper<String, String>(
+                SolverFactory.newDefault(), false);
+        assertNotNull(this.helper);
+    }
 
 }

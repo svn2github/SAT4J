@@ -41,22 +41,22 @@ import org.sat4j.specs.ContradictionException;
 
 public class MaxLongWatchPBCPConstructor implements IPBConstructor {
 
-	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
-		if (dspb.isLongSufficient()) {
-			return MaxWatchPbLongCP.normalizedWatchPbNew(voc, dspb);
-		}
-		return MaxWatchPb.normalizedWatchPbNew(voc, dspb);
-	}
+    public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
+        if (dspb.isLongSufficient()) {
+            return MaxWatchPbLongCP.normalizedWatchPbNew(voc, dspb);
+        }
+        return MaxWatchPb.normalizedWatchPbNew(voc, dspb);
+    }
 
-	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException {
-		if (sumCoefs.bitLength() < Long.SIZE) {
-			return MaxWatchPbLongCP.normalizedMaxWatchPbNew(solver, voc,
-					theLits, coefs, degree, sumCoefs);
-		}
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
-				degree, sumCoefs);
-	}
+    public Constr constructPB(UnitPropagationListener solver, ILits voc,
+            int[] theLits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException {
+        if (sumCoefs.bitLength() < Long.SIZE) {
+            return MaxWatchPbLongCP.normalizedMaxWatchPbNew(solver, voc,
+                    theLits, coefs, degree, sumCoefs);
+        }
+        return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
+                degree, sumCoefs);
+    }
 
 }

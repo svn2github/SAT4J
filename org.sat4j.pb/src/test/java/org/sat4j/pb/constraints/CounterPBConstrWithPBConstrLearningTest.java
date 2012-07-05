@@ -38,8 +38,8 @@ import org.sat4j.pb.SolverFactory;
 /**
  * @author Propri?taire
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class CounterPBConstrWithPBConstrLearningTest extends
         AbstractEZPseudoBooleanAndPigeonHoleTest {

@@ -57,182 +57,184 @@ import org.sat4j.specs.IVecInt;
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class AbstractPBDataStructureFactory extends
-		AbstractDataStructureFactory implements PBDataStructureFactory {
+        AbstractDataStructureFactory implements PBDataStructureFactory {
 
-	interface INormalizer {
-		PBContainer nice(IVecInt ps, IVec<BigInteger> bigCoefs,
-				boolean moreThan, BigInteger bigDeg, ILits voc)
-				throws ContradictionException;
-	}
+    interface INormalizer {
+        PBContainer nice(IVecInt ps, IVec<BigInteger> bigCoefs,
+                boolean moreThan, BigInteger bigDeg, ILits voc)
+                throws ContradictionException;
+    }
 
-	public static final INormalizer FOR_COMPETITION = new INormalizer() {
+    public static final INormalizer FOR_COMPETITION = new INormalizer() {
 
-		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
-				boolean moreThan, BigInteger degree, ILits voc)
-				throws ContradictionException {
-			if (literals.size() != coefs.size())
-				throw new IllegalArgumentException(
-						"Number of coeff and literals are different!!!");
-			IVecInt cliterals = new VecInt(literals.size());
-			literals.copyTo(cliterals);
-			IVec<BigInteger> ccoefs = new Vec<BigInteger>(literals.size());
-			coefs.copyTo(ccoefs);
-			for (int i = 0; i < cliterals.size();) {
-				if (ccoefs.get(i).equals(BigInteger.ZERO)) {
-					cliterals.delete(i);
-					ccoefs.delete(i);
-				} else {
-					i++;
-				}
-			}
-			int[] theLits = new int[cliterals.size()];
-			cliterals.copyTo(theLits);
-			BigInteger[] normCoefs = new BigInteger[ccoefs.size()];
-			ccoefs.copyTo(normCoefs);
-			BigInteger degRes = Pseudos.niceParametersForCompetition(theLits,
-					normCoefs, moreThan, degree);
-			return new PBContainer(theLits, normCoefs, degRes);
+        public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
+                boolean moreThan, BigInteger degree, ILits voc)
+                throws ContradictionException {
+            if (literals.size() != coefs.size()) {
+                throw new IllegalArgumentException(
+                        "Number of coeff and literals are different!!!");
+            }
+            IVecInt cliterals = new VecInt(literals.size());
+            literals.copyTo(cliterals);
+            IVec<BigInteger> ccoefs = new Vec<BigInteger>(literals.size());
+            coefs.copyTo(ccoefs);
+            for (int i = 0; i < cliterals.size();) {
+                if (ccoefs.get(i).equals(BigInteger.ZERO)) {
+                    cliterals.delete(i);
+                    ccoefs.delete(i);
+                } else {
+                    i++;
+                }
+            }
+            int[] theLits = new int[cliterals.size()];
+            cliterals.copyTo(theLits);
+            BigInteger[] normCoefs = new BigInteger[ccoefs.size()];
+            ccoefs.copyTo(normCoefs);
+            BigInteger degRes = Pseudos.niceParametersForCompetition(theLits,
+                    normCoefs, moreThan, degree);
+            return new PBContainer(theLits, normCoefs, degRes);
 
-		}
+        }
 
-	};
+    };
 
-	public static final INormalizer NO_COMPETITION = new INormalizer() {
+    public static final INormalizer NO_COMPETITION = new INormalizer() {
 
-		public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
-				boolean moreThan, BigInteger degree, ILits voc)
-				throws ContradictionException {
-			IDataStructurePB res = Pseudos.niceParameters(literals, coefs,
-					moreThan, degree, voc);
-			int size = res.size();
-			int[] theLits = new int[size];
-			BigInteger[] theCoefs = new BigInteger[size];
-			res.buildConstraintFromMapPb(theLits, theCoefs);
-			BigInteger theDegree = res.getDegree();
-			return new PBContainer(theLits, theCoefs, theDegree);
-		}
-	};
+        public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
+                boolean moreThan, BigInteger degree, ILits voc)
+                throws ContradictionException {
+            IDataStructurePB res = Pseudos.niceParameters(literals, coefs,
+                    moreThan, degree, voc);
+            int size = res.size();
+            int[] theLits = new int[size];
+            BigInteger[] theCoefs = new BigInteger[size];
+            res.buildConstraintFromMapPb(theLits, theCoefs);
+            BigInteger theDegree = res.getDegree();
+            return new PBContainer(theLits, theCoefs, theDegree);
+        }
+    };
 
-	private INormalizer norm = FOR_COMPETITION;
+    private INormalizer norm = FOR_COMPETITION;
 
-	protected INormalizer getNormalizer() {
-		return norm;
-	}
+    protected INormalizer getNormalizer() {
+        return this.norm;
+    }
 
-	public void setNormalizer(String simp) {
-		Field f;
-		try {
-			f = AbstractPBDataStructureFactory.class.getDeclaredField(simp);
-			norm = (INormalizer) f.get(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			norm = FOR_COMPETITION;
-		}
-	}
+    public void setNormalizer(String simp) {
+        Field f;
+        try {
+            f = AbstractPBDataStructureFactory.class.getDeclaredField(simp);
+            this.norm = (INormalizer) f.get(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.norm = FOR_COMPETITION;
+        }
+    }
 
-	public void setNormalizer(INormalizer normalizer) {
-		norm = normalizer;
-	}
+    public void setNormalizer(INormalizer normalizer) {
+        this.norm = normalizer;
+    }
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalHTClause.brandNewClause(solver, getVocabulary(), v);
-	}
+    public Constr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), this.solver);
+        if (v == null) {
+            // tautological clause
+            return null;
+        }
+        if (v.size() == 1) {
+            return new UnitClause(v.last());
+        }
+        if (v.size() == 2) {
+            return OriginalBinaryClause.brandNewClause(this.solver,
+                    getVocabulary(), v);
+        }
+        return OriginalHTClause.brandNewClause(this.solver, getVocabulary(), v);
+    }
 
-	public Constr createUnregisteredClause(IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClause(literals, getVocabulary());
-		}
-		return new LearntHTClause(literals, getVocabulary());
-	}
+    public Constr createUnregisteredClause(IVecInt literals) {
+        if (literals.size() == 1) {
+            return new UnitClause(literals.last());
+        }
+        if (literals.size() == 2) {
+            return new LearntBinaryClause(literals, getVocabulary());
+        }
+        return new LearntHTClause(literals, getVocabulary());
+    }
 
-	@Override
-	public Constr createCardinalityConstraint(IVecInt literals, int degree)
-			throws ContradictionException {
-		return AtLeastPB.atLeastNew(solver, getVocabulary(), literals, degree);
-	}
+    @Override
+    public Constr createCardinalityConstraint(IVecInt literals, int degree)
+            throws ContradictionException {
+        return AtLeastPB.atLeastNew(this.solver, getVocabulary(), literals,
+                degree);
+    }
 
-	public Constr createPseudoBooleanConstraint(IVecInt literals,
-			IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-			throws ContradictionException {
-		PBContainer res = getNormalizer().nice(literals, coefs, moreThan,
-				degree, getVocabulary());
-		return constraintFactory(res.lits, res.coefs, res.degree);
-	}
+    public Constr createPseudoBooleanConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
+            throws ContradictionException {
+        PBContainer res = getNormalizer().nice(literals, coefs, moreThan,
+                degree, getVocabulary());
+        return constraintFactory(res.lits, res.coefs, res.degree);
+    }
 
-	public Constr createAtMostPBConstraint(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree)
-			throws ContradictionException {
-		return createPseudoBooleanConstraint(literals, coefs, false, degree);
-	}
+    public Constr createAtMostPBConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree)
+            throws ContradictionException {
+        return createPseudoBooleanConstraint(literals, coefs, false, degree);
+    }
 
-	public Constr createAtLeastPBConstraint(IVecInt literals,
-			IVec<BigInteger> coefs, BigInteger degree)
-			throws ContradictionException {
-		return createPseudoBooleanConstraint(literals, coefs, true, degree);
-	}
+    public Constr createAtLeastPBConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree)
+            throws ContradictionException {
+        return createPseudoBooleanConstraint(literals, coefs, true, degree);
+    }
 
-	// public Constr createPseudoBooleanConstraint(IVecInt literals,
-	// IVecInt coefs, boolean moreThan, BigInteger degree)
-	// throws ContradictionException;
-	//
-	// public Constr createAtMostPBConstraint(IVecInt literals, IVecInt coefs,
-	// boolean moreThan, BigInteger degree) throws ContradictionException {
-	// return createPseudoBooleanConstraint(literals, coefs, false, degree);
-	// }
-	//
-	// public Constr createAtLeastPBConstraint(IVecInt literals, IVecInt coefs,
-	// boolean moreThan, BigInteger degree) throws ContradictionException {
-	// return createPseudoBooleanConstraint(literals, coefs, true, degree);
-	// }
-	//
-	// public Constr createAtMostPBConstraint(IVecInt literals, long[] coefs,
-	// boolean moreThan, BigInteger degree) throws ContradictionException {
-	// return createPseudoBooleanConstraint(literals, coefs, false, degree);
-	// }
-	//
-	// public Constr createAtLeastPBConstraint(IVecInt literals, long[] coefs,
-	// boolean moreThan, BigInteger degree) throws ContradictionException {
-	// return createPseudoBooleanConstraint(literals, coefs, true, degree);
-	// }
-	//
-	// public Constr createPseudoBooleanConstraint(IVecInt literals, long[]
-	// coefs,
-	// boolean moreThan, BigInteger degree) throws ContradictionException;
+    // public Constr createPseudoBooleanConstraint(IVecInt literals,
+    // IVecInt coefs, boolean moreThan, BigInteger degree)
+    // throws ContradictionException;
+    //
+    // public Constr createAtMostPBConstraint(IVecInt literals, IVecInt coefs,
+    // boolean moreThan, BigInteger degree) throws ContradictionException {
+    // return createPseudoBooleanConstraint(literals, coefs, false, degree);
+    // }
+    //
+    // public Constr createAtLeastPBConstraint(IVecInt literals, IVecInt coefs,
+    // boolean moreThan, BigInteger degree) throws ContradictionException {
+    // return createPseudoBooleanConstraint(literals, coefs, true, degree);
+    // }
+    //
+    // public Constr createAtMostPBConstraint(IVecInt literals, long[] coefs,
+    // boolean moreThan, BigInteger degree) throws ContradictionException {
+    // return createPseudoBooleanConstraint(literals, coefs, false, degree);
+    // }
+    //
+    // public Constr createAtLeastPBConstraint(IVecInt literals, long[] coefs,
+    // boolean moreThan, BigInteger degree) throws ContradictionException {
+    // return createPseudoBooleanConstraint(literals, coefs, true, degree);
+    // }
+    //
+    // public Constr createPseudoBooleanConstraint(IVecInt literals, long[]
+    // coefs,
+    // boolean moreThan, BigInteger degree) throws ContradictionException;
 
-	public Constr createUnregisteredPseudoBooleanConstraint(
-			IDataStructurePB dspb) {
-		return learntConstraintFactory(dspb);
-	}
+    public Constr createUnregisteredPseudoBooleanConstraint(
+            IDataStructurePB dspb) {
+        return learntConstraintFactory(dspb);
+    }
 
-	protected abstract Constr constraintFactory(int[] literals,
-			BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException;
+    protected abstract Constr constraintFactory(int[] literals,
+            BigInteger[] coefs, BigInteger degree)
+            throws ContradictionException;
 
-	protected abstract Constr learntConstraintFactory(IDataStructurePB dspb);
+    protected abstract Constr learntConstraintFactory(IDataStructurePB dspb);
 
-	@Override
-	protected ILits createLits() {
-		return new Lits();
-	}
+    @Override
+    protected ILits createLits() {
+        return new Lits();
+    }
 
 }

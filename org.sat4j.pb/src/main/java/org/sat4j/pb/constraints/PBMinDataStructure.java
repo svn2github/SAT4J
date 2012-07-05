@@ -43,33 +43,33 @@ import org.sat4j.specs.ContradictionException;
  */
 public class PBMinDataStructure extends AbstractPBDataStructureFactory {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected PBConstr constraintFactory(int[] literals, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return MinWatchPb.normalizedMinWatchPbNew(solver, getVocabulary(),
-				literals, coefs, degree,
-				AbstractPBClauseCardConstrDataStructure
-						.sumOfCoefficients(coefs));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
+     * boolean, int)
+     */
+    @Override
+    protected PBConstr constraintFactory(int[] literals, BigInteger[] coefs,
+            BigInteger degree) throws ContradictionException {
+        return MinWatchPb.normalizedMinWatchPbNew(this.solver, getVocabulary(),
+                literals, coefs, degree,
+                AbstractPBClauseCardConstrDataStructure
+                        .sumOfCoefficients(coefs));
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
-	 */
-	@Override
-	protected Constr learntConstraintFactory(IDataStructurePB dspb) {
-		return MinWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
+     */
+    @Override
+    protected Constr learntConstraintFactory(IDataStructurePB dspb) {
+        return MinWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
+    }
 
 }

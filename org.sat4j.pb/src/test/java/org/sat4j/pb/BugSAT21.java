@@ -45,88 +45,88 @@ import org.sat4j.specs.TimeoutException;
  */
 public class BugSAT21 {
 
-	@Test
-	public void testAtLeastWithNegativeLiteralsAsText()
-			throws ContradictionException {
+    @Test
+    public void testAtLeastWithNegativeLiteralsAsText()
+            throws ContradictionException {
 
-		IPBSolver pbSolver = new OPBStringSolver();
-		pbSolver.newVar(2);
-		pbSolver.setExpectedNumberOfClauses(1);
+        IPBSolver pbSolver = new OPBStringSolver();
+        pbSolver.newVar(2);
+        pbSolver.setExpectedNumberOfClauses(1);
 
-		int[] constr = { -1, 2 };
+        int[] constr = { -1, 2 };
 
-		pbSolver.addAtLeast(new VecInt(constr), 1);
-		String expected = "* #variable= 2 #constraint= 1 \n\n-1 x1 +1 x2 >= 0 ;\n";
-		assertEquals(expected, pbSolver.toString());
+        pbSolver.addAtLeast(new VecInt(constr), 1);
+        String expected = "* #variable= 2 #constraint= 1 \n\n-1 x1 +1 x2 >= 0 ;\n";
+        assertEquals(expected, pbSolver.toString());
 
-	}
+    }
 
-	@Test
-	public void testAtLeastWithNegativeLiterals()
-			throws ContradictionException, TimeoutException {
+    @Test
+    public void testAtLeastWithNegativeLiterals()
+            throws ContradictionException, TimeoutException {
 
-		IPBSolver pbSolver = SolverFactory.newDefault();
-		pbSolver.newVar(2);
-		pbSolver.setExpectedNumberOfClauses(1);
+        IPBSolver pbSolver = SolverFactory.newDefault();
+        pbSolver.newVar(2);
+        pbSolver.setExpectedNumberOfClauses(1);
 
-		int[] constr = { -1, 2 };
+        int[] constr = { -1, 2 };
 
-		pbSolver.addAtLeast(new VecInt(constr), 1);
-		IVecInt assumps = new VecInt();
-		assumps.push(1).push(-2);
-		assertFalse(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(-1).push(-2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(1).push(2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(-1).push(2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
+        pbSolver.addAtLeast(new VecInt(constr), 1);
+        IVecInt assumps = new VecInt();
+        assumps.push(1).push(-2);
+        assertFalse(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(-1).push(-2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(1).push(2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(-1).push(2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
 
-	}
+    }
 
-	@Test
-	public void testAlMostWithNegativeLiteralsAsText()
-			throws ContradictionException {
+    @Test
+    public void testAlMostWithNegativeLiteralsAsText()
+            throws ContradictionException {
 
-		IPBSolver pbSolver = new OPBStringSolver();
-		pbSolver.newVar(2);
-		pbSolver.setExpectedNumberOfClauses(1);
+        IPBSolver pbSolver = new OPBStringSolver();
+        pbSolver.newVar(2);
+        pbSolver.setExpectedNumberOfClauses(1);
 
-		int[] constr = { -1, 2 };
+        int[] constr = { -1, 2 };
 
-		pbSolver.addAtMost(new VecInt(constr), 1);
-		String expected = "* #variable= 2 #constraint= 1 \n\n+1 x1 -1 x2 >= 0 ;\n";
-		assertEquals(expected, pbSolver.toString());
+        pbSolver.addAtMost(new VecInt(constr), 1);
+        String expected = "* #variable= 2 #constraint= 1 \n\n+1 x1 -1 x2 >= 0 ;\n";
+        assertEquals(expected, pbSolver.toString());
 
-	}
-	
-	@Test
-	public void testAtMostWithNegativeLiterals()
-			throws ContradictionException, TimeoutException {
+    }
 
-		IPBSolver pbSolver = SolverFactory.newDefault();
-		pbSolver.newVar(2);
-		pbSolver.setExpectedNumberOfClauses(1);
+    @Test
+    public void testAtMostWithNegativeLiterals() throws ContradictionException,
+            TimeoutException {
 
-		int[] constr = { -1, 2 };
+        IPBSolver pbSolver = SolverFactory.newDefault();
+        pbSolver.newVar(2);
+        pbSolver.setExpectedNumberOfClauses(1);
 
-		pbSolver.addAtMost(new VecInt(constr), 1);
-		IVecInt assumps = new VecInt();
-		assumps.push(1).push(-2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(-1).push(-2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(1).push(2);
-		assertTrue(pbSolver.isSatisfiable(assumps));
-		assumps.clear();
-		assumps.push(-1).push(2);
-		assertFalse(pbSolver.isSatisfiable(assumps));
+        int[] constr = { -1, 2 };
 
-	}
+        pbSolver.addAtMost(new VecInt(constr), 1);
+        IVecInt assumps = new VecInt();
+        assumps.push(1).push(-2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(-1).push(-2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(1).push(2);
+        assertTrue(pbSolver.isSatisfiable(assumps));
+        assumps.clear();
+        assumps.push(-1).push(2);
+        assertFalse(pbSolver.isSatisfiable(assumps));
+
+    }
 
 }

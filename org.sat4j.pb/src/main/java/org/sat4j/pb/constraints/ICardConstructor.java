@@ -38,9 +38,9 @@ import org.sat4j.specs.IVecInt;
 
 public interface ICardConstructor {
 
-	Constr constructCard(UnitPropagationListener solver, ILits voc,
-			IVecInt theLits, int degree) throws ContradictionException;
+    Constr constructCard(UnitPropagationListener solver, ILits voc,
+            IVecInt theLits, int degree) throws ContradictionException;
 
-	Constr constructLearntCard(ILits voc, IDataStructurePB dspb);
+    Constr constructLearntCard(ILits voc, IDataStructurePB dspb);
 
 }

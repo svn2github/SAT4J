@@ -47,22 +47,24 @@ import org.sat4j.specs.TimeoutException;
  * https://bugs.eclipse.org/bugs/show_bug.cgi?id=247567
  * 
  * @author daniel
- *
+ * 
  */
 public class TestEclipseBug247567 {
-	private static final String PREFIX = System.getProperty("test.pbprefix");
+    private static final String PREFIX = System.getProperty("test.pbprefix");
 
-	@Test
-	public void testReserveVarsButUseLess() throws ContradictionException, TimeoutException, FileNotFoundException, ParseFormatException, IOException {
-		IPBSolver solver = SolverFactory.newEclipseP2();
-		Reader reader = new OPBEclipseReader2007(solver);
-		reader.parseInstance(PREFIX+"bug247567.opb");
-		assertTrue(solver.isSatisfiable());
-		assertTrue(solver.model(1));
-		assertTrue(solver.model(2));
-		assertTrue(solver.model(3));
-		assertFalse(solver.model(4));
-		assertFalse(solver.model(5));
-		assertFalse(solver.model(6));
-	}
+    @Test
+    public void testReserveVarsButUseLess() throws ContradictionException,
+            TimeoutException, FileNotFoundException, ParseFormatException,
+            IOException {
+        IPBSolver solver = SolverFactory.newEclipseP2();
+        Reader reader = new OPBEclipseReader2007(solver);
+        reader.parseInstance(PREFIX + "bug247567.opb");
+        assertTrue(solver.isSatisfiable());
+        assertTrue(solver.model(1));
+        assertTrue(solver.model(2));
+        assertTrue(solver.model(3));
+        assertFalse(solver.model(4));
+        assertFalse(solver.model(5));
+        assertFalse(solver.model(6));
+    }
 }

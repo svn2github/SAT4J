@@ -30,16 +30,16 @@
 package org.sat4j.pb.constraints;
 
 public class CompetResolutionPBLongMixedWLClauseCardConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+        AbstractPBClauseCardConstrDataStructure {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public CompetResolutionPBLongMixedWLClauseCardConstrDataStructure() {
-		super(new UnitBinaryWLClauseConstructor(), new MinCardConstructor(),
-				new MaxLongWatchPBConstructor());
-	}
+    public CompetResolutionPBLongMixedWLClauseCardConstrDataStructure() {
+        super(new UnitBinaryWLClauseConstructor(), new MinCardConstructor(),
+                new MaxLongWatchPBConstructor());
+    }
 
 }

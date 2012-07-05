@@ -44,58 +44,58 @@ import org.sat4j.tools.SolverDecorator;
  * 
  */
 public class PBSolverDecorator extends SolverDecorator<IPBSolver> implements
-		IPBSolver {
+        IPBSolver {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PBSolverDecorator(IPBSolver solver) {
-		super(solver);
-	}
+    public PBSolverDecorator(IPBSolver solver) {
+        super(solver);
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		return decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        return decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		decorated().setObjectiveFunction(obj);
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        decorated().setObjectiveFunction(obj);
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		return decorated().getObjectiveFunction();
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        return decorated().getObjectiveFunction();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		return decorated().addAtMost(literals, coeffs, degree);
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        return decorated().addAtMost(literals, coeffs, degree);
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		return decorated().addAtMost(literals, coeffs, degree);
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        return decorated().addAtMost(literals, coeffs, degree);
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		return decorated().addAtLeast(literals, coeffs, degree);
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        return decorated().addAtLeast(literals, coeffs, degree);
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		return decorated().addAtLeast(literals, coeffs, degree);
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        return decorated().addAtLeast(literals, coeffs, degree);
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		return decorated().addExactly(literals, coeffs, weight);
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        return decorated().addExactly(literals, coeffs, weight);
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		return decorated().addExactly(literals, coeffs, weight);
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        return decorated().addExactly(literals, coeffs, weight);
+    }
 
 }

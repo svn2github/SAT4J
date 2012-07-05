@@ -37,97 +37,99 @@ import org.sat4j.specs.ContradictionException;
 
 public final class PuebloMinWatchPb extends MinWatchPb {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructeur de base des contraintes
-	 * 
-	 * @param voc
-	 *            Informations sur le vocabulaire employ???
-	 * @param ps
-	 *            Liste des litt???raux
-	 * @param weightedLits
-	 *            Liste des coefficients
-	 * @param moreThan
-	 *            Indication sur le comparateur
-	 * @param degree
-	 *            Stockage du degr??? de la contrainte
-	 */
-	private PuebloMinWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
-			BigInteger degree, BigInteger sumCoefs) {
-		super(voc, lits, coefs, degree, sumCoefs);
-	}
+    /**
+     * Constructeur de base des contraintes
+     * 
+     * @param voc
+     *            Informations sur le vocabulaire employ???
+     * @param ps
+     *            Liste des litt???raux
+     * @param weightedLits
+     *            Liste des coefficients
+     * @param moreThan
+     *            Indication sur le comparateur
+     * @param degree
+     *            Stockage du degr??? de la contrainte
+     */
+    private PuebloMinWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
+            BigInteger degree, BigInteger sumCoefs) {
+        super(voc, lits, coefs, degree, sumCoefs);
+    }
 
-	private PuebloMinWatchPb(ILits voc, IDataStructurePB mpb) {
+    private PuebloMinWatchPb(ILits voc, IDataStructurePB mpb) {
 
-		super(voc, mpb);
-	}
+        super(voc, mpb);
+    }
 
-	/**
-	 * @param s
-	 *            a unit propagation listener
-	 * @param voc
-	 *            the vocabulary
-	 * @param lits
-	 *            the literals
-	 * @param coefs
-	 *            the coefficients
-	 * @param degree
-	 *            the degree of the constraint to normalize.
-	 * @return a new PB constraint or null if a trivial inconsistency is
-	 *         detected.
-	 */
-	public static PuebloMinWatchPb normalizedMinWatchPbNew(
-			UnitPropagationListener s, ILits voc, int[] lits,
-			BigInteger[] coefs, BigInteger degree)
-			throws ContradictionException {
-		// Il ne faut pas modifier les param?tres
-		BigInteger sumCoefs = BigInteger.ZERO;
-		for (BigInteger c : coefs)
-			sumCoefs = sumCoefs.add(c);
-		PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, lits, coefs,
-				degree, sumCoefs);
+    /**
+     * @param s
+     *            a unit propagation listener
+     * @param voc
+     *            the vocabulary
+     * @param lits
+     *            the literals
+     * @param coefs
+     *            the coefficients
+     * @param degree
+     *            the degree of the constraint to normalize.
+     * @return a new PB constraint or null if a trivial inconsistency is
+     *         detected.
+     */
+    public static PuebloMinWatchPb normalizedMinWatchPbNew(
+            UnitPropagationListener s, ILits voc, int[] lits,
+            BigInteger[] coefs, BigInteger degree)
+            throws ContradictionException {
+        // Il ne faut pas modifier les param?tres
+        BigInteger sumCoefs = BigInteger.ZERO;
+        for (BigInteger c : coefs) {
+            sumCoefs = sumCoefs.add(c);
+        }
+        PuebloMinWatchPb outclause = new PuebloMinWatchPb(voc, lits, coefs,
+                degree, sumCoefs);
 
-		if (outclause.degree.signum() <= 0) {
-			return null;
-		}
+        if (outclause.degree.signum() <= 0) {
+            return null;
+        }
 
-		outclause.computeWatches();
+        outclause.computeWatches();
 
-		outclause.computePropagation(s);
+        outclause.computePropagation(s);
 
-		return outclause;
+        return outclause;
 
-	}
+    }
 
-	public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
-		return new PuebloMinWatchPb(voc, mpb);
-	}
+    public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
+        return new PuebloMinWatchPb(voc, mpb);
+    }
 
-	@Override
-	protected BigInteger maximalCoefficient(int pIndice) {
-		return coefs[0];
-	}
+    @Override
+    protected BigInteger maximalCoefficient(int pIndice) {
+        return this.coefs[0];
+    }
 
-	@Override
-	protected BigInteger updateWatched(BigInteger mc, int pIndice) {
-		BigInteger maxCoef = mc;
-		if (watchingCount < size()) {
-			BigInteger upWatchCumul = watchCumul.subtract(coefs[pIndice]);
-			BigInteger borneSup = degree.add(maxCoef);
-			for (int ind = 0; ind < lits.length
-					&& upWatchCumul.compareTo(borneSup) < 0; ind++) {
-				if (!voc.isFalsified(lits[ind]) && !watched[ind]) {
-					upWatchCumul = upWatchCumul.add(coefs[ind]);
-					watched[ind] = true;
-					assert watchingCount < size();
-					watching[watchingCount++] = ind;
-					voc.watch(lits[ind] ^ 1, this);
-				}
-			}
-			watchCumul = upWatchCumul.add(coefs[pIndice]);
-		}
-		return maxCoef;
-	}
+    @Override
+    protected BigInteger updateWatched(BigInteger mc, int pIndice) {
+        BigInteger maxCoef = mc;
+        if (this.watchingCount < size()) {
+            BigInteger upWatchCumul = this.watchCumul
+                    .subtract(this.coefs[pIndice]);
+            BigInteger borneSup = this.degree.add(maxCoef);
+            for (int ind = 0; ind < this.lits.length
+                    && upWatchCumul.compareTo(borneSup) < 0; ind++) {
+                if (!this.voc.isFalsified(this.lits[ind]) && !this.watched[ind]) {
+                    upWatchCumul = upWatchCumul.add(this.coefs[ind]);
+                    this.watched[ind] = true;
+                    assert this.watchingCount < size();
+                    this.watching[this.watchingCount++] = ind;
+                    this.voc.watch(this.lits[ind] ^ 1, this);
+                }
+            }
+            this.watchCumul = upWatchCumul.add(this.coefs[pIndice]);
+        }
+        return maxCoef;
+    }
 
 }

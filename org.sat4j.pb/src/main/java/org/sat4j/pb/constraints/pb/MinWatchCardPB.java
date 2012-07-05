@@ -39,162 +39,166 @@ import org.sat4j.specs.IVecInt;
 
 public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final BigInteger bigDegree;
+    private final BigInteger bigDegree;
 
-	public MinWatchCardPB(ILits voc, IVecInt ps, boolean moreThan, int degree) {
-		super(voc, ps, moreThan, degree);
-		// this.degree has been computed in the superclass constructor.
-		this.bigDegree = BigInteger.valueOf(this.degree);
-	}
+    public MinWatchCardPB(ILits voc, IVecInt ps, boolean moreThan, int degree) {
+        super(voc, ps, moreThan, degree);
+        // this.degree has been computed in the superclass constructor.
+        this.bigDegree = BigInteger.valueOf(this.degree);
+    }
 
-	public MinWatchCardPB(ILits voc, IVecInt ps, int degree) {
-		super(voc, ps, degree);
-		this.bigDegree = BigInteger.valueOf(this.degree);
-	}
+    public MinWatchCardPB(ILits voc, IVecInt ps, int degree) {
+        super(voc, ps, degree);
+        this.bigDegree = BigInteger.valueOf(this.degree);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.constraints.pb.PBConstr#getCoefficient(int)
-	 */
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.constraints.pb.PBConstr#getCoefficient(int)
+     */
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.constraints.pb.PBConstr#getDegree()
-	 */
-	public BigInteger getDegree() {
-		return bigDegree;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.constraints.pb.PBConstr#getDegree()
+     */
+    public BigInteger getDegree() {
+        return this.bigDegree;
+    }
 
-	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = new BigInteger[size()];
-		for (int i = 0; i < tmp.length; i++)
-			tmp[i] = BigInteger.ONE;
-		return tmp;
-	}
+    public BigInteger[] getCoefs() {
+        BigInteger[] tmp = new BigInteger[size()];
+        for (int i = 0; i < tmp.length; i++) {
+            tmp[i] = BigInteger.ONE;
+        }
+        return tmp;
+    }
 
-	/**
-	 * Permet la cr?ation de contrainte de cardinalit? ? observation minimale
-	 * 
-	 * @param s
-	 *            outil pour la propagation des litt?raux
-	 * @param voc
-	 *            vocabulaire utilis? par la contrainte
-	 * @param ps
-	 *            liste des litt?raux de la nouvelle contrainte
-	 * @param degree
-	 *            fournit le degr? de la contrainte
-	 * @return une nouvelle clause si tout va bien, null sinon
-	 * @throws ContradictionException
-	 */
-	public static PBConstr normalizedMinWatchCardPBNew(
-			UnitPropagationListener s, ILits voc, IVecInt ps, int degree)
-			throws ContradictionException {
-		return minWatchCardPBNew(s, voc, ps, ATLEAST, degree, true);
-	}
+    /**
+     * Permet la cr?ation de contrainte de cardinalit? ? observation minimale
+     * 
+     * @param s
+     *            outil pour la propagation des litt?raux
+     * @param voc
+     *            vocabulaire utilis? par la contrainte
+     * @param ps
+     *            liste des litt?raux de la nouvelle contrainte
+     * @param degree
+     *            fournit le degr? de la contrainte
+     * @return une nouvelle clause si tout va bien, null sinon
+     * @throws ContradictionException
+     */
+    public static PBConstr normalizedMinWatchCardPBNew(
+            UnitPropagationListener s, ILits voc, IVecInt ps, int degree)
+            throws ContradictionException {
+        return minWatchCardPBNew(s, voc, ps, ATLEAST, degree, true);
+    }
 
-	/**
-	 * Permet la cr?ation de contrainte de cardinalit? ? observation minimale
-	 * 
-	 * @param s
-	 *            outil pour la propagation des litt?raux
-	 * @param voc
-	 *            vocabulaire utilis? par la contrainte
-	 * @param ps
-	 *            liste des litt?raux de la nouvelle contrainte
-	 * @param moreThan
-	 *            d?termine si c'est une sup?rieure ou ?gal ? l'origine
-	 * @param degree
-	 *            fournit le degr? de la contrainte
-	 * @return une nouvelle clause si tout va bien, null sinon
-	 * @throws ContradictionException
-	 */
-	public static PBConstr minWatchCardPBNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, boolean moreThan, int degree)
-			throws ContradictionException {
-		return minWatchCardPBNew(s, voc, ps, moreThan, degree, false);
-	}
+    /**
+     * Permet la cr?ation de contrainte de cardinalit? ? observation minimale
+     * 
+     * @param s
+     *            outil pour la propagation des litt?raux
+     * @param voc
+     *            vocabulaire utilis? par la contrainte
+     * @param ps
+     *            liste des litt?raux de la nouvelle contrainte
+     * @param moreThan
+     *            d?termine si c'est une sup?rieure ou ?gal ? l'origine
+     * @param degree
+     *            fournit le degr? de la contrainte
+     * @return une nouvelle clause si tout va bien, null sinon
+     * @throws ContradictionException
+     */
+    public static PBConstr minWatchCardPBNew(UnitPropagationListener s,
+            ILits voc, IVecInt ps, boolean moreThan, int degree)
+            throws ContradictionException {
+        return minWatchCardPBNew(s, voc, ps, moreThan, degree, false);
+    }
 
-	private static PBConstr minWatchCardPBNew(UnitPropagationListener s,
-			ILits voc, IVecInt ps, boolean moreThan, int degree,
-			boolean normalized) throws ContradictionException {
-		int mydegree = degree + linearisation(voc, ps);
+    private static PBConstr minWatchCardPBNew(UnitPropagationListener s,
+            ILits voc, IVecInt ps, boolean moreThan, int degree,
+            boolean normalized) throws ContradictionException {
+        int mydegree = degree + linearisation(voc, ps);
 
-		if (ps.size() < mydegree) {
-			throw new ContradictionException();
-		} else if (ps.size() == 0 && mydegree > 0) {
-			throw new ContradictionException();
-		} else if (ps.size() == mydegree || ps.size() <= 0) {
-			for (int i = 0; i < ps.size(); i++)
-				if (!s.enqueue(ps.get(i))) {
-					throw new ContradictionException();
-				}
-			return new UnitClausesPB(ps);
-		}
+        if (ps.size() < mydegree) {
+            throw new ContradictionException();
+        } else if (ps.size() == 0 && mydegree > 0) {
+            throw new ContradictionException();
+        } else if (ps.size() == mydegree || ps.size() <= 0) {
+            for (int i = 0; i < ps.size(); i++) {
+                if (!s.enqueue(ps.get(i))) {
+                    throw new ContradictionException();
+                }
+            }
+            return new UnitClausesPB(ps);
+        }
 
-		// constraint is now instanciated
-		MinWatchCardPB retour = null;
-		if (normalized)
-			retour = new MinWatchCardPB(voc, ps, mydegree);
-		else
-			retour = new MinWatchCardPB(voc, ps, moreThan, mydegree);
+        // constraint is now instanciated
+        MinWatchCardPB retour = null;
+        if (normalized) {
+            retour = new MinWatchCardPB(voc, ps, mydegree);
+        } else {
+            retour = new MinWatchCardPB(voc, ps, moreThan, mydegree);
+        }
 
-		if (retour.bigDegree.signum() <= 0)
-			return null;
+        if (retour.bigDegree.signum() <= 0) {
+            return null;
+        }
 
-		retour.computeWatches();
+        retour.computeWatches();
 
-		return ((MinWatchCardPB) retour.computePropagation(s));
-	}
+        return (MinWatchCardPB) retour.computePropagation(s);
+    }
 
-	/**
+    /**
      * 
      */
-	private boolean learnt = false;
+    private boolean learnt = false;
 
-	/**
-	 * D?termine si la contrainte est apprise
-	 * 
-	 * @return true si la contrainte est apprise, false sinon
-	 * @see org.sat4j.specs.IConstr#learnt()
-	 */
-	@Override
-	public boolean learnt() {
-		return learnt;
-	}
+    /**
+     * D?termine si la contrainte est apprise
+     * 
+     * @return true si la contrainte est apprise, false sinon
+     * @see org.sat4j.specs.IConstr#learnt()
+     */
+    @Override
+    public boolean learnt() {
+        return this.learnt;
+    }
 
-	@Override
-	public void setLearnt() {
-		learnt = true;
-	}
+    @Override
+    public void setLearnt() {
+        this.learnt = true;
+    }
 
-	@Override
-	public void register() {
-		assert learnt;
-		computeWatches();
-	}
+    @Override
+    public void register() {
+        assert this.learnt;
+        computeWatches();
+    }
 
-	@Override
-	public void assertConstraint(UnitPropagationListener s) {
-		for (int i = 0; i < size(); i++) {
-			if (getVocabulary().isUnassigned(get(i))) {
-				boolean ret = s.enqueue(get(i), this);
-				assert ret;
-			}
-		}
-	}
+    @Override
+    public void assertConstraint(UnitPropagationListener s) {
+        for (int i = 0; i < size(); i++) {
+            if (getVocabulary().isUnassigned(get(i))) {
+                boolean ret = s.enqueue(get(i), this);
+                assert ret;
+            }
+        }
+    }
 
-	public IVecInt computeAnImpliedClause() {
-		return null;
-	}
+    public IVecInt computeAnImpliedClause() {
+        return null;
+    }
 
 }

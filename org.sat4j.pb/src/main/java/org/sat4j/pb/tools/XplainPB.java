@@ -45,134 +45,135 @@ import org.sat4j.tools.xplain.Xplain;
 
 public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public XplainPB(IPBSolver solver) {
-		super(solver);
-	}
+    public XplainPB(IPBSolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		IVecInt coeffs = new VecInt(literals.size(), 1);
-		int newvar = createNewVar(literals);
-		literals.push(newvar);
-		coeffs.push(coeffs.size() - degree);
-		IConstr constr = decorated().addAtLeast(literals, coeffs, degree);
-		if (constr == null) {
-			// constraint trivially satisfied
-			discardLastestVar();
-		} else {
-			constrs.put(newvar, constr);
-		}
-		return constr;
-	}
+    @Override
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        IVecInt coeffs = new VecInt(literals.size(), 1);
+        int newvar = createNewVar(literals);
+        literals.push(newvar);
+        coeffs.push(coeffs.size() - degree);
+        IConstr constr = decorated().addAtLeast(literals, coeffs, degree);
+        if (constr == null) {
+            // constraint trivially satisfied
+            discardLastestVar();
+        } else {
+            this.constrs.put(newvar, constr);
+        }
+        return constr;
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		IVecInt coeffs = new VecInt(literals.size(), 1);
-		int newvar = createNewVar(literals);
-		literals.push(newvar);
-		coeffs.push(degree - coeffs.size());
-		IConstr constr = decorated().addAtMost(literals, coeffs, degree);
-		if (constr == null) {
-			// constraint trivially satisfied
-			discardLastestVar();
-		} else {
-			constrs.put(newvar, constr);
-		}
-		return constr;
-	}
+    @Override
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        IVecInt coeffs = new VecInt(literals.size(), 1);
+        int newvar = createNewVar(literals);
+        literals.push(newvar);
+        coeffs.push(degree - coeffs.size());
+        IConstr constr = decorated().addAtMost(literals, coeffs, degree);
+        if (constr == null) {
+            // constraint trivially satisfied
+            discardLastestVar();
+        } else {
+            this.constrs.put(newvar, constr);
+        }
+        return constr;
+    }
 
-	@Override
-	public IConstr addExactly(IVecInt literals, int n)
-			throws ContradictionException {
-		int newvar = createNewVar(literals);
+    @Override
+    public IConstr addExactly(IVecInt literals, int n)
+            throws ContradictionException {
+        int newvar = createNewVar(literals);
 
-		// at most
-		IVecInt coeffs = new VecInt(literals.size(), 1);
-		literals.push(newvar);
-		coeffs.push(n - coeffs.size());
-		IConstr constr1 = decorated().addAtMost(literals, coeffs, n);
-		// at least
-		coeffs.pop();
-		coeffs.push(coeffs.size() - n);
-		IConstr constr2 = decorated().addAtLeast(literals, coeffs, n);
-		if (constr1 == null && constr2 == null) {
-			discardLastestVar();
-			return null;
-		}
-		ConstrGroup group = new ConstrGroup();
-		group.add(constr1);
-		group.add(constr2);
-		constrs.put(newvar, group);
-		return group;
-	}
+        // at most
+        IVecInt coeffs = new VecInt(literals.size(), 1);
+        literals.push(newvar);
+        coeffs.push(n - coeffs.size());
+        IConstr constr1 = decorated().addAtMost(literals, coeffs, n);
+        // at least
+        coeffs.pop();
+        coeffs.push(coeffs.size() - n);
+        IConstr constr2 = decorated().addAtLeast(literals, coeffs, n);
+        if (constr1 == null && constr2 == null) {
+            discardLastestVar();
+            return null;
+        }
+        ConstrGroup group = new ConstrGroup();
+        group.add(constr1);
+        group.add(constr2);
+        this.constrs.put(newvar, group);
+        return group;
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		int newvar = createNewVar(lits);
-		lits.push(newvar);
-		if (moreThan && d.signum() >= 0) {
-			coeffs.push(d);
-		} else {
-			BigInteger sum = BigInteger.ZERO;
-			for (Iterator<BigInteger> ite = coeffs.iterator(); ite.hasNext();)
-				sum = sum.add(ite.next());
-			sum = sum.subtract(d);
-			coeffs.push(sum.negate());
-		}
-		IConstr constr = decorated()
-				.addPseudoBoolean(lits, coeffs, moreThan, d);
-		if (constr == null) {
-			// constraint trivially satisfied
-			discardLastestVar();
-			// System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
-		} else {
-			constrs.put(newvar, constr);
-		}
-		return constr;
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        int newvar = createNewVar(lits);
+        lits.push(newvar);
+        if (moreThan && d.signum() >= 0) {
+            coeffs.push(d);
+        } else {
+            BigInteger sum = BigInteger.ZERO;
+            for (Iterator<BigInteger> ite = coeffs.iterator(); ite.hasNext();) {
+                sum = sum.add(ite.next());
+            }
+            sum = sum.subtract(d);
+            coeffs.push(sum.negate());
+        }
+        IConstr constr = decorated()
+                .addPseudoBoolean(lits, coeffs, moreThan, d);
+        if (constr == null) {
+            // constraint trivially satisfied
+            discardLastestVar();
+            // System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+        } else {
+            this.constrs.put(newvar, constr);
+        }
+        return constr;
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		decorated().setObjectiveFunction(obj);
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        decorated().setObjectiveFunction(obj);
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		return decorated().getObjectiveFunction();
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        return decorated().getObjectiveFunction();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 }

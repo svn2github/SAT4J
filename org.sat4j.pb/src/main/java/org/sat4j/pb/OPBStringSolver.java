@@ -49,320 +49,320 @@ import org.sat4j.tools.DimacsStringSolver;
  */
 public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
-	private static final String FAKE_I_CONSTR_MSG = "Fake IConstr";
+    private static final String FAKE_I_CONSTR_MSG = "Fake IConstr";
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int indxConstrObj;
+    private int indxConstrObj;
 
-	private int nbOfConstraints;
+    private int nbOfConstraints;
 
-	private ObjectiveFunction obj;
+    private ObjectiveFunction obj;
 
-	private boolean inserted = false;
+    private boolean inserted = false;
 
-	private static final IConstr FAKE_CONSTR = new IConstr() {
+    private static final IConstr FAKE_CONSTR = new IConstr() {
 
-		public int size() {
-			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
-		}
+        public int size() {
+            throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
 
-		public boolean learnt() {
-			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
-		}
+        public boolean learnt() {
+            throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
 
-		public double getActivity() {
-			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
-		}
+        public double getActivity() {
+            throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
 
-		public int get(int i) {
-			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
-		}
+        public int get(int i) {
+            throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
 
-		public boolean canBePropagatedMultipleTimes() {
-			throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
-		}
-	};
+        public boolean canBePropagatedMultipleTimes() {
+            throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
+    };
 
-	/**
+    /**
 	 * 
 	 */
-	public OPBStringSolver() {
-	}
+    public OPBStringSolver() {
+    }
 
-	/**
-	 * @param initSize
-	 */
-	public OPBStringSolver(int initSize) {
-		super(initSize);
-	}
+    /**
+     * @param initSize
+     */
+    public OPBStringSolver(int initSize) {
+        super(initSize);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		for (IteratorInt it = assumps.iterator(); it.hasNext();) {
-			int p = it.next();
-			if (p > 0) {
-				getOut().append("+1 x" + p + " >= 1 ;\n");
-			} else {
-				getOut().append("-1 x" + (-p) + " >= 0 ;\n");
-			}
-			nbOfConstraints++;
-		}
-		throw new TimeoutException();
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        for (IteratorInt it = assumps.iterator(); it.hasNext();) {
+            int p = it.next();
+            if (p > 0) {
+                getOut().append("+1 x" + p + " >= 1 ;\n");
+            } else {
+                getOut().append("-1 x" + -p + " >= 0 ;\n");
+            }
+            this.nbOfConstraints++;
+        }
+        throw new TimeoutException();
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		return super.isSatisfiable(assumps, global);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        return super.isSatisfiable(assumps, global);
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		if (moreThan) {
-			return addAtLeast(lits, coeffs, d);
-		}
-		return addAtMost(lits, coeffs, d);
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        if (moreThan) {
+            return addAtLeast(lits, coeffs, d);
+        }
+        return addAtMost(lits, coeffs, d);
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		this.obj = obj;
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        this.obj = obj;
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		StringBuffer out = getOut();
-		nbOfConstraints++;
-		int negationweight = 0;
-		int p;
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
-			p = iterator.next();
-			assert p != 0;
-			if (p > 0) {
-				out.append("+1 x" + p + " ");
-			} else {
-				out.append("-1 x" + (-p) + " ");
-				negationweight++;
-			}
-		}
-		out.append(">= " + (degree - negationweight) + " ;\n");
-		return FAKE_CONSTR;
-	}
+    @Override
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        this.nbOfConstraints++;
+        int negationweight = 0;
+        int p;
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            p = iterator.next();
+            assert p != 0;
+            if (p > 0) {
+                out.append("+1 x" + p + " ");
+            } else {
+                out.append("-1 x" + -p + " ");
+                negationweight++;
+            }
+        }
+        out.append(">= " + (degree - negationweight) + " ;\n");
+        return FAKE_CONSTR;
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		StringBuffer out = getOut();
-		nbOfConstraints++;
-		int negationweight = 0;
-		int p;
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
-			p = iterator.next();
-			assert p != 0;
-			if (p > 0) {
-				out.append("-1 x" + p + " ");
-			} else {
-				out.append("+1 x" + (-p) + " ");
-				negationweight++;
-			}
-		}
-		out.append(">= " + (-degree + negationweight) + " ;\n");
-		return FAKE_CONSTR;
-	}
+    @Override
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        this.nbOfConstraints++;
+        int negationweight = 0;
+        int p;
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            p = iterator.next();
+            assert p != 0;
+            if (p > 0) {
+                out.append("-1 x" + p + " ");
+            } else {
+                out.append("+1 x" + -p + " ");
+                negationweight++;
+            }
+        }
+        out.append(">= " + (-degree + negationweight) + " ;\n");
+        return FAKE_CONSTR;
+    }
 
-	@Override
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		StringBuffer out = getOut();
-		nbOfConstraints++;
-		int lit;
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
-			lit = iterator.next();
-			if (lit > 0) {
-				out.append("+1 x" + lit + " ");
-			} else {
-				out.append("+1 ~x" + -lit + " ");
-			}
-		}
-		out.append(">= 1 ;\n");
-		return FAKE_CONSTR;
-	}
+    @Override
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        StringBuffer out = getOut();
+        this.nbOfConstraints++;
+        int lit;
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            lit = iterator.next();
+            if (lit > 0) {
+                out.append("+1 x" + lit + " ");
+            } else {
+                out.append("+1 ~x" + -lit + " ");
+            }
+        }
+        out.append(">= 1 ;\n");
+        return FAKE_CONSTR;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.pb.IPBSolver#getExplanation()
-	 */
-	public String getExplanation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.pb.IPBSolver#getExplanation()
+     */
+    public String getExplanation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.sat4j.pb.IPBSolver#setListOfVariablesForExplanation(org.sat4j.specs
-	 * .IVecInt)
-	 */
-	public void setListOfVariablesForExplanation(IVecInt listOfVariables) {
-		// TODO Auto-generated method stub
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.sat4j.pb.IPBSolver#setListOfVariablesForExplanation(org.sat4j.specs
+     * .IVecInt)
+     */
+    public void setListOfVariablesForExplanation(IVecInt listOfVariables) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer out = getOut();
-		if (!inserted) {
-			StringBuffer tmp = new StringBuffer();
-			tmp.append("* #variable= ");
-			tmp.append(nVars());
-			tmp.append(" #constraint= ");
-			tmp.append(nbOfConstraints);
-			if (obj != null) {
-				tmp.append("\n");
-				tmp.append("min: ");
-				tmp.append(obj);
-				tmp.append(";");
-			}
-			out.insert(indxConstrObj, tmp.toString());
-			inserted = true;
-		}
-		return out.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuffer out = getOut();
+        if (!this.inserted) {
+            StringBuffer tmp = new StringBuffer();
+            tmp.append("* #variable= ");
+            tmp.append(nVars());
+            tmp.append(" #constraint= ");
+            tmp.append(this.nbOfConstraints);
+            if (this.obj != null) {
+                tmp.append("\n");
+                tmp.append("min: ");
+                tmp.append(this.obj);
+                tmp.append(";");
+            }
+            out.insert(this.indxConstrObj, tmp.toString());
+            this.inserted = true;
+        }
+        return out.toString();
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return "OPB output solver";
-	}
+    @Override
+    public String toString(String prefix) {
+        return "OPB output solver";
+    }
 
-	@Override
-	public int newVar(int howmany) {
-		StringBuffer out = getOut();
-		setNbVars(howmany);
-		// to add later the number of constraints
-		indxConstrObj = out.length();
-		out.append("\n");
-		return howmany;
-	}
+    @Override
+    public int newVar(int howmany) {
+        StringBuffer out = getOut();
+        setNbVars(howmany);
+        // to add later the number of constraints
+        this.indxConstrObj = out.length();
+        out.append("\n");
+        return howmany;
+    }
 
-	@Override
-	public void setExpectedNumberOfClauses(int nb) {
-	}
+    @Override
+    public void setExpectedNumberOfClauses(int nb) {
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		return obj;
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        return this.obj;
+    }
 
-	@Override
-	public int nConstraints() {
-		return nbOfConstraints;
-	}
+    @Override
+    public int nConstraints() {
+        return this.nbOfConstraints;
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(-coeffs.get(i));
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append(">= ");
-		out.append(-degree);
-		out.append(" ;\n");
-		return FAKE_CONSTR;
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(-coeffs.get(i));
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append(">= ");
+        out.append(-degree);
+        out.append(" ;\n");
+        return FAKE_CONSTR;
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(coeffs.get(i).negate());
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append(">= ");
-		out.append(degree.negate());
-		out.append(" ;\n");
-		return FAKE_CONSTR;
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(coeffs.get(i).negate());
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append(">= ");
+        out.append(degree.negate());
+        out.append(" ;\n");
+        return FAKE_CONSTR;
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(coeffs.get(i));
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append(">= ");
-		out.append(degree);
-		out.append(" ;\n");
-		return FAKE_CONSTR;
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(coeffs.get(i));
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append(">= ");
+        out.append(degree);
+        out.append(" ;\n");
+        return FAKE_CONSTR;
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(coeffs.get(i));
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append(">= ");
-		out.append(degree);
-		out.append(" ;\n");
-		return FAKE_CONSTR;
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(coeffs.get(i));
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append(">= ");
+        out.append(degree);
+        out.append(" ;\n");
+        return FAKE_CONSTR;
 
-	}
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(coeffs.get(i));
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append("= ");
-		out.append(weight);
-		out.append(" ;\n");
-		return FAKE_CONSTR;
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(coeffs.get(i));
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append("= ");
+        out.append(weight);
+        out.append(" ;\n");
+        return FAKE_CONSTR;
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		StringBuffer out = getOut();
-		assert literals.size() == coeffs.size();
-		nbOfConstraints++;
-		for (int i = 0; i < literals.size(); i++) {
-			out.append(coeffs.get(i));
-			out.append(" x");
-			out.append(literals.get(i));
-			out.append(" ");
-		}
-		out.append("= ");
-		out.append(weight);
-		out.append(" ;\n");
-		return FAKE_CONSTR;
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        StringBuffer out = getOut();
+        assert literals.size() == coeffs.size();
+        this.nbOfConstraints++;
+        for (int i = 0; i < literals.size(); i++) {
+            out.append(coeffs.get(i));
+            out.append(" x");
+            out.append(literals.get(i));
+            out.append(" ");
+        }
+        out.append("= ");
+        out.append(weight);
+        out.append(" ;\n");
+        return FAKE_CONSTR;
+    }
 
 }

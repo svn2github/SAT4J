@@ -49,64 +49,64 @@ import org.sat4j.specs.IVecInt;
  * @param <C>
  */
 public class ImplicationAnd<T, C> {
-	private final DependencyHelper<T, C> helper;
-	private final IVecInt clause;
-	private final IVec<IConstr> toName = new Vec<IConstr>();
+    private final DependencyHelper<T, C> helper;
+    private final IVecInt clause;
+    private final IVec<IConstr> toName = new Vec<IConstr>();
 
-	public ImplicationAnd(DependencyHelper<T, C> helper, IVecInt clause) {
-		this.clause = clause;
-		this.helper = helper;
-	}
+    public ImplicationAnd(DependencyHelper<T, C> helper, IVecInt clause) {
+        this.clause = clause;
+        this.helper = helper;
+    }
 
-	/**
-	 * Add a new positive literal to the conjunction of literals.
-	 * 
-	 * @param thing
-	 *            a domain object
-	 * @return a RHS conjunction of literals.
-	 * @throws ContradictionException
-	 */
-	public ImplicationAnd<T, C> and(T thing) throws ContradictionException {
-		IVecInt tmpClause = new VecInt();
-		clause.copyTo(tmpClause);
-		tmpClause.push(helper.getIntValue(thing));
-		IConstr constr = helper.solver.addClause(tmpClause);
-		if (constr != null) {
-			toName.push(constr);
-		}
-		return this;
-	}
+    /**
+     * Add a new positive literal to the conjunction of literals.
+     * 
+     * @param thing
+     *            a domain object
+     * @return a RHS conjunction of literals.
+     * @throws ContradictionException
+     */
+    public ImplicationAnd<T, C> and(T thing) throws ContradictionException {
+        IVecInt tmpClause = new VecInt();
+        this.clause.copyTo(tmpClause);
+        tmpClause.push(this.helper.getIntValue(thing));
+        IConstr constr = this.helper.solver.addClause(tmpClause);
+        if (constr != null) {
+            this.toName.push(constr);
+        }
+        return this;
+    }
 
-	/**
-	 * Add a new negative literal to the conjunction of literals.
-	 * 
-	 * @param thing
-	 *            a domain object
-	 * @return a RHS conjunction of literals.
-	 * @throws ContradictionException
-	 */
-	public ImplicationAnd<T, C> andNot(T thing) throws ContradictionException {
-		IVecInt tmpClause = new VecInt();
-		clause.copyTo(tmpClause);
-		tmpClause.push(-helper.getIntValue(thing));
-		IConstr constr = helper.solver.addClause(tmpClause);
-		if (constr != null) {
-			toName.push(constr);
-		}
-		return this;
-	}
+    /**
+     * Add a new negative literal to the conjunction of literals.
+     * 
+     * @param thing
+     *            a domain object
+     * @return a RHS conjunction of literals.
+     * @throws ContradictionException
+     */
+    public ImplicationAnd<T, C> andNot(T thing) throws ContradictionException {
+        IVecInt tmpClause = new VecInt();
+        this.clause.copyTo(tmpClause);
+        tmpClause.push(-this.helper.getIntValue(thing));
+        IConstr constr = this.helper.solver.addClause(tmpClause);
+        if (constr != null) {
+            this.toName.push(constr);
+        }
+        return this;
+    }
 
-	/**
-	 * "name" the constraint for the explanation.
-	 * 
-	 * IT IS MANDATORY TO NAME ALL THE CONSTRAINTS!
-	 * 
-	 * @param name
-	 *            an object to link to the constraint.
-	 */
-	public void named(C name) {
-		for (Iterator<IConstr> it = toName.iterator(); it.hasNext();) {
-			helper.descs.put(it.next(), name);
-		}
-	}
+    /**
+     * "name" the constraint for the explanation.
+     * 
+     * IT IS MANDATORY TO NAME ALL THE CONSTRAINTS!
+     * 
+     * @param name
+     *            an object to link to the constraint.
+     */
+    public void named(C name) {
+        for (Iterator<IConstr> it = this.toName.iterator(); it.hasNext();) {
+            this.helper.descs.put(it.next(), name);
+        }
+    }
 }

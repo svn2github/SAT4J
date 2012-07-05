@@ -44,32 +44,32 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 public abstract class AbstractPBXplainTest extends
-		AbstractXplainTest<IPBSolver> {
+        AbstractXplainTest<IPBSolver> {
 
-	@Test
-	public void testExactlyConstraint() throws ContradictionException,
-			TimeoutException {
-		solver.newVar(4);
-		IVecInt clause = new VecInt();
-		clause.push(1).push(2).push(3).push(4);
-		IConstr c1 = solver.addExactly(clause, 1);
-		clause.clear();
-		clause.push(-1).push(2);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(-2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(-3).push(4);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(-4).push(1);
-		solver.addClause(clause);
-		clause.clear();
-		assertFalse(solver.isSatisfiable());
-		Collection<IConstr> explanation = solver.explain();
-		System.out.println(explanation);
-		assertEquals(5, explanation.size());
-		assertTrue(explanation.contains(c1));
-	}
+    @Test
+    public void testExactlyConstraint() throws ContradictionException,
+            TimeoutException {
+        this.solver.newVar(4);
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3).push(4);
+        IConstr c1 = this.solver.addExactly(clause, 1);
+        clause.clear();
+        clause.push(-1).push(2);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-3).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-4).push(1);
+        this.solver.addClause(clause);
+        clause.clear();
+        assertFalse(this.solver.isSatisfiable());
+        Collection<IConstr> explanation = this.solver.explain();
+        System.out.println(explanation);
+        assertEquals(5, explanation.size());
+        assertTrue(explanation.contains(c1));
+    }
 }

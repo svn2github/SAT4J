@@ -33,7 +33,7 @@ import java.math.BigInteger;
 
 public interface IWatchPb extends PBConstr {
 
-	public BigInteger slackConstraint(BigInteger[] theCoefs,
-			BigInteger theDegree);
+    public BigInteger slackConstraint(BigInteger[] theCoefs,
+            BigInteger theDegree);
 
 }

@@ -36,44 +36,45 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVecInt;
 
 public final class LearntBinaryClausePB extends LearntBinaryClause implements
-		PBConstr {
+        PBConstr {
 
-	public LearntBinaryClausePB(IVecInt ps, ILits voc) {
-		super(ps, voc);
-	}
+    public LearntBinaryClausePB(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IVecInt computeAnImpliedClause() {
-		return null;
-	}
+    public IVecInt computeAnImpliedClause() {
+        return null;
+    }
 
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = new BigInteger[size()];
-		for (int i = 0; i < tmp.length; i++)
-			tmp[i] = BigInteger.ONE;
-		return tmp;
-	}
+    public BigInteger[] getCoefs() {
+        BigInteger[] tmp = new BigInteger[size()];
+        for (int i = 0; i < tmp.length; i++) {
+            tmp[i] = BigInteger.ONE;
+        }
+        return tmp;
+    }
 
-	public BigInteger getDegree() {
-		return BigInteger.ONE;
-	}
+    public BigInteger getDegree() {
+        return BigInteger.ONE;
+    }
 
-	// @Override
-	// public void assertConstraint(UnitPropagationListener s) {
-	// if (getVocabulary().isUnassigned(head)) {
-	// s.enqueue(head, this);
-	// } else {
-	// assert getVocabulary().isUnassigned(tail);
-	// s.enqueue(tail, this);
-	// }
-	// }
+    // @Override
+    // public void assertConstraint(UnitPropagationListener s) {
+    // if (getVocabulary().isUnassigned(head)) {
+    // s.enqueue(head, this);
+    // } else {
+    // assert getVocabulary().isUnassigned(tail);
+    // s.enqueue(tail, this);
+    // }
+    // }
 
 }

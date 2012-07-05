@@ -45,181 +45,182 @@ import org.sat4j.specs.TimeoutException;
  * 
  */
 public class PseudoOptDecorator extends PBSolverDecorator implements
-		IOptimizationProblem {
+        IOptimizationProblem {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private BigInteger objectiveValue;
+    private BigInteger objectiveValue;
 
-	private int[] prevmodel;
-	private int[] prevmodelwithadditionalvars;
+    private int[] prevmodel;
+    private int[] prevmodelwithadditionalvars;
 
-	private boolean[] prevfullmodel;
+    private boolean[] prevfullmodel;
 
-	private IConstr previousPBConstr;
+    private IConstr previousPBConstr;
 
-	private boolean isSolutionOptimal;
+    private boolean isSolutionOptimal;
 
-	public PseudoOptDecorator(IPBSolver solver) {
-		super(solver);
-	}
+    public PseudoOptDecorator(IPBSolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public boolean isSatisfiable() throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY);
-	}
+    @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY);
+    }
 
-	@Override
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY, global);
-	}
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY, global);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps, true);
-		if (result) {
-			prevmodel = super.model();
-			prevmodelwithadditionalvars = super.modelWithInternalVariables();
-			prevfullmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				prevfullmodel[i] = decorated().model(i + 1);
-			}
-		} else {
-			if (previousPBConstr != null) {
-				decorated().removeConstr(previousPBConstr);
-				previousPBConstr = null;
-			}
-		}
-		return result;
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        boolean result = super.isSatisfiable(assumps, true);
+        if (result) {
+            this.prevmodel = super.model();
+            this.prevmodelwithadditionalvars = super
+                    .modelWithInternalVariables();
+            this.prevfullmodel = new boolean[nVars()];
+            for (int i = 0; i < nVars(); i++) {
+                this.prevfullmodel[i] = decorated().model(i + 1);
+            }
+        } else {
+            if (this.previousPBConstr != null) {
+                decorated().removeConstr(this.previousPBConstr);
+                this.previousPBConstr = null;
+            }
+        }
+        return result;
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		return isSatisfiable(assumps, true);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        return isSatisfiable(assumps, true);
+    }
 
-	@Override
-	public void setObjectiveFunction(ObjectiveFunction objf) {
-		decorated().setObjectiveFunction(objf);
-	}
+    @Override
+    public void setObjectiveFunction(ObjectiveFunction objf) {
+        decorated().setObjectiveFunction(objf);
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		try {
-			isSolutionOptimal = false;
-			boolean result = super.isSatisfiable(assumps, true);
-			if (result) {
-				prevmodel = super.model();
-				prevmodelwithadditionalvars = super
-						.modelWithInternalVariables();
-				prevfullmodel = new boolean[nVars()];
-				for (int i = 0; i < nVars(); i++) {
-					prevfullmodel[i] = decorated().model(i + 1);
-				}
-				if (decorated().getObjectiveFunction() != null) {
-					calculateObjective();
-				}
-			} else {
-				isSolutionOptimal = true;
-				if (previousPBConstr != null) {
-					decorated().removeConstr(previousPBConstr);
-					previousPBConstr = null;
-				}
-			}
-			return result;
-		} catch (TimeoutException te) {
-			if (previousPBConstr != null) {
-				decorated().removeConstr(previousPBConstr);
-				previousPBConstr = null;
-			}
-			throw te;
-		}
-	}
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        try {
+            this.isSolutionOptimal = false;
+            boolean result = super.isSatisfiable(assumps, true);
+            if (result) {
+                this.prevmodel = super.model();
+                this.prevmodelwithadditionalvars = super
+                        .modelWithInternalVariables();
+                this.prevfullmodel = new boolean[nVars()];
+                for (int i = 0; i < nVars(); i++) {
+                    this.prevfullmodel[i] = decorated().model(i + 1);
+                }
+                if (decorated().getObjectiveFunction() != null) {
+                    calculateObjective();
+                }
+            } else {
+                this.isSolutionOptimal = true;
+                if (this.previousPBConstr != null) {
+                    decorated().removeConstr(this.previousPBConstr);
+                    this.previousPBConstr = null;
+                }
+            }
+            return result;
+        } catch (TimeoutException te) {
+            if (this.previousPBConstr != null) {
+                decorated().removeConstr(this.previousPBConstr);
+                this.previousPBConstr = null;
+            }
+            throw te;
+        }
+    }
 
-	public boolean hasNoObjectiveFunction() {
-		return decorated().getObjectiveFunction() == null;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return decorated().getObjectiveFunction() == null;
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return true;
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return true;
+    }
 
-	public Number calculateObjective() {
-		if (decorated().getObjectiveFunction() == null) {
-			throw new UnsupportedOperationException(
-					"The problem does not contain an objective function");
-		}
-		objectiveValue = decorated().getObjectiveFunction().calculateDegree(
-				decorated());
-		return getObjectiveValue();
-	}
+    public Number calculateObjective() {
+        if (decorated().getObjectiveFunction() == null) {
+            throw new UnsupportedOperationException(
+                    "The problem does not contain an objective function");
+        }
+        this.objectiveValue = decorated().getObjectiveFunction()
+                .calculateDegree(decorated());
+        return getObjectiveValue();
+    }
 
-	public void discardCurrentSolution() throws ContradictionException {
-		if (previousPBConstr != null) {
-			super.removeSubsumedConstr(previousPBConstr);
-		}
-		if (decorated().getObjectiveFunction() != null
-				&& objectiveValue != null) {
-			previousPBConstr = super.addPseudoBoolean(decorated()
-					.getObjectiveFunction().getVars(), decorated()
-					.getObjectiveFunction().getCoeffs(), false, objectiveValue
-					.subtract(BigInteger.ONE));
-		}
-	}
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.previousPBConstr != null) {
+            super.removeSubsumedConstr(this.previousPBConstr);
+        }
+        if (decorated().getObjectiveFunction() != null
+                && this.objectiveValue != null) {
+            this.previousPBConstr = super.addPseudoBoolean(decorated()
+                    .getObjectiveFunction().getVars(), decorated()
+                    .getObjectiveFunction().getCoeffs(), false,
+                    this.objectiveValue.subtract(BigInteger.ONE));
+        }
+    }
 
-	@Override
-	public void reset() {
-		previousPBConstr = null;
-		super.reset();
-	}
+    @Override
+    public void reset() {
+        this.previousPBConstr = null;
+        super.reset();
+    }
 
-	@Override
-	public int[] model() {
-		// DLB findbugs ok
-		return prevmodel;
-	}
+    @Override
+    public int[] model() {
+        // DLB findbugs ok
+        return this.prevmodel;
+    }
 
-	@Override
-	public boolean model(int var) {
-		return prevfullmodel[var - 1];
-	}
+    @Override
+    public boolean model(int var) {
+        return this.prevfullmodel[var - 1];
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return prefix + "Pseudo Boolean Optimization by upper bound\n"
-				+ super.toString(prefix);
-	}
+    @Override
+    public String toString(String prefix) {
+        return prefix + "Pseudo Boolean Optimization by upper bound\n"
+                + super.toString(prefix);
+    }
 
-	public Number getObjectiveValue() {
-		return objectiveValue.add(decorated().getObjectiveFunction()
-				.getCorrection());
-	}
+    public Number getObjectiveValue() {
+        return this.objectiveValue.add(decorated().getObjectiveFunction()
+                .getCorrection());
+    }
 
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
-	}
+    public void discard() throws ContradictionException {
+        discardCurrentSolution();
+    }
 
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		super.addPseudoBoolean(decorated().getObjectiveFunction().getVars(),
-				decorated().getObjectiveFunction().getCoeffs(), false,
-				(BigInteger) forcedValue);
-	}
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        super.addPseudoBoolean(decorated().getObjectiveFunction().getVars(),
+                decorated().getObjectiveFunction().getCoeffs(), false,
+                (BigInteger) forcedValue);
+    }
 
-	public boolean isOptimal() {
-		return isSolutionOptimal;
-	}
+    public boolean isOptimal() {
+        return this.isSolutionOptimal;
+    }
 
-	@Override
-	public int[] modelWithInternalVariables() {
-		return prevmodelwithadditionalvars;
-	}
+    @Override
+    public int[] modelWithInternalVariables() {
+        return this.prevmodelwithadditionalvars;
+    }
 }

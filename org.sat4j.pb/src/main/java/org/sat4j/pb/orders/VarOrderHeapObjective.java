@@ -42,57 +42,58 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public class VarOrderHeapObjective extends VarOrderHeap implements
-		IOrderObjective {
+        IOrderObjective {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private ObjectiveFunction obj;
+    private ObjectiveFunction obj;
 
-	public VarOrderHeapObjective() {
-		this(new PhaseInLastLearnedClauseSelectionStrategy());
-	}
+    public VarOrderHeapObjective() {
+        this(new PhaseInLastLearnedClauseSelectionStrategy());
+    }
 
-	public VarOrderHeapObjective(IPhaseSelectionStrategy strategy) {
-		super(strategy);
-	}
+    public VarOrderHeapObjective(IPhaseSelectionStrategy strategy) {
+        super(strategy);
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		this.obj = obj;
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        this.obj = obj;
+    }
 
-	@Override
-	public void init() {
-		super.init();
-		if (obj != null) {
-			IVecInt vars = obj.getVars();
-			IVec<BigInteger> coefs = obj.getCoeffs();
-			for (int i = 0; i < vars.size(); i++) {
-				int dimacsLiteral = vars.get(i);
-				if (lits.belongsToPool(Math.abs(dimacsLiteral))) {
-					int p = lits.getFromPool(dimacsLiteral);
-					BigInteger c = coefs.get(i);
-					if (c.signum() < 0) {
-						p = neg(p);
-					}
-					int var = var(p);
-					activity[var] = c.bitLength() < Long.SIZE ? c.abs()
-							.longValue() : Long.MAX_VALUE;
-					if (heap.inHeap(var))
-						heap.increase(var);
-					else
-						heap.insert(var);
-					phaseStrategy.init(var, neg(p));
-				}
-			}
-		}
-	}
+    @Override
+    public void init() {
+        super.init();
+        if (this.obj != null) {
+            IVecInt vars = this.obj.getVars();
+            IVec<BigInteger> coefs = this.obj.getCoeffs();
+            for (int i = 0; i < vars.size(); i++) {
+                int dimacsLiteral = vars.get(i);
+                if (this.lits.belongsToPool(Math.abs(dimacsLiteral))) {
+                    int p = this.lits.getFromPool(dimacsLiteral);
+                    BigInteger c = coefs.get(i);
+                    if (c.signum() < 0) {
+                        p = neg(p);
+                    }
+                    int var = var(p);
+                    this.activity[var] = c.bitLength() < Long.SIZE ? c.abs()
+                            .longValue() : Long.MAX_VALUE;
+                    if (this.heap.inHeap(var)) {
+                        this.heap.increase(var);
+                    } else {
+                        this.heap.insert(var);
+                    }
+                    this.phaseStrategy.init(var, neg(p));
+                }
+            }
+        }
+    }
 
-	@Override
-	public String toString() {
-		return super.toString() + " taking into account the objective function";
-	}
+    @Override
+    public String toString() {
+        return super.toString() + " taking into account the objective function";
+    }
 
 }

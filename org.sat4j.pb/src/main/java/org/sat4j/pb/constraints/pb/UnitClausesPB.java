@@ -37,32 +37,32 @@ import org.sat4j.specs.IVecInt;
 
 public class UnitClausesPB extends UnitClauses implements PBConstr {
 
-	public UnitClausesPB(IVecInt values) {
-		super(values);
-	}
+    public UnitClausesPB(IVecInt values) {
+        super(values);
+    }
 
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	public BigInteger getDegree() {
-		return BigInteger.ONE;
-	}
+    public BigInteger getDegree() {
+        return BigInteger.ONE;
+    }
 
-	public ILits getVocabulary() {
-		throw new UnsupportedOperationException();
-	}
+    public ILits getVocabulary() {
+        throw new UnsupportedOperationException();
+    }
 
-	public int[] getLits() {
-		throw new UnsupportedOperationException();
-	}
+    public int[] getLits() {
+        throw new UnsupportedOperationException();
+    }
 
-	public BigInteger[] getCoefs() {
-		throw new UnsupportedOperationException();
-	}
+    public BigInteger[] getCoefs() {
+        throw new UnsupportedOperationException();
+    }
 
-	public IVecInt computeAnImpliedClause() {
-		throw new UnsupportedOperationException();
-	}
+    public IVecInt computeAnImpliedClause() {
+        throw new UnsupportedOperationException();
+    }
 
 }

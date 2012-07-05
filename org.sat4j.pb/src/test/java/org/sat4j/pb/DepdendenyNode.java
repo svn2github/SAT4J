@@ -33,54 +33,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DepdendenyNode<C> {
-	private final C name;
-	private List<DepdendenyNode<C>> children;
-	private final Explanation<C> explanation;
+    private final C name;
+    private List<DepdendenyNode<C>> children;
+    private final Explanation<C> explanation;
 
-	public DepdendenyNode(C name, Explanation<C> explanation) {
-		this.name = name;
-		this.explanation = explanation;
-	}
+    public DepdendenyNode(C name, Explanation<C> explanation) {
+        this.name = name;
+        this.explanation = explanation;
+    }
 
-	public C getName() {
-		return name;
-	}
-	
-	public DepdendenyNode<C> newChild(C name) {
-		DepdendenyNode<C> newNode = explanation.newNode(name);
-		if (children == null) {
-			children = new ArrayList<DepdendenyNode<C>>();
-		}
-		children.add(newNode);
-		return newNode;
-	}
+    public C getName() {
+        return this.name;
+    }
 
-	public boolean hasBranches() {
-		if (children == null || children.isEmpty())
-			return false;
-		if (children.size() > 1)
-			return true;
-		return children.get(0).hasBranches();
-	}
+    public DepdendenyNode<C> newChild(C name) {
+        DepdendenyNode<C> newNode = this.explanation.newNode(name);
+        if (this.children == null) {
+            this.children = new ArrayList<DepdendenyNode<C>>();
+        }
+        this.children.add(newNode);
+        return newNode;
+    }
 
-	public int getMaxDepth() {
-		if (children == null || children.isEmpty())
-			return 1;
-		int maxChildDepth = 0;
-		for (DepdendenyNode<C> child : children) {
-			int childDepth = child.getMaxDepth();
-			if (childDepth > maxChildDepth) {
-				maxChildDepth = childDepth;
-			}
-		}
-		return maxChildDepth + 1;
-	}
+    public boolean hasBranches() {
+        if (this.children == null || this.children.isEmpty()) {
+            return false;
+        }
+        if (this.children.size() > 1) {
+            return true;
+        }
+        return this.children.get(0).hasBranches();
+    }
 
-	public DepdendenyNode<C> getOnlyChild() {
-		if (children == null || children.isEmpty())
-			return null;
-		if (children.size() > 1)
-			throw new IllegalStateException(this + " has " + children.size() + " children.");
-		return children.get(0);
-	}
+    public int getMaxDepth() {
+        if (this.children == null || this.children.isEmpty()) {
+            return 1;
+        }
+        int maxChildDepth = 0;
+        for (DepdendenyNode<C> child : this.children) {
+            int childDepth = child.getMaxDepth();
+            if (childDepth > maxChildDepth) {
+                maxChildDepth = childDepth;
+            }
+        }
+        return maxChildDepth + 1;
+    }
+
+    public DepdendenyNode<C> getOnlyChild() {
+        if (this.children == null || this.children.isEmpty()) {
+            return null;
+        }
+        if (this.children.size() > 1) {
+            throw new IllegalStateException(this + " has "
+                    + this.children.size() + " children.");
+        }
+        return this.children.get(0);
+    }
 }

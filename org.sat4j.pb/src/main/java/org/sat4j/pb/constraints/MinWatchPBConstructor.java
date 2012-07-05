@@ -40,15 +40,15 @@ import org.sat4j.specs.ContradictionException;
 
 public class MinWatchPBConstructor implements IPBConstructor {
 
-	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
-		return MinWatchPb.normalizedWatchPbNew(voc, dspb);
-	}
+    public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
+        return MinWatchPb.normalizedWatchPbNew(voc, dspb);
+    }
 
-	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException {
-		return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
-				degree, sumCoefs);
-	}
+    public Constr constructPB(UnitPropagationListener solver, ILits voc,
+            int[] theLits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException {
+        return MinWatchPb.normalizedMinWatchPbNew(solver, voc, theLits, coefs,
+                degree, sumCoefs);
+    }
 
 }

@@ -48,111 +48,116 @@ import org.sat4j.specs.IVecInt;
  */
 public class ObjectiveFunction implements Serializable {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// contains the coeffs of the objective function for each variable
-	private final IVec<BigInteger> coeffs;
+    // contains the coeffs of the objective function for each variable
+    private final IVec<BigInteger> coeffs;
 
-	private final IVecInt vars;
+    private final IVecInt vars;
 
-	private BigInteger correction = BigInteger.ZERO;
+    private BigInteger correction = BigInteger.ZERO;
 
-	public ObjectiveFunction(IVecInt vars, IVec<BigInteger> coeffs) {
-		this.vars = new ReadOnlyVecInt(vars);
-		this.coeffs = new ReadOnlyVec<BigInteger>(coeffs);
-	}
+    public ObjectiveFunction(IVecInt vars, IVec<BigInteger> coeffs) {
+        this.vars = new ReadOnlyVecInt(vars);
+        this.coeffs = new ReadOnlyVec<BigInteger>(coeffs);
+    }
 
-	// calculate the degree of the objective function
-	public BigInteger calculateDegree(ISolver solver) {
-		BigInteger tempDegree = BigInteger.ZERO;
+    // calculate the degree of the objective function
+    public BigInteger calculateDegree(ISolver solver) {
+        BigInteger tempDegree = BigInteger.ZERO;
 
-		for (int i = 0; i < vars.size(); i++) {
-			BigInteger coeff = coeffs.get(i);
-			if (varInModel(vars.get(i), solver))
-				tempDegree = tempDegree.add(coeff);
-			else if ((coeff.signum() < 0) && !varInModel(-vars.get(i), solver)) {
-				// the variable does not appear in the model: it can be assigned
-				// either way
-				tempDegree = tempDegree.add(coeff);
-			}
-		}
-		return tempDegree;
-	}
+        for (int i = 0; i < this.vars.size(); i++) {
+            BigInteger coeff = this.coeffs.get(i);
+            if (varInModel(this.vars.get(i), solver)) {
+                tempDegree = tempDegree.add(coeff);
+            } else if (coeff.signum() < 0
+                    && !varInModel(-this.vars.get(i), solver)) {
+                // the variable does not appear in the model: it can be assigned
+                // either way
+                tempDegree = tempDegree.add(coeff);
+            }
+        }
+        return tempDegree;
+    }
 
-	private boolean varInModel(int var, ISolver solver) {
-		if (var > 0)
-			return solver.model(var);
-		return !solver.model(-var);
-	}
+    private boolean varInModel(int var, ISolver solver) {
+        if (var > 0) {
+            return solver.model(var);
+        }
+        return !solver.model(-var);
+    }
 
-	public IVec<BigInteger> getCoeffs() {
-		return coeffs;
-	}
+    public IVec<BigInteger> getCoeffs() {
+        return this.coeffs;
+    }
 
-	public IVecInt getVars() {
-		return vars;
-	}
+    public IVecInt getVars() {
+        return this.vars;
+    }
 
-	public void setCorrection(BigInteger correction) {
-		this.correction = correction;
-	}
+    public void setCorrection(BigInteger correction) {
+        this.correction = correction;
+    }
 
-	public BigInteger getCorrection() {
-		return correction;
-	}
+    public BigInteger getCorrection() {
+        return this.correction;
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer stb = new StringBuffer();
-		IVecInt lits = getVars();
-		IVec<BigInteger> coefs = getCoeffs();
-		BigInteger coef;
-		int lit;
-		for (int i = 0; i < lits.size(); i++) {
-			coef = coefs.get(i);
-			lit = lits.get(i);
-			if (lit < 0) {
-				lit = -lit;
-				coef = coef.negate();
-			}
-			stb.append((coef.signum() < 0 ? "" : "+") + coef + " x" + lit + " ");
-		}
-		return stb.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuffer stb = new StringBuffer();
+        IVecInt lits = getVars();
+        IVec<BigInteger> coefs = getCoeffs();
+        BigInteger coef;
+        int lit;
+        for (int i = 0; i < lits.size(); i++) {
+            coef = coefs.get(i);
+            lit = lits.get(i);
+            if (lit < 0) {
+                lit = -lit;
+                coef = coef.negate();
+            }
+            stb.append((coef.signum() < 0 ? "" : "+") + coef + " x" + lit + " ");
+        }
+        return stb.toString();
+    }
 
-	public BigInteger minValue() {
-		BigInteger tempDegree = BigInteger.ZERO;
-		for (int i = 0; i < vars.size(); i++) {
-			BigInteger coeff = coeffs.get(i);
-			if (coeff.signum() < 0) {
-				tempDegree = tempDegree.add(coeff);
-			}
-		}
-		return tempDegree;
-	}
+    public BigInteger minValue() {
+        BigInteger tempDegree = BigInteger.ZERO;
+        for (int i = 0; i < this.vars.size(); i++) {
+            BigInteger coeff = this.coeffs.get(i);
+            if (coeff.signum() < 0) {
+                tempDegree = tempDegree.add(coeff);
+            }
+        }
+        return tempDegree;
+    }
 
-	public BigInteger calculateDegree(int[] model) {
-		BigInteger tempDegree = BigInteger.ZERO;
+    public BigInteger calculateDegree(int[] model) {
+        BigInteger tempDegree = BigInteger.ZERO;
 
-		for (int i = 0; i < vars.size(); i++) {
-			BigInteger coeff = coeffs.get(i);
-			if (varInModel(vars.get(i), model))
-				tempDegree = tempDegree.add(coeff);
-			else if ((coeff.signum() < 0) && !varInModel(-vars.get(i), model)) {
-				tempDegree = tempDegree.add(coeff);
-			}
-		}
-		return tempDegree;
-	}
+        for (int i = 0; i < this.vars.size(); i++) {
+            BigInteger coeff = this.coeffs.get(i);
+            if (varInModel(this.vars.get(i), model)) {
+                tempDegree = tempDegree.add(coeff);
+            } else if (coeff.signum() < 0
+                    && !varInModel(-this.vars.get(i), model)) {
+                tempDegree = tempDegree.add(coeff);
+            }
+        }
+        return tempDegree;
+    }
 
-	private boolean varInModel(int var, int[] model) {
-		for (int i = 0; i < model.length; i++)
-			if (var == model[i])
-				return true;
-		return false;
-	}
+    private boolean varInModel(int var, int[] model) {
+        for (int element : model) {
+            if (var == element) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

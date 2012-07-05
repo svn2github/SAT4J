@@ -68,7 +68,8 @@ public class OPBReader2006 extends OPBReader2005 {
 
         skipSpaces();
 
-        if (!readIdentifier(var))
+        if (!readIdentifier(var)) {
             throw new ParseFormatException("identifier expected");
+        }
     }
 }

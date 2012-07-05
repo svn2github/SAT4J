@@ -37,44 +37,45 @@ import org.sat4j.pb.constraints.pb.PBConstr;
 
 public class PBSolverCautious extends PBSolverCP {
 
-	private static final long serialVersionUID = 1L;
-	public static final int BOUND = 10;
+    private static final long serialVersionUID = 1L;
+    public static final int BOUND = 10;
 
-	public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order) {
-		super(learner, dsf, order);
-		ConflictMapSwitchToClause.UPPERBOUND = BOUND;
-	}
+    public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
+        super(learner, dsf, order);
+        ConflictMapSwitchToClause.UPPERBOUND = BOUND;
+    }
 
-	public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order, int bound) {
-		super(learner, dsf, order);
-		ConflictMapSwitchToClause.UPPERBOUND = bound;
-	}
+    public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order, int bound) {
+        super(learner, dsf, order);
+        ConflictMapSwitchToClause.UPPERBOUND = bound;
+    }
 
-	@Override
-	IConflict chooseConflict(PBConstr myconfl, int level) {
-		return ConflictMapSwitchToClause.createConflict(myconfl, level);
-	}
+    @Override
+    IConflict chooseConflict(PBConstr myconfl, int level) {
+        return ConflictMapSwitchToClause.createConflict(myconfl, level);
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix)
-				+ "\n"
-				+ prefix
-				+ "When dealing with too large coefficients, simplify asserted PB constraints to clauses";
-	}
+    @Override
+    public String toString(String prefix) {
+        return super.toString(prefix)
+                + "\n"
+                + prefix
+                + "When dealing with too large coefficients, simplify asserted PB constraints to clauses";
+    }
 
-	@Override
-	protected void updateNumberOfReductions(IConflict confl) {
-		stats.numberOfReductions += ((ConflictMapSwitchToClause) confl)
-				.getNumberOfReductions();
-	}
+    @Override
+    protected void updateNumberOfReductions(IConflict confl) {
+        this.stats.numberOfReductions += ((ConflictMapSwitchToClause) confl)
+                .getNumberOfReductions();
+    }
 
-	@Override
-	protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
-		if (((ConflictMapSwitchToClause) confl).hasBeenReduced())
-			stats.numberOfLearnedConstraintsReduced++;
-	}
+    @Override
+    protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
+        if (((ConflictMapSwitchToClause) confl).hasBeenReduced()) {
+            this.stats.numberOfLearnedConstraintsReduced++;
+        }
+    }
 
 }

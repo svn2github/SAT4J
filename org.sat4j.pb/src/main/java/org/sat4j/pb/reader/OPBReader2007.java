@@ -81,266 +81,276 @@ import org.sat4j.specs.IVecInt;
  */
 public class OPBReader2007 extends OPBReader2006 {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param solver
-	 */
-	public OPBReader2007(IPBSolver solver) {
-		super(solver);
-	}
+    /**
+     * @param solver
+     */
+    public OPBReader2007(IPBSolver solver) {
+        super(solver);
+    }
 
-	@Override
-	protected boolean isGoodFirstCharacter(char c) {
-		return Character.isLetter(c) || c == '_' || c == '~';
-	}
+    @Override
+    protected boolean isGoodFirstCharacter(char c) {
+        return Character.isLetter(c) || c == '_' || c == '~';
+    }
 
-	@Override
-	protected void checkId(StringBuffer s) throws ParseFormatException {
-		// Small check on the coefficient ID to make sure everything is ok
-		int cpt = 1;
-		if (s.charAt(0) == '~')
-			cpt = 2;
-		int varID = Integer.parseInt(s.substring(cpt));
-		if (varID > nbVars) {
-			throw new ParseFormatException(
-					"Variable identifier larger than #variables in metadata.");
-		}
-	}
+    @Override
+    protected void checkId(StringBuffer s) throws ParseFormatException {
+        // Small check on the coefficient ID to make sure everything is ok
+        int cpt = 1;
+        if (s.charAt(0) == '~') {
+            cpt = 2;
+        }
+        int varID = Integer.parseInt(s.substring(cpt));
+        if (varID > this.nbVars) {
+            throw new ParseFormatException(
+                    "Variable identifier larger than #variables in metadata.");
+        }
+    }
 
-	/**
-	 * contains the number of new symbols generated to linearize products
-	 */
-	protected int nbNewSymbols;
+    /**
+     * contains the number of new symbols generated to linearize products
+     */
+    protected int nbNewSymbols;
 
-	@Override
-	protected void readTerm(StringBuffer coeff, StringBuffer var)
-			throws IOException, ParseFormatException {
-		readInteger(coeff);
+    @Override
+    protected void readTerm(StringBuffer coeff, StringBuffer var)
+            throws IOException, ParseFormatException {
+        readInteger(coeff);
 
-		skipSpaces();
+        skipSpaces();
 
-		var.setLength(0);
-		IVec<String> tmpLit = new Vec<String>();
-		StringBuffer tmpVar = new StringBuffer();
-		while (readIdentifier(tmpVar)) {
-			tmpLit = tmpLit.push(tmpVar.toString());
-			skipSpaces();
-		}
-		if (tmpLit.size() == 0)
-			throw new ParseFormatException("identifier expected");
-		if (tmpLit.size() == 1) {
-			// it is a "normal" term
-			var.append(tmpLit.last());
-			tmpLit.pop();
-		} else {
-			// it is a product term
-			try {
-				var.append(linearizeProduct(tmpLit));
-			} catch (ContradictionException e) {
-				throw new ParseFormatException(e);
-			}
-		}
-	}
+        var.setLength(0);
+        IVec<String> tmpLit = new Vec<String>();
+        StringBuffer tmpVar = new StringBuffer();
+        while (readIdentifier(tmpVar)) {
+            tmpLit = tmpLit.push(tmpVar.toString());
+            skipSpaces();
+        }
+        if (tmpLit.size() == 0) {
+            throw new ParseFormatException("identifier expected");
+        }
+        if (tmpLit.size() == 1) {
+            // it is a "normal" term
+            var.append(tmpLit.last());
+            tmpLit.pop();
+        } else {
+            // it is a product term
+            try {
+                var.append(linearizeProduct(tmpLit));
+            } catch (ContradictionException e) {
+                throw new ParseFormatException(e);
+            }
+        }
+    }
 
-	/**
-	 * callback called when we read a term of a constraint
-	 * 
-	 * @param var
-	 *            the identifier of the variable
-	 * @param lits
-	 *            a set of literals in DIMACS format in which var once
-	 *            translated will be added.
-	 * @throws ParseFormatException
-	 */
-	protected void literalInAProduct(String var, IVecInt lits)
-			throws ParseFormatException {
-		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
-		int id = Integer.parseInt(var.substring(beginning));
-		int lid = ((var.charAt(0) == '~') ? -1 : 1) * id;
-		if (lid == 0 || Math.abs(lid) >= nbNewSymbols) {
-			throw new ParseFormatException("Wrong variable id");
-		}
-		lits.push(lid);
-	}
+    /**
+     * callback called when we read a term of a constraint
+     * 
+     * @param var
+     *            the identifier of the variable
+     * @param lits
+     *            a set of literals in DIMACS format in which var once
+     *            translated will be added.
+     * @throws ParseFormatException
+     */
+    protected void literalInAProduct(String var, IVecInt lits)
+            throws ParseFormatException {
+        int beginning = var.charAt(0) == '~' ? 2 : 1;
+        int id = Integer.parseInt(var.substring(beginning));
+        int lid = (var.charAt(0) == '~' ? -1 : 1) * id;
+        if (lid == 0 || Math.abs(lid) >= this.nbNewSymbols) {
+            throw new ParseFormatException("Wrong variable id");
+        }
+        lits.push(lid);
+    }
 
-	/**
-	 * callback called when we read a term of a constraint
-	 * 
-	 * @param var
-	 *            the identifier of the variable
-	 * @param lits
-	 *            a set of literals in DIMACS format in which var once
-	 *            translated will be added.
-	 */
-	protected void negateLiteralInAProduct(String var, IVecInt lits) {
-		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
-		int id = Integer.parseInt(var.substring(beginning));
-		int lid = ((var.charAt(0) == '~') ? 1 : -1) * id;
-		lits.push(lid);
-	}
+    /**
+     * callback called when we read a term of a constraint
+     * 
+     * @param var
+     *            the identifier of the variable
+     * @param lits
+     *            a set of literals in DIMACS format in which var once
+     *            translated will be added.
+     */
+    protected void negateLiteralInAProduct(String var, IVecInt lits) {
+        int beginning = var.charAt(0) == '~' ? 2 : 1;
+        int id = Integer.parseInt(var.substring(beginning));
+        int lid = (var.charAt(0) == '~' ? 1 : -1) * id;
+        lits.push(lid);
+    }
 
-	/**
-	 * read the first comment line to get the number of variables and the number
-	 * of constraints in the file calls metaData with the data that was read
-	 * 
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	@Override
-	protected void readMetaData() throws IOException, ParseFormatException {
-		char c;
-		String s;
+    /**
+     * read the first comment line to get the number of variables and the number
+     * of constraints in the file calls metaData with the data that was read
+     * 
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Override
+    protected void readMetaData() throws IOException, ParseFormatException {
+        char c;
+        String s;
 
-		// get the number of variables and constraints
-		c = get();
-		if (c != '*')
-			throw new ParseFormatException(
-					"First line of input file should be a comment");
-		s = readWord();
-		if (eof() || !"#variable=".equals(s))
-			throw new ParseFormatException(
-					"First line should contain #variable= as first keyword");
+        // get the number of variables and constraints
+        c = get();
+        if (c != '*') {
+            throw new ParseFormatException(
+                    "First line of input file should be a comment");
+        }
+        s = readWord();
+        if (eof() || !"#variable=".equals(s)) {
+            throw new ParseFormatException(
+                    "First line should contain #variable= as first keyword");
+        }
 
-		nbVars = Integer.parseInt(readWord());
-		nbNewSymbols = nbVars + 1;
+        this.nbVars = Integer.parseInt(readWord());
+        this.nbNewSymbols = this.nbVars + 1;
 
-		s = readWord();
-		if (eof() || !"#constraint=".equals(s))
-			throw new ParseFormatException(
-					"First line should contain #constraint= as second keyword");
+        s = readWord();
+        if (eof() || !"#constraint=".equals(s)) {
+            throw new ParseFormatException(
+                    "First line should contain #constraint= as second keyword");
+        }
 
-		nbConstr = Integer.parseInt(readWord());
-		charAvailable = false;
-		if (!eol()) {
-			String rest = in.readLine();
+        this.nbConstr = Integer.parseInt(readWord());
+        this.charAvailable = false;
+        if (!eol()) {
+            String rest = this.in.readLine();
 
-			if (rest != null && rest.indexOf("#product=") != -1) {
-				String[] splitted = rest.trim().split(" ");
-				if (splitted[0].equals("#product=")) {
-					Integer.parseInt(splitted[1]);
-				}
+            if (rest != null && rest.indexOf("#product=") != -1) {
+                String[] splitted = rest.trim().split(" ");
+                if (splitted[0].equals("#product=")) {
+                    Integer.parseInt(splitted[1]);
+                }
 
-				// if (splitted[2].equals("sizeproduct="))
-				// readWord();
+                // if (splitted[2].equals("sizeproduct="))
+                // readWord();
 
-			}
-		}
-		// callback to transmit the data
-		metaData(nbVars, nbConstr);
-	}
+            }
+        }
+        // callback to transmit the data
+        metaData(this.nbVars, this.nbConstr);
+    }
 
-	@Override
-	protected int translateVarToId(String var) throws ParseFormatException {
-		int beginning = ((var.charAt(0) == '~') ? 2 : 1);
-		int id = Integer.parseInt(var.substring(beginning));
-		if (id == 0 || id >= nbNewSymbols) {
-			throw new ParseFormatException("Wrong variable id format: " + var);
-		}
-		return ((var.charAt(0) == '~') ? -1 : 1) * id;
-	}
+    @Override
+    protected int translateVarToId(String var) throws ParseFormatException {
+        int beginning = var.charAt(0) == '~' ? 2 : 1;
+        int id = Integer.parseInt(var.substring(beginning));
+        if (id == 0 || id >= this.nbNewSymbols) {
+            throw new ParseFormatException("Wrong variable id format: " + var);
+        }
+        return (var.charAt(0) == '~' ? -1 : 1) * id;
+    }
 
-	private String linearizeProduct(IVec<String> tmpLit)
-			throws ContradictionException, ParseFormatException {
-		tmpLit.sort(String.CASE_INSENSITIVE_ORDER);
-		String newVar = getProductVariable(tmpLit);
-		if (newVar == null) {
-			// generate a new symbol
-			newVar = "X" + nbNewSymbols++;
-			// linearization proposed by O. Roussel (PB07)
-			// generate the clause
-			// product => newSymbol (this is a clause)
-			// not x1 or not x2 ... or not xn or newSymbol
-			if (tmpLit.size() == 2) {
-				Map<String, String> map1 = binaryProductToVar
-						.get(tmpLit.get(0));
-				if (map1 == null) {
-					map1 = new HashMap<String, String>();
-					binaryProductToVar.put(tmpLit.get(0), map1);
-				}
-				map1.put(tmpLit.get(1), newVar);
-			}
-			varToProduct.put(newVar, tmpLit);
-			IVecInt newLits = new VecInt();
-			for (Iterator<String> iterator = tmpLit.iterator(); iterator
-					.hasNext();)
-				negateLiteralInAProduct(iterator.next(), newLits);
-			literalInAProduct(newVar, newLits);
-			solver.addClause(newLits);
-			// generate the PB-constraint
-			// newSymbol => product translated as
-			// x1+x2+x3...+xn-n*newSymbol>=0
-			newLits.clear();
-			IVec<BigInteger> newCoefs = new Vec<BigInteger>();
-			for (Iterator<String> iterator = tmpLit.iterator(); iterator
-					.hasNext();) {
-				literalInAProduct(iterator.next(), newLits);
-				newCoefs.push(BigInteger.ONE);
-			}
-			literalInAProduct(newVar, newLits);
-			newCoefs.push(new BigInteger(String.valueOf(-tmpLit.size())));
-			solver.addPseudoBoolean(newLits, newCoefs, true, BigInteger.ZERO);
-			// nbConstraintsRead += 2;
-		}
-		return newVar;
-	}
+    private String linearizeProduct(IVec<String> tmpLit)
+            throws ContradictionException, ParseFormatException {
+        tmpLit.sort(String.CASE_INSENSITIVE_ORDER);
+        String newVar = getProductVariable(tmpLit);
+        if (newVar == null) {
+            // generate a new symbol
+            newVar = "X" + this.nbNewSymbols++;
+            // linearization proposed by O. Roussel (PB07)
+            // generate the clause
+            // product => newSymbol (this is a clause)
+            // not x1 or not x2 ... or not xn or newSymbol
+            if (tmpLit.size() == 2) {
+                Map<String, String> map1 = this.binaryProductToVar.get(tmpLit
+                        .get(0));
+                if (map1 == null) {
+                    map1 = new HashMap<String, String>();
+                    this.binaryProductToVar.put(tmpLit.get(0), map1);
+                }
+                map1.put(tmpLit.get(1), newVar);
+            }
+            this.varToProduct.put(newVar, tmpLit);
+            IVecInt newLits = new VecInt();
+            for (Iterator<String> iterator = tmpLit.iterator(); iterator
+                    .hasNext();) {
+                negateLiteralInAProduct(iterator.next(), newLits);
+            }
+            literalInAProduct(newVar, newLits);
+            this.solver.addClause(newLits);
+            // generate the PB-constraint
+            // newSymbol => product translated as
+            // x1+x2+x3...+xn-n*newSymbol>=0
+            newLits.clear();
+            IVec<BigInteger> newCoefs = new Vec<BigInteger>();
+            for (Iterator<String> iterator = tmpLit.iterator(); iterator
+                    .hasNext();) {
+                literalInAProduct(iterator.next(), newLits);
+                newCoefs.push(BigInteger.ONE);
+            }
+            literalInAProduct(newVar, newLits);
+            newCoefs.push(new BigInteger(String.valueOf(-tmpLit.size())));
+            this.solver.addPseudoBoolean(newLits, newCoefs, true,
+                    BigInteger.ZERO);
+            // nbConstraintsRead += 2;
+        }
+        return newVar;
+    }
 
-	private final Map<String, IVec<String>> varToProduct = new HashMap<String, IVec<String>>();
+    private final Map<String, IVec<String>> varToProduct = new HashMap<String, IVec<String>>();
 
-	private final Map<String, Map<String, String>> binaryProductToVar = new HashMap<String, Map<String, String>>();
+    private final Map<String, Map<String, String>> binaryProductToVar = new HashMap<String, Map<String, String>>();
 
-	private String getProductVariable(IVec<String> lits) {
-		if (lits.size() == 2) {
-			Map<String, String> map = binaryProductToVar.get(lits.get(0));
-			if (map == null)
-				return null;
-			return map.get(lits.get(1));
-		}
-		for (Map.Entry<String, IVec<String>> c : varToProduct.entrySet())
-			if (c.getValue().equals(lits))
-				return c.getKey();
-		return null;
-	}
+    private String getProductVariable(IVec<String> lits) {
+        if (lits.size() == 2) {
+            Map<String, String> map = this.binaryProductToVar.get(lits.get(0));
+            if (map == null) {
+                return null;
+            }
+            return map.get(lits.get(1));
+        }
+        for (Map.Entry<String, IVec<String>> c : this.varToProduct.entrySet()) {
+            if (c.getValue().equals(lits)) {
+                return c.getKey();
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public String decode(int[] model) {
-		StringBuffer stb = new StringBuffer();
-		int p;
-		for (int i = 0; i < model.length; i++) {
-			p = model[i];
-			if (Math.abs(p) <= nbVars) {
-				if (p < 0) {
-					stb.append("-x");
-					stb.append(-p);
-				} else {
-					stb.append("x");
-					stb.append(p);
-				}
-				stb.append(" ");
-			}
-		}
-		return stb.toString();
-	}
+    @Override
+    public String decode(int[] model) {
+        StringBuffer stb = new StringBuffer();
+        int p;
+        for (int element : model) {
+            p = element;
+            if (Math.abs(p) <= this.nbVars) {
+                if (p < 0) {
+                    stb.append("-x");
+                    stb.append(-p);
+                } else {
+                    stb.append("x");
+                    stb.append(p);
+                }
+                stb.append(" ");
+            }
+        }
+        return stb.toString();
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		int p;
-		for (int i = 0; i < model.length; i++) {
-			p = model[i];
-			if (Math.abs(p) <= nbVars) {
-				if (model[i] < 0) {
-					out.print("-x");
-					out.print(-p);
-				} else {
-					out.print("x");
-					out.print(p);
-				}
-				out.print(" ");
-			}
-		}
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        int p;
+        for (int element : model) {
+            p = element;
+            if (Math.abs(p) <= this.nbVars) {
+                if (element < 0) {
+                    out.print("-x");
+                    out.print(-p);
+                } else {
+                    out.print("x");
+                    out.print(p);
+                }
+                out.print(" ");
+            }
+        }
+    }
 
 }

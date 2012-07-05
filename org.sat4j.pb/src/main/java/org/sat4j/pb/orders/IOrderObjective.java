@@ -33,5 +33,5 @@ import org.sat4j.minisat.core.IOrder;
 import org.sat4j.pb.ObjectiveFunction;
 
 public interface IOrderObjective extends IOrder {
-	void setObjectiveFunction(ObjectiveFunction obj);
+    void setObjectiveFunction(ObjectiveFunction obj);
 }

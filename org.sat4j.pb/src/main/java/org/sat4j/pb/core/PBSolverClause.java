@@ -37,24 +37,24 @@ import org.sat4j.pb.constraints.pb.PBConstr;
 
 public class PBSolverClause extends PBSolverCP {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PBSolverClause(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order) {
-		super(learner, dsf, order);
-	}
+    public PBSolverClause(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
+        super(learner, dsf, order);
+    }
 
-	@Override
-	IConflict chooseConflict(PBConstr myconfl, int level) {
-		return ConflictMapClause.createConflict(myconfl, level);
-	}
+    @Override
+    IConflict chooseConflict(PBConstr myconfl, int level) {
+        return ConflictMapClause.createConflict(myconfl, level);
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix) + "\n" + prefix
-				+ "Simplify asserted PB constraints to clauses";
-	}
+    @Override
+    public String toString(String prefix) {
+        return super.toString(prefix) + "\n" + prefix
+                + "Simplify asserted PB constraints to clauses";
+    }
 }

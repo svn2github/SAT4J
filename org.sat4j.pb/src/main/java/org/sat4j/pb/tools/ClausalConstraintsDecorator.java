@@ -41,57 +41,57 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.ClausalCardinalitiesDecorator;
 
 public class ClausalConstraintsDecorator extends
-		ClausalCardinalitiesDecorator<ISolver> implements IPBSolver {
+        ClausalCardinalitiesDecorator<ISolver> implements IPBSolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ClausalConstraintsDecorator(ISolver solver) {
-		super(solver);
-	}
+    public ClausalConstraintsDecorator(ISolver solver) {
+        super(solver);
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
 }

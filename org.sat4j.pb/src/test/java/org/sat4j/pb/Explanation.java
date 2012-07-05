@@ -33,37 +33,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Explanation<C> {
-	private final List<DepdendenyNode<C>> roots;
-	private final List<Conflict<C>> conflicts;
-	
-	public Explanation() {
-		roots = new ArrayList<DepdendenyNode<C>>();
-		conflicts = new ArrayList<Conflict<C>>();
-	}
-	
-	public DepdendenyNode<C> newFalseRoot(C name) {
-		DepdendenyNode<C> root = newNode(name);
-		roots.add(root);
-		return root;
-	}
-	
-	public DepdendenyNode<C> newNode(C name) {
-		return new DepdendenyNode<C>(name, this);
-	}
-	
-	public List<DepdendenyNode<C>> getRoots() {
-		return roots;
-	}
+    private final List<DepdendenyNode<C>> roots;
+    private final List<Conflict<C>> conflicts;
 
-	public Conflict<C> newConflict() {
-		Conflict<C> conflict = new Conflict<C>(this);
-		conflicts.add(conflict);
-		return conflict;
-	}
+    public Explanation() {
+        this.roots = new ArrayList<DepdendenyNode<C>>();
+        this.conflicts = new ArrayList<Conflict<C>>();
+    }
 
-	public List<Conflict<C>> getConflicts() {
-		return conflicts;
-	}
-	
-	
+    public DepdendenyNode<C> newFalseRoot(C name) {
+        DepdendenyNode<C> root = newNode(name);
+        this.roots.add(root);
+        return root;
+    }
+
+    public DepdendenyNode<C> newNode(C name) {
+        return new DepdendenyNode<C>(name, this);
+    }
+
+    public List<DepdendenyNode<C>> getRoots() {
+        return this.roots;
+    }
+
+    public Conflict<C> newConflict() {
+        Conflict<C> conflict = new Conflict<C>(this);
+        this.conflicts.add(conflict);
+        return conflict;
+    }
+
+    public List<Conflict<C>> getConflicts() {
+        return this.conflicts;
+    }
+
 }

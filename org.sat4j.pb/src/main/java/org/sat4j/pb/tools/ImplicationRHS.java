@@ -46,61 +46,63 @@ import org.sat4j.specs.IVecInt;
  */
 public class ImplicationRHS<T, C> {
 
-	private final IVecInt clause;
-	private final DependencyHelper<T, C> helper;
+    private final IVecInt clause;
+    private final DependencyHelper<T, C> helper;
 
-	private final IVec<IConstr> toName = new Vec<IConstr>();
+    private final IVec<IConstr> toName = new Vec<IConstr>();
 
-	public ImplicationRHS(DependencyHelper<T, C> helper, IVecInt clause) {
-		this.clause = clause;
-		this.helper = helper;
-	}
+    public ImplicationRHS(DependencyHelper<T, C> helper, IVecInt clause) {
+        this.clause = clause;
+        this.helper = helper;
+    }
 
-	/**
-	 * Build an implication with a conjunction of literals in the RHS.
-	 * 
-	 * @param thing
-	 *            a domain object that will appear positively.
-	 * @return a RHS conjunction of literals.
-	 * @throws ContradictionException
-	 */
-	public ImplicationAnd<T, C> implies(T thing) throws ContradictionException {
-		ImplicationAnd<T, C> and = new ImplicationAnd<T, C>(helper, clause);
-		and.and(thing);
-		return and;
-	}
+    /**
+     * Build an implication with a conjunction of literals in the RHS.
+     * 
+     * @param thing
+     *            a domain object that will appear positively.
+     * @return a RHS conjunction of literals.
+     * @throws ContradictionException
+     */
+    public ImplicationAnd<T, C> implies(T thing) throws ContradictionException {
+        ImplicationAnd<T, C> and = new ImplicationAnd<T, C>(this.helper,
+                this.clause);
+        and.and(thing);
+        return and;
+    }
 
-	/**
-	 * Build an implication with a disjunction of literals in the RHS.
-	 * 
-	 * @param thing
-	 *            a domain object
-	 * @return an object used to name the constraint. The constraint MUST BE
-	 *         NAMED.
-	 * @throws ContradictionException
-	 */
-	public ImplicationNamer<T, C> implies(T... things)
-			throws ContradictionException {
-		for (T t : things) {
-			clause.push(helper.getIntValue(t));
-		}
-		toName.push(helper.solver.addClause(clause));
-		return new ImplicationNamer<T, C>(helper, toName);
-	}
+    /**
+     * Build an implication with a disjunction of literals in the RHS.
+     * 
+     * @param thing
+     *            a domain object
+     * @return an object used to name the constraint. The constraint MUST BE
+     *         NAMED.
+     * @throws ContradictionException
+     */
+    public ImplicationNamer<T, C> implies(T... things)
+            throws ContradictionException {
+        for (T t : things) {
+            this.clause.push(this.helper.getIntValue(t));
+        }
+        this.toName.push(this.helper.solver.addClause(this.clause));
+        return new ImplicationNamer<T, C>(this.helper, this.toName);
+    }
 
-	/**
-	 * Build an implication with a conjunction of literals in the RHS.
-	 * 
-	 * @param thing
-	 *            a domain object that will appear negatively.
-	 * @return a RHS conjunction of literals.
-	 * @throws ContradictionException
-	 */
-	public ImplicationAnd<T, C> impliesNot(T thing)
-			throws ContradictionException {
-		ImplicationAnd<T, C> and = new ImplicationAnd<T, C>(helper, clause);
-		and.andNot(thing);
-		return and;
-	}
+    /**
+     * Build an implication with a conjunction of literals in the RHS.
+     * 
+     * @param thing
+     *            a domain object that will appear negatively.
+     * @return a RHS conjunction of literals.
+     * @throws ContradictionException
+     */
+    public ImplicationAnd<T, C> impliesNot(T thing)
+            throws ContradictionException {
+        ImplicationAnd<T, C> and = new ImplicationAnd<T, C>(this.helper,
+                this.clause);
+        and.andNot(thing);
+        return and;
+    }
 
 }

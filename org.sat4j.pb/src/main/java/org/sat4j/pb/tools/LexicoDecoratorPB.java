@@ -44,106 +44,109 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.LexicoDecorator;
 
 public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
-		IPBSolver {
+        IPBSolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
-	private BigInteger bigCurrentValue;
+    private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
+    private BigInteger bigCurrentValue;
 
-	public LexicoDecoratorPB(IPBSolver solver) {
-		super(solver);
-	}
+    public LexicoDecoratorPB(IPBSolver solver) {
+        super(solver);
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		return decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        return decorated().addPseudoBoolean(lits, coeffs, moreThan, d);
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		throw new UnsupportedOperationException();
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        throw new UnsupportedOperationException();
 
-	}
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		throw new UnsupportedOperationException();
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		decorated().setObjectiveFunction(objs.get(currentCriterion));
-		return super.admitABetterSolution(assumps);
-	}
+    @Override
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        decorated().setObjectiveFunction(this.objs.get(this.currentCriterion));
+        return super.admitABetterSolution(assumps);
+    }
 
-	@Override
-	public void addCriterion(IVecInt literals) {
-		objs.add(new ObjectiveFunction(literals, new Vec<BigInteger>(literals
-				.size(), BigInteger.ONE)));
-	}
+    @Override
+    public void addCriterion(IVecInt literals) {
+        this.objs.add(new ObjectiveFunction(literals, new Vec<BigInteger>(
+                literals.size(), BigInteger.ONE)));
+    }
 
-	public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
-		objs.add(new ObjectiveFunction(literals, coefs));
-	}
+    public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
+        this.objs.add(new ObjectiveFunction(literals, coefs));
+    }
 
-	@Override
-	protected Number evaluate() {
-		bigCurrentValue = objs.get(currentCriterion).calculateDegree(this);
-		return bigCurrentValue;
-	}
+    @Override
+    protected Number evaluate() {
+        this.bigCurrentValue = this.objs.get(this.currentCriterion)
+                .calculateDegree(this);
+        return this.bigCurrentValue;
+    }
 
-	@Override
-	protected void fixCriterionValue() throws ContradictionException {
-		addPseudoBoolean(objs.get(currentCriterion).getVars(),
-				objs.get(currentCriterion).getCoeffs(), true, bigCurrentValue);
-		addPseudoBoolean(objs.get(currentCriterion).getVars(),
-				objs.get(currentCriterion).getCoeffs(), false, bigCurrentValue);
-	}
+    @Override
+    protected void fixCriterionValue() throws ContradictionException {
+        addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
+                this.objs.get(this.currentCriterion).getCoeffs(), true,
+                this.bigCurrentValue);
+        addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
+                this.objs.get(this.currentCriterion).getCoeffs(), false,
+                this.bigCurrentValue);
+    }
 
-	@Override
-	protected IConstr discardSolutionsForOptimizing()
-			throws ContradictionException {
-		return addPseudoBoolean(objs.get(currentCriterion).getVars(),
-				objs.get(currentCriterion).getCoeffs(), false,
-				bigCurrentValue.subtract(BigInteger.ONE));
-	}
+    @Override
+    protected IConstr discardSolutionsForOptimizing()
+            throws ContradictionException {
+        return addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
+                this.objs.get(this.currentCriterion).getCoeffs(), false,
+                this.bigCurrentValue.subtract(BigInteger.ONE));
+    }
 
-	@Override
-	protected int numberOfCriteria() {
-		return objs.size();
-	}
+    @Override
+    protected int numberOfCriteria() {
+        return this.objs.size();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
 }

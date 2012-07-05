@@ -33,15 +33,15 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class MiniOPBClauseCardMinLearningTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractPseudoBooleanAndPigeonHoleTest {
 
-	public MiniOPBClauseCardMinLearningTest(String arg) {
-		super(arg);
-	}
+    public MiniOPBClauseCardMinLearningTest(String arg) {
+        super(arg);
+    }
 
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory.newMiniOPBClauseCardMin();
-	}
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory.newMiniOPBClauseCardMin();
+    }
 
 }

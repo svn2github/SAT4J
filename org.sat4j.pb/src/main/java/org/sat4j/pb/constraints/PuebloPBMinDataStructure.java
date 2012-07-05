@@ -42,25 +42,25 @@ import org.sat4j.specs.ContradictionException;
  */
 public class PuebloPBMinDataStructure extends AbstractPBDataStructureFactory {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected PBConstr constraintFactory(int[] literals, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return PuebloMinWatchPb.normalizedMinWatchPbNew(solver,
-				getVocabulary(), literals, coefs, degree);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
+     * boolean, int)
+     */
+    @Override
+    protected PBConstr constraintFactory(int[] literals, BigInteger[] coefs,
+            BigInteger degree) throws ContradictionException {
+        return PuebloMinWatchPb.normalizedMinWatchPbNew(this.solver,
+                getVocabulary(), literals, coefs, degree);
+    }
 
-	@Override
-	protected PBConstr learntConstraintFactory(IDataStructurePB dspb) {
-		return PuebloMinWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
-	}
+    @Override
+    protected PBConstr learntConstraintFactory(IDataStructurePB dspb) {
+        return PuebloMinWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
+    }
 
 }

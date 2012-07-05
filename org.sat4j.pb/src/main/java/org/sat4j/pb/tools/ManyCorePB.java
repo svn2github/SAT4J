@@ -43,91 +43,91 @@ import org.sat4j.tools.ManyCore;
 
 public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ManyCorePB(ASolverFactory<IPBSolver> factory, String... solverNames) {
-		super(factory, solverNames);
-	}
+    public ManyCorePB(ASolverFactory<IPBSolver> factory, String... solverNames) {
+        super(factory, solverNames);
+    }
 
-	public ManyCorePB(IPBSolver... iSolver) {
-		super(iSolver);
-	}
+    public ManyCorePB(IPBSolver... iSolver) {
+        super(iSolver);
+    }
 
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i)
-					.addPseudoBoolean(lits, coeffs, moreThan, d));
-		}
-		return group;
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addPseudoBoolean(lits, coeffs,
+                    moreThan, d));
+        }
+        return group;
+    }
 
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		for (int i = 0; i < numberOfSolvers; i++) {
-			solvers.get(i).setObjectiveFunction(obj);
-		}
-	}
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            this.solvers.get(i).setObjectiveFunction(obj);
+        }
+    }
 
-	public ObjectiveFunction getObjectiveFunction() {
-		return solvers.get(0).getObjectiveFunction();
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        return this.solvers.get(0).getObjectiveFunction();
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtMost(literals, coeffs, degree));
-		}
-		return group;
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtMost(literals, coeffs, degree));
+        }
+        return group;
+    }
 
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtMost(literals, coeffs, degree));
-		}
-		return group;
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtMost(literals, coeffs, degree));
+        }
+        return group;
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtLeast(literals, coeffs, degree));
-		}
-		return group;
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtLeast(literals, coeffs, degree));
+        }
+        return group;
+    }
 
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addAtLeast(literals, coeffs, degree));
-		}
-		return group;
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addAtLeast(literals, coeffs, degree));
+        }
+        return group;
+    }
 
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addExactly(literals, coeffs, weight));
-		}
-		return group;
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addExactly(literals, coeffs, weight));
+        }
+        return group;
+    }
 
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		for (int i = 0; i < numberOfSolvers; i++) {
-			group.add(solvers.get(i).addExactly(literals, coeffs, weight));
-		}
-		return group;
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addExactly(literals, coeffs, weight));
+        }
+        return group;
+    }
 
 }

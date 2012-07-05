@@ -48,274 +48,284 @@ import org.sat4j.specs.ContradictionException;
  */
 public final class MaxWatchPb extends WatchPb {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final int LIMIT_FOR_MAP = 100;
+    public static final int LIMIT_FOR_MAP = 100;
 
-	/**
-	 * sum of the coefficients of the literals satisfied or unvalued
-	 */
-	private BigInteger watchCumul = BigInteger.ZERO;
+    /**
+     * sum of the coefficients of the literals satisfied or unvalued
+     */
+    private BigInteger watchCumul = BigInteger.ZERO;
 
-	private final Map<Integer, BigInteger> litToCoeffs;
+    private final Map<Integer, BigInteger> litToCoeffs;
 
-	/**
-	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
-	 * 
-	 * This constructor is called for learnt pseudo boolean constraints.
-	 * 
-	 * @param voc
-	 *            all the possible variables (vocabulary)
-	 * @param mpb
-	 *            data structure which contains literals of the constraint,
-	 *            coefficients (a0, a1, ... an), and the degree of the
-	 *            constraint (k). The constraint is a "more than" constraint.
-	 */
-	private MaxWatchPb(ILits voc, IDataStructurePB mpb) {
+    /**
+     * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
+     * 
+     * This constructor is called for learnt pseudo boolean constraints.
+     * 
+     * @param voc
+     *            all the possible variables (vocabulary)
+     * @param mpb
+     *            data structure which contains literals of the constraint,
+     *            coefficients (a0, a1, ... an), and the degree of the
+     *            constraint (k). The constraint is a "more than" constraint.
+     */
+    private MaxWatchPb(ILits voc, IDataStructurePB mpb) {
 
-		super(mpb);
-		this.voc = voc;
+        super(mpb);
+        this.voc = voc;
 
-		activity = 0;
-		watchCumul = BigInteger.ZERO;
-		if (coefs.length > LIMIT_FOR_MAP) {
-			litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
-			for (int i = 0; i < coefs.length; i++) {
-				litToCoeffs.put(lits[i], this.coefs[i]);
-			}
-		} else
-			litToCoeffs = null;
-	}
+        this.activity = 0;
+        this.watchCumul = BigInteger.ZERO;
+        if (this.coefs.length > LIMIT_FOR_MAP) {
+            this.litToCoeffs = new HashMap<Integer, BigInteger>(
+                    this.coefs.length);
+            for (int i = 0; i < this.coefs.length; i++) {
+                this.litToCoeffs.put(this.lits[i], this.coefs[i]);
+            }
+        } else {
+            this.litToCoeffs = null;
+        }
+    }
 
-	/**
-	 * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
-	 * 
-	 * @param voc
-	 *            all the possible variables (vocabulary)
-	 * @param lits
-	 *            literals of the constraint (x0,x1, ... xn)
-	 * @param coefs
-	 *            coefficients of the left side of the constraint (a0, a1, ...
-	 *            an)
-	 * @param degree
-	 *            degree of the constraint (k)
-	 */
-	private MaxWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
-			BigInteger degree, BigInteger sumCoefs) {
+    /**
+     * Builds a PB constraint for a0.x0 + a1.x1 + ... + an.xn >= k
+     * 
+     * @param voc
+     *            all the possible variables (vocabulary)
+     * @param lits
+     *            literals of the constraint (x0,x1, ... xn)
+     * @param coefs
+     *            coefficients of the left side of the constraint (a0, a1, ...
+     *            an)
+     * @param degree
+     *            degree of the constraint (k)
+     */
+    private MaxWatchPb(ILits voc, int[] lits, BigInteger[] coefs,
+            BigInteger degree, BigInteger sumCoefs) {
 
-		super(lits, coefs, degree, sumCoefs);
-		this.voc = voc;
+        super(lits, coefs, degree, sumCoefs);
+        this.voc = voc;
 
-		activity = 0;
-		watchCumul = BigInteger.ZERO;
-		if (coefs.length > LIMIT_FOR_MAP) {
-			litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
-			for (int i = 0; i < coefs.length; i++) {
-				litToCoeffs.put(lits[i], this.coefs[i]);
-			}
-		} else
-			litToCoeffs = null;
-	}
+        this.activity = 0;
+        this.watchCumul = BigInteger.ZERO;
+        if (coefs.length > LIMIT_FOR_MAP) {
+            this.litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
+            for (int i = 0; i < coefs.length; i++) {
+                this.litToCoeffs.put(lits[i], this.coefs[i]);
+            }
+        } else {
+            this.litToCoeffs = null;
+        }
+    }
 
-	/**
-	 * All the literals are watched.
-	 * 
-	 * @see org.sat4j.pb.constraints.pb.WatchPb#computeWatches()
-	 */
-	@Override
-	protected void computeWatches() throws ContradictionException {
-		assert watchCumul.equals(BigInteger.ZERO);
-		for (int i = 0; i < lits.length; i++) {
-			if (voc.isFalsified(lits[i])) {
-				if (learnt) {
-					voc.undos(lits[i] ^ 1).push(this);
-					voc.watch(lits[i] ^ 1, this);
-				}
-			} else {
-				// updating of the initial value for the counter
-				voc.watch(lits[i] ^ 1, this);
-				watchCumul = watchCumul.add(coefs[i]);
-			}
-		}
+    /**
+     * All the literals are watched.
+     * 
+     * @see org.sat4j.pb.constraints.pb.WatchPb#computeWatches()
+     */
+    @Override
+    protected void computeWatches() throws ContradictionException {
+        assert this.watchCumul.equals(BigInteger.ZERO);
+        for (int i = 0; i < this.lits.length; i++) {
+            if (this.voc.isFalsified(this.lits[i])) {
+                if (this.learnt) {
+                    this.voc.undos(this.lits[i] ^ 1).push(this);
+                    this.voc.watch(this.lits[i] ^ 1, this);
+                }
+            } else {
+                // updating of the initial value for the counter
+                this.voc.watch(this.lits[i] ^ 1, this);
+                this.watchCumul = this.watchCumul.add(this.coefs[i]);
+            }
+        }
 
-		assert watchCumul.compareTo(computeLeftSide()) >= 0;
-		if (!learnt && watchCumul.compareTo(degree) < 0) {
-			throw new ContradictionException("non satisfiable constraint");
-		}
-	}
+        assert this.watchCumul.compareTo(computeLeftSide()) >= 0;
+        if (!this.learnt && this.watchCumul.compareTo(this.degree) < 0) {
+            throw new ContradictionException("non satisfiable constraint");
+        }
+    }
 
-	/*
-	 * This method propagates any possible value.
-	 * 
-	 * This method is only called in the factory methods.
-	 * 
-	 * @see org.sat4j.minisat.constraints.WatchPb#computePropagation()
-	 */
-	@Override
-	protected void computePropagation(UnitPropagationListener s)
-			throws ContradictionException {
-		// propagate any possible value
-		int ind = 0;
-		while (ind < coefs.length
-				&& watchCumul.subtract(coefs[ind]).compareTo(degree) < 0) {
-			if (voc.isUnassigned(lits[ind]) && !s.enqueue(lits[ind], this))
-				// because this happens during the building of a constraint.
-				throw new ContradictionException("non satisfiable constraint");
-			ind++;
-		}
-		assert watchCumul.compareTo(computeLeftSide()) >= 0;
-	}
+    /*
+     * This method propagates any possible value.
+     * 
+     * This method is only called in the factory methods.
+     * 
+     * @see org.sat4j.minisat.constraints.WatchPb#computePropagation()
+     */
+    @Override
+    protected void computePropagation(UnitPropagationListener s)
+            throws ContradictionException {
+        // propagate any possible value
+        int ind = 0;
+        while (ind < this.coefs.length
+                && this.watchCumul.subtract(this.coefs[ind]).compareTo(
+                        this.degree) < 0) {
+            if (this.voc.isUnassigned(this.lits[ind])
+                    && !s.enqueue(this.lits[ind], this)) {
+                // because this happens during the building of a constraint.
+                throw new ContradictionException("non satisfiable constraint");
+            }
+            ind++;
+        }
+        assert this.watchCumul.compareTo(computeLeftSide()) >= 0;
+    }
 
-	/**
-	 * Propagation of a falsified literal
-	 * 
-	 * @param s
-	 *            the solver
-	 * @param p
-	 *            the propagated literal (it must be falsified)
-	 * @return false iff there is a conflict
-	 */
-	public boolean propagate(UnitPropagationListener s, int p) {
-		voc.watch(p, this);
+    /**
+     * Propagation of a falsified literal
+     * 
+     * @param s
+     *            the solver
+     * @param p
+     *            the propagated literal (it must be falsified)
+     * @return false iff there is a conflict
+     */
+    public boolean propagate(UnitPropagationListener s, int p) {
+        this.voc.watch(p, this);
 
-		assert watchCumul.compareTo(computeLeftSide()) >= 0 : "" + watchCumul
-				+ "/" + computeLeftSide() + ":" + learnt;
+        assert this.watchCumul.compareTo(computeLeftSide()) >= 0 : ""
+                + this.watchCumul + "/" + computeLeftSide() + ":" + this.learnt;
 
-		// compute the new value for watchCumul
-		BigInteger coefP;
-		if (litToCoeffs == null) {
-			// finding the index for p in the array of literals
-			int indiceP = 0;
-			while ((lits[indiceP] ^ 1) != p)
-				indiceP++;
+        // compute the new value for watchCumul
+        BigInteger coefP;
+        if (this.litToCoeffs == null) {
+            // finding the index for p in the array of literals
+            int indiceP = 0;
+            while ((this.lits[indiceP] ^ 1) != p) {
+                indiceP++;
+            }
 
-			// compute the new value for watchCumul
-			coefP = coefs[indiceP];
-		} else {
-			coefP = litToCoeffs.get(p ^ 1);
-		}
+            // compute the new value for watchCumul
+            coefP = this.coefs[indiceP];
+        } else {
+            coefP = this.litToCoeffs.get(p ^ 1);
+        }
 
-		BigInteger newcumul = watchCumul.subtract(coefP);
+        BigInteger newcumul = this.watchCumul.subtract(coefP);
 
-		if (newcumul.compareTo(degree) < 0) {
-			// there is a conflict
-			assert !isSatisfiable();
-			return false;
-		}
+        if (newcumul.compareTo(this.degree) < 0) {
+            // there is a conflict
+            assert !isSatisfiable();
+            return false;
+        }
 
-		// if no conflict, not(p) can be propagated
-		// allow a later un-assignation
-		voc.undos(p).push(this);
-		// really update watchCumul
-		watchCumul = newcumul;
+        // if no conflict, not(p) can be propagated
+        // allow a later un-assignation
+        this.voc.undos(p).push(this);
+        // really update watchCumul
+        this.watchCumul = newcumul;
 
-		// propagation
-		int ind = 0;
-		// limit is the margin between the sum of the coefficients of the
-		// satisfied+unassigned literals
-		// and the degree of the constraint
-		BigInteger limit = watchCumul.subtract(degree);
-		// for each coefficient greater than limit
-		while (ind < coefs.length && limit.compareTo(coefs[ind]) < 0) {
-			// its corresponding literal is implied
-			if (voc.isUnassigned(lits[ind]) && (!s.enqueue(lits[ind], this))) {
-				// if it is not possible then there is a conflict
-				assert !isSatisfiable();
-				return false;
-			}
-			ind++;
-		}
+        // propagation
+        int ind = 0;
+        // limit is the margin between the sum of the coefficients of the
+        // satisfied+unassigned literals
+        // and the degree of the constraint
+        BigInteger limit = this.watchCumul.subtract(this.degree);
+        // for each coefficient greater than limit
+        while (ind < this.coefs.length && limit.compareTo(this.coefs[ind]) < 0) {
+            // its corresponding literal is implied
+            if (this.voc.isUnassigned(this.lits[ind])
+                    && !s.enqueue(this.lits[ind], this)) {
+                // if it is not possible then there is a conflict
+                assert !isSatisfiable();
+                return false;
+            }
+            ind++;
+        }
 
-		assert learnt || watchCumul.compareTo(computeLeftSide()) >= 0;
-		assert watchCumul.compareTo(computeLeftSide()) >= 0;
-		return true;
-	}
+        assert this.learnt || this.watchCumul.compareTo(computeLeftSide()) >= 0;
+        assert this.watchCumul.compareTo(computeLeftSide()) >= 0;
+        return true;
+    }
 
-	/**
-	 * Remove a constraint from the solver
-	 */
-	public void remove(UnitPropagationListener upl) {
-		for (int i = 0; i < lits.length; i++) {
-			if (!voc.isFalsified(lits[i]))
-				voc.watches(lits[i] ^ 1).remove(this);
-		}
-	}
+    /**
+     * Remove a constraint from the solver
+     */
+    public void remove(UnitPropagationListener upl) {
+        for (int i = 0; i < this.lits.length; i++) {
+            if (!this.voc.isFalsified(this.lits[i])) {
+                this.voc.watches(this.lits[i] ^ 1).remove(this);
+            }
+        }
+    }
 
-	/**
-	 * this method is called during backtrack
-	 * 
-	 * @param p
-	 *            an unassigned literal
-	 */
-	public void undo(int p) {
-		BigInteger coefP;
-		if (litToCoeffs == null) {
-			// finding the index for p in the array of literals
-			int indiceP = 0;
-			while ((lits[indiceP] ^ 1) != p)
-				indiceP++;
+    /**
+     * this method is called during backtrack
+     * 
+     * @param p
+     *            an unassigned literal
+     */
+    public void undo(int p) {
+        BigInteger coefP;
+        if (this.litToCoeffs == null) {
+            // finding the index for p in the array of literals
+            int indiceP = 0;
+            while ((this.lits[indiceP] ^ 1) != p) {
+                indiceP++;
+            }
 
-			// compute the new value for watchCumul
-			coefP = coefs[indiceP];
-		} else {
-			coefP = litToCoeffs.get(p ^ 1);
-		}
+            // compute the new value for watchCumul
+            coefP = this.coefs[indiceP];
+        } else {
+            coefP = this.litToCoeffs.get(p ^ 1);
+        }
 
-		watchCumul = watchCumul.add(coefP);
-	}
+        this.watchCumul = this.watchCumul.add(coefP);
+    }
 
-	/**
-	 * build a pseudo boolean constraint. Coefficients are positive integers
-	 * less than or equal to the degree (this is called a normalized
-	 * constraint).
-	 * 
-	 * @param s
-	 *            a unit propagation listener (usually the solver)
-	 * @param voc
-	 *            the vocabulary
-	 * @param lits
-	 *            the literals of the constraint
-	 * @param coefs
-	 *            the coefficients of the constraint
-	 * @param degree
-	 *            the degree of the constraint
-	 * @return a new PB constraint or null if a trivial inconsistency is
-	 *         detected.
-	 */
-	public static MaxWatchPb normalizedMaxWatchPbNew(UnitPropagationListener s,
-			ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException {
-		// Parameters must not be modified
-		MaxWatchPb outclause = new MaxWatchPb(voc, lits, coefs, degree,
-				sumCoefs);
+    /**
+     * build a pseudo boolean constraint. Coefficients are positive integers
+     * less than or equal to the degree (this is called a normalized
+     * constraint).
+     * 
+     * @param s
+     *            a unit propagation listener (usually the solver)
+     * @param voc
+     *            the vocabulary
+     * @param lits
+     *            the literals of the constraint
+     * @param coefs
+     *            the coefficients of the constraint
+     * @param degree
+     *            the degree of the constraint
+     * @return a new PB constraint or null if a trivial inconsistency is
+     *         detected.
+     */
+    public static MaxWatchPb normalizedMaxWatchPbNew(UnitPropagationListener s,
+            ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException {
+        // Parameters must not be modified
+        MaxWatchPb outclause = new MaxWatchPb(voc, lits, coefs, degree,
+                sumCoefs);
 
-		if (outclause.degree.signum() <= 0) {
-			return null;
-		}
+        if (outclause.degree.signum() <= 0) {
+            return null;
+        }
 
-		outclause.computeWatches();
+        outclause.computeWatches();
 
-		outclause.computePropagation(s);
+        outclause.computePropagation(s);
 
-		return outclause;
+        return outclause;
 
-	}
+    }
 
-	/**
-	 * build a pseudo boolean constraint from a specific data structure. For
-	 * learnt constraints.
-	 * 
-	 * @param s
-	 *            a unit propagation listener (usually the solver)
-	 * @param mpb
-	 *            data structure which contains literals of the constraint,
-	 *            coefficients (a0, a1, ... an), and the degree of the
-	 *            constraint (k). The constraint is a "more than" constraint.
-	 * @return a new PB constraint or null if a trivial inconsistency is
-	 *         detected.
-	 */
-	public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
-		return new MaxWatchPb(voc, mpb);
-	}
+    /**
+     * build a pseudo boolean constraint from a specific data structure. For
+     * learnt constraints.
+     * 
+     * @param s
+     *            a unit propagation listener (usually the solver)
+     * @param mpb
+     *            data structure which contains literals of the constraint,
+     *            coefficients (a0, a1, ... an), and the degree of the
+     *            constraint (k). The constraint is a "more than" constraint.
+     * @return a new PB constraint or null if a trivial inconsistency is
+     *         detected.
+     */
+    public static WatchPb normalizedWatchPbNew(ILits voc, IDataStructurePB mpb) {
+        return new MaxWatchPb(voc, mpb);
+    }
 
 }

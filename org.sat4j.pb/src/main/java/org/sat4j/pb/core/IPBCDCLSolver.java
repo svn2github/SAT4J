@@ -42,6 +42,6 @@ import org.sat4j.pb.IPBSolver;
  * @param <D>
  */
 public interface IPBCDCLSolver<D extends PBDataStructureFactory> extends
-		IPBSolver, ICDCL<D> {
+        IPBSolver, ICDCL<D> {
 
 }

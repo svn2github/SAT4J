@@ -34,18 +34,18 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.Reader;
 
 public abstract class AbstractPBRandomCardProblemsTest extends
-		AbstractRandomCardProblemsTest<IPBSolver> {
+        AbstractRandomCardProblemsTest<IPBSolver> {
 
-	@Override
-	protected Reader createInstanceReader(final IPBSolver solver) {
-		return new GoodOPBReader(solver);
-	}
+    @Override
+    protected Reader createInstanceReader(final IPBSolver solver) {
+        return new GoodOPBReader(solver);
+    }
 
-	/**
+    /**
      * 
      */
-	public AbstractPBRandomCardProblemsTest(String name) {
-		super(name);
-	}
+    public AbstractPBRandomCardProblemsTest(String name) {
+        super(name);
+    }
 
 }

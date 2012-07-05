@@ -29,18 +29,17 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-
 public class PBMaxClauseAtLeastConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+        AbstractPBClauseCardConstrDataStructure {
 
-	/**
+    /**
 * 
 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PBMaxClauseAtLeastConstrDataStructure() {
-		super(new UnitBinaryHTClausePBConstructor(),
-				new AtLeastCardPBConstructor(), new MaxWatchPBConstructor());
-	}
+    public PBMaxClauseAtLeastConstrDataStructure() {
+        super(new UnitBinaryHTClausePBConstructor(),
+                new AtLeastCardPBConstructor(), new MaxWatchPBConstructor());
+    }
 
 }

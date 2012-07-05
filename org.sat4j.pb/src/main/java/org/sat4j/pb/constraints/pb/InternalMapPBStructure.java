@@ -38,108 +38,105 @@ import org.sat4j.specs.IVecInt;
 
 /**
  * @author anne
- *
+ * 
  */
 public class InternalMapPBStructure {
 
-	IVecInt lits;
-	IVec<BigInteger> coefs;
-	IVecInt allLits;
-	
-	
-	InternalMapPBStructure(int size){
-		assert size > 0;
-		allLits = new VecInt(size,-1);
-		coefs = new Vec<BigInteger>();
-		lits = new VecInt();
-	}
-	
-	InternalMapPBStructure(PBConstr cpb){
-		allLits = new VecInt(cpb.getVocabulary().nVars()*2+2,-1);
-		coefs = new Vec<BigInteger>(cpb.size());
-		lits = new VecInt(cpb.size());
-		int lit;
+    IVecInt lits;
+    IVec<BigInteger> coefs;
+    IVecInt allLits;
+
+    InternalMapPBStructure(int size) {
+        assert size > 0;
+        this.allLits = new VecInt(size, -1);
+        this.coefs = new Vec<BigInteger>();
+        this.lits = new VecInt();
+    }
+
+    InternalMapPBStructure(PBConstr cpb) {
+        this.allLits = new VecInt(cpb.getVocabulary().nVars() * 2 + 2, -1);
+        this.coefs = new Vec<BigInteger>(cpb.size());
+        this.lits = new VecInt(cpb.size());
+        int lit;
         for (int i = 0; i < cpb.size(); i++) {
             assert cpb.get(i) != 0;
             assert cpb.getCoef(i).signum() > 0;
             lit = cpb.get(i);
-            lits.push(lit);
-            assert i+1 == lits.size();
-            allLits.set(lit, i);
-            coefs.push(cpb.getCoef(i));
+            this.lits.push(lit);
+            assert i + 1 == this.lits.size();
+            this.allLits.set(lit, i);
+            this.coefs.push(cpb.getCoef(i));
         }
-	}
-	
-	// coefs.get(lit)
-	BigInteger get(int lit){
-		assert allLits.get(lit) != -1;
-		return coefs.get(allLits.get(lit));
-	}
-	
-	int getLit(int indLit){
-		assert indLit < lits.size();
-		return lits.get(indLit); 
-	}
-
-	BigInteger getCoef(int indLit){
-		assert indLit < coefs.size();
-		return coefs.get(indLit); 
-	}
-	
-	//coefs.containsKey(nLitImplied)
-	boolean containsKey(int lit){
-		return allLits.get(lit) != -1;
-	}
-		
-	int size(){
-		return lits.size();
-	}
-	
-	//coefs.put(lit, newValue)
-	void put(int lit, BigInteger newValue){
-		int indLit = allLits.get(lit);
-		if (indLit != -1){
-			coefs.set(indLit,newValue);
-		}
-		else {
-			lits.push(lit);
-			coefs.push(newValue);
-			allLits.set(lit, lits.size()-1);
-		}
-	}
-	
-	void changeCoef(int indLit, BigInteger newValue){
-		assert indLit <= coefs.size();
-		coefs.set(indLit,newValue);
-	}
-	
-	//void removeCoef(Integer lit) {
-        //coefs.remove(lit);     
-    void remove(int lit){
-		int indLit = allLits.get(lit);
-		if (indLit != -1){
-			int tmp = lits.last();
-			coefs.delete(indLit);
-			lits.delete(indLit);
-			allLits.set(tmp,indLit);
-			allLits.set(lit,-1);
-		}
-    }
-    
-
-    void copyCoefs(IVec<BigInteger> dest){
-    	coefs.copyTo(dest);
     }
 
-    void copyCoefs(BigInteger[] dest){
-    	coefs.copyTo(dest);
+    // coefs.get(lit)
+    BigInteger get(int lit) {
+        assert this.allLits.get(lit) != -1;
+        return this.coefs.get(this.allLits.get(lit));
     }
 
-    void copyLits(IVecInt dest){
-    	lits.copyTo(dest);
+    int getLit(int indLit) {
+        assert indLit < this.lits.size();
+        return this.lits.get(indLit);
     }
 
-    void copyLits(int[] dest){
-    	lits.copyTo(dest);
+    BigInteger getCoef(int indLit) {
+        assert indLit < this.coefs.size();
+        return this.coefs.get(indLit);
+    }
+
+    // coefs.containsKey(nLitImplied)
+    boolean containsKey(int lit) {
+        return this.allLits.get(lit) != -1;
+    }
+
+    int size() {
+        return this.lits.size();
+    }
+
+    // coefs.put(lit, newValue)
+    void put(int lit, BigInteger newValue) {
+        int indLit = this.allLits.get(lit);
+        if (indLit != -1) {
+            this.coefs.set(indLit, newValue);
+        } else {
+            this.lits.push(lit);
+            this.coefs.push(newValue);
+            this.allLits.set(lit, this.lits.size() - 1);
+        }
+    }
+
+    void changeCoef(int indLit, BigInteger newValue) {
+        assert indLit <= this.coefs.size();
+        this.coefs.set(indLit, newValue);
+    }
+
+    // void removeCoef(Integer lit) {
+    // coefs.remove(lit);
+    void remove(int lit) {
+        int indLit = this.allLits.get(lit);
+        if (indLit != -1) {
+            int tmp = this.lits.last();
+            this.coefs.delete(indLit);
+            this.lits.delete(indLit);
+            this.allLits.set(tmp, indLit);
+            this.allLits.set(lit, -1);
+        }
+    }
+
+    void copyCoefs(IVec<BigInteger> dest) {
+        this.coefs.copyTo(dest);
+    }
+
+    void copyCoefs(BigInteger[] dest) {
+        this.coefs.copyTo(dest);
+    }
+
+    void copyLits(IVecInt dest) {
+        this.lits.copyTo(dest);
+    }
+
+    void copyLits(int[] dest) {
+        this.lits.copyTo(dest);
     }
 }

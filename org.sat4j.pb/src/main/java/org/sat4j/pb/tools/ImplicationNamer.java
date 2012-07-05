@@ -37,32 +37,33 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 
 /**
- * That class is used to associate each constraint with another object that
- * must be used to represent it in an explanation.
+ * That class is used to associate each constraint with another object that must
+ * be used to represent it in an explanation.
  * 
  * @author daniel
- *
+ * 
  * @param <T>
  * @param <C>
  */
-public class ImplicationNamer<T,C> {
-	
-	private final DependencyHelper<T,C> helper;
-	private IVec<IConstr> toName = new Vec<IConstr>();
-	
-	public ImplicationNamer(DependencyHelper<T,C> helper, IVec<IConstr> toName) {
-		this.toName = toName;
-		this.helper = helper;
-	}
-	
-	/**
-	 * Associate the current constraint with a specific object that
-	 * will be used to represent it in an explanation.
-	 * @param name
-	 */
-	public void named(C name) {
-		for (Iterator<IConstr> it = toName.iterator();it.hasNext();) {
-			helper.descs.put(it.next(),name);
-		}
-	}
+public class ImplicationNamer<T, C> {
+
+    private final DependencyHelper<T, C> helper;
+    private IVec<IConstr> toName = new Vec<IConstr>();
+
+    public ImplicationNamer(DependencyHelper<T, C> helper, IVec<IConstr> toName) {
+        this.toName = toName;
+        this.helper = helper;
+    }
+
+    /**
+     * Associate the current constraint with a specific object that will be used
+     * to represent it in an explanation.
+     * 
+     * @param name
+     */
+    public void named(C name) {
+        for (Iterator<IConstr> it = this.toName.iterator(); it.hasNext();) {
+            this.helper.descs.put(it.next(), name);
+        }
+    }
 }

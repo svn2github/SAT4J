@@ -42,89 +42,91 @@ import org.sat4j.specs.IVecInt;
  */
 public class OPBEclipseReader2007 extends OPBReader2007 {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final IVecInt varExplain = new VecInt();
+    private final IVecInt varExplain = new VecInt();
 
-	/**
-	 * @param solver
-	 */
-	public OPBEclipseReader2007(IPBSolver solver) {
-		super(solver);
-	}
+    /**
+     * @param solver
+     */
+    public OPBEclipseReader2007(IPBSolver solver) {
+        super(solver);
+    }
 
-	/**
-	 * callback called before we read the list for variables explanation
-	 */
-	protected void beginListOfVariables() {
-	}
+    /**
+     * callback called before we read the list for variables explanation
+     */
+    protected void beginListOfVariables() {
+    }
 
-	/**
-	 * callback called after we've read the list for variable explanation
-	 */
-	protected void endListOfVariables() {
-	}
+    /**
+     * callback called after we've read the list for variable explanation
+     */
+    protected void endListOfVariables() {
+    }
 
-	/**
-	 * read the list for variables explanation (if any) calls
-	 * beginListOfVariables and endListOfVariables
-	 * 
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	@Override
-	protected void readVariablesExplanation() throws IOException,
-			ParseFormatException {
-		char c;
-		StringBuffer var = new StringBuffer();
+    /**
+     * read the list for variables explanation (if any) calls
+     * beginListOfVariables and endListOfVariables
+     * 
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Override
+    protected void readVariablesExplanation() throws IOException,
+            ParseFormatException {
+        char c;
+        StringBuffer var = new StringBuffer();
 
-		// read variables line (if any)
-		// if the problem is unsatisfiable, and if these variables are part of
-		// the reason of the conflict
-		// then an explanation should be produced for these variables
+        // read variables line (if any)
+        // if the problem is unsatisfiable, and if these variables are part of
+        // the reason of the conflict
+        // then an explanation should be produced for these variables
 
-		skipSpaces();
-		c = get();
-		if (c != 'e') {
-			// no variables line
-			putback(c);
-			return;
-		}
+        skipSpaces();
+        c = get();
+        if (c != 'e') {
+            // no variables line
+            putback(c);
+            return;
+        }
 
-		hasVariablesExplanation = true;
-		if (get() == 'x' && get() == 'p' && get() == 'l' && get() == 'a'
-				&& get() == 'i' && get() == 'n' && get() == ':') {
-			beginListOfVariables(); // callback
+        this.hasVariablesExplanation = true;
+        if (get() == 'x' && get() == 'p' && get() == 'l' && get() == 'a'
+                && get() == 'i' && get() == 'n' && get() == ':') {
+            beginListOfVariables(); // callback
 
-			while (!eof()) {
-				readIdentifier(var);
-				varExplain.push(translateVarToId(var.toString()));
+            while (!eof()) {
+                readIdentifier(var);
+                this.varExplain.push(translateVarToId(var.toString()));
 
-				skipSpaces();
-				c = get();
-				if (c == ';')
-					break; // end of list of variables
-				putback(c);
-			}
+                skipSpaces();
+                c = get();
+                if (c == ';') {
+                    break; // end of list of variables
+                }
+                putback(c);
+            }
 
-			endListOfVariables();
-		} else
-			throw new ParseFormatException(
-					"input format error: 'explain:' expected");
+            endListOfVariables();
+        } else {
+            throw new ParseFormatException(
+                    "input format error: 'explain:' expected");
+        }
 
-	}
+    }
 
-	@Override
-	public IVecInt getListOfVariables() {
-		if (hasVariablesExplanation) {
-			IVecInt tmp = new VecInt();
-			varExplain.moveTo(tmp);
-			return tmp;
-		}
-		return null;
-	}
+    @Override
+    public IVecInt getListOfVariables() {
+        if (this.hasVariablesExplanation) {
+            IVecInt tmp = new VecInt();
+            this.varExplain.moveTo(tmp);
+            return tmp;
+        }
+        return null;
+    }
 
 }

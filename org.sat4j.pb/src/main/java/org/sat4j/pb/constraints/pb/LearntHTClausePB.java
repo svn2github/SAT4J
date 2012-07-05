@@ -38,48 +38,49 @@ import org.sat4j.specs.IVecInt;
 
 public final class LearntHTClausePB extends LearntHTClause implements PBConstr {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public LearntHTClausePB(IVecInt ps, ILits voc) {
-		super(ps, voc);
-	}
+    public LearntHTClausePB(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
-	@Override
-	public void assertConstraint(UnitPropagationListener s) {
-		if (getVocabulary().isUnassigned(head)) {
-			s.enqueue(head, this);
-		} else if (getVocabulary().isUnassigned(tail)) {
-			s.enqueue(tail, this);
-		} else {
-			for (int i = 0; i < middleLits.length; i++) {
-				if (getVocabulary().isUnassigned(middleLits[i])) {
-					int temp = middleLits[i];
-					middleLits[i] = head;
-					head = temp;
-					s.enqueue(temp, this);
-					break;
-				}
-			}
-		}
-	}
+    @Override
+    public void assertConstraint(UnitPropagationListener s) {
+        if (getVocabulary().isUnassigned(this.head)) {
+            s.enqueue(this.head, this);
+        } else if (getVocabulary().isUnassigned(this.tail)) {
+            s.enqueue(this.tail, this);
+        } else {
+            for (int i = 0; i < this.middleLits.length; i++) {
+                if (getVocabulary().isUnassigned(this.middleLits[i])) {
+                    int temp = this.middleLits[i];
+                    this.middleLits[i] = this.head;
+                    this.head = temp;
+                    s.enqueue(temp, this);
+                    break;
+                }
+            }
+        }
+    }
 
-	public IVecInt computeAnImpliedClause() {
-		return null;
-	}
+    public IVecInt computeAnImpliedClause() {
+        return null;
+    }
 
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = new BigInteger[size()];
-		for (int i = 0; i < tmp.length; i++)
-			tmp[i] = BigInteger.ONE;
-		return tmp;
-	}
+    public BigInteger[] getCoefs() {
+        BigInteger[] tmp = new BigInteger[size()];
+        for (int i = 0; i < tmp.length; i++) {
+            tmp[i] = BigInteger.ONE;
+        }
+        return tmp;
+    }
 
-	public BigInteger getDegree() {
-		return BigInteger.ONE;
-	}
+    public BigInteger getDegree() {
+        return BigInteger.ONE;
+    }
 
 }

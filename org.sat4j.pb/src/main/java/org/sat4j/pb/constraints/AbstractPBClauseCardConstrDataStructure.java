@@ -41,131 +41,136 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public abstract class AbstractPBClauseCardConstrDataStructure extends
-		AbstractPBDataStructureFactory {
+        AbstractPBDataStructureFactory {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	static final BigInteger MAX_INT_VALUE = BigInteger
-			.valueOf(Integer.MAX_VALUE);
+    static final BigInteger MAX_INT_VALUE = BigInteger
+            .valueOf(Integer.MAX_VALUE);
 
-	private final IPBConstructor ipbc;
-	private final ICardConstructor icardc;
-	private final IClauseConstructor iclausec;
+    private final IPBConstructor ipbc;
+    private final ICardConstructor icardc;
+    private final IClauseConstructor iclausec;
 
-	AbstractPBClauseCardConstrDataStructure(IClauseConstructor iclausec,
-			ICardConstructor icardc, IPBConstructor ipbc) {
-		this.iclausec = iclausec;
-		this.icardc = icardc;
-		this.ipbc = ipbc;
-	}
+    AbstractPBClauseCardConstrDataStructure(IClauseConstructor iclausec,
+            ICardConstructor icardc, IPBConstructor ipbc) {
+        this.iclausec = iclausec;
+        this.icardc = icardc;
+        this.ipbc = ipbc;
+    }
 
-	@Override
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		return constructClause(v);
-	}
+    @Override
+    public Constr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), this.solver);
+        return constructClause(v);
+    }
 
-	@Override
-	public Constr createUnregisteredClause(IVecInt literals) {
-		return constructLearntClause(literals);
-	}
+    @Override
+    public Constr createUnregisteredClause(IVecInt literals) {
+        return constructLearntClause(literals);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
-	 * boolean, int)
-	 */
-	@Override
-	protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		if (literals.length == 0 && degree.signum() <= 0) {
-			return null;
-		}
-		if (degree.equals(BigInteger.ONE)) {
-			IVecInt v = Clauses.sanityCheck(new VecInt(literals),
-					getVocabulary(), solver);
-			if (v == null)
-				return null;
-			return constructClause(v);
-		}
-		if (coefficientsEqualToOne(coefs)) {
-			assert degree.compareTo(MAX_INT_VALUE) < 0;
-			return constructCard(new VecInt(literals), degree.intValue());
-		}
-		return constructPB(literals, coefs, degree);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt,
+     * boolean, int)
+     */
+    @Override
+    protected Constr constraintFactory(int[] literals, BigInteger[] coefs,
+            BigInteger degree) throws ContradictionException {
+        if (literals.length == 0 && degree.signum() <= 0) {
+            return null;
+        }
+        if (degree.equals(BigInteger.ONE)) {
+            IVecInt v = Clauses.sanityCheck(new VecInt(literals),
+                    getVocabulary(), this.solver);
+            if (v == null) {
+                return null;
+            }
+            return constructClause(v);
+        }
+        if (coefficientsEqualToOne(coefs)) {
+            assert degree.compareTo(MAX_INT_VALUE) < 0;
+            return constructCard(new VecInt(literals), degree.intValue());
+        }
+        return constructPB(literals, coefs, degree);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
-	 * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
-	 */
-	@Override
-	protected Constr learntConstraintFactory(IDataStructurePB dspb) {
-		if (dspb.getDegree().equals(BigInteger.ONE)) {
-			IVecInt literals = new VecInt();
-			IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-			dspb.buildConstraintFromConflict(literals, resCoefs);
-			// then assertive literal must be placed at the first place
-			int indLit = dspb.getAssertiveLiteral();
-			if (indLit > -1) {
-				int tmp = literals.get(indLit);
-				literals.set(indLit, literals.get(0));
-				literals.set(0, tmp);
-			}
-			return constructLearntClause(literals);
-		}
-		if (dspb.isCardinality()) {
-			return constructLearntCard(dspb);
-		}
-		return constructLearntPB(dspb);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
+     */
+    @Override
+    protected Constr learntConstraintFactory(IDataStructurePB dspb) {
+        if (dspb.getDegree().equals(BigInteger.ONE)) {
+            IVecInt literals = new VecInt();
+            IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+            dspb.buildConstraintFromConflict(literals, resCoefs);
+            // then assertive literal must be placed at the first place
+            int indLit = dspb.getAssertiveLiteral();
+            if (indLit > -1) {
+                int tmp = literals.get(indLit);
+                literals.set(indLit, literals.get(0));
+                literals.set(0, tmp);
+            }
+            return constructLearntClause(literals);
+        }
+        if (dspb.isCardinality()) {
+            return constructLearntCard(dspb);
+        }
+        return constructLearntPB(dspb);
+    }
 
-	static boolean coefficientsEqualToOne(BigInteger[] coefs) {
-		for (int i = 0; i < coefs.length; i++)
-			if (!coefs[i].equals(BigInteger.ONE))
-				return false;
-		return true;
-	}
+    static boolean coefficientsEqualToOne(BigInteger[] coefs) {
+        for (int i = 0; i < coefs.length; i++) {
+            if (!coefs[i].equals(BigInteger.ONE)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	protected Constr constructClause(IVecInt v) {
-		return iclausec.constructClause(solver, getVocabulary(), v);
-	}
+    protected Constr constructClause(IVecInt v) {
+        return this.iclausec.constructClause(this.solver, getVocabulary(), v);
+    }
 
-	protected Constr constructCard(IVecInt theLits, int degree)
-			throws ContradictionException {
-		return icardc.constructCard(solver, getVocabulary(), theLits, degree);
-	}
+    protected Constr constructCard(IVecInt theLits, int degree)
+            throws ContradictionException {
+        return this.icardc.constructCard(this.solver, getVocabulary(), theLits,
+                degree);
+    }
 
-	protected Constr constructPB(int[] theLits, BigInteger[] coefs,
-			BigInteger degree) throws ContradictionException {
-		return ipbc.constructPB(solver, getVocabulary(), theLits, coefs,
-				degree, sumOfCoefficients(coefs));
-	}
+    protected Constr constructPB(int[] theLits, BigInteger[] coefs,
+            BigInteger degree) throws ContradictionException {
+        return this.ipbc.constructPB(this.solver, getVocabulary(), theLits,
+                coefs, degree, sumOfCoefficients(coefs));
+    }
 
-	protected Constr constructLearntClause(IVecInt literals) {
-		return iclausec.constructLearntClause(getVocabulary(), literals);
-	}
+    protected Constr constructLearntClause(IVecInt literals) {
+        return this.iclausec.constructLearntClause(getVocabulary(), literals);
+    }
 
-	protected Constr constructLearntCard(IDataStructurePB dspb) {
-		return icardc.constructLearntCard(getVocabulary(), dspb);
-	}
+    protected Constr constructLearntCard(IDataStructurePB dspb) {
+        return this.icardc.constructLearntCard(getVocabulary(), dspb);
+    }
 
-	protected Constr constructLearntPB(IDataStructurePB dspb) {
-		return ipbc.constructLearntPB(getVocabulary(), dspb);
-	}
+    protected Constr constructLearntPB(IDataStructurePB dspb) {
+        return this.ipbc.constructLearntPB(getVocabulary(), dspb);
+    }
 
-	public static final BigInteger sumOfCoefficients(BigInteger[] coefs) {
-		BigInteger sumCoefs = BigInteger.ZERO;
-		for (BigInteger c : coefs)
-			sumCoefs = sumCoefs.add(c);
-		return sumCoefs;
-	}
+    public static final BigInteger sumOfCoefficients(BigInteger[] coefs) {
+        BigInteger sumCoefs = BigInteger.ZERO;
+        for (BigInteger c : coefs) {
+            sumCoefs = sumCoefs.add(c);
+        }
+        return sumCoefs;
+    }
 
 }

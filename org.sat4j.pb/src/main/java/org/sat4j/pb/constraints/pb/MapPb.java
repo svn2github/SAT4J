@@ -42,212 +42,222 @@ import org.sat4j.specs.IVecInt;
  */
 public class MapPb implements IDataStructurePB {
 
-	/*
-	 * During the process of cutting planes, pseudo-boolean constraints are
-	 * coded with a HashMap <literal, coefficient> and a BigInteger for the
-	 * degree.
-	 */
-	protected InternalMapPBStructure weightedLits;
+    /*
+     * During the process of cutting planes, pseudo-boolean constraints are
+     * coded with a HashMap <literal, coefficient> and a BigInteger for the
+     * degree.
+     */
+    protected InternalMapPBStructure weightedLits;
 
-	protected BigInteger degree;
+    protected BigInteger degree;
 
-	protected int assertiveLiteral = -1;
+    protected int assertiveLiteral = -1;
 
-	MapPb(PBConstr cpb) {
-		weightedLits = new InternalMapPBStructure(cpb);
-		degree = cpb.getDegree();
-	}
+    MapPb(PBConstr cpb) {
+        this.weightedLits = new InternalMapPBStructure(cpb);
+        this.degree = cpb.getDegree();
+    }
 
-	MapPb(int size) {
-		weightedLits = new InternalMapPBStructure(size);
-		degree = BigInteger.ZERO;
-	}
+    MapPb(int size) {
+        this.weightedLits = new InternalMapPBStructure(size);
+        this.degree = BigInteger.ZERO;
+    }
 
-	public boolean isCardinality() {
-		for (int i = 0; i < size(); i++)
-			if (!(weightedLits.getCoef(i).equals(BigInteger.ONE)))
-				return false;
-		return true;
-	}
+    public boolean isCardinality() {
+        for (int i = 0; i < size(); i++) {
+            if (!this.weightedLits.getCoef(i).equals(BigInteger.ONE)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public boolean isLongSufficient() {
-		BigInteger som = BigInteger.ZERO;
-		for (int i = 0; i < size() && som.bitLength() < Long.SIZE; i++) {
-			assert weightedLits.getCoef(i).compareTo(BigInteger.ZERO) >= 0;
-			som = som.add(weightedLits.getCoef(i));
-		}
-		return som.bitLength() < Long.SIZE;
-	}
+    public boolean isLongSufficient() {
+        BigInteger som = BigInteger.ZERO;
+        for (int i = 0; i < size() && som.bitLength() < Long.SIZE; i++) {
+            assert this.weightedLits.getCoef(i).compareTo(BigInteger.ZERO) >= 0;
+            som = som.add(this.weightedLits.getCoef(i));
+        }
+        return som.bitLength() < Long.SIZE;
+    }
 
-	public int getAssertiveLiteral() {
-		return assertiveLiteral;
-	}
+    public int getAssertiveLiteral() {
+        return this.assertiveLiteral;
+    }
 
-	public BigInteger saturation() {
-		assert degree.signum() > 0;
-		BigInteger minimum = degree;
-		for (int ind = 0; ind < size(); ind++) {
-			assert weightedLits.getCoef(ind).signum() > 0;
-			if (degree.compareTo(weightedLits.getCoef(ind)) < 0)
-				changeCoef(ind, degree);
-			assert weightedLits.getCoef(ind).signum() > 0;
-			minimum = minimum.min(weightedLits.getCoef(ind));
-		}
-		// a clause has been learned
-		if (minimum.equals(degree) && minimum.compareTo(BigInteger.ONE) > 0) {
-			degree = BigInteger.ONE;
-			for (int ind = 0; ind < size(); ind++)
-				changeCoef(ind, BigInteger.ONE);
-		}
+    public BigInteger saturation() {
+        assert this.degree.signum() > 0;
+        BigInteger minimum = this.degree;
+        for (int ind = 0; ind < size(); ind++) {
+            assert this.weightedLits.getCoef(ind).signum() > 0;
+            if (this.degree.compareTo(this.weightedLits.getCoef(ind)) < 0) {
+                changeCoef(ind, this.degree);
+            }
+            assert this.weightedLits.getCoef(ind).signum() > 0;
+            minimum = minimum.min(this.weightedLits.getCoef(ind));
+        }
+        // a clause has been learned
+        if (minimum.equals(this.degree)
+                && minimum.compareTo(BigInteger.ONE) > 0) {
+            this.degree = BigInteger.ONE;
+            for (int ind = 0; ind < size(); ind++) {
+                changeCoef(ind, BigInteger.ONE);
+            }
+        }
 
-		return degree;
-	}
+        return this.degree;
+    }
 
-	public BigInteger cuttingPlane(PBConstr cpb, BigInteger deg,
-			BigInteger[] reducedCoefs, VarActivityListener val) {
-		return cuttingPlane(cpb, deg, reducedCoefs, BigInteger.ONE, val);
-	}
+    public BigInteger cuttingPlane(PBConstr cpb, BigInteger deg,
+            BigInteger[] reducedCoefs, VarActivityListener val) {
+        return cuttingPlane(cpb, deg, reducedCoefs, BigInteger.ONE, val);
+    }
 
-	public BigInteger cuttingPlane(PBConstr cpb, BigInteger degreeCons,
-			BigInteger[] reducedCoefs, BigInteger coefMult,
-			VarActivityListener val) {
-		degree = degree.add(degreeCons);
-		assert degree.signum() > 0;
+    public BigInteger cuttingPlane(PBConstr cpb, BigInteger degreeCons,
+            BigInteger[] reducedCoefs, BigInteger coefMult,
+            VarActivityListener val) {
+        this.degree = this.degree.add(degreeCons);
+        assert this.degree.signum() > 0;
 
-		if (reducedCoefs == null)
-			for (int i = 0; i < cpb.size(); i++) {
-				val.varBumpActivity(cpb.get(i));
-				cuttingPlaneStep(cpb.get(i), multiplyCoefficient(
-						cpb.getCoef(i), coefMult));
-			}
-		else
-			for (int i = 0; i < cpb.size(); i++) {
-				val.varBumpActivity(cpb.get(i));
-				cuttingPlaneStep(cpb.get(i), multiplyCoefficient(
-						reducedCoefs[i], coefMult));
-			}
+        if (reducedCoefs == null) {
+            for (int i = 0; i < cpb.size(); i++) {
+                val.varBumpActivity(cpb.get(i));
+                cuttingPlaneStep(cpb.get(i),
+                        multiplyCoefficient(cpb.getCoef(i), coefMult));
+            }
+        } else {
+            for (int i = 0; i < cpb.size(); i++) {
+                val.varBumpActivity(cpb.get(i));
+                cuttingPlaneStep(cpb.get(i),
+                        multiplyCoefficient(reducedCoefs[i], coefMult));
+            }
+        }
 
-		return degree;
-	}
+        return this.degree;
+    }
 
-	public BigInteger cuttingPlane(int[] lits, BigInteger[] reducedCoefs,
-			BigInteger deg) {
-		return cuttingPlane(lits, reducedCoefs, deg, BigInteger.ONE);
-	}
+    public BigInteger cuttingPlane(int[] lits, BigInteger[] reducedCoefs,
+            BigInteger deg) {
+        return cuttingPlane(lits, reducedCoefs, deg, BigInteger.ONE);
+    }
 
-	public BigInteger cuttingPlane(int lits[], BigInteger[] reducedCoefs,
-			BigInteger degreeCons, BigInteger coefMult) {
-		degree = degree.add(degreeCons);
-		assert degree.signum() > 0;
+    public BigInteger cuttingPlane(int lits[], BigInteger[] reducedCoefs,
+            BigInteger degreeCons, BigInteger coefMult) {
+        this.degree = this.degree.add(degreeCons);
+        assert this.degree.signum() > 0;
 
-		for (int i = 0; i < lits.length; i++)
-			cuttingPlaneStep(lits[i], reducedCoefs[i].multiply(coefMult));
+        for (int i = 0; i < lits.length; i++) {
+            cuttingPlaneStep(lits[i], reducedCoefs[i].multiply(coefMult));
+        }
 
-		return degree;
-	}
+        return this.degree;
+    }
 
-	private void cuttingPlaneStep(final int lit, final BigInteger coef) {
-		assert coef.signum() >= 0;
-		int nlit = lit ^ 1;
-		if (coef.signum() > 0) {
-			if (weightedLits.containsKey(nlit)) {
-				assert !weightedLits.containsKey(lit);
-				assert weightedLits.get(nlit) != null;
-				if (weightedLits.get(nlit).compareTo(coef) < 0) {
-					BigInteger tmp = weightedLits.get(nlit);
-					setCoef(lit, coef.subtract(tmp));
-					assert weightedLits.get(lit).signum() > 0;
-					degree = degree.subtract(tmp);
-					removeCoef(nlit);
-				} else {
-					if (weightedLits.get(nlit).equals(coef)) {
-						degree = degree.subtract(coef);
-						removeCoef(nlit);
-					} else {
-						decreaseCoef(nlit, coef);
-						assert weightedLits.get(nlit).signum() > 0;
-						degree = degree.subtract(coef);
-					}
-				}
-			} else {
-				assert (!weightedLits.containsKey(lit))
-						|| (weightedLits.get(lit).signum() > 0);
-				if (weightedLits.containsKey(lit))
-					increaseCoef(lit, coef);
-				else
-					setCoef(lit, coef);
-				assert weightedLits.get(lit).signum() > 0;
-			}
-		}
-		assert (!weightedLits.containsKey(nlit))
-				|| (!weightedLits.containsKey(lit));
-	}
+    private void cuttingPlaneStep(final int lit, final BigInteger coef) {
+        assert coef.signum() >= 0;
+        int nlit = lit ^ 1;
+        if (coef.signum() > 0) {
+            if (this.weightedLits.containsKey(nlit)) {
+                assert !this.weightedLits.containsKey(lit);
+                assert this.weightedLits.get(nlit) != null;
+                if (this.weightedLits.get(nlit).compareTo(coef) < 0) {
+                    BigInteger tmp = this.weightedLits.get(nlit);
+                    setCoef(lit, coef.subtract(tmp));
+                    assert this.weightedLits.get(lit).signum() > 0;
+                    this.degree = this.degree.subtract(tmp);
+                    removeCoef(nlit);
+                } else {
+                    if (this.weightedLits.get(nlit).equals(coef)) {
+                        this.degree = this.degree.subtract(coef);
+                        removeCoef(nlit);
+                    } else {
+                        decreaseCoef(nlit, coef);
+                        assert this.weightedLits.get(nlit).signum() > 0;
+                        this.degree = this.degree.subtract(coef);
+                    }
+                }
+            } else {
+                assert !this.weightedLits.containsKey(lit)
+                        || this.weightedLits.get(lit).signum() > 0;
+                if (this.weightedLits.containsKey(lit)) {
+                    increaseCoef(lit, coef);
+                } else {
+                    setCoef(lit, coef);
+                }
+                assert this.weightedLits.get(lit).signum() > 0;
+            }
+        }
+        assert !this.weightedLits.containsKey(nlit)
+                || !this.weightedLits.containsKey(lit);
+    }
 
-	public void buildConstraintFromConflict(IVecInt resLits,
-			IVec<BigInteger> resCoefs) {
-		resLits.clear();
-		resCoefs.clear();
-		weightedLits.copyCoefs(resCoefs);
-		weightedLits.copyLits(resLits);
-	};
+    public void buildConstraintFromConflict(IVecInt resLits,
+            IVec<BigInteger> resCoefs) {
+        resLits.clear();
+        resCoefs.clear();
+        this.weightedLits.copyCoefs(resCoefs);
+        this.weightedLits.copyLits(resLits);
+    };
 
-	public void buildConstraintFromMapPb(int[] resLits, BigInteger[] resCoefs) {
-		// On recherche tous les litt?raux concern?s
-		assert resLits.length == resCoefs.length;
-		assert resLits.length == size();
-		weightedLits.copyCoefs(resCoefs);
-		weightedLits.copyLits(resLits);
-	};
+    public void buildConstraintFromMapPb(int[] resLits, BigInteger[] resCoefs) {
+        // On recherche tous les litt?raux concern?s
+        assert resLits.length == resCoefs.length;
+        assert resLits.length == size();
+        this.weightedLits.copyCoefs(resCoefs);
+        this.weightedLits.copyLits(resLits);
+    };
 
-	public BigInteger getDegree() {
-		return degree;
-	}
+    public BigInteger getDegree() {
+        return this.degree;
+    }
 
-	public int size() {
-		return weightedLits.size();
-	}
+    public int size() {
+        return this.weightedLits.size();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuffer stb = new StringBuffer();
-		for (int ind = 0; ind < size(); ind++) {
-			stb.append(weightedLits.getCoef(ind));
-			stb.append(".");
-			stb.append(Lits.toString(weightedLits.getLit(ind)));
-			stb.append(" ");
-		}
-		return stb.toString() + " >= " + degree; //$NON-NLS-1$
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuffer stb = new StringBuffer();
+        for (int ind = 0; ind < size(); ind++) {
+            stb.append(this.weightedLits.getCoef(ind));
+            stb.append(".");
+            stb.append(Lits.toString(this.weightedLits.getLit(ind)));
+            stb.append(" ");
+        }
+        return stb.toString() + " >= " + this.degree; //$NON-NLS-1$
+    }
 
-	private BigInteger multiplyCoefficient(BigInteger coef, BigInteger mult) {
-		if (coef.equals(BigInteger.ONE))
-			return mult;
-		return coef.multiply(mult);
-	}
+    private BigInteger multiplyCoefficient(BigInteger coef, BigInteger mult) {
+        if (coef.equals(BigInteger.ONE)) {
+            return mult;
+        }
+        return coef.multiply(mult);
+    }
 
-	void increaseCoef(int lit, BigInteger incCoef) {
-		weightedLits.put(lit, weightedLits.get(lit).add(incCoef));
-	}
+    void increaseCoef(int lit, BigInteger incCoef) {
+        this.weightedLits.put(lit, this.weightedLits.get(lit).add(incCoef));
+    }
 
-	void decreaseCoef(int lit, BigInteger decCoef) {
-		weightedLits.put(lit, weightedLits.get(lit).subtract(decCoef));
-	}
+    void decreaseCoef(int lit, BigInteger decCoef) {
+        this.weightedLits
+                .put(lit, this.weightedLits.get(lit).subtract(decCoef));
+    }
 
-	void setCoef(int lit, BigInteger newValue) {
-		weightedLits.put(lit, newValue);
-	}
+    void setCoef(int lit, BigInteger newValue) {
+        this.weightedLits.put(lit, newValue);
+    }
 
-	void changeCoef(int indLit, BigInteger newValue) {
-		weightedLits.changeCoef(indLit, newValue);
-	}
+    void changeCoef(int indLit, BigInteger newValue) {
+        this.weightedLits.changeCoef(indLit, newValue);
+    }
 
-	void removeCoef(int lit) {
-		weightedLits.remove(lit);
-	}
+    void removeCoef(int lit) {
+        this.weightedLits.remove(lit);
+    }
 
 }

@@ -37,54 +37,55 @@ import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
 
 public final class OriginalHTClausePB extends OriginalHTClause implements
-		PBConstr {
+        PBConstr {
 
-	public OriginalHTClausePB(IVecInt ps, ILits voc) {
-		super(ps, voc);
-	}
+    public OriginalHTClausePB(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IVecInt computeAnImpliedClause() {
-		return null;
-	}
+    public IVecInt computeAnImpliedClause() {
+        return null;
+    }
 
-	public BigInteger getCoef(int literal) {
-		return BigInteger.ONE;
-	}
+    public BigInteger getCoef(int literal) {
+        return BigInteger.ONE;
+    }
 
-	public BigInteger[] getCoefs() {
-		BigInteger[] tmp = new BigInteger[size()];
-		for (int i = 0; i < tmp.length; i++)
-			tmp[i] = BigInteger.ONE;
-		return tmp;
-	}
+    public BigInteger[] getCoefs() {
+        BigInteger[] tmp = new BigInteger[size()];
+        for (int i = 0; i < tmp.length; i++) {
+            tmp[i] = BigInteger.ONE;
+        }
+        return tmp;
+    }
 
-	public BigInteger getDegree() {
-		return BigInteger.ONE;
-	}
+    public BigInteger getDegree() {
+        return BigInteger.ONE;
+    }
 
-	/**
-	 * Creates a brand new clause, presumably from external data. Performs all
-	 * sanity checks.
-	 * 
-	 * @param s
-	 *            the object responsible for unit propagation
-	 * @param voc
-	 *            the vocabulary
-	 * @param literals
-	 *            the literals to store in the clause
-	 * @return the created clause or null if the clause should be ignored
-	 *         (tautology for example)
-	 */
-	public static OriginalHTClausePB brandNewClause(UnitPropagationListener s,
-			ILits voc, IVecInt literals) {
-		OriginalHTClausePB c = new OriginalHTClausePB(literals, voc);
-		c.register();
-		return c;
-	}
+    /**
+     * Creates a brand new clause, presumably from external data. Performs all
+     * sanity checks.
+     * 
+     * @param s
+     *            the object responsible for unit propagation
+     * @param voc
+     *            the vocabulary
+     * @param literals
+     *            the literals to store in the clause
+     * @return the created clause or null if the clause should be ignored
+     *         (tautology for example)
+     */
+    public static OriginalHTClausePB brandNewClause(UnitPropagationListener s,
+            ILits voc, IVecInt literals) {
+        OriginalHTClausePB c = new OriginalHTClausePB(literals, voc);
+        c.register();
+        return c;
+    }
 
 }

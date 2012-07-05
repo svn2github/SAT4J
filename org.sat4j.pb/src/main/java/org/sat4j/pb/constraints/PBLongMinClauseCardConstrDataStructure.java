@@ -30,16 +30,16 @@
 package org.sat4j.pb.constraints;
 
 public class PBLongMinClauseCardConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+        AbstractPBClauseCardConstrDataStructure {
 
-	/**
+    /**
 * 
 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PBLongMinClauseCardConstrDataStructure() {
-		super(new UnitBinaryHTClausePBConstructor(),
-				new MinCardPBConstructor(), new MinLongWatchPBCPConstructor());
-	}
+    public PBLongMinClauseCardConstrDataStructure() {
+        super(new UnitBinaryHTClausePBConstructor(),
+                new MinCardPBConstructor(), new MinLongWatchPBCPConstructor());
+    }
 
 }

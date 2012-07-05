@@ -43,41 +43,42 @@ import org.sat4j.tools.ModelIterator;
 
 public class TestGlobalTimeoutForOptimalModelEnumeration {
 
-	private ISolver solver;
+    private ISolver solver;
 
-	@Before
-	public void setUp() throws ContradictionException {
-		PseudoOptDecorator pbsolver = new PseudoOptDecorator(
-				SolverFactory.newDefault());
-		IVecInt clause = new VecInt();
-		pbsolver.newVar(1000);
-		for (int i = 1; i <= 1000; i++)
-			clause.push(-i);
-		pbsolver.addClause(clause);
-		Vec<BigInteger> weights = new Vec<BigInteger>();
-		for (int i = 1; i <= 1000; i++) {
-			weights.push(BigInteger.valueOf(5));
-		}
-		pbsolver.setObjectiveFunction(new ObjectiveFunction(clause, weights));
-		solver = new ModelIterator(pbsolver);
-	}
+    @Before
+    public void setUp() throws ContradictionException {
+        PseudoOptDecorator pbsolver = new PseudoOptDecorator(
+                SolverFactory.newDefault());
+        IVecInt clause = new VecInt();
+        pbsolver.newVar(1000);
+        for (int i = 1; i <= 1000; i++) {
+            clause.push(-i);
+        }
+        pbsolver.addClause(clause);
+        Vec<BigInteger> weights = new Vec<BigInteger>();
+        for (int i = 1; i <= 1000; i++) {
+            weights.push(BigInteger.valueOf(5));
+        }
+        pbsolver.setObjectiveFunction(new ObjectiveFunction(clause, weights));
+        this.solver = new ModelIterator(pbsolver);
+    }
 
-	@Test(expected = TimeoutException.class, timeout = 3000)
-	public void testTimeoutOnSeconds() throws TimeoutException {
-		solver.setTimeout(2);
-		while (solver.isSatisfiable()) {
-			solver.model(); // needed to
-							// discard
-							// that
-							// solution
-		}
-	}
+    @Test(expected = TimeoutException.class, timeout = 3000)
+    public void testTimeoutOnSeconds() throws TimeoutException {
+        this.solver.setTimeout(2);
+        while (this.solver.isSatisfiable()) {
+            this.solver.model(); // needed to
+            // discard
+            // that
+            // solution
+        }
+    }
 
-	@Test(expected = TimeoutException.class, timeout = 5000)
-	public void testTimeoutOnConflicts() throws TimeoutException {
-		solver.setTimeoutOnConflicts(1000);
-		while (solver.isSatisfiable()) {
-			solver.model(); // needed to discard that solution
-		}
-	}
+    @Test(expected = TimeoutException.class, timeout = 5000)
+    public void testTimeoutOnConflicts() throws TimeoutException {
+        this.solver.setTimeoutOnConflicts(1000);
+        while (this.solver.isSatisfiable()) {
+            this.solver.model(); // needed to discard that solution
+        }
+    }
 }

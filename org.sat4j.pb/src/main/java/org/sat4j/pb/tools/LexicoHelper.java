@@ -42,48 +42,48 @@ import org.sat4j.specs.IVecInt;
 
 public class LexicoHelper<T, C> extends DependencyHelper<T, C> {
 
-	private final LexicoDecoratorPB lexico;
+    private final LexicoDecoratorPB lexico;
 
-	public LexicoHelper(IPBSolver solver) {
-		super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)));
-		lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-				.decorated();
-	}
+    public LexicoHelper(IPBSolver solver) {
+        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)));
+        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
+                .decorated();
+    }
 
-	public LexicoHelper(IPBSolver solver, boolean explanationEnabled,
-			boolean canonicalOptFunctionEnabled) {
-		super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
-				explanationEnabled, canonicalOptFunctionEnabled);
-		lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-				.decorated();
-	}
+    public LexicoHelper(IPBSolver solver, boolean explanationEnabled,
+            boolean canonicalOptFunctionEnabled) {
+        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
+                explanationEnabled, canonicalOptFunctionEnabled);
+        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
+                .decorated();
+    }
 
-	public LexicoHelper(IPBSolver solver, boolean explanationEnabled) {
-		super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
-				explanationEnabled);
-		lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-				.decorated();
-	}
+    public LexicoHelper(IPBSolver solver, boolean explanationEnabled) {
+        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
+                explanationEnabled);
+        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
+                .decorated();
+    }
 
-	public void addCriterion(Collection<T> things) {
-		IVecInt literals = new VecInt(things.size());
-		for (T thing : things) {
-			literals.push(getIntValue(thing));
-		}
-		lexico.addCriterion(literals);
-	}
+    public void addCriterion(Collection<T> things) {
+        IVecInt literals = new VecInt(things.size());
+        for (T thing : things) {
+            literals.push(getIntValue(thing));
+        }
+        this.lexico.addCriterion(literals);
+    }
 
-	public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
-		IVecInt literals = new VecInt(things.size());
-		IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
-		for (WeightedObject<T> wo : things) {
-			literals.push(getIntValue(wo.thing));
-			coefs.push(wo.getWeight());
-		}
-		lexico.addCriterion(literals, coefs);
-	}
+    public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
+        IVecInt literals = new VecInt(things.size());
+        IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
+        for (WeightedObject<T> wo : things) {
+            literals.push(getIntValue(wo.thing));
+            coefs.push(wo.getWeight());
+        }
+        this.lexico.addCriterion(literals, coefs);
+    }
 
-	public boolean isOptimal() {
-		return ((OptToPBSATAdapter) getSolver()).isOptimal();
-	}
+    public boolean isOptimal() {
+        return ((OptToPBSATAdapter) getSolver()).isOptimal();
+    }
 }

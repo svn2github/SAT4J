@@ -50,77 +50,78 @@ import org.sat4j.specs.IProblem;
  */
 public class PBInstanceReader extends InstanceReader {
 
-	private OPBReader2007 opb;
+    private OPBReader2007 opb;
 
-	private Reader reader = null;
+    private Reader reader = null;
 
-	private final IPBSolver solver;
+    private final IPBSolver solver;
 
-	public PBInstanceReader(IPBSolver solver) {
-		super(solver);
-		this.solver = solver;
-	}
+    public PBInstanceReader(IPBSolver solver) {
+        super(solver);
+        this.solver = solver;
+    }
 
-	private Reader getDefaultOPBReader() {
-		if (opb == null) {
-			opb = new OPBReader2007(solver);
-		}
-		return opb;
-	}
+    private Reader getDefaultOPBReader() {
+        if (this.opb == null) {
+            this.opb = new OPBReader2007(this.solver);
+        }
+        return this.opb;
+    }
 
-	public boolean hasObjectiveFunction() {
-		return opb.hasObjFunc;
-	}
+    public boolean hasObjectiveFunction() {
+        return this.opb.hasObjFunc;
+    }
 
-	@Override
-	public IProblem parseInstance(String filename)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
-		String fname;
-		boolean isHttp = false;
-		String tempFileName = "";
-		String prefix = "";
+    @Override
+    public IProblem parseInstance(String filename)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        String fname;
+        boolean isHttp = false;
+        String tempFileName = "";
+        String prefix = "";
 
-		if (filename.startsWith("http://")) {
-			isHttp = true;
-			tempFileName = filename;
-			filename = filename.substring(filename.lastIndexOf('/'),
-					filename.length() - 1);
-		}
+        if (filename.startsWith("http://")) {
+            isHttp = true;
+            tempFileName = filename;
+            filename = filename.substring(filename.lastIndexOf('/'),
+                    filename.length() - 1);
+        }
 
-		if (filename.indexOf(':') != -1) {
+        if (filename.indexOf(':') != -1) {
 
-			String[] parts = filename.split(":");
-			filename = parts[1];
-			prefix = parts[0].toUpperCase(Locale.getDefault());
+            String[] parts = filename.split(":");
+            filename = parts[1];
+            prefix = parts[0].toUpperCase(Locale.getDefault());
 
-		}
+        }
 
-		if (filename.endsWith(".gz")) {
-			fname = filename.substring(0, filename.lastIndexOf('.'));
-		} else {
-			fname = filename;
-		}
-		if (fname.endsWith(".opb") || "PB".equals(prefix)) {
-			reader = getDefaultOPBReader();
-		} else {
-			return super.parseInstance(filename);
-		}
+        if (filename.endsWith(".gz")) {
+            fname = filename.substring(0, filename.lastIndexOf('.'));
+        } else {
+            fname = filename;
+        }
+        if (fname.endsWith(".opb") || "PB".equals(prefix)) {
+            this.reader = getDefaultOPBReader();
+        } else {
+            return super.parseInstance(filename);
+        }
 
-		if (isHttp) {
-			return reader.parseInstance((new URL(tempFileName)).openStream());
-		}
-		return reader.parseInstance(filename);
-	}
+        if (isHttp) {
+            return this.reader
+                    .parseInstance(new URL(tempFileName).openStream());
+        }
+        return this.reader.parseInstance(filename);
+    }
 
-	@Override
-	@Deprecated
-	public String decode(int[] model) {
-		return reader.decode(model);
-	}
+    @Override
+    @Deprecated
+    public String decode(int[] model) {
+        return this.reader.decode(model);
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		reader.decode(model, out);
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        this.reader.decode(model, out);
+    }
 }

@@ -36,52 +36,52 @@ import org.sat4j.minisat.core.SearchParams;
 
 public class PBSolverResCP extends PBSolverCP {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final long MAXCONFLICTS = 100000L;
+    public static final long MAXCONFLICTS = 100000L;
 
-	private long bound;
+    private long bound;
 
-	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order) {
-		this(learner, dsf, order, MAXCONFLICTS);
-	}
+    public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
+        this(learner, dsf, order, MAXCONFLICTS);
+    }
 
-	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order, long bound) {
-		super(learner, dsf, order);
-		this.bound = bound;
-	}
+    public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order, long bound) {
+        super(learner, dsf, order);
+        this.bound = bound;
+    }
 
-	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, SearchParams params, IOrder order,
-			RestartStrategy restarter) {
-		super(learner, dsf, params, order, restarter);
-	}
+    public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order,
+            RestartStrategy restarter) {
+        super(learner, dsf, params, order, restarter);
+    }
 
-	public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
-		super(learner, dsf, params, order);
-		// TODO Auto-generated constructor stub
-	}
+    public PBSolverResCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order) {
+        super(learner, dsf, params, order);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	boolean someCriteria() {
-		if (stats.conflicts == bound) {
-			this.setSimplifier(NO_SIMPLIFICATION);
-			this.reduceDB();
-			stats.numberOfCP++;
-			return true;
-		} else if (stats.conflicts > bound) {
-			stats.numberOfCP++;
-			return true;
-		} else {
-			stats.numberOfResolution++;
-			return false;
-		}
-	}
+    @Override
+    boolean someCriteria() {
+        if (this.stats.conflicts == this.bound) {
+            this.setSimplifier(NO_SIMPLIFICATION);
+            this.reduceDB();
+            this.stats.numberOfCP++;
+            return true;
+        } else if (this.stats.conflicts > this.bound) {
+            this.stats.numberOfCP++;
+            return true;
+        } else {
+            this.stats.numberOfResolution++;
+            return false;
+        }
+    }
 
 }

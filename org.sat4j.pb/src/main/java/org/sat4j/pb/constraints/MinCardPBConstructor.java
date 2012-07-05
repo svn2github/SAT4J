@@ -33,6 +33,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.constraints.card.MinWatchCard;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.UnitPropagationListener;
@@ -44,18 +45,18 @@ import org.sat4j.specs.IVecInt;
 
 public class MinCardPBConstructor implements ICardConstructor {
 
-	public Constr constructCard(UnitPropagationListener solver, ILits voc,
-			IVecInt theLits, int degree) throws ContradictionException {
-		return MinWatchCardPB.minWatchCardPBNew(solver, voc, theLits,
-				MinWatchCardPB.ATLEAST, degree);
-	}
+    public Constr constructCard(UnitPropagationListener solver, ILits voc,
+            IVecInt theLits, int degree) throws ContradictionException {
+        return MinWatchCardPB.minWatchCardPBNew(solver, voc, theLits,
+                MinWatchCard.ATLEAST, degree);
+    }
 
-	public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
-		return new MinWatchCardPB(voc, resLits, true, dspb.getDegree()
-				.intValue());
-	}
+    public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
+        IVecInt resLits = new VecInt();
+        IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+        dspb.buildConstraintFromConflict(resLits, resCoefs);
+        return new MinWatchCardPB(voc, resLits, true, dspb.getDegree()
+                .intValue());
+    }
 
 }

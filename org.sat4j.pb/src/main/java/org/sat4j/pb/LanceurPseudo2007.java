@@ -43,39 +43,39 @@ import org.sat4j.specs.ISolver;
  */
 public class LanceurPseudo2007 extends LanceurPseudo2005 {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public LanceurPseudo2007() {
-		super();
-	}
+    public LanceurPseudo2007() {
+        super();
+    }
 
-	public LanceurPseudo2007(ASolverFactory<IPBSolver> factory) {
-		super(factory);
-	}
+    public LanceurPseudo2007(ASolverFactory<IPBSolver> factory) {
+        super(factory);
+    }
 
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		return new OPBReader2010((IPBSolver) theSolver);
-	}
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        return new OPBReader2010((IPBSolver) theSolver);
+    }
 
-	/**
-	 * Lance le prouveur sur un fichier Dimacs
-	 * 
-	 * @param args
-	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
-	 *            compress?.
-	 */
-	public static void main(final String[] args) {
-		final AbstractLauncher lanceur = new LanceurPseudo2007();
-		if (args.length == 0 || args.length > 3) {
-			lanceur.usage();
-			return;
-		}
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    /**
+     * Lance le prouveur sur un fichier Dimacs
+     * 
+     * @param args
+     *            doit contenir le nom d'un fichier Dimacs, eventuellement
+     *            compress?.
+     */
+    public static void main(final String[] args) {
+        final AbstractLauncher lanceur = new LanceurPseudo2007();
+        if (args.length == 0 || args.length > 3) {
+            lanceur.usage();
+            return;
+        }
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 
 }

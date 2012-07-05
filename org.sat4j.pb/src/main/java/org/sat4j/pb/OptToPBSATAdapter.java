@@ -45,124 +45,126 @@ import org.sat4j.specs.TimeoutException;
  */
 public class OptToPBSATAdapter extends PBSolverDecorator {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	IOptimizationProblem problem;
+    IOptimizationProblem problem;
 
-	boolean modelComputed = false;
+    boolean modelComputed = false;
 
-	private final IVecInt assumps = new VecInt();
+    private final IVecInt assumps = new VecInt();
 
-	private long begin;
+    private long begin;
 
-	public OptToPBSATAdapter(IOptimizationProblem problem) {
-		super((IPBSolver) problem);
-		this.problem = problem;
-	}
+    public OptToPBSATAdapter(IOptimizationProblem problem) {
+        super((IPBSolver) problem);
+        this.problem = problem;
+    }
 
-	@Override
-	public boolean isSatisfiable() throws TimeoutException {
-		modelComputed = false;
-		assumps.clear();
-		begin = System.currentTimeMillis();
-		if (problem.hasNoObjectiveFunction()) {
-			return modelComputed = problem.isSatisfiable();
-		}
-		return problem.admitABetterSolution();
-	}
+    @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        this.modelComputed = false;
+        this.assumps.clear();
+        this.begin = System.currentTimeMillis();
+        if (this.problem.hasNoObjectiveFunction()) {
+            return this.modelComputed = this.problem.isSatisfiable();
+        }
+        return this.problem.admitABetterSolution();
+    }
 
-	@Override
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return isSatisfiable();
-	}
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return isSatisfiable();
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt myAssumps, boolean global)
-			throws TimeoutException {
-		return isSatisfiable(myAssumps);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt myAssumps, boolean global)
+            throws TimeoutException {
+        return isSatisfiable(myAssumps);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
-		modelComputed = false;
-		this.assumps.clear();
-		myAssumps.copyTo(this.assumps);
-		begin = System.currentTimeMillis();
-		if (problem.hasNoObjectiveFunction()) {
-			return modelComputed = problem.isSatisfiable(myAssumps);
-		}
-		return problem.admitABetterSolution(myAssumps);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
+        this.modelComputed = false;
+        this.assumps.clear();
+        myAssumps.copyTo(this.assumps);
+        this.begin = System.currentTimeMillis();
+        if (this.problem.hasNoObjectiveFunction()) {
+            return this.modelComputed = this.problem.isSatisfiable(myAssumps);
+        }
+        return this.problem.admitABetterSolution(myAssumps);
+    }
 
-	@Override
-	public int[] model() {
-		return model(new PrintWriter(System.out));
-	}
+    @Override
+    public int[] model() {
+        return model(new PrintWriter(System.out));
+    }
 
-	/**
-	 * Compute a minimal model according to the objective function of the
-	 * IPBProblem decorated.
-	 * 
-	 * @param out
-	 *            a writer to display information in verbose mode
-	 * @since 2.3.2
-	 */
-	public int[] model(PrintWriter out) {
-		if (modelComputed)
-			return problem.model();
-		try {
-			assert problem.admitABetterSolution(assumps);
-			assert !problem.hasNoObjectiveFunction();
-			do {
-				problem.discardCurrentSolution();
-				if (isVerbose()) {
-					out.println(getLogPrefix()
-							+ "Current objective function value: "
-							+ problem.getObjectiveValue() + "("
-							+ ((System.currentTimeMillis() - begin) / 1000.0)
-							+ "s)");
-				}
-			} while (problem.admitABetterSolution(assumps));
-		} catch (TimeoutException e) {
-			if (isVerbose()) {
-				out.println(getLogPrefix() + "Solver timed out after "
-						+ ((System.currentTimeMillis() - begin) / 1000.0)
-						+ "s)");
-			}
-		} catch (ContradictionException e) {
-			// OK, optimal model found
-		}
-		modelComputed = true;
-		return problem.model();
-	}
+    /**
+     * Compute a minimal model according to the objective function of the
+     * IPBProblem decorated.
+     * 
+     * @param out
+     *            a writer to display information in verbose mode
+     * @since 2.3.2
+     */
+    public int[] model(PrintWriter out) {
+        if (this.modelComputed) {
+            return this.problem.model();
+        }
+        try {
+            assert this.problem.admitABetterSolution(this.assumps);
+            assert !this.problem.hasNoObjectiveFunction();
+            do {
+                this.problem.discardCurrentSolution();
+                if (isVerbose()) {
+                    out.println(getLogPrefix()
+                            + "Current objective function value: "
+                            + this.problem.getObjectiveValue() + "("
+                            + (System.currentTimeMillis() - this.begin)
+                            / 1000.0 + "s)");
+                }
+            } while (this.problem.admitABetterSolution(this.assumps));
+        } catch (TimeoutException e) {
+            if (isVerbose()) {
+                out.println(getLogPrefix() + "Solver timed out after "
+                        + (System.currentTimeMillis() - this.begin) / 1000.0
+                        + "s)");
+            }
+        } catch (ContradictionException e) {
+            // OK, optimal model found
+        }
+        this.modelComputed = true;
+        return this.problem.model();
+    }
 
-	@Override
-	public boolean model(int var) {
-		if (!modelComputed)
-			model();
-		return problem.model(var);
-	}
+    @Override
+    public boolean model(int var) {
+        if (!this.modelComputed) {
+            model();
+        }
+        return this.problem.model(var);
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return prefix + "Optimization to Pseudo Boolean adapter\n"
-				+ super.toString(prefix);
-	}
+    @Override
+    public String toString(String prefix) {
+        return prefix + "Optimization to Pseudo Boolean adapter\n"
+                + super.toString(prefix);
+    }
 
-	public boolean isOptimal() {
-		return problem.isOptimal();
-	}
+    public boolean isOptimal() {
+        return this.problem.isOptimal();
+    }
 
-	/**
-	 * Return the value of the objective function in the last model found.
-	 * 
-	 * @return
-	 * @since 2.3.2
-	 */
-	public Number getCurrentObjectiveValue() {
-		return problem.getObjectiveValue();
-	}
+    /**
+     * Return the value of the objective function in the last model found.
+     * 
+     * @return
+     * @since 2.3.2
+     */
+    public Number getCurrentObjectiveValue() {
+        return this.problem.getObjectiveValue();
+    }
 }

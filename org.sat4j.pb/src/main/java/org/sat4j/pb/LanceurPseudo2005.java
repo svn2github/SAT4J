@@ -56,141 +56,141 @@ import org.sat4j.tools.MultiTracing;
  * @author mederic
  */
 public class LanceurPseudo2005 extends AbstractOptimizationLauncher implements
-		ICDCLLogger {
+        ICDCLLogger {
 
-	ASolverFactory<IPBSolver> factory;
+    ASolverFactory<IPBSolver> factory;
 
-	public LanceurPseudo2005() {
-		this(SolverFactory.instance());
-	}
+    public LanceurPseudo2005() {
+        this(SolverFactory.instance());
+    }
 
-	LanceurPseudo2005(ASolverFactory<IPBSolver> factory) {
-		this.factory = factory;
-	}
+    LanceurPseudo2005(ASolverFactory<IPBSolver> factory) {
+        this.factory = factory;
+    }
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Lance le prouveur sur un fichier Dimacs
-	 * 
-	 * @param args
-	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
-	 *            compress?.
-	 */
-	public static void main(final String[] args) {
-		final AbstractLauncher lanceur = new LanceurPseudo2005();
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    /**
+     * Lance le prouveur sur un fichier Dimacs
+     * 
+     * @param args
+     *            doit contenir le nom d'un fichier Dimacs, eventuellement
+     *            compress?.
+     */
+    public static void main(final String[] args) {
+        final AbstractLauncher lanceur = new LanceurPseudo2005();
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 
-	protected ObjectiveFunction obfct;
+    protected ObjectiveFunction obfct;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.Lanceur#createReader(org.sat4j.specs.ISolver)
-	 */
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		return new OPBReader2006((IPBSolver) theSolver);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.Lanceur#createReader(org.sat4j.specs.ISolver)
+     */
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        return new OPBReader2006((IPBSolver) theSolver);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.Lanceur#configureSolver(java.lang.String[])
-	 */
-	@Override
-	protected ISolver configureSolver(String[] args) {
-		IPBSolver theSolver;
-		String solverName = args[0];
-		boolean trace = false;
-		if (solverName.startsWith("Trace")) {
-			trace = true;
-			solverName = solverName.substring("Trace".length());
-		}
-		boolean lower = false;
-		if (solverName.startsWith("Lower")) {
-			lower = true;
-			solverName = solverName.substring("Lower".length());
-		}
-		if (args.length > 1) {
-			theSolver = factory.createSolverByName(solverName);
-		} else {
-			theSolver = factory.defaultSolver();
-		}
-		if (lower) {
-			theSolver = new ConstraintRelaxingPseudoOptDecorator(theSolver);
-		} else {
-			theSolver = new PseudoOptDecorator(theSolver);
-		}
-		if (args.length == 3) {
-			theSolver.setTimeout(Integer.valueOf(args[1]));
-		}
-		if (trace) {
-			String fileName = args[args.length - 1];
-			theSolver.setSearchListener(new MultiTracing(
-					new ConflictLevelTracing(new FileBasedVisualizationTool(
-							fileName + "-conflict-level"),
-							new FileBasedVisualizationTool(fileName
-									+ "-conflict-level-restart"),
-							new FileBasedVisualizationTool(fileName
-									+ "-conflict-level-clean")),
-					new DecisionTracing(new FileBasedVisualizationTool(fileName
-							+ "-decision-indexes-pos"),
-							new FileBasedVisualizationTool(fileName
-									+ "-decision-indexes-neg"),
-							new FileBasedVisualizationTool(fileName
-									+ "-decision-indexes-restart"),
-							new FileBasedVisualizationTool(fileName
-									+ "-decision-indexes-clean")),
-					new LearnedClausesSizeTracing(
-							new FileBasedVisualizationTool(fileName
-									+ "-learned-clauses-size"),
-							new FileBasedVisualizationTool(fileName
-									+ "-learned-clauses-size-restart"),
-							new FileBasedVisualizationTool(fileName
-									+ "-learned-clauses-size-clean")),
-					new ConflictDepthTracing(new FileBasedVisualizationTool(
-							fileName + "-conflict-depth"),
-							new FileBasedVisualizationTool(fileName
-									+ "-conflict-depth-restart"),
-							new FileBasedVisualizationTool(fileName
-									+ "-conflict-depth-clean"))));
-		}
-		// theSolver.setSearchListener(new TextOutputTracing(null));
-		out.println(theSolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return theSolver;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.Lanceur#configureSolver(java.lang.String[])
+     */
+    @Override
+    protected ISolver configureSolver(String[] args) {
+        IPBSolver theSolver;
+        String solverName = args[0];
+        boolean trace = false;
+        if (solverName.startsWith("Trace")) {
+            trace = true;
+            solverName = solverName.substring("Trace".length());
+        }
+        boolean lower = false;
+        if (solverName.startsWith("Lower")) {
+            lower = true;
+            solverName = solverName.substring("Lower".length());
+        }
+        if (args.length > 1) {
+            theSolver = this.factory.createSolverByName(solverName);
+        } else {
+            theSolver = this.factory.defaultSolver();
+        }
+        if (lower) {
+            theSolver = new ConstraintRelaxingPseudoOptDecorator(theSolver);
+        } else {
+            theSolver = new PseudoOptDecorator(theSolver);
+        }
+        if (args.length == 3) {
+            theSolver.setTimeout(Integer.valueOf(args[1]));
+        }
+        if (trace) {
+            String fileName = args[args.length - 1];
+            theSolver.setSearchListener(new MultiTracing(
+                    new ConflictLevelTracing(new FileBasedVisualizationTool(
+                            fileName + "-conflict-level"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-conflict-level-restart"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-conflict-level-clean")),
+                    new DecisionTracing(new FileBasedVisualizationTool(fileName
+                            + "-decision-indexes-pos"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-decision-indexes-neg"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-decision-indexes-restart"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-decision-indexes-clean")),
+                    new LearnedClausesSizeTracing(
+                            new FileBasedVisualizationTool(fileName
+                                    + "-learned-clauses-size"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-learned-clauses-size-restart"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-learned-clauses-size-clean")),
+                    new ConflictDepthTracing(new FileBasedVisualizationTool(
+                            fileName + "-conflict-depth"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-conflict-depth-restart"),
+                            new FileBasedVisualizationTool(fileName
+                                    + "-conflict-depth-clean"))));
+        }
+        // theSolver.setSearchListener(new TextOutputTracing(null));
+        this.out.println(theSolver.toString(COMMENT_PREFIX));
+        return theSolver;
+    }
 
-	@Override
-	public void usage() {
-		out.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
-		showAvailableSolvers(SolverFactory.instance());
-	}
+    @Override
+    public void usage() {
+        this.out.println("java -jar sat4j-pb.jar [solvername [timeout]] instancename.opb"); //$NON-NLS-1$
+        showAvailableSolvers(SolverFactory.instance());
+    }
 
-	@Override
-	protected String getInstanceName(String[] args) {
-		assert args.length == 1 || args.length == 2 || args.length == 3;
-		if (args.length == 0) {
-			return null;
-		}
-		return args[args.length - 1];
-	}
+    @Override
+    protected String getInstanceName(String[] args) {
+        assert args.length == 1 || args.length == 2 || args.length == 3;
+        if (args.length == 0) {
+            return null;
+        }
+        return args[args.length - 1];
+    }
 
-	@Override
-	protected IProblem readProblem(String problemname)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
-		IProblem problem = super.readProblem(problemname);
-		ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
-		if (obj != null) {
-			out.println(COMMENT_PREFIX + "objective function length is "
-					+ obj.getVars().size() + " literals");
-		}
-		return problem;
-	}
+    @Override
+    protected IProblem readProblem(String problemname)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        IProblem problem = super.readProblem(problemname);
+        ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
+        if (obj != null) {
+            this.out.println(COMMENT_PREFIX + "objective function length is "
+                    + obj.getVars().size() + " literals");
+        }
+        return problem;
+    }
 }

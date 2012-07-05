@@ -33,16 +33,16 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class MiniOPBLongClauseCardMinLearningTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractPseudoBooleanAndPigeonHoleTest {
 
-	public MiniOPBLongClauseCardMinLearningTest(String arg) {
-		super(arg);
-	}
+    public MiniOPBLongClauseCardMinLearningTest(String arg) {
+        super(arg);
+    }
 
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory
-				.newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-	}
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory
+                .newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
+    }
 
 }

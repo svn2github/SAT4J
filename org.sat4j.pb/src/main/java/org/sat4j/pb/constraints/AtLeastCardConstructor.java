@@ -44,17 +44,17 @@ import org.sat4j.specs.IVecInt;
 
 public class AtLeastCardConstructor implements ICardConstructor {
 
-	public Constr constructCard(UnitPropagationListener solver, ILits voc,
-			IVecInt theLits, int degree) throws ContradictionException {
-		return AtLeast.atLeastNew(solver, voc, theLits, degree);
-	}
+    public Constr constructCard(UnitPropagationListener solver, ILits voc,
+            IVecInt theLits, int degree) throws ContradictionException {
+        return AtLeast.atLeastNew(solver, voc, theLits, degree);
+    }
 
-	public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
-		IVecInt resLits = new VecInt();
-		IVec<BigInteger> resCoefs = new Vec<BigInteger>();
-		dspb.buildConstraintFromConflict(resLits, resCoefs);
-		// return AtLeast.atLeastNew(voc, resLits, dspb.getDegree().intValue());
-		return null;
-	}
+    public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
+        IVecInt resLits = new VecInt();
+        IVec<BigInteger> resCoefs = new Vec<BigInteger>();
+        dspb.buildConstraintFromConflict(resLits, resCoefs);
+        // return AtLeast.atLeastNew(voc, resLits, dspb.getDegree().intValue());
+        return null;
+    }
 
 }

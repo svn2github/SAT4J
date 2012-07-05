@@ -41,31 +41,31 @@ import org.sat4j.specs.ContradictionException;
 
 public class MaxLongWatchPBConstructor implements IPBConstructor {
 
-	public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
-		if (dspb.isLongSufficient()) {
-			return MaxWatchPbLong.normalizedWatchPbNew(voc, dspb);
-		}
-		return MaxWatchPb.normalizedWatchPbNew(voc, dspb);
-	}
+    public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
+        if (dspb.isLongSufficient()) {
+            return MaxWatchPbLong.normalizedWatchPbNew(voc, dspb);
+        }
+        return MaxWatchPb.normalizedWatchPbNew(voc, dspb);
+    }
 
-	public Constr constructPB(UnitPropagationListener solver, ILits voc,
-			int[] theLits, BigInteger[] coefs, BigInteger degree,
-			BigInteger sumCoefs) throws ContradictionException {
-		if (sumCoefs.bitLength() < Long.SIZE) {
-			return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc, theLits,
-					coefs, degree, sumCoefs);
-		}
-		return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
-				degree, sumCoefs);
-	}
+    public Constr constructPB(UnitPropagationListener solver, ILits voc,
+            int[] theLits, BigInteger[] coefs, BigInteger degree,
+            BigInteger sumCoefs) throws ContradictionException {
+        if (sumCoefs.bitLength() < Long.SIZE) {
+            return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc, theLits,
+                    coefs, degree, sumCoefs);
+        }
+        return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
+                degree, sumCoefs);
+    }
 
-	// public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
-	// degree) {
-	// BigInteger somCoefs = BigInteger.ZERO;
-	// for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length;
-	// i++)
-	// somCoefs = somCoefs.add(coefs[i]);
-	// return somCoefs.bitLength() < Long.SIZE;
-	// }
+    // public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
+    // degree) {
+    // BigInteger somCoefs = BigInteger.ZERO;
+    // for (int i = 0; somCoefs.bitLength() < Long.SIZE && i < coefs.length;
+    // i++)
+    // somCoefs = somCoefs.add(coefs[i]);
+    // return somCoefs.bitLength() < Long.SIZE;
+    // }
 
 }

@@ -41,37 +41,37 @@ import org.sat4j.specs.IVecInt;
 
 public class PBSolverWithImpliedClause extends PBSolverCP {
 
-	public PBSolverWithImpliedClause(
-			LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order) {
-		super(learner, dsf, order);
-	}
+    public PBSolverWithImpliedClause(
+            LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
+        super(learner, dsf, order);
+    }
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public IConstr addPseudoBoolean(IVecInt literals, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger degree) throws ContradictionException {
-		IVecInt vlits = dimacs2internal(literals);
-		assert vlits.size() == literals.size();
-		assert literals.size() == coeffs.size();
-		PBConstr result = (PBConstr) dsfactory.createPseudoBooleanConstraint(
-				vlits, coeffs, moreThan, degree);
-		if (result != null) {
-			IVecInt clits = result.computeAnImpliedClause();
-			if (clits != null) {
-				addConstr(dsfactory.createClause(clits));
-			}
-		}
-		return addConstr(result);
-	}
+    @Override
+    public IConstr addPseudoBoolean(IVecInt literals, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger degree) throws ContradictionException {
+        IVecInt vlits = dimacs2internal(literals);
+        assert vlits.size() == literals.size();
+        assert literals.size() == coeffs.size();
+        PBConstr result = (PBConstr) this.dsfactory
+                .createPseudoBooleanConstraint(vlits, coeffs, moreThan, degree);
+        if (result != null) {
+            IVecInt clits = result.computeAnImpliedClause();
+            if (clits != null) {
+                addConstr(this.dsfactory.createClause(clits));
+            }
+        }
+        return addConstr(result);
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix) + "\n" + prefix
-				+ "Add implied clauses in preprocessing";
-	}
+    @Override
+    public String toString(String prefix) {
+        return super.toString(prefix) + "\n" + prefix
+                + "Add implied clauses in preprocessing";
+    }
 }

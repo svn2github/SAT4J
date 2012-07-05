@@ -31,9 +31,9 @@ package org.sat4j.pb.constraints.pb;
 
 public final class ConflictMapCardinality extends ConflictMap {
 
-	public ConflictMapCardinality(PBConstr cpb, int level) {
-		super(cpb, level);
-		// TODO Auto-generated constructor stub
-	}
+    public ConflictMapCardinality(PBConstr cpb, int level) {
+        super(cpb, level);
+        // TODO Auto-generated constructor stub
+    }
 
 }

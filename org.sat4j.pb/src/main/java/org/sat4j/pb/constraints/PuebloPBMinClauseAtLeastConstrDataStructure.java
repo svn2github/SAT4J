@@ -29,19 +29,18 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-
 public class PuebloPBMinClauseAtLeastConstrDataStructure extends
-		AbstractPBClauseCardConstrDataStructure {
+        AbstractPBClauseCardConstrDataStructure {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PuebloPBMinClauseAtLeastConstrDataStructure() {
-		super(new UnitBinaryHTClausePBConstructor(),
-				new AtLeastCardPBConstructor(),
-				new PuebloMinWatchPBConstructor());
-	}
+    public PuebloPBMinClauseAtLeastConstrDataStructure() {
+        super(new UnitBinaryHTClausePBConstructor(),
+                new AtLeastCardPBConstructor(),
+                new PuebloMinWatchPBConstructor());
+    }
 
 }

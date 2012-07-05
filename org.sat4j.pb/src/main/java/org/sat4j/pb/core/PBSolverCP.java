@@ -49,129 +49,133 @@ import org.sat4j.specs.TimeoutException;
  */
 public class PBSolverCP extends PBSolver {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param acg
-	 * @param learner
-	 * @param dsf
-	 */
-	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, IOrder order) {
-		super(learner, dsf, new SearchParams(1.5, 100), order,
-				new MiniSATRestarts());
-	}
+    /**
+     * @param acg
+     * @param learner
+     * @param dsf
+     */
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order) {
+        super(learner, dsf, new SearchParams(1.5, 100), order,
+                new MiniSATRestarts());
+    }
 
-	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, SearchParams params, IOrder order,
-			RestartStrategy restarter) {
-		super(learner, dsf, params, order, restarter);
-	}
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order,
+            RestartStrategy restarter) {
+        super(learner, dsf, params, order, restarter);
+    }
 
-	public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
-			PBDataStructureFactory dsf, SearchParams params, IOrder order) {
-		super(learner, dsf, params, order, new MiniSATRestarts());
-	}
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order) {
+        super(learner, dsf, params, order, new MiniSATRestarts());
+    }
 
-	@Override
-	public void analyze(Constr myconfl, Pair results) throws TimeoutException {
-		if (someCriteria())
-			analyzeCP(myconfl, results);
-		else
-			super.analyze(myconfl, results);
-	}
+    @Override
+    public void analyze(Constr myconfl, Pair results) throws TimeoutException {
+        if (someCriteria()) {
+            analyzeCP(myconfl, results);
+        } else {
+            super.analyze(myconfl, results);
+        }
+    }
 
-	public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
-		int litImplied = trail.last();
-		int currentLevel = voc.getLevel(litImplied);
-		IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
-		assert confl.slackConflict().signum() < 0;
-		while (!confl.isAssertive(currentLevel)) {
-			if (!undertimeout) {
-				throw new TimeoutException();
-			}
-			PBConstr constraint = (PBConstr) voc.getReason(litImplied);
-			// result of the resolution is in the conflict (confl)
-			confl.resolve(constraint, litImplied, this);
-			updateNumberOfReductions(confl);
-			assert confl.slackConflict().signum() <= 0;
-			// implication trail is reduced
-			if (trail.size() == 1)
-				break;
-			undoOne();
-			// assert decisionLevel() >= 0;
-			if (decisionLevel() == 0)
-				break;
-			litImplied = trail.last();
-			if (voc.getLevel(litImplied) != currentLevel) {
-				trailLim.pop();
-				confl.updateSlack(voc.getLevel(litImplied));
-			}
-			assert voc.getLevel(litImplied) <= currentLevel;
-			currentLevel = voc.getLevel(litImplied);
-			assert confl.slackIsCorrect(currentLevel);
-			assert currentLevel == decisionLevel();
-			assert litImplied > 1;
-		}
-		assert confl.isAssertive(currentLevel) || trail.size() == 1
-				|| decisionLevel() == 0;
+    public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
+        int litImplied = this.trail.last();
+        int currentLevel = this.voc.getLevel(litImplied);
+        IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
+        assert confl.slackConflict().signum() < 0;
+        while (!confl.isAssertive(currentLevel)) {
+            if (!this.undertimeout) {
+                throw new TimeoutException();
+            }
+            PBConstr constraint = (PBConstr) this.voc.getReason(litImplied);
+            // result of the resolution is in the conflict (confl)
+            confl.resolve(constraint, litImplied, this);
+            updateNumberOfReductions(confl);
+            assert confl.slackConflict().signum() <= 0;
+            // implication trail is reduced
+            if (this.trail.size() == 1) {
+                break;
+            }
+            undoOne();
+            // assert decisionLevel() >= 0;
+            if (decisionLevel() == 0) {
+                break;
+            }
+            litImplied = this.trail.last();
+            if (this.voc.getLevel(litImplied) != currentLevel) {
+                this.trailLim.pop();
+                confl.updateSlack(this.voc.getLevel(litImplied));
+            }
+            assert this.voc.getLevel(litImplied) <= currentLevel;
+            currentLevel = this.voc.getLevel(litImplied);
+            assert confl.slackIsCorrect(currentLevel);
+            assert currentLevel == decisionLevel();
+            assert litImplied > 1;
+        }
+        assert confl.isAssertive(currentLevel) || this.trail.size() == 1
+                || decisionLevel() == 0;
 
-		assert currentLevel == decisionLevel();
-		undoOne();
+        assert currentLevel == decisionLevel();
+        undoOne();
 
-		updateNumberOfReducedLearnedConstraints(confl);
-		// necessary informations to build a PB-constraint
-		// are kept from the conflict
-		if ((confl.size() == 0)
-				|| ((decisionLevel() == 0 || trail.size() == 0) && confl
-						.slackConflict().signum() < 0)) {
-			results.reason = null;
-			results.backtrackLevel = -1;
-			return;
-		}
+        updateNumberOfReducedLearnedConstraints(confl);
+        // necessary informations to build a PB-constraint
+        // are kept from the conflict
+        if (confl.size() == 0
+                || (decisionLevel() == 0 || this.trail.size() == 0)
+                && confl.slackConflict().signum() < 0) {
+            results.reason = null;
+            results.backtrackLevel = -1;
+            return;
+        }
 
-		// assertive PB-constraint is build and referenced
-		PBConstr resConstr = (PBConstr) dsfactory
-				.createUnregisteredPseudoBooleanConstraint(confl);
-		slistener.learn(resConstr);
-		results.reason = resConstr;
-		getSearchListener().learn(resConstr);
+        // assertive PB-constraint is build and referenced
+        PBConstr resConstr = (PBConstr) this.dsfactory
+                .createUnregisteredPseudoBooleanConstraint(confl);
+        this.slistener.learn(resConstr);
+        results.reason = resConstr;
+        getSearchListener().learn(resConstr);
 
-		// the conflict give the highest decision level for the backtrack
-		// (which is less than current level)
-		// assert confl.isAssertive(currentLevel);
-		if (decisionLevel() == 0 || trail.size() == 0)
-			results.backtrackLevel = -1;
-		else
-			results.backtrackLevel = confl.getBacktrackLevel(currentLevel);
-	}
+        // the conflict give the highest decision level for the backtrack
+        // (which is less than current level)
+        // assert confl.isAssertive(currentLevel);
+        if (decisionLevel() == 0 || this.trail.size() == 0) {
+            results.backtrackLevel = -1;
+        } else {
+            results.backtrackLevel = confl.getBacktrackLevel(currentLevel);
+        }
+    }
 
-	IConflict chooseConflict(PBConstr myconfl, int level) {
-		return ConflictMap.createConflict(myconfl, level);
-	}
+    IConflict chooseConflict(PBConstr myconfl, int level) {
+        return ConflictMap.createConflict(myconfl, level);
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return prefix + "Cutting planes based inference ("
-				+ this.getClass().getName() + ")\n" + super.toString(prefix);
-	}
+    @Override
+    public String toString(String prefix) {
+        return prefix + "Cutting planes based inference ("
+                + this.getClass().getName() + ")\n" + super.toString(prefix);
+    }
 
-	private final IVec<String> conflictVariables = new Vec<String>();
-	private final IVec<String> conflictConstraints = new Vec<String>();
+    private final IVec<String> conflictVariables = new Vec<String>();
+    private final IVec<String> conflictConstraints = new Vec<String>();
 
-	void initExplanation() {
-		conflictVariables.clear();
-		conflictConstraints.clear();
-	}
+    void initExplanation() {
+        this.conflictVariables.clear();
+        this.conflictConstraints.clear();
+    }
 
-	boolean someCriteria() {
-		return true;
-	}
+    boolean someCriteria() {
+        return true;
+    }
 
-	protected void updateNumberOfReductions(IConflict confl) {
-	}
+    protected void updateNumberOfReductions(IConflict confl) {
+    }
 
-	protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
-	}
+    protected void updateNumberOfReducedLearnedConstraints(IConflict confl) {
+    }
 
 }

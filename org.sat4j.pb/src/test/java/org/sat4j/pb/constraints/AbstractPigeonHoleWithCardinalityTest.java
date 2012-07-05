@@ -40,11 +40,11 @@ import org.sat4j.specs.ISolver;
 /**
  * @author leberre
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class AbstractPigeonHoleWithCardinalityTest<T extends ISolver> extends
-        AbstractAcceptanceTestCase<T> {
+public abstract class AbstractPigeonHoleWithCardinalityTest<T extends ISolver>
+        extends AbstractAcceptanceTestCase<T> {
 
     protected static final String PREFIX = System.getProperty("test.pbprefix");
 

@@ -33,16 +33,16 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.SolverFactory;
 
 public class PBCPMixedConstraintsCautiousTest extends
-		AbstractPseudoBooleanAndPigeonHoleTest {
+        AbstractPseudoBooleanAndPigeonHoleTest {
 
-	public PBCPMixedConstraintsCautiousTest(String arg) {
-		super(arg);
-		// TODO Auto-generated constructor stub
-	}
+    public PBCPMixedConstraintsCautiousTest(String arg) {
+        super(arg);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	protected IPBSolver createSolver() {
-		return SolverFactory.newPBCPMixedConstraintsCautious();
-	}
+    @Override
+    protected IPBSolver createSolver() {
+        return SolverFactory.newPBCPMixedConstraintsCautious();
+    }
 
 }

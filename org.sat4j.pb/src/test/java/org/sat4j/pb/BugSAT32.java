@@ -43,31 +43,31 @@ import org.sat4j.specs.IVecInt;
 
 public class BugSAT32 {
 
-	@Test
-	public void testClassicalCase() throws ContradictionException {
-		IVecInt literals = VecInt.EMPTY;
-		IVec<BigInteger> coefs = new Vec<BigInteger>();
-		ILits voc = new Lits();
-		Pseudos.niceParameters(literals, coefs, true, BigInteger.ZERO, voc);
-		Pseudos.niceParameters(literals, coefs, false, BigInteger.ZERO, voc);
-		Pseudos.niceParameters(literals, coefs, true, BigInteger.ONE.negate(),
-				voc);
-		Pseudos.niceParameters(literals, coefs, false, BigInteger.ONE.negate(),
-				voc);
-	}
+    @Test
+    public void testClassicalCase() throws ContradictionException {
+        IVecInt literals = VecInt.EMPTY;
+        IVec<BigInteger> coefs = new Vec<BigInteger>();
+        ILits voc = new Lits();
+        Pseudos.niceParameters(literals, coefs, true, BigInteger.ZERO, voc);
+        Pseudos.niceParameters(literals, coefs, false, BigInteger.ZERO, voc);
+        Pseudos.niceParameters(literals, coefs, true, BigInteger.ONE.negate(),
+                voc);
+        Pseudos.niceParameters(literals, coefs, false, BigInteger.ONE.negate(),
+                voc);
+    }
 
-	@Test
-	public void testCompetitionCase() throws ContradictionException {
-		int[] literals = {};
-		BigInteger[] coefs = {};
-		Pseudos.niceParametersForCompetition(literals, coefs, true,
-				BigInteger.ZERO);
-		Pseudos.niceParametersForCompetition(literals, coefs, false,
-				BigInteger.ZERO);
-		Pseudos.niceParametersForCompetition(literals, coefs, true,
-				BigInteger.ONE.negate());
-		Pseudos.niceParametersForCompetition(literals, coefs, false,
-				BigInteger.ONE.negate());
-	}
+    @Test
+    public void testCompetitionCase() throws ContradictionException {
+        int[] literals = {};
+        BigInteger[] coefs = {};
+        Pseudos.niceParametersForCompetition(literals, coefs, true,
+                BigInteger.ZERO);
+        Pseudos.niceParametersForCompetition(literals, coefs, false,
+                BigInteger.ZERO);
+        Pseudos.niceParametersForCompetition(literals, coefs, true,
+                BigInteger.ONE.negate());
+        Pseudos.niceParametersForCompetition(literals, coefs, false,
+                BigInteger.ONE.negate());
+    }
 
 }

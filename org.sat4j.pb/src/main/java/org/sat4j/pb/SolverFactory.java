@@ -82,689 +82,689 @@ import org.sat4j.tools.DimacsOutputSolver;
  */
 public class SolverFactory extends ASolverFactory<IPBSolver> {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
-
-	// thread safe implementation of the singleton design pattern
-	private static SolverFactory instance;
-
-	/**
-	 * Private contructor. Use singleton method instance() instead.
-	 * 
-	 * @see #instance()
-	 */
-	private SolverFactory() {
-
-	}
-
-	private static synchronized void createInstance() {
-		if (instance == null) {
-			instance = new SolverFactory();
-		}
-	}
-
-	/**
-	 * Access to the single instance of the factory.
-	 * 
-	 * @return the singleton of that class.
-	 */
-	public static SolverFactory instance() {
-		if (instance == null) {
-			createInstance();
-		}
-		return instance;
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and clause
-	 *         learning.
-	 */
-	public static PBSolverResolution newPBResAllPB() {
-		return newPBRes(new PBMaxDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning.
-	 */
-	public static PBSolverCP newPBCPAllPB() {
-		return newPBCP(new PBMaxDataStructure());
-	}
-
-	/**
-	 * @return Solver used to display in a string the pb-instance in OPB format.
-	 */
-	public static IPBSolver newOPBStringSolver() {
-		return new OPBStringSolver();
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt).
-	 */
-	public static PBSolverCP newPBCPMixedConstraints() {
-		return newPBCP(new PBMaxClauseCardConstrDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A specific heuristics
-	 *         taking into account the objective value is used.
-	 */
-	public static PBSolverCP newPBCPMixedConstraintsObjective() {
-		return newPBCP(new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-	}
-
-	public static PBSolverCP newCompetPBCPMixedConstraintsObjective() {
-		return newPBCP(new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-	}
-
-	public static PBSolverCP newCompetPBCPMixedConstraintsMinObjective() {
-		return newPBCP(new PBMinClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-	}
-
-	public static PBSolverCP newCompetPBCPMixedConstraintsLongMaxObjective() {
-		return newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-	}
-
-	public static PBSolverCP newCompetPBCPMixedConstraintsLongMinObjective() {
-		return newPBCP(new PBLongMinClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-	}
-
-	/**
-	 * @return MiniLearning with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A specific heuristics
-	 *         taking into account the objective value is used. Conflict
-	 *         analysis with full cutting plane inference. Only clauses are
-	 *         recorded.
-	 */
-	public static PBSolverCP newPBCPMixedConstraintsObjectiveLearnJustClauses() {
-		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
-		PBSolverCP solver = new PBSolverCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setSolver(solver);
-		return solver;
-	}
-
-	public static PBSolverCP newCompetPBCPMixedConstraintsObjectiveLearnJustClauses() {
-		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
-		PBSolverCP solver = new PBSolverCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setSolver(solver);
-		return solver;
-	}
-
-	private static PBSolverCP newPBKiller(IPhaseSelectionStrategy phase) {
-		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
-		PBSolverCP solver = new PBSolverCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(phase));
-		learning.setSolver(solver);
-		return solver;
-	}
-
-	public static PBSolverCP newPBKillerRSAT() {
-		return newPBKiller(new RSATPhaseSelectionStrategy());
-	}
-
-	public static PBSolverCP newPBKillerClassic() {
-		return newPBKiller(new PhaseInLastLearnedClauseSelectionStrategy());
-	}
-
-	public static PBSolverCP newPBKillerFixed() {
-		return newPBKiller(new UserFixedPhaseSelectionStrategy());
-	}
-
-	private static PBSolverCP newCompetPBKiller(IPhaseSelectionStrategy phase) {
-		ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
-		PBSolverCP solver = new PBSolverCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(phase));
-		learning.setSolver(solver);
-		return solver;
-	}
-
-	public static PBSolverCP newCompetPBKillerRSAT() {
-		return newCompetPBKiller(new RSATPhaseSelectionStrategy());
-	}
-
-	public static PBSolverCP newCompetPBKillerClassic() {
-		return newCompetPBKiller(new PhaseInLastLearnedClauseSelectionStrategy());
-	}
-
-	public static PBSolverCP newCompetPBKillerFixed() {
-		return newCompetPBKiller(new UserFixedPhaseSelectionStrategy());
-	}
-
-	/**
-	 * @return MiniLearning with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A specific heuristics
-	 *         taking into account the objective value is used. Conflict
-	 *         analysis reduces to clauses to avoid computations
-	 */
-	public static PBSolverCP newMiniLearningOPBClauseCardConstrMaxSpecificOrderIncrementalReductionToClause() {
-		// LimitedLearning learning = new LimitedLearning(10);
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		// LearningStrategy learning = new NoLearningButHeuristics();
-		PBSolverCP solver = new PBSolverClause(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	/**
-	 * @return MiniLearning with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A specific heuristics
-	 *         taking into account the objective value is used. The PB
-	 *         constraints are not learnt (watched), just used for backjumping.
-	 */
-	public static PBSolverCP newPBCPMixedConstraintsObjectiveNoLearning() {
-		NoLearningButHeuristics<PBDataStructureFactory> learning = new NoLearningButHeuristics<PBDataStructureFactory>();
-		// SearchParams params = new SearchParams(1.1,100);
-		PBSolverCP solver = new PBSolverCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective());
-		learning.setSolver(solver);
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newPBResMixedConstraintsObjective() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResWLMixedConstraintsObjectiveExpSimp() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedWLClauseCardConstrDataStructure());
-	}
-
-	public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
-	}
-
-	public static PBSolverResolution newCompetPBResLongHTMixedConstraintsObjectiveExpSimp() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedHTClauseCardConstrDataStructure());
-	}
-
-	public static PBSolverResolution newCompetPBResLongWLMixedConstraintsObjectiveExpSimp() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure());
-	}
-
-	public static PBSolverResolution newCompetMinPBResLongWLMixedConstraintsObjectiveExpSimp() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure());
-	}
-
-	public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp(
-			PBDataStructureFactory dsf) {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(learning, dsf,
-				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
-				new ArminRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	public static PBSolverResolution newPBResHTMixedConstraintsObjective() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		AbstractPBDataStructureFactory ds = new CompetResolutionPBMixedHTClauseCardConstrDataStructure();
-		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
-		PBSolverResolution solver = new PBSolverResolution(learning, ds,
-				new VarOrderHeapObjective(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjective() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(learning,
-				new CompetMinHTmixedClauseCardConstrDataStructureFactory(),
-				new VarOrderHeapObjective(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newPBResMinHTMixedConstraintsObjective() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		AbstractPBDataStructureFactory ds = new CompetMinHTmixedClauseCardConstrDataStructureFactory();
-		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
-		PBSolverResolution solver = new PBSolverResolution(learning, ds,
-				new VarOrderHeapObjective(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newPBResMixedConstraintsObjective();
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	public static PBSolverResolution newPBResHTMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newPBResHTMixedConstraintsObjective();
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjectiveExpSimp() {
-		PBSolverResolution solver = newCompetPBResMinHTMixedConstraintsObjective();
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A reduction of
-	 *         PB-constraints to clauses is made in order to simplify cutting
-	 *         planes.
-	 */
-	public static PBSolverClause newPBCPMixedConstraintsReduceToClause() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverClause solver = new PBSolverClause(learning,
-				new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A reduction of
-	 *         PB-constraints to clauses is made in order to simplify cutting
-	 *         planes (if coefficients are larger than bound).
-	 */
-	public static PBSolverCautious newPBCPMixedConstraintsCautious(int bound) {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverCautious solver = new PBSolverCautious(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(), bound);
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	public static PBSolverCautious newPBCPMixedConstraintsCautious() {
-		return newPBCPMixedConstraintsCautious(PBSolverCautious.BOUND);
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). A reduction of
-	 *         PB-constraints to clauses is made in order to simplify cutting
-	 *         planes (if coefficients are larger than bound).
-	 */
-	public static PBSolverResCP newPBCPMixedConstraintsResCP(long bound) {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResCP solver = new PBSolverResCP(learning,
-				new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(), bound);
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	public static PBSolverResCP newPBCPMixedConstraintsResCP() {
-		return newPBCPMixedConstraintsResCP(PBSolverResCP.MAXCONFLICTS);
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints and
-	 *         constraint learning. Clauses and cardinalities with watched
-	 *         literals are also handled (and learnt). a pre-processing is
-	 *         applied which adds implied clauses from PB-constraints.
-	 */
-	public static PBSolverWithImpliedClause newPBCPMixedConstrainsImplied() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverWithImpliedClause solver = new PBSolverWithImpliedClause(
-				learning, new PBMaxClauseCardConstrDataStructure(),
-				new VarOrderHeap());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	/**
-	 * @return MiniSAT with Counter-based pseudo boolean constraints,
-	 *         counter-based cardinalities, watched clauses and constraint
-	 *         learning. methods isAssertive() and getBacktrackLevel() are
-	 *         totally incremental. Conflicts for PB-constraints use a Map
-	 *         structure
-	 */
-	public static PBSolverCP newMiniOPBClauseAtLeastConstrMax() {
-		return newPBCP(new PBMaxClauseAtLeastConstrDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and clause
-	 *         learning.
-	 */
-	public static PBSolverResolution newPBResAllPBWL() {
-		return newPBRes(new PBMinDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and constraint
-	 *         learning.
-	 */
-	public static PBSolverCP newPBCPAllPBWL() {
-		return newPBCP(new PBMinDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and clause
-	 *         learning.
-	 */
-	public static PBSolverResolution newPBResAllPBWLPueblo() {
-		return newPBRes(new PuebloPBMinDataStructure());
-	}
-
-	private static PBSolverResolution newPBRes(PBDataStructureFactory dsf) {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(learning, dsf,
-				new VarOrderHeap(), new MiniSATRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		return solver;
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and constraint
-	 *         learning.
-	 */
-	public static PBSolverCP newPBCPAllPBWLPueblo() {
-		return newPBCP(new PuebloPBMinDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
-	 *         cardinalities, and constraint learning.
-	 */
-	public static PBSolverCP newMiniOPBClauseCardMinPueblo() {
-		return newPBCP(new PuebloPBMinClauseCardConstrDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
-	 *         cardinalities, and constraint learning.
-	 */
-	public static PBSolverCP newMiniOPBClauseCardMin() {
-		return newPBCP(new PBMinClauseCardConstrDataStructure());
-	}
-
-	/**
-	 * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
-	 *         counter-based cardinalities, and constraint learning.
-	 */
-	public static PBSolverCP newMiniOPBClauseAtLeastMinPueblo() {
-		return newPBCP(new PuebloPBMinClauseAtLeastConstrDataStructure());
-	}
-
-	private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverCP solver = new PBSolverCP(learning, dsf, order);
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		solver.setRestartStrategy(new ArminRestarts());
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
-		return solver;
-	}
-
-	private static PBSolverCP newPBCP(PBDataStructureFactory dsf) {
-		return newPBCP(dsf, new VarOrderHeap());
-	}
-
-	/**
-	 * Cutting Planes based solver. The inference during conflict analysis is
-	 * based on cutting planes instead of resolution as in a SAT solver.
-	 * 
-	 * @return the best available cutting planes based solver of the library.
-	 */
-	public static IPBSolver newCuttingPlanes() {
-		return newCompetPBCPMixedConstraintsObjective();
-	}
-
-	/**
-	 * Cutting Planes based solver. The inference during conflict analysis is
-	 * based on cutting planes instead of resolution as in a SAT solver.
-	 * 
-	 * @return the best available cutting planes based solver of the library.
-	 */
-	public static IPBSolver newCuttingPlanesAggressiveCleanup() {
-		PBSolverCP solver = newCompetPBCPMixedConstraintsObjective();
-		solver.setLearnedConstraintsDeletionStrategy(solver.fixedSize(100));
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static IPBSolver newResolution() {
-		return newResolutionGlucoseExpSimp();
-	}
-
-	/**
-	 * Resolution and CuttingPlanes based solvers running in parallel. Does only
-	 * make sense if run on a computer with several cores.
-	 * 
-	 * @return a parallel solver using both resolution and cutting planes proof
-	 *         system.
-	 */
-	public static IPBSolver newBoth() {
-		return new ManyCorePB(newResolution(), newCuttingPlanes());
-	}
-
-	/**
-	 * Two solvers are running in //: one for solving SAT instances, the other
-	 * one for solving unsat instances.
-	 * 
-	 * @return a parallel solver for both SAT and UNSAT problems.
-	 */
-	public static IPBSolver newSATUNSAT() {
-		return new ManyCorePB(newSAT(), newUNSAT());
-	}
-
-	/**
-	 * That solver is expected to perform better on satisfiable benchmarks.
-	 * 
-	 * @return a solver for satisfiable benchmarks.
-	 */
-	public static PBSolverResolution newSAT() {
-		PBSolverResolution solver = newResolutionGlucose();
-		solver.setRestartStrategy(new LubyRestarts(100));
-		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
-		return solver;
-	}
-
-	/**
-	 * That solver is expected to perform better on unsatisfiable benchmarks.
-	 * 
-	 * @return a solver for unsatisfiable benchmarks.
-	 */
-	public static PBSolverResolution newUNSAT() {
-		return newResolutionGlucose();
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management. The reason simplification is now disabled by default because
-	 * it slows down a lot when long PB or cardinality constraints are used.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static PBSolverResolution newResolutionGlucose() {
-		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-		solver.setSimplifier(Solver.NO_SIMPLIFICATION);
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static PBSolverResolution newResolutionGlucoseSimpleSimp() {
-		PBSolverResolution solver = newResolutionGlucose();
-		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management. It uses the expensive reason simplification. If the problem
-	 * contains long PB or cardinality constraints, it might be slowed down by
-	 * such treatment.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static PBSolverResolution newResolutionGlucoseExpSimp() {
-		PBSolverResolution solver = newResolutionGlucose();
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static IPBSolver newSimpleSimplification() {
-		PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
-		solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism). Uses glucose based memory
-	 * management. Uses a simple restart strategy (original Minisat's one).
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static IPBSolver newResolutionSimpleRestarts() {
-		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-		solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
-		solver.setRestartStrategy(new MiniSATRestarts());
-		return solver;
-	}
-
-	/**
-	 * Resolution based solver (i.e. classic SAT solver able to handle generic
-	 * constraints. No specific inference mechanism).
-	 * 
-	 * Keeps the constraints as long as there is enough memory available.
-	 * 
-	 * @return the best available resolution based solver of the library.
-	 */
-	public static IPBSolver newResolutionMaxMemory() {
-		PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-		solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
-		return solver;
-	}
-
-	/**
-	 * Default solver of the SolverFactory. This solver is meant to be used on
-	 * challenging SAT benchmarks.
-	 * 
-	 * @return the best "general purpose" SAT solver available in the factory.
-	 * @see #defaultSolver() the same method, polymorphic, to be called from an
-	 *      instance of ASolverFactory.
-	 */
-	public static PBSolver newDefault() {
-		return newResolutionGlucose();
-	}
-
-	/**
-	 * Default solver of the SolverFactory for instances not normalized. This
-	 * solver is meant to be used on challenging SAT benchmarks.
-	 * 
-	 * @return the best "general purpose" SAT solver available in the factory.
-	 * @see #defaultSolver() the same method, polymorphic, to be called from an
-	 *      instance of ASolverFactory.
-	 */
-	public static IPBSolver newDefaultNonNormalized() {
-		PBSolver solver = newDefault();
-		AbstractPBDataStructureFactory ds = new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure();
-		ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
-		solver.setDataStructureFactory(ds);
-		return solver;
-	}
-
-	@Override
-	public PBSolver defaultSolver() {
-		return newDefault();
-	}
-
-	/**
-	 * Small footprint SAT solver.
-	 * 
-	 * @return a SAT solver suitable for solving small/easy SAT benchmarks.
-	 * @see #lightSolver() the same method, polymorphic, to be called from an
-	 *      instance of ASolverFactory.
-	 */
-	public static IPBSolver newLight() {
-		return newCompetPBResMixedConstraintsObjectiveExpSimp();
-	}
-
-	@Override
-	public IPBSolver lightSolver() {
-		return newLight();
-	}
-
-	public static ISolver newDimacsOutput() {
-		return new ClausalConstraintsDecorator(new DimacsOutputSolver());
-	}
-
-	public static IPBSolver newEclipseP2() {
-		MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-		PBSolverResolution solver = new PBSolverResolution(learning,
-				new CompetResolutionPBMixedHTClauseCardConstrDataStructure(),
-				new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
-				new ArminRestarts());
-		learning.setDataStructureFactory(solver.getDSFactory());
-		learning.setVarActivityListener(solver);
-		solver.setTimeoutOnConflicts(300);
-		solver.setVerbose(false);
-		return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
-	}
+    private static final long serialVersionUID = 1L;
+
+    // thread safe implementation of the singleton design pattern
+    private static SolverFactory instance;
+
+    /**
+     * Private contructor. Use singleton method instance() instead.
+     * 
+     * @see #instance()
+     */
+    private SolverFactory() {
+
+    }
+
+    private static synchronized void createInstance() {
+        if (instance == null) {
+            instance = new SolverFactory();
+        }
+    }
+
+    /**
+     * Access to the single instance of the factory.
+     * 
+     * @return the singleton of that class.
+     */
+    public static SolverFactory instance() {
+        if (instance == null) {
+            createInstance();
+        }
+        return instance;
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and clause
+     *         learning.
+     */
+    public static PBSolverResolution newPBResAllPB() {
+        return newPBRes(new PBMaxDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning.
+     */
+    public static PBSolverCP newPBCPAllPB() {
+        return newPBCP(new PBMaxDataStructure());
+    }
+
+    /**
+     * @return Solver used to display in a string the pb-instance in OPB format.
+     */
+    public static IPBSolver newOPBStringSolver() {
+        return new OPBStringSolver();
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt).
+     */
+    public static PBSolverCP newPBCPMixedConstraints() {
+        return newPBCP(new PBMaxClauseCardConstrDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A specific heuristics
+     *         taking into account the objective value is used.
+     */
+    public static PBSolverCP newPBCPMixedConstraintsObjective() {
+        return newPBCP(new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+    }
+
+    public static PBSolverCP newCompetPBCPMixedConstraintsObjective() {
+        return newPBCP(new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+    }
+
+    public static PBSolverCP newCompetPBCPMixedConstraintsMinObjective() {
+        return newPBCP(new PBMinClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+    }
+
+    public static PBSolverCP newCompetPBCPMixedConstraintsLongMaxObjective() {
+        return newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+    }
+
+    public static PBSolverCP newCompetPBCPMixedConstraintsLongMinObjective() {
+        return newPBCP(new PBLongMinClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+    }
+
+    /**
+     * @return MiniLearning with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A specific heuristics
+     *         taking into account the objective value is used. Conflict
+     *         analysis with full cutting plane inference. Only clauses are
+     *         recorded.
+     */
+    public static PBSolverCP newPBCPMixedConstraintsObjectiveLearnJustClauses() {
+        ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+        learning.setSolver(solver);
+        return solver;
+    }
+
+    public static PBSolverCP newCompetPBCPMixedConstraintsObjectiveLearnJustClauses() {
+        ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+        learning.setSolver(solver);
+        return solver;
+    }
+
+    private static PBSolverCP newPBKiller(IPhaseSelectionStrategy phase) {
+        ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(phase));
+        learning.setSolver(solver);
+        return solver;
+    }
+
+    public static PBSolverCP newPBKillerRSAT() {
+        return newPBKiller(new RSATPhaseSelectionStrategy());
+    }
+
+    public static PBSolverCP newPBKillerClassic() {
+        return newPBKiller(new PhaseInLastLearnedClauseSelectionStrategy());
+    }
+
+    public static PBSolverCP newPBKillerFixed() {
+        return newPBKiller(new UserFixedPhaseSelectionStrategy());
+    }
+
+    private static PBSolverCP newCompetPBKiller(IPhaseSelectionStrategy phase) {
+        ClauseOnlyLearning<PBDataStructureFactory> learning = new ClauseOnlyLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(phase));
+        learning.setSolver(solver);
+        return solver;
+    }
+
+    public static PBSolverCP newCompetPBKillerRSAT() {
+        return newCompetPBKiller(new RSATPhaseSelectionStrategy());
+    }
+
+    public static PBSolverCP newCompetPBKillerClassic() {
+        return newCompetPBKiller(new PhaseInLastLearnedClauseSelectionStrategy());
+    }
+
+    public static PBSolverCP newCompetPBKillerFixed() {
+        return newCompetPBKiller(new UserFixedPhaseSelectionStrategy());
+    }
+
+    /**
+     * @return MiniLearning with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A specific heuristics
+     *         taking into account the objective value is used. Conflict
+     *         analysis reduces to clauses to avoid computations
+     */
+    public static PBSolverCP newMiniLearningOPBClauseCardConstrMaxSpecificOrderIncrementalReductionToClause() {
+        // LimitedLearning learning = new LimitedLearning(10);
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        // LearningStrategy learning = new NoLearningButHeuristics();
+        PBSolverCP solver = new PBSolverClause(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    /**
+     * @return MiniLearning with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A specific heuristics
+     *         taking into account the objective value is used. The PB
+     *         constraints are not learnt (watched), just used for backjumping.
+     */
+    public static PBSolverCP newPBCPMixedConstraintsObjectiveNoLearning() {
+        NoLearningButHeuristics<PBDataStructureFactory> learning = new NoLearningButHeuristics<PBDataStructureFactory>();
+        // SearchParams params = new SearchParams(1.1,100);
+        PBSolverCP solver = new PBSolverCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective());
+        learning.setSolver(solver);
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverResolution newPBResMixedConstraintsObjective() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResolution solver = new PBSolverResolution(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), new MiniSATRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverResolution newCompetPBResWLMixedConstraintsObjectiveExpSimp() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedWLClauseCardConstrDataStructure());
+    }
+
+    public static PBSolverResolution newCompetPBResHTMixedConstraintsObjectiveExpSimp() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBMixedHTClauseCardConstrDataStructure());
+    }
+
+    public static PBSolverResolution newCompetPBResLongHTMixedConstraintsObjectiveExpSimp() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedHTClauseCardConstrDataStructure());
+    }
+
+    public static PBSolverResolution newCompetPBResLongWLMixedConstraintsObjectiveExpSimp() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure());
+    }
+
+    public static PBSolverResolution newCompetMinPBResLongWLMixedConstraintsObjectiveExpSimp() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp(new CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure());
+    }
+
+    public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp(
+            PBDataStructureFactory dsf) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResolution solver = new PBSolverResolution(learning, dsf,
+                new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
+                new ArminRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static PBSolverResolution newPBResHTMixedConstraintsObjective() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        AbstractPBDataStructureFactory ds = new CompetResolutionPBMixedHTClauseCardConstrDataStructure();
+        ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+        PBSolverResolution solver = new PBSolverResolution(learning, ds,
+                new VarOrderHeapObjective(), new MiniSATRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjective() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResolution solver = new PBSolverResolution(learning,
+                new CompetMinHTmixedClauseCardConstrDataStructureFactory(),
+                new VarOrderHeapObjective(), new MiniSATRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverResolution newPBResMinHTMixedConstraintsObjective() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        AbstractPBDataStructureFactory ds = new CompetMinHTmixedClauseCardConstrDataStructureFactory();
+        ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+        PBSolverResolution solver = new PBSolverResolution(learning, ds,
+                new VarOrderHeapObjective(), new MiniSATRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverResolution newCompetPBResMixedConstraintsObjectiveExpSimp() {
+        PBSolverResolution solver = newPBResMixedConstraintsObjective();
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static PBSolverResolution newPBResHTMixedConstraintsObjectiveExpSimp() {
+        PBSolverResolution solver = newPBResHTMixedConstraintsObjective();
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static PBSolverResolution newCompetPBResMinHTMixedConstraintsObjectiveExpSimp() {
+        PBSolverResolution solver = newCompetPBResMinHTMixedConstraintsObjective();
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A reduction of
+     *         PB-constraints to clauses is made in order to simplify cutting
+     *         planes.
+     */
+    public static PBSolverClause newPBCPMixedConstraintsReduceToClause() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverClause solver = new PBSolverClause(learning,
+                new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A reduction of
+     *         PB-constraints to clauses is made in order to simplify cutting
+     *         planes (if coefficients are larger than bound).
+     */
+    public static PBSolverCautious newPBCPMixedConstraintsCautious(int bound) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverCautious solver = new PBSolverCautious(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), bound);
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    public static PBSolverCautious newPBCPMixedConstraintsCautious() {
+        return newPBCPMixedConstraintsCautious(PBSolverCautious.BOUND);
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A reduction of
+     *         PB-constraints to clauses is made in order to simplify cutting
+     *         planes (if coefficients are larger than bound).
+     */
+    public static PBSolverResCP newPBCPMixedConstraintsResCP(long bound) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResCP solver = new PBSolverResCP(learning,
+                new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), bound);
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static PBSolverResCP newPBCPMixedConstraintsResCP() {
+        return newPBCPMixedConstraintsResCP(PBSolverResCP.MAXCONFLICTS);
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). a pre-processing is
+     *         applied which adds implied clauses from PB-constraints.
+     */
+    public static PBSolverWithImpliedClause newPBCPMixedConstrainsImplied() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverWithImpliedClause solver = new PBSolverWithImpliedClause(
+                learning, new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeap());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints,
+     *         counter-based cardinalities, watched clauses and constraint
+     *         learning. methods isAssertive() and getBacktrackLevel() are
+     *         totally incremental. Conflicts for PB-constraints use a Map
+     *         structure
+     */
+    public static PBSolverCP newMiniOPBClauseAtLeastConstrMax() {
+        return newPBCP(new PBMaxClauseAtLeastConstrDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and clause
+     *         learning.
+     */
+    public static PBSolverResolution newPBResAllPBWL() {
+        return newPBRes(new PBMinDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and constraint
+     *         learning.
+     */
+    public static PBSolverCP newPBCPAllPBWL() {
+        return newPBCP(new PBMinDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and clause
+     *         learning.
+     */
+    public static PBSolverResolution newPBResAllPBWLPueblo() {
+        return newPBRes(new PuebloPBMinDataStructure());
+    }
+
+    private static PBSolverResolution newPBRes(PBDataStructureFactory dsf) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResolution solver = new PBSolverResolution(learning, dsf,
+                new VarOrderHeap(), new MiniSATRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        return solver;
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and constraint
+     *         learning.
+     */
+    public static PBSolverCP newPBCPAllPBWLPueblo() {
+        return newPBCP(new PuebloPBMinDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
+     *         cardinalities, and constraint learning.
+     */
+    public static PBSolverCP newMiniOPBClauseCardMinPueblo() {
+        return newPBCP(new PuebloPBMinClauseCardConstrDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
+     *         cardinalities, and constraint learning.
+     */
+    public static PBSolverCP newMiniOPBClauseCardMin() {
+        return newPBCP(new PBMinClauseCardConstrDataStructure());
+    }
+
+    /**
+     * @return MiniSAT with WL-based pseudo boolean constraints and clauses,
+     *         counter-based cardinalities, and constraint learning.
+     */
+    public static PBSolverCP newMiniOPBClauseAtLeastMinPueblo() {
+        return newPBCP(new PuebloPBMinClauseAtLeastConstrDataStructure());
+    }
+
+    private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCP(learning, dsf, order);
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setRestartStrategy(new ArminRestarts());
+        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        return solver;
+    }
+
+    private static PBSolverCP newPBCP(PBDataStructureFactory dsf) {
+        return newPBCP(dsf, new VarOrderHeap());
+    }
+
+    /**
+     * Cutting Planes based solver. The inference during conflict analysis is
+     * based on cutting planes instead of resolution as in a SAT solver.
+     * 
+     * @return the best available cutting planes based solver of the library.
+     */
+    public static IPBSolver newCuttingPlanes() {
+        return newCompetPBCPMixedConstraintsObjective();
+    }
+
+    /**
+     * Cutting Planes based solver. The inference during conflict analysis is
+     * based on cutting planes instead of resolution as in a SAT solver.
+     * 
+     * @return the best available cutting planes based solver of the library.
+     */
+    public static IPBSolver newCuttingPlanesAggressiveCleanup() {
+        PBSolverCP solver = newCompetPBCPMixedConstraintsObjective();
+        solver.setLearnedConstraintsDeletionStrategy(solver.fixedSize(100));
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static IPBSolver newResolution() {
+        return newResolutionGlucoseExpSimp();
+    }
+
+    /**
+     * Resolution and CuttingPlanes based solvers running in parallel. Does only
+     * make sense if run on a computer with several cores.
+     * 
+     * @return a parallel solver using both resolution and cutting planes proof
+     *         system.
+     */
+    public static IPBSolver newBoth() {
+        return new ManyCorePB(newResolution(), newCuttingPlanes());
+    }
+
+    /**
+     * Two solvers are running in //: one for solving SAT instances, the other
+     * one for solving unsat instances.
+     * 
+     * @return a parallel solver for both SAT and UNSAT problems.
+     */
+    public static IPBSolver newSATUNSAT() {
+        return new ManyCorePB(newSAT(), newUNSAT());
+    }
+
+    /**
+     * That solver is expected to perform better on satisfiable benchmarks.
+     * 
+     * @return a solver for satisfiable benchmarks.
+     */
+    public static PBSolverResolution newSAT() {
+        PBSolverResolution solver = newResolutionGlucose();
+        solver.setRestartStrategy(new LubyRestarts(100));
+        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        return solver;
+    }
+
+    /**
+     * That solver is expected to perform better on unsatisfiable benchmarks.
+     * 
+     * @return a solver for unsatisfiable benchmarks.
+     */
+    public static PBSolverResolution newUNSAT() {
+        return newResolutionGlucose();
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism). Uses glucose based memory
+     * management. The reason simplification is now disabled by default because
+     * it slows down a lot when long PB or cardinality constraints are used.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static PBSolverResolution newResolutionGlucose() {
+        PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
+        solver.setSimplifier(Solver.NO_SIMPLIFICATION);
+        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism). Uses glucose based memory
+     * management.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static PBSolverResolution newResolutionGlucoseSimpleSimp() {
+        PBSolverResolution solver = newResolutionGlucose();
+        solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism). Uses glucose based memory
+     * management. It uses the expensive reason simplification. If the problem
+     * contains long PB or cardinality constraints, it might be slowed down by
+     * such treatment.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static PBSolverResolution newResolutionGlucoseExpSimp() {
+        PBSolverResolution solver = newResolutionGlucose();
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism). Uses glucose based memory
+     * management.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static IPBSolver newSimpleSimplification() {
+        PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
+        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism). Uses glucose based memory
+     * management. Uses a simple restart strategy (original Minisat's one).
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static IPBSolver newResolutionSimpleRestarts() {
+        PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
+        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setRestartStrategy(new MiniSATRestarts());
+        return solver;
+    }
+
+    /**
+     * Resolution based solver (i.e. classic SAT solver able to handle generic
+     * constraints. No specific inference mechanism).
+     * 
+     * Keeps the constraints as long as there is enough memory available.
+     * 
+     * @return the best available resolution based solver of the library.
+     */
+    public static IPBSolver newResolutionMaxMemory() {
+        PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
+        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        return solver;
+    }
+
+    /**
+     * Default solver of the SolverFactory. This solver is meant to be used on
+     * challenging SAT benchmarks.
+     * 
+     * @return the best "general purpose" SAT solver available in the factory.
+     * @see #defaultSolver() the same method, polymorphic, to be called from an
+     *      instance of ASolverFactory.
+     */
+    public static PBSolver newDefault() {
+        return newResolutionGlucose();
+    }
+
+    /**
+     * Default solver of the SolverFactory for instances not normalized. This
+     * solver is meant to be used on challenging SAT benchmarks.
+     * 
+     * @return the best "general purpose" SAT solver available in the factory.
+     * @see #defaultSolver() the same method, polymorphic, to be called from an
+     *      instance of ASolverFactory.
+     */
+    public static IPBSolver newDefaultNonNormalized() {
+        PBSolver solver = newDefault();
+        AbstractPBDataStructureFactory ds = new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure();
+        ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
+        solver.setDataStructureFactory(ds);
+        return solver;
+    }
+
+    @Override
+    public PBSolver defaultSolver() {
+        return newDefault();
+    }
+
+    /**
+     * Small footprint SAT solver.
+     * 
+     * @return a SAT solver suitable for solving small/easy SAT benchmarks.
+     * @see #lightSolver() the same method, polymorphic, to be called from an
+     *      instance of ASolverFactory.
+     */
+    public static IPBSolver newLight() {
+        return newCompetPBResMixedConstraintsObjectiveExpSimp();
+    }
+
+    @Override
+    public IPBSolver lightSolver() {
+        return newLight();
+    }
+
+    public static ISolver newDimacsOutput() {
+        return new ClausalConstraintsDecorator(new DimacsOutputSolver());
+    }
+
+    public static IPBSolver newEclipseP2() {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverResolution solver = new PBSolverResolution(learning,
+                new CompetResolutionPBMixedHTClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(new RSATPhaseSelectionStrategy()),
+                new ArminRestarts());
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setTimeoutOnConflicts(300);
+        solver.setVerbose(false);
+        return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
+    }
 
 }
