@@ -43,107 +43,108 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
  */
 public class TabuListDecorator implements IOrder {
 
-	private final VarOrderHeap decorated;
+    private final VarOrderHeap decorated;
 
-	private final int tabuSize;
+    private final int tabuSize;
 
-	private ILits voc;
-	private int lastVar = -1;
+    private ILits voc;
+    private int lastVar = -1;
 
-	private final LinkedList<Integer> tabuList = new LinkedList<Integer>();
+    private final LinkedList<Integer> tabuList = new LinkedList<Integer>();
 
-	public TabuListDecorator(VarOrderHeap order) {
-		this(order, 10);
-	}
+    public TabuListDecorator(VarOrderHeap order) {
+        this(order, 10);
+    }
 
-	public TabuListDecorator(VarOrderHeap order, int tabuSize) {
-		decorated = order;
-		this.tabuSize = tabuSize;
-	}
+    public TabuListDecorator(VarOrderHeap order, int tabuSize) {
+        this.decorated = order;
+        this.tabuSize = tabuSize;
+    }
 
-	public void assignLiteral(int q) {
-		decorated.assignLiteral(q);
-	}
+    public void assignLiteral(int q) {
+        this.decorated.assignLiteral(q);
+    }
 
-	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
-		return decorated.getPhaseSelectionStrategy();
-	}
+    public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
+        return this.decorated.getPhaseSelectionStrategy();
+    }
 
-	public void init() {
-		decorated.init();
-		lastVar = -1;
-	}
+    public void init() {
+        this.decorated.init();
+        this.lastVar = -1;
+    }
 
-	public void printStat(PrintWriter out, String prefix) {
-		out.println(prefix + "tabu list size\t: " + tabuSize);
-		decorated.printStat(out, prefix);
-	}
+    public void printStat(PrintWriter out, String prefix) {
+        out.println(prefix + "tabu list size\t: " + this.tabuSize);
+        this.decorated.printStat(out, prefix);
+    }
 
-	public int select() {
-		int lit = decorated.select();
-		if (lit == ILits.UNDEFINED) {
-			int var;
-			do {
-				if (tabuList.isEmpty()) {
-					return ILits.UNDEFINED;
-				}
-				var = tabuList.removeFirst();
-			} while (!voc.isUnassigned(var << 1));
-			return getPhaseSelectionStrategy().select(var);
-		}
-		lastVar = lit >> 1;
-		return lit;
-	}
+    public int select() {
+        int lit = this.decorated.select();
+        if (lit == ILits.UNDEFINED) {
+            int var;
+            do {
+                if (this.tabuList.isEmpty()) {
+                    return ILits.UNDEFINED;
+                }
+                var = this.tabuList.removeFirst();
+            } while (!this.voc.isUnassigned(var << 1));
+            return getPhaseSelectionStrategy().select(var);
+        }
+        this.lastVar = lit >> 1;
+        return lit;
+    }
 
-	public void setLits(ILits lits) {
-		decorated.setLits(lits);
-		voc = lits;
-	}
+    public void setLits(ILits lits) {
+        this.decorated.setLits(lits);
+        this.voc = lits;
+    }
 
-	public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy) {
-		decorated.setPhaseSelectionStrategy(strategy);
-	}
+    public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy) {
+        this.decorated.setPhaseSelectionStrategy(strategy);
+    }
 
-	public void setVarDecay(double d) {
-		decorated.setVarDecay(d);
-	}
+    public void setVarDecay(double d) {
+        this.decorated.setVarDecay(d);
+    }
 
-	public void undo(int x) {
-		if (tabuList.size() == tabuSize) {
-			int var = tabuList.removeFirst();
-			decorated.undo(var);
-		}
-		if (x == lastVar) {
-			tabuList.add(x);
-			lastVar = -1;
-		} else {
-			decorated.undo(x);
-		}
-	}
+    public void undo(int x) {
+        if (this.tabuList.size() == this.tabuSize) {
+            int var = this.tabuList.removeFirst();
+            this.decorated.undo(var);
+        }
+        if (x == this.lastVar) {
+            this.tabuList.add(x);
+            this.lastVar = -1;
+        } else {
+            this.decorated.undo(x);
+        }
+    }
 
-	public void updateVar(int q) {
-		decorated.updateVar(q);
-	}
+    public void updateVar(int q) {
+        this.decorated.updateVar(q);
+    }
 
-	public double varActivity(int q) {
-		return decorated.varActivity(q);
-	}
+    public double varActivity(int q) {
+        return this.decorated.varActivity(q);
+    }
 
-	public void varDecayActivity() {
-		decorated.varDecayActivity();
-	}
+    public void varDecayActivity() {
+        this.decorated.varDecayActivity();
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-		decorated.updateVarAtDecisionLevel(q);
-	}
+    public void updateVarAtDecisionLevel(int q) {
+        this.decorated.updateVarAtDecisionLevel(q);
+    }
 
-	@Override
-	public String toString() {
-		return decorated.toString() + " with tabu list of size " + tabuSize;
-	}
+    @Override
+    public String toString() {
+        return this.decorated.toString() + " with tabu list of size "
+                + this.tabuSize;
+    }
 
-	public double[] getVariableHeuristics() {
-		return decorated.getVariableHeuristics();
-	}
+    public double[] getVariableHeuristics() {
+        return this.decorated.getVariableHeuristics();
+    }
 
 }

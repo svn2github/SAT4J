@@ -46,238 +46,241 @@ import org.sat4j.specs.IVec;
  */
 public final class Lits implements Serializable, ILits {
 
-	private static final int DEFAULT_INIT_SIZE = 128;
+    private static final int DEFAULT_INIT_SIZE = 128;
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private boolean pool[] = new boolean[1];
+    private boolean pool[] = new boolean[1];
 
-	private int realnVars = 0;
+    private int realnVars = 0;
 
-	@SuppressWarnings("unchecked")
-	private IVec<Propagatable>[] watches = new IVec[0];
+    @SuppressWarnings("unchecked")
+    private IVec<Propagatable>[] watches = new IVec[0];
 
-	private int[] level = new int[0];
+    private int[] level = new int[0];
 
-	private Constr[] reason = new Constr[0];
+    private Constr[] reason = new Constr[0];
 
-	private int maxvarid = 0;
+    private int maxvarid = 0;
 
-	@SuppressWarnings("unchecked")
-	private IVec<Undoable>[] undos = new IVec[0];
+    @SuppressWarnings("unchecked")
+    private IVec<Undoable>[] undos = new IVec[0];
 
-	private boolean[] falsified = new boolean[0];
+    private boolean[] falsified = new boolean[0];
 
-	public Lits() {
-		init(DEFAULT_INIT_SIZE);
-	}
+    public Lits() {
+        init(DEFAULT_INIT_SIZE);
+    }
 
-	@SuppressWarnings({ "unchecked" })
-	public final void init(int nvar) {
-		if (nvar < pool.length) {
-			return;
-		}
-		assert nvar >= 0;
-		// let some space for unused 0 indexer.
-		int nvars = nvar + 1;
-		boolean[] npool = new boolean[nvars];
-		System.arraycopy(pool, 0, npool, 0, pool.length);
-		pool = npool;
+    @SuppressWarnings({ "unchecked" })
+    public final void init(int nvar) {
+        if (nvar < this.pool.length) {
+            return;
+        }
+        assert nvar >= 0;
+        // let some space for unused 0 indexer.
+        int nvars = nvar + 1;
+        boolean[] npool = new boolean[nvars];
+        System.arraycopy(this.pool, 0, npool, 0, this.pool.length);
+        this.pool = npool;
 
-		int[] nlevel = new int[nvars];
-		System.arraycopy(level, 0, nlevel, 0, level.length);
-		level = nlevel;
+        int[] nlevel = new int[nvars];
+        System.arraycopy(this.level, 0, nlevel, 0, this.level.length);
+        this.level = nlevel;
 
-		IVec<Propagatable>[] nwatches = new IVec[2 * nvars];
-		System.arraycopy(watches, 0, nwatches, 0, watches.length);
-		watches = nwatches;
+        IVec<Propagatable>[] nwatches = new IVec[2 * nvars];
+        System.arraycopy(this.watches, 0, nwatches, 0, this.watches.length);
+        this.watches = nwatches;
 
-		IVec<Undoable>[] nundos = new IVec[nvars];
-		System.arraycopy(undos, 0, nundos, 0, undos.length);
-		undos = nundos;
+        IVec<Undoable>[] nundos = new IVec[nvars];
+        System.arraycopy(this.undos, 0, nundos, 0, this.undos.length);
+        this.undos = nundos;
 
-		Constr[] nreason = new Constr[nvars];
-		System.arraycopy(reason, 0, nreason, 0, reason.length);
-		reason = nreason;
+        Constr[] nreason = new Constr[nvars];
+        System.arraycopy(this.reason, 0, nreason, 0, this.reason.length);
+        this.reason = nreason;
 
-		boolean[] newFalsified = new boolean[2 * nvars];
-		System.arraycopy(falsified, 0, newFalsified, 0, falsified.length);
-		falsified = newFalsified;
-	}
+        boolean[] newFalsified = new boolean[2 * nvars];
+        System.arraycopy(this.falsified, 0, newFalsified, 0,
+                this.falsified.length);
+        this.falsified = newFalsified;
+    }
 
-	public int getFromPool(int x) {
-		int var = Math.abs(x);
-		if (var >= pool.length) {
-			init(Math.max(var, pool.length << 1));
-		}
-		assert var < pool.length;
-		if (var > maxvarid) {
-			maxvarid = var;
-		}
-		int lit = LiteralsUtils.toInternal(x);
-		assert lit > 1;
-		if (!pool[var]) {
-			realnVars++;
-			pool[var] = true;
-			watches[var << 1] = new Vec<Propagatable>();
-			watches[(var << 1) | 1] = new Vec<Propagatable>();
-			undos[var] = new Vec<Undoable>();
-			level[var] = -1;
-			falsified[var << 1] = false; // because truthValue[var] is
-			// UNDEFINED
-			falsified[var << 1 | 1] = false; // because truthValue[var] is
-			// UNDEFINED
-		}
-		return lit;
-	}
+    public int getFromPool(int x) {
+        int var = Math.abs(x);
+        if (var >= this.pool.length) {
+            init(Math.max(var, this.pool.length << 1));
+        }
+        assert var < this.pool.length;
+        if (var > this.maxvarid) {
+            this.maxvarid = var;
+        }
+        int lit = LiteralsUtils.toInternal(x);
+        assert lit > 1;
+        if (!this.pool[var]) {
+            this.realnVars++;
+            this.pool[var] = true;
+            this.watches[var << 1] = new Vec<Propagatable>();
+            this.watches[var << 1 | 1] = new Vec<Propagatable>();
+            this.undos[var] = new Vec<Undoable>();
+            this.level[var] = -1;
+            this.falsified[var << 1] = false; // because truthValue[var] is
+            // UNDEFINED
+            this.falsified[var << 1 | 1] = false; // because truthValue[var] is
+            // UNDEFINED
+        }
+        return lit;
+    }
 
-	public boolean belongsToPool(int x) {
-		assert x > 0;
-		if (x >= pool.length) {
-			return false;
-		}
-		return pool[x];
-	}
+    public boolean belongsToPool(int x) {
+        assert x > 0;
+        if (x >= this.pool.length) {
+            return false;
+        }
+        return this.pool[x];
+    }
 
-	public void resetPool() {
-		for (int i = 0; i < pool.length; i++) {
-			if (pool[i]) {
-				reset(i << 1);
-			}
-		}
-		maxvarid = 0;
-		realnVars = 0;
-	}
+    public void resetPool() {
+        for (int i = 0; i < this.pool.length; i++) {
+            if (this.pool[i]) {
+                reset(i << 1);
+            }
+        }
+        this.maxvarid = 0;
+        this.realnVars = 0;
+    }
 
-	public void ensurePool(int howmany) {
-		if (howmany >= pool.length) {
-			init(Math.max(howmany, pool.length << 1));
-		}
-		maxvarid = howmany;
-	}
+    public void ensurePool(int howmany) {
+        if (howmany >= this.pool.length) {
+            init(Math.max(howmany, this.pool.length << 1));
+        }
+        this.maxvarid = howmany;
+    }
 
-	public void unassign(int lit) {
-		assert falsified[lit] || falsified[lit ^ 1];
-		falsified[lit] = false;
-		falsified[lit ^ 1] = false;
-	}
+    public void unassign(int lit) {
+        assert this.falsified[lit] || this.falsified[lit ^ 1];
+        this.falsified[lit] = false;
+        this.falsified[lit ^ 1] = false;
+    }
 
-	public void satisfies(int lit) {
-		assert !falsified[lit] && !falsified[lit ^ 1];
-		falsified[lit] = false;
-		falsified[lit ^ 1] = true;
-	}
+    public void satisfies(int lit) {
+        assert !this.falsified[lit] && !this.falsified[lit ^ 1];
+        this.falsified[lit] = false;
+        this.falsified[lit ^ 1] = true;
+    }
 
-	public void forgets(int var) {
-		falsified[var << 1] = true;
-		falsified[(var << 1) ^ 1] = true;
-	}
+    public void forgets(int var) {
+        this.falsified[var << 1] = true;
+        this.falsified[var << 1 ^ 1] = true;
+    }
 
-	public boolean isSatisfied(int lit) {
-		return falsified[lit ^ 1];
-	}
+    public boolean isSatisfied(int lit) {
+        return this.falsified[lit ^ 1];
+    }
 
-	public final boolean isFalsified(int lit) {
-		return falsified[lit];
-	}
+    public final boolean isFalsified(int lit) {
+        return this.falsified[lit];
+    }
 
-	public boolean isUnassigned(int lit) {
-		return !falsified[lit] && !falsified[lit ^ 1];
-	}
+    public boolean isUnassigned(int lit) {
+        return !this.falsified[lit] && !this.falsified[lit ^ 1];
+    }
 
-	public String valueToString(int lit) {
-		if (isUnassigned(lit)) {
-			return "?"; //$NON-NLS-1$
-		}
-		if (isSatisfied(lit)) {
-			return "T"; //$NON-NLS-1$
-		}
-		return "F"; //$NON-NLS-1$
-	}
+    public String valueToString(int lit) {
+        if (isUnassigned(lit)) {
+            return "?"; //$NON-NLS-1$
+        }
+        if (isSatisfied(lit)) {
+            return "T"; //$NON-NLS-1$
+        }
+        return "F"; //$NON-NLS-1$
+    }
 
-	public int nVars() {
-		// return pool.length - 1;
-		return maxvarid;
-	}
+    public int nVars() {
+        // return pool.length - 1;
+        return this.maxvarid;
+    }
 
-	public int not(int lit) {
-		return lit ^ 1;
-	}
+    public int not(int lit) {
+        return lit ^ 1;
+    }
 
-	public static String toString(int lit) {
-		return ((lit & 1) == 0 ? "" : "-") + (lit >> 1); //$NON-NLS-1$//$NON-NLS-2$
-	}
+    public static String toString(int lit) {
+        return ((lit & 1) == 0 ? "" : "-") + (lit >> 1); //$NON-NLS-1$//$NON-NLS-2$
+    }
 
-	public void reset(int lit) {
-		watches[lit].clear();
-		watches[lit ^ 1].clear();
-		level[lit >> 1] = -1;
-		reason[lit >> 1] = null;
-		undos[lit >> 1].clear();
-		falsified[lit] = false;
-		falsified[lit ^ 1] = false;
-		pool[lit >> 1] = false;
-	}
+    public void reset(int lit) {
+        this.watches[lit].clear();
+        this.watches[lit ^ 1].clear();
+        this.level[lit >> 1] = -1;
+        this.reason[lit >> 1] = null;
+        this.undos[lit >> 1].clear();
+        this.falsified[lit] = false;
+        this.falsified[lit ^ 1] = false;
+        this.pool[lit >> 1] = false;
+    }
 
-	public int getLevel(int lit) {
-		return level[lit >> 1];
-	}
+    public int getLevel(int lit) {
+        return this.level[lit >> 1];
+    }
 
-	public void setLevel(int lit, int l) {
-		level[lit >> 1] = l;
-	}
+    public void setLevel(int lit, int l) {
+        this.level[lit >> 1] = l;
+    }
 
-	public Constr getReason(int lit) {
-		return reason[lit >> 1];
-	}
+    public Constr getReason(int lit) {
+        return this.reason[lit >> 1];
+    }
 
-	public void setReason(int lit, Constr r) {
-		reason[lit >> 1] = r;
-	}
+    public void setReason(int lit, Constr r) {
+        this.reason[lit >> 1] = r;
+    }
 
-	public IVec<Undoable> undos(int lit) {
-		return undos[lit >> 1];
-	}
+    public IVec<Undoable> undos(int lit) {
+        return this.undos[lit >> 1];
+    }
 
-	public void watch(int lit, Propagatable c) {
-		watches[lit].push(c);
-	}
+    public void watch(int lit, Propagatable c) {
+        this.watches[lit].push(c);
+    }
 
-	public IVec<Propagatable> watches(int lit) {
-		return watches[lit];
-	}
+    public IVec<Propagatable> watches(int lit) {
+        return this.watches[lit];
+    }
 
-	public boolean isImplied(int lit) {
-		int var = lit >> 1;
-		assert reason[var] == null || falsified[lit] || falsified[lit ^ 1];
-		// a literal is implied if it is a unit clause, ie
-		// propagated without reason at decision level 0.
-		return pool[var] && (reason[var] != null || level[var] == 0);
-	}
+    public boolean isImplied(int lit) {
+        int var = lit >> 1;
+        assert this.reason[var] == null || this.falsified[lit]
+                || this.falsified[lit ^ 1];
+        // a literal is implied if it is a unit clause, ie
+        // propagated without reason at decision level 0.
+        return this.pool[var]
+                && (this.reason[var] != null || this.level[var] == 0);
+    }
 
-	public int realnVars() {
-		return realnVars;
-	}
+    public int realnVars() {
+        return this.realnVars;
+    }
 
-	/**
-	 * To get the capacity of the current vocabulary.
-	 * 
-	 * @return the total number of variables that can be managed by the
-	 *         vocabulary.
-	 */
-	protected int capacity() {
-		return pool.length - 1;
-	}
+    /**
+     * To get the capacity of the current vocabulary.
+     * 
+     * @return the total number of variables that can be managed by the
+     *         vocabulary.
+     */
+    protected int capacity() {
+        return this.pool.length - 1;
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public int nextFreeVarId(boolean reserve) {
-		if (reserve) {
-			ensurePool(maxvarid + 1);
-			// ensure pool changes maxvarid
-			return maxvarid;
-		}
-		return maxvarid + 1;
-	}
+    /**
+     * @since 2.1
+     */
+    public int nextFreeVarId(boolean reserve) {
+        if (reserve) {
+            ensurePool(this.maxvarid + 1);
+            // ensure pool changes maxvarid
+            return this.maxvarid;
+        }
+        return this.maxvarid + 1;
+    }
 }

@@ -51,129 +51,129 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 public class TestSatAssumps {
-	@Test
-	public void testIterativeAssumptionCallsWithSet()
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException, TimeoutException {
-		ISolver satSolver = SolverFactory.newDefault();
-		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+    @Test
+    public void testIterativeAssumptionCallsWithSet()
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException, TimeoutException {
+        ISolver satSolver = SolverFactory.newDefault();
+        Reader reader = new LecteurDimacs(satSolver);
+        IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-		List<Integer> vars = new ArrayList<Integer>();
-		for (int i = 1; i <= p.nVars(); i++) {
-			vars.add(-i);
-			vars.add(i);
-		}
+        List<Integer> vars = new ArrayList<Integer>();
+        for (int i = 1; i <= p.nVars(); i++) {
+            vars.add(-i);
+            vars.add(i);
+        }
 
-		Set<Integer> sol = new HashSet<Integer>();
+        Set<Integer> sol = new HashSet<Integer>();
 
-		for (int i = 0; i < vars.size(); i++) {
-			ISolver satSolverOracle = SolverFactory.newDefault();
-			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+        for (int i = 0; i < vars.size(); i++) {
+            ISolver satSolverOracle = SolverFactory.newDefault();
+            Reader readerOracle = new LecteurDimacs(satSolverOracle);
+            readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-			int varnr = vars.get(i);
+            int varnr = vars.get(i);
 
-			int assumpsArray[] = new int[sol.size() + 1];
-			int c = 0;
-			for (int a : sol) {
-				assumpsArray[c] = a;
-				c++;
-			}
-			assumpsArray[assumpsArray.length - 1] = varnr;
-			IVecInt assumps = new VecInt(assumpsArray);
-			// Check
-			if (satSolver.isSatisfiable(assumps)) {
-				sol.add(varnr);
-			}
+            int assumpsArray[] = new int[sol.size() + 1];
+            int c = 0;
+            for (int a : sol) {
+                assumpsArray[c] = a;
+                c++;
+            }
+            assumpsArray[assumpsArray.length - 1] = varnr;
+            IVecInt assumps = new VecInt(assumpsArray);
+            // Check
+            if (satSolver.isSatisfiable(assumps)) {
+                sol.add(varnr);
+            }
 
-			assertEquals(satSolverOracle.isSatisfiable(assumps),
-					satSolver.isSatisfiable(assumps));
-		}
-	}
+            assertEquals(satSolverOracle.isSatisfiable(assumps),
+                    satSolver.isSatisfiable(assumps));
+        }
+    }
 
-	@Test
-	public void testIterativeAssumptionCallsWithList()
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException, TimeoutException {
-		ISolver satSolver = SolverFactory.newDefault();
-		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+    @Test
+    public void testIterativeAssumptionCallsWithList()
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException, TimeoutException {
+        ISolver satSolver = SolverFactory.newDefault();
+        Reader reader = new LecteurDimacs(satSolver);
+        IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-		List<Integer> vars = new ArrayList<Integer>();
-		for (int i = 1; i <= p.nVars(); i++) {
-			vars.add(-i);
-			vars.add(i);
-		}
+        List<Integer> vars = new ArrayList<Integer>();
+        for (int i = 1; i <= p.nVars(); i++) {
+            vars.add(-i);
+            vars.add(i);
+        }
 
-		List<Integer> sol = new ArrayList<Integer>();
+        List<Integer> sol = new ArrayList<Integer>();
 
-		for (int i = 0; i < vars.size(); i++) {
-			ISolver satSolverOracle = SolverFactory.newDefault();
-			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+        for (int i = 0; i < vars.size(); i++) {
+            ISolver satSolverOracle = SolverFactory.newDefault();
+            Reader readerOracle = new LecteurDimacs(satSolverOracle);
+            readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-			int varnr = vars.get(i);
+            int varnr = vars.get(i);
 
-			int assumpsArray[] = new int[sol.size() + 1];
-			int c = 0;
-			for (int a : sol) {
-				assumpsArray[c] = a;
-				c++;
-			}
-			assumpsArray[assumpsArray.length - 1] = varnr;
-			IVecInt assumps = new VecInt(assumpsArray);
+            int assumpsArray[] = new int[sol.size() + 1];
+            int c = 0;
+            for (int a : sol) {
+                assumpsArray[c] = a;
+                c++;
+            }
+            assumpsArray[assumpsArray.length - 1] = varnr;
+            IVecInt assumps = new VecInt(assumpsArray);
 
-			// Check
-			if (satSolver.isSatisfiable(assumps)) {
-				sol.add(varnr);
-			}
+            // Check
+            if (satSolver.isSatisfiable(assumps)) {
+                sol.add(varnr);
+            }
 
-			assertEquals(satSolverOracle.isSatisfiable(assumps),
-					satSolver.isSatisfiable(assumps));
-		}
-	}
+            assertEquals(satSolverOracle.isSatisfiable(assumps),
+                    satSolver.isSatisfiable(assumps));
+        }
+    }
 
-	@Test
-	public void testIterativeCorrectWay() throws FileNotFoundException,
-			ParseFormatException, IOException, ContradictionException,
-			TimeoutException {
-		ISolver satSolver = SolverFactory.newDefault();
-		Reader reader = new LecteurDimacs(satSolver);
-		IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+    @Test
+    public void testIterativeCorrectWay() throws FileNotFoundException,
+            ParseFormatException, IOException, ContradictionException,
+            TimeoutException {
+        ISolver satSolver = SolverFactory.newDefault();
+        Reader reader = new LecteurDimacs(satSolver);
+        IProblem p = reader.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-		Set<Integer> sol = new HashSet<Integer>();
+        Set<Integer> sol = new HashSet<Integer>();
 
-		for (int i = 1; i <= p.nVars(); i++) {
-			ISolver satSolverOracle = SolverFactory.newDefault();
-			Reader readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+        for (int i = 1; i <= p.nVars(); i++) {
+            ISolver satSolverOracle = SolverFactory.newDefault();
+            Reader readerOracle = new LecteurDimacs(satSolverOracle);
+            readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
 
-			int assumpsArray[] = new int[sol.size() + 1];
-			int c = 0;
-			for (int a : sol) {
-				assumpsArray[c] = a;
-				c++;
-			}
-			assumpsArray[assumpsArray.length - 1] = -i;
-			IVecInt assumps = new VecInt(assumpsArray);
+            int assumpsArray[] = new int[sol.size() + 1];
+            int c = 0;
+            for (int a : sol) {
+                assumpsArray[c] = a;
+                c++;
+            }
+            assumpsArray[assumpsArray.length - 1] = -i;
+            IVecInt assumps = new VecInt(assumpsArray);
 
-			// Check
-			assertEquals(satSolverOracle.isSatisfiable(assumps),
-					satSolver.isSatisfiable(assumps));
-			if (satSolver.isSatisfiable(assumps)) {
-				sol.add(-i);
-				continue;
-			}
-			assumpsArray[assumpsArray.length - 1] = i;
-			satSolverOracle = SolverFactory.newDefault();
-			readerOracle = new LecteurDimacs(satSolverOracle);
-			readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
-			assertEquals(satSolverOracle.isSatisfiable(assumps),
-					satSolver.isSatisfiable(assumps));
-			if (satSolver.isSatisfiable(assumps)) {
-				sol.add(i);
-			}
-		}
-	}
+            // Check
+            assertEquals(satSolverOracle.isSatisfiable(assumps),
+                    satSolver.isSatisfiable(assumps));
+            if (satSolver.isSatisfiable(assumps)) {
+                sol.add(-i);
+                continue;
+            }
+            assumpsArray[assumpsArray.length - 1] = i;
+            satSolverOracle = SolverFactory.newDefault();
+            readerOracle = new LecteurDimacs(satSolverOracle);
+            readerOracle.parseInstance("src/test/testfiles/Eshop-fm.dimacs");
+            assertEquals(satSolverOracle.isSatisfiable(assumps),
+                    satSolver.isSatisfiable(assumps));
+            if (satSolver.isSatisfiable(assumps)) {
+                sol.add(i);
+            }
+        }
+    }
 }

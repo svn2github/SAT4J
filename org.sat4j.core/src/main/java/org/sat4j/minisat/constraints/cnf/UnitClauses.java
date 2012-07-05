@@ -38,83 +38,83 @@ import org.sat4j.specs.IVecInt;
  */
 public class UnitClauses implements Constr {
 
-	protected final int[] literals;
+    protected final int[] literals;
 
-	public UnitClauses(IVecInt values) {
-		literals = new int[values.size()];
-		values.copyTo(literals);
-	}
+    public UnitClauses(IVecInt values) {
+        this.literals = new int[values.size()];
+        values.copyTo(this.literals);
+    }
 
-	public void assertConstraint(UnitPropagationListener s) {
-		for (int p : literals) {
-			s.enqueue(p, this);
-		}
-	}
+    public void assertConstraint(UnitPropagationListener s) {
+        for (int p : this.literals) {
+            s.enqueue(p, this);
+        }
+    }
 
-	public void calcReason(int p, IVecInt outReason) {
-		throw new UnsupportedOperationException();
+    public void calcReason(int p, IVecInt outReason) {
+        throw new UnsupportedOperationException();
 
-	}
+    }
 
-	public double getActivity() {
-		throw new UnsupportedOperationException();
-	}
+    public double getActivity() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void incActivity(double claInc) {
-		// silent to prevent problems with xplain trick.
-	}
+    public void incActivity(double claInc) {
+        // silent to prevent problems with xplain trick.
+    }
 
-	public void setActivity(double claInc) {
-		// do nothing
-	}
+    public void setActivity(double claInc) {
+        // do nothing
+    }
 
-	public boolean locked() {
-		throw new UnsupportedOperationException();
-	}
+    public boolean locked() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void register() {
-		throw new UnsupportedOperationException();
-	}
+    public void register() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void remove(UnitPropagationListener upl) {
-		for (int i = literals.length - 1; i >= 0; i--) {
-			upl.unset(literals[i]);
-		}
-	}
+    public void remove(UnitPropagationListener upl) {
+        for (int i = this.literals.length - 1; i >= 0; i--) {
+            upl.unset(this.literals[i]);
+        }
+    }
 
-	public void rescaleBy(double d) {
-		throw new UnsupportedOperationException();
-	}
+    public void rescaleBy(double d) {
+        throw new UnsupportedOperationException();
+    }
 
-	public void setLearnt() {
-		throw new UnsupportedOperationException();
-	}
+    public void setLearnt() {
+        throw new UnsupportedOperationException();
+    }
 
-	public boolean simplify() {
-		return false;
-	}
+    public boolean simplify() {
+        return false;
+    }
 
-	public boolean propagate(UnitPropagationListener s, int p) {
-		throw new UnsupportedOperationException();
-	}
+    public boolean propagate(UnitPropagationListener s, int p) {
+        throw new UnsupportedOperationException();
+    }
 
-	public int get(int i) {
-		throw new UnsupportedOperationException();
-	}
+    public int get(int i) {
+        throw new UnsupportedOperationException();
+    }
 
-	public boolean learnt() {
-		throw new UnsupportedOperationException();
-	}
+    public boolean learnt() {
+        throw new UnsupportedOperationException();
+    }
 
-	public int size() {
-		throw new UnsupportedOperationException();
-	}
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void forwardActivity(double claInc) {
-		// silent to prevent problems with xplain trick.
-	}
+    public void forwardActivity(double claInc) {
+        // silent to prevent problems with xplain trick.
+    }
 
-	public boolean canBePropagatedMultipleTimes() {
-		return false;
-	}
+    public boolean canBePropagatedMultipleTimes() {
+        return false;
+    }
 }

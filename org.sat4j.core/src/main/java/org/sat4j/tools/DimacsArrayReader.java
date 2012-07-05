@@ -59,7 +59,7 @@ public class DimacsArrayReader implements Serializable {
     protected boolean handleConstr(int gateType, int output, int[] inputs)
             throws ContradictionException {
         IVecInt literals = new VecInt(inputs);
-        solver.addClause(literals);
+        this.solver.addClause(literals);
         return true;
     }
 
@@ -80,21 +80,21 @@ public class DimacsArrayReader implements Serializable {
      * @throws ContradictionException
      *             si le probleme est trivialement inconsitant
      */
-    public ISolver parseInstance(int[] gateType, int[] outputs,
-            int[][] inputs, int maxVar) throws ContradictionException {
-        solver.reset();
-        solver.newVar(maxVar);
-        solver.setExpectedNumberOfClauses(outputs.length);
+    public ISolver parseInstance(int[] gateType, int[] outputs, int[][] inputs,
+            int maxVar) throws ContradictionException {
+        this.solver.reset();
+        this.solver.newVar(maxVar);
+        this.solver.setExpectedNumberOfClauses(outputs.length);
         for (int i = 0; i < outputs.length; ++i) {
             handleConstr(gateType[i], outputs[i], inputs[i]);
         }
-        return solver;
+        return this.solver;
     }
 
     public String decode(int[] model) {
         StringBuffer stb = new StringBuffer(4 * model.length);
-        for (int i = 0; i < model.length; i++) {
-            stb.append(model[i]);
+        for (int element : model) {
+            stb.append(element);
             stb.append(" ");
         }
         stb.append("0");
@@ -102,6 +102,6 @@ public class DimacsArrayReader implements Serializable {
     }
 
     protected ISolver getSolver() {
-        return solver;
+        return this.solver;
     }
 }

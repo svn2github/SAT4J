@@ -41,86 +41,86 @@ import org.sat4j.specs.ISolver;
  * @param <D>
  */
 public interface ICDCL<D extends DataStructureFactory> extends ISolver,
-		UnitPropagationListener, ActivityListener, Learner {
+        UnitPropagationListener, ActivityListener, Learner {
 
-	/**
-	 * Change the internal representation of the constraints. Note that the
-	 * heuristics must be changed prior to calling that method.
-	 * 
-	 * @param dsf
-	 *            the internal factory
-	 */
-	void setDataStructureFactory(D dsf);
+    /**
+     * Change the internal representation of the constraints. Note that the
+     * heuristics must be changed prior to calling that method.
+     * 
+     * @param dsf
+     *            the internal factory
+     */
+    void setDataStructureFactory(D dsf);
 
-	/**
-	 * @since 2.2
-	 */
-	void setLearner(LearningStrategy<D> learner);
+    /**
+     * @since 2.2
+     */
+    void setLearner(LearningStrategy<D> learner);
 
-	void setSearchParams(SearchParams sp);
+    void setSearchParams(SearchParams sp);
 
-	void setRestartStrategy(RestartStrategy restarter);
+    void setRestartStrategy(RestartStrategy restarter);
 
-	RestartStrategy getRestartStrategy();
+    RestartStrategy getRestartStrategy();
 
-	/**
-	 * Setup the reason simplification strategy. By default, there is no reason
-	 * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH
-	 * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES.
-	 * 
-	 * @param simp
-	 *            a simplification type.
-	 * 
-	 */
-	void setSimplifier(SimplificationType simp);
+    /**
+     * Setup the reason simplification strategy. By default, there is no reason
+     * simplification. NOTE THAT REASON SIMPLIFICATION DOES NOT WORK WITH
+     * SPECIFIC DATA STRUCTURE FOR HANDLING BOTH BINARY AND TERNARY CLAUSES.
+     * 
+     * @param simp
+     *            a simplification type.
+     * 
+     */
+    void setSimplifier(SimplificationType simp);
 
-	/**
-	 * Setup the reason simplification strategy. By default, there is no reason
-	 * simplification. NOTE THAT REASON SIMPLIFICATION IS ONLY ALLOWED FOR WL
-	 * CLAUSAL data structures. USING REASON SIMPLIFICATION ON CB CLAUSES,
-	 * CARDINALITY CONSTRAINTS OR PB CONSTRAINTS MIGHT RESULT IN INCORRECT
-	 * RESULTS.
-	 * 
-	 * @param simp
-	 */
-	void setSimplifier(ISimplifier simp);
+    /**
+     * Setup the reason simplification strategy. By default, there is no reason
+     * simplification. NOTE THAT REASON SIMPLIFICATION IS ONLY ALLOWED FOR WL
+     * CLAUSAL data structures. USING REASON SIMPLIFICATION ON CB CLAUSES,
+     * CARDINALITY CONSTRAINTS OR PB CONSTRAINTS MIGHT RESULT IN INCORRECT
+     * RESULTS.
+     * 
+     * @param simp
+     */
+    void setSimplifier(ISimplifier simp);
 
-	ISimplifier getSimplifier();
+    ISimplifier getSimplifier();
 
-	/**
-	 * @param lcds
-	 * @since 2.1
-	 */
-	void setLearnedConstraintsDeletionStrategy(
-			LearnedConstraintsDeletionStrategy lcds);
+    /**
+     * @param lcds
+     * @since 2.1
+     */
+    void setLearnedConstraintsDeletionStrategy(
+            LearnedConstraintsDeletionStrategy lcds);
 
-	/**
-	 * 
-	 * @param timer
-	 *            when to apply constraints cleanup.
-	 * @param evaluation
-	 *            the strategy used to evaluate learned clauses.
-	 * @since 2.3.2
-	 */
-	void setLearnedConstraintsDeletionStrategy(ConflictTimer timer,
-			LearnedConstraintsEvaluationType evaluation);
+    /**
+     * 
+     * @param timer
+     *            when to apply constraints cleanup.
+     * @param evaluation
+     *            the strategy used to evaluate learned clauses.
+     * @since 2.3.2
+     */
+    void setLearnedConstraintsDeletionStrategy(ConflictTimer timer,
+            LearnedConstraintsEvaluationType evaluation);
 
-	/**
-	 * 
-	 * @param evaluation
-	 *            the strategy used to evaluate learned clauses.
-	 * @since 2.3.2
-	 */
-	void setLearnedConstraintsDeletionStrategy(
-			LearnedConstraintsEvaluationType evaluation);
+    /**
+     * 
+     * @param evaluation
+     *            the strategy used to evaluate learned clauses.
+     * @since 2.3.2
+     */
+    void setLearnedConstraintsDeletionStrategy(
+            LearnedConstraintsEvaluationType evaluation);
 
-	IOrder getOrder();
+    IOrder getOrder();
 
-	void setOrder(IOrder h);
+    void setOrder(IOrder h);
 
-	void setNeedToReduceDB(boolean needToReduceDB);
+    void setNeedToReduceDB(boolean needToReduceDB);
 
-	void setLogger(ICDCLLogger out);
+    void setLogger(ICDCLLogger out);
 
-	ICDCLLogger getLogger();
+    ICDCLLogger getLogger();
 }

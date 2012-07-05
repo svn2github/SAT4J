@@ -42,127 +42,130 @@ import org.sat4j.tools.xplain.Xplain;
 
 public class MUSLauncher extends AbstractLauncher {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int[] mus;
+    private int[] mus;
 
-	private Explainer xplain;
+    private Explainer xplain;
 
-	private boolean highLevel = false;
+    private boolean highLevel = false;
 
-	@Override
-	public void usage() {
-		log("java -jar sat4j-mus.jar [Insertion|Deletion|QuickXplain] <cnffile>|<gcnffile>");
-	}
+    @Override
+    public void usage() {
+        log("java -jar sat4j-mus.jar [Insertion|Deletion|QuickXplain] <cnffile>|<gcnffile>");
+    }
 
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		if (highLevel) {
-			return new GroupedCNFReader((HighLevelXplain<ISolver>) theSolver);
-		}
-		return new LecteurDimacs(theSolver);
-	}
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        if (this.highLevel) {
+            return new GroupedCNFReader((HighLevelXplain<ISolver>) theSolver);
+        }
+        return new LecteurDimacs(theSolver);
+    }
 
-	@Override
-	protected String getInstanceName(String[] args) {
-		if (args.length == 0) {
-			return null;
-		}
-		return args[args.length - 1];
-	}
+    @Override
+    protected String getInstanceName(String[] args) {
+        if (args.length == 0) {
+            return null;
+        }
+        return args[args.length - 1];
+    }
 
-	@Override
-	protected ISolver configureSolver(String[] args) {
-		String problemName = args[args.length - 1];
-		if (problemName.endsWith(".gcnf")) {
-			highLevel = true;
-		}
-		ISolver solver;
-		if (highLevel) {
-			HighLevelXplain<ISolver> hlxp = new HighLevelXplain<ISolver>(
-					SolverFactory.newDefault());
-			xplain = hlxp;
-			solver = hlxp;
-		} else {
-			Xplain<ISolver> xp = new Xplain<ISolver>(
-					SolverFactory.newDefault(), false);
-			xplain = xp;
-			solver = xp;
-		}
-		if (args.length == 2) {
-			// retrieve minimization strategy
-			String className = "org.sat4j.tools.xplain." + args[0] + "Strategy";
-			try {
-				xplain.setMinimizationStrategy((MinimizationStrategy) Class
-						.forName(className).newInstance());
-			} catch (Exception e) {
-				log(e.getMessage());
-			}
-		}
-		solver.setTimeout(Integer.MAX_VALUE);
-		solver.setDBSimplificationAllowed(true);
-		getLogWriter().println(solver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return solver;
-	}
+    @Override
+    protected ISolver configureSolver(String[] args) {
+        String problemName = args[args.length - 1];
+        if (problemName.endsWith(".gcnf")) {
+            this.highLevel = true;
+        }
+        ISolver solver;
+        if (this.highLevel) {
+            HighLevelXplain<ISolver> hlxp = new HighLevelXplain<ISolver>(
+                    SolverFactory.newDefault());
+            this.xplain = hlxp;
+            solver = hlxp;
+        } else {
+            Xplain<ISolver> xp = new Xplain<ISolver>(
+                    SolverFactory.newDefault(), false);
+            this.xplain = xp;
+            solver = xp;
+        }
+        if (args.length == 2) {
+            // retrieve minimization strategy
+            String className = "org.sat4j.tools.xplain." + args[0] + "Strategy";
+            try {
+                this.xplain
+                        .setMinimizationStrategy((MinimizationStrategy) Class
+                                .forName(className).newInstance());
+            } catch (Exception e) {
+                log(e.getMessage());
+            }
+        }
+        solver.setTimeout(Integer.MAX_VALUE);
+        solver.setDBSimplificationAllowed(true);
+        getLogWriter().println(solver.toString(COMMENT_PREFIX));
+        return solver;
+    }
 
-	@Override
-	protected void displayResult() {
-		if (solver != null) {
-			double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
-			solver.printStat(out, COMMENT_PREFIX);
-			solver.printInfos(out, COMMENT_PREFIX);
-			out.println(ANSWER_PREFIX + exitCode);
-			if (exitCode == ExitCode.SATISFIABLE) {
-				int[] model = solver.model();
-				out.print(SOLUTION_PREFIX);
-				reader.decode(model, out);
-				out.println();
-			} else if (exitCode == ExitCode.UNSATISFIABLE && mus != null) {
-				out.print(SOLUTION_PREFIX);
-				reader.decode(mus, out);
-				out.println();
-			}
-			log("Total wall clock time (in seconds) : " + wallclocktime); //$NON-NLS-1$
-		}
-	}
+    @Override
+    protected void displayResult() {
+        if (this.solver != null) {
+            double wallclocktime = (System.currentTimeMillis() - this.beginTime) / 1000.0;
+            this.solver.printStat(this.out, COMMENT_PREFIX);
+            this.solver.printInfos(this.out, COMMENT_PREFIX);
+            this.out.println(ANSWER_PREFIX + this.exitCode);
+            if (this.exitCode == ExitCode.SATISFIABLE) {
+                int[] model = this.solver.model();
+                this.out.print(SOLUTION_PREFIX);
+                this.reader.decode(model, this.out);
+                this.out.println();
+            } else if (this.exitCode == ExitCode.UNSATISFIABLE
+                    && this.mus != null) {
+                this.out.print(SOLUTION_PREFIX);
+                this.reader.decode(this.mus, this.out);
+                this.out.println();
+            }
+            log("Total wall clock time (in seconds) : " + wallclocktime); //$NON-NLS-1$
+        }
+    }
 
-	@Override
-	public void run(String[] args) {
-		mus = null;
-		super.run(args);
-		double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
-		if (exitCode == ExitCode.UNSATISFIABLE) {
-			try {
-				log("Unsat detection wall clock time (in seconds) : "
-						+ wallclocktime);
-				log("Size of initial " + (highLevel ? "high level " : "")
-						+ "unsat subformula: "
-						+ solver.unsatExplanation().size());
-				log("Computing " + (highLevel ? "high level " : "") + "MUS ...");
-				double beginmus = System.currentTimeMillis();
-				mus = xplain.minimalExplanation();
-				log("Size of the " + (highLevel ? "high level " : "") + "MUS: "
-						+ mus.length);
-				log("Unsat core  computation wall clock time (in seconds) : "
-						+ (System.currentTimeMillis() - beginmus) / 1000.0);
-			} catch (TimeoutException e) {
-				log("Cannot compute " + (highLevel ? "high level " : "")
-						+ "MUS within the timeout.");
-			}
-		}
+    @Override
+    public void run(String[] args) {
+        this.mus = null;
+        super.run(args);
+        double wallclocktime = (System.currentTimeMillis() - this.beginTime) / 1000.0;
+        if (this.exitCode == ExitCode.UNSATISFIABLE) {
+            try {
+                log("Unsat detection wall clock time (in seconds) : "
+                        + wallclocktime);
+                log("Size of initial " + (this.highLevel ? "high level " : "")
+                        + "unsat subformula: "
+                        + this.solver.unsatExplanation().size());
+                log("Computing " + (this.highLevel ? "high level " : "")
+                        + "MUS ...");
+                double beginmus = System.currentTimeMillis();
+                this.mus = this.xplain.minimalExplanation();
+                log("Size of the " + (this.highLevel ? "high level " : "")
+                        + "MUS: " + this.mus.length);
+                log("Unsat core  computation wall clock time (in seconds) : "
+                        + (System.currentTimeMillis() - beginmus) / 1000.0);
+            } catch (TimeoutException e) {
+                log("Cannot compute " + (this.highLevel ? "high level " : "")
+                        + "MUS within the timeout.");
+            }
+        }
 
-	}
+    }
 
-	public static void main(final String[] args) {
-		MUSLauncher lanceur = new MUSLauncher();
-		if (args.length < 1 || args.length > 2) {
-			lanceur.usage();
-			return;
-		}
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    public static void main(final String[] args) {
+        MUSLauncher lanceur = new MUSLauncher();
+        if (args.length < 1 || args.length > 2) {
+            lanceur.usage();
+            return;
+        }
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 }

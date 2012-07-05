@@ -43,34 +43,34 @@ import org.sat4j.specs.IVec;
  */
 public class ConflictTimerContainer implements Serializable, ConflictTimer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final IVec<ConflictTimer> timers = new Vec<ConflictTimer>();
+    private final IVec<ConflictTimer> timers = new Vec<ConflictTimer>();
 
-	ConflictTimerContainer add(ConflictTimer timer) {
-		timers.push(timer);
-		return this;
-	}
+    ConflictTimerContainer add(ConflictTimer timer) {
+        this.timers.push(timer);
+        return this;
+    }
 
-	ConflictTimerContainer remove(ConflictTimer timer) {
-		timers.remove(timer);
-		return this;
-	}
+    ConflictTimerContainer remove(ConflictTimer timer) {
+        this.timers.remove(timer);
+        return this;
+    }
 
-	public void reset() {
-		Iterator<ConflictTimer> it = timers.iterator();
-		while (it.hasNext()) {
-			it.next().reset();
-		}
-	}
+    public void reset() {
+        Iterator<ConflictTimer> it = this.timers.iterator();
+        while (it.hasNext()) {
+            it.next().reset();
+        }
+    }
 
-	public void newConflict() {
-		Iterator<ConflictTimer> it = timers.iterator();
-		while (it.hasNext()) {
-			it.next().newConflict();
-		}
-	}
+    public void newConflict() {
+        Iterator<ConflictTimer> it = this.timers.iterator();
+        while (it.hasNext()) {
+            it.next().newConflict();
+        }
+    }
 }

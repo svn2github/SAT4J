@@ -37,67 +37,67 @@ import org.sat4j.specs.Lbool;
  * @since 2.3.2
  */
 public class LearnedClausesSizeTracing extends
-		SearchListenerAdapter<ISolverService> {
+        SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final IVisualizationTool visuTool;
-	private final IVisualizationTool restartTool;
-	private final IVisualizationTool cleanTool;
-	private int counter;
-	private int maxSize;
+    private final IVisualizationTool visuTool;
+    private final IVisualizationTool restartTool;
+    private final IVisualizationTool cleanTool;
+    private int counter;
+    private int maxSize;
 
-	public LearnedClausesSizeTracing(IVisualizationTool visuTool,
-			IVisualizationTool restartTool, IVisualizationTool cleanTool) {
-		this.visuTool = visuTool;
-		this.restartTool = restartTool;
-		this.cleanTool = cleanTool;
-		counter = 0;
-		maxSize = 0;
-	}
+    public LearnedClausesSizeTracing(IVisualizationTool visuTool,
+            IVisualizationTool restartTool, IVisualizationTool cleanTool) {
+        this.visuTool = visuTool;
+        this.restartTool = restartTool;
+        this.cleanTool = cleanTool;
+        this.counter = 0;
+        this.maxSize = 0;
+    }
 
-	@Override
-	public void end(Lbool result) {
-		visuTool.end();
-		restartTool.end();
-		cleanTool.end();
-	}
+    @Override
+    public void end(Lbool result) {
+        this.visuTool.end();
+        this.restartTool.end();
+        this.cleanTool.end();
+    }
 
-	@Override
-	public void learn(IConstr c) {
-		int s = c.size();
-		if (s > maxSize) {
-			maxSize = s;
-		}
-		visuTool.addPoint(counter, s);
-		restartTool.addInvisiblePoint(counter, 0);
-		cleanTool.addInvisiblePoint(counter, 0);
-		counter++;
-	}
+    @Override
+    public void learn(IConstr c) {
+        int s = c.size();
+        if (s > this.maxSize) {
+            this.maxSize = s;
+        }
+        this.visuTool.addPoint(this.counter, s);
+        this.restartTool.addInvisiblePoint(this.counter, 0);
+        this.cleanTool.addInvisiblePoint(this.counter, 0);
+        this.counter++;
+    }
 
-	@Override
-	public void start() {
-		visuTool.init();
-		restartTool.init();
-		cleanTool.init();
-		counter = 0;
-		maxSize = 0;
-	}
+    @Override
+    public void start() {
+        this.visuTool.init();
+        this.restartTool.init();
+        this.cleanTool.init();
+        this.counter = 0;
+        this.maxSize = 0;
+    }
 
-	@Override
-	public void restarting() {
-		visuTool.addInvisiblePoint(counter, 0);
-		restartTool.addPoint(counter, maxSize);
-		cleanTool.addPoint(counter, 0);
-	}
+    @Override
+    public void restarting() {
+        this.visuTool.addInvisiblePoint(this.counter, 0);
+        this.restartTool.addPoint(this.counter, this.maxSize);
+        this.cleanTool.addPoint(this.counter, 0);
+    }
 
-	@Override
-	public void cleaning() {
-		visuTool.addInvisiblePoint(counter, 0);
-		restartTool.addPoint(counter, 0);
-		cleanTool.addPoint(counter, maxSize);
-	}
+    @Override
+    public void cleaning() {
+        this.visuTool.addInvisiblePoint(this.counter, 0);
+        this.restartTool.addPoint(this.counter, 0);
+        this.cleanTool.addPoint(this.counter, this.maxSize);
+    }
 }

@@ -37,46 +37,46 @@ package org.sat4j.reader;
  */
 public class ParseFormatException extends Exception {
 
-	public static final String PARSING_ERROR = "Parsing Error";
-	private static final long serialVersionUID = 1L;
+    public static final String PARSING_ERROR = "Parsing Error";
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor for ParseFormatException.
-	 */
-	public ParseFormatException() {
-		super(PARSING_ERROR);
-	}
+    /**
+     * Constructor for ParseFormatException.
+     */
+    public ParseFormatException() {
+        super(PARSING_ERROR);
+    }
 
-	/**
-	 * Constructor for ParseFormatException.
-	 * 
-	 * @param message
-	 *            the error message
-	 */
-	public ParseFormatException(String message) {
-		super(PARSING_ERROR + message);
-	}
+    /**
+     * Constructor for ParseFormatException.
+     * 
+     * @param message
+     *            the error message
+     */
+    public ParseFormatException(String message) {
+        super(PARSING_ERROR + message);
+    }
 
-	/**
-	 * Constructor for ParseFormatException.
-	 * 
-	 * @param message
-	 *            the error message
-	 * @param cause
-	 *            the cause of the exception
-	 */
-	public ParseFormatException(String message, Throwable cause) {
-		super(PARSING_ERROR + message, cause);
-	}
+    /**
+     * Constructor for ParseFormatException.
+     * 
+     * @param message
+     *            the error message
+     * @param cause
+     *            the cause of the exception
+     */
+    public ParseFormatException(String message, Throwable cause) {
+        super(PARSING_ERROR + message, cause);
+    }
 
-	/**
-	 * Constructor for ParseFormatException.
-	 * 
-	 * @param cause
-	 *            the cause of the exception
-	 */
-	public ParseFormatException(Throwable cause) {
-		super(cause);
-	}
+    /**
+     * Constructor for ParseFormatException.
+     * 
+     * @param cause
+     *            the cause of the exception
+     */
+    public ParseFormatException(Throwable cause) {
+        super(cause);
+    }
 
 }

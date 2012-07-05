@@ -38,115 +38,115 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public final class LubyRestarts implements RestartStrategy {
 
-	public static final int DEFAULT_LUBY_FACTOR = 32;
+    public static final int DEFAULT_LUBY_FACTOR = 32;
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// 21-06-2012 back from SAT 2012
-	// computing luby values the way presented by Donald Knuth in his invited
-	// talk at the SAT 2012 conference
-	// u1
-	private int un = 1;
-	// v1
-	private int vn = 1;
+    // 21-06-2012 back from SAT 2012
+    // computing luby values the way presented by Donald Knuth in his invited
+    // talk at the SAT 2012 conference
+    // u1
+    private int un = 1;
+    // v1
+    private int vn = 1;
 
-	/**
-	 * returns the current value of the luby sequence.
-	 * 
-	 * @return the current value of the luby sequence.
-	 */
-	public int luby() {
-		return vn;
-	}
+    /**
+     * returns the current value of the luby sequence.
+     * 
+     * @return the current value of the luby sequence.
+     */
+    public int luby() {
+        return this.vn;
+    }
 
-	/**
-	 * Computes and return the next value of the luby sequence. That method has
-	 * a side effect of the value returned by luby(). luby()!=nextLuby() but
-	 * nextLuby()==luby().
-	 * 
-	 * @return the new current value of the luby sequence.
-	 * @see #luby()
-	 */
-	public int nextLuby() {
-		if ((un & -un) == vn) {
-			un = un + 1;
-			vn = 1;
-		} else {
-			vn = vn << 1;
-		}
-		return vn;
-	}
+    /**
+     * Computes and return the next value of the luby sequence. That method has
+     * a side effect of the value returned by luby(). luby()!=nextLuby() but
+     * nextLuby()==luby().
+     * 
+     * @return the new current value of the luby sequence.
+     * @see #luby()
+     */
+    public int nextLuby() {
+        if ((this.un & -this.un) == this.vn) {
+            this.un = this.un + 1;
+            this.vn = 1;
+        } else {
+            this.vn = this.vn << 1;
+        }
+        return this.vn;
+    }
 
-	private int factor;
+    private int factor;
 
-	private int bound;
-	private int conflictcount;
+    private int bound;
+    private int conflictcount;
 
-	public LubyRestarts() {
-		this(DEFAULT_LUBY_FACTOR); // uses TiniSAT default
-	}
+    public LubyRestarts() {
+        this(DEFAULT_LUBY_FACTOR); // uses TiniSAT default
+    }
 
-	/**
-	 * @param factor
-	 *            the factor used for the Luby series.
-	 * @since 2.1
-	 */
-	public LubyRestarts(int factor) {
-		setFactor(factor);
-	}
+    /**
+     * @param factor
+     *            the factor used for the Luby series.
+     * @since 2.1
+     */
+    public LubyRestarts(int factor) {
+        setFactor(factor);
+    }
 
-	public final void setFactor(int factor) {
-		this.factor = factor;
-	}
+    public final void setFactor(int factor) {
+        this.factor = factor;
+    }
 
-	public int getFactor() {
-		return factor;
-	}
+    public int getFactor() {
+        return this.factor;
+    }
 
-	public void init(SearchParams params) {
-		un = 1;
-		vn = 1;
-		bound = luby() * factor;
-	}
+    public void init(SearchParams params) {
+        this.un = 1;
+        this.vn = 1;
+        this.bound = luby() * this.factor;
+    }
 
-	public long nextRestartNumberOfConflict() {
-		return bound;
-	}
+    public long nextRestartNumberOfConflict() {
+        return this.bound;
+    }
 
-	public void onRestart() {
-		bound = nextLuby() * factor;
-		conflictcount = 0;
-	}
+    public void onRestart() {
+        this.bound = nextLuby() * this.factor;
+        this.conflictcount = 0;
+    }
 
-	@Override
-	public String toString() {
-		return "luby style (SATZ_rand, TiniSAT) restarts strategy with factor "
-				+ factor;
-	}
+    @Override
+    public String toString() {
+        return "luby style (SATZ_rand, TiniSAT) restarts strategy with factor "
+                + this.factor;
+    }
 
-	public boolean shouldRestart() {
-		return conflictcount >= bound;
-	}
+    public boolean shouldRestart() {
+        return this.conflictcount >= this.bound;
+    }
 
-	public void onBackjumpToRootLevel() {
-		conflictcount = 0;
-	}
+    public void onBackjumpToRootLevel() {
+        this.conflictcount = 0;
+    }
 
-	public void reset() {
-		conflictcount = 0;
-	}
+    public void reset() {
+        this.conflictcount = 0;
+    }
 
-	public void newConflict() {
-		conflictcount++;
-	}
+    public void newConflict() {
+        this.conflictcount++;
+    }
 
-	public SearchParams getSearchParams() {
-		return new SearchParams();
-	}
+    public SearchParams getSearchParams() {
+        return new SearchParams();
+    }
 
-	public void newLearnedClause(Constr learned, int trailLevel) {
-	}
+    public void newLearnedClause(Constr learned, int trailLevel) {
+    }
 }

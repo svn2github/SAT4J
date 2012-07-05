@@ -44,114 +44,115 @@ import org.sat4j.specs.SearchListener;
  */
 public class TextOutputTracing<T> implements SearchListener {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Map<Integer, T> mapping;
+    private final Map<Integer, T> mapping;
 
-	/**
-	 * @since 2.1
-	 */
-	public TextOutputTracing(Map<Integer, T> mapping) {
-		this.mapping = mapping;
-	}
+    /**
+     * @since 2.1
+     */
+    public TextOutputTracing(Map<Integer, T> mapping) {
+        this.mapping = mapping;
+    }
 
-	private String node(int dimacs) {
+    private String node(int dimacs) {
 
-		if (mapping != null) {
-			int var = Math.abs(dimacs);
-			T t = mapping.get(var);
-			if (t != null) {
-				if (dimacs > 0)
-					return t.toString();
-				return "-" + t.toString();
-			}
-		}
-		return Integer.toString(dimacs);
-	}
+        if (this.mapping != null) {
+            int var = Math.abs(dimacs);
+            T t = this.mapping.get(var);
+            if (t != null) {
+                if (dimacs > 0) {
+                    return t.toString();
+                }
+                return "-" + t.toString();
+            }
+        }
+        return Integer.toString(dimacs);
+    }
 
-	public void assuming(int p) {
-		System.out.println("assuming " + node(p));
-	}
+    public void assuming(int p) {
+        System.out.println("assuming " + node(p));
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void propagating(int p, IConstr reason) {
-		System.out.println("propagating " + node(p));
-	}
+    /**
+     * @since 2.1
+     */
+    public void propagating(int p, IConstr reason) {
+        System.out.println("propagating " + node(p));
+    }
 
-	public void backtracking(int p) {
-		System.out.println("backtracking " + node(p));
-	}
+    public void backtracking(int p) {
+        System.out.println("backtracking " + node(p));
+    }
 
-	public void adding(int p) {
-		System.out.println("adding " + node(p));
-	}
+    public void adding(int p) {
+        System.out.println("adding " + node(p));
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void learn(IConstr clause) {
-		System.out.println("learning " + clause);
+    /**
+     * @since 2.1
+     */
+    public void learn(IConstr clause) {
+        System.out.println("learning " + clause);
 
-	}
+    }
 
-	public void delete(int[] clause) {
+    public void delete(int[] clause) {
 
-	}
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		System.out.println("conflict ");
-	}
+    /**
+     * @since 2.1
+     */
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        System.out.println("conflict ");
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void conflictFound(int p) {
-		System.out.println("conflict during propagation");
-	}
+    /**
+     * @since 2.1
+     */
+    public void conflictFound(int p) {
+        System.out.println("conflict during propagation");
+    }
 
-	public void solutionFound(int[] model) {
-		System.out.println("solution found ");
-	}
+    public void solutionFound(int[] model) {
+        System.out.println("solution found ");
+    }
 
-	public void beginLoop() {
-	}
+    public void beginLoop() {
+    }
 
-	public void start() {
-	}
+    public void start() {
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void end(Lbool result) {
-	}
+    /**
+     * @since 2.1
+     */
+    public void end(Lbool result) {
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public void restarting() {
-		System.out.println("restarting ");
-	}
+    /**
+     * @since 2.2
+     */
+    public void restarting() {
+        System.out.println("restarting ");
+    }
 
-	public void backjump(int backjumpLevel) {
-		System.out.println("backjumping to decision level " + backjumpLevel);
-	}
+    public void backjump(int backjumpLevel) {
+        System.out.println("backjumping to decision level " + backjumpLevel);
+    }
 
-	/**
-	 * @since 2.3.2
-	 */
-	public void init(ISolverService solverService) {
-	}
+    /**
+     * @since 2.3.2
+     */
+    public void init(ISolverService solverService) {
+    }
 
-	/**
-	 * @since 2.3.2
-	 */
-	public void cleaning() {
-		System.out.println("cleaning");
-	}
+    /**
+     * @since 2.3.2
+     */
+    public void cleaning() {
+        System.out.println("cleaning");
+    }
 
 }

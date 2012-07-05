@@ -39,7 +39,7 @@ package org.sat4j.minisat.core;
  */
 public interface ConflictTimer {
 
-	void reset();
+    void reset();
 
-	void newConflict();
+    void newConflict();
 }

@@ -45,20 +45,20 @@ import org.sat4j.specs.TimeoutException;
  */
 public interface MinimizationStrategy extends Serializable {
 
-	/**
-	 * 
-	 * @param solver
-	 * @param constrs
-	 * @param assumps
-	 * @return
-	 * @throws TimeoutException
-	 * @since 2.1
-	 */
-	IVecInt explain(ISolver solver, Map<Integer, ?> constrs, IVecInt assumps)
-			throws TimeoutException;
+    /**
+     * 
+     * @param solver
+     * @param constrs
+     * @param assumps
+     * @return
+     * @throws TimeoutException
+     * @since 2.1
+     */
+    IVecInt explain(ISolver solver, Map<Integer, ?> constrs, IVecInt assumps)
+            throws TimeoutException;
 
-	/**
-	 * @since 2.1
-	 */
-	void cancelExplanationComputation();
+    /**
+     * @since 2.1
+     */
+    void cancelExplanationComputation();
 }

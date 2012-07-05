@@ -43,7 +43,8 @@ import org.sat4j.minisat.core.VarActivityListener;
  * 
  * @author leberre
  */
-public abstract class LimitedLearning<D extends DataStructureFactory> implements LearningStrategy<D> {
+public abstract class LimitedLearning<D extends DataStructureFactory>
+        implements LearningStrategy<D> {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,39 +53,39 @@ public abstract class LimitedLearning<D extends DataStructureFactory> implements
     private final MiniSATLearning<D> all;
 
     protected ILits lits;
-    
+
     private SolverStats stats;
 
     public LimitedLearning() {
-        none = new NoLearningButHeuristics<D>();
-        all = new MiniSATLearning<D>();
+        this.none = new NoLearningButHeuristics<D>();
+        this.all = new MiniSATLearning<D>();
     }
 
     public void setSolver(Solver<D> s) {
         this.lits = s.getVocabulary();
         setVarActivityListener(s);
-        all.setDataStructureFactory(s.getDSFactory());
-        stats = s.getStats();
+        this.all.setDataStructureFactory(s.getDSFactory());
+        this.stats = s.getStats();
     }
 
     public void learns(Constr constr) {
         if (learningCondition(constr)) {
-            all.learns(constr);
+            this.all.learns(constr);
         } else {
-            none.learns(constr);
-            stats.ignoredclauses++;
+            this.none.learns(constr);
+            this.stats.ignoredclauses++;
         }
     }
 
     abstract protected boolean learningCondition(Constr constr);
-    
+
     public void init() {
-        all.init();
-        none.init();
+        this.all.init();
+        this.none.init();
     }
 
     public void setVarActivityListener(VarActivityListener s) {
-        none.setVarActivityListener(s);
-        all.setVarActivityListener(s);
+        this.none.setVarActivityListener(s);
+        this.all.setVarActivityListener(s);
     }
 }

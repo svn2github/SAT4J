@@ -41,38 +41,38 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class RemiUtils {
 
-	private RemiUtils() {
-		// no instanceof that class are expected to be used.
-	}
+    private RemiUtils() {
+        // no instanceof that class are expected to be used.
+    }
 
-	/**
-	 * Compute the set of literals common to all models of the formula.
-	 * 
-	 * @param s
-	 *            a solver already feeded
-	 * @return the set of literals common to all models of the formula contained
-	 *         in the solver, in dimacs format.
-	 * @throws TimeoutException
-	 */
-	public static IVecInt backbone(ISolver s) throws TimeoutException {
-		IVecInt backbone = new VecInt();
-		int nvars = s.nVars();
-		for (int i = 1; i <= nvars; i++) {
-			backbone.push(i);
-			if (s.isSatisfiable(backbone)) {
-				backbone.pop().push(-i);
-				if (s.isSatisfiable(backbone)) {
-					backbone.pop();
-				} else {
-					// i is in the backbone
-					backbone.pop().push(i);
-				}
-			} else {
-				// -i is in the backbone
-				backbone.pop().push(-i);
-			}
-		}
-		return backbone;
-	}
+    /**
+     * Compute the set of literals common to all models of the formula.
+     * 
+     * @param s
+     *            a solver already feeded
+     * @return the set of literals common to all models of the formula contained
+     *         in the solver, in dimacs format.
+     * @throws TimeoutException
+     */
+    public static IVecInt backbone(ISolver s) throws TimeoutException {
+        IVecInt backbone = new VecInt();
+        int nvars = s.nVars();
+        for (int i = 1; i <= nvars; i++) {
+            backbone.push(i);
+            if (s.isSatisfiable(backbone)) {
+                backbone.pop().push(-i);
+                if (s.isSatisfiable(backbone)) {
+                    backbone.pop();
+                } else {
+                    // i is in the backbone
+                    backbone.pop().push(i);
+                }
+            } else {
+                // -i is in the backbone
+                backbone.pop().push(-i);
+            }
+        }
+        return backbone;
+    }
 
 }

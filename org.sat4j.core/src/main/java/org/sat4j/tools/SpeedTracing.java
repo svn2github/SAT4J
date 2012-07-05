@@ -35,101 +35,102 @@ import org.sat4j.specs.Lbool;
 
 public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
-	// private int maxDlevel;
+    // private int maxDlevel;
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final IVisualizationTool visuTool;
-	private final IVisualizationTool cleanVisuTool;
-	private final IVisualizationTool restartVisuTool;
+    private final IVisualizationTool visuTool;
+    private final IVisualizationTool cleanVisuTool;
+    private final IVisualizationTool restartVisuTool;
 
-	private long begin, end;
-	private int counter;
-	private long index;
+    private long begin, end;
+    private int counter;
+    private long index;
 
-	private int nVar;
+    private int nVar;
 
-	private double maxY;
+    private double maxY;
 
-	public SpeedTracing(IVisualizationTool visuTool,
-			IVisualizationTool cleanVisuTool, IVisualizationTool restartVisuTool) {
-		this.visuTool = visuTool;
-		this.cleanVisuTool = cleanVisuTool;
-		this.restartVisuTool = restartVisuTool;
+    public SpeedTracing(IVisualizationTool visuTool,
+            IVisualizationTool cleanVisuTool, IVisualizationTool restartVisuTool) {
+        this.visuTool = visuTool;
+        this.cleanVisuTool = cleanVisuTool;
+        this.restartVisuTool = restartVisuTool;
 
-		visuTool.init();
-		cleanVisuTool.init();
-		restartVisuTool.init();
+        visuTool.init();
+        cleanVisuTool.init();
+        restartVisuTool.init();
 
-		begin = System.currentTimeMillis();
-		counter = 0;
-		index = 0;
-		maxY = 0;
-	}
+        this.begin = System.currentTimeMillis();
+        this.counter = 0;
+        this.index = 0;
+        this.maxY = 0;
+    }
 
-	@Override
-	public void propagating(int p, IConstr reason) {
-		end = System.currentTimeMillis();
-		double y;
-		if (end - begin >= 2000) {
-			long tmp = (end - begin);
-			index += tmp;
-			y = counter / tmp * 1000;
-			if (y > maxY) {
-				maxY = y;
-			}
-			visuTool.addPoint(index / 1000.0, y);
-			cleanVisuTool.addPoint(index / 1000.0, 0);
-			restartVisuTool.addPoint(index / 1000.0, 0);
-			begin = System.currentTimeMillis();
-			counter = 0;
-		}
-		counter++;
-	}
+    @Override
+    public void propagating(int p, IConstr reason) {
+        this.end = System.currentTimeMillis();
+        double y;
+        if (this.end - this.begin >= 2000) {
+            long tmp = this.end - this.begin;
+            this.index += tmp;
+            y = this.counter / tmp * 1000;
+            if (y > this.maxY) {
+                this.maxY = y;
+            }
+            this.visuTool.addPoint(this.index / 1000.0, y);
+            this.cleanVisuTool.addPoint(this.index / 1000.0, 0);
+            this.restartVisuTool.addPoint(this.index / 1000.0, 0);
+            this.begin = System.currentTimeMillis();
+            this.counter = 0;
+        }
+        this.counter++;
+    }
 
-	@Override
-	public void end(Lbool result) {
-		visuTool.end();
-		cleanVisuTool.end();
-		restartVisuTool.end();
-	}
+    @Override
+    public void end(Lbool result) {
+        this.visuTool.end();
+        this.cleanVisuTool.end();
+        this.restartVisuTool.end();
+    }
 
-	@Override
-	public void cleaning() {
-		end = System.currentTimeMillis();
-		long indexClean = index + (end - begin);
-		visuTool.addPoint(indexClean / 1000.0, counter / (end - begin) * 1000);
-		cleanVisuTool.addPoint(indexClean / 1000.0, maxY);
-		restartVisuTool.addInvisiblePoint(indexClean, 0);
-		// out.println("# ignore");
-	}
+    @Override
+    public void cleaning() {
+        this.end = System.currentTimeMillis();
+        long indexClean = this.index + this.end - this.begin;
+        this.visuTool.addPoint(indexClean / 1000.0, this.counter
+                / (this.end - this.begin) * 1000);
+        this.cleanVisuTool.addPoint(indexClean / 1000.0, this.maxY);
+        this.restartVisuTool.addInvisiblePoint(indexClean, 0);
+        // out.println("# ignore");
+    }
 
-	@Override
-	public void restarting() {
-		end = System.currentTimeMillis();
-		long indexRestart = index + (end - begin);
-		double y = counter / (end - begin) * 1000;
-		visuTool.addPoint(indexRestart / 1000.0, y);
-		if (y > maxY) {
-			maxY = y;
-		}
-		restartVisuTool.addPoint(indexRestart / 1000.0, maxY);
-		cleanVisuTool.addInvisiblePoint(indexRestart, 0);
-	}
+    @Override
+    public void restarting() {
+        this.end = System.currentTimeMillis();
+        long indexRestart = this.index + this.end - this.begin;
+        double y = this.counter / (this.end - this.begin) * 1000;
+        this.visuTool.addPoint(indexRestart / 1000.0, y);
+        if (y > this.maxY) {
+            this.maxY = y;
+        }
+        this.restartVisuTool.addPoint(indexRestart / 1000.0, this.maxY);
+        this.cleanVisuTool.addInvisiblePoint(indexRestart, 0);
+    }
 
-	@Override
-	public void start() {
-		visuTool.init();
-		cleanVisuTool.init();
-		restartVisuTool.init();
+    @Override
+    public void start() {
+        this.visuTool.init();
+        this.cleanVisuTool.init();
+        this.restartVisuTool.init();
 
-		begin = System.currentTimeMillis();
-		counter = 0;
-		index = 0;
-	}
+        this.begin = System.currentTimeMillis();
+        this.counter = 0;
+        this.index = 0;
+    }
 
-	@Override
-	public void init(ISolverService solverService) {
-		nVar = solverService.nVars();
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.nVar = solverService.nVars();
+    }
 }

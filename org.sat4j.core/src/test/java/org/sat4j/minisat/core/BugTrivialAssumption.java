@@ -43,67 +43,67 @@ import org.sat4j.specs.TimeoutException;
 
 public class BugTrivialAssumption {
 
-	@Test
-	public void testUnitClauseInFormulaUnsat() throws ContradictionException,
-			TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		solver.newVar(1);
-		solver.addClause(new VecInt(new int[] { 1 }));
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1 })));
-		IVecInt explanation = solver.unsatExplanation();
-		assertTrue(explanation.contains(-1));
-		assertEquals(1, explanation.size());
-	}
+    @Test
+    public void testUnitClauseInFormulaUnsat() throws ContradictionException,
+            TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        solver.newVar(1);
+        solver.addClause(new VecInt(new int[] { 1 }));
+        assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1 })));
+        IVecInt explanation = solver.unsatExplanation();
+        assertTrue(explanation.contains(-1));
+        assertEquals(1, explanation.size());
+    }
 
-	@Test
-	public void testUnitClauseInFormulaSat() throws ContradictionException,
-			TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		solver.addClause(new VecInt(new int[] { 1 }));
-		assertTrue(solver.isSatisfiable(new VecInt(new int[] { 1 })));
-	}
+    @Test
+    public void testUnitClauseInFormulaSat() throws ContradictionException,
+            TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        solver.addClause(new VecInt(new int[] { 1 }));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { 1 })));
+    }
 
-	@Test
-	public void testBinaryClauseInFormula() throws ContradictionException,
-			TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		solver.addClause(new VecInt(new int[] { 1, 2 }));
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, -2 })));
-		IVecInt explanation = solver.unsatExplanation();
-		assertTrue(explanation.contains(-1));
-		assertTrue(explanation.contains(-2));
-		assertEquals(2, explanation.size());
-	}
+    @Test
+    public void testBinaryClauseInFormula() throws ContradictionException,
+            TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        solver.addClause(new VecInt(new int[] { 1, 2 }));
+        assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, -2 })));
+        IVecInt explanation = solver.unsatExplanation();
+        assertTrue(explanation.contains(-1));
+        assertTrue(explanation.contains(-2));
+        assertEquals(2, explanation.size());
+    }
 
-	@Test
-	public void testEasyInconsistencyInAssumption()
-			throws ContradictionException, TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		solver.newVar(1);
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, 1 })));
-		IVecInt explanation = solver.unsatExplanation();
-		assertTrue(explanation.contains(-1));
-		assertTrue(explanation.contains(1));
-		assertEquals(2, explanation.size());
-	}
+    @Test
+    public void testEasyInconsistencyInAssumption()
+            throws ContradictionException, TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        solver.newVar(1);
+        assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, 1 })));
+        IVecInt explanation = solver.unsatExplanation();
+        assertTrue(explanation.contains(-1));
+        assertTrue(explanation.contains(1));
+        assertEquals(2, explanation.size());
+    }
 
-	@Test
-	public void testInconsistencyInAssumption() throws ContradictionException,
-			TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		solver.newVar(3);
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, 2, 3, 1 })));
-		IVecInt explanation = solver.unsatExplanation();
-		assertTrue(explanation.contains(-1));
-		assertTrue(explanation.contains(1));
-		assertEquals(2, explanation.size());
-	}
+    @Test
+    public void testInconsistencyInAssumption() throws ContradictionException,
+            TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        solver.newVar(3);
+        assertFalse(solver.isSatisfiable(new VecInt(new int[] { -1, 2, 3, 1 })));
+        IVecInt explanation = solver.unsatExplanation();
+        assertTrue(explanation.contains(-1));
+        assertTrue(explanation.contains(1));
+        assertEquals(2, explanation.size());
+    }
 
-	@Test
-	public void testVoidFormula() throws ContradictionException,
-			TimeoutException {
-		final ISolver solver = SolverFactory.newDefault();
-		assertTrue(solver.isSatisfiable(new VecInt(new int[] { -1 })));
-		assertTrue(solver.isSatisfiable(new VecInt(new int[] { 1 })));
-	}
+    @Test
+    public void testVoidFormula() throws ContradictionException,
+            TimeoutException {
+        final ISolver solver = SolverFactory.newDefault();
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { -1 })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { 1 })));
+    }
 }

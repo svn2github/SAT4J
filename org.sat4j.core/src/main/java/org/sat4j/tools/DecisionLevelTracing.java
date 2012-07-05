@@ -38,39 +38,39 @@ import org.sat4j.specs.Lbool;
  */
 public class DecisionLevelTracing extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int counter;
+    private int counter;
 
-	private final IVisualizationTool visuTool;
+    private final IVisualizationTool visuTool;
 
-	public DecisionLevelTracing(IVisualizationTool visuTool) {
-		this.visuTool = visuTool;
-		visuTool.init();
-		counter = 0;
-	}
+    public DecisionLevelTracing(IVisualizationTool visuTool) {
+        this.visuTool = visuTool;
+        visuTool.init();
+        this.counter = 0;
+    }
 
-	@Override
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		counter++;
-	}
+    @Override
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        this.counter++;
+    }
 
-	@Override
-	public void end(Lbool result) {
-		visuTool.end();
-	}
+    @Override
+    public void end(Lbool result) {
+        this.visuTool.end();
+    }
 
-	@Override
-	public void start() {
-		visuTool.init();
-	}
+    @Override
+    public void start() {
+        this.visuTool.init();
+    }
 
-	@Override
-	public void backjump(int backjumpLevel) {
-		visuTool.addPoint(counter, backjumpLevel);
-	}
+    @Override
+    public void backjump(int backjumpLevel) {
+        this.visuTool.addPoint(this.counter, backjumpLevel);
+    }
 
 }

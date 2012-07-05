@@ -55,46 +55,46 @@ import org.sat4j.tools.SolutionCounter;
  */
 public final class MoreThanSAT {
 
-	/**
-	 * This constructor is private to prevent people to use instances of that
-	 * class.
-	 * 
-	 */
-	private MoreThanSAT() {
-		// to silent PMD audit
-	}
+    /**
+     * This constructor is private to prevent people to use instances of that
+     * class.
+     * 
+     */
+    private MoreThanSAT() {
+        // to silent PMD audit
+    }
 
-	public static void main(final String[] args) {
-		final ISolver solver = SolverFactory.newDefault();
-		final SolutionCounter sc = new SolutionCounter(solver);
-		solver.setTimeout(3600); // 1 hour timeout
-		Reader reader = new InstanceReader(solver);
+    public static void main(final String[] args) {
+        final ISolver solver = SolverFactory.newDefault();
+        final SolutionCounter sc = new SolutionCounter(solver);
+        solver.setTimeout(3600); // 1 hour timeout
+        Reader reader = new InstanceReader(solver);
 
-		// filename is given on the command line
-		try {
-			final IProblem problem = reader.parseInstance(args[0]);
-			if (problem.isSatisfiable()) {
-				System.out.println(Messages.getString("MoreThanSAT.0")); //$NON-NLS-1$
-				reader.decode(problem.model(), new PrintWriter(System.out));
-				IVecInt backbone = RemiUtils.backbone(solver);
-				System.out
-						.println(Messages.getString("MoreThanSAT.1") + backbone); //$NON-NLS-1$
-				System.out.println(Messages.getString("MoreThanSAT.2")); //$NON-NLS-1$
-				System.out.println(Messages.getString("MoreThanSAT.3") //$NON-NLS-1$
-						+ sc.countSolutions());
-			} else {
-				System.out.println(Messages.getString("MoreThanSAT.4")); //$NON-NLS-1$
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (ParseFormatException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ContradictionException e) {
-			System.out.println(Messages.getString("MoreThanSAT.5")); //$NON-NLS-1$
-		} catch (TimeoutException e) {
-			System.out.println(Messages.getString("MoreThanSAT.6")); //$NON-NLS-1$
-		}
-	}
+        // filename is given on the command line
+        try {
+            final IProblem problem = reader.parseInstance(args[0]);
+            if (problem.isSatisfiable()) {
+                System.out.println(Messages.getString("MoreThanSAT.0")); //$NON-NLS-1$
+                reader.decode(problem.model(), new PrintWriter(System.out));
+                IVecInt backbone = RemiUtils.backbone(solver);
+                System.out
+                        .println(Messages.getString("MoreThanSAT.1") + backbone); //$NON-NLS-1$
+                System.out.println(Messages.getString("MoreThanSAT.2")); //$NON-NLS-1$
+                System.out.println(Messages.getString("MoreThanSAT.3") //$NON-NLS-1$
+                        + sc.countSolutions());
+            } else {
+                System.out.println(Messages.getString("MoreThanSAT.4")); //$NON-NLS-1$
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ParseFormatException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ContradictionException e) {
+            System.out.println(Messages.getString("MoreThanSAT.5")); //$NON-NLS-1$
+        } catch (TimeoutException e) {
+            System.out.println(Messages.getString("MoreThanSAT.6")); //$NON-NLS-1$
+        }
+    }
 }

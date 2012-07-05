@@ -41,8 +41,8 @@ import junit.framework.TestCase;
 /**
  * @author leberre
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class QueueTest extends TestCase {
 
@@ -60,55 +60,55 @@ public class QueueTest extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        qu = new IntQueue();
+        this.qu = new IntQueue();
     }
 
     public void testInsert() {
-        qu.ensure(15);
+        this.qu.ensure(15);
         for (int i = 0; i < 15; i++) {
-            qu.insert(i);
+            this.qu.insert(i);
         }
         for (int i = 0; i < 15; i++) {
-            assertEquals(i, qu.dequeue());
+            assertEquals(i, this.qu.dequeue());
         }
     }
 
     public void testDequeue() {
-        qu.insert(1);
-        qu.insert(2);
-        assertEquals(2, qu.size());
-        int i = qu.dequeue();
+        this.qu.insert(1);
+        this.qu.insert(2);
+        assertEquals(2, this.qu.size());
+        int i = this.qu.dequeue();
         assertEquals(1, i);
-        qu.insert(3);
-        assertEquals(2, qu.size());
-        i = qu.dequeue();
+        this.qu.insert(3);
+        assertEquals(2, this.qu.size());
+        i = this.qu.dequeue();
         assertEquals(2, i);
-        i = qu.dequeue();
+        i = this.qu.dequeue();
         assertEquals(3, i);
     }
 
     public void testClear() {
-        assertEquals(0, qu.size());
-        qu.insert(1);
-        qu.insert(2);
-        assertEquals(2, qu.size());
-        qu.clear();
-        assertEquals(0, qu.size());
-        qu.insert(1);
-        qu.insert(2);
-        assertEquals(2, qu.size());
+        assertEquals(0, this.qu.size());
+        this.qu.insert(1);
+        this.qu.insert(2);
+        assertEquals(2, this.qu.size());
+        this.qu.clear();
+        assertEquals(0, this.qu.size());
+        this.qu.insert(1);
+        this.qu.insert(2);
+        assertEquals(2, this.qu.size());
     }
 
     public void testSize() {
-        assertEquals(0, qu.size());
-        qu.insert(1);
-        assertEquals(1, qu.size());
-        qu.insert(2);
-        assertEquals(2, qu.size());
-        qu.dequeue();
-        assertEquals(1, qu.size());
-        qu.dequeue();
-        assertEquals(0, qu.size());
+        assertEquals(0, this.qu.size());
+        this.qu.insert(1);
+        assertEquals(1, this.qu.size());
+        this.qu.insert(2);
+        assertEquals(2, this.qu.size());
+        this.qu.dequeue();
+        assertEquals(1, this.qu.size());
+        this.qu.dequeue();
+        assertEquals(0, this.qu.size());
     }
 
     private IntQueue qu;

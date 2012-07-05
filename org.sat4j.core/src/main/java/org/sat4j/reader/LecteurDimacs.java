@@ -54,189 +54,198 @@ import org.sat4j.specs.IVecInt;
  */
 public class LecteurDimacs extends Reader implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/* taille du buffer */
-	private final static int TAILLE_BUF = 16384;
+    /* taille du buffer */
+    private final static int TAILLE_BUF = 16384;
 
-	private final ISolver s;
+    private final ISolver s;
 
-	private transient BufferedInputStream in;
+    private transient BufferedInputStream in;
 
-	/* nombre de literaux dans le fichier */
-	private int nbVars = -1;
+    /* nombre de literaux dans le fichier */
+    private int nbVars = -1;
 
-	private int nbClauses = -1;
+    private int nbClauses = -1;
 
-	private static final char EOF = (char) -1;
+    private static final char EOF = (char) -1;
 
-	/*
-	 * nomFichier repr?sente le nom du fichier ? lire
-	 */
-	public LecteurDimacs(ISolver s) {
-		this.s = s;
-	}
+    /*
+     * nomFichier repr?sente le nom du fichier ? lire
+     */
+    public LecteurDimacs(ISolver s) {
+        this.s = s;
+    }
 
-	@Override
-	public final IProblem parseInstance(final InputStream input)
-			throws ParseFormatException, ContradictionException, IOException {
+    @Override
+    public final IProblem parseInstance(final InputStream input)
+            throws ParseFormatException, ContradictionException, IOException {
 
-		this.in = new BufferedInputStream(input, LecteurDimacs.TAILLE_BUF);
-		s.reset();
-		passerCommentaire();
-		if (nbVars < 0)
-			throw new ParseFormatException(
-					"DIMACS error: wrong max number of variables");
-		s.newVar(nbVars);
-		s.setExpectedNumberOfClauses(nbClauses);
-		char car = passerEspaces();
-		if (nbClauses > 0) {
-			if (car == EOF)
-				throw new ParseFormatException(
-						"DIMACS error: the clauses are missing");
-			ajouterClauses(car);
-		}
-		input.close();
-		return s;
-	}
+        this.in = new BufferedInputStream(input, LecteurDimacs.TAILLE_BUF);
+        this.s.reset();
+        passerCommentaire();
+        if (this.nbVars < 0) {
+            throw new ParseFormatException(
+                    "DIMACS error: wrong max number of variables");
+        }
+        this.s.newVar(this.nbVars);
+        this.s.setExpectedNumberOfClauses(this.nbClauses);
+        char car = passerEspaces();
+        if (this.nbClauses > 0) {
+            if (car == EOF) {
+                throw new ParseFormatException(
+                        "DIMACS error: the clauses are missing");
+            }
+            ajouterClauses(car);
+        }
+        input.close();
+        return this.s;
+    }
 
-	/** on passe les commentaires et on lit le nombre de literaux */
-	private char passerCommentaire() throws IOException {
-		char car;
-		for (;;) {
-			car = passerEspaces();
-			if (car == 'p') {
-				car = lectureNombreLiteraux();
-			}
-			if (car != 'c' && car != 'p')
-				break; /* fin des commentaires */
-			car = nextLine(); /* on passe la ligne de commentaire */
-			if (car == EOF)
-				break;
-		}
-		return car;
-	}
+    /** on passe les commentaires et on lit le nombre de literaux */
+    private char passerCommentaire() throws IOException {
+        char car;
+        for (;;) {
+            car = passerEspaces();
+            if (car == 'p') {
+                car = lectureNombreLiteraux();
+            }
+            if (car != 'c' && car != 'p') {
+                break; /* fin des commentaires */
+            }
+            car = nextLine(); /* on passe la ligne de commentaire */
+            if (car == EOF) {
+                break;
+            }
+        }
+        return car;
+    }
 
-	/** lit le nombre repr?sentant le nombre de literaux */
-	private char lectureNombreLiteraux() throws IOException {
-		char car = nextChiffre(); /* on lit le prchain chiffre */
-		if (car != EOF) {
-			nbVars = car - '0';
-			for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
-				car = (char) in.read();
-				if (car < '0' || car > '9')
-					break;
-				nbVars = 10 * nbVars + (car - '0');
-			}
-			car = nextChiffre();
-			nbClauses = car - '0';
-			for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
-				car = (char) in.read();
-				if (car < '0' || car > '9')
-					break;
-				nbClauses = 10 * nbClauses + (car - '0');
-			}
-			if (car != '\n' && car != EOF)
-				nextLine(); /* on lit la fin de la ligne */
-		}
-		return car;
-	}
+    /** lit le nombre repr?sentant le nombre de literaux */
+    private char lectureNombreLiteraux() throws IOException {
+        char car = nextChiffre(); /* on lit le prchain chiffre */
+        if (car != EOF) {
+            this.nbVars = car - '0';
+            for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
+                car = (char) this.in.read();
+                if (car < '0' || car > '9') {
+                    break;
+                }
+                this.nbVars = 10 * this.nbVars + car - '0';
+            }
+            car = nextChiffre();
+            this.nbClauses = car - '0';
+            for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
+                car = (char) this.in.read();
+                if (car < '0' || car > '9') {
+                    break;
+                }
+                this.nbClauses = 10 * this.nbClauses + car - '0';
+            }
+            if (car != '\n' && car != EOF) {
+                nextLine(); /* on lit la fin de la ligne */
+            }
+        }
+        return car;
+    }
 
-	/**
-	 * lit les clauses et les ajoute dans le vecteur donn? en param?tre
-	 * 
-	 * @throws ParseFormatException
-	 */
-	private void ajouterClauses(char car) throws IOException,
-			ContradictionException, ParseFormatException {
-		final IVecInt lit = new VecInt();
-		int val = 0;
-		boolean neg = false;
-		for (;;) {
-			/* on lit le signe du literal */
-			if (car == '-') {
-				neg = true;
-				car = (char) in.read();
-			} else if (car == '+')
-				car = (char) in.read();
-			else /* on le 1er chiffre du literal */
-			if (car >= '0' && car <= '9') {
-				val = car - '0';
-				car = (char) in.read();
-			} else
-				throw new ParseFormatException("Unknown character " + car);
-			/* on lit la suite du literal */
-			while (car >= '0' && car <= '9') {
-				val = (val * 10) + car - '0';
-				car = (char) in.read();
-			}
-			if (val == 0) { // on a lu toute la clause
-				s.addClause(lit);
-				lit.clear();
-			} else {
-				/* on ajoute le literal au vecteur */
-				// s.newVar(val-1);
-				lit.push(neg ? -val : val);
-				neg = false;
-				val = 0; /* on reinitialise les variables */
-			}
-			if (car != EOF)
-				car = passerEspaces();
-			if (car == EOF) {
-				if (!lit.isEmpty()) {
-					s.addClause(lit);
-				}
-				break; /* on a lu tout le fichier */
-			}
-		}
-	}
+    /**
+     * lit les clauses et les ajoute dans le vecteur donn? en param?tre
+     * 
+     * @throws ParseFormatException
+     */
+    private void ajouterClauses(char car) throws IOException,
+            ContradictionException, ParseFormatException {
+        final IVecInt lit = new VecInt();
+        int val = 0;
+        boolean neg = false;
+        for (;;) {
+            /* on lit le signe du literal */
+            if (car == '-') {
+                neg = true;
+                car = (char) this.in.read();
+            } else if (car == '+') {
+                car = (char) this.in.read();
+            } else /* on le 1er chiffre du literal */
+            if (car >= '0' && car <= '9') {
+                val = car - '0';
+                car = (char) this.in.read();
+            } else {
+                throw new ParseFormatException("Unknown character " + car);
+            }
+            /* on lit la suite du literal */
+            while (car >= '0' && car <= '9') {
+                val = val * 10 + car - '0';
+                car = (char) this.in.read();
+            }
+            if (val == 0) { // on a lu toute la clause
+                this.s.addClause(lit);
+                lit.clear();
+            } else {
+                /* on ajoute le literal au vecteur */
+                // s.newVar(val-1);
+                lit.push(neg ? -val : val);
+                neg = false;
+                val = 0; /* on reinitialise les variables */
+            }
+            if (car != EOF) {
+                car = passerEspaces();
+            }
+            if (car == EOF) {
+                if (!lit.isEmpty()) {
+                    this.s.addClause(lit);
+                }
+                break; /* on a lu tout le fichier */
+            }
+        }
+    }
 
-	/** passe tout les caract?res d'espacement (espace ou \n) */
-	private char passerEspaces() throws IOException {
-		char car;
+    /** passe tout les caract?res d'espacement (espace ou \n) */
+    private char passerEspaces() throws IOException {
+        char car;
 
-		do {
-			car = (char) in.read();
-		} while (car == ' ' || car == '\n');
+        do {
+            car = (char) this.in.read();
+        } while (car == ' ' || car == '\n');
 
-		return car;
-	}
+        return car;
+    }
 
-	/** passe tout les caract?res jusqu? rencontrer une fin de la ligne */
-	private char nextLine() throws IOException {
-		char car;
-		do {
-			car = (char) in.read();
-		} while ((car != '\n') && (car != EOF));
-		return car;
-	}
+    /** passe tout les caract?res jusqu? rencontrer une fin de la ligne */
+    private char nextLine() throws IOException {
+        char car;
+        do {
+            car = (char) this.in.read();
+        } while (car != '\n' && car != EOF);
+        return car;
+    }
 
-	/** passe tout les caract?re jusqu'? rencontrer un chiffre */
-	private char nextChiffre() throws IOException {
-		char car;
-		do {
-			car = (char) in.read();
-		} while ((car < '0') || (car > '9') && (car != EOF));
-		return car;
-	}
+    /** passe tout les caract?re jusqu'? rencontrer un chiffre */
+    private char nextChiffre() throws IOException {
+        char car;
+        do {
+            car = (char) this.in.read();
+        } while (car < '0' || car > '9' && car != EOF);
+        return car;
+    }
 
-	@Override
-	public String decode(int[] model) {
-		StringBuffer stb = new StringBuffer();
-		for (int i = 0; i < model.length; i++) {
-			stb.append(model[i]);
-			stb.append(" ");
-		}
-		stb.append("0");
-		return stb.toString();
-	}
+    @Override
+    public String decode(int[] model) {
+        StringBuffer stb = new StringBuffer();
+        for (int element : model) {
+            stb.append(element);
+            stb.append(" ");
+        }
+        stb.append("0");
+        return stb.toString();
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		for (int i = 0; i < model.length; i++) {
-			out.print(model[i]);
-			out.print(" ");
-		}
-		out.print("0");
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        for (int element : model) {
+            out.print(element);
+            out.print(" ");
+        }
+        out.print("0");
+    }
 }

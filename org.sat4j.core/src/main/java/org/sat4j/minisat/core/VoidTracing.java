@@ -42,53 +42,53 @@ import org.sat4j.specs.SearchListener;
  * 
  */
 final class VoidTracing implements SearchListener<ISolverService> {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void assuming(int p) {
-	}
+    public void assuming(int p) {
+    }
 
-	public void propagating(int p, IConstr reason) {
-	}
+    public void propagating(int p, IConstr reason) {
+    }
 
-	public void backtracking(int p) {
-	}
+    public void backtracking(int p) {
+    }
 
-	public void adding(int p) {
-	}
+    public void adding(int p) {
+    }
 
-	public void learn(IConstr clause) {
-	}
+    public void learn(IConstr clause) {
+    }
 
-	public void delete(int[] clause) {
-	}
+    public void delete(int[] clause) {
+    }
 
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-	}
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+    }
 
-	public void conflictFound(int p) {
-	}
+    public void conflictFound(int p) {
+    }
 
-	public void solutionFound(int[] model) {
-	}
+    public void solutionFound(int[] model) {
+    }
 
-	public void beginLoop() {
-	}
+    public void beginLoop() {
+    }
 
-	public void start() {
-	}
+    public void start() {
+    }
 
-	public void end(Lbool result) {
-	}
+    public void end(Lbool result) {
+    }
 
-	public void restarting() {
-	}
+    public void restarting() {
+    }
 
-	public void backjump(int backjumpLevel) {
-	}
+    public void backjump(int backjumpLevel) {
+    }
 
-	public void init(ISolverService solverService) {
-	}
+    public void init(ISolverService solverService) {
+    }
 
-	public void cleaning() {
-	}
+    public void cleaning() {
+    }
 }

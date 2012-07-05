@@ -38,47 +38,47 @@ package org.sat4j;
  */
 public final class ExitCode {
 
-	public static final ExitCode OPTIMUM_FOUND = new ExitCode(30,
-			"OPTIMUM FOUND");
-	public static final ExitCode UPPER_BOUND = new ExitCode(30, "UPPER BOUND");
-	public static final ExitCode SATISFIABLE = new ExitCode(10, "SATISFIABLE");
-	public static final ExitCode UNKNOWN = new ExitCode(0, "UNKNOWN");
-	public static final ExitCode UNSATISFIABLE = new ExitCode(20,
-			"UNSATISFIABLE");
+    public static final ExitCode OPTIMUM_FOUND = new ExitCode(30,
+            "OPTIMUM FOUND");
+    public static final ExitCode UPPER_BOUND = new ExitCode(30, "UPPER BOUND");
+    public static final ExitCode SATISFIABLE = new ExitCode(10, "SATISFIABLE");
+    public static final ExitCode UNKNOWN = new ExitCode(0, "UNKNOWN");
+    public static final ExitCode UNSATISFIABLE = new ExitCode(20,
+            "UNSATISFIABLE");
 
-	/** value of the exit code. */
-	private final int value;
+    /** value of the exit code. */
+    private final int value;
 
-	/** alternative textual representation of the exit code. */
-	private final String str;
+    /** alternative textual representation of the exit code. */
+    private final String str;
 
-	/**
-	 * creates an exit code with a given value and an alternative textual
-	 * representation.
-	 * 
-	 * @param i
-	 *            the value of the exit code
-	 * @param str
-	 *            the alternative textual representation
-	 */
-	private ExitCode(final int i, final String str) {
-		this.value = i;
-		this.str = str;
-	}
+    /**
+     * creates an exit code with a given value and an alternative textual
+     * representation.
+     * 
+     * @param i
+     *            the value of the exit code
+     * @param str
+     *            the alternative textual representation
+     */
+    private ExitCode(final int i, final String str) {
+        this.value = i;
+        this.str = str;
+    }
 
-	/**
-	 * @return the exit code value
-	 */
-	public int value() {
-		return value;
-	}
+    /**
+     * @return the exit code value
+     */
+    public int value() {
+        return this.value;
+    }
 
-	/**
-	 * @return the name of the enum or the alternative textual representation if
-	 *         any.
-	 */
-	@Override
-	public String toString() {
-		return str;
-	}
+    /**
+     * @return the name of the enum or the alternative textual representation if
+     *         any.
+     */
+    @Override
+    public String toString() {
+        return this.str;
+    }
 }

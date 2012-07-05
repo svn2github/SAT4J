@@ -54,8 +54,8 @@ public final class IntQueue implements Serializable {
      */
     public void insert(final int x) {
         // ensure(size + 1);
-        assert size < myarray.length;
-        myarray[size++] = x;
+        assert this.size < this.myarray.length;
+        this.myarray[this.size++] = x;
     }
 
     /**
@@ -65,16 +65,16 @@ public final class IntQueue implements Serializable {
      * @return the firsst element on the queue
      */
     public int dequeue() {
-        assert first < size;
-        return myarray[first++];
+        assert this.first < this.size;
+        return this.myarray[this.first++];
     }
 
     /**
      * Vide la queue
      */
     public void clear() {
-        size = 0;
-        first = 0;
+        this.size = 0;
+        this.first = 0;
     }
 
     /**
@@ -83,7 +83,7 @@ public final class IntQueue implements Serializable {
      * @return le nombre d'elements restant dans la queue
      */
     public int size() {
-        return size - first;
+        return this.size - this.first;
     }
 
     /**
@@ -93,10 +93,10 @@ public final class IntQueue implements Serializable {
      *            la taille maximale de la queue
      */
     public void ensure(final int nsize) {
-        if (nsize >= myarray.length) {
-            int[] narray = new int[Math.max(nsize, size * 2)];
-            System.arraycopy(myarray, 0, narray, 0, size);
-            myarray = narray;
+        if (nsize >= this.myarray.length) {
+            int[] narray = new int[Math.max(nsize, this.size * 2)];
+            System.arraycopy(this.myarray, 0, narray, 0, this.size);
+            this.myarray = narray;
         }
     }
 
@@ -104,12 +104,12 @@ public final class IntQueue implements Serializable {
     public String toString() {
         StringBuffer stb = new StringBuffer();
         stb.append(">"); //$NON-NLS-1$
-        for (int i = first; i < size - 1; i++) {
-            stb.append(myarray[i]);
+        for (int i = this.first; i < this.size - 1; i++) {
+            stb.append(this.myarray[i]);
             stb.append(" "); //$NON-NLS-1$
         }
-        if (first != size) {
-            stb.append(myarray[size - 1]);
+        if (this.first != this.size) {
+            stb.append(this.myarray[this.size - 1]);
         }
         stb.append("<"); //$NON-NLS-1$
         return stb.toString();

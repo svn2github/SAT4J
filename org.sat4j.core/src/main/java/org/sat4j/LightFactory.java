@@ -51,53 +51,53 @@ import org.sat4j.specs.ISolver;
  * @since 2.2
  */
 public class LightFactory extends ASolverFactory<ISolver> {
-	private static final long serialVersionUID = 1460304168178023681L;
-	private static LightFactory instance;
+    private static final long serialVersionUID = 1460304168178023681L;
+    private static LightFactory instance;
 
-	private static synchronized void createInstance() {
-		if (instance == null) {
-			instance = new LightFactory();
-		}
-	}
+    private static synchronized void createInstance() {
+        if (instance == null) {
+            instance = new LightFactory();
+        }
+    }
 
-	/**
-	 * Access to the single instance of the factory.
-	 * 
-	 * @return the singleton of that class.
-	 */
-	public static LightFactory instance() {
-		if (instance == null) {
-			createInstance();
-		}
-		return instance;
-	}
+    /**
+     * Access to the single instance of the factory.
+     * 
+     * @return the singleton of that class.
+     */
+    public static LightFactory instance() {
+        if (instance == null) {
+            createInstance();
+        }
+        return instance;
+    }
 
-	@Override
-	public ISolver defaultSolver() {
-		MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
-		Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
-				learning, new MixedDataStructureDanielWL(), new VarOrderHeap(new RSATPhaseSelectionStrategy()),
-				new ArminRestarts());
-		learning.setSolver(solver);
-		solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-		solver.setSearchParams(new SearchParams(1.1, 100));
-		return solver;
-	}
+    @Override
+    public ISolver defaultSolver() {
+        MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
+                learning, new MixedDataStructureDanielWL(), new VarOrderHeap(
+                        new RSATPhaseSelectionStrategy()), new ArminRestarts());
+        learning.setSolver(solver);
+        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+        solver.setSearchParams(new SearchParams(1.1, 100));
+        return solver;
+    }
 
-	@Override
-	public ISolver lightSolver() {
-		return defaultSolver();
-	}
+    @Override
+    public ISolver lightSolver() {
+        return defaultSolver();
+    }
 
-	public static void main(final String[] args) {
-		BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
-				LightFactory.instance());
-		if (args.length != 1) {
-			lanceur.usage();
-			return;
-		}
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    public static void main(final String[] args) {
+        BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
+                LightFactory.instance());
+        if (args.length != 1) {
+            lanceur.usage();
+            return;
+        }
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 
 }

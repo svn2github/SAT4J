@@ -47,113 +47,116 @@ import org.sat4j.specs.ISolver;
  */
 public class InstanceReader extends Reader {
 
-	private AAGReader aag;
+    private AAGReader aag;
 
-	private AIGReader aig;
+    private AIGReader aig;
 
-	private DimacsReader ezdimacs;
+    private DimacsReader ezdimacs;
 
-	private LecteurDimacs dimacs;
+    private LecteurDimacs dimacs;
 
-	private Reader reader = null;
+    private Reader reader = null;
 
-	private final ISolver solver;
+    private final ISolver solver;
 
-	public InstanceReader(ISolver solver) {
-		// dimacs = new DimacsReader(solver);
-		this.solver = solver;
-	}
+    public InstanceReader(ISolver solver) {
+        // dimacs = new DimacsReader(solver);
+        this.solver = solver;
+    }
 
-	private Reader getDefaultSATReader() {
-		if (dimacs == null) {
-			dimacs = new LecteurDimacs(solver);// new LecteurDimacs(solver);
-		}
-		return dimacs;
-	}
+    private Reader getDefaultSATReader() {
+        if (this.dimacs == null) {
+            this.dimacs = new LecteurDimacs(this.solver);// new
+                                                         // LecteurDimacs(solver);
+        }
+        return this.dimacs;
+    }
 
-	private Reader getEZSATReader() {
-		if (ezdimacs == null) {
-			ezdimacs = new DimacsReader(solver);// new LecteurDimacs(solver);
-		}
-		return ezdimacs;
-	}
+    private Reader getEZSATReader() {
+        if (this.ezdimacs == null) {
+            this.ezdimacs = new DimacsReader(this.solver);// new
+                                                          // LecteurDimacs(solver);
+        }
+        return this.ezdimacs;
+    }
 
-	private Reader getAIGReader() {
-		if (aig == null) {
-			aig = new AIGReader(solver);
-		}
-		return aig;
-	}
+    private Reader getAIGReader() {
+        if (this.aig == null) {
+            this.aig = new AIGReader(this.solver);
+        }
+        return this.aig;
+    }
 
-	private Reader getAAGReader() {
-		if (aag == null) {
-			aag = new AAGReader(solver);
-		}
-		return aag;
-	}
+    private Reader getAAGReader() {
+        if (this.aag == null) {
+            this.aag = new AAGReader(this.solver);
+        }
+        return this.aag;
+    }
 
-	@Override
-	public IProblem parseInstance(String filename)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
-		String fname;
-		boolean isHttp = false;
-		String tempFileName = "";
-		String prefix = "";
+    @Override
+    public IProblem parseInstance(String filename)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        String fname;
+        boolean isHttp = false;
+        String tempFileName = "";
+        String prefix = "";
 
-		if (filename.startsWith("http://")) {
-			isHttp = true;
-			tempFileName = filename;
-			filename = filename.substring(filename.lastIndexOf('/'),
-					filename.length() - 1);
-		}
+        if (filename.startsWith("http://")) {
+            isHttp = true;
+            tempFileName = filename;
+            filename = filename.substring(filename.lastIndexOf('/'),
+                    filename.length() - 1);
+        }
 
-		if (filename.indexOf(':') != -1) {
+        if (filename.indexOf(':') != -1) {
 
-			String[] parts = filename.split(":");
-			filename = parts[1];
-			prefix = parts[0].toUpperCase(Locale.getDefault());
+            String[] parts = filename.split(":");
+            filename = parts[1];
+            prefix = parts[0].toUpperCase(Locale.getDefault());
 
-		}
+        }
 
-		if (filename.endsWith(".gz")) {
-			fname = filename.substring(0, filename.lastIndexOf('.'));
-		} else {
-			fname = filename;
-		}
-		if ("EZCNF".equals(prefix)) {
-			reader = getEZSATReader();
-		} else if (fname.endsWith(".aag")) {
-			reader = getAAGReader();
-		} else if (fname.endsWith(".aig")) {
-			reader = getAIGReader();
+        if (filename.endsWith(".gz")) {
+            fname = filename.substring(0, filename.lastIndexOf('.'));
+        } else {
+            fname = filename;
+        }
+        if ("EZCNF".equals(prefix)) {
+            this.reader = getEZSATReader();
+        } else if (fname.endsWith(".aag")) {
+            this.reader = getAAGReader();
+        } else if (fname.endsWith(".aig")) {
+            this.reader = getAIGReader();
 
-		} else {
-			reader = getDefaultSATReader();
-		}
+        } else {
+            this.reader = getDefaultSATReader();
+        }
 
-		if (isHttp) {
-			return reader.parseInstance((new URL(tempFileName)).openStream());
-		}
-		return reader.parseInstance(filename);
-	}
+        if (isHttp) {
+            return this.reader
+                    .parseInstance(new URL(tempFileName).openStream());
+        }
+        return this.reader.parseInstance(filename);
+    }
 
-	@Override
-	@Deprecated
-	public String decode(int[] model) {
-		return reader.decode(model);
-	}
+    @Override
+    @Deprecated
+    public String decode(int[] model) {
+        return this.reader.decode(model);
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		reader.decode(model, out);
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        this.reader.decode(model, out);
+    }
 
-	@Override
-	public IProblem parseInstance(java.io.InputStream in)
-			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException(
-				"Use a domain specific Reader (LecteurDimacs, AIGReader, etc.) for stream input ");
-	}
+    @Override
+    public IProblem parseInstance(java.io.InputStream in)
+            throws ParseFormatException, ContradictionException, IOException {
+        throw new UnsupportedOperationException(
+                "Use a domain specific Reader (LecteurDimacs, AIGReader, etc.) for stream input ");
+    }
 
 }

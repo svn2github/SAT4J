@@ -52,8 +52,8 @@ import org.sat4j.specs.TimeoutException;
 /**
  * @author leberre
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class TestsFonctionnels extends TestCase {
 
@@ -70,8 +70,8 @@ public class TestsFonctionnels extends TestCase {
 
     public void testSat() {
         try {
-            reader.parseInstance(PREFIX + "aim-50-yes-ok.cnf");
-            assertTrue(solver.isSatisfiable());
+            this.reader.parseInstance(PREFIX + "aim-50-yes-ok.cnf");
+            assertTrue(this.solver.isSatisfiable());
         } catch (TimeoutException e) {
             fail();
         } catch (Exception e) {
@@ -81,8 +81,8 @@ public class TestsFonctionnels extends TestCase {
 
     public void testUnsat() throws TimeoutException {
         try {
-            reader.parseInstance(PREFIX + "aim-50-no-ok.cnf");
-            assertFalse(solver.isSatisfiable());
+            this.reader.parseInstance(PREFIX + "aim-50-no-ok.cnf");
+            assertFalse(this.solver.isSatisfiable());
         } catch (IOException e) {
             fail();
         } catch (ParseFormatException e) {
@@ -93,34 +93,34 @@ public class TestsFonctionnels extends TestCase {
     }
 
     public void testTrivialUnsat() {
-        solver.newVar(1);
+        this.solver.newVar(1);
         IVecInt vec = new VecInt();
         vec.push(1);
         try {
-            solver.addClause(vec);
+            this.solver.addClause(vec);
         } catch (ContradictionException e) {
             fail();
         }
         vec.clear();
         vec.push(-1);
         try {
-            solver.addClause(vec);
+            this.solver.addClause(vec);
             fail();
         } catch (ContradictionException e1) {
         }
     }
 
     public void testTrivialSat() throws TimeoutException {
-        solver.reset();
-        solver.newVar(2);
+        this.solver.reset();
+        this.solver.newVar(2);
         try {
             IVecInt vec = new VecInt();
             vec.push(1);
-            solver.addClause(vec);
+            this.solver.addClause(vec);
             vec.clear();
             vec.push(-2);
-            solver.addClause(vec);
-            assertTrue(solver.isSatisfiable());
+            this.solver.addClause(vec);
+            assertTrue(this.solver.isSatisfiable());
         } catch (ContradictionException e) {
             fail();
         }
@@ -129,37 +129,37 @@ public class TestsFonctionnels extends TestCase {
     @Deprecated
     public void testTrivialSatNewVar() throws TimeoutException {
         try {
-            solver.newVar(0);
-            solver.newVar();
+            this.solver.newVar(0);
+            this.solver.newVar();
             IVecInt vec = new VecInt();
             vec.push(1);
-            solver.addClause(vec);
+            this.solver.addClause(vec);
             vec.clear();
-            solver.newVar();
+            this.solver.newVar();
             vec.push(-2);
-            solver.addClause(vec);
-            assertTrue(solver.isSatisfiable());
+            this.solver.addClause(vec);
+            assertTrue(this.solver.isSatisfiable());
         } catch (ContradictionException e) {
             fail();
         }
     }
 
     public void testBug001() throws TimeoutException {
-        solver.reset();
+        this.solver.reset();
         try {
-            reader.parseInstance(PREFIX + "bug001.cnf");
+            this.reader.parseInstance(PREFIX + "bug001.cnf");
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
-        assertTrue(solver.isSatisfiable());
+        assertTrue(this.solver.isSatisfiable());
     }
 
     public void testTrivialInconsistentFormula() {
-        solver.reset();
+        this.solver.reset();
         try {
-            reader.parseInstance(PREFIX + "test3.dimacs");
-            assertFalse(solver.isSatisfiable());
+            this.reader.parseInstance(PREFIX + "test3.dimacs");
+            assertFalse(this.solver.isSatisfiable());
         } catch (ContradictionException e) {
             // OK
         } catch (Exception e) {
@@ -169,10 +169,10 @@ public class TestsFonctionnels extends TestCase {
     }
 
     public void testCommentsInInstance() {
-        solver.reset();
+        this.solver.reset();
         try {
-            reader.parseInstance("EZCNF:"+PREFIX + "testcomments.cnf");
-            assertFalse(solver.isSatisfiable());
+            this.reader.parseInstance("EZCNF:" + PREFIX + "testcomments.cnf");
+            assertFalse(this.solver.isSatisfiable());
         } catch (ContradictionException e) {
             // OK
         } catch (Exception e) {
@@ -182,41 +182,41 @@ public class TestsFonctionnels extends TestCase {
 
     public void testRemoveConstraints() throws TimeoutException {
         try {
-            solver.newVar(3);
-            assertEquals(0, solver.nConstraints());
+            this.solver.newVar(3);
+            assertEquals(0, this.solver.nConstraints());
             IVecInt vec = new VecInt();
             vec.push(1).push(-2);
-            IConstr c = solver.addClause(vec);
+            IConstr c = this.solver.addClause(vec);
             assertNotNull(c);
-            assertEquals(1, solver.nConstraints());
+            assertEquals(1, this.solver.nConstraints());
             vec.clear();
             vec.push(-1).push(-2);
-            c = solver.addClause(vec);
+            c = this.solver.addClause(vec);
             assertNotNull(c);
-            assertEquals(2, solver.nConstraints());
+            assertEquals(2, this.solver.nConstraints());
             vec.clear();
             vec.push(-1).push(2);
-            solver.addClause(vec);
+            this.solver.addClause(vec);
             // assertNotNull(c);
-            assertEquals(3, solver.nConstraints());
+            assertEquals(3, this.solver.nConstraints());
             vec.clear();
             vec.push(1).push(2);
-            solver.addClause(vec);
-            assertEquals(4, solver.nConstraints());
+            this.solver.addClause(vec);
+            assertEquals(4, this.solver.nConstraints());
             // assertNotNull(c);
-            assertFalse(solver.isSatisfiable());
-            solver.removeConstr(c);
-            assertEquals(3, solver.nConstraints());
-            assertTrue(solver.isSatisfiable());
-            assertEquals(1, solver.model()[0]);
-            assertEquals(2, solver.model()[1]);
+            assertFalse(this.solver.isSatisfiable());
+            this.solver.removeConstr(c);
+            assertEquals(3, this.solver.nConstraints());
+            assertTrue(this.solver.isSatisfiable());
+            assertEquals(1, this.solver.model()[0]);
+            assertEquals(2, this.solver.model()[1]);
             vec.clear();
             vec.push(-1).push(-2);
             try {
-                c = solver.addClause(vec);
+                c = this.solver.addClause(vec);
                 assertNotNull(c);
-                assertEquals(4, solver.nConstraints());
-                assertFalse(solver.isSatisfiable());
+                assertEquals(4, this.solver.nConstraints());
+                assertFalse(this.solver.isSatisfiable());
             } catch (ContradictionException ce) {
                 // its fine
             }
@@ -226,55 +226,60 @@ public class TestsFonctionnels extends TestCase {
     }
 
     public void testRemoveAtLeast() {
-        solver.newVar(3);
+        this.solver.newVar(3);
         IVecInt c1 = new VecInt().push(1).push(2).push(3);
         try {
-            solver.addClause(c1); // 4 12 14
-            assertEquals(1, solver.nConstraints());
+            this.solver.addClause(c1); // 4 12 14
+            assertEquals(1, this.solver.nConstraints());
             assertEquals(3, c1.size());
-            IConstr atLeast = solver.addAtLeast(c1, 2);
-            assertEquals(2, solver.nConstraints());
-            solver.removeConstr(atLeast);
-            assertEquals(1, solver.nConstraints());
+            IConstr atLeast = this.solver.addAtLeast(c1, 2);
+            assertEquals(2, this.solver.nConstraints());
+            this.solver.removeConstr(atLeast);
+            assertEquals(1, this.solver.nConstraints());
         } catch (ContradictionException e) {
             fail();
         }
     }
 
     public void testIsImplied() {
-        solver.newVar(3);
+        this.solver.newVar(3);
         IVecInt c1 = new VecInt().push(1);
         try {
-            solver.addClause(c1);
-            assertTrue("isImplied(1) ", solver.getVocabulary().isImplied(2));
-            assertFalse("isImplied(2) :", solver.getVocabulary().isImplied(4));
-            solver.propagate();
-            assertTrue("isImplied(1) ", solver.getVocabulary().isImplied(2));
-            assertFalse("isImplied(2) :", solver.getVocabulary().isImplied(4));
+            this.solver.addClause(c1);
+            assertTrue("isImplied(1) ", this.solver.getVocabulary()
+                    .isImplied(2));
+            assertFalse("isImplied(2) :", this.solver.getVocabulary()
+                    .isImplied(4));
+            this.solver.propagate();
+            assertTrue("isImplied(1) ", this.solver.getVocabulary()
+                    .isImplied(2));
+            assertFalse("isImplied(2) :", this.solver.getVocabulary()
+                    .isImplied(4));
         } catch (ContradictionException e) {
             fail();
         }
     }
 
     public void testIsImplied3() {
-        solver.newVar(1);
+        this.solver.newVar(1);
         IVecInt c1 = new VecInt().push(-1);
         try {
-            solver.addClause(c1);
-            solver.propagate();
+            this.solver.addClause(c1);
+            this.solver.propagate();
         } catch (ContradictionException e) {
             fail();
         }
-        assertTrue("isImplied(1) ", solver.getVocabulary().isImplied(2));
-        assertFalse("isSatisfiedl(1)", solver.getVocabulary().isSatisfied(2));
-        assertTrue("isFalsified(1)", solver.getVocabulary().isFalsified(2));
+        assertTrue("isImplied(1) ", this.solver.getVocabulary().isImplied(2));
+        assertFalse("isSatisfiedl(1)",
+                this.solver.getVocabulary().isSatisfied(2));
+        assertTrue("isFalsified(1)", this.solver.getVocabulary().isFalsified(2));
     }
 
     public void testWhenNewVarNotCalled() {
         IVecInt c1 = new VecInt().push(-1);
         try {
-            solver.addClause(c1);
-            solver.propagate();
+            this.solver.addClause(c1);
+            this.solver.propagate();
         } catch (ContradictionException e) {
             fail();
         }
@@ -285,8 +290,8 @@ public class TestsFonctionnels extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        solver = SolverFactory.newMiniSATHeap();
-        reader = new InstanceReader(solver);
+        this.solver = SolverFactory.newMiniSATHeap();
+        this.reader = new InstanceReader(this.solver);
     }
 
     private Solver<DataStructureFactory> solver;

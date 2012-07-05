@@ -41,40 +41,40 @@ import org.sat4j.specs.Lbool;
  * 
  */
 public class SearchEnumeratorListener extends
-		SearchListenerAdapter<ISolverService> {
+        SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private ISolverService solverService;
+    private ISolverService solverService;
 
-	private int nbsolutions = 0;
+    private int nbsolutions = 0;
 
-	@Override
-	public void init(ISolverService solverService) {
-		this.solverService = solverService;
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.solverService = solverService;
+    }
 
-	@Override
-	public void solutionFound(int[] model) {
-		int[] clause = new int[model.length];
-		for (int i = 0; i < model.length; i++) {
-			clause[i] = -model[i];
-		}
-		solverService.backtrack(clause);
-		nbsolutions++;
-		System.out.println(new VecInt(model));
-	}
+    @Override
+    public void solutionFound(int[] model) {
+        int[] clause = new int[model.length];
+        for (int i = 0; i < model.length; i++) {
+            clause[i] = -model[i];
+        }
+        this.solverService.backtrack(clause);
+        this.nbsolutions++;
+        System.out.println(new VecInt(model));
+    }
 
-	@Override
-	public void end(Lbool result) {
-		assert result != Lbool.TRUE;
-		System.out.println("C'est fini !" + result);
-	}
+    @Override
+    public void end(Lbool result) {
+        assert result != Lbool.TRUE;
+        System.out.println("C'est fini !" + result);
+    }
 
-	public int getNumberOfSolutionFound() {
-		return nbsolutions;
-	}
+    public int getNumberOfSolutionFound() {
+        return this.nbsolutions;
+    }
 }

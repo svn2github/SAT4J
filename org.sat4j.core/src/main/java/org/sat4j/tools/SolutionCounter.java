@@ -62,54 +62,54 @@ import org.sat4j.specs.TimeoutException;
  */
 public class SolutionCounter extends SolverDecorator<ISolver> {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int lowerBound;
+    private int lowerBound;
 
-	public SolutionCounter(ISolver solver) {
-		super(solver);
-	}
+    public SolutionCounter(ISolver solver) {
+        super(solver);
+    }
 
-	/**
-	 * Get the number of solutions found before the timeout occurs.
-	 * 
-	 * @return the number of solutions found so far.
-	 * @since 2.1
-	 */
-	public int lowerBound() {
-		return lowerBound;
-	}
+    /**
+     * Get the number of solutions found before the timeout occurs.
+     * 
+     * @return the number of solutions found so far.
+     * @since 2.1
+     */
+    public int lowerBound() {
+        return this.lowerBound;
+    }
 
-	/**
-	 * Naive approach to count the solutions available in a boolean formula:
-	 * each time a solution is found, a new clause is added to prevent it to be
-	 * found again.
-	 * 
-	 * @return the number of solution found.
-	 * @throws TimeoutException
-	 *             if the timeout given to the solver is reached.
-	 */
-	public long countSolutions() throws TimeoutException {
-		lowerBound = 0;
-		boolean trivialfalsity = false;
+    /**
+     * Naive approach to count the solutions available in a boolean formula:
+     * each time a solution is found, a new clause is added to prevent it to be
+     * found again.
+     * 
+     * @return the number of solution found.
+     * @throws TimeoutException
+     *             if the timeout given to the solver is reached.
+     */
+    public long countSolutions() throws TimeoutException {
+        this.lowerBound = 0;
+        boolean trivialfalsity = false;
 
-		while (!trivialfalsity && isSatisfiable(true)) {
-			lowerBound++;
-			int[] last = model();
-			IVecInt clause = new VecInt(last.length);
-			for (int q : last) {
-				clause.push(-q);
-			}
-			try {
-				// System.out.println("Sol number "+nbsols+" adding " + clause);
-				addClause(clause);
-			} catch (ContradictionException e) {
-				trivialfalsity = true;
-			}
-		}
-		return lowerBound;
-	}
+        while (!trivialfalsity && isSatisfiable(true)) {
+            this.lowerBound++;
+            int[] last = model();
+            IVecInt clause = new VecInt(last.length);
+            for (int q : last) {
+                clause.push(-q);
+            }
+            try {
+                // System.out.println("Sol number "+nbsols+" adding " + clause);
+                addClause(clause);
+            } catch (ContradictionException e) {
+                trivialfalsity = true;
+            }
+        }
+        return this.lowerBound;
+    }
 }

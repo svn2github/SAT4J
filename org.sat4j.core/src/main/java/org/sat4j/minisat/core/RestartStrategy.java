@@ -39,45 +39,45 @@ import java.io.Serializable;
  */
 public interface RestartStrategy extends Serializable, ConflictTimer {
 
-	/**
-	 * Hook method called just before the search starts.
-	 * 
-	 * @param params
-	 *            the user's search parameters.
-	 * 
-	 */
-	void init(SearchParams params);
+    /**
+     * Hook method called just before the search starts.
+     * 
+     * @param params
+     *            the user's search parameters.
+     * 
+     */
+    void init(SearchParams params);
 
-	/**
-	 * Ask for the next restart in number of conflicts. Deprecated since 2.3.2
-	 * 
-	 * @return the delay in conflicts before the next restart.
-	 */
-	@Deprecated
-	long nextRestartNumberOfConflict();
+    /**
+     * Ask for the next restart in number of conflicts. Deprecated since 2.3.2
+     * 
+     * @return the delay in conflicts before the next restart.
+     */
+    @Deprecated
+    long nextRestartNumberOfConflict();
 
-	/**
-	 * Ask the strategy if the solver should restart.
-	 * 
-	 * @return true if the solver should restart, else false.
-	 */
-	boolean shouldRestart();
+    /**
+     * Ask the strategy if the solver should restart.
+     * 
+     * @return true if the solver should restart, else false.
+     */
+    boolean shouldRestart();
 
-	/**
-	 * Hook method called when a restart occurs (once the solver has backtracked
-	 * to top decision level).
-	 * 
-	 */
-	void onRestart();
+    /**
+     * Hook method called when a restart occurs (once the solver has backtracked
+     * to top decision level).
+     * 
+     */
+    void onRestart();
 
-	/**
-	 * Called when the solver backjumps to the root level.
-	 * 
-	 * @since 2.3.2
-	 */
-	void onBackjumpToRootLevel();
+    /**
+     * Called when the solver backjumps to the root level.
+     * 
+     * @since 2.3.2
+     */
+    void onBackjumpToRootLevel();
 
-	SearchParams getSearchParams();
+    SearchParams getSearchParams();
 
-	void newLearnedClause(Constr learned, int trailLevel);
+    void newLearnedClause(Constr learned, int trailLevel);
 }

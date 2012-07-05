@@ -39,35 +39,35 @@ import org.sat4j.specs.IVecInt;
  */
 public class LearntBinaryClause extends BinaryClause {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public LearntBinaryClause(IVecInt ps, ILits voc) {
-		super(ps, voc);
-	}
+    public LearntBinaryClause(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
-	public void setLearnt() {
-		// do nothing
-	}
+    public void setLearnt() {
+        // do nothing
+    }
 
-	public boolean learnt() {
-		return true;
-	}
+    public boolean learnt() {
+        return true;
+    }
 
-	public void forwardActivity(double claInc) {
+    public void forwardActivity(double claInc) {
 
-	}
+    }
 
-	/**
-	 * @param claInc
-	 */
-	public void incActivity(double claInc) {
-		activity += claInc;
-	}
+    /**
+     * @param claInc
+     */
+    public void incActivity(double claInc) {
+        this.activity += claInc;
+    }
 
-	public void setActivity(double d) {
-		activity = d;
-	}
+    public void setActivity(double d) {
+        this.activity = d;
+    }
 }

@@ -48,56 +48,57 @@ import org.sat4j.specs.IVecInt;
  */
 public class MixedDataStructureDanielWL extends AbstractDataStructureFactory {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org
-	 * .sat4j.datatype.VecInt, int)
-	 */
-	@Override
-	public Constr createCardinalityConstraint(IVecInt literals, int degree)
-			throws ContradictionException {
-		return AtLeast.atLeastNew(solver, getVocabulary(), literals, degree);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org
+     * .sat4j.datatype.VecInt, int)
+     */
+    @Override
+    public Constr createCardinalityConstraint(IVecInt literals, int degree)
+            throws ContradictionException {
+        return AtLeast.atLeastNew(this.solver, getVocabulary(), literals,
+                degree);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype
-	 * .VecInt)
-	 */
-	public Constr createClause(IVecInt literals) throws ContradictionException {
-		IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), solver);
-		if (v == null) {
-			// tautological clause
-			return null;
-		}
-		if (v.size() == 1) {
-			return new UnitClause(v.last());
-		}
-		if (v.size() == 2) {
-			return OriginalBinaryClause.brandNewClause(solver, getVocabulary(),
-					v);
-		}
-		return OriginalWLClause.brandNewClause(solver, getVocabulary(), v);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype
+     * .VecInt)
+     */
+    public Constr createClause(IVecInt literals) throws ContradictionException {
+        IVecInt v = Clauses.sanityCheck(literals, getVocabulary(), this.solver);
+        if (v == null) {
+            // tautological clause
+            return null;
+        }
+        if (v.size() == 1) {
+            return new UnitClause(v.last());
+        }
+        if (v.size() == 2) {
+            return OriginalBinaryClause.brandNewClause(this.solver,
+                    getVocabulary(), v);
+        }
+        return OriginalWLClause.brandNewClause(this.solver, getVocabulary(), v);
+    }
 
-	public Constr createUnregisteredClause(IVecInt literals) {
-		if (literals.size() == 1) {
-			return new UnitClause(literals.last());
-		}
-		if (literals.size() == 2) {
-			return new LearntBinaryClause(literals, getVocabulary());
-		}
-		return new LearntWLClause(literals, getVocabulary());
-	}
+    public Constr createUnregisteredClause(IVecInt literals) {
+        if (literals.size() == 1) {
+            return new UnitClause(literals.last());
+        }
+        if (literals.size() == 2) {
+            return new LearntBinaryClause(literals, getVocabulary());
+        }
+        return new LearntWLClause(literals, getVocabulary());
+    }
 
-	@Override
-	protected ILits createLits() {
-		return new Lits();
-	}
+    @Override
+    protected ILits createLits() {
+        return new Lits();
+    }
 }

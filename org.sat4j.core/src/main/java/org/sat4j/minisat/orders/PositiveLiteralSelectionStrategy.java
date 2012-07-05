@@ -34,34 +34,34 @@ import static org.sat4j.core.LiteralsUtils.posLit;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 
 public final class PositiveLiteralSelectionStrategy implements
-		IPhaseSelectionStrategy {
+        IPhaseSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void assignLiteral(int p) {
-	}
+    public void assignLiteral(int p) {
+    }
 
-	public void init(int nlength) {
-	}
+    public void init(int nlength) {
+    }
 
-	public void init(int var, int p) {
-	}
+    public void init(int var, int p) {
+    }
 
-	public int select(int var) {
-		return posLit(var);
-	}
+    public int select(int var) {
+        return posLit(var);
+    }
 
-	public void updateVar(int p) {
-	}
+    public void updateVar(int p) {
+    }
 
-	@Override
-	public String toString() {
-		return "positive phase selection";
-	}
+    @Override
+    public String toString() {
+        return "positive phase selection";
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-	}
+    public void updateVarAtDecisionLevel(int q) {
+    }
 }

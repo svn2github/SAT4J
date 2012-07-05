@@ -42,42 +42,43 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericM2Test extends AbstractM2Test<ISolver> {
 
-	private String solvername;
+    private String solvername;
 
-	private static final SolverFactory FACTORY = SolverFactory.instance();
+    private static final SolverFactory FACTORY = SolverFactory.instance();
 
-	/**
-	 * @param arg0
-	 */
-	public GenericM2Test(String arg0) {
-		setName("AbstractM2Test" + arg0);
-		solvername = arg0;
-	}
+    /**
+     * @param arg0
+     */
+    public GenericM2Test(String arg0) {
+        setName("AbstractM2Test" + arg0);
+        this.solvername = arg0;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected ISolver createSolver() {
-		return FACTORY.createSolverByName(solvername);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see junit.framework.TestCase#setUp()
+     */
+    @Override
+    protected ISolver createSolver() {
+        return FACTORY.createSolverByName(this.solvername);
+    }
 
-	public static TestSuite suite() {
-		TestSuite suite = new TestSuite();
-		String[] names = FACTORY.solverNames();
-		String name;
-		for (int i = 0; i < names.length; i++) {
-			name = names[i];
-			if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name))
-				suite.addTest(new GenericM2Test(name));
-		}
-		return suite;
-	}
+    public static TestSuite suite() {
+        TestSuite suite = new TestSuite();
+        String[] names = FACTORY.solverNames();
+        String name;
+        for (String name2 : names) {
+            name = name2;
+            if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name)) {
+                suite.addTest(new GenericM2Test(name));
+            }
+        }
+        return suite;
+    }
 
-	@Override
-	protected void runTest() throws Throwable {
-		assertFalse(solveInstance(PREFIX + "pigeons/hole6.cnf"));
-	}
+    @Override
+    protected void runTest() throws Throwable {
+        assertFalse(solveInstance(PREFIX + "pigeons/hole6.cnf"));
+    }
 }

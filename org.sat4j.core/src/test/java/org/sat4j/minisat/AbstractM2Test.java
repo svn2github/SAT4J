@@ -41,7 +41,8 @@ import org.sat4j.specs.ISolver;
  * @author leberre
  * 
  */
-public abstract class AbstractM2Test<T extends ISolver> extends AbstractAcceptanceTestCase<T> {
+public abstract class AbstractM2Test<T extends ISolver> extends
+        AbstractAcceptanceTestCase<T> {
 
     // private static final String PREFIX = "C:\\Documents and
     // Settings\\Daniel\\Mes documents\\SAT\\";

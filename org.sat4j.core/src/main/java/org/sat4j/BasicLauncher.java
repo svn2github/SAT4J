@@ -44,79 +44,79 @@ import org.sat4j.specs.ISolver;
  */
 public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final ASolverFactory<T> factory;
+    private final ASolverFactory<T> factory;
 
-	private boolean prime = false;
+    private boolean prime = false;
 
-	public BasicLauncher(ASolverFactory<T> factory) {
-		this.factory = factory;
-	}
+    public BasicLauncher(ASolverFactory<T> factory) {
+        this.factory = factory;
+    }
 
-	/**
-	 * Lance le prouveur sur un fichier Dimacs.
-	 * 
-	 * @param args
-	 *            doit contenir le nom d'un fichier Dimacs, eventuellement
-	 *            compress?.
-	 */
-	public static void main(final String[] args) {
-		BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
-				SolverFactory.instance());
-		if (args.length != 1) {
-			lanceur.usage();
-			return;
-		}
-		lanceur.run(args);
-		System.exit(lanceur.getExitCode().value());
-	}
+    /**
+     * Lance le prouveur sur un fichier Dimacs.
+     * 
+     * @param args
+     *            doit contenir le nom d'un fichier Dimacs, eventuellement
+     *            compress?.
+     */
+    public static void main(final String[] args) {
+        BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
+                SolverFactory.instance());
+        if (args.length != 1) {
+            lanceur.usage();
+            return;
+        }
+        lanceur.run(args);
+        System.exit(lanceur.getExitCode().value());
+    }
 
-	@Override
-	protected ISolver configureSolver(String[] args) {
-		prime = System.getProperty("prime") != null;
-		ISolver asolver = factory.defaultSolver();
-		asolver.setTimeout(Integer.MAX_VALUE);
-		asolver.setDBSimplificationAllowed(true);
-		getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-		return asolver;
-	}
+    @Override
+    protected ISolver configureSolver(String[] args) {
+        this.prime = System.getProperty("prime") != null;
+        ISolver asolver = this.factory.defaultSolver();
+        asolver.setTimeout(Integer.MAX_VALUE);
+        asolver.setDBSimplificationAllowed(true);
+        getLogWriter().println(asolver.toString(COMMENT_PREFIX));
+        return asolver;
+    }
 
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		return new InstanceReader(theSolver);
-	}
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        return new InstanceReader(theSolver);
+    }
 
-	@Override
-	public void usage() {
-		log("java -jar org.sat4j.core.jar <cnffile>");
-	}
+    @Override
+    public void usage() {
+        log("java -jar org.sat4j.core.jar <cnffile>");
+    }
 
-	@Override
-	protected String getInstanceName(String[] args) {
-		if (args.length == 0) {
-			return null;
-		}
-		return args[0];
-	}
+    @Override
+    protected String getInstanceName(String[] args) {
+        if (args.length == 0) {
+            return null;
+        }
+        return args[0];
+    }
 
-	@Override
-	protected void displayResult() {
-		super.displayResult();
-		if (prime && exitCode == ExitCode.SATISFIABLE) {
-			log("For information, a prime implicant:");
-			long begin = System.currentTimeMillis();
-			int[] implicant = solver.primeImplicant();
-			out.println(COMMENT_PREFIX);
-			reader.decode(implicant, out);
-			out.println();
-			log(" prime computation time: "
-					+ (System.currentTimeMillis() - begin) / 1000 + "s");
-		}
+    @Override
+    protected void displayResult() {
+        super.displayResult();
+        if (this.prime && this.exitCode == ExitCode.SATISFIABLE) {
+            log("For information, a prime implicant:");
+            long begin = System.currentTimeMillis();
+            int[] implicant = this.solver.primeImplicant();
+            this.out.println(COMMENT_PREFIX);
+            this.reader.decode(implicant, this.out);
+            this.out.println();
+            log(" prime computation time: "
+                    + (System.currentTimeMillis() - begin) / 1000 + "s");
+        }
 
-	}
+    }
 
 }

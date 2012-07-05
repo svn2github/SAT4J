@@ -42,118 +42,118 @@ import java.io.Serializable;
  */
 public interface SearchListener<S extends ISolverService> extends Serializable {
 
-	/**
-	 * Provide access to the solver's controllable interface.
-	 * 
-	 * @param solverService
-	 *            a way to safely control the solver.
-	 * @since 2.3.2
-	 */
-	void init(S solverService);
+    /**
+     * Provide access to the solver's controllable interface.
+     * 
+     * @param solverService
+     *            a way to safely control the solver.
+     * @since 2.3.2
+     */
+    void init(S solverService);
 
-	/**
-	 * decision variable
-	 * 
-	 * @param p
-	 */
-	void assuming(int p);
+    /**
+     * decision variable
+     * 
+     * @param p
+     */
+    void assuming(int p);
 
-	/**
-	 * Unit propagation
-	 * 
-	 * @param p
-	 * @param reason
-	 *            TODO
-	 */
-	void propagating(int p, IConstr reason);
+    /**
+     * Unit propagation
+     * 
+     * @param p
+     * @param reason
+     *            TODO
+     */
+    void propagating(int p, IConstr reason);
 
-	/**
-	 * backtrack on a decision variable
-	 * 
-	 * @param p
-	 */
-	void backtracking(int p);
+    /**
+     * backtrack on a decision variable
+     * 
+     * @param p
+     */
+    void backtracking(int p);
 
-	/**
-	 * adding forced variable (conflict driven assignment)
-	 */
-	void adding(int p);
+    /**
+     * adding forced variable (conflict driven assignment)
+     */
+    void adding(int p);
 
-	/**
-	 * learning a new clause
-	 * 
-	 * @param c
-	 */
-	void learn(IConstr c);
+    /**
+     * learning a new clause
+     * 
+     * @param c
+     */
+    void learn(IConstr c);
 
-	/**
-	 * delete a clause
-	 */
-	void delete(int[] clause);
+    /**
+     * delete a clause
+     */
+    void delete(int[] clause);
 
-	/**
-	 * a conflict has been found.
-	 * 
-	 * @param confl
-	 *            TODO
-	 * @param dlevel
-	 *            TODO
-	 * @param trailLevel
-	 *            TODO
-	 * 
-	 */
-	void conflictFound(IConstr confl, int dlevel, int trailLevel);
+    /**
+     * a conflict has been found.
+     * 
+     * @param confl
+     *            TODO
+     * @param dlevel
+     *            TODO
+     * @param trailLevel
+     *            TODO
+     * 
+     */
+    void conflictFound(IConstr confl, int dlevel, int trailLevel);
 
-	/**
-	 * a conflict has been found while propagating values.
-	 * 
-	 * @param p
-	 *            the conflicting value.
-	 */
-	void conflictFound(int p);
+    /**
+     * a conflict has been found while propagating values.
+     * 
+     * @param p
+     *            the conflicting value.
+     */
+    void conflictFound(int p);
 
-	/**
-	 * a solution is found.
-	 * 
-	 * @param model
-	 *            the model found
-	 * 
-	 */
-	void solutionFound(int[] model);
+    /**
+     * a solution is found.
+     * 
+     * @param model
+     *            the model found
+     * 
+     */
+    void solutionFound(int[] model);
 
-	/**
-	 * starts a propagation
-	 */
-	void beginLoop();
+    /**
+     * starts a propagation
+     */
+    void beginLoop();
 
-	/**
-	 * Start the search.
-	 * 
-	 */
-	void start();
+    /**
+     * Start the search.
+     * 
+     */
+    void start();
 
-	/**
-	 * End the search.
-	 * 
-	 * @param result
-	 *            the result of the search.
-	 */
-	void end(Lbool result);
+    /**
+     * End the search.
+     * 
+     * @param result
+     *            the result of the search.
+     */
+    void end(Lbool result);
 
-	/**
-	 * The solver restarts the search.
-	 */
-	void restarting();
+    /**
+     * The solver restarts the search.
+     */
+    void restarting();
 
-	/**
-	 * The solver is asked to backjump to a given decision level.
-	 * 
-	 * @param backjumpLevel
-	 */
-	void backjump(int backjumpLevel);
+    /**
+     * The solver is asked to backjump to a given decision level.
+     * 
+     * @param backjumpLevel
+     */
+    void backjump(int backjumpLevel);
 
-	/**
-	 * The solver is going to delete some learned clauses.
-	 */
-	void cleaning();
+    /**
+     * The solver is going to delete some learned clauses.
+     */
+    void cleaning();
 }

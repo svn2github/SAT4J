@@ -47,79 +47,79 @@ import org.sat4j.tools.SolverDecorator;
  * 
  */
 public abstract class AbstractSelectorVariablesDecorator extends
-		SolverDecorator<ISolver> implements IOptimizationProblem {
+        SolverDecorator<ISolver> implements IOptimizationProblem {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int nbexpectedclauses;
+    private int nbexpectedclauses;
 
-	protected int[] prevfullmodel;
+    protected int[] prevfullmodel;
 
-	/**
-	 * @since 2.1
-	 */
-	protected int[] prevmodel;
-	/**
-	 * @since 2.1
-	 */
-	protected boolean[] prevboolmodel;
+    /**
+     * @since 2.1
+     */
+    protected int[] prevmodel;
+    /**
+     * @since 2.1
+     */
+    protected boolean[] prevboolmodel;
 
-	protected boolean isSolutionOptimal;
+    protected boolean isSolutionOptimal;
 
-	public AbstractSelectorVariablesDecorator(ISolver solver) {
-		super(solver);
-	}
+    public AbstractSelectorVariablesDecorator(ISolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public void setExpectedNumberOfClauses(int nb) {
-		nbexpectedclauses = nb;
-	}
+    @Override
+    public void setExpectedNumberOfClauses(int nb) {
+        this.nbexpectedclauses = nb;
+    }
 
-	public int getExpectedNumberOfClauses() {
-		return nbexpectedclauses;
-	}
+    public int getExpectedNumberOfClauses() {
+        return this.nbexpectedclauses;
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		isSolutionOptimal = false;
-		boolean result = super.isSatisfiable(assumps, true);
-		if (result) {
-			prevboolmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				prevboolmodel[i] = decorated().model(i + 1);
-			}
-			prevfullmodel = super.modelWithInternalVariables();
-			prevmodel = super.model();
-			calculateObjectiveValue();
-		} else {
-			isSolutionOptimal = true;
-		}
-		return result;
-	}
+    /**
+     * @since 2.1
+     */
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        this.isSolutionOptimal = false;
+        boolean result = super.isSatisfiable(assumps, true);
+        if (result) {
+            this.prevboolmodel = new boolean[nVars()];
+            for (int i = 0; i < nVars(); i++) {
+                this.prevboolmodel[i] = decorated().model(i + 1);
+            }
+            this.prevfullmodel = super.modelWithInternalVariables();
+            this.prevmodel = super.model();
+            calculateObjectiveValue();
+        } else {
+            this.isSolutionOptimal = true;
+        }
+        return result;
+    }
 
-	abstract void calculateObjectiveValue();
+    abstract void calculateObjectiveValue();
 
-	@Override
-	public int[] model() {
-		return prevmodel;
-	}
+    @Override
+    public int[] model() {
+        return this.prevmodel;
+    }
 
-	@Override
-	public boolean model(int var) {
-		return prevboolmodel[var - 1];
-	}
+    @Override
+    public boolean model(int var) {
+        return this.prevboolmodel[var - 1];
+    }
 
-	public boolean isOptimal() {
-		return isSolutionOptimal;
-	}
+    public boolean isOptimal() {
+        return this.isSolutionOptimal;
+    }
 }

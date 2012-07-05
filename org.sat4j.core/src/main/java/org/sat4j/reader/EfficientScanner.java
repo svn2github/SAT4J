@@ -48,150 +48,151 @@ import java.math.BigInteger;
  */
 public class EfficientScanner implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/* taille du buffer */
-	private final static int TAILLE_BUF = 16384;
+    /* taille du buffer */
+    private final static int TAILLE_BUF = 16384;
 
-	private transient final BufferedInputStream in;
+    private transient final BufferedInputStream in;
 
-	private static final char EOF = (char) -1;
+    private static final char EOF = (char) -1;
 
-	private final char commentChar;
+    private final char commentChar;
 
-	/*
-	 * nomFichier repr?sente le nom du fichier ? lire
-	 */
-	public EfficientScanner(final InputStream input, char commentChar) {
-		this.in = new BufferedInputStream(input, EfficientScanner.TAILLE_BUF);
-		this.commentChar = commentChar;
-	}
+    /*
+     * nomFichier repr?sente le nom du fichier ? lire
+     */
+    public EfficientScanner(final InputStream input, char commentChar) {
+        this.in = new BufferedInputStream(input, EfficientScanner.TAILLE_BUF);
+        this.commentChar = commentChar;
+    }
 
-	public EfficientScanner(final InputStream input) {
-		this(input, 'c');
-	}
+    public EfficientScanner(final InputStream input) {
+        this(input, 'c');
+    }
 
-	public void close() throws IOException {
-		in.close();
-	}
+    public void close() throws IOException {
+        this.in.close();
+    }
 
-	/** Skip commented lines. */
-	public void skipComments() throws IOException {
-		char currentChar;
-		for (;;) {
-			currentChar = currentChar();
-			if (currentChar != commentChar) {
-				break;
-			}
-			skipRestOfLine();
-			if (currentChar == EOF)
-				break;
-		}
-	}
+    /** Skip commented lines. */
+    public void skipComments() throws IOException {
+        char currentChar;
+        for (;;) {
+            currentChar = currentChar();
+            if (currentChar != this.commentChar) {
+                break;
+            }
+            skipRestOfLine();
+            if (currentChar == EOF) {
+                break;
+            }
+        }
+    }
 
-	/**
-	 * To get the next available integer.
-	 * 
-	 * @return
-	 * @throws IOException
-	 * @throws ParseFormatException
-	 */
-	public int nextInt() throws IOException, ParseFormatException {
-		int val = 0;
-		boolean neg = false;
-		char currentChar = skipSpaces();
-		if (currentChar == '-') {
-			neg = true;
-			currentChar = (char) in.read();
-		} else if (currentChar == '+') {
-			currentChar = (char) in.read();
-		} else if (currentChar >= '0' && currentChar <= '9') {
-			val = currentChar - '0';
-			currentChar = (char) in.read();
-		} else {
-			throw new ParseFormatException("Unknown character " + currentChar);
-		}
-		/* on lit la suite du literal */
-		while (currentChar >= '0' && currentChar <= '9') {
-			val = (val * 10) + currentChar - '0';
-			currentChar = (char) in.read();
-		}
-		if (currentChar == '\r') {
-			in.read(); // skip \r\n on windows.
-		}
-		return neg ? -val : val;
-	}
+    /**
+     * To get the next available integer.
+     * 
+     * @return
+     * @throws IOException
+     * @throws ParseFormatException
+     */
+    public int nextInt() throws IOException, ParseFormatException {
+        int val = 0;
+        boolean neg = false;
+        char currentChar = skipSpaces();
+        if (currentChar == '-') {
+            neg = true;
+            currentChar = (char) this.in.read();
+        } else if (currentChar == '+') {
+            currentChar = (char) this.in.read();
+        } else if (currentChar >= '0' && currentChar <= '9') {
+            val = currentChar - '0';
+            currentChar = (char) this.in.read();
+        } else {
+            throw new ParseFormatException("Unknown character " + currentChar);
+        }
+        /* on lit la suite du literal */
+        while (currentChar >= '0' && currentChar <= '9') {
+            val = val * 10 + currentChar - '0';
+            currentChar = (char) this.in.read();
+        }
+        if (currentChar == '\r') {
+            this.in.read(); // skip \r\n on windows.
+        }
+        return neg ? -val : val;
+    }
 
-	public BigInteger nextBigInteger() throws IOException, ParseFormatException {
-		StringBuffer stb = new StringBuffer();
-		char currentChar = skipSpaces();
-		if (currentChar == '-') {
-			stb.append(currentChar);
-			currentChar = (char) in.read();
-		} else if (currentChar == '+') {
-			currentChar = (char) in.read();
-		} else if (currentChar >= '0' && currentChar <= '9') {
-			stb.append(currentChar);
-			currentChar = (char) in.read();
-		} else {
-			throw new ParseFormatException("Unknown character " + currentChar);
-		}
-		while (currentChar >= '0' && currentChar <= '9') {
-			stb.append(currentChar);
-			currentChar = (char) in.read();
-		}
-		return new BigInteger(stb.toString());
-	}
+    public BigInteger nextBigInteger() throws IOException, ParseFormatException {
+        StringBuffer stb = new StringBuffer();
+        char currentChar = skipSpaces();
+        if (currentChar == '-') {
+            stb.append(currentChar);
+            currentChar = (char) this.in.read();
+        } else if (currentChar == '+') {
+            currentChar = (char) this.in.read();
+        } else if (currentChar >= '0' && currentChar <= '9') {
+            stb.append(currentChar);
+            currentChar = (char) this.in.read();
+        } else {
+            throw new ParseFormatException("Unknown character " + currentChar);
+        }
+        while (currentChar >= '0' && currentChar <= '9') {
+            stb.append(currentChar);
+            currentChar = (char) this.in.read();
+        }
+        return new BigInteger(stb.toString());
+    }
 
-	/**
-	 * @throws ParseFormatException
-	 *             never used in that method.
-	 */
-	public String next() throws IOException, ParseFormatException {
-		StringBuffer stb = new StringBuffer();
-		char currentChar = skipSpaces();
-		while (currentChar != ' ' && currentChar != '\n') {
-			stb.append(currentChar);
-			currentChar = (char) in.read();
-		}
-		return stb.toString();
-	}
+    /**
+     * @throws ParseFormatException
+     *             never used in that method.
+     */
+    public String next() throws IOException, ParseFormatException {
+        StringBuffer stb = new StringBuffer();
+        char currentChar = skipSpaces();
+        while (currentChar != ' ' && currentChar != '\n') {
+            stb.append(currentChar);
+            currentChar = (char) this.in.read();
+        }
+        return stb.toString();
+    }
 
-	public char skipSpaces() throws IOException {
-		char car;
+    public char skipSpaces() throws IOException {
+        char car;
 
-		do {
-			car = (char) in.read();
-		} while (car == ' ' || car == '\n');
+        do {
+            car = (char) this.in.read();
+        } while (car == ' ' || car == '\n');
 
-		return car;
-	}
+        return car;
+    }
 
-	public String nextLine() throws IOException {
-		StringBuffer stb = new StringBuffer();
-		char car;
-		do {
-			car = (char) in.read();
-			stb.append(car);
-		} while ((car != '\n') && (car != EOF));
-		return stb.toString();
-	}
+    public String nextLine() throws IOException {
+        StringBuffer stb = new StringBuffer();
+        char car;
+        do {
+            car = (char) this.in.read();
+            stb.append(car);
+        } while (car != '\n' && car != EOF);
+        return stb.toString();
+    }
 
-	public void skipRestOfLine() throws IOException {
-		char car;
-		do {
-			car = (char) in.read();
-		} while ((car != '\n') && (car != EOF));
-	}
+    public void skipRestOfLine() throws IOException {
+        char car;
+        do {
+            car = (char) this.in.read();
+        } while (car != '\n' && car != EOF);
+    }
 
-	public boolean eof() throws IOException {
-		return currentChar() == EOF;
-	}
+    public boolean eof() throws IOException {
+        return currentChar() == EOF;
+    }
 
-	public char currentChar() throws IOException {
-		in.mark(10);
-		char car = (char) in.read();
-		in.reset();
-		return car;
-	}
+    public char currentChar() throws IOException {
+        this.in.mark(10);
+        char car = (char) this.in.read();
+        this.in.reset();
+        return car;
+    }
 }

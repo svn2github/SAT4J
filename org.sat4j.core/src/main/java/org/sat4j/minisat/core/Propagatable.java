@@ -37,27 +37,27 @@ package org.sat4j.minisat.core;
  */
 public interface Propagatable {
 
-	/**
-	 * Propagate the truth value of a literal in constraints in which that
-	 * literal is falsified.
-	 * 
-	 * @param s
-	 *            something able to perform unit propagation
-	 * @param p
-	 *            the literal being propagated. Its negation must appear in the
-	 *            constraint.
-	 * @return false iff an inconsistency (a contradiction) is detected.
-	 */
-	boolean propagate(UnitPropagationListener s, int p);
+    /**
+     * Propagate the truth value of a literal in constraints in which that
+     * literal is falsified.
+     * 
+     * @param s
+     *            something able to perform unit propagation
+     * @param p
+     *            the literal being propagated. Its negation must appear in the
+     *            constraint.
+     * @return false iff an inconsistency (a contradiction) is detected.
+     */
+    boolean propagate(UnitPropagationListener s, int p);
 
-	/**
-	 * Allow to access a constraint view of the propagatable to avoid casting.
-	 * In most cases, the constraint will implement directly propagatable thus
-	 * will return itself. It will also also the implementation of more
-	 * sophisticated watching strategy.
-	 * 
-	 * @return the constraint associated to that propagatable.
-	 * @since 2.3.2
-	 */
-	Constr toConstraint();
+    /**
+     * Allow to access a constraint view of the propagatable to avoid casting.
+     * In most cases, the constraint will implement directly propagatable thus
+     * will return itself. It will also also the implementation of more
+     * sophisticated watching strategy.
+     * 
+     * @return the constraint associated to that propagatable.
+     * @since 2.3.2
+     */
+    Constr toConstraint();
 }

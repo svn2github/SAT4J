@@ -42,32 +42,32 @@ package org.sat4j.specs;
  * IOptimizationProblem optproblem = (IOptimizationProblem) problem;
  * 
  * try {
- * 	while (optproblem.admitABetterSolution()) {
- * 		if (!isSatisfiable) {
- * 			if (optproblem.nonOptimalMeansSatisfiable()) {
- * 				setExitCode(ExitCode.SATISFIABLE);
- * 				if (optproblem.hasNoObjectiveFunction()) {
- * 					return;
- * 				}
- * 				log(&quot;SATISFIABLE&quot;); //$NON-NLS-1$
- * 			}
- * 			isSatisfiable = true;
- * 			log(&quot;OPTIMIZING...&quot;); //$NON-NLS-1$
- * 		}
- * 		log(&quot;Got one! Elapsed wall clock time (in seconds):&quot; //$NON-NLS-1$
- * 				+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);
- * 		getLogWriter().println(
- * 				CURRENT_OPTIMUM_VALUE_PREFIX + optproblem.getObjectiveValue());
- * 		optproblem.discardCurrentSolution();
- * 	}
- * 	if (isSatisfiable) {
- * 		setExitCode(ExitCode.OPTIMUM_FOUND);
- * 	} else {
- * 		setExitCode(ExitCode.UNSATISFIABLE);
- * 	}
+ *     while (optproblem.admitABetterSolution()) {
+ *         if (!isSatisfiable) {
+ *             if (optproblem.nonOptimalMeansSatisfiable()) {
+ *                 setExitCode(ExitCode.SATISFIABLE);
+ *                 if (optproblem.hasNoObjectiveFunction()) {
+ *                     return;
+ *                 }
+ *                 log(&quot;SATISFIABLE&quot;); //$NON-NLS-1$
+ *             }
+ *             isSatisfiable = true;
+ *             log(&quot;OPTIMIZING...&quot;); //$NON-NLS-1$
+ *         }
+ *         log(&quot;Got one! Elapsed wall clock time (in seconds):&quot; //$NON-NLS-1$
+ *                 + (System.currentTimeMillis() - getBeginTime()) / 1000.0);
+ *         getLogWriter().println(
+ *                 CURRENT_OPTIMUM_VALUE_PREFIX + optproblem.getObjectiveValue());
+ *         optproblem.discardCurrentSolution();
+ *     }
+ *     if (isSatisfiable) {
+ *         setExitCode(ExitCode.OPTIMUM_FOUND);
+ *     } else {
+ *         setExitCode(ExitCode.UNSATISFIABLE);
+ *     }
  * } catch (ContradictionException ex) {
- * 	assert isSatisfiable;
- * 	setExitCode(ExitCode.OPTIMUM_FOUND);
+ *     assert isSatisfiable;
+ *     setExitCode(ExitCode.OPTIMUM_FOUND);
  * }
  * </pre>
  * 
@@ -76,112 +76,112 @@ package org.sat4j.specs;
  */
 public interface IOptimizationProblem extends IProblem {
 
-	/**
-	 * Look for a solution of the optimization problem.
-	 * 
-	 * @return true if a better solution than current one can be found.
-	 * @throws TimeoutException
-	 *             if the solver cannot answer in reasonable time.
-	 * @see ISolver#setTimeout(int)
-	 */
-	boolean admitABetterSolution() throws TimeoutException;
+    /**
+     * Look for a solution of the optimization problem.
+     * 
+     * @return true if a better solution than current one can be found.
+     * @throws TimeoutException
+     *             if the solver cannot answer in reasonable time.
+     * @see ISolver#setTimeout(int)
+     */
+    boolean admitABetterSolution() throws TimeoutException;
 
-	/**
-	 * Look for a solution of the optimization problem when some literals are
-	 * satisfied.
-	 * 
-	 * @param assumps
-	 *            a set of literals in Dimacs format.
-	 * @return true if a better solution than current one can be found.
-	 * @throws TimeoutException
-	 *             if the solver cannot answer in reasonable time.
-	 * @see ISolver#setTimeout(int)
-	 * @since 2.1
-	 */
-	boolean admitABetterSolution(IVecInt assumps) throws TimeoutException;
+    /**
+     * Look for a solution of the optimization problem when some literals are
+     * satisfied.
+     * 
+     * @param assumps
+     *            a set of literals in Dimacs format.
+     * @return true if a better solution than current one can be found.
+     * @throws TimeoutException
+     *             if the solver cannot answer in reasonable time.
+     * @see ISolver#setTimeout(int)
+     * @since 2.1
+     */
+    boolean admitABetterSolution(IVecInt assumps) throws TimeoutException;
 
-	/**
-	 * If the optimization problem has no objective function, then it is a
-	 * simple decision problem.
-	 * 
-	 * @return true if the problem is a decision problem, false if the problem
-	 *         is an optimization problem.
-	 */
-	boolean hasNoObjectiveFunction();
+    /**
+     * If the optimization problem has no objective function, then it is a
+     * simple decision problem.
+     * 
+     * @return true if the problem is a decision problem, false if the problem
+     *         is an optimization problem.
+     */
+    boolean hasNoObjectiveFunction();
 
-	/**
-	 * A suboptimal solution has different meaning depending of the optimization
-	 * problem considered.
-	 * 
-	 * For instance, in the case of MAXSAT, a suboptimal solution does not mean
-	 * that the problem is satisfiable, while in pseudo boolean optimization, it
-	 * is true.
-	 * 
-	 * @return true if founding a suboptimal solution means that the problem is
-	 *         satisfiable.
-	 */
-	boolean nonOptimalMeansSatisfiable();
+    /**
+     * A suboptimal solution has different meaning depending of the optimization
+     * problem considered.
+     * 
+     * For instance, in the case of MAXSAT, a suboptimal solution does not mean
+     * that the problem is satisfiable, while in pseudo boolean optimization, it
+     * is true.
+     * 
+     * @return true if founding a suboptimal solution means that the problem is
+     *         satisfiable.
+     */
+    boolean nonOptimalMeansSatisfiable();
 
-	/**
-	 * Compute the value of the objective function for the current solution. A
-	 * call to that method only makes sense if hasNoObjectiveFunction()==false.
-	 * 
-	 * DO NOT CALL THAT METHOD THAT WILL BE CALLED AUTOMATICALLY. USE
-	 * getObjectiveValue() instead!
-	 * 
-	 * @return the value of the objective function.
-	 * @see #getObjectiveValue()
-	 */
-	@Deprecated
-	Number calculateObjective();
+    /**
+     * Compute the value of the objective function for the current solution. A
+     * call to that method only makes sense if hasNoObjectiveFunction()==false.
+     * 
+     * DO NOT CALL THAT METHOD THAT WILL BE CALLED AUTOMATICALLY. USE
+     * getObjectiveValue() instead!
+     * 
+     * @return the value of the objective function.
+     * @see #getObjectiveValue()
+     */
+    @Deprecated
+    Number calculateObjective();
 
-	/**
-	 * Read only access to the value of the objective function for the current
-	 * solution.
-	 * 
-	 * @return the value of the objective function for the current solution.
-	 * @since 2.1
-	 */
-	Number getObjectiveValue();
+    /**
+     * Read only access to the value of the objective function for the current
+     * solution.
+     * 
+     * @return the value of the objective function for the current solution.
+     * @since 2.1
+     */
+    Number getObjectiveValue();
 
-	/**
-	 * Force the value of the objective function.
-	 * 
-	 * This is especially useful to iterate over optimal solutions.
-	 * 
-	 * @throws ContradictionException
-	 * @since 2.1
-	 */
-	void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException;
+    /**
+     * Force the value of the objective function.
+     * 
+     * This is especially useful to iterate over optimal solutions.
+     * 
+     * @throws ContradictionException
+     * @since 2.1
+     */
+    void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException;
 
-	/**
-	 * Discard the current solution in the optimization problem.
-	 * 
-	 * THE NAME WAS NOT NICE. STILL AVAILABLE TO AVOID BREAKING THE API. PLEASE
-	 * USE THE LONGER discardCurrentSolution() instead.
-	 * 
-	 * @throws ContradictionException
-	 *             if a trivial inconsistency is detected.
-	 * @see #discardCurrentSolution()
-	 */
-	@Deprecated
-	void discard() throws ContradictionException;
+    /**
+     * Discard the current solution in the optimization problem.
+     * 
+     * THE NAME WAS NOT NICE. STILL AVAILABLE TO AVOID BREAKING THE API. PLEASE
+     * USE THE LONGER discardCurrentSolution() instead.
+     * 
+     * @throws ContradictionException
+     *             if a trivial inconsistency is detected.
+     * @see #discardCurrentSolution()
+     */
+    @Deprecated
+    void discard() throws ContradictionException;
 
-	/**
-	 * Discard the current solution in the optimization problem.
-	 * 
-	 * @throws ContradictionException
-	 *             if a trivial inconsistency is detected.
-	 * @since 2.1
-	 */
-	void discardCurrentSolution() throws ContradictionException;
+    /**
+     * Discard the current solution in the optimization problem.
+     * 
+     * @throws ContradictionException
+     *             if a trivial inconsistency is detected.
+     * @since 2.1
+     */
+    void discardCurrentSolution() throws ContradictionException;
 
-	/**
-	 * Allows to check afterwards if the solution provided by the solver is
-	 * optimal or not.
-	 * 
-	 * @return
-	 */
-	boolean isOptimal();
+    /**
+     * Allows to check afterwards if the solution provided by the solver is
+     * optimal or not.
+     * 
+     * @return
+     */
+    boolean isOptimal();
 }

@@ -41,45 +41,45 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public final class NoRestarts implements RestartStrategy {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void init(SearchParams params) {
-		// nothing to do
-	}
+    public void init(SearchParams params) {
+        // nothing to do
+    }
 
-	public long nextRestartNumberOfConflict() {
-		return Long.MAX_VALUE;
-	}
+    public long nextRestartNumberOfConflict() {
+        return Long.MAX_VALUE;
+    }
 
-	public void onRestart() {
-		// do nothing
-	}
+    public void onRestart() {
+        // do nothing
+    }
 
-	public void reset() {
-		// do nothing
-	}
+    public void reset() {
+        // do nothing
+    }
 
-	public void newConflict() {
-		// do nothing
-	}
+    public void newConflict() {
+        // do nothing
+    }
 
-	public boolean shouldRestart() {
-		return false;
-	}
+    public boolean shouldRestart() {
+        return false;
+    }
 
-	public void onBackjumpToRootLevel() {
-		// do nothing
-	}
+    public void onBackjumpToRootLevel() {
+        // do nothing
+    }
 
-	@Override
-	public String toString() {
-		return "NoRestarts";
-	}
+    @Override
+    public String toString() {
+        return "NoRestarts";
+    }
 
-	public SearchParams getSearchParams() {
-		return new SearchParams();
-	}
+    public SearchParams getSearchParams() {
+        return new SearchParams();
+    }
 
-	public void newLearnedClause(Constr learned, int trailLevel) {
-	}
+    public void newLearnedClause(Constr learned, int trailLevel) {
+    }
 }

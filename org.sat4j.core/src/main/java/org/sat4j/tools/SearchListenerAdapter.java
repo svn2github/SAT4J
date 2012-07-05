@@ -35,71 +35,71 @@ import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
 public abstract class SearchListenerAdapter<S extends ISolverService>
-		implements SearchListener<S> {
+        implements SearchListener<S> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// private Collection<IVisualizationTool> visuTools = new
-	// ArrayList<IVisualizationTool>();
-	//
-	// public SearchListenerAdapter(IVisualizationTool... visuTools) {
-	// this.visuTools = new ArrayList<IVisualizationTool>();
-	// this.visuTools.addAll(Arrays.asList(visuTools));
-	// }
-	//
-	// public SearchListenerAdapter(Collection<IVisualizationTool> visuTools) {
-	// this.visuTools = visuTools;
-	// }
+    // private Collection<IVisualizationTool> visuTools = new
+    // ArrayList<IVisualizationTool>();
+    //
+    // public SearchListenerAdapter(IVisualizationTool... visuTools) {
+    // this.visuTools = new ArrayList<IVisualizationTool>();
+    // this.visuTools.addAll(Arrays.asList(visuTools));
+    // }
+    //
+    // public SearchListenerAdapter(Collection<IVisualizationTool> visuTools) {
+    // this.visuTools = visuTools;
+    // }
 
-	public void init(S solverService) {
-	}
+    public void init(S solverService) {
+    }
 
-	public void assuming(int p) {
-	}
+    public void assuming(int p) {
+    }
 
-	public void propagating(int p, IConstr reason) {
-	}
+    public void propagating(int p, IConstr reason) {
+    }
 
-	public void backtracking(int p) {
-	}
+    public void backtracking(int p) {
+    }
 
-	public void adding(int p) {
-	}
+    public void adding(int p) {
+    }
 
-	public void learn(IConstr c) {
-	}
+    public void learn(IConstr c) {
+    }
 
-	public void delete(int[] clause) {
-	}
+    public void delete(int[] clause) {
+    }
 
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-	}
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+    }
 
-	public void conflictFound(int p) {
-	}
+    public void conflictFound(int p) {
+    }
 
-	public void solutionFound(int[] model) {
-	}
+    public void solutionFound(int[] model) {
+    }
 
-	public void beginLoop() {
-	}
+    public void beginLoop() {
+    }
 
-	public void start() {
-	}
+    public void start() {
+    }
 
-	public void end(Lbool result) {
-	}
+    public void end(Lbool result) {
+    }
 
-	public void restarting() {
-	}
+    public void restarting() {
+    }
 
-	public void backjump(int backjumpLevel) {
-	}
+    public void backjump(int backjumpLevel) {
+    }
 
-	public void cleaning() {
-	}
+    public void cleaning() {
+    }
 
 }

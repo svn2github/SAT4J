@@ -46,45 +46,45 @@ import org.sat4j.specs.TimeoutException;
  */
 public class Minimal4CardinalityModel extends SolverDecorator<ISolver> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param solver
-	 */
-	public Minimal4CardinalityModel(ISolver solver) {
-		super(solver);
-	}
+    /**
+     * @param solver
+     */
+    public Minimal4CardinalityModel(ISolver solver) {
+        super(solver);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#model()
-	 */
-	@Override
-	public int[] model() {
-		int[] prevmodel = null;
-		IVecInt vec = new VecInt();
-		try {
-			do {
-				prevmodel = super.model();
-				vec.clear();
-				for (int i = 1; i <= nVars(); i++) {
-					vec.push(-i);
-				}
-				int counter = 0;
-				for (int q : prevmodel) {
-					if (q < 0) {
-						counter++;
-					}
-				}
-				addAtMost(vec, counter - 1);
-			} while (isSatisfiable());
-		} catch (TimeoutException e) {
-			throw new IllegalStateException("Solver timed out"); //$NON-NLS-1$
-		} catch (ContradictionException e) {
-			// added trivial unsat clauses
-		}
-		// restore();
-		return prevmodel;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#model()
+     */
+    @Override
+    public int[] model() {
+        int[] prevmodel = null;
+        IVecInt vec = new VecInt();
+        try {
+            do {
+                prevmodel = super.model();
+                vec.clear();
+                for (int i = 1; i <= nVars(); i++) {
+                    vec.push(-i);
+                }
+                int counter = 0;
+                for (int q : prevmodel) {
+                    if (q < 0) {
+                        counter++;
+                    }
+                }
+                addAtMost(vec, counter - 1);
+            } while (isSatisfiable());
+        } catch (TimeoutException e) {
+            throw new IllegalStateException("Solver timed out"); //$NON-NLS-1$
+        } catch (ContradictionException e) {
+            // added trivial unsat clauses
+        }
+        // restore();
+        return prevmodel;
+    }
 }

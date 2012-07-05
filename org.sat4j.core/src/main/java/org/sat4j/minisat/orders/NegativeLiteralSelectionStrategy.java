@@ -34,34 +34,34 @@ import static org.sat4j.core.LiteralsUtils.negLit;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 
 public final class NegativeLiteralSelectionStrategy implements
-		IPhaseSelectionStrategy {
+        IPhaseSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void assignLiteral(int p) {
-	}
+    public void assignLiteral(int p) {
+    }
 
-	public void init(int nlength) {
-	}
+    public void init(int nlength) {
+    }
 
-	public void init(int var, int p) {
-	}
+    public void init(int var, int p) {
+    }
 
-	public int select(int var) {
-		return negLit(var);
-	}
+    public int select(int var) {
+        return negLit(var);
+    }
 
-	public void updateVar(int p) {
-	}
+    public void updateVar(int p) {
+    }
 
-	@Override
-	public String toString() {
-		return "negative phase selection";
-	}
+    @Override
+    public String toString() {
+        return "negative phase selection";
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-	}
+    public void updateVarAtDecisionLevel(int q) {
+    }
 }

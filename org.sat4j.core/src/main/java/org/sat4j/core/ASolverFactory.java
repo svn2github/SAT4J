@@ -45,86 +45,86 @@ import org.sat4j.specs.ISolver;
  */
 public abstract class ASolverFactory<T extends ISolver> implements Serializable {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * This methods returns names of solvers to be used with the method
-	 * getSolverByName().
-	 * 
-	 * @return an array containing the names of all the solvers available in the
-	 *         library.
-	 * @see #createSolverByName(String)
-	 */
-	public String[] solverNames() {
-		List<String> l = new ArrayList<String>();
-		Method[] solvers = this.getClass().getDeclaredMethods();
-		for (int i = 0; i < solvers.length; i++) {
-			if (solvers[i].getParameterTypes().length == 0
-					&& solvers[i].getName().startsWith("new")) { //$NON-NLS-1$
-				l.add(solvers[i].getName().substring(3));
-			}
-		}
-		String[] names = new String[l.size()];
-		l.toArray(names);
-		return names;
-	}
+    /**
+     * This methods returns names of solvers to be used with the method
+     * getSolverByName().
+     * 
+     * @return an array containing the names of all the solvers available in the
+     *         library.
+     * @see #createSolverByName(String)
+     */
+    public String[] solverNames() {
+        List<String> l = new ArrayList<String>();
+        Method[] solvers = this.getClass().getDeclaredMethods();
+        for (Method solver : solvers) {
+            if (solver.getParameterTypes().length == 0
+                    && solver.getName().startsWith("new")) { //$NON-NLS-1$
+                l.add(solver.getName().substring(3));
+            }
+        }
+        String[] names = new String[l.size()];
+        l.toArray(names);
+        return names;
+    }
 
-	/**
-	 * create a solver from its String name. the solvername Xxxx must map one of
-	 * the newXxxx methods.
-	 * 
-	 * @param solvername
-	 *            the name of the solver
-	 * @return an ISolver built using newSolvername. <code>null</code> if the
-	 *         solvername doesn't map one of the method of the factory.
-	 */
-	@SuppressWarnings("unchecked")
-	public T createSolverByName(String solvername) {
-		try {
-			Class<?>[] paramtypes = {};
-			Method m = this.getClass()
-					.getMethod("new" + solvername, paramtypes); //$NON-NLS-1$
-			return (T) m.invoke(null, (Object[]) null);
-		} catch (SecurityException e) {
-			System.err.println(e.getLocalizedMessage());
-		} catch (IllegalArgumentException e) {
-			System.err.println(e.getLocalizedMessage());
-		} catch (NoSuchMethodException e) {
-			System.err.println(e.getLocalizedMessage());
-		} catch (IllegalAccessException e) {
-			System.err.println(e.getLocalizedMessage());
-		} catch (InvocationTargetException e) {
-			System.err.println(e.getLocalizedMessage());
-		}
-		return null;
-	}
+    /**
+     * create a solver from its String name. the solvername Xxxx must map one of
+     * the newXxxx methods.
+     * 
+     * @param solvername
+     *            the name of the solver
+     * @return an ISolver built using newSolvername. <code>null</code> if the
+     *         solvername doesn't map one of the method of the factory.
+     */
+    @SuppressWarnings("unchecked")
+    public T createSolverByName(String solvername) {
+        try {
+            Class<?>[] paramtypes = {};
+            Method m = this.getClass()
+                    .getMethod("new" + solvername, paramtypes); //$NON-NLS-1$
+            return (T) m.invoke(null, (Object[]) null);
+        } catch (SecurityException e) {
+            System.err.println(e.getLocalizedMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getLocalizedMessage());
+        } catch (NoSuchMethodException e) {
+            System.err.println(e.getLocalizedMessage());
+        } catch (IllegalAccessException e) {
+            System.err.println(e.getLocalizedMessage());
+        } catch (InvocationTargetException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+        return null;
+    }
 
-	/**
-	 * To obtain the default solver of the library. The solver is suitable to
-	 * solve huge SAT benchmarks. It should reflect state-of-the-art SAT
-	 * technologies.
-	 * 
-	 * For solving small/easy SAT benchmarks, use lightSolver() instead.
-	 * 
-	 * @return a solver from the factory
-	 * @see #lightSolver()
-	 */
-	public abstract T defaultSolver();
+    /**
+     * To obtain the default solver of the library. The solver is suitable to
+     * solve huge SAT benchmarks. It should reflect state-of-the-art SAT
+     * technologies.
+     * 
+     * For solving small/easy SAT benchmarks, use lightSolver() instead.
+     * 
+     * @return a solver from the factory
+     * @see #lightSolver()
+     */
+    public abstract T defaultSolver();
 
-	/**
-	 * To obtain a solver that is suitable for solving many small instances of
-	 * SAT problems.
-	 * 
-	 * The solver is not using sophisticated but costly reasoning and avoids to
-	 * allocate too much memory.
-	 * 
-	 * For solving bigger SAT benchmarks, use defaultSolver() instead.
-	 * 
-	 * @return a solver from the factory
-	 * @see #defaultSolver()
-	 */
-	public abstract T lightSolver();
+    /**
+     * To obtain a solver that is suitable for solving many small instances of
+     * SAT problems.
+     * 
+     * The solver is not using sophisticated but costly reasoning and avoids to
+     * allocate too much memory.
+     * 
+     * For solving bigger SAT benchmarks, use defaultSolver() instead.
+     * 
+     * @return a solver from the factory
+     * @see #defaultSolver()
+     */
+    public abstract T lightSolver();
 }

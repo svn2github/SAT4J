@@ -50,22 +50,26 @@ public class CardinalityDataStructure extends AbstractCardinalityDataStructure {
     /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype.VecInt)
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype
+     * .VecInt)
      */
     public Constr createClause(IVecInt literals) throws ContradictionException {
-        return AtLeast.atLeastNew(solver, getVocabulary(), literals, 1);
+        return AtLeast.atLeastNew(this.solver, getVocabulary(), literals, 1);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org.sat4j.datatype.VecInt,
-     *      int)
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org
+     * .sat4j.datatype.VecInt, int)
      */
     @Override
     public Constr createCardinalityConstraint(IVecInt literals, int degree)
             throws ContradictionException {
-        return AtLeast.atLeastNew(solver, getVocabulary(), literals, degree);
+        return AtLeast.atLeastNew(this.solver, getVocabulary(), literals,
+                degree);
     }
 
 }

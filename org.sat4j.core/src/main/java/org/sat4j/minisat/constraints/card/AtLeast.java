@@ -46,264 +46,270 @@ import org.sat4j.specs.IVecInt;
  */
 public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** number of allowed falsified literal */
-	protected int maxUnsatisfied;
+    /** number of allowed falsified literal */
+    protected int maxUnsatisfied;
 
-	/** current number of falsified literals */
-	private int counter;
+    /** current number of falsified literals */
+    private int counter;
 
-	/**
-	 * constraint literals
-	 */
-	protected final int[] lits;
+    /**
+     * constraint literals
+     */
+    protected final int[] lits;
 
-	protected final ILits voc;
+    protected final ILits voc;
 
-	/**
-	 * @param ps
-	 *            a vector of literals
-	 * @param degree
-	 *            the minimal number of satisfied literals
-	 */
-	protected AtLeast(ILits voc, IVecInt ps, int degree) {
-		maxUnsatisfied = ps.size() - degree;
-		this.voc = voc;
-		counter = 0;
-		lits = new int[ps.size()];
-		ps.moveTo(lits);
-		for (int q : lits) {
-			voc.watch(q ^ 1, this);
-		}
-	}
+    /**
+     * @param ps
+     *            a vector of literals
+     * @param degree
+     *            the minimal number of satisfied literals
+     */
+    protected AtLeast(ILits voc, IVecInt ps, int degree) {
+        this.maxUnsatisfied = ps.size() - degree;
+        this.voc = voc;
+        this.counter = 0;
+        this.lits = new int[ps.size()];
+        ps.moveTo(this.lits);
+        for (int q : this.lits) {
+            voc.watch(q ^ 1, this);
+        }
+    }
 
-	protected static int niceParameters(UnitPropagationListener s, ILits voc,
-			IVecInt ps, int deg) throws ContradictionException {
+    protected static int niceParameters(UnitPropagationListener s, ILits voc,
+            IVecInt ps, int deg) throws ContradictionException {
 
-		if (ps.size() < deg)
-			throw new ContradictionException();
-		int degree = deg;
-		for (int i = 0; i < ps.size();) {
-			// on verifie si le litteral est affecte
-			if (voc.isUnassigned(ps.get(i))) {
-				// go to next literal
-				i++;
-			} else {
-				// Si le litteral est satisfait,
-				// ?a revient ? baisser le degr?
-				if (voc.isSatisfied(ps.get(i))) {
-					degree--;
-				}
-				// dans tous les cas, s'il est assign?,
-				// on enleve le ieme litteral
-				ps.delete(i);
-			}
-		}
+        if (ps.size() < deg) {
+            throw new ContradictionException();
+        }
+        int degree = deg;
+        for (int i = 0; i < ps.size();) {
+            // on verifie si le litteral est affecte
+            if (voc.isUnassigned(ps.get(i))) {
+                // go to next literal
+                i++;
+            } else {
+                // Si le litteral est satisfait,
+                // ?a revient ? baisser le degr?
+                if (voc.isSatisfied(ps.get(i))) {
+                    degree--;
+                }
+                // dans tous les cas, s'il est assign?,
+                // on enleve le ieme litteral
+                ps.delete(i);
+            }
+        }
 
-		// on trie le vecteur ps
-		ps.sortUnique();
-		// ?limine les clauses tautologiques
-		// deux litt?raux de signe oppos?s apparaissent dans la m?me
-		// clause
+        // on trie le vecteur ps
+        ps.sortUnique();
+        // ?limine les clauses tautologiques
+        // deux litt?raux de signe oppos?s apparaissent dans la m?me
+        // clause
 
-		if (ps.size() == degree) {
-			for (int i = 0; i < ps.size(); i++) {
-				if (!s.enqueue(ps.get(i))) {
-					throw new ContradictionException();
-				}
-			}
-			return 0;
-		}
+        if (ps.size() == degree) {
+            for (int i = 0; i < ps.size(); i++) {
+                if (!s.enqueue(ps.get(i))) {
+                    throw new ContradictionException();
+                }
+            }
+            return 0;
+        }
 
-		if (ps.size() < degree)
-			throw new ContradictionException();
-		return degree;
+        if (ps.size() < degree) {
+            throw new ContradictionException();
+        }
+        return degree;
 
-	}
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public static Constr atLeastNew(UnitPropagationListener s, ILits voc,
-			IVecInt ps, int n) throws ContradictionException {
-		int degree = niceParameters(s, voc, ps, n);
-		if (degree == 0)
-			return new UnitClauses(ps);
-		return new AtLeast(voc, ps, degree);
-	}
+    /**
+     * @since 2.1
+     */
+    public static Constr atLeastNew(UnitPropagationListener s, ILits voc,
+            IVecInt ps, int n) throws ContradictionException {
+        int degree = niceParameters(s, voc, ps, n);
+        if (degree == 0) {
+            return new UnitClauses(ps);
+        }
+        return new AtLeast(voc, ps, degree);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void remove(UnitPropagationListener upl) {
-		for (int q : lits) {
-			voc.watches(q ^ 1).remove(this);
-		}
-	}
+    /**
+     * @since 2.1
+     */
+    public void remove(UnitPropagationListener upl) {
+        for (int q : this.lits) {
+            this.voc.watches(q ^ 1).remove(this);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#propagate(Solver, Lit)
-	 */
-	public boolean propagate(UnitPropagationListener s, int p) {
-		// remet la clause dans la liste des clauses regardees
-		voc.watch(p, this);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Constr#propagate(Solver, Lit)
+     */
+    public boolean propagate(UnitPropagationListener s, int p) {
+        // remet la clause dans la liste des clauses regardees
+        this.voc.watch(p, this);
 
-		if (counter == maxUnsatisfied)
-			return false;
+        if (this.counter == this.maxUnsatisfied) {
+            return false;
+        }
 
-		counter++;
-		voc.undos(p).push(this);
+        this.counter++;
+        this.voc.undos(p).push(this);
 
-		// If no more can be false, enqueue the rest:
-		if (counter == maxUnsatisfied)
-			for (int q : lits) {
-				if (voc.isUnassigned(q) && !s.enqueue(q, this)) {
-					return false;
-				}
-			}
-		return true;
-	}
+        // If no more can be false, enqueue the rest:
+        if (this.counter == this.maxUnsatisfied) {
+            for (int q : this.lits) {
+                if (this.voc.isUnassigned(q) && !s.enqueue(q, this)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#simplify(Solver)
-	 */
-	public boolean simplify() {
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Constr#simplify(Solver)
+     */
+    public boolean simplify() {
+        return false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#undo(Solver, Lit)
-	 */
-	public void undo(int p) {
-		counter--;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Constr#undo(Solver, Lit)
+     */
+    public void undo(int p) {
+        this.counter--;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see Constr#calcReason(Solver, Lit, Vec)
-	 */
-	public void calcReason(int p, IVecInt outReason) {
-		int c = (p == ILits.UNDEFINED) ? -1 : 0;
-		for (int q : lits) {
-			if (voc.isFalsified(q)) {
-				outReason.push(q ^ 1);
-				if (++c == maxUnsatisfied)
-					return;
-			}
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see Constr#calcReason(Solver, Lit, Vec)
+     */
+    public void calcReason(int p, IVecInt outReason) {
+        int c = p == ILits.UNDEFINED ? -1 : 0;
+        for (int q : this.lits) {
+            if (this.voc.isFalsified(q)) {
+                outReason.push(q ^ 1);
+                if (++c == this.maxUnsatisfied) {
+                    return;
+                }
+            }
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.datatype.Constr#learnt()
-	 */
-	public boolean learnt() {
-		// Ces contraintes ne sont pas apprises pour le moment.
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.datatype.Constr#learnt()
+     */
+    public boolean learnt() {
+        // Ces contraintes ne sont pas apprises pour le moment.
+        return false;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.datatype.Constr#getActivity()
-	 */
-	public double getActivity() {
-		return 0;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.datatype.Constr#getActivity()
+     */
+    public double getActivity() {
+        return 0;
+    }
 
-	public void setActivity(double d) {
-	}
+    public void setActivity(double d) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.datatype.Constr#incActivity(double)
-	 */
-	public void incActivity(double claInc) {
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.datatype.Constr#incActivity(double)
+     */
+    public void incActivity(double claInc) {
+    }
 
-	/*
-	 * For learnt clauses only @author leberre
-	 */
-	public boolean locked() {
-		// FIXME need to be adapted to AtLeast
-		// return lits[0].getReason() == this;
-		return true;
-	}
+    /*
+     * For learnt clauses only @author leberre
+     */
+    public boolean locked() {
+        // FIXME need to be adapted to AtLeast
+        // return lits[0].getReason() == this;
+        return true;
+    }
 
-	public void setLearnt() {
-		throw new UnsupportedOperationException();
-	}
+    public void setLearnt() {
+        throw new UnsupportedOperationException();
+    }
 
-	public void register() {
-		throw new UnsupportedOperationException();
-	}
+    public void register() {
+        throw new UnsupportedOperationException();
+    }
 
-	public int size() {
-		return lits.length;
-	}
+    public int size() {
+        return this.lits.length;
+    }
 
-	public int get(int i) {
-		return lits[i];
-	}
+    public int get(int i) {
+        return this.lits[i];
+    }
 
-	public void rescaleBy(double d) {
-		throw new UnsupportedOperationException();
-	}
+    public void rescaleBy(double d) {
+        throw new UnsupportedOperationException();
+    }
 
-	public void assertConstraint(UnitPropagationListener s) {
-		throw new UnsupportedOperationException();
-	}
+    public void assertConstraint(UnitPropagationListener s) {
+        throw new UnsupportedOperationException();
+    }
 
-	/**
-	 * Cha?ne repr?sentant la contrainte
-	 * 
-	 * @return Cha?ne repr?sentant la contrainte
-	 */
-	@Override
-	public String toString() {
-		StringBuffer stb = new StringBuffer();
-		stb.append("Card (" + lits.length + ") : ");
-		for (int i = 0; i < lits.length; i++) {
-			// if (voc.isUnassigned(lits[i])) {
-			stb.append(" + "); //$NON-NLS-1$
-			stb.append(Lits.toString(this.lits[i]));
-			stb.append("[");
-			stb.append(voc.valueToString(lits[i]));
-			stb.append("@");
-			stb.append(voc.getLevel(lits[i]));
-			stb.append("]");
-			stb.append(" ");
-			stb.append(" "); //$NON-NLS-1$
-		}
-		stb.append(">= "); //$NON-NLS-1$
-		stb.append(size() - maxUnsatisfied);
+    /**
+     * Cha?ne repr?sentant la contrainte
+     * 
+     * @return Cha?ne repr?sentant la contrainte
+     */
+    @Override
+    public String toString() {
+        StringBuffer stb = new StringBuffer();
+        stb.append("Card (" + this.lits.length + ") : ");
+        for (int lit : this.lits) {
+            // if (voc.isUnassigned(lits[i])) {
+            stb.append(" + "); //$NON-NLS-1$
+            stb.append(Lits.toString(lit));
+            stb.append("[");
+            stb.append(this.voc.valueToString(lit));
+            stb.append("@");
+            stb.append(this.voc.getLevel(lit));
+            stb.append("]");
+            stb.append(" ");
+            stb.append(" "); //$NON-NLS-1$
+        }
+        stb.append(">= "); //$NON-NLS-1$
+        stb.append(size() - this.maxUnsatisfied);
 
-		return stb.toString();
-	}
+        return stb.toString();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void forwardActivity(double claInc) {
-		// TODO Auto-generated method stub
+    /**
+     * @since 2.1
+     */
+    public void forwardActivity(double claInc) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public boolean canBePropagatedMultipleTimes() {
-		return true;
-	}
+    public boolean canBePropagatedMultipleTimes() {
+        return true;
+    }
 
-	public Constr toConstraint() {
-		return this;
-	}
+    public Constr toConstraint() {
+        return this;
+    }
 }

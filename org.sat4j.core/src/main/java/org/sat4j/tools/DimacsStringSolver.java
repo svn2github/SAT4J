@@ -45,171 +45,175 @@ import org.sat4j.specs.IteratorInt;
  */
 public class DimacsStringSolver extends AbstractOutputSolver {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private StringBuffer out;
+    private StringBuffer out;
 
-	private int firstCharPos;
+    private int firstCharPos;
 
-	private final int initBuilderSize;
+    private final int initBuilderSize;
 
-	private int maxvarid = 0;
+    private int maxvarid = 0;
 
-	public DimacsStringSolver() {
-		this(16);
-	}
+    public DimacsStringSolver() {
+        this(16);
+    }
 
-	public DimacsStringSolver(int initSize) {
-		out = new StringBuffer(initSize);
-		initBuilderSize = initSize;
-	}
+    public DimacsStringSolver(int initSize) {
+        this.out = new StringBuffer(initSize);
+        this.initBuilderSize = initSize;
+    }
 
-	public StringBuffer getOut() {
-		return out;
-	}
+    public StringBuffer getOut() {
+        return this.out;
+    }
 
-	public int newVar() {
-		return 0;
-	}
+    public int newVar() {
+        return 0;
+    }
 
-	public int newVar(int howmany) {
-		setNbVars(howmany);
-		return howmany;
-	}
+    @Override
+    public int newVar(int howmany) {
+        setNbVars(howmany);
+        return howmany;
+    }
 
-	protected void setNbVars(int howmany) {
-		nbvars = howmany;
-		maxvarid = howmany;
-	}
+    protected void setNbVars(int howmany) {
+        this.nbvars = howmany;
+        this.maxvarid = howmany;
+    }
 
-	public void setExpectedNumberOfClauses(int nb) {
-		out.append(" ");
-		out.append(nb);
-		nbclauses = nb;
-		fixedNbClauses = true;
-	}
+    public void setExpectedNumberOfClauses(int nb) {
+        this.out.append(" ");
+        this.out.append(nb);
+        this.nbclauses = nb;
+        this.fixedNbClauses = true;
+    }
 
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		if (firstConstr) {
-			if (!fixedNbClauses) {
-				firstCharPos = 7 + Integer.toString(nbvars).length();
-				out.append("                    ");
-				out.append("\n");
-				nbclauses = 0;
-			}
-			firstConstr = false;
-		}
-		if (!fixedNbClauses) {
-			nbclauses++;
-		}
-		for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
-			out.append(iterator.next()).append(" ");
-		}
-		out.append("0\n");
-		return null;
-	}
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        if (this.firstConstr) {
+            if (!this.fixedNbClauses) {
+                this.firstCharPos = 7 + Integer.toString(this.nbvars).length();
+                this.out.append("                    ");
+                this.out.append("\n");
+                this.nbclauses = 0;
+            }
+            this.firstConstr = false;
+        }
+        if (!this.fixedNbClauses) {
+            this.nbclauses++;
+        }
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            this.out.append(iterator.next()).append(" ");
+        }
+        this.out.append("0\n");
+        return null;
+    }
 
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		if (degree > 1) {
-			throw new UnsupportedOperationException(
-					"Not a clausal problem! degree " + degree);
-		}
-		assert degree == 1;
-		if (firstConstr) {
-			firstCharPos = 0;
-			out.append("                    ");
-			out.append("\n");
-			nbclauses = 0;
-			firstConstr = false;
-		}
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        if (degree > 1) {
+            throw new UnsupportedOperationException(
+                    "Not a clausal problem! degree " + degree);
+        }
+        assert degree == 1;
+        if (this.firstConstr) {
+            this.firstCharPos = 0;
+            this.out.append("                    ");
+            this.out.append("\n");
+            this.nbclauses = 0;
+            this.firstConstr = false;
+        }
 
-		for (int i = 0; i <= literals.size(); i++) {
-			for (int j = i + 1; j < literals.size(); j++) {
-				if (!fixedNbClauses) {
-					nbclauses++;
-				}
-				out.append(-literals.get(i));
-				out.append(" ");
-				out.append(-literals.get(j));
-				out.append(" 0\n");
-			}
-		}
-		return null;
-	}
+        for (int i = 0; i <= literals.size(); i++) {
+            for (int j = i + 1; j < literals.size(); j++) {
+                if (!this.fixedNbClauses) {
+                    this.nbclauses++;
+                }
+                this.out.append(-literals.get(i));
+                this.out.append(" ");
+                this.out.append(-literals.get(j));
+                this.out.append(" 0\n");
+            }
+        }
+        return null;
+    }
 
-	public IConstr addExactly(IVecInt literals, int n)
-			throws ContradictionException {
-		if (n > 1) {
-			throw new UnsupportedOperationException(
-					"Not a clausal problem! degree " + n);
-		}
-		assert n == 1;
-		addAtMost(literals, n);
-		addAtLeast(literals, n);
-		return null;
-	}
+    public IConstr addExactly(IVecInt literals, int n)
+            throws ContradictionException {
+        if (n > 1) {
+            throw new UnsupportedOperationException(
+                    "Not a clausal problem! degree " + n);
+        }
+        assert n == 1;
+        addAtMost(literals, n);
+        addAtLeast(literals, n);
+        return null;
+    }
 
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		if (degree > 1) {
-			throw new UnsupportedOperationException(
-					"Not a clausal problem! degree " + degree);
-		}
-		assert degree == 1;
-		return addClause(literals);
-	}
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        if (degree > 1) {
+            throw new UnsupportedOperationException(
+                    "Not a clausal problem! degree " + degree);
+        }
+        assert degree == 1;
+        return addClause(literals);
+    }
 
-	public void reset() {
-		fixedNbClauses = false;
-		firstConstr = true;
-		out = new StringBuffer(initBuilderSize);
-		maxvarid = 0;
-	}
+    public void reset() {
+        this.fixedNbClauses = false;
+        this.firstConstr = true;
+        this.out = new StringBuffer(this.initBuilderSize);
+        this.maxvarid = 0;
+    }
 
-	public String toString(String prefix) {
-		return "Dimacs output solver";
-	}
+    public String toString(String prefix) {
+        return "Dimacs output solver";
+    }
 
-	public int nConstraints() {
-		return nbclauses;
-	}
+    @Override
+    public int nConstraints() {
+        return this.nbclauses;
+    }
 
-	public int nVars() {
-		return maxvarid;
-	}
+    @Override
+    public int nVars() {
+        return this.maxvarid;
+    }
 
-	@Override
-	public String toString() {
-		out.insert(firstCharPos, "p cnf " + maxvarid + " " + nbclauses);
-		return out.toString();
-	}
+    @Override
+    public String toString() {
+        this.out.insert(this.firstCharPos, "p cnf " + this.maxvarid + " "
+                + this.nbclauses);
+        return this.out.toString();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public int nextFreeVarId(boolean reserve) {
-		if (reserve) {
-			return ++maxvarid;
-		}
-		return maxvarid + 1;
-	}
+    /**
+     * @since 2.1
+     */
+    public int nextFreeVarId(boolean reserve) {
+        if (reserve) {
+            return ++this.maxvarid;
+        }
+        return this.maxvarid + 1;
+    }
 
-	/**
-	 * @since 2.3.1
-	 */
-	public int[] modelWithInternalVariables() {
-		throw new UnsupportedOperationException();
-	}
+    /**
+     * @since 2.3.1
+     */
+    public int[] modelWithInternalVariables() {
+        throw new UnsupportedOperationException();
+    }
 
-	public int realNumberOfVariables() {
-		return maxvarid;
-	}
+    public int realNumberOfVariables() {
+        return this.maxvarid;
+    }
 
-	public void registerLiteral(int p) {
-		throw new UnsupportedOperationException();
-	}
+    public void registerLiteral(int p) {
+        throw new UnsupportedOperationException();
+    }
 }

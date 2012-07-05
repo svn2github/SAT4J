@@ -44,20 +44,20 @@ import org.sat4j.minisat.core.DataStructureFactory;
  *            a data structure for the clauses.
  */
 public final class ClauseOnlyLearning<D extends DataStructureFactory> extends
-		LimitedLearning<D> {
+        LimitedLearning<D> {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	protected boolean learningCondition(Constr constr) {
-		return constr instanceof WLClause;
-	}
+    @Override
+    protected boolean learningCondition(Constr constr) {
+        return constr instanceof WLClause;
+    }
 
-	@Override
-	public String toString() {
-		return "Limit learning to clauses using watched literals only";
-	}
+    @Override
+    public String toString() {
+        return "Limit learning to clauses using watched literals only";
+    }
 }

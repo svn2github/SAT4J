@@ -43,93 +43,93 @@ import org.sat4j.specs.TimeoutException;
 
 public class TestPrimeComputation {
 
-	private Solver<DataStructureFactory> solver;
+    private Solver<DataStructureFactory> solver;
 
-	@Before
-	public void setUp() {
-		solver = SolverFactory.newBestWL();
-		solver.getOrder().setPhaseSelectionStrategy(
-				new PositiveLiteralSelectionStrategy());
-	}
+    @Before
+    public void setUp() {
+        this.solver = SolverFactory.newBestWL();
+        this.solver.getOrder().setPhaseSelectionStrategy(
+                new PositiveLiteralSelectionStrategy());
+    }
 
-	@Test
-	public void testBasicImplicant() throws ContradictionException,
-			TimeoutException {
-		IVecInt clause = new VecInt();
-		clause.push(1).push(-2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(-1).push(2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(-3);
-		solver.addClause(clause);
-		clause.clear();
-		assertTrue(solver.isSatisfiable());
-		int[] model = solver.model();
-		assertEquals(3, model.length);
-		int[] implicant = solver.primeImplicant();
-		assertEquals(2, implicant.length);
-	}
+    @Test
+    public void testBasicImplicant() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1).push(-2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        assertTrue(this.solver.isSatisfiable());
+        int[] model = this.solver.model();
+        assertEquals(3, model.length);
+        int[] implicant = this.solver.primeImplicant();
+        assertEquals(2, implicant.length);
+    }
 
-	@Test
-	public void testImplicantPascal() throws ContradictionException,
-			TimeoutException {
-		IVecInt clause = new VecInt();
-		clause.push(1).push(-2).push(3).push(-4);
-		solver.addClause(clause);
-		assertTrue(solver.isSatisfiable());
-		int[] model = solver.model();
-		assertEquals(4, model.length);
-		int[] implicant = solver.primeImplicant();
-		assertEquals(1, implicant.length);
-	}
+    @Test
+    public void testImplicantPascal() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1).push(-2).push(3).push(-4);
+        this.solver.addClause(clause);
+        assertTrue(this.solver.isSatisfiable());
+        int[] model = this.solver.model();
+        assertEquals(4, model.length);
+        int[] implicant = this.solver.primeImplicant();
+        assertEquals(1, implicant.length);
+    }
 
-	@Test
-	public void testOtherImplicant() throws ContradictionException,
-			TimeoutException {
-		IVecInt clause = new VecInt();
-		clause.push(1).push(-2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(-3);
-		solver.addClause(clause);
-		clause.clear();
-		assertTrue(solver.isSatisfiable());
-		int[] model = solver.model();
-		assertEquals(3, model.length);
-		int[] implicant = solver.primeImplicant();
-		assertEquals(2, implicant.length);
-		clause.push(1).push(-2).push(-3);
-		solver.addBlockingClause(clause);
-		assertTrue(solver.isSatisfiable());
-		clause.clear();
-		model = solver.model();
-		assertEquals(3, model.length);
-		implicant = solver.primeImplicant();
-		assertEquals(1, implicant.length);
-	}
+    @Test
+    public void testOtherImplicant() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1).push(-2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        assertTrue(this.solver.isSatisfiable());
+        int[] model = this.solver.model();
+        assertEquals(3, model.length);
+        int[] implicant = this.solver.primeImplicant();
+        assertEquals(2, implicant.length);
+        clause.push(1).push(-2).push(-3);
+        this.solver.addBlockingClause(clause);
+        assertTrue(this.solver.isSatisfiable());
+        clause.clear();
+        model = this.solver.model();
+        assertEquals(3, model.length);
+        implicant = this.solver.primeImplicant();
+        assertEquals(1, implicant.length);
+    }
 
-	@Test
-	public void testFolletExample() throws ContradictionException,
-			TimeoutException {
-		IVecInt clause = new VecInt();
-		clause.push(1);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(2).push(3);
-		solver.addClause(clause);
-		clause.clear();
-		clause.push(3);
-		solver.addClause(clause);
-		clause.clear();
-		assertTrue(solver.isSatisfiable());
-		int[] model = solver.model();
-		assertEquals(3, model.length);
-		int[] implicant = solver.primeImplicant();
-		assertEquals(2, implicant.length);
-	}
+    @Test
+    public void testFolletExample() throws ContradictionException,
+            TimeoutException {
+        IVecInt clause = new VecInt();
+        clause.push(1);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        assertTrue(this.solver.isSatisfiable());
+        int[] model = this.solver.model();
+        assertEquals(3, model.length);
+        int[] implicant = this.solver.primeImplicant();
+        assertEquals(2, implicant.length);
+    }
 }

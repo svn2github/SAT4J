@@ -60,264 +60,264 @@ import org.sat4j.tools.SolverDecorator;
  * @since 2.1
  */
 public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
-		Explainer {
+        Explainer {
 
-	protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
+    protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
 
-	protected IVecInt assump;
+    protected IVecInt assump;
 
-	private int lastCreatedVar;
-	private boolean pooledVarId = false;
-	private final IVecInt lastClause = new VecInt();
-	private IConstr lastConstr;
-	private final boolean skipDuplicatedEntries;
+    private int lastCreatedVar;
+    private boolean pooledVarId = false;
+    private final IVecInt lastClause = new VecInt();
+    private IConstr lastConstr;
+    private final boolean skipDuplicatedEntries;
 
-	private MinimizationStrategy xplainStrategy = new DeletionStrategy();
+    private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 
-	public Xplain(T solver, boolean skipDuplicatedEntries) {
-		super(solver);
-		this.skipDuplicatedEntries = skipDuplicatedEntries;
-	}
+    public Xplain(T solver, boolean skipDuplicatedEntries) {
+        super(solver);
+        this.skipDuplicatedEntries = skipDuplicatedEntries;
+    }
 
-	public Xplain(T solver) {
-		this(solver, true);
-	}
+    public Xplain(T solver) {
+        this(solver, true);
+    }
 
-	@Override
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		if (skipDuplicatedEntries) {
-			if (literals.equals(lastClause)) {
-				// System.err.println("c Duplicated entry: " + literals);
-				return null;
-			}
-			lastClause.clear();
-			literals.copyTo(lastClause);
-		}
-		int newvar = createNewVar(literals);
-		literals.push(newvar);
-		lastConstr = super.addClause(literals);
-		if (lastConstr == null) {
-			discardLastestVar();
-		} else {
-			constrs.put(newvar, lastConstr);
-		}
-		return lastConstr;
-	}
+    @Override
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        if (this.skipDuplicatedEntries) {
+            if (literals.equals(this.lastClause)) {
+                // System.err.println("c Duplicated entry: " + literals);
+                return null;
+            }
+            this.lastClause.clear();
+            literals.copyTo(this.lastClause);
+        }
+        int newvar = createNewVar(literals);
+        literals.push(newvar);
+        this.lastConstr = super.addClause(literals);
+        if (this.lastConstr == null) {
+            discardLastestVar();
+        } else {
+            this.constrs.put(newvar, this.lastConstr);
+        }
+        return this.lastConstr;
+    }
 
-	/**
+    /**
+     * 
+     * @param literals
+     * @return
+     * @since 2.1
+     */
+    protected int createNewVar(IVecInt literals) {
+        for (IteratorInt it = literals.iterator(); it.hasNext();) {
+            if (Math.abs(it.next()) > nextFreeVarId(false)) {
+                throw new IllegalStateException(
+                        "Please call newVar(int) before adding constraints!!!");
+            }
+        }
+        if (this.pooledVarId) {
+            this.pooledVarId = false;
+            return this.lastCreatedVar;
+        }
+        this.lastCreatedVar = nextFreeVarId(true);
+        return this.lastCreatedVar;
+    }
+
+    protected void discardLastestVar() {
+        this.pooledVarId = true;
+    }
+
+    @Override
+    public IConstr addExactly(IVecInt literals, int n)
+            throws ContradictionException {
+        throw new UnsupportedOperationException(
+                "Explanation requires Pseudo Boolean support. See XplainPB class instead.");
+    }
+
+    @Override
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException(
+                "Explanation requires Pseudo Boolean support. See XplainPB class instead.");
+    }
+
+    @Override
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException(
+                "Explanation requires Pseudo Boolean support. See XplainPB class instead.");
+    }
+
+    /**
 	 * 
-	 * @param literals
-	 * @return
-	 * @since 2.1
 	 */
-	protected int createNewVar(IVecInt literals) {
-		for (IteratorInt it = literals.iterator(); it.hasNext();) {
-			if (Math.abs(it.next()) > nextFreeVarId(false)) {
-				throw new IllegalStateException(
-						"Please call newVar(int) before adding constraints!!!");
-			}
-		}
-		if (pooledVarId) {
-			pooledVarId = false;
-			return lastCreatedVar;
-		}
-		lastCreatedVar = nextFreeVarId(true);
-		return lastCreatedVar;
-	}
+    private static final long serialVersionUID = 1L;
 
-	protected void discardLastestVar() {
-		pooledVarId = true;
-	}
+    /**
+     * @since 2.2.4
+     * @return
+     * @throws TimeoutException
+     */
+    private IVecInt explanationKeys() throws TimeoutException {
+        assert !isSatisfiable(this.assump);
+        ISolver solver = decorated();
+        if (solver instanceof SolverDecorator<?>) {
+            solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
+        }
+        return this.xplainStrategy.explain(solver, this.constrs, this.assump);
+    }
 
-	@Override
-	public IConstr addExactly(IVecInt literals, int n)
-			throws ContradictionException {
-		throw new UnsupportedOperationException(
-				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
-	}
+    public int[] minimalExplanation() throws TimeoutException {
+        IVecInt keys = explanationKeys();
+        keys.sort();
+        List<Integer> allKeys = new ArrayList<Integer>(this.constrs.keySet());
+        Collections.sort(allKeys);
+        int[] model = new int[keys.size()];
+        int i = 0;
+        for (IteratorInt it = keys.iterator(); it.hasNext();) {
+            model[i++] = allKeys.indexOf(it.next()) + 1;
+        }
+        return model;
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException(
-				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
-	}
+    /**
+     * @since 2.1
+     * @return
+     * @throws TimeoutException
+     */
+    public Collection<IConstr> explain() throws TimeoutException {
+        IVecInt keys = explanationKeys();
+        Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
+        for (IteratorInt it = keys.iterator(); it.hasNext();) {
+            explanation.add(this.constrs.get(it.next()));
+        }
+        return explanation;
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException(
-				"Explanation requires Pseudo Boolean support. See XplainPB class instead.");
-	}
+    /**
+     * @since 2.1
+     */
+    public void cancelExplanation() {
+        this.xplainStrategy.cancelExplanationComputation();
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     * @since 2.1
+     */
+    public Collection<IConstr> getConstraints() {
+        return this.constrs.values();
+    }
 
-	/**
-	 * @since 2.2.4
-	 * @return
-	 * @throws TimeoutException
-	 */
-	private IVecInt explanationKeys() throws TimeoutException {
-		assert !isSatisfiable(assump);
-		ISolver solver = decorated();
-		if (solver instanceof SolverDecorator<?>) {
-			solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
-		}
-		return xplainStrategy.explain(solver, constrs, assump);
-	}
+    @Override
+    public int[] findModel() throws TimeoutException {
+        this.assump = VecInt.EMPTY;
+        IVecInt extraVariables = new VecInt();
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.findModel(extraVariables);
+    }
 
-	public int[] minimalExplanation() throws TimeoutException {
-		IVecInt keys = explanationKeys();
-		keys.sort();
-		List<Integer> allKeys = new ArrayList<Integer>(constrs.keySet());
-		Collections.sort(allKeys);
-		int[] model = new int[keys.size()];
-		int i = 0;
-		for (IteratorInt it = keys.iterator(); it.hasNext();) {
-			model[i++] = allKeys.indexOf(it.next()) + 1;
-		}
-		return model;
-	}
+    @Override
+    public int[] findModel(IVecInt assumps) throws TimeoutException {
+        this.assump = assumps;
+        IVecInt extraVariables = new VecInt();
+        assumps.copyTo(extraVariables);
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.findModel(extraVariables);
+    }
 
-	/**
-	 * @since 2.1
-	 * @return
-	 * @throws TimeoutException
-	 */
-	public Collection<IConstr> explain() throws TimeoutException {
-		IVecInt keys = explanationKeys();
-		Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
-		for (IteratorInt it = keys.iterator(); it.hasNext();) {
-			explanation.add(constrs.get(it.next()));
-		}
-		return explanation;
-	}
+    @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        this.assump = VecInt.EMPTY;
+        IVecInt extraVariables = new VecInt();
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.isSatisfiable(extraVariables);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void cancelExplanation() {
-		xplainStrategy.cancelExplanationComputation();
-	}
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        this.assump = VecInt.EMPTY;
+        IVecInt extraVariables = new VecInt();
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.isSatisfiable(extraVariables, global);
+    }
 
-	/**
-	 * 
-	 * @since 2.1
-	 */
-	public Collection<IConstr> getConstraints() {
-		return constrs.values();
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        this.assump = assumps;
+        IVecInt extraVariables = new VecInt();
+        assumps.copyTo(extraVariables);
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.isSatisfiable(extraVariables);
+    }
 
-	@Override
-	public int[] findModel() throws TimeoutException {
-		assump = VecInt.EMPTY;
-		IVecInt extraVariables = new VecInt();
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.findModel(extraVariables);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        this.assump = assumps;
+        IVecInt extraVariables = new VecInt();
+        assumps.copyTo(extraVariables);
+        for (Integer p : this.constrs.keySet()) {
+            extraVariables.push(-p);
+        }
+        return super.isSatisfiable(extraVariables, global);
+    }
 
-	@Override
-	public int[] findModel(IVecInt assumps) throws TimeoutException {
-		assump = assumps;
-		IVecInt extraVariables = new VecInt();
-		assumps.copyTo(extraVariables);
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.findModel(extraVariables);
-	}
+    @Override
+    public int[] model() {
+        int[] fullmodel = super.modelWithInternalVariables();
+        if (fullmodel == null) {
+            return null;
+        }
+        int[] model = new int[fullmodel.length - this.constrs.size()];
+        int j = 0;
+        for (int element : fullmodel) {
+            if (this.constrs.get(Math.abs(element)) == null) {
+                model[j++] = element;
+            }
+        }
+        return model;
+    }
 
-	@Override
-	public boolean isSatisfiable() throws TimeoutException {
-		assump = VecInt.EMPTY;
-		IVecInt extraVariables = new VecInt();
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.isSatisfiable(extraVariables);
-	}
+    @Override
+    public String toString(String prefix) {
+        System.out.println(prefix + "Explanation (MUS) enabled solver");
+        System.out.println(prefix + this.xplainStrategy);
+        return super.toString(prefix);
+    }
 
-	@Override
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		assump = VecInt.EMPTY;
-		IVecInt extraVariables = new VecInt();
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.isSatisfiable(extraVariables, global);
-	}
+    public void setMinimizationStrategy(MinimizationStrategy strategy) {
+        this.xplainStrategy = strategy;
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		assump = assumps;
-		IVecInt extraVariables = new VecInt();
-		assumps.copyTo(extraVariables);
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.isSatisfiable(extraVariables);
-	}
+    @Override
+    public boolean removeConstr(IConstr c) {
+        if (this.lastConstr == c) {
+            this.lastClause.clear();
+            this.lastConstr = null;
+        }
+        return super.removeConstr(c);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		assump = assumps;
-		IVecInt extraVariables = new VecInt();
-		assumps.copyTo(extraVariables);
-		for (Integer p : constrs.keySet()) {
-			extraVariables.push(-p);
-		}
-		return super.isSatisfiable(extraVariables, global);
-	}
-
-	@Override
-	public int[] model() {
-		int[] fullmodel = super.modelWithInternalVariables();
-		if (fullmodel == null) {
-			return null;
-		}
-		int[] model = new int[fullmodel.length - constrs.size()];
-		int j = 0;
-		for (int i = 0; i < fullmodel.length; i++) {
-			if (constrs.get(Math.abs(fullmodel[i])) == null) {
-				model[j++] = fullmodel[i];
-			}
-		}
-		return model;
-	}
-
-	@Override
-	public String toString(String prefix) {
-		System.out.println(prefix + "Explanation (MUS) enabled solver");
-		System.out.println(prefix + xplainStrategy);
-		return super.toString(prefix);
-	}
-
-	public void setMinimizationStrategy(MinimizationStrategy strategy) {
-		xplainStrategy = strategy;
-	}
-
-	@Override
-	public boolean removeConstr(IConstr c) {
-		if (lastConstr == c) {
-			lastClause.clear();
-			lastConstr = null;
-		}
-		return super.removeConstr(c);
-	}
-
-	@Override
-	public boolean removeSubsumedConstr(IConstr c) {
-		if (lastConstr == c) {
-			lastClause.clear();
-			lastConstr = null;
-		}
-		return super.removeSubsumedConstr(c);
-	}
+    @Override
+    public boolean removeSubsumedConstr(IConstr c) {
+        if (this.lastConstr == c) {
+            this.lastClause.clear();
+            this.lastConstr = null;
+        }
+        return super.removeSubsumedConstr(c);
+    }
 
 }

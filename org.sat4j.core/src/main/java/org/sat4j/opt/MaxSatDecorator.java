@@ -45,130 +45,130 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final boolean equivalence;
+    private final boolean equivalence;
 
-	public MaxSatDecorator(ISolver solver) {
-		this(solver, false);
-	}
+    public MaxSatDecorator(ISolver solver) {
+        this(solver, false);
+    }
 
-	public MaxSatDecorator(ISolver solver, boolean equivalence) {
-		super(solver);
-		this.equivalence = equivalence;
-	}
+    public MaxSatDecorator(ISolver solver, boolean equivalence) {
+        super(solver);
+        this.equivalence = equivalence;
+    }
 
-	@Override
-	public void setExpectedNumberOfClauses(int nb) {
-		super.setExpectedNumberOfClauses(nb);
-		lits.ensure(nb);
-	}
+    @Override
+    public void setExpectedNumberOfClauses(int nb) {
+        super.setExpectedNumberOfClauses(nb);
+        this.lits.ensure(nb);
+    }
 
-	@Override
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		int newvar = nextFreeVarId(true);
-		lits.push(newvar);
-		literals.push(newvar);
-		if (equivalence) {
-			ConstrGroup constrs = new ConstrGroup();
-			constrs.add(super.addClause(literals));
-			IVecInt clause = new VecInt(2);
-			clause.push(-newvar);
-			for (int i = 0; i < literals.size() - 1; i++) {
-				clause.push(-literals.get(i));
-				constrs.add(super.addClause(clause));
-			}
-			clause.pop();
-			return constrs;
-		}
-		return super.addClause(literals);
-	}
+    @Override
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        int newvar = nextFreeVarId(true);
+        this.lits.push(newvar);
+        literals.push(newvar);
+        if (this.equivalence) {
+            ConstrGroup constrs = new ConstrGroup();
+            constrs.add(super.addClause(literals));
+            IVecInt clause = new VecInt(2);
+            clause.push(-newvar);
+            for (int i = 0; i < literals.size() - 1; i++) {
+                clause.push(-literals.get(i));
+                constrs.add(super.addClause(clause));
+            }
+            clause.pop();
+            return constrs;
+        }
+        return super.addClause(literals);
+    }
 
-	@Override
-	public void reset() {
-		lits.clear();
-		super.reset();
-		prevConstr = null;
-	}
+    @Override
+    public void reset() {
+        this.lits.clear();
+        super.reset();
+        this.prevConstr = null;
+    }
 
-	public boolean hasNoObjectiveFunction() {
-		return false;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return false;
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return false;
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return false;
+    }
 
-	public Number calculateObjective() {
-		calculateObjectiveValue();
-		return counter;
-	}
+    public Number calculateObjective() {
+        calculateObjectiveValue();
+        return this.counter;
+    }
 
-	private final IVecInt lits = new VecInt();
+    private final IVecInt lits = new VecInt();
 
-	private int counter;
+    private int counter;
 
-	private IConstr prevConstr;
+    private IConstr prevConstr;
 
-	/**
-	 * @since 2.1
-	 */
-	public void discardCurrentSolution() throws ContradictionException {
-		if (prevConstr != null) {
-			super.removeSubsumedConstr(prevConstr);
-		}
-		try {
-			prevConstr = super.addAtMost(lits, counter - 1);
-		} catch (ContradictionException ce) {
-			isSolutionOptimal = true;
-			throw ce;
-		}
-	}
+    /**
+     * @since 2.1
+     */
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.prevConstr != null) {
+            super.removeSubsumedConstr(this.prevConstr);
+        }
+        try {
+            this.prevConstr = super.addAtMost(this.lits, this.counter - 1);
+        } catch (ContradictionException ce) {
+            this.isSolutionOptimal = true;
+            throw ce;
+        }
+    }
 
-	@Override
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
+    @Override
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
 
-		boolean result = super.admitABetterSolution(assumps);
-		if (!result) {
-			if (prevConstr != null) {
-				super.removeConstr(prevConstr);
-				prevConstr = null;
-			}
-		}
-		return result;
-	}
+        boolean result = super.admitABetterSolution(assumps);
+        if (!result) {
+            if (this.prevConstr != null) {
+                super.removeConstr(this.prevConstr);
+                this.prevConstr = null;
+            }
+        }
+        return result;
+    }
 
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
-	}
+    public void discard() throws ContradictionException {
+        discardCurrentSolution();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public Number getObjectiveValue() {
-		return counter;
-	}
+    /**
+     * @since 2.1
+     */
+    public Number getObjectiveValue() {
+        return this.counter;
+    }
 
-	@Override
-	void calculateObjectiveValue() {
-		counter = 0;
-		for (int q : prevfullmodel) {
-			if (q > nVars()) {
-				counter++;
-			}
-		}
-	}
+    @Override
+    void calculateObjectiveValue() {
+        this.counter = 0;
+        for (int q : this.prevfullmodel) {
+            if (q > nVars()) {
+                this.counter++;
+            }
+        }
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		super.addAtMost(lits, forcedValue.intValue());
-	}
+    /**
+     * @since 2.1
+     */
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        super.addAtMost(this.lits, forcedValue.intValue());
+    }
 
 }

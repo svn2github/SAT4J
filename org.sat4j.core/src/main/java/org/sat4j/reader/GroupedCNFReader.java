@@ -37,113 +37,114 @@ import org.sat4j.tools.xplain.HighLevelXplain;
 
 public class GroupedCNFReader extends DimacsReader {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int numberOfComponents;
+    private int numberOfComponents;
 
-	private final HighLevelXplain<ISolver> hlxplain;
+    private final HighLevelXplain<ISolver> hlxplain;
 
-	private int currentComponentIndex;
+    private int currentComponentIndex;
 
-	public GroupedCNFReader(HighLevelXplain<ISolver> solver) {
-		super(solver, "gcnf");
-		hlxplain = solver;
-	}
+    public GroupedCNFReader(HighLevelXplain<ISolver> solver) {
+        super(solver, "gcnf");
+        this.hlxplain = solver;
+    }
 
-	/**
-	 * @param in
-	 *            the input stream
-	 * @throws IOException
-	 *             iff an IO occurs
-	 * @throws ParseFormatException
-	 *             if the input stream does not comply with the DIMACS format.
-	 * @since 2.1
-	 */
-	@Override
-	protected void readProblemLine() throws IOException, ParseFormatException {
+    /**
+     * @param in
+     *            the input stream
+     * @throws IOException
+     *             iff an IO occurs
+     * @throws ParseFormatException
+     *             if the input stream does not comply with the DIMACS format.
+     * @since 2.1
+     */
+    @Override
+    protected void readProblemLine() throws IOException, ParseFormatException {
 
-		String line = scanner.nextLine();
+        String line = this.scanner.nextLine();
 
-		if (line == null) {
-			throw new ParseFormatException("premature end of file: <p "
-					+ formatString + " ...> expected");
-		}
-		line = line.trim();
-		String[] tokens = line.split("\\s+");
-		if (tokens.length < 5 || !"p".equals(tokens[0])
-				|| !formatString.equals(tokens[1])) {
-			throw new ParseFormatException("problem line expected (p "
-					+ formatString + " ...)");
-		}
+        if (line == null) {
+            throw new ParseFormatException("premature end of file: <p "
+                    + this.formatString + " ...> expected");
+        }
+        line = line.trim();
+        String[] tokens = line.split("\\s+");
+        if (tokens.length < 5 || !"p".equals(tokens[0])
+                || !this.formatString.equals(tokens[1])) {
+            throw new ParseFormatException("problem line expected (p "
+                    + this.formatString + " ...)");
+        }
 
-		int vars;
+        int vars;
 
-		// reads the max var id
-		vars = Integer.parseInt(tokens[2]);
-		assert vars > 0;
-		solver.newVar(vars);
-		// reads the number of clauses
-		expectedNbOfConstr = Integer.parseInt(tokens[3]);
-		assert expectedNbOfConstr > 0;
-		numberOfComponents = Integer.parseInt(tokens[4]);
-		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
-	}
+        // reads the max var id
+        vars = Integer.parseInt(tokens[2]);
+        assert vars > 0;
+        this.solver.newVar(vars);
+        // reads the number of clauses
+        this.expectedNbOfConstr = Integer.parseInt(tokens[3]);
+        assert this.expectedNbOfConstr > 0;
+        this.numberOfComponents = Integer.parseInt(tokens[4]);
+        this.solver.setExpectedNumberOfClauses(this.expectedNbOfConstr);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	protected boolean handleLine() throws ContradictionException, IOException,
-			ParseFormatException {
-		int lit;
-		boolean added = false;
-		String component = scanner.next();
-		if (!component.startsWith("{") || !component.endsWith("}")) {
-			throw new ParseFormatException(
-					"Component index required at the beginning of the clause");
-		}
-		currentComponentIndex = Integer.valueOf(component.substring(1,
-				component.length() - 1));
-		if (currentComponentIndex < 0
-				|| currentComponentIndex > numberOfComponents) {
-			throw new ParseFormatException("wrong component index: "
-					+ currentComponentIndex);
-		}
-		while (!scanner.eof()) {
-			lit = scanner.nextInt();
-			if (lit == 0) {
-				if (literals.size() > 0) {
-					flushConstraint();
-					literals.clear();
-					added = true;
-				}
-				break;
-			}
-			literals.push(lit);
-		}
-		return added;
-	}
+    /**
+     * @since 2.1
+     */
+    @Override
+    protected boolean handleLine() throws ContradictionException, IOException,
+            ParseFormatException {
+        int lit;
+        boolean added = false;
+        String component = this.scanner.next();
+        if (!component.startsWith("{") || !component.endsWith("}")) {
+            throw new ParseFormatException(
+                    "Component index required at the beginning of the clause");
+        }
+        this.currentComponentIndex = Integer.valueOf(component.substring(1,
+                component.length() - 1));
+        if (this.currentComponentIndex < 0
+                || this.currentComponentIndex > this.numberOfComponents) {
+            throw new ParseFormatException("wrong component index: "
+                    + this.currentComponentIndex);
+        }
+        while (!this.scanner.eof()) {
+            lit = this.scanner.nextInt();
+            if (lit == 0) {
+                if (this.literals.size() > 0) {
+                    flushConstraint();
+                    this.literals.clear();
+                    added = true;
+                }
+                break;
+            }
+            this.literals.push(lit);
+        }
+        return added;
+    }
 
-	/**
-	 * 
-	 * @throws ContradictionException
-	 * @since 2.1
-	 */
-	@Override
-	protected void flushConstraint() throws ContradictionException {
-		try {
-			if (currentComponentIndex == 0) {
-				hlxplain.addClause(literals);
-			} else {
-				hlxplain.addClause(literals, currentComponentIndex);
-			}
-		} catch (IllegalArgumentException ex) {
-			if (isVerbose()) {
-				System.err.println("c Skipping constraint " + literals);
-			}
-		}
-	}
+    /**
+     * 
+     * @throws ContradictionException
+     * @since 2.1
+     */
+    @Override
+    protected void flushConstraint() throws ContradictionException {
+        try {
+            if (this.currentComponentIndex == 0) {
+                this.hlxplain.addClause(this.literals);
+            } else {
+                this.hlxplain.addClause(this.literals,
+                        this.currentComponentIndex);
+            }
+        } catch (IllegalArgumentException ex) {
+            if (isVerbose()) {
+                System.err.println("c Skipping constraint " + this.literals);
+            }
+        }
+    }
 }

@@ -40,11 +40,11 @@ import org.sat4j.minisat.core.DataStructureFactory;
  * @author leberre
  */
 public final class NoLearningButHeuristics<D extends DataStructureFactory>
-		extends AbstractLearning<D> {
+        extends AbstractLearning<D> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void learns(Constr reason) {
-		claBumpActivity(reason);
-	}
+    public void learns(Constr reason) {
+        claBumpActivity(reason);
+    }
 }

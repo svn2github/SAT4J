@@ -38,52 +38,52 @@ package org.sat4j.minisat.core;
  */
 public class CircularBuffer {
 
-	private final int[] values;
-	private int index = 0;
-	private long sum = 0;
-	private boolean full = false;
+    private final int[] values;
+    private int index = 0;
+    private long sum = 0;
+    private boolean full = false;
 
-	public CircularBuffer(int capacity) {
-		values = new int[capacity];
-	}
+    public CircularBuffer(int capacity) {
+        this.values = new int[capacity];
+    }
 
-	public void push(int value) {
-		if (!full) {
-			values[index++] = value;
-			sum += value;
-			if (index == values.length) {
-				full = true;
-				index = -1;
-			}
-			return;
-		}
-		index++;
-		if (index == values.length) {
-			index = 0;
-		}
-		// buffer full, overwrite
-		sum -= values[index];
-		values[index] = value;
-		sum += value;
-	}
+    public void push(int value) {
+        if (!this.full) {
+            this.values[this.index++] = value;
+            this.sum += value;
+            if (this.index == this.values.length) {
+                this.full = true;
+                this.index = -1;
+            }
+            return;
+        }
+        this.index++;
+        if (this.index == this.values.length) {
+            this.index = 0;
+        }
+        // buffer full, overwrite
+        this.sum -= this.values[this.index];
+        this.values[this.index] = value;
+        this.sum += value;
+    }
 
-	public long average() {
-		if (full) {
-			return sum / values.length;
-		}
-		if (index == 0) {
-			return 0;
-		}
-		return sum / index;
-	}
+    public long average() {
+        if (this.full) {
+            return this.sum / this.values.length;
+        }
+        if (this.index == 0) {
+            return 0;
+        }
+        return this.sum / this.index;
+    }
 
-	public void clear() {
-		index = 0;
-		full = false;
-		sum = 0;
-	}
+    public void clear() {
+        this.index = 0;
+        this.full = false;
+        this.sum = 0;
+    }
 
-	public boolean isFull() {
-		return full;
-	}
+    public boolean isFull() {
+        return this.full;
+    }
 }

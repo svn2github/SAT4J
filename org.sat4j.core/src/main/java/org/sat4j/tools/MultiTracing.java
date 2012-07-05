@@ -47,126 +47,126 @@ import org.sat4j.specs.SearchListener;
  */
 public class MultiTracing implements SearchListener {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Collection<SearchListener> listeners = new ArrayList<SearchListener>();
+    private final Collection<SearchListener> listeners = new ArrayList<SearchListener>();
 
-	public MultiTracing(SearchListener... listeners) {
-		this.listeners.addAll(Arrays.asList(listeners));
-	}
+    public MultiTracing(SearchListener... listeners) {
+        this.listeners.addAll(Arrays.asList(listeners));
+    }
 
-	public MultiTracing(List<SearchListener> listenersList) {
-		this.listeners.addAll(listenersList);
-	}
+    public MultiTracing(List<SearchListener> listenersList) {
+        this.listeners.addAll(listenersList);
+    }
 
-	public void assuming(int p) {
-		for (SearchListener sl : listeners) {
-			sl.assuming(p);
-		}
+    public void assuming(int p) {
+        for (SearchListener sl : this.listeners) {
+            sl.assuming(p);
+        }
 
-	}
+    }
 
-	public void propagating(int p, IConstr reason) {
-		for (SearchListener sl : listeners) {
-			sl.propagating(p, reason);
-		}
+    public void propagating(int p, IConstr reason) {
+        for (SearchListener sl : this.listeners) {
+            sl.propagating(p, reason);
+        }
 
-	}
+    }
 
-	public void backtracking(int p) {
-		for (SearchListener sl : listeners) {
-			sl.backtracking(p);
-		}
-	}
+    public void backtracking(int p) {
+        for (SearchListener sl : this.listeners) {
+            sl.backtracking(p);
+        }
+    }
 
-	public void adding(int p) {
-		for (SearchListener sl : listeners) {
-			sl.adding(p);
-		}
+    public void adding(int p) {
+        for (SearchListener sl : this.listeners) {
+            sl.adding(p);
+        }
 
-	}
+    }
 
-	public void learn(IConstr c) {
-		for (SearchListener sl : listeners) {
-			sl.learn(c);
-		}
+    public void learn(IConstr c) {
+        for (SearchListener sl : this.listeners) {
+            sl.learn(c);
+        }
 
-	}
+    }
 
-	public void delete(int[] clause) {
-		for (SearchListener sl : listeners) {
-			sl.delete(clause);
-		}
+    public void delete(int[] clause) {
+        for (SearchListener sl : this.listeners) {
+            sl.delete(clause);
+        }
 
-	}
+    }
 
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		for (SearchListener sl : listeners) {
-			sl.conflictFound(confl, dlevel, trailLevel);
-		}
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        for (SearchListener sl : this.listeners) {
+            sl.conflictFound(confl, dlevel, trailLevel);
+        }
 
-	}
+    }
 
-	public void conflictFound(int p) {
-		for (SearchListener sl : listeners) {
-			sl.conflictFound(p);
-		}
+    public void conflictFound(int p) {
+        for (SearchListener sl : this.listeners) {
+            sl.conflictFound(p);
+        }
 
-	}
+    }
 
-	public void solutionFound(int[] model) {
-		for (SearchListener sl : listeners) {
-			sl.solutionFound(model);
-		}
+    public void solutionFound(int[] model) {
+        for (SearchListener sl : this.listeners) {
+            sl.solutionFound(model);
+        }
 
-	}
+    }
 
-	public void beginLoop() {
-		for (SearchListener sl : listeners) {
-			sl.beginLoop();
-		}
-	}
+    public void beginLoop() {
+        for (SearchListener sl : this.listeners) {
+            sl.beginLoop();
+        }
+    }
 
-	public void start() {
-		for (SearchListener sl : listeners) {
-			sl.start();
-		}
+    public void start() {
+        for (SearchListener sl : this.listeners) {
+            sl.start();
+        }
 
-	}
+    }
 
-	public void end(Lbool result) {
-		for (SearchListener sl : listeners) {
-			sl.end(result);
-		}
-	}
+    public void end(Lbool result) {
+        for (SearchListener sl : this.listeners) {
+            sl.end(result);
+        }
+    }
 
-	public void restarting() {
-		for (SearchListener sl : listeners) {
-			sl.restarting();
-		}
+    public void restarting() {
+        for (SearchListener sl : this.listeners) {
+            sl.restarting();
+        }
 
-	}
+    }
 
-	public void backjump(int backjumpLevel) {
-		for (SearchListener sl : listeners) {
-			sl.backjump(backjumpLevel);
-		}
+    public void backjump(int backjumpLevel) {
+        for (SearchListener sl : this.listeners) {
+            sl.backjump(backjumpLevel);
+        }
 
-	}
+    }
 
-	public void init(ISolverService solverService) {
-		for (SearchListener sl : listeners) {
-			sl.init(solverService);
-		}
-	}
+    public void init(ISolverService solverService) {
+        for (SearchListener sl : this.listeners) {
+            sl.init(solverService);
+        }
+    }
 
-	public void cleaning() {
-		for (SearchListener sl : listeners) {
-			sl.cleaning();
-		}
-	}
+    public void cleaning() {
+        for (SearchListener sl : this.listeners) {
+            sl.cleaning();
+        }
+    }
 
 }

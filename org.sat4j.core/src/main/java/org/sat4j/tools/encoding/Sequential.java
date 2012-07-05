@@ -50,62 +50,62 @@ import org.sat4j.specs.IVecInt;
  */
 public class Sequential extends EncodingStrategyAdapter {
 
-	/**
-	 * This encoding adds (n-1)*k variables (n is the number of variables in the
-	 * at most constraint and k is the degree of the constraint) and 2nk+n-3k-1
-	 * clauses.
-	 */
-	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
-		final int n = literals.size();
+    /**
+     * This encoding adds (n-1)*k variables (n is the number of variables in the
+     * at most constraint and k is the degree of the constraint) and 2nk+n-3k-1
+     * clauses.
+     */
+    @Override
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        final int n = literals.size();
 
-		int s[][] = new int[n - 1][k];
-		for (int j = 0; j < k; j++) {
-			for (int i = 0; i < n - 1; i++) {
-				s[i][j] = solver.nextFreeVarId(true);
-			}
-		}
-		IVecInt clause = new VecInt();
-		clause.push(-literals.get(0));
-		clause.push(s[0][0]);
-		group.add(solver.addClause(clause));
-		clause.clear();
-		for (int j = 1; j < k; j++) {
-			clause.push(-s[0][j]);
-			group.add(solver.addClause(clause));
-			clause.clear();
-		}
-		clause.push(-literals.get(n - 1));
-		clause.push(-s[n - 2][k - 1]);
-		group.add(solver.addClause(clause));
-		clause.clear();
-		for (int i = 1; i < n - 1; i++) {
-			clause.push(-literals.get(i));
-			clause.push(s[i][0]);
-			group.add(solver.addClause(clause));
-			clause.clear();
-			clause.push(-s[i - 1][0]);
-			clause.push(s[i][0]);
-			group.add(solver.addClause(clause));
-			clause.clear();
-			for (int j = 1; j < k; j++) {
-				clause.push(-literals.get(i));
-				clause.push(-s[i - 1][j - 1]);
-				clause.push(s[i][j]);
-				group.add(solver.addClause(clause));
-				clause.clear();
-				clause.push(-s[i - 1][j]);
-				clause.push(s[i][j]);
-				group.add(solver.addClause(clause));
-				clause.clear();
-			}
-			clause.push(-literals.get(i));
-			clause.push(-s[i - 1][k - 1]);
-			group.add(solver.addClause(clause));
-			clause.clear();
-		}
-		return group;
-	}
+        int s[][] = new int[n - 1][k];
+        for (int j = 0; j < k; j++) {
+            for (int i = 0; i < n - 1; i++) {
+                s[i][j] = solver.nextFreeVarId(true);
+            }
+        }
+        IVecInt clause = new VecInt();
+        clause.push(-literals.get(0));
+        clause.push(s[0][0]);
+        group.add(solver.addClause(clause));
+        clause.clear();
+        for (int j = 1; j < k; j++) {
+            clause.push(-s[0][j]);
+            group.add(solver.addClause(clause));
+            clause.clear();
+        }
+        clause.push(-literals.get(n - 1));
+        clause.push(-s[n - 2][k - 1]);
+        group.add(solver.addClause(clause));
+        clause.clear();
+        for (int i = 1; i < n - 1; i++) {
+            clause.push(-literals.get(i));
+            clause.push(s[i][0]);
+            group.add(solver.addClause(clause));
+            clause.clear();
+            clause.push(-s[i - 1][0]);
+            clause.push(s[i][0]);
+            group.add(solver.addClause(clause));
+            clause.clear();
+            for (int j = 1; j < k; j++) {
+                clause.push(-literals.get(i));
+                clause.push(-s[i - 1][j - 1]);
+                clause.push(s[i][j]);
+                group.add(solver.addClause(clause));
+                clause.clear();
+                clause.push(-s[i - 1][j]);
+                clause.push(s[i][j]);
+                group.add(solver.addClause(clause));
+                clause.clear();
+            }
+            clause.push(-literals.get(i));
+            clause.push(-s[i - 1][k - 1]);
+            group.add(solver.addClause(clause));
+            clause.clear();
+        }
+        return group;
+    }
 }

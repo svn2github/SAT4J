@@ -40,8 +40,8 @@ import org.sat4j.minisat.orders.VarOrderHeap;
 /**
  * @author leberre
  * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
+ *         To change the template for this generated type comment go to Window -
+ *         Preferences - Java - Code Generation - Code and Comments
  */
 public class VarOrderTest extends TestCase {
 
@@ -49,11 +49,11 @@ public class VarOrderTest extends TestCase {
      * Class to test for void newVar()
      */
     public void testNewVar() {
-        int p = voc.getFromPool(-1);
-        order.init();
-        assertEquals(p, order.select());
-        voc.satisfies(2); // satisfying literal 1
-        assertEquals(ILits.UNDEFINED, order.select());
+        int p = this.voc.getFromPool(-1);
+        this.order.init();
+        assertEquals(p, this.order.select());
+        this.voc.satisfies(2); // satisfying literal 1
+        assertEquals(ILits.UNDEFINED, this.order.select());
     }
 
     /*
@@ -90,10 +90,10 @@ public class VarOrderTest extends TestCase {
      */
     @Override
     protected void setUp() throws Exception {
-        voc = new ClausalDataStructureWL().getVocabulary();
-        voc.ensurePool(5);
-        order = new VarOrderHeap();
-        order.setLits(voc);
+        this.voc = new ClausalDataStructureWL().getVocabulary();
+        this.voc.ensurePool(5);
+        this.order = new VarOrderHeap();
+        this.order.setLits(this.voc);
     }
 
     private ILits voc;

@@ -50,72 +50,72 @@ import org.sat4j.specs.IVecInt;
  */
 public class Binary extends EncodingStrategyAdapter {
 
-	/**
-	 * p being the smaller integer greater than log_2(n), this encoding adds p
-	 * variables and n*p clauses.
-	 * 
-	 */
-	@Override
-	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup(false);
+    /**
+     * p being the smaller integer greater than log_2(n), this encoding adds p
+     * variables and n*p clauses.
+     * 
+     */
+    @Override
+    public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
 
-		final int n = literals.size();
-		final int p = (int) Math.ceil(Math.log(n) / Math.log(2));
-		final int k = (int) Math.pow(2, p) - n;
+        final int n = literals.size();
+        final int p = (int) Math.ceil(Math.log(n) / Math.log(2));
+        final int k = (int) Math.pow(2, p) - n;
 
-		int y[] = new int[p];
-		for (int i = 0; i < p; i++) {
-			y[i] = solver.nextFreeVarId(true);
-		}
+        int y[] = new int[p];
+        for (int i = 0; i < p; i++) {
+            y[i] = solver.nextFreeVarId(true);
+        }
 
-		IVecInt clause = new VecInt();
-		String binary = "";
+        IVecInt clause = new VecInt();
+        String binary = "";
 
-		for (int i = 0; i < k; i++) {
-			binary = Integer.toBinaryString(i);
-			while (binary.length() != p - 1) {
-				binary = "0" + binary;
-			}
+        for (int i = 0; i < k; i++) {
+            binary = Integer.toBinaryString(i);
+            while (binary.length() != p - 1) {
+                binary = "0" + binary;
+            }
 
-			for (int j = 0; j < p - 1; j++) {
-				clause.push(-literals.get(i));
-				if (binary.charAt(j) == '0') {
-					clause.push(-y[j]);
-				} else {
-					clause.push(y[j]);
-				}
-				group.add(solver.addClause(clause));
-				clause.clear();
+            for (int j = 0; j < p - 1; j++) {
+                clause.push(-literals.get(i));
+                if (binary.charAt(j) == '0') {
+                    clause.push(-y[j]);
+                } else {
+                    clause.push(y[j]);
+                }
+                group.add(solver.addClause(clause));
+                clause.clear();
 
-			}
-		}
+            }
+        }
 
-		for (int i = k; i < n; i++) {
-			binary = Integer.toBinaryString(2 * k + i - k);
-			while (binary.length() != p) {
-				binary = "0" + binary;
-			}
-			for (int j = 0; j < p; j++) {
-				clause.push(-literals.get(i));
-				if (binary.charAt(j) == '0') {
-					clause.push(-y[j]);
-				} else {
-					clause.push(y[j]);
-				}
-				group.add(solver.addClause(clause));
-				clause.clear();
-			}
+        for (int i = k; i < n; i++) {
+            binary = Integer.toBinaryString(2 * k + i - k);
+            while (binary.length() != p) {
+                binary = "0" + binary;
+            }
+            for (int j = 0; j < p; j++) {
+                clause.push(-literals.get(i));
+                if (binary.charAt(j) == '0') {
+                    clause.push(-y[j]);
+                } else {
+                    clause.push(y[j]);
+                }
+                group.add(solver.addClause(clause));
+                clause.clear();
+            }
 
-		}
+        }
 
-		return group;
-	}
+        return group;
+    }
 
-	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
-			throws ContradictionException {
-		// TODO Implement binary at most k method
-		return super.addAtMost(solver, literals, degree);
-	}
+    @Override
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        // TODO Implement binary at most k method
+        return super.addAtMost(solver, literals, degree);
+    }
 }

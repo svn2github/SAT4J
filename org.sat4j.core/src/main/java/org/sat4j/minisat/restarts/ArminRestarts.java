@@ -42,63 +42,63 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public final class ArminRestarts implements RestartStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private double inner, outer;
-	private long conflicts;
-	private SearchParams params;
-	private long conflictcount = 0;
+    private double inner, outer;
+    private long conflicts;
+    private SearchParams params;
+    private long conflictcount = 0;
 
-	public void init(SearchParams theParams) {
-		this.params = theParams;
-		inner = theParams.getInitConflictBound();
-		outer = theParams.getInitConflictBound();
-		conflicts = Math.round(inner);
-	}
+    public void init(SearchParams theParams) {
+        this.params = theParams;
+        this.inner = theParams.getInitConflictBound();
+        this.outer = theParams.getInitConflictBound();
+        this.conflicts = Math.round(this.inner);
+    }
 
-	public long nextRestartNumberOfConflict() {
-		return conflicts;
-	}
+    public long nextRestartNumberOfConflict() {
+        return this.conflicts;
+    }
 
-	public void onRestart() {
-		if (inner >= outer) {
-			outer *= params.getConflictBoundIncFactor();
-			inner = params.getInitConflictBound();
-		} else {
-			inner *= params.getConflictBoundIncFactor();
-		}
-		conflicts = Math.round(inner);
-		conflictcount = 0;
-	}
+    public void onRestart() {
+        if (this.inner >= this.outer) {
+            this.outer *= this.params.getConflictBoundIncFactor();
+            this.inner = this.params.getInitConflictBound();
+        } else {
+            this.inner *= this.params.getConflictBoundIncFactor();
+        }
+        this.conflicts = Math.round(this.inner);
+        this.conflictcount = 0;
+    }
 
-	@Override
-	public String toString() {
-		return "Armin Biere (Picosat) restarts strategy";
-	}
+    @Override
+    public String toString() {
+        return "Armin Biere (Picosat) restarts strategy";
+    }
 
-	public boolean shouldRestart() {
-		return conflictcount >= conflicts;
-	}
+    public boolean shouldRestart() {
+        return this.conflictcount >= this.conflicts;
+    }
 
-	public void onBackjumpToRootLevel() {
-		conflictcount = 0;
-	}
+    public void onBackjumpToRootLevel() {
+        this.conflictcount = 0;
+    }
 
-	public void reset() {
-		conflictcount = 0;
-	}
+    public void reset() {
+        this.conflictcount = 0;
+    }
 
-	public void newConflict() {
-		conflictcount++;
-	}
+    public void newConflict() {
+        this.conflictcount++;
+    }
 
-	public SearchParams getSearchParams() {
-		return params;
-	}
+    public SearchParams getSearchParams() {
+        return this.params;
+    }
 
-	public void newLearnedClause(Constr learned, int trailLevel) {
-	}
+    public void newLearnedClause(Constr learned, int trailLevel) {
+    }
 }

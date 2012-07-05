@@ -38,37 +38,37 @@ import java.io.Serializable;
  * 
  */
 public abstract class ConflictTimerAdapter implements Serializable,
-		ConflictTimer {
+        ConflictTimer {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int counter;
+    private int counter;
 
-	private final int bound;
+    private final int bound;
 
-	public ConflictTimerAdapter(final int bound) {
-		this.bound = bound;
-		counter = 0;
-	}
+    public ConflictTimerAdapter(final int bound) {
+        this.bound = bound;
+        this.counter = 0;
+    }
 
-	public void reset() {
-		counter = 0;
-	}
+    public void reset() {
+        this.counter = 0;
+    }
 
-	public void newConflict() {
-		counter++;
-		if (counter == bound) {
-			run();
-			counter = 0;
-		}
-	}
+    public void newConflict() {
+        this.counter++;
+        if (this.counter == this.bound) {
+            run();
+            this.counter = 0;
+        }
+    }
 
-	public abstract void run();
+    public abstract void run();
 
-	public int bound() {
-		return bound;
-	}
+    public int bound() {
+        return this.bound;
+    }
 }

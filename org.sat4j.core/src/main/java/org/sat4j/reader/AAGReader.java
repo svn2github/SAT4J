@@ -47,106 +47,106 @@ import org.sat4j.tools.GateTranslator;
  */
 public class AAGReader extends Reader {
 
-	private final static int FALSE = 0;
+    private final static int FALSE = 0;
 
-	private final static int TRUE = 1;
+    private final static int TRUE = 1;
 
-	private final GateTranslator solver;
+    private final GateTranslator solver;
 
-	private int maxvarid;
+    private int maxvarid;
 
-	private int nbinputs;
+    private int nbinputs;
 
-	AAGReader(ISolver s) {
-		solver = new GateTranslator(s);
-	}
+    AAGReader(ISolver s) {
+        this.solver = new GateTranslator(s);
+    }
 
-	@Override
-	public String decode(int[] model) {
-		StringBuffer stb = new StringBuffer();
-		for (int i = 0; i < nbinputs; i++) {
-			stb.append(model[i] > 0 ? 1 : 0);
-		}
-		return stb.toString();
-	}
+    @Override
+    public String decode(int[] model) {
+        StringBuffer stb = new StringBuffer();
+        for (int i = 0; i < this.nbinputs; i++) {
+            stb.append(model[i] > 0 ? 1 : 0);
+        }
+        return stb.toString();
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		for (int i = 0; i < nbinputs; i++) {
-			out.print(model[i] > 0 ? 1 : 0);
-		}
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        for (int i = 0; i < this.nbinputs; i++) {
+            out.print(model[i] > 0 ? 1 : 0);
+        }
+    }
 
-	@Override
-	public IProblem parseInstance(java.io.InputStream in)
-			throws ParseFormatException, ContradictionException, IOException {
-		EfficientScanner scanner = new EfficientScanner(in);
-		String prefix = scanner.next();
-		if (!"aag".equals(prefix)) {
-			throw new ParseFormatException("AAG format only!");
-		}
-		maxvarid = scanner.nextInt();
-		nbinputs = scanner.nextInt();
-		int nblatches = scanner.nextInt();
-		int nboutputs = scanner.nextInt();
-		if (nboutputs > 1) {
-			throw new ParseFormatException(
-					"CNF conversion allowed for single output circuit only!");
-		}
-		int nbands = scanner.nextInt();
-		solver.newVar(maxvarid + 1);
-		solver.setExpectedNumberOfClauses(3 * nbands + 2);
-		readInput(nbinputs, scanner);
-		assert nblatches == 0;
-		if (nboutputs > 0) {
-			int output0 = readOutput(nboutputs, scanner);
-			readAnd(nbands, output0, scanner);
-		}
-		return solver;
-	}
+    @Override
+    public IProblem parseInstance(java.io.InputStream in)
+            throws ParseFormatException, ContradictionException, IOException {
+        EfficientScanner scanner = new EfficientScanner(in);
+        String prefix = scanner.next();
+        if (!"aag".equals(prefix)) {
+            throw new ParseFormatException("AAG format only!");
+        }
+        this.maxvarid = scanner.nextInt();
+        this.nbinputs = scanner.nextInt();
+        int nblatches = scanner.nextInt();
+        int nboutputs = scanner.nextInt();
+        if (nboutputs > 1) {
+            throw new ParseFormatException(
+                    "CNF conversion allowed for single output circuit only!");
+        }
+        int nbands = scanner.nextInt();
+        this.solver.newVar(this.maxvarid + 1);
+        this.solver.setExpectedNumberOfClauses(3 * nbands + 2);
+        readInput(this.nbinputs, scanner);
+        assert nblatches == 0;
+        if (nboutputs > 0) {
+            int output0 = readOutput(nboutputs, scanner);
+            readAnd(nbands, output0, scanner);
+        }
+        return this.solver;
+    }
 
-	private void readAnd(int nbands, int output0, EfficientScanner scanner)
-			throws ContradictionException, IOException, ParseFormatException {
+    private void readAnd(int nbands, int output0, EfficientScanner scanner)
+            throws ContradictionException, IOException, ParseFormatException {
 
-		for (int i = 0; i < nbands; i++) {
-			int lhs = scanner.nextInt();
-			int rhs0 = scanner.nextInt();
-			int rhs1 = scanner.nextInt();
-			solver.and(toDimacs(lhs), toDimacs(rhs0), toDimacs(rhs1));
-		}
-		solver.gateTrue(maxvarid + 1);
-		solver.gateTrue(toDimacs(output0));
-	}
+        for (int i = 0; i < nbands; i++) {
+            int lhs = scanner.nextInt();
+            int rhs0 = scanner.nextInt();
+            int rhs1 = scanner.nextInt();
+            this.solver.and(toDimacs(lhs), toDimacs(rhs0), toDimacs(rhs1));
+        }
+        this.solver.gateTrue(this.maxvarid + 1);
+        this.solver.gateTrue(toDimacs(output0));
+    }
 
-	private int toDimacs(int v) {
-		if (v == FALSE) {
-			return -(maxvarid + 1);
-		}
-		if (v == TRUE) {
-			return maxvarid + 1;
-		}
-		int var = v >> 1;
-		if ((v & 1) == 0) {
-			return var;
-		}
-		return -var;
-	}
+    private int toDimacs(int v) {
+        if (v == FALSE) {
+            return -(this.maxvarid + 1);
+        }
+        if (v == TRUE) {
+            return this.maxvarid + 1;
+        }
+        int var = v >> 1;
+        if ((v & 1) == 0) {
+            return var;
+        }
+        return -var;
+    }
 
-	private int readOutput(int nboutputs, EfficientScanner scanner)
-			throws IOException, ParseFormatException {
-		IVecInt outputs = new VecInt(nboutputs);
-		for (int i = 0; i < nboutputs; i++) {
-			outputs.push(scanner.nextInt());
-		}
-		return outputs.get(0);
-	}
+    private int readOutput(int nboutputs, EfficientScanner scanner)
+            throws IOException, ParseFormatException {
+        IVecInt outputs = new VecInt(nboutputs);
+        for (int i = 0; i < nboutputs; i++) {
+            outputs.push(scanner.nextInt());
+        }
+        return outputs.get(0);
+    }
 
-	private IVecInt readInput(int numberOfInputs, EfficientScanner scanner)
-			throws IOException, ParseFormatException {
-		IVecInt inputs = new VecInt(numberOfInputs);
-		for (int i = 0; i < numberOfInputs; i++) {
-			inputs.push(scanner.nextInt());
-		}
-		return inputs;
-	}
+    private IVecInt readInput(int numberOfInputs, EfficientScanner scanner)
+            throws IOException, ParseFormatException {
+        IVecInt inputs = new VecInt(numberOfInputs);
+        for (int i = 0; i < numberOfInputs; i++) {
+            inputs.push(scanner.nextInt());
+        }
+        return inputs;
+    }
 }

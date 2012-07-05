@@ -42,171 +42,172 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
-		implements IOptimizationProblem {
+        implements IOptimizationProblem {
 
-	protected final List<IVecInt> criteria = new ArrayList<IVecInt>();
+    protected final List<IVecInt> criteria = new ArrayList<IVecInt>();
 
-	protected int currentCriterion = 0;
+    protected int currentCriterion = 0;
 
-	private IConstr prevConstr;
+    private IConstr prevConstr;
 
-	private Number currentValue = -1;
+    private Number currentValue = -1;
 
-	protected int[] prevfullmodel;
-	protected boolean[] prevboolmodel;
+    protected int[] prevfullmodel;
+    protected boolean[] prevboolmodel;
 
-	private boolean isSolutionOptimal;
+    private boolean isSolutionOptimal;
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public LexicoDecorator(T solver) {
-		super(solver);
-	}
+    public LexicoDecorator(T solver) {
+        super(solver);
+    }
 
-	public void addCriterion(IVecInt literals) {
-		IVecInt copy = new VecInt(literals.size());
-		literals.copyTo(copy);
-		criteria.add(copy);
-	}
+    public void addCriterion(IVecInt literals) {
+        IVecInt copy = new VecInt(literals.size());
+        literals.copyTo(copy);
+        this.criteria.add(copy);
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		isSolutionOptimal = false;
-		if (decorated().isSatisfiable(assumps, true)) {
-			prevboolmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				prevboolmodel[i] = decorated().model(i + 1);
-			}
-			prevfullmodel = decorated().model();
-			calculateObjective();
-			return true;
-		}
-		return manageUnsatCase();
-	}
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        this.isSolutionOptimal = false;
+        if (decorated().isSatisfiable(assumps, true)) {
+            this.prevboolmodel = new boolean[nVars()];
+            for (int i = 0; i < nVars(); i++) {
+                this.prevboolmodel[i] = decorated().model(i + 1);
+            }
+            this.prevfullmodel = decorated().model();
+            calculateObjective();
+            return true;
+        }
+        return manageUnsatCase();
+    }
 
-	private boolean manageUnsatCase() {
-		if (currentCriterion < numberOfCriteria() - 1) {
-			if (prevConstr != null) {
-				super.removeConstr(prevConstr);
-				prevConstr = null;
-			}
-			try {
-				fixCriterionValue();
-			} catch (ContradictionException e) {
-				throw new IllegalStateException(e);
-			}
-			if (isVerbose()) {
-				System.out.println(getLogPrefix()
-						+ "Found optimal criterion number "
-						+ (currentCriterion + 1));
-			}
-			currentCriterion++;
-			calculateObjective();
-			return true;
-		}
-		if (isVerbose()) {
-			System.out.println(getLogPrefix()
-					+ "Found optimal solution for the last criterion ");
-		}
-		isSolutionOptimal = true;
-		if (prevConstr != null) {
-			super.removeConstr(prevConstr);
-			prevConstr = null;
-		}
-		return false;
-	}
+    private boolean manageUnsatCase() {
+        if (this.currentCriterion < numberOfCriteria() - 1) {
+            if (this.prevConstr != null) {
+                super.removeConstr(this.prevConstr);
+                this.prevConstr = null;
+            }
+            try {
+                fixCriterionValue();
+            } catch (ContradictionException e) {
+                throw new IllegalStateException(e);
+            }
+            if (isVerbose()) {
+                System.out.println(getLogPrefix()
+                        + "Found optimal criterion number "
+                        + (this.currentCriterion + 1));
+            }
+            this.currentCriterion++;
+            calculateObjective();
+            return true;
+        }
+        if (isVerbose()) {
+            System.out.println(getLogPrefix()
+                    + "Found optimal solution for the last criterion ");
+        }
+        this.isSolutionOptimal = true;
+        if (this.prevConstr != null) {
+            super.removeConstr(this.prevConstr);
+            this.prevConstr = null;
+        }
+        return false;
+    }
 
-	protected int numberOfCriteria() {
-		return criteria.size();
-	}
+    protected int numberOfCriteria() {
+        return this.criteria.size();
+    }
 
-	protected void fixCriterionValue() throws ContradictionException {
-		super.addAtMost(criteria.get(currentCriterion), currentValue.intValue());
-		super.addAtLeast(criteria.get(currentCriterion),
-				currentValue.intValue());
-	}
+    protected void fixCriterionValue() throws ContradictionException {
+        super.addAtMost(this.criteria.get(this.currentCriterion),
+                this.currentValue.intValue());
+        super.addAtLeast(this.criteria.get(this.currentCriterion),
+                this.currentValue.intValue());
+    }
 
-	@Override
-	public int[] model() {
-		return prevfullmodel;
-	}
+    @Override
+    public int[] model() {
+        return this.prevfullmodel;
+    }
 
-	@Override
-	public boolean model(int var) {
-		return prevboolmodel[var - 1];
-	}
+    @Override
+    public boolean model(int var) {
+        return this.prevboolmodel[var - 1];
+    }
 
-	public boolean hasNoObjectiveFunction() {
-		return false;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return false;
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return true;
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return true;
+    }
 
-	public Number calculateObjective() {
-		currentValue = evaluate();
-		return currentValue;
-	}
+    public Number calculateObjective() {
+        this.currentValue = evaluate();
+        return this.currentValue;
+    }
 
-	public Number getObjectiveValue() {
-		return currentValue;
-	}
+    public Number getObjectiveValue() {
+        return this.currentValue;
+    }
 
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
+    public void discard() throws ContradictionException {
+        discardCurrentSolution();
 
-	}
+    }
 
-	public void discardCurrentSolution() throws ContradictionException {
-		if (prevConstr != null) {
-			super.removeSubsumedConstr(prevConstr);
-		}
-		try {
-			prevConstr = discardSolutionsForOptimizing();
-		} catch (ContradictionException c) {
-			prevConstr = null;
-			if (!manageUnsatCase()) {
-				throw c;
-			}
-		}
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.prevConstr != null) {
+            super.removeSubsumedConstr(this.prevConstr);
+        }
+        try {
+            this.prevConstr = discardSolutionsForOptimizing();
+        } catch (ContradictionException c) {
+            this.prevConstr = null;
+            if (!manageUnsatCase()) {
+                throw c;
+            }
+        }
 
-	}
+    }
 
-	protected IConstr discardSolutionsForOptimizing()
-			throws ContradictionException {
-		return super.addAtMost(criteria.get(currentCriterion),
-				currentValue.intValue() - 1);
-	}
+    protected IConstr discardSolutionsForOptimizing()
+            throws ContradictionException {
+        return super.addAtMost(this.criteria.get(this.currentCriterion),
+                this.currentValue.intValue() - 1);
+    }
 
-	protected Number evaluate() {
-		int value = 0;
-		int lit;
-		for (IteratorInt it = criteria.get(currentCriterion).iterator(); it
-				.hasNext();) {
-			lit = it.next();
-			if ((lit > 0 && prevboolmodel[lit - 1])
-					|| (lit < 0 && !prevboolmodel[-lit - 1])) {
-				value++;
-			}
-		}
-		return value;
-	}
+    protected Number evaluate() {
+        int value = 0;
+        int lit;
+        for (IteratorInt it = this.criteria.get(this.currentCriterion)
+                .iterator(); it.hasNext();) {
+            lit = it.next();
+            if (lit > 0 && this.prevboolmodel[lit - 1] || lit < 0
+                    && !this.prevboolmodel[-lit - 1]) {
+                value++;
+            }
+        }
+        return value;
+    }
 
-	public boolean isOptimal() {
-		return isSolutionOptimal;
-	}
+    public boolean isOptimal() {
+        return this.isSolutionOptimal;
+    }
 
 }

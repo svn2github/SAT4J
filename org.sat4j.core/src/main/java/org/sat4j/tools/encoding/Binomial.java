@@ -48,40 +48,40 @@ import org.sat4j.specs.IVecInt;
  */
 public class Binomial extends EncodingStrategyAdapter {
 
-	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+    @Override
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
 
-		IVecInt clause = new VecInt();
+        IVecInt clause = new VecInt();
 
-		for (IVecInt vec : literals.subset(degree + 1)) {
-			for (int i = 0; i < vec.size(); i++) {
-				clause.push(-vec.get(i));
-			}
-			group.add(solver.addClause(clause));
-			clause.clear();
-		}
-		return group;
+        for (IVecInt vec : literals.subset(degree + 1)) {
+            for (int i = 0; i < vec.size(); i++) {
+                clause.push(-vec.get(i));
+            }
+            group.add(solver.addClause(clause));
+            clause.clear();
+        }
+        return group;
 
-	}
+    }
 
-	@Override
-	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
-			throws ContradictionException {
-		ConstrGroup group = new ConstrGroup();
+    @Override
+    public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
 
-		VecInt clause = new VecInt();
+        VecInt clause = new VecInt();
 
-		for (int i = 0; i < literals.size() - 1; i++) {
-			for (int j = i + 1; j < literals.size(); j++) {
-				clause.push(-literals.get(i));
-				clause.push(-literals.get(j));
-				group.add(solver.addClause(clause));
-				clause.clear();
-			}
-		}
-		return group;
-	}
+        for (int i = 0; i < literals.size() - 1; i++) {
+            for (int j = i + 1; j < literals.size(); j++) {
+                clause.push(-literals.get(i));
+                clause.push(-literals.get(j));
+                group.add(solver.addClause(clause));
+                clause.clear();
+            }
+        }
+        return group;
+    }
 
 }

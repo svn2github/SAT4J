@@ -52,16 +52,18 @@ public abstract class AbstractDataStructureFactory implements
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
+    /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.core.DataStructureFactory#conflictDetectedInWatchesFor(int)
+     * @see
+     * org.sat4j.minisat.core.DataStructureFactory#conflictDetectedInWatchesFor
+     * (int)
      */
     public void conflictDetectedInWatchesFor(int p, int i) {
-        for (int j = i + 1; j < tmp.size(); j++) {
-            lits.watch(p, tmp.get(j));
+        for (int j = i + 1; j < this.tmp.size(); j++) {
+            this.lits.watch(p, this.tmp.get(j));
         }
     }
 
@@ -71,19 +73,19 @@ public abstract class AbstractDataStructureFactory implements
      * @see org.sat4j.minisat.core.DataStructureFactory#getWatchesFor(int)
      */
     public IVec<Propagatable> getWatchesFor(int p) {
-        tmp.clear();
-        lits.watches(p).moveTo(tmp);
-        return tmp;
+        this.tmp.clear();
+        this.lits.watches(p).moveTo(this.tmp);
+        return this.tmp;
     }
 
     protected ILits lits;
-    
+
     protected AbstractDataStructureFactory() {
-        lits = createLits();
+        this.lits = createLits();
     }
 
-    protected abstract ILits createLits(); 
-    
+    protected abstract ILits createLits();
+
     private final IVec<Propagatable> tmp = new Vec<Propagatable>();
 
     /*
@@ -92,7 +94,7 @@ public abstract class AbstractDataStructureFactory implements
      * @see org.sat4j.minisat.DataStructureFactory#createVocabulary()
      */
     public ILits getVocabulary() {
-        return lits;
+        return this.lits;
     }
 
     protected UnitPropagationListener solver;
@@ -100,7 +102,7 @@ public abstract class AbstractDataStructureFactory implements
     protected Learner learner;
 
     public void setUnitPropagationListener(UnitPropagationListener s) {
-        solver = s;
+        this.solver = s;
     }
 
     public void setLearner(Learner learner) {
@@ -111,14 +113,15 @@ public abstract class AbstractDataStructureFactory implements
     }
 
     public void learnConstraint(Constr constr) {
-        learner.learn(constr);
+        this.learner.learn(constr);
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.core.DataStructureFactory#createCardinalityConstraint(org.sat4j.specs.VecInt,
-     *      int)
+     * @see
+     * org.sat4j.minisat.core.DataStructureFactory#createCardinalityConstraint
+     * (org.sat4j.specs.VecInt, int)
      */
     public Constr createCardinalityConstraint(IVecInt literals, int degree)
             throws ContradictionException {

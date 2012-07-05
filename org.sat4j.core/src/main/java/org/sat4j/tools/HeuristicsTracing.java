@@ -33,41 +33,41 @@ import org.sat4j.specs.ISolverService;
 
 public class HeuristicsTracing extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	// private final String filename;
-	private ISolverService solverService;
-	private final IVisualizationTool visuTool;
+    private static final long serialVersionUID = 1L;
+    // private final String filename;
+    private ISolverService solverService;
+    private final IVisualizationTool visuTool;
 
-	public HeuristicsTracing(IVisualizationTool visuTool) {
-		this.visuTool = visuTool;
-	}
+    public HeuristicsTracing(IVisualizationTool visuTool) {
+        this.visuTool = visuTool;
+    }
 
-	@Override
-	public void solutionFound(int[] model) {
-		trace();
-	}
+    @Override
+    public void solutionFound(int[] model) {
+        trace();
+    }
 
-	@Override
-	public void restarting() {
-		trace();
-	}
+    @Override
+    public void restarting() {
+        trace();
+    }
 
-	private void trace() {
-		visuTool.init();
+    private void trace() {
+        this.visuTool.init();
 
-		int n = solverService.nVars();
-		double[] heuristics = solverService.getVariableHeuristics();
-		for (int i = 1; i <= n; i++) {
-			visuTool.addPoint(heuristics[i], i);
-		}
-		visuTool.end();
-	}
+        int n = this.solverService.nVars();
+        double[] heuristics = this.solverService.getVariableHeuristics();
+        for (int i = 1; i <= n; i++) {
+            this.visuTool.addPoint(heuristics[i], i);
+        }
+        this.visuTool.end();
+    }
 
-	@Override
-	public void init(ISolverService solverService) {
-		this.solverService = solverService;
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.solverService = solverService;
+    }
 }

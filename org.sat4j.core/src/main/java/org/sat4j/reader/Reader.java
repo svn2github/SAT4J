@@ -48,127 +48,127 @@ import org.sat4j.specs.IProblem;
  */
 public abstract class Reader {
 
-	/**
-	 * This is the usual method to feed a solver with a benchmark.
-	 * 
-	 * @param filename
-	 *            the fully qualified name of the benchmark. The filename
-	 *            extension may by used to detect which type of benchmarks it is
-	 *            (SAT, OPB, MAXSAT, etc).
-	 * @return the problem to solve (an ISolver in fact).
-	 * @throws FileNotFoundException
-	 *             if the file cannot be found.
-	 * @throws ParseFormatException
-	 *             if an error occurs during parsing.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws ContradictionException
-	 *             if the problem is found trivially inconsistent.
-	 */
-	public IProblem parseInstance(final String filename)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
-		InputStream in = null;
-		try {
-			if (filename.startsWith("http://")) {
-				in = (new URL(filename)).openStream();
-			} else {
-				in = new FileInputStream(filename);
-			}
-			if (filename.endsWith(".gz")) {
-				in = new GZIPInputStream(in);
-			} else if (filename.endsWith(".bz2")) {
-				in = Runtime.getRuntime().exec("bunzip2 -c " + filename)
-						.getInputStream();
-			}
-			IProblem problem;
-			problem = parseInstance(in);
-			return problem;
-		} catch (FileNotFoundException e) {
-			throw e;
-		} catch (ParseFormatException e) {
-			throw e;
-		} catch (IOException e) {
-			throw e;
-		} catch (ContradictionException e) {
-			throw e;
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-	}
+    /**
+     * This is the usual method to feed a solver with a benchmark.
+     * 
+     * @param filename
+     *            the fully qualified name of the benchmark. The filename
+     *            extension may by used to detect which type of benchmarks it is
+     *            (SAT, OPB, MAXSAT, etc).
+     * @return the problem to solve (an ISolver in fact).
+     * @throws FileNotFoundException
+     *             if the file cannot be found.
+     * @throws ParseFormatException
+     *             if an error occurs during parsing.
+     * @throws IOException
+     *             if an I/O error occurs.
+     * @throws ContradictionException
+     *             if the problem is found trivially inconsistent.
+     */
+    public IProblem parseInstance(final String filename)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        InputStream in = null;
+        try {
+            if (filename.startsWith("http://")) {
+                in = new URL(filename).openStream();
+            } else {
+                in = new FileInputStream(filename);
+            }
+            if (filename.endsWith(".gz")) {
+                in = new GZIPInputStream(in);
+            } else if (filename.endsWith(".bz2")) {
+                in = Runtime.getRuntime().exec("bunzip2 -c " + filename)
+                        .getInputStream();
+            }
+            IProblem problem;
+            problem = parseInstance(in);
+            return problem;
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (ParseFormatException e) {
+            throw e;
+        } catch (IOException e) {
+            throw e;
+        } catch (ContradictionException e) {
+            throw e;
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+    }
 
-	/**
-	 * Read a file from a stream.
-	 * 
-	 * It is important to note that benchmarks are usually encoded in ASCII, not
-	 * UTF8. As such, the only reasonable way to feed a solver from a stream is
-	 * to use a stream.
-	 * 
-	 * @param in
-	 *            a stream containing the benchmark.
-	 * @return the problem to solve (an ISolver in fact).
-	 * @throws ParseFormatException
-	 *             if an error occurs during parsing.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws ContradictionException
-	 *             if the problem is found trivially inconsistent.
-	 */
-	public abstract IProblem parseInstance(final InputStream in)
-			throws ParseFormatException, ContradictionException, IOException;
+    /**
+     * Read a file from a stream.
+     * 
+     * It is important to note that benchmarks are usually encoded in ASCII, not
+     * UTF8. As such, the only reasonable way to feed a solver from a stream is
+     * to use a stream.
+     * 
+     * @param in
+     *            a stream containing the benchmark.
+     * @return the problem to solve (an ISolver in fact).
+     * @throws ParseFormatException
+     *             if an error occurs during parsing.
+     * @throws IOException
+     *             if an I/O error occurs.
+     * @throws ContradictionException
+     *             if the problem is found trivially inconsistent.
+     */
+    public abstract IProblem parseInstance(final InputStream in)
+            throws ParseFormatException, ContradictionException, IOException;
 
-	/**
-	 * Read a file from a reader.
-	 * 
-	 * Do not use that method, it is no longer supported.
-	 * 
-	 * @param in
-	 *            a stream containing the benchmark.
-	 * @return the problem to solve (an ISolver in fact).
-	 * @throws ParseFormatException
-	 *             if an error occurs during parsing.
-	 * @throws IOException
-	 *             if an I/O error occurs.
-	 * @throws ContradictionException
-	 *             if the problem is found trivially inconsistent.
-	 * @see #parseInstance(InputStream)
-	 */
-	@Deprecated
-	public IProblem parseInstance(java.io.Reader in)
-			throws ParseFormatException, ContradictionException, IOException {
-		throw new UnsupportedOperationException(
-				"Use #parseInstance(InputStream) instead");
-	}
+    /**
+     * Read a file from a reader.
+     * 
+     * Do not use that method, it is no longer supported.
+     * 
+     * @param in
+     *            a stream containing the benchmark.
+     * @return the problem to solve (an ISolver in fact).
+     * @throws ParseFormatException
+     *             if an error occurs during parsing.
+     * @throws IOException
+     *             if an I/O error occurs.
+     * @throws ContradictionException
+     *             if the problem is found trivially inconsistent.
+     * @see #parseInstance(InputStream)
+     */
+    @Deprecated
+    public IProblem parseInstance(java.io.Reader in)
+            throws ParseFormatException, ContradictionException, IOException {
+        throw new UnsupportedOperationException(
+                "Use #parseInstance(InputStream) instead");
+    }
 
-	/**
-	 * Produce a model using the reader format.
-	 * 
-	 * @param model
-	 *            a model using the Dimacs format.
-	 * @return a human readable view of the model.
-	 */
-	@Deprecated
-	public abstract String decode(int[] model);
+    /**
+     * Produce a model using the reader format.
+     * 
+     * @param model
+     *            a model using the Dimacs format.
+     * @return a human readable view of the model.
+     */
+    @Deprecated
+    public abstract String decode(int[] model);
 
-	/**
-	 * Produce a model using the reader format on a provided printwriter.
-	 * 
-	 * @param model
-	 *            a model using the Dimacs format.
-	 * @param out
-	 *            the place where to display the model
-	 */
-	public abstract void decode(int[] model, PrintWriter out);
+    /**
+     * Produce a model using the reader format on a provided printwriter.
+     * 
+     * @param model
+     *            a model using the Dimacs format.
+     * @param out
+     *            the place where to display the model
+     */
+    public abstract void decode(int[] model, PrintWriter out);
 
-	public boolean isVerbose() {
-		return verbose;
-	}
+    public boolean isVerbose() {
+        return this.verbose;
+    }
 
-	public void setVerbosity(boolean b) {
-		verbose = b;
-	}
+    public void setVerbosity(boolean b) {
+        this.verbose = b;
+    }
 
-	private boolean verbose = false;
+    private boolean verbose = false;
 }

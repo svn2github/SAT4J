@@ -51,435 +51,435 @@ import org.sat4j.specs.TimeoutException;
  */
 public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public boolean isDBSimplificationAllowed() {
-		return solver.isDBSimplificationAllowed();
-	}
+    public boolean isDBSimplificationAllowed() {
+        return this.solver.isDBSimplificationAllowed();
+    }
 
-	public void setDBSimplificationAllowed(boolean status) {
-		solver.setDBSimplificationAllowed(status);
-	}
+    public void setDBSimplificationAllowed(boolean status) {
+        this.solver.setDBSimplificationAllowed(status);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#setTimeoutOnConflicts(int)
-	 */
-	public void setTimeoutOnConflicts(int count) {
-		solver.setTimeoutOnConflicts(count);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#setTimeoutOnConflicts(int)
+     */
+    public void setTimeoutOnConflicts(int count) {
+        this.solver.setTimeoutOnConflicts(count);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#printInfos(java.io.PrintWriter,
-	 * java.lang.String)
-	 */
-	public void printInfos(PrintWriter out, String prefix) {
-		solver.printInfos(out, prefix);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#printInfos(java.io.PrintWriter,
+     * java.lang.String)
+     */
+    public void printInfos(PrintWriter out, String prefix) {
+        this.solver.printInfos(out, prefix);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#isSatisfiable(boolean)
-	 */
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return solver.isSatisfiable(global);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#isSatisfiable(boolean)
+     */
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return this.solver.isSatisfiable(global);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#isSatisfiable(org.sat4j.specs.IVecInt,
-	 * boolean)
-	 */
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		return solver.isSatisfiable(assumps, global);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#isSatisfiable(org.sat4j.specs.IVecInt,
+     * boolean)
+     */
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        return this.solver.isSatisfiable(assumps, global);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#clearLearntClauses()
-	 */
-	public void clearLearntClauses() {
-		solver.clearLearntClauses();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#clearLearntClauses()
+     */
+    public void clearLearntClauses() {
+        this.solver.clearLearntClauses();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#findModel()
-	 */
-	public int[] findModel() throws TimeoutException {
-		return solver.findModel();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#findModel()
+     */
+    public int[] findModel() throws TimeoutException {
+        return this.solver.findModel();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#findModel(org.sat4j.specs.IVecInt)
-	 */
-	public int[] findModel(IVecInt assumps) throws TimeoutException {
-		return solver.findModel(assumps);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#findModel(org.sat4j.specs.IVecInt)
+     */
+    public int[] findModel(IVecInt assumps) throws TimeoutException {
+        return this.solver.findModel(assumps);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.IProblem#model(int)
-	 */
-	public boolean model(int var) {
-		return solver.model(var);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.IProblem#model(int)
+     */
+    public boolean model(int var) {
+        return this.solver.model(var);
+    }
 
-	public void setExpectedNumberOfClauses(int nb) {
-		solver.setExpectedNumberOfClauses(nb);
-	}
+    public void setExpectedNumberOfClauses(int nb) {
+        this.solver.setExpectedNumberOfClauses(nb);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#getTimeout()
-	 */
-	public int getTimeout() {
-		return solver.getTimeout();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#getTimeout()
+     */
+    public int getTimeout() {
+        return this.solver.getTimeout();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public long getTimeoutMs() {
-		return solver.getTimeoutMs();
-	}
+    /**
+     * @since 2.1
+     */
+    public long getTimeoutMs() {
+        return this.solver.getTimeoutMs();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#toString(java.lang.String)
-	 */
-	public String toString(String prefix) {
-		return solver.toString(prefix);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#toString(java.lang.String)
+     */
+    public String toString(String prefix) {
+        return this.solver.toString(prefix);
+    }
 
-	@Override
-	public String toString() {
-		return toString("");
-	}
+    @Override
+    public String toString() {
+        return toString("");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#printStat(java.io.PrintStream,
-	 * java.lang.String)
-	 */
-	@Deprecated
-	public void printStat(PrintStream out, String prefix) {
-		solver.printStat(out, prefix);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#printStat(java.io.PrintStream,
+     * java.lang.String)
+     */
+    @Deprecated
+    public void printStat(PrintStream out, String prefix) {
+        this.solver.printStat(out, prefix);
+    }
 
-	public void printStat(PrintWriter out, String prefix) {
-		solver.printStat(out, prefix);
-	}
+    public void printStat(PrintWriter out, String prefix) {
+        this.solver.printStat(out, prefix);
+    }
 
-	private T solver;
+    private T solver;
 
-	/**
+    /**
      * 
      */
-	public SolverDecorator(T solver) {
-		this.solver = solver;
-	}
+    public SolverDecorator(T solver) {
+        this.solver = solver;
+    }
 
-	@Deprecated
-	public int newVar() {
-		return solver.newVar();
-	}
+    @Deprecated
+    public int newVar() {
+        return this.solver.newVar();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#newVar(int)
-	 */
-	public int newVar(int howmany) {
-		return solver.newVar(howmany);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#newVar(int)
+     */
+    public int newVar(int howmany) {
+        return this.solver.newVar(howmany);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#addClause(org.sat4j.datatype.VecInt)
-	 */
-	public IConstr addClause(IVecInt literals) throws ContradictionException {
-		return solver.addClause(literals);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#addClause(org.sat4j.datatype.VecInt)
+     */
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        return this.solver.addClause(literals);
+    }
 
-	public void addAllClauses(IVec<IVecInt> clauses)
-			throws ContradictionException {
-		solver.addAllClauses(clauses);
-	}
+    public void addAllClauses(IVec<IVecInt> clauses)
+            throws ContradictionException {
+        this.solver.addAllClauses(clauses);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public IConstr addBlockingClause(IVecInt literals)
-			throws ContradictionException {
-		return solver.addBlockingClause(literals);
-	}
+    /**
+     * @since 2.1
+     */
+    public IConstr addBlockingClause(IVecInt literals)
+            throws ContradictionException {
+        return this.solver.addBlockingClause(literals);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#addAtMost(org.sat4j.datatype.VecInt, int)
-	 */
-	public IConstr addAtMost(IVecInt literals, int degree)
-			throws ContradictionException {
-		return solver.addAtMost(literals, degree);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#addAtMost(org.sat4j.datatype.VecInt, int)
+     */
+    public IConstr addAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        return this.solver.addAtMost(literals, degree);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#addAtLeast(org.sat4j.datatype.VecInt, int)
-	 */
-	public IConstr addAtLeast(IVecInt literals, int degree)
-			throws ContradictionException {
-		return solver.addAtLeast(literals, degree);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#addAtLeast(org.sat4j.datatype.VecInt, int)
+     */
+    public IConstr addAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        return this.solver.addAtLeast(literals, degree);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#model()
-	 */
-	public int[] model() {
-		return solver.model();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#model()
+     */
+    public int[] model() {
+        return this.solver.model();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#isSatisfiable()
-	 */
-	public boolean isSatisfiable() throws TimeoutException {
-		return solver.isSatisfiable();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#isSatisfiable()
+     */
+    public boolean isSatisfiable() throws TimeoutException {
+        return this.solver.isSatisfiable();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#isSatisfiable(org.sat4j.datatype.VecInt)
-	 */
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		return solver.isSatisfiable(assumps);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#isSatisfiable(org.sat4j.datatype.VecInt)
+     */
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        return this.solver.isSatisfiable(assumps);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#setTimeout(int)
-	 */
-	public void setTimeout(int t) {
-		solver.setTimeout(t);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#setTimeout(int)
+     */
+    public void setTimeout(int t) {
+        this.solver.setTimeout(t);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#setTimeoutMs(int)
-	 */
-	public void setTimeoutMs(long t) {
-		solver.setTimeoutMs(t);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#setTimeoutMs(int)
+     */
+    public void setTimeoutMs(long t) {
+        this.solver.setTimeoutMs(t);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#expireTimeout()
-	 */
-	public void expireTimeout() {
-		solver.expireTimeout();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#expireTimeout()
+     */
+    public void expireTimeout() {
+        this.solver.expireTimeout();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#nConstraints()
-	 */
-	public int nConstraints() {
-		return solver.nConstraints();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#nConstraints()
+     */
+    public int nConstraints() {
+        return this.solver.nConstraints();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#nVars()
-	 */
-	public int nVars() {
-		return solver.nVars();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#nVars()
+     */
+    public int nVars() {
+        return this.solver.nVars();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.ISolver#reset()
-	 */
-	public void reset() {
-		solver.reset();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#reset()
+     */
+    public void reset() {
+        this.solver.reset();
+    }
 
-	public T decorated() {
-		return solver;
-	}
+    public T decorated() {
+        return this.solver;
+    }
 
-	/**
-	 * Method to be called to clear the decorator from its decorated solver.
-	 * This is especially useful to avoid memory leak in a program.
-	 * 
-	 * @return the decorated solver.
-	 */
-	public T clearDecorated() {
-		T decorated = solver;
-		solver = null;
-		return decorated;
-	}
+    /**
+     * Method to be called to clear the decorator from its decorated solver.
+     * This is especially useful to avoid memory leak in a program.
+     * 
+     * @return the decorated solver.
+     */
+    public T clearDecorated() {
+        T decorated = this.solver;
+        this.solver = null;
+        return decorated;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#removeConstr(org.sat4j.minisat.core.Constr)
-	 */
-	public boolean removeConstr(IConstr c) {
-		return solver.removeConstr(c);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#removeConstr(org.sat4j.minisat.core.Constr)
+     */
+    public boolean removeConstr(IConstr c) {
+        return this.solver.removeConstr(c);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.specs.ISolver#getStat()
-	 */
-	public Map<String, Number> getStat() {
-		return solver.getStat();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.specs.ISolver#getStat()
+     */
+    public Map<String, Number> getStat() {
+        return this.solver.getStat();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public <S extends ISolverService> void setSearchListener(
-			SearchListener<S> sl) {
-		solver.setSearchListener(sl);
-	}
+    /**
+     * @since 2.1
+     */
+    public <S extends ISolverService> void setSearchListener(
+            SearchListener<S> sl) {
+        this.solver.setSearchListener(sl);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public int nextFreeVarId(boolean reserve) {
-		return solver.nextFreeVarId(reserve);
-	}
+    /**
+     * @since 2.1
+     */
+    public int nextFreeVarId(boolean reserve) {
+        return this.solver.nextFreeVarId(reserve);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public boolean removeSubsumedConstr(IConstr c) {
-		return solver.removeSubsumedConstr(c);
-	}
+    /**
+     * @since 2.1
+     */
+    public boolean removeSubsumedConstr(IConstr c) {
+        return this.solver.removeSubsumedConstr(c);
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public <S extends ISolverService> SearchListener<S> getSearchListener() {
-		return solver.getSearchListener();
-	}
+    /**
+     * @since 2.2
+     */
+    public <S extends ISolverService> SearchListener<S> getSearchListener() {
+        return this.solver.getSearchListener();
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public boolean isVerbose() {
-		return solver.isVerbose();
-	}
+    /**
+     * @since 2.2
+     */
+    public boolean isVerbose() {
+        return this.solver.isVerbose();
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public void setVerbose(boolean value) {
-		solver.setVerbose(value);
-	}
+    /**
+     * @since 2.2
+     */
+    public void setVerbose(boolean value) {
+        this.solver.setVerbose(value);
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public void setLogPrefix(String prefix) {
-		solver.setLogPrefix(prefix);
-	}
+    /**
+     * @since 2.2
+     */
+    public void setLogPrefix(String prefix) {
+        this.solver.setLogPrefix(prefix);
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public String getLogPrefix() {
-		return solver.getLogPrefix();
-	}
+    /**
+     * @since 2.2
+     */
+    public String getLogPrefix() {
+        return this.solver.getLogPrefix();
+    }
 
-	/**
-	 * @since 2.2
-	 */
-	public IVecInt unsatExplanation() {
-		return solver.unsatExplanation();
-	}
+    /**
+     * @since 2.2
+     */
+    public IVecInt unsatExplanation() {
+        return this.solver.unsatExplanation();
+    }
 
-	/**
-	 * @since 2.3
-	 */
-	public int[] primeImplicant() {
-		return solver.primeImplicant();
-	}
+    /**
+     * @since 2.3
+     */
+    public int[] primeImplicant() {
+        return this.solver.primeImplicant();
+    }
 
-	/**
-	 * @since 2.3.1
-	 */
-	public IConstr addExactly(IVecInt literals, int n)
-			throws ContradictionException {
-		return solver.addExactly(literals, n);
-	}
+    /**
+     * @since 2.3.1
+     */
+    public IConstr addExactly(IVecInt literals, int n)
+            throws ContradictionException {
+        return this.solver.addExactly(literals, n);
+    }
 
-	/**
-	 * @since 2.3.1
-	 */
-	public int[] modelWithInternalVariables() {
-		return solver.modelWithInternalVariables();
-	}
+    /**
+     * @since 2.3.1
+     */
+    public int[] modelWithInternalVariables() {
+        return this.solver.modelWithInternalVariables();
+    }
 
-	/**
-	 * @since 2.3.1
-	 */
-	public int realNumberOfVariables() {
-		return solver.realNumberOfVariables();
-	}
+    /**
+     * @since 2.3.1
+     */
+    public int realNumberOfVariables() {
+        return this.solver.realNumberOfVariables();
+    }
 
-	/**
-	 * @since 2.3.1
-	 */
-	public void registerLiteral(int p) {
-		solver.registerLiteral(p);
-	}
+    /**
+     * @since 2.3.1
+     */
+    public void registerLiteral(int p) {
+        this.solver.registerLiteral(p);
+    }
 
-	/**
-	 * @since 2.3.2
-	 */
-	public boolean isSolverKeptHot() {
-		return solver.isSolverKeptHot();
-	}
+    /**
+     * @since 2.3.2
+     */
+    public boolean isSolverKeptHot() {
+        return this.solver.isSolverKeptHot();
+    }
 
-	/**
-	 * @since 2.3.2
-	 */
-	public void setKeepSolverHot(boolean value) {
-		solver.setKeepSolverHot(value);
-	}
+    /**
+     * @since 2.3.2
+     */
+    public void setKeepSolverHot(boolean value) {
+        this.solver.setKeepSolverHot(value);
+    }
 
 }

@@ -46,64 +46,67 @@ import org.sat4j.tools.encoding.Policy;
  * @param <T>
  */
 public class ClausalCardinalitiesDecorator<T extends ISolver> extends
-		SolverDecorator<T> {
+        SolverDecorator<T> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final EncodingStrategyAdapter encodingAdapter;
+    private final EncodingStrategyAdapter encodingAdapter;
 
-	public ClausalCardinalitiesDecorator(T solver) {
-		super(solver);
-		encodingAdapter = new Policy();
-	}
+    public ClausalCardinalitiesDecorator(T solver) {
+        super(solver);
+        this.encodingAdapter = new Policy();
+    }
 
-	public ClausalCardinalitiesDecorator(T solver,
-			EncodingStrategyAdapter encodingAd) {
-		super(solver);
-		encodingAdapter = encodingAd;
-	}
+    public ClausalCardinalitiesDecorator(T solver,
+            EncodingStrategyAdapter encodingAd) {
+        super(solver);
+        this.encodingAdapter = encodingAd;
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, int k)
-			throws ContradictionException {
-		if (k == 1) {
-			return encodingAdapter.addAtLeastOne(decorated(), literals);
-		} else
-			return encodingAdapter.addAtLeast(decorated(), literals, k);
-	}
+    @Override
+    public IConstr addAtLeast(IVecInt literals, int k)
+            throws ContradictionException {
+        if (k == 1) {
+            return this.encodingAdapter.addAtLeastOne(decorated(), literals);
+        } else {
+            return this.encodingAdapter.addAtLeast(decorated(), literals, k);
+        }
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, int k)
-			throws ContradictionException {
-		if (k == 1)
-			return encodingAdapter.addAtMostOne(decorated(), literals);
-		else
-			return encodingAdapter.addAtMost(decorated(), literals, k);
-	}
+    @Override
+    public IConstr addAtMost(IVecInt literals, int k)
+            throws ContradictionException {
+        if (k == 1) {
+            return this.encodingAdapter.addAtMostOne(decorated(), literals);
+        } else {
+            return this.encodingAdapter.addAtMost(decorated(), literals, k);
+        }
+    }
 
-	@Override
-	public IConstr addExactly(IVecInt literals, int k)
-			throws ContradictionException {
+    @Override
+    public IConstr addExactly(IVecInt literals, int k)
+            throws ContradictionException {
 
-		if (k == 1)
-			return encodingAdapter.addExactlyOne(decorated(), literals);
-		else
-			return encodingAdapter.addExactly(decorated(), literals, k);
-	}
+        if (k == 1) {
+            return this.encodingAdapter.addExactlyOne(decorated(), literals);
+        } else {
+            return this.encodingAdapter.addExactly(decorated(), literals, k);
+        }
+    }
 
-	@Override
-	public String toString() {
-		return toString("");
-	}
+    @Override
+    public String toString() {
+        return toString("");
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return super.toString(prefix) + "\n"
-				+ "Cardinality to SAT encoding: \n" + "Encoding: "
-				+ encodingAdapter + "\n";
-	}
+    @Override
+    public String toString(String prefix) {
+        return super.toString(prefix) + "\n"
+                + "Cardinality to SAT encoding: \n" + "Encoding: "
+                + this.encodingAdapter + "\n";
+    }
 
 }

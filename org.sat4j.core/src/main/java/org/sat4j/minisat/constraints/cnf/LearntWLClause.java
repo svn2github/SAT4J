@@ -34,61 +34,61 @@ import org.sat4j.specs.IVecInt;
 
 public final class LearntWLClause extends WLClause {
 
-	public LearntWLClause(IVecInt ps, ILits voc) {
-		super(ps, voc);
-	}
+    public LearntWLClause(IVecInt ps, ILits voc) {
+        super(ps, voc);
+    }
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
-	 */
-	public void register() {
-		assert lits.length > 1;
-		// prendre un deuxieme litt???ral ??? surveiller
-		int maxi = 1;
-		int maxlevel = voc.getLevel(lits[1]);
-		for (int i = 2; i < lits.length; i++) {
-			int level = voc.getLevel(lits[i]);
-			if (level > maxlevel) {
-				maxi = i;
-				maxlevel = level;
-			}
-		}
-		int l = lits[1];
-		lits[1] = lits[maxi];
-		lits[maxi] = l;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
+     */
+    public void register() {
+        assert this.lits.length > 1;
+        // prendre un deuxieme litt???ral ??? surveiller
+        int maxi = 1;
+        int maxlevel = this.voc.getLevel(this.lits[1]);
+        for (int i = 2; i < this.lits.length; i++) {
+            int level = this.voc.getLevel(this.lits[i]);
+            if (level > maxlevel) {
+                maxi = i;
+                maxlevel = level;
+            }
+        }
+        int l = this.lits[1];
+        this.lits[1] = this.lits[maxi];
+        this.lits[maxi] = l;
 
-		// ajoute la clause a la liste des clauses control???es.
-		voc.watch(lits[0] ^ 1, this);
-		voc.watch(lits[1] ^ 1, this);
+        // ajoute la clause a la liste des clauses control???es.
+        this.voc.watch(this.lits[0] ^ 1, this);
+        this.voc.watch(this.lits[1] ^ 1, this);
 
-	}
+    }
 
-	public boolean learnt() {
-		return true;
-	}
+    public boolean learnt() {
+        return true;
+    }
 
-	public void setLearnt() {
-		// do nothing
-	}
+    public void setLearnt() {
+        // do nothing
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void forwardActivity(double claInc) {
+    /**
+     * @since 2.1
+     */
+    public void forwardActivity(double claInc) {
 
-	}
+    }
 
-	/**
-	 * @param claInc
-	 */
-	public void incActivity(double claInc) {
-		activity += claInc;
-	}
+    /**
+     * @param claInc
+     */
+    public void incActivity(double claInc) {
+        this.activity += claInc;
+    }
 }

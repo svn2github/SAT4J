@@ -6,44 +6,45 @@ import java.io.PrintStream;
 
 public class FileBasedVisualizationTool implements IVisualizationTool {
 
-	private String filename;
-	private PrintStream out;
+    private String filename;
+    private PrintStream out;
 
-	public FileBasedVisualizationTool(String filename) {
-		this.filename = filename;
-		updateWriter();
-	}
+    public FileBasedVisualizationTool(String filename) {
+        this.filename = filename;
+        updateWriter();
+    }
 
-	public void updateWriter() {
-		try {
-			out = new PrintStream(new FileOutputStream(filename + ".dat"));
-		} catch (FileNotFoundException e) {
-			out = System.out;
-		}
-	}
+    public void updateWriter() {
+        try {
+            this.out = new PrintStream(new FileOutputStream(this.filename
+                    + ".dat"));
+        } catch (FileNotFoundException e) {
+            this.out = System.out;
+        }
+    }
 
-	public String getFilename() {
-		return filename;
-	}
+    public String getFilename() {
+        return this.filename;
+    }
 
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 
-	public void addPoint(double x, double y) {
-		out.println(x + "\t" + y);
-	}
+    public void addPoint(double x, double y) {
+        this.out.println(x + "\t" + y);
+    }
 
-	public void addInvisiblePoint(double x, double y) {
-		out.println("#" + x + "\t" + "1/0");
-	}
+    public void addInvisiblePoint(double x, double y) {
+        this.out.println("#" + x + "\t" + "1/0");
+    }
 
-	public void init() {
-		updateWriter();
-	}
+    public void init() {
+        updateWriter();
+    }
 
-	public void end() {
-		out.close();
-	}
+    public void end() {
+        this.out.close();
+    }
 
 }

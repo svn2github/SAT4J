@@ -37,24 +37,24 @@ package org.sat4j.minisat.orders;
  * 
  */
 public final class UserFixedPhaseSelectionStrategy extends
-		AbstractPhaserecordingSelectionStrategy {
+        AbstractPhaserecordingSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void assignLiteral(int p) {
-	}
+    public void assignLiteral(int p) {
+    }
 
-	public void updateVar(int p) {
-	}
+    public void updateVar(int p) {
+    }
 
-	@Override
-	public String toString() {
-		return "Fixed selection strategy.";
-	}
+    @Override
+    public String toString() {
+        return "Fixed selection strategy.";
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-	}
+    public void updateVarAtDecisionLevel(int q) {
+    }
 }

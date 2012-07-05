@@ -46,123 +46,123 @@ import org.sat4j.tools.SolverDecorator;
  * @author leberre
  */
 public final class MinOneDecorator extends SolverDecorator<ISolver> implements
-		IOptimizationProblem {
+        IOptimizationProblem {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int[] prevmodel;
+    private int[] prevmodel;
 
-	private boolean isSolutionOptimal;
+    private boolean isSolutionOptimal;
 
-	public MinOneDecorator(ISolver solver) {
-		super(solver);
-	}
+    public MinOneDecorator(ISolver solver) {
+        super(solver);
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		isSolutionOptimal = false;
-		boolean result = isSatisfiable(assumps, true);
-		if (result) {
-			prevmodel = super.model();
-			calculateObjectiveValue();
-		} else {
-			isSolutionOptimal = true;
-		}
-		return result;
-	}
+    /**
+     * @since 2.1
+     */
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        this.isSolutionOptimal = false;
+        boolean result = isSatisfiable(assumps, true);
+        if (result) {
+            this.prevmodel = super.model();
+            calculateObjectiveValue();
+        } else {
+            this.isSolutionOptimal = true;
+        }
+        return result;
+    }
 
-	public boolean hasNoObjectiveFunction() {
-		return false;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return false;
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return true;
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return true;
+    }
 
-	private int counter;
+    private int counter;
 
-	public Number calculateObjective() {
-		calculateObjectiveValue();
-		return counter;
-	}
+    public Number calculateObjective() {
+        calculateObjectiveValue();
+        return this.counter;
+    }
 
-	private void calculateObjectiveValue() {
-		counter = 0;
-		for (int p : prevmodel) {
-			if (p > 0) {
-				counter++;
-			}
-		}
-	}
+    private void calculateObjectiveValue() {
+        this.counter = 0;
+        for (int p : this.prevmodel) {
+            if (p > 0) {
+                this.counter++;
+            }
+        }
+    }
 
-	private final IVecInt literals = new VecInt();
+    private final IVecInt literals = new VecInt();
 
-	private IConstr previousConstr;
+    private IConstr previousConstr;
 
-	/**
-	 * @since 2.1
-	 */
-	public void discardCurrentSolution() throws ContradictionException {
-		if (literals.isEmpty()) {
-			for (int i = 1; i <= nVars(); i++) {
-				literals.push(i);
-			}
-		}
-		if (previousConstr != null) {
-			super.removeConstr(previousConstr);
-		}
-		previousConstr = addAtMost(literals, counter - 1);
-	}
+    /**
+     * @since 2.1
+     */
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.literals.isEmpty()) {
+            for (int i = 1; i <= nVars(); i++) {
+                this.literals.push(i);
+            }
+        }
+        if (this.previousConstr != null) {
+            super.removeConstr(this.previousConstr);
+        }
+        this.previousConstr = addAtMost(this.literals, this.counter - 1);
+    }
 
-	@Override
-	public int[] model() {
-		// DLB findbugs ok
-		return prevmodel;
-	}
+    @Override
+    public int[] model() {
+        // DLB findbugs ok
+        return this.prevmodel;
+    }
 
-	@Override
-	public void reset() {
-		literals.clear();
-		previousConstr = null;
-		super.reset();
-	}
+    @Override
+    public void reset() {
+        this.literals.clear();
+        this.previousConstr = null;
+        super.reset();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public Number getObjectiveValue() {
-		return counter;
-	}
+    /**
+     * @since 2.1
+     */
+    public Number getObjectiveValue() {
+        return this.counter;
+    }
 
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
-	}
+    public void discard() throws ContradictionException {
+        discardCurrentSolution();
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		try {
-			addAtMost(literals, forcedValue.intValue());
-		} catch (ContradictionException ce) {
-			isSolutionOptimal = true;
-			throw ce;
-		}
+    /**
+     * @since 2.1
+     */
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        try {
+            addAtMost(this.literals, forcedValue.intValue());
+        } catch (ContradictionException ce) {
+            this.isSolutionOptimal = true;
+            throw ce;
+        }
 
-	}
+    }
 
-	public boolean isOptimal() {
-		return isSolutionOptimal;
-	}
+    public boolean isOptimal() {
+        return this.isSolutionOptimal;
+    }
 }

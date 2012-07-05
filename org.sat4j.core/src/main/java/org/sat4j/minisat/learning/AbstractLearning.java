@@ -38,22 +38,23 @@ import org.sat4j.minisat.core.VarActivityListener;
 /**
  * An abstract learning strategy.
  * 
- * The Variable Activity Listener is expected to be set thanks to the 
+ * The Variable Activity Listener is expected to be set thanks to the
  * appropriate setter method before using it.
  * 
  * It was not possible to set it in the constructor.
  * 
  * @author daniel
- *
+ * 
  */
-abstract class AbstractLearning<D extends DataStructureFactory> implements LearningStrategy<D> {
+abstract class AbstractLearning<D extends DataStructureFactory> implements
+        LearningStrategy<D> {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	
-	private VarActivityListener val;
+    private static final long serialVersionUID = 1L;
+
+    private VarActivityListener val;
 
     public void setVarActivityListener(VarActivityListener s) {
         this.val = s;
@@ -67,7 +68,7 @@ abstract class AbstractLearning<D extends DataStructureFactory> implements Learn
         for (int i = 0; i < reason.size(); i++) {
             int q = reason.get(i);
             assert q > 1;
-            val.varBumpActivity(q);
+            this.val.varBumpActivity(q);
         }
     }
 

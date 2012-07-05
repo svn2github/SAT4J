@@ -52,79 +52,79 @@ package org.sat4j.core;
  */
 public final class LiteralsUtils {
 
-	private LiteralsUtils() {
-		// no instance supposed to be created.
-	}
+    private LiteralsUtils() {
+        // no instance supposed to be created.
+    }
 
-	/**
-	 * Returns the variable associated to the literal
-	 * 
-	 * @param p
-	 *            a literal in internal representation
-	 * @return the Dimacs variable associated to that literal.
-	 */
-	public static int var(int p) {
-		assert p > 1;
-		return p >> 1;
-	}
+    /**
+     * Returns the variable associated to the literal
+     * 
+     * @param p
+     *            a literal in internal representation
+     * @return the Dimacs variable associated to that literal.
+     */
+    public static int var(int p) {
+        assert p > 1;
+        return p >> 1;
+    }
 
-	/**
-	 * Returns the opposite literal.
-	 * 
-	 * @param p
-	 *            a literal in internal representation
-	 * @return the opposite literal in internal representation
-	 */
-	public static int neg(int p) {
-		return p ^ 1;
-	}
+    /**
+     * Returns the opposite literal.
+     * 
+     * @param p
+     *            a literal in internal representation
+     * @return the opposite literal in internal representation
+     */
+    public static int neg(int p) {
+        return p ^ 1;
+    }
 
-	/**
-	 * Returns the positive literal associated with a variable.
-	 * 
-	 * @param var
-	 *            a variable in Dimacs format
-	 * @return the positive literal associated with this variable in internal
-	 *         representation
-	 */
-	public static int posLit(int var) {
-		return var << 1;
-	}
+    /**
+     * Returns the positive literal associated with a variable.
+     * 
+     * @param var
+     *            a variable in Dimacs format
+     * @return the positive literal associated with this variable in internal
+     *         representation
+     */
+    public static int posLit(int var) {
+        return var << 1;
+    }
 
-	/**
-	 * Returns the negative literal associated with a variable.
-	 * 
-	 * @param var
-	 *            a variable in Dimacs format
-	 * @return the negative literal associated with this variable in internal
-	 *         representation
-	 */
-	public static int negLit(int var) {
-		return (var << 1) ^ 1;
-	}
+    /**
+     * Returns the negative literal associated with a variable.
+     * 
+     * @param var
+     *            a variable in Dimacs format
+     * @return the negative literal associated with this variable in internal
+     *         representation
+     */
+    public static int negLit(int var) {
+        return var << 1 ^ 1;
+    }
 
-	/**
-	 * decode the internal representation of a literal in internal
-	 * representation into Dimacs format.
-	 * 
-	 * @param p
-	 *            the literal in internal representation
-	 * @return the literal in dimacs representation
-	 */
-	public static int toDimacs(int p) {
-		return ((p & 1) == 0 ? 1 : -1) * (p >> 1);
-	}
+    /**
+     * decode the internal representation of a literal in internal
+     * representation into Dimacs format.
+     * 
+     * @param p
+     *            the literal in internal representation
+     * @return the literal in dimacs representation
+     */
+    public static int toDimacs(int p) {
+        return ((p & 1) == 0 ? 1 : -1) * (p >> 1);
+    }
 
-	/**
-	 * encode the classical Dimacs representation (negated integers for negated
-	 * literals) into the internal format.
-	 * 
-	 * @param x
-	 *            the literal in Dimacs format
-	 * @return the literal in internal format.
-	 * @since 2.2
-	 */
-	public static int toInternal(int x) {
-		return ((x < 0) ? ((-x) << 1) ^ 1 : (x << 1));
-	}
+    /**
+     * encode the classical Dimacs representation (negated integers for negated
+     * literals) into the internal format.
+     * 
+     * @param x
+     *            the literal in Dimacs format
+     * @return the literal in internal format.
+     * @since 2.2
+     */
+    public static int toInternal(int x) {
+        return x < 0 ? -x << 1 ^ 1 : x << 1;
+    }
 }

@@ -49,58 +49,58 @@ import org.sat4j.specs.TimeoutException;
  *         Preferences - Java - Code Generation - Code and Comments
  */
 public abstract class AbstractAcceptanceTestCase<T extends ISolver> extends
-		TestCase {
+        TestCase {
 
-	/**
+    /**
      * 
      */
-	public AbstractAcceptanceTestCase() {
-		super();
-	}
+    public AbstractAcceptanceTestCase() {
+        super();
+    }
 
-	/**
-	 * @param arg0
-	 */
-	public AbstractAcceptanceTestCase(String arg0) {
-		super(arg0);
-	}
+    /**
+     * @param arg0
+     */
+    public AbstractAcceptanceTestCase(String arg0) {
+        super(arg0);
+    }
 
-	protected T solver;
+    protected T solver;
 
-	protected Reader reader;
+    protected Reader reader;
 
-	protected abstract T createSolver();
+    protected abstract T createSolver();
 
-	/**
-	 * @see TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() {
-		solver = createSolver();
-		reader = createInstanceReader(solver);
-	}
+    /**
+     * @see TestCase#setUp()
+     */
+    @Override
+    protected void setUp() {
+        this.solver = createSolver();
+        this.reader = createInstanceReader(this.solver);
+    }
 
-	protected Reader createInstanceReader(T aSolver) {
-		return new InstanceReader(aSolver);
-	}
+    protected Reader createInstanceReader(T aSolver) {
+        return new InstanceReader(aSolver);
+    }
 
-	@Override
-	protected void tearDown() {
-		solver.reset();
-	}
+    @Override
+    protected void tearDown() {
+        this.solver.reset();
+    }
 
-	protected boolean solveInstance(String filename)
-			throws FileNotFoundException, ParseFormatException, IOException {
-		try {
-			reader.parseInstance(filename);
-			solver.setTimeout(300); // set timeout to 5 minutes.
-			return solver.isSatisfiable();
-		} catch (ContradictionException ce) {
-			return false;
-		} catch (TimeoutException ce) {
-			fail("Timeout: need more time to complete!");
-			return false;
-		}
-	}
+    protected boolean solveInstance(String filename)
+            throws FileNotFoundException, ParseFormatException, IOException {
+        try {
+            this.reader.parseInstance(filename);
+            this.solver.setTimeout(300); // set timeout to 5 minutes.
+            return this.solver.isSatisfiable();
+        } catch (ContradictionException ce) {
+            return false;
+        } catch (TimeoutException ce) {
+            fail("Timeout: need more time to complete!");
+            return false;
+        }
+    }
 
 }

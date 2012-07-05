@@ -37,7 +37,8 @@ import java.io.Serializable;
  * 
  * @author leberre
  */
-public interface LearningStrategy<D extends DataStructureFactory> extends Serializable {
+public interface LearningStrategy<D extends DataStructureFactory> extends
+        Serializable {
 
     /**
      * hook method called just before the search begins. Useful to compute

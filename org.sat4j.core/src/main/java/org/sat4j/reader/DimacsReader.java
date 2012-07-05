@@ -48,9 +48,9 @@ import org.sat4j.specs.IVecInt;
  * DimacsReader solver = new DimacsReader(SolverFactory.OneSolver());
  * solver.readInstance(&quot;mybench.cnf&quot;);
  * if (solver.isSatisfiable()) {
- * 	// SAT case
+ *     // SAT case
  * } else {
- * 	// UNSAT case
+ *     // UNSAT case
  * }
  * </pre>
  * 
@@ -63,230 +63,231 @@ import org.sat4j.specs.IVecInt;
  */
 public class DimacsReader extends Reader implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected int expectedNbOfConstr; // as announced on the p cnf line
+    protected int expectedNbOfConstr; // as announced on the p cnf line
 
-	protected final ISolver solver;
+    protected final ISolver solver;
 
-	private boolean checkConstrNb = true;
+    private boolean checkConstrNb = true;
 
-	protected final String formatString;
+    protected final String formatString;
 
-	/**
-	 * @since 2.1
-	 */
-	protected EfficientScanner scanner;
+    /**
+     * @since 2.1
+     */
+    protected EfficientScanner scanner;
 
-	public DimacsReader(ISolver solver) {
-		this(solver, "cnf");
-	}
+    public DimacsReader(ISolver solver) {
+        this(solver, "cnf");
+    }
 
-	public DimacsReader(ISolver solver, String format) {
-		this.solver = solver;
-		formatString = format;
-	}
+    public DimacsReader(ISolver solver, String format) {
+        this.solver = solver;
+        this.formatString = format;
+    }
 
-	public void disableNumberOfConstraintCheck() {
-		checkConstrNb = false;
-	}
+    public void disableNumberOfConstraintCheck() {
+        this.checkConstrNb = false;
+    }
 
-	/**
-	 * Skip comments at the beginning of the input stream.
-	 * 
-	 * @param in
-	 *            the input stream
-	 * @throws IOException
-	 *             if an IO problem occurs.
-	 * @since 2.1
-	 */
-	protected void skipComments() throws IOException {
-		scanner.skipComments();
-	}
+    /**
+     * Skip comments at the beginning of the input stream.
+     * 
+     * @param in
+     *            the input stream
+     * @throws IOException
+     *             if an IO problem occurs.
+     * @since 2.1
+     */
+    protected void skipComments() throws IOException {
+        this.scanner.skipComments();
+    }
 
-	/**
-	 * @param in
-	 *            the input stream
-	 * @throws IOException
-	 *             iff an IO occurs
-	 * @throws ParseFormatException
-	 *             if the input stream does not comply with the DIMACS format.
-	 * @since 2.1
-	 */
-	protected void readProblemLine() throws IOException, ParseFormatException {
+    /**
+     * @param in
+     *            the input stream
+     * @throws IOException
+     *             iff an IO occurs
+     * @throws ParseFormatException
+     *             if the input stream does not comply with the DIMACS format.
+     * @since 2.1
+     */
+    protected void readProblemLine() throws IOException, ParseFormatException {
 
-		String line = scanner.nextLine().trim();
+        String line = this.scanner.nextLine().trim();
 
-		if (line == null) {
-			throw new ParseFormatException(
-					"premature end of file: <p cnf ...> expected");
-		}
-		String[] tokens = line.split("\\s+");
-		if (tokens.length < 4 || !"p".equals(tokens[0])
-				|| !formatString.equals(tokens[1])) {
-			throw new ParseFormatException("problem line expected (p cnf ...)");
-		}
+        if (line == null) {
+            throw new ParseFormatException(
+                    "premature end of file: <p cnf ...> expected");
+        }
+        String[] tokens = line.split("\\s+");
+        if (tokens.length < 4 || !"p".equals(tokens[0])
+                || !this.formatString.equals(tokens[1])) {
+            throw new ParseFormatException("problem line expected (p cnf ...)");
+        }
 
-		int vars;
+        int vars;
 
-		// reads the max var id
-		vars = Integer.parseInt(tokens[2]);
-		assert vars > 0;
-		solver.newVar(vars);
-		// reads the number of clauses
-		expectedNbOfConstr = Integer.parseInt(tokens[3]);
-		assert expectedNbOfConstr > 0;
-		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
-	}
+        // reads the max var id
+        vars = Integer.parseInt(tokens[2]);
+        assert vars > 0;
+        this.solver.newVar(vars);
+        // reads the number of clauses
+        this.expectedNbOfConstr = Integer.parseInt(tokens[3]);
+        assert this.expectedNbOfConstr > 0;
+        this.solver.setExpectedNumberOfClauses(this.expectedNbOfConstr);
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	protected IVecInt literals = new VecInt();
+    /**
+     * @since 2.1
+     */
+    protected IVecInt literals = new VecInt();
 
-	/**
-	 * @param in
-	 *            the input stream
-	 * @throws IOException
-	 *             iff an IO problems occurs
-	 * @throws ParseFormatException
-	 *             if the input stream does not comply with the DIMACS format.
-	 * @throws ContradictionException
-	 *             si le probl?me est trivialement inconsistant.
-	 * @since 2.1
-	 */
-	protected void readConstrs() throws IOException, ParseFormatException,
-			ContradictionException {
-		int realNbOfConstr = 0;
+    /**
+     * @param in
+     *            the input stream
+     * @throws IOException
+     *             iff an IO problems occurs
+     * @throws ParseFormatException
+     *             if the input stream does not comply with the DIMACS format.
+     * @throws ContradictionException
+     *             si le probl?me est trivialement inconsistant.
+     * @since 2.1
+     */
+    protected void readConstrs() throws IOException, ParseFormatException,
+            ContradictionException {
+        int realNbOfConstr = 0;
 
-		literals.clear();
-		boolean needToContinue = true;
+        this.literals.clear();
+        boolean needToContinue = true;
 
-		while (needToContinue) {
-			boolean added = false;
-			if (scanner.eof()) {
-				// end of file
-				if (literals.size() > 0) {
-					// no 0 end the last clause
-					flushConstraint();
-					added = true;
-				}
-				needToContinue = false;
-			} else {
-				if (scanner.currentChar() == 'c') {
-					// ignore comment line
-					scanner.skipRestOfLine();
-					continue;
-				}
-				if (scanner.currentChar() == '%'
-						&& expectedNbOfConstr == realNbOfConstr) {
-					if (solver.isVerbose()) {
-						System.out
-								.println("Ignoring the rest of the file (SATLIB format");
-					}
-					break;
-				}
-				added = handleLine();
-			}
-			if (added) {
-				realNbOfConstr++;
-			}
-		}
-		if (checkConstrNb && expectedNbOfConstr != realNbOfConstr) {
-			throw new ParseFormatException("wrong nbclauses parameter. Found "
-					+ realNbOfConstr + ", " + expectedNbOfConstr + " expected");
-		}
-	}
+        while (needToContinue) {
+            boolean added = false;
+            if (this.scanner.eof()) {
+                // end of file
+                if (this.literals.size() > 0) {
+                    // no 0 end the last clause
+                    flushConstraint();
+                    added = true;
+                }
+                needToContinue = false;
+            } else {
+                if (this.scanner.currentChar() == 'c') {
+                    // ignore comment line
+                    this.scanner.skipRestOfLine();
+                    continue;
+                }
+                if (this.scanner.currentChar() == '%'
+                        && this.expectedNbOfConstr == realNbOfConstr) {
+                    if (this.solver.isVerbose()) {
+                        System.out
+                                .println("Ignoring the rest of the file (SATLIB format");
+                    }
+                    break;
+                }
+                added = handleLine();
+            }
+            if (added) {
+                realNbOfConstr++;
+            }
+        }
+        if (this.checkConstrNb && this.expectedNbOfConstr != realNbOfConstr) {
+            throw new ParseFormatException("wrong nbclauses parameter. Found "
+                    + realNbOfConstr + ", " + this.expectedNbOfConstr
+                    + " expected");
+        }
+    }
 
-	/**
-	 * 
-	 * @throws ContradictionException
-	 * @since 2.1
-	 */
-	protected void flushConstraint() throws ContradictionException {
-		try {
-			solver.addClause(literals);
-		} catch (IllegalArgumentException ex) {
-			if (isVerbose()) {
-				System.err.println("c Skipping constraint " + literals);
-			}
-		}
-	}
+    /**
+     * 
+     * @throws ContradictionException
+     * @since 2.1
+     */
+    protected void flushConstraint() throws ContradictionException {
+        try {
+            this.solver.addClause(this.literals);
+        } catch (IllegalArgumentException ex) {
+            if (isVerbose()) {
+                System.err.println("c Skipping constraint " + this.literals);
+            }
+        }
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	protected boolean handleLine() throws ContradictionException, IOException,
-			ParseFormatException {
-		int lit;
-		boolean added = false;
-		while (!scanner.eof()) {
-			lit = scanner.nextInt();
-			if (lit == 0) {
-				if (literals.size() > 0) {
-					flushConstraint();
-					literals.clear();
-					added = true;
-				}
-				break;
-			}
-			literals.push(lit);
-		}
-		return added;
-	}
+    /**
+     * @since 2.1
+     */
+    protected boolean handleLine() throws ContradictionException, IOException,
+            ParseFormatException {
+        int lit;
+        boolean added = false;
+        while (!this.scanner.eof()) {
+            lit = this.scanner.nextInt();
+            if (lit == 0) {
+                if (this.literals.size() > 0) {
+                    flushConstraint();
+                    this.literals.clear();
+                    added = true;
+                }
+                break;
+            }
+            this.literals.push(lit);
+        }
+        return added;
+    }
 
-	@Override
-	public IProblem parseInstance(InputStream in) throws ParseFormatException,
-			ContradictionException, IOException {
-		scanner = new EfficientScanner(in);
-		return parseInstance();
-	}
+    @Override
+    public IProblem parseInstance(InputStream in) throws ParseFormatException,
+            ContradictionException, IOException {
+        this.scanner = new EfficientScanner(in);
+        return parseInstance();
+    }
 
-	/**
-	 * @param in
-	 *            the input stream
-	 * @throws ParseFormatException
-	 *             if the input stream does not comply with the DIMACS format.
-	 * @throws ContradictionException
-	 *             si le probl?me est trivialement inconsitant
-	 */
-	private IProblem parseInstance() throws ParseFormatException,
-			ContradictionException {
-		solver.reset();
-		try {
-			skipComments();
-			readProblemLine();
-			readConstrs();
-			scanner.close();
-			return solver;
-		} catch (IOException e) {
-			throw new ParseFormatException(e);
-		} catch (NumberFormatException e) {
-			throw new ParseFormatException("integer value expected ");
-		}
-	}
+    /**
+     * @param in
+     *            the input stream
+     * @throws ParseFormatException
+     *             if the input stream does not comply with the DIMACS format.
+     * @throws ContradictionException
+     *             si le probl?me est trivialement inconsitant
+     */
+    private IProblem parseInstance() throws ParseFormatException,
+            ContradictionException {
+        this.solver.reset();
+        try {
+            skipComments();
+            readProblemLine();
+            readConstrs();
+            this.scanner.close();
+            return this.solver;
+        } catch (IOException e) {
+            throw new ParseFormatException(e);
+        } catch (NumberFormatException e) {
+            throw new ParseFormatException("integer value expected ");
+        }
+    }
 
-	@Override
-	public String decode(int[] model) {
-		StringBuffer stb = new StringBuffer();
-		for (int i = 0; i < model.length; i++) {
-			stb.append(model[i]);
-			stb.append(" ");
-		}
-		stb.append("0");
-		return stb.toString();
-	}
+    @Override
+    public String decode(int[] model) {
+        StringBuffer stb = new StringBuffer();
+        for (int element : model) {
+            stb.append(element);
+            stb.append(" ");
+        }
+        stb.append("0");
+        return stb.toString();
+    }
 
-	@Override
-	public void decode(int[] model, PrintWriter out) {
-		for (int i = 0; i < model.length; i++) {
-			out.print(model[i]);
-			out.print(" ");
-		}
-		out.print("0");
-	}
+    @Override
+    public void decode(int[] model, PrintWriter out) {
+        for (int element : model) {
+            out.print(element);
+            out.print(" ");
+        }
+        out.print("0");
+    }
 
-	protected ISolver getSolver() {
-		return solver;
-	}
+    protected ISolver getSolver() {
+        return this.solver;
+    }
 }

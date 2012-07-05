@@ -36,35 +36,35 @@ package org.sat4j.minisat.core;
  */
 public interface UnitPropagationListener {
 
-	/**
-	 * satisfies a literal
-	 * 
-	 * @param p
-	 *            a literal
-	 * @return true if the assignment looks possible, false if a conflict
-	 *         occurs.
-	 */
-	public abstract boolean enqueue(int p);
+    /**
+     * satisfies a literal
+     * 
+     * @param p
+     *            a literal
+     * @return true if the assignment looks possible, false if a conflict
+     *         occurs.
+     */
+    public abstract boolean enqueue(int p);
 
-	/**
-	 * satisfies a literal
-	 * 
-	 * @param p
-	 *            a literal
-	 * @param from
-	 *            a reason explaining why p should be satisfied.
-	 * @return true if the assignment looks possible, false if a conflict
-	 *         occurs.
-	 */
-	public abstract boolean enqueue(int p, Constr from);
+    /**
+     * satisfies a literal
+     * 
+     * @param p
+     *            a literal
+     * @param from
+     *            a reason explaining why p should be satisfied.
+     * @return true if the assignment looks possible, false if a conflict
+     *         occurs.
+     */
+    public abstract boolean enqueue(int p, Constr from);
 
-	/**
-	 * Unset a unit clause. The effect of such method is to unset all truth
-	 * values on the stack until the given literal is found (that literal
-	 * included).
-	 * 
-	 * @param p
-	 * @since 2.1
-	 */
-	public void unset(int p);
+    /**
+     * Unset a unit clause. The effect of such method is to unset all truth
+     * values on the stack until the given literal is found (that literal
+     * included).
+     * 
+     * @param p
+     * @since 2.1
+     */
+    public void unset(int p);
 }

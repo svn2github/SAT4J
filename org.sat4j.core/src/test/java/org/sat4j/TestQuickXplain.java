@@ -36,11 +36,11 @@ import org.sat4j.tools.xplain.Xplain;
 
 public class TestQuickXplain extends AbstractXplainTest<ISolver> {
 
-	@Override
-	protected Xplain<ISolver> getXplain() {
-		Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
-		solver.setMinimizationStrategy(new QuickXplainStrategy());
-		return solver;
-	}
+    @Override
+    protected Xplain<ISolver> getXplain() {
+        Xplain<ISolver> solver = new Xplain<ISolver>(SolverFactory.newDefault());
+        solver.setMinimizationStrategy(new QuickXplainStrategy());
+        return solver;
+    }
 
 }

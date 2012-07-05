@@ -33,30 +33,30 @@ package org.sat4j.minisat.core;
  * @since 2.1
  */
 public class Counter {
-	private int value = 1;
+    private int value = 1;
 
-	public void inc() {
-		value++;
-	}
+    public void inc() {
+        this.value++;
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	public void dec() {
-		value--;
-	}
+    /**
+     * @since 2.1
+     */
+    public void dec() {
+        this.value--;
+    }
 
-	@Override
-	public String toString() {
-		return String.valueOf(value);
-	}
+    @Override
+    public String toString() {
+        return String.valueOf(this.value);
+    }
 
-	/**
-	 * 
-	 * @return the value of the counter.
-	 * @since 2.3.1
-	 */
-	public int getValue() {
-		return value;
-	}
+    /**
+     * 
+     * @return the value of the counter.
+     * @since 2.3.1
+     */
+    public int getValue() {
+        return this.value;
+    }
 }

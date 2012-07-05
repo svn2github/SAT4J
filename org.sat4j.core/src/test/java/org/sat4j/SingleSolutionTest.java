@@ -47,9 +47,9 @@ public class SingleSolutionTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
-        solver = SolverFactory.newDefault();
-        detector = new SingleSolutionDetector(solver);
-        detector.newVar(3);
+        this.solver = SolverFactory.newDefault();
+        this.detector = new SingleSolutionDetector(this.solver);
+        this.detector.newVar(3);
     }
 
     /*
@@ -60,12 +60,12 @@ public class SingleSolutionTest extends TestCase {
             TimeoutException {
         IVecInt clause = new VecInt();
         clause.push(1).push(2);
-        detector.addClause(clause);
+        this.detector.addClause(clause);
         clause.clear();
         clause.push(-1).push(-2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable());
-        assertFalse(detector.hasASingleSolution());
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable());
+        assertFalse(this.detector.hasASingleSolution());
     }
 
     /*
@@ -76,28 +76,28 @@ public class SingleSolutionTest extends TestCase {
             TimeoutException {
         IVecInt clause = new VecInt();
         clause.push(1).push(2);
-        detector.addClause(clause);
+        this.detector.addClause(clause);
         clause.clear();
         clause.push(-1).push(-2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable());
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable());
         clause.clear();
         clause.push(-1).push(2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable());
-        assertTrue(detector.hasASingleSolution());
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable());
+        assertTrue(this.detector.hasASingleSolution());
         clause.clear();
         clause.push(1).push(-2);
-        detector.addClause(clause);
-        assertFalse(detector.isSatisfiable());
+        this.detector.addClause(clause);
+        assertFalse(this.detector.isSatisfiable());
         try {
-            assertFalse(detector.hasASingleSolution());
+            assertFalse(this.detector.hasASingleSolution());
             fail();
         } catch (UnsupportedOperationException e) {
             // OK
         }
     }
-    
+
     /*
      * Test method for
      * 'org.sat4j.tools.SingleSolutionDetector.hasASingleSolution()'
@@ -106,26 +106,27 @@ public class SingleSolutionTest extends TestCase {
             TimeoutException {
         IVecInt clause = new VecInt();
         clause.push(1).push(2);
-        detector.addClause(clause);
+        this.detector.addClause(clause);
         clause.clear();
         clause.push(-1).push(-2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable());
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable());
         clause.clear();
         clause.push(-1).push(2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable());
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable());
         clause.clear();
         clause.push(1).push(-2);
-        detector.addClause(clause);
-        assertFalse(detector.isSatisfiable());
+        this.detector.addClause(clause);
+        assertFalse(this.detector.isSatisfiable());
         try {
-            assertFalse(detector.hasASingleSolution());
+            assertFalse(this.detector.hasASingleSolution());
             fail();
         } catch (UnsupportedOperationException e) {
             // OK
         }
     }
+
     /*
      * Test method for
      * 'org.sat4j.tools.SingleSolutionDetector.hasASingleSolution(IVecInt)'
@@ -134,22 +135,22 @@ public class SingleSolutionTest extends TestCase {
             TimeoutException {
         IVecInt clause = new VecInt();
         clause.push(1).push(2);
-        detector.addClause(clause);
+        this.detector.addClause(clause);
         IVecInt assumptions = new VecInt();
         assumptions.push(1);
-        assertTrue(detector.isSatisfiable(assumptions));
-        assertFalse(detector.hasASingleSolution(assumptions));
+        assertTrue(this.detector.isSatisfiable(assumptions));
+        assertFalse(this.detector.hasASingleSolution(assumptions));
         clause.clear();
         clause.push(-1).push(2);
-        detector.addClause(clause);
-        assertTrue(detector.isSatisfiable(assumptions));
-        assertTrue(detector.hasASingleSolution(assumptions));
+        this.detector.addClause(clause);
+        assertTrue(this.detector.isSatisfiable(assumptions));
+        assertTrue(this.detector.hasASingleSolution(assumptions));
         clause.clear();
         clause.push(-1).push(-2);
-        detector.addClause(clause);
-        assertFalse(detector.isSatisfiable(assumptions));
+        this.detector.addClause(clause);
+        assertFalse(this.detector.isSatisfiable(assumptions));
         try {
-            assertFalse(detector.hasASingleSolution(assumptions));
+            assertFalse(this.detector.hasASingleSolution(assumptions));
             fail();
         } catch (UnsupportedOperationException e) {
             // OK

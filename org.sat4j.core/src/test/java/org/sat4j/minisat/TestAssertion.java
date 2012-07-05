@@ -35,16 +35,17 @@ import junit.framework.TestCase;
 /**
  * @author roussel
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class TestAssertion extends TestCase {
 
     public void testAssertion() {
         boolean assertionsEnabled = false;
         assert assertionsEnabled = true;
-        if (!assertionsEnabled)
+        if (!assertionsEnabled) {
             fail("assertions should be enabled !");
+        }
     }
 
 }

@@ -46,96 +46,97 @@ import org.sat4j.specs.TimeoutException;
  */
 public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
+    private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
 
-	private boolean incomplete = false;
+    private boolean incomplete = false;
 
-	private boolean displaySolutionLine = true;
+    private boolean displaySolutionLine = true;
 
-	protected void setIncomplete(boolean value) {
-		incomplete = value;
-	}
+    protected void setIncomplete(boolean value) {
+        this.incomplete = value;
+    }
 
-	protected void setDisplaySolutionLine(boolean value) {
-		displaySolutionLine = value;
-	}
+    protected void setDisplaySolutionLine(boolean value) {
+        this.displaySolutionLine = value;
+    }
 
-	@Override
-	protected void displayResult() {
-		displayAnswer();
+    @Override
+    protected void displayResult() {
+        displayAnswer();
 
-		log("Total wall clock time (in seconds): " //$NON-NLS-1$
-				+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);
-	}
+        log("Total wall clock time (in seconds): " //$NON-NLS-1$
+                + (System.currentTimeMillis() - getBeginTime()) / 1000.0);
+    }
 
-	protected void displayAnswer() {
-		if (solver == null)
-			return;
-		System.out.flush();
-		PrintWriter out = getLogWriter();
-		out.flush();
-		solver.printStat(out, COMMENT_PREFIX);
-		solver.printInfos(out, COMMENT_PREFIX);
-		ExitCode exitCode = getExitCode();
-		out.println(ANSWER_PREFIX + exitCode);
-		if (exitCode == ExitCode.SATISFIABLE
-				|| exitCode == ExitCode.OPTIMUM_FOUND
-				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
-			if (displaySolutionLine) {
-				out.print(SOLUTION_PREFIX);
-				getReader().decode(solver.model(), out);
-				out.println();
-			}
-			IOptimizationProblem optproblem = (IOptimizationProblem) solver;
-			if (!optproblem.hasNoObjectiveFunction()) {
-				log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
-			}
-		}
-	}
+    protected void displayAnswer() {
+        if (this.solver == null) {
+            return;
+        }
+        System.out.flush();
+        PrintWriter out = getLogWriter();
+        out.flush();
+        this.solver.printStat(out, COMMENT_PREFIX);
+        this.solver.printInfos(out, COMMENT_PREFIX);
+        ExitCode exitCode = getExitCode();
+        out.println(ANSWER_PREFIX + exitCode);
+        if (exitCode == ExitCode.SATISFIABLE
+                || exitCode == ExitCode.OPTIMUM_FOUND || this.incomplete
+                && exitCode == ExitCode.UPPER_BOUND) {
+            if (this.displaySolutionLine) {
+                out.print(SOLUTION_PREFIX);
+                getReader().decode(this.solver.model(), out);
+                out.println();
+            }
+            IOptimizationProblem optproblem = (IOptimizationProblem) this.solver;
+            if (!optproblem.hasNoObjectiveFunction()) {
+                log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+            }
+        }
+    }
 
-	@Override
-	protected void solve(IProblem problem) throws TimeoutException {
-		boolean isSatisfiable = false;
+    @Override
+    protected void solve(IProblem problem) throws TimeoutException {
+        boolean isSatisfiable = false;
 
-		IOptimizationProblem optproblem = (IOptimizationProblem) problem;
+        IOptimizationProblem optproblem = (IOptimizationProblem) problem;
 
-		try {
-			while (optproblem.admitABetterSolution()) {
-				if (!isSatisfiable) {
-					if (optproblem.nonOptimalMeansSatisfiable()) {
-						setExitCode(ExitCode.SATISFIABLE);
-						if (optproblem.hasNoObjectiveFunction()) {
-							return;
-						}
-						log("SATISFIABLE"); //$NON-NLS-1$
-					} else if (incomplete) {
-						setExitCode(ExitCode.UPPER_BOUND);
-					}
-					isSatisfiable = true;
-					log("OPTIMIZING..."); //$NON-NLS-1$
-				}
-				log("Got one! Elapsed wall clock time (in seconds):" //$NON-NLS-1$
-						+ (System.currentTimeMillis() - getBeginTime())
-						/ 1000.0);
-				getLogWriter().println(
-						CURRENT_OPTIMUM_VALUE_PREFIX
-								+ optproblem.getObjectiveValue());
-				optproblem.discardCurrentSolution();
-			}
-			if (isSatisfiable) {
-				setExitCode(ExitCode.OPTIMUM_FOUND);
-			} else {
-				setExitCode(ExitCode.UNSATISFIABLE);
-			}
-		} catch (ContradictionException ex) {
-			assert isSatisfiable;
-			setExitCode(ExitCode.OPTIMUM_FOUND);
-		}
-	}
+        try {
+            while (optproblem.admitABetterSolution()) {
+                if (!isSatisfiable) {
+                    if (optproblem.nonOptimalMeansSatisfiable()) {
+                        setExitCode(ExitCode.SATISFIABLE);
+                        if (optproblem.hasNoObjectiveFunction()) {
+                            return;
+                        }
+                        log("SATISFIABLE"); //$NON-NLS-1$
+                    } else if (this.incomplete) {
+                        setExitCode(ExitCode.UPPER_BOUND);
+                    }
+                    isSatisfiable = true;
+                    log("OPTIMIZING..."); //$NON-NLS-1$
+                }
+                log("Got one! Elapsed wall clock time (in seconds):" //$NON-NLS-1$
+                        + (System.currentTimeMillis() - getBeginTime())
+                        / 1000.0);
+                getLogWriter().println(
+                        CURRENT_OPTIMUM_VALUE_PREFIX
+                                + optproblem.getObjectiveValue());
+                optproblem.discardCurrentSolution();
+            }
+            if (isSatisfiable) {
+                setExitCode(ExitCode.OPTIMUM_FOUND);
+            } else {
+                setExitCode(ExitCode.UNSATISFIABLE);
+            }
+        } catch (ContradictionException ex) {
+            assert isSatisfiable;
+            setExitCode(ExitCode.OPTIMUM_FOUND);
+        }
+    }
 
 }

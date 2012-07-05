@@ -38,75 +38,75 @@ import org.sat4j.specs.Lbool;
  */
 public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private int counter;
-	// private int maxDlevel;
+    private int counter;
+    // private int maxDlevel;
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	// private final String filename;
-	private int nVar;
-	private int maxDLevel;
+    // private final String filename;
+    private int nVar;
+    private int maxDLevel;
 
-	private final IVisualizationTool visuTool;
-	private final IVisualizationTool restartVisuTool;
-	private final IVisualizationTool cleanTool;
+    private final IVisualizationTool visuTool;
+    private final IVisualizationTool restartVisuTool;
+    private final IVisualizationTool cleanTool;
 
-	public ConflictLevelTracing(IVisualizationTool visuTool,
-			IVisualizationTool restartVisuTool, IVisualizationTool cleanTool) {
-		this.visuTool = visuTool;
-		this.restartVisuTool = restartVisuTool;
-		this.cleanTool = cleanTool;
+    public ConflictLevelTracing(IVisualizationTool visuTool,
+            IVisualizationTool restartVisuTool, IVisualizationTool cleanTool) {
+        this.visuTool = visuTool;
+        this.restartVisuTool = restartVisuTool;
+        this.cleanTool = cleanTool;
 
-		counter = 1;
-		maxDLevel = 0;
-	}
+        this.counter = 1;
+        this.maxDLevel = 0;
+    }
 
-	@Override
-	public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		if (dlevel > maxDLevel) {
-			maxDLevel = dlevel;
-		}
-		visuTool.addPoint(counter, dlevel);
-		restartVisuTool.addInvisiblePoint(counter, maxDLevel);
-		cleanTool.addInvisiblePoint(counter, maxDLevel);
-		counter++;
-	}
+    @Override
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        if (dlevel > this.maxDLevel) {
+            this.maxDLevel = dlevel;
+        }
+        this.visuTool.addPoint(this.counter, dlevel);
+        this.restartVisuTool.addInvisiblePoint(this.counter, this.maxDLevel);
+        this.cleanTool.addInvisiblePoint(this.counter, this.maxDLevel);
+        this.counter++;
+    }
 
-	@Override
-	public void restarting() {
-		restartVisuTool.addPoint(counter, maxDLevel);
-		cleanTool.addPoint(counter, 0);
-		visuTool.addInvisiblePoint(counter, nVar);
-	}
+    @Override
+    public void restarting() {
+        this.restartVisuTool.addPoint(this.counter, this.maxDLevel);
+        this.cleanTool.addPoint(this.counter, 0);
+        this.visuTool.addInvisiblePoint(this.counter, this.nVar);
+    }
 
-	@Override
-	public void end(Lbool result) {
-		visuTool.end();
-		cleanTool.end();
-		restartVisuTool.end();
-	}
+    @Override
+    public void end(Lbool result) {
+        this.visuTool.end();
+        this.cleanTool.end();
+        this.restartVisuTool.end();
+    }
 
-	@Override
-	public void start() {
-		visuTool.init();
-		restartVisuTool.init();
-		cleanTool.init();
-		counter = 1;
-		maxDLevel = 0;
-	}
+    @Override
+    public void start() {
+        this.visuTool.init();
+        this.restartVisuTool.init();
+        this.cleanTool.init();
+        this.counter = 1;
+        this.maxDLevel = 0;
+    }
 
-	@Override
-	public void init(ISolverService solverService) {
-		nVar = solverService.nVars();
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.nVar = solverService.nVars();
+    }
 
-	@Override
-	public void cleaning() {
-		restartVisuTool.addPoint(counter, 0);
-		cleanTool.addPoint(counter, maxDLevel);
-		visuTool.addInvisiblePoint(counter, nVar);
-	}
+    @Override
+    public void cleaning() {
+        this.restartVisuTool.addPoint(this.counter, 0);
+        this.cleanTool.addPoint(this.counter, this.maxDLevel);
+        this.visuTool.addInvisiblePoint(this.counter, this.nVar);
+    }
 }

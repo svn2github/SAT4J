@@ -78,10 +78,10 @@ public class ExtendedDimacsArrayReader extends DimacsArrayReader {
     private static final long serialVersionUID = 1L;
 
     private final GateTranslator gater;
-    
+
     public ExtendedDimacsArrayReader(ISolver solver) {
         super(solver);
-        gater = new GateTranslator(solver);
+        this.gater = new GateTranslator(solver);
     }
 
     /**
@@ -94,8 +94,8 @@ public class ExtendedDimacsArrayReader extends DimacsArrayReader {
      * @param inputs
      *            the numbers of the inputs of the gates in question; the array
      *            must have the corresponding length for the gate type unless
-     *            arbitrary lengths are allowed (i.e., 0 for TRUE and FALSE,
-     *            1 for NOT, or 3 for ITE)
+     *            arbitrary lengths are allowed (i.e., 0 for TRUE and FALSE, 1
+     *            for NOT, or 3 for ITE)
      * @return true
      */
     @Override
@@ -105,35 +105,35 @@ public class ExtendedDimacsArrayReader extends DimacsArrayReader {
         switch (gateType) {
         case FALSE:
             assert inputs.length == 0;
-            gater.gateFalse(output);
+            this.gater.gateFalse(output);
             break;
         case TRUE:
             assert inputs.length == 0;
-            gater.gateTrue(output);
+            this.gater.gateTrue(output);
             break;
         case OR:
             literals = new VecInt(inputs);
-            gater.or(output, literals);
+            this.gater.or(output, literals);
             break;
         case NOT:
             assert inputs.length == 1;
-            gater.not(output, inputs[0]);
+            this.gater.not(output, inputs[0]);
             break;
         case AND:
             literals = new VecInt(inputs);
-            gater.and(output, literals);
+            this.gater.and(output, literals);
             break;
         case XOR:
             literals = new VecInt(inputs);
-            gater.xor(output, literals);
+            this.gater.xor(output, literals);
             break;
         case IFF:
             literals = new VecInt(inputs);
-            gater.iff(output, literals);
+            this.gater.iff(output, literals);
             break;
         case IFTHENELSE:
             assert inputs.length == 3;
-            gater.ite(output, inputs[0], inputs[1], inputs[2]);
+            this.gater.ite(output, inputs[0], inputs[1], inputs[2]);
             break;
         default:
             throw new UnsupportedOperationException("Gate type " + gateType

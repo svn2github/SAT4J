@@ -45,25 +45,25 @@ import org.sat4j.specs.IVecInt;
 
 public class TestGateTranslator {
 
-	private ISolver solver;
-	private GateTranslator gator;
+    private ISolver solver;
+    private GateTranslator gator;
 
-	@Before
-	public void startUp() {
-		solver = SolverFactory.newDefault();
-		gator = new GateTranslator(solver);
-	}
+    @Before
+    public void startUp() {
+        this.solver = SolverFactory.newDefault();
+        this.gator = new GateTranslator(this.solver);
+    }
 
-	@Test
-	public void testTwoValues() throws ContradictionException {
-		IVecInt literals = new VecInt().push(1).push(2);
-		IVec<BigInteger> coefs = new Vec<BigInteger>().push(
-				BigInteger.valueOf(3)).push(BigInteger.valueOf(6));
-		IVecInt result = new VecInt();
-		gator.optimisationFunction(literals, coefs, result);
-		System.out.println(result);
-		assertEquals(4, result.size());
+    @Test
+    public void testTwoValues() throws ContradictionException {
+        IVecInt literals = new VecInt().push(1).push(2);
+        IVec<BigInteger> coefs = new Vec<BigInteger>().push(
+                BigInteger.valueOf(3)).push(BigInteger.valueOf(6));
+        IVecInt result = new VecInt();
+        this.gator.optimisationFunction(literals, coefs, result);
+        System.out.println(result);
+        assertEquals(4, result.size());
 
-	}
+    }
 
 }

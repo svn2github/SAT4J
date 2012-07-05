@@ -37,41 +37,41 @@ package org.sat4j.specs;
  */
 public interface IConstr {
 
-	/**
-	 * @return true iff the clause was learnt during the search
-	 */
-	boolean learnt();
+    /**
+     * @return true iff the clause was learnt during the search
+     */
+    boolean learnt();
 
-	/**
-	 * @return the number of literals in the constraint.
-	 */
-	int size();
+    /**
+     * @return the number of literals in the constraint.
+     */
+    int size();
 
-	/**
-	 * returns the ith literal in the constraint
-	 * 
-	 * @param i
-	 *            the index of the literal
-	 * @return a literal
-	 */
-	int get(int i);
+    /**
+     * returns the ith literal in the constraint
+     * 
+     * @param i
+     *            the index of the literal
+     * @return a literal
+     */
+    int get(int i);
 
-	/**
-	 * To obtain the activity of the constraint.
-	 * 
-	 * @return the activity of the clause.
-	 * @since 2.1
-	 */
-	double getActivity();
+    /**
+     * To obtain the activity of the constraint.
+     * 
+     * @return the activity of the clause.
+     * @since 2.1
+     */
+    double getActivity();
 
-	/**
-	 * Partition constraints into the ones that can only be found once on the
-	 * trail (e.g. clauses) and the ones that can be found several times (e.g.
-	 * cardinality constraints and pseudo-boolean constraints).
-	 * 
-	 * @return true if the constraint can be used several times as a reason to
-	 *         propagate a literal.
-	 * @since 2.3.1
-	 */
-	boolean canBePropagatedMultipleTimes();
+    /**
+     * Partition constraints into the ones that can only be found once on the
+     * trail (e.g. clauses) and the ones that can be found several times (e.g.
+     * cardinality constraints and pseudo-boolean constraints).
+     * 
+     * @return true if the constraint can be used several times as a reason to
+     *         propagate a literal.
+     * @since 2.3.1
+     */
+    boolean canBePropagatedMultipleTimes();
 }

@@ -44,35 +44,35 @@ import org.sat4j.minisat.core.Solver;
  * @author leberre
  */
 public final class MiniSATLearning<D extends DataStructureFactory> extends
-		AbstractLearning<D> {
-	private static final long serialVersionUID = 1L;
+        AbstractLearning<D> {
+    private static final long serialVersionUID = 1L;
 
-	private DataStructureFactory dsf;
+    private DataStructureFactory dsf;
 
-	public void setDataStructureFactory(DataStructureFactory dsf) {
-		this.dsf = dsf;
-	}
+    public void setDataStructureFactory(DataStructureFactory dsf) {
+        this.dsf = dsf;
+    }
 
-	@Override
-	public void setSolver(Solver<D> s) {
-		super.setSolver(s);
-		this.dsf = s.getDSFactory();
-	}
+    @Override
+    public void setSolver(Solver<D> s) {
+        super.setSolver(s);
+        this.dsf = s.getDSFactory();
+    }
 
-	public void learns(Constr constr) {
-		// va contenir une nouvelle clause ou null si la clause est unitaire
-		claBumpActivity(constr);
-		dsf.learnConstraint(constr);
-	}
+    public void learns(Constr constr) {
+        // va contenir une nouvelle clause ou null si la clause est unitaire
+        claBumpActivity(constr);
+        this.dsf.learnConstraint(constr);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Learn all clauses as in MiniSAT";
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "Learn all clauses as in MiniSAT";
+    }
 
 }

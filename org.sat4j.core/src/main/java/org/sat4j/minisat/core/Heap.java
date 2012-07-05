@@ -42,123 +42,126 @@ import org.sat4j.specs.IVecInt;
  */
 public final class Heap implements Serializable {
 
-	/*
-	 * default serial version id
-	 */
-	private static final long serialVersionUID = 1L;
+    /*
+     * default serial version id
+     */
+    private static final long serialVersionUID = 1L;
 
-	private static final int left(int i) {
-		return i << 1;
-	}
+    private static final int left(int i) {
+        return i << 1;
+    }
 
-	private static final int right(int i) {
-		return (i << 1) ^ 1;
-	}
+    private static final int right(int i) {
+        return i << 1 ^ 1;
+    }
 
-	private static final int parent(int i) {
-		return i >> 1;
-	}
+    private static final int parent(int i) {
+        return i >> 1;
+    }
 
-	private final boolean comp(int a, int b) {
-		return activity[a] > activity[b];
-	}
+    private final boolean comp(int a, int b) {
+        return this.activity[a] > this.activity[b];
+    }
 
-	private final IVecInt heap = new VecInt(); // heap of ints
+    private final IVecInt heap = new VecInt(); // heap of ints
 
-	private final IVecInt indices = new VecInt(); // int -> index in heap
+    private final IVecInt indices = new VecInt(); // int -> index in heap
 
-	private final double[] activity;
+    private final double[] activity;
 
-	final void percolateUp(int i) {
-		int x = heap.get(i);
-		while (parent(i) != 0 && comp(x, heap.get(parent(i)))) {
-			heap.set(i, heap.get(parent(i)));
-			indices.set(heap.get(i), i);
-			i = parent(i);
-		}
-		heap.set(i, x);
-		indices.set(x, i);
-	}
+    final void percolateUp(int i) {
+        int x = this.heap.get(i);
+        while (parent(i) != 0 && comp(x, this.heap.get(parent(i)))) {
+            this.heap.set(i, this.heap.get(parent(i)));
+            this.indices.set(this.heap.get(i), i);
+            i = parent(i);
+        }
+        this.heap.set(i, x);
+        this.indices.set(x, i);
+    }
 
-	final void percolateDown(int i) {
-		int x = heap.get(i);
-		while (left(i) < heap.size()) {
-			int child = right(i) < heap.size()
-					&& comp(heap.get(right(i)), heap.get(left(i))) ? right(i)
-					: left(i);
-			if (!comp(heap.get(child), x))
-				break;
-			heap.set(i, heap.get(child));
-			indices.set(heap.get(i), i);
-			i = child;
-		}
-		heap.set(i, x);
-		indices.set(x, i);
-	}
+    final void percolateDown(int i) {
+        int x = this.heap.get(i);
+        while (left(i) < this.heap.size()) {
+            int child = right(i) < this.heap.size()
+                    && comp(this.heap.get(right(i)), this.heap.get(left(i))) ? right(i)
+                    : left(i);
+            if (!comp(this.heap.get(child), x)) {
+                break;
+            }
+            this.heap.set(i, this.heap.get(child));
+            this.indices.set(this.heap.get(i), i);
+            i = child;
+        }
+        this.heap.set(i, x);
+        this.indices.set(x, i);
+    }
 
-	boolean ok(int n) {
-		return n >= 0 && n < indices.size();
-	}
+    boolean ok(int n) {
+        return n >= 0 && n < this.indices.size();
+    }
 
-	public Heap(double[] activity) { // NOPMD
-		this.activity = activity;
-		heap.push(-1);
-	}
+    public Heap(double[] activity) { // NOPMD
+        this.activity = activity;
+        this.heap.push(-1);
+    }
 
-	public void setBounds(int size) {
-		assert (size >= 0);
-		indices.growTo(size, 0);
-	}
+    public void setBounds(int size) {
+        assert size >= 0;
+        this.indices.growTo(size, 0);
+    }
 
-	public boolean inHeap(int n) {
-		assert (ok(n));
-		return indices.get(n) != 0;
-	}
+    public boolean inHeap(int n) {
+        assert ok(n);
+        return this.indices.get(n) != 0;
+    }
 
-	public void increase(int n) {
-		assert (ok(n));
-		assert (inHeap(n));
-		percolateUp(indices.get(n));
-	}
+    public void increase(int n) {
+        assert ok(n);
+        assert inHeap(n);
+        percolateUp(this.indices.get(n));
+    }
 
-	public boolean empty() {
-		return heap.size() == 1;
-	}
+    public boolean empty() {
+        return this.heap.size() == 1;
+    }
 
-	public int size() {
-		return heap.size() - 1;
-	}
+    public int size() {
+        return this.heap.size() - 1;
+    }
 
-	public int get(int i) {
-		int r = heap.get(i);
-		heap.set(i, heap.last());
-		indices.set(heap.get(i), i);
-		indices.set(r, 0);
-		heap.pop();
-		if (heap.size() > 1)
-			percolateDown(1);
-		return r;
-	}
+    public int get(int i) {
+        int r = this.heap.get(i);
+        this.heap.set(i, this.heap.last());
+        this.indices.set(this.heap.get(i), i);
+        this.indices.set(r, 0);
+        this.heap.pop();
+        if (this.heap.size() > 1) {
+            percolateDown(1);
+        }
+        return r;
+    }
 
-	public void insert(int n) {
-		assert (ok(n));
-		indices.set(n, heap.size());
-		heap.push(n);
-		percolateUp(indices.get(n));
-	}
+    public void insert(int n) {
+        assert ok(n);
+        this.indices.set(n, this.heap.size());
+        this.heap.push(n);
+        percolateUp(this.indices.get(n));
+    }
 
-	public int getmin() {
-		return get(1);
-	}
+    public int getmin() {
+        return get(1);
+    }
 
-	public boolean heapProperty() {
-		return heapProperty(1);
-	}
+    public boolean heapProperty() {
+        return heapProperty(1);
+    }
 
-	public boolean heapProperty(int i) {
-		return i >= heap.size()
-				|| ((parent(i) == 0 || !comp(heap.get(i), heap.get(parent(i))))
-						&& heapProperty(left(i)) && heapProperty(right(i)));
-	}
+    public boolean heapProperty(int i) {
+        return i >= this.heap.size()
+                || (parent(i) == 0 || !comp(this.heap.get(i),
+                        this.heap.get(parent(i)))) && heapProperty(left(i))
+                && heapProperty(right(i));
+    }
 
 }

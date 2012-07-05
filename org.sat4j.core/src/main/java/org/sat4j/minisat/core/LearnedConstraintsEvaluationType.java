@@ -36,20 +36,20 @@ package org.sat4j.minisat.core;
  * 
  */
 public enum LearnedConstraintsEvaluationType {
-	/**
-	 * The clauses are evaluated according to their activity during conflict
-	 * analysis.
-	 */
-	ACTIVITY,
+    /**
+     * The clauses are evaluated according to their activity during conflict
+     * analysis.
+     */
+    ACTIVITY,
 
-	/**
-	 * The clauses are evaluated using Glucose's Literal Block Distance.
-	 */
-	LBD,
+    /**
+     * The clauses are evaluated using Glucose's Literal Block Distance.
+     */
+    LBD,
 
-	/**
-	 * LBD updated also when the unit propagation is performed on the unit
-	 * clauses.
-	 */
-	LBD2;
+    /**
+     * LBD updated also when the unit propagation is performed on the unit
+     * clauses.
+     */
+    LBD2;
 }

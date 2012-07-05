@@ -40,5 +40,5 @@ import org.sat4j.specs.IVecInt;
  * 
  */
 public interface ISimplifier extends Serializable {
-	void simplify(IVecInt outLearnt);
+    void simplify(IVecInt outLearnt);
 }

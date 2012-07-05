@@ -34,29 +34,29 @@ import static org.sat4j.core.LiteralsUtils.negLit;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 
 abstract class AbstractPhaserecordingSelectionStrategy implements
-		IPhaseSelectionStrategy {
+        IPhaseSelectionStrategy {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected int[] phase;
+    protected int[] phase;
 
-	public void init(int nlength) {
-		if (phase == null || phase.length < nlength) {
-			phase = new int[nlength];
-		}
-		for (int i = 1; i < nlength; i++) {
-			phase[i] = negLit(i);
-		}
-	}
+    public void init(int nlength) {
+        if (this.phase == null || this.phase.length < nlength) {
+            this.phase = new int[nlength];
+        }
+        for (int i = 1; i < nlength; i++) {
+            this.phase[i] = negLit(i);
+        }
+    }
 
-	public void init(int var, int p) {
-		phase[var] = p;
-	}
+    public void init(int var, int p) {
+        this.phase[var] = p;
+    }
 
-	public int select(int var) {
-		return phase[var];
-	}
+    public int select(int var) {
+        return this.phase[var];
+    }
 }

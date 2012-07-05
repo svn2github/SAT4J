@@ -44,15 +44,16 @@ public class SearchParams implements Serializable {
 
     /**
      * Default search parameters.
-     *
+     * 
      */
     public SearchParams() {
         this(0.95, 0.999, 1.5, 100);
     }
 
-    /** 
+    /**
      * 
-     * @param conflictBound the initial conflict bound for the first restart.
+     * @param conflictBound
+     *            the initial conflict bound for the first restart.
      */
     public SearchParams(int conflictBound) {
         this(0.95, 0.999, 1.5, conflictBound);
@@ -73,24 +74,24 @@ public class SearchParams implements Serializable {
      *            initialConflictBound
      */
     public SearchParams(double d, double e, double f, int i) {
-        varDecay = d;
-        claDecay = e;
-        conflictBoundIncFactor = f;
-        initConflictBound = i;
+        this.varDecay = d;
+        this.claDecay = e;
+        this.conflictBoundIncFactor = f;
+        this.initConflictBound = i;
     }
 
     /**
      * @return la valeur de clause decay
      */
     public double getClaDecay() {
-        return claDecay;
+        return this.claDecay;
     }
 
     /**
      * @return la valeur de var decay
      */
     public double getVarDecay() {
-        return varDecay;
+        return this.varDecay;
     }
 
     private double claDecay;
@@ -110,7 +111,8 @@ public class SearchParams implements Serializable {
     public String toString() {
         StringBuffer stb = new StringBuffer();
         for (Field field : SearchParams.class.getDeclaredFields()) {
-            if (!field.getName().startsWith("serial")&&!field.getName().startsWith("class")) {
+            if (!field.getName().startsWith("serial")
+                    && !field.getName().startsWith("class")) {
                 stb.append(field.getName());
                 stb.append("="); //$NON-NLS-1$
                 try {
@@ -146,14 +148,14 @@ public class SearchParams implements Serializable {
      * @return the conflictBoundIncFactor
      */
     public double getConflictBoundIncFactor() {
-        return conflictBoundIncFactor;
+        return this.conflictBoundIncFactor;
     }
 
     /**
      * @return the initConflictBound
      */
     public int getInitConflictBound() {
-        return initConflictBound;
+        return this.initConflictBound;
     }
 
     /**

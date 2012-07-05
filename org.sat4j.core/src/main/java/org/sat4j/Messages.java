@@ -39,26 +39,26 @@ import java.util.ResourceBundle;
  * 
  */
 public final class Messages {
-	private static final String BUNDLE_NAME = "org.sat4j.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.sat4j.messages"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
+    private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
+            .getBundle(BUNDLE_NAME);
 
-	/**
-	 * No instances should be used. Use Messages.getString(key) to get localized
-	 * message for key.
-	 * 
-	 */
-	private Messages() {
-		super();
-	}
+    /**
+     * No instances should be used. Use Messages.getString(key) to get localized
+     * message for key.
+     * 
+     */
+    private Messages() {
+        super();
+    }
 
-	public static String getString(String key) {
-		// TODO Auto-generated method stub
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
-	}
+    public static String getString(String key) {
+        // TODO Auto-generated method stub
+        try {
+            return RESOURCE_BUNDLE.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
 }

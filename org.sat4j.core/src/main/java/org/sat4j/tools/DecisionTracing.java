@@ -37,85 +37,85 @@ import org.sat4j.specs.Lbool;
  */
 public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int counter;
+    private int counter;
 
-	private final IVisualizationTool positiveVisu;
-	private final IVisualizationTool negativeVisu;
-	private final IVisualizationTool restartVisu;
-	private final IVisualizationTool cleanVisu;
+    private final IVisualizationTool positiveVisu;
+    private final IVisualizationTool negativeVisu;
+    private final IVisualizationTool restartVisu;
+    private final IVisualizationTool cleanVisu;
 
-	// private final String filename;
-	// private PrintStream outPos;
-	// private PrintStream outNeg;
-	// private PrintStream outRestart;
-	private int nVar;
+    // private final String filename;
+    // private PrintStream outPos;
+    // private PrintStream outNeg;
+    // private PrintStream outRestart;
+    private int nVar;
 
-	public DecisionTracing(IVisualizationTool positiveVisu,
-			IVisualizationTool negativeVisu, IVisualizationTool restartVisu,
-			IVisualizationTool cleanVisu) {
-		this.positiveVisu = positiveVisu;
-		this.negativeVisu = negativeVisu;
-		this.restartVisu = restartVisu;
-		this.cleanVisu = cleanVisu;
+    public DecisionTracing(IVisualizationTool positiveVisu,
+            IVisualizationTool negativeVisu, IVisualizationTool restartVisu,
+            IVisualizationTool cleanVisu) {
+        this.positiveVisu = positiveVisu;
+        this.negativeVisu = negativeVisu;
+        this.restartVisu = restartVisu;
+        this.cleanVisu = cleanVisu;
 
-		counter = 1;
-	}
+        this.counter = 1;
+    }
 
-	@Override
-	public void assuming(int p) {
-		if (p > 0) {
-			positiveVisu.addPoint(counter, p);
-			negativeVisu.addInvisiblePoint(counter, 0);
-		} else {
-			negativeVisu.addPoint(counter, -p);
-			positiveVisu.addInvisiblePoint(counter, 0);
-		}
-		restartVisu.addInvisiblePoint(counter, 0);
-		cleanVisu.addInvisiblePoint(counter, 0);
-		counter++;
-	}
+    @Override
+    public void assuming(int p) {
+        if (p > 0) {
+            this.positiveVisu.addPoint(this.counter, p);
+            this.negativeVisu.addInvisiblePoint(this.counter, 0);
+        } else {
+            this.negativeVisu.addPoint(this.counter, -p);
+            this.positiveVisu.addInvisiblePoint(this.counter, 0);
+        }
+        this.restartVisu.addInvisiblePoint(this.counter, 0);
+        this.cleanVisu.addInvisiblePoint(this.counter, 0);
+        this.counter++;
+    }
 
-	@Override
-	public void restarting() {
-		restartVisu.addPoint(counter, nVar);
-		cleanVisu.addPoint(counter, 0);
-		positiveVisu.addInvisiblePoint(counter, 0);
-		negativeVisu.addInvisiblePoint(counter, 0);
-	}
+    @Override
+    public void restarting() {
+        this.restartVisu.addPoint(this.counter, this.nVar);
+        this.cleanVisu.addPoint(this.counter, 0);
+        this.positiveVisu.addInvisiblePoint(this.counter, 0);
+        this.negativeVisu.addInvisiblePoint(this.counter, 0);
+    }
 
-	@Override
-	public void end(Lbool result) {
-		positiveVisu.end();
-		negativeVisu.end();
-		restartVisu.end();
-		cleanVisu.end();
-	}
+    @Override
+    public void end(Lbool result) {
+        this.positiveVisu.end();
+        this.negativeVisu.end();
+        this.restartVisu.end();
+        this.cleanVisu.end();
+    }
 
-	@Override
-	public void start() {
-		counter = 1;
-	}
+    @Override
+    public void start() {
+        this.counter = 1;
+    }
 
-	@Override
-	public void init(ISolverService solverService) {
-		this.nVar = solverService.nVars();
-		this.positiveVisu.init();
-		this.negativeVisu.init();
-		this.restartVisu.init();
-		this.cleanVisu.init();
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.nVar = solverService.nVars();
+        this.positiveVisu.init();
+        this.negativeVisu.init();
+        this.restartVisu.init();
+        this.cleanVisu.init();
+    }
 
-	@Override
-	public void cleaning() {
-		restartVisu.addPoint(counter, 0);
-		cleanVisu.addPoint(counter, nVar);
-		positiveVisu.addInvisiblePoint(counter, 0);
-		negativeVisu.addInvisiblePoint(counter, 0);
-	}
+    @Override
+    public void cleaning() {
+        this.restartVisu.addPoint(this.counter, 0);
+        this.cleanVisu.addPoint(this.counter, this.nVar);
+        this.positiveVisu.addInvisiblePoint(this.counter, 0);
+        this.negativeVisu.addInvisiblePoint(this.counter, 0);
+    }
 
 }

@@ -53,199 +53,199 @@ import org.sat4j.specs.IVecInt;
  */
 public class Commander extends EncodingStrategyAdapter {
 
-	/**
-	 * In this encoding, variables are partitioned in groups. Kwon and Klieber
-	 * claim that the fewest clauses are produced when the size of the groups is
-	 * 3, thus leading to 3.5 clauses and introducing n/2 variables.
-	 */
-	@Override
-	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
-			throws ContradictionException {
+    /**
+     * In this encoding, variables are partitioned in groups. Kwon and Klieber
+     * claim that the fewest clauses are produced when the size of the groups is
+     * 3, thus leading to 3.5 clauses and introducing n/2 variables.
+     */
+    @Override
+    public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
 
-		return addAtMostOne(solver, literals, 3);
-	}
+        return addAtMostOne(solver, literals, 3);
+    }
 
-	private IConstr addAtMostOne(ISolver solver, IVecInt literals, int groupSize)
-			throws ContradictionException {
+    private IConstr addAtMostOne(ISolver solver, IVecInt literals, int groupSize)
+            throws ContradictionException {
 
-		ConstrGroup constrGroup = new ConstrGroup(false);
+        ConstrGroup constrGroup = new ConstrGroup(false);
 
-		IVecInt clause = new VecInt();
-		IVecInt clause1 = new VecInt();
+        IVecInt clause = new VecInt();
+        IVecInt clause1 = new VecInt();
 
-		final int n = literals.size();
+        final int n = literals.size();
 
-		int nbGroup = (int) Math.ceil((double) literals.size()
-				/ (double) groupSize);
+        int nbGroup = (int) Math.ceil((double) literals.size()
+                / (double) groupSize);
 
-		if (nbGroup == 1) {
-			for (int i = 0; i < literals.size() - 1; i++) {
-				for (int j = i + 1; j < literals.size(); j++) {
-					clause.push(-literals.get(i));
-					clause.push(-literals.get(j));
-					constrGroup.add(solver.addClause(clause));
-					clause.clear();
-				}
-			}
-			return constrGroup;
-		}
+        if (nbGroup == 1) {
+            for (int i = 0; i < literals.size() - 1; i++) {
+                for (int j = i + 1; j < literals.size(); j++) {
+                    clause.push(-literals.get(i));
+                    clause.push(-literals.get(j));
+                    constrGroup.add(solver.addClause(clause));
+                    clause.clear();
+                }
+            }
+            return constrGroup;
+        }
 
-		int[] c = new int[nbGroup];
+        int[] c = new int[nbGroup];
 
-		for (int i = 0; i < nbGroup; i++) {
-			c[i] = solver.nextFreeVarId(true);
-		}
+        for (int i = 0; i < nbGroup; i++) {
+            c[i] = solver.nextFreeVarId(true);
+        }
 
-		int nbVarLastGroup = n - (nbGroup - 1) * groupSize;
+        int nbVarLastGroup = n - (nbGroup - 1) * groupSize;
 
-		// Encoding <=1 for each group of groupLitterals
-		for (int i = 0; i < nbGroup; i++) {
-			int size = 0;
-			if (i == (nbGroup - 1)) {
-				size = nbVarLastGroup;
-			} else {
-				size = groupSize;
-			}
-			// Encoding <=1 for each group of groupLitterals
-			for (int j = 0; j < size - 1; j++) {
-				for (int k = j + 1; k < size; k++) {
-					clause.push(-literals.get(i * groupSize + j));
-					clause.push(-literals.get(i * groupSize + k));
-					constrGroup.add(solver.addClause(clause));
-					clause.clear();
-				}
-			}
+        // Encoding <=1 for each group of groupLitterals
+        for (int i = 0; i < nbGroup; i++) {
+            int size = 0;
+            if (i == nbGroup - 1) {
+                size = nbVarLastGroup;
+            } else {
+                size = groupSize;
+            }
+            // Encoding <=1 for each group of groupLitterals
+            for (int j = 0; j < size - 1; j++) {
+                for (int k = j + 1; k < size; k++) {
+                    clause.push(-literals.get(i * groupSize + j));
+                    clause.push(-literals.get(i * groupSize + k));
+                    constrGroup.add(solver.addClause(clause));
+                    clause.clear();
+                }
+            }
 
-			// If a commander variable is true then some variable in its
-			// corresponding group must be true (clause1)
-			// If a commander variable is false then no variable in its group
-			// can be true (clause)
-			clause1.push(-c[i]);
-			for (int j = 0; j < size; j++) {
-				clause1.push(literals.get(i * groupSize + j));
-				clause.push(c[i]);
-				clause.push(-literals.get(i * groupSize + j));
-				constrGroup.add(solver.addClause(clause));
-				clause.clear();
-			}
-			constrGroup.add(solver.addClause(clause1));
-			clause1.clear();
-		}
+            // If a commander variable is true then some variable in its
+            // corresponding group must be true (clause1)
+            // If a commander variable is false then no variable in its group
+            // can be true (clause)
+            clause1.push(-c[i]);
+            for (int j = 0; j < size; j++) {
+                clause1.push(literals.get(i * groupSize + j));
+                clause.push(c[i]);
+                clause.push(-literals.get(i * groupSize + j));
+                constrGroup.add(solver.addClause(clause));
+                clause.clear();
+            }
+            constrGroup.add(solver.addClause(clause1));
+            clause1.clear();
+        }
 
-		// encode <=1 on commander variables
+        // encode <=1 on commander variables
 
-		constrGroup.add(addAtMostOne(solver, new VecInt(c), groupSize));
-		return constrGroup;
-	}
+        constrGroup.add(addAtMostOne(solver, new VecInt(c), groupSize));
+        return constrGroup;
+    }
 
-	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
-			throws ContradictionException {
-		return super.addAtMost(solver, literals, degree);
-		// return addAtMost(solver, literals, degree, degree * 2);
-	}
+    @Override
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        return super.addAtMost(solver, literals, degree);
+        // return addAtMost(solver, literals, degree, degree * 2);
+    }
 
-	private IConstr addAtMost(ISolver solver, IVecInt literals, int k,
-			int groupSize) throws ContradictionException {
-		ConstrGroup constrGroup = new ConstrGroup(false);
+    private IConstr addAtMost(ISolver solver, IVecInt literals, int k,
+            int groupSize) throws ContradictionException {
+        ConstrGroup constrGroup = new ConstrGroup(false);
 
-		IVecInt clause = new VecInt();
+        IVecInt clause = new VecInt();
 
-		final int n = literals.size();
+        final int n = literals.size();
 
-		int nbGroup = (int) Math.ceil((double) n / (double) groupSize);
+        int nbGroup = (int) Math.ceil((double) n / (double) groupSize);
 
-		if (nbGroup == 1) {
-			for (IVecInt vec : literals.subset(k + 1)) {
-				for (int i = 0; i < vec.size(); i++) {
-					clause.push(-vec.get(i));
-				}
-				constrGroup.add(solver.addClause(clause));
-				clause.clear();
-			}
-			return constrGroup;
-		}
+        if (nbGroup == 1) {
+            for (IVecInt vec : literals.subset(k + 1)) {
+                for (int i = 0; i < vec.size(); i++) {
+                    clause.push(-vec.get(i));
+                }
+                constrGroup.add(solver.addClause(clause));
+                clause.clear();
+            }
+            return constrGroup;
+        }
 
-		int[][] c = new int[nbGroup][k];
-		VecInt vecC = new VecInt();
+        int[][] c = new int[nbGroup][k];
+        VecInt vecC = new VecInt();
 
-		for (int i = 0; i < nbGroup - 1; i++) {
-			for (int j = 0; j < k; j++) {
-				c[i][j] = solver.nextFreeVarId(true);
-				vecC.push(c[i][j]);
-			}
-		}
+        for (int i = 0; i < nbGroup - 1; i++) {
+            for (int j = 0; j < k; j++) {
+                c[i][j] = solver.nextFreeVarId(true);
+                vecC.push(c[i][j]);
+            }
+        }
 
-		int nbVarLastGroup = n - (nbGroup - 1) * groupSize;
-		int nbCForLastGroup;
-		// nbCForLastGroup = Math.min(k, nbVarLastGroup);
-		nbCForLastGroup = k;
+        int nbVarLastGroup = n - (nbGroup - 1) * groupSize;
+        int nbCForLastGroup;
+        // nbCForLastGroup = Math.min(k, nbVarLastGroup);
+        nbCForLastGroup = k;
 
-		for (int j = 0; j < nbCForLastGroup; j++) {
-			c[nbGroup - 1][j] = solver.nextFreeVarId(true);
-			vecC.push(c[nbGroup - 1][j]);
-		}
+        for (int j = 0; j < nbCForLastGroup; j++) {
+            c[nbGroup - 1][j] = solver.nextFreeVarId(true);
+            vecC.push(c[nbGroup - 1][j]);
+        }
 
-		VecInt[] groupTab = new VecInt[nbGroup];
+        VecInt[] groupTab = new VecInt[nbGroup];
 
-		// Every literal x is in a group Gi
-		// For every group Gi, we construct the group every {Gi \cup {c[i][j], j
-		// =0,...k-1}}
-		for (int i = 0; i < nbGroup - 1; i++) {
-			groupTab[i] = new VecInt();
+        // Every literal x is in a group Gi
+        // For every group Gi, we construct the group every {Gi \cup {c[i][j], j
+        // =0,...k-1}}
+        for (int i = 0; i < nbGroup - 1; i++) {
+            groupTab[i] = new VecInt();
 
-			int size = 0;
-			if (i == (nbGroup - 1)) {
-				size = nbVarLastGroup;
-			} else {
-				size = groupSize;
-			}
+            int size = 0;
+            if (i == nbGroup - 1) {
+                size = nbVarLastGroup;
+            } else {
+                size = groupSize;
+            }
 
-			for (int j = 0; j < size; j++) {
-				groupTab[i].push(literals.get(i * groupSize + j));
-			}
-			for (int j = 0; j < k; j++) {
-				groupTab[i].push(-c[i][j]);
-			}
-		}
+            for (int j = 0; j < size; j++) {
+                groupTab[i].push(literals.get(i * groupSize + j));
+            }
+            for (int j = 0; j < k; j++) {
+                groupTab[i].push(-c[i][j]);
+            }
+        }
 
-		int size = nbVarLastGroup;
-		groupTab[nbGroup - 1] = new VecInt();
-		for (int j = 0; j < size; j++) {
-			groupTab[nbGroup - 1].push(literals.get((nbGroup - 1) * groupSize
-					+ j));
-		}
-		for (int j = 0; j < nbCForLastGroup; j++) {
-			groupTab[nbGroup - 1].push(-c[nbGroup - 1][j]);
-		}
+        int size = nbVarLastGroup;
+        groupTab[nbGroup - 1] = new VecInt();
+        for (int j = 0; j < size; j++) {
+            groupTab[nbGroup - 1].push(literals.get((nbGroup - 1) * groupSize
+                    + j));
+        }
+        for (int j = 0; j < nbCForLastGroup; j++) {
+            groupTab[nbGroup - 1].push(-c[nbGroup - 1][j]);
+        }
 
-		Binomial bin = new Binomial();
+        Binomial bin = new Binomial();
 
-		// Encode <=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
-		// encoding
-		for (int i = 0; i < nbGroup; i++) {
-			constrGroup.add(bin.addAtMost(solver, groupTab[i], k));
-			System.out.println(constrGroup.getConstr(i).size());
-		}
+        // Encode <=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
+        // encoding
+        for (int i = 0; i < nbGroup; i++) {
+            constrGroup.add(bin.addAtMost(solver, groupTab[i], k));
+            System.out.println(constrGroup.getConstr(i).size());
+        }
 
-		// Encode >=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
-		// encoding
-		for (int i = 0; i < nbGroup; i++) {
-			constrGroup.add(bin.addAtLeast(solver, groupTab[i], k));
-			System.out.println(constrGroup.getConstr(i + nbGroup).size());
-		}
+        // Encode >=k for every Gi \cup {c[i][j], j=0,...k-1}} with Binomial
+        // encoding
+        for (int i = 0; i < nbGroup; i++) {
+            constrGroup.add(bin.addAtLeast(solver, groupTab[i], k));
+            System.out.println(constrGroup.getConstr(i + nbGroup).size());
+        }
 
-		for (int i = 0; i < nbGroup; i++) {
-			for (int j = 0; j < k - 1; j++) {
-				clause.push(-c[i][j]);
-				clause.push(c[i][j + 1]);
-				constrGroup.add(solver.addClause(clause));
-				clause.clear();
-			}
-		}
+        for (int i = 0; i < nbGroup; i++) {
+            for (int j = 0; j < k - 1; j++) {
+                clause.push(-c[i][j]);
+                clause.push(c[i][j + 1]);
+                constrGroup.add(solver.addClause(clause));
+                clause.clear();
+            }
+        }
 
-		constrGroup.add(addAtMost(solver, vecC, k));
+        constrGroup.add(addAtMost(solver, vecC, k));
 
-		return constrGroup;
-	}
+        return constrGroup;
+    }
 }

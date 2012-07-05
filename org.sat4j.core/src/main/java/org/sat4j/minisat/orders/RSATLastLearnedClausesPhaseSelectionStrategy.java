@@ -38,26 +38,26 @@ import static org.sat4j.core.LiteralsUtils.var;
  * 
  */
 public final class RSATLastLearnedClausesPhaseSelectionStrategy extends
-		AbstractPhaserecordingSelectionStrategy {
+        AbstractPhaserecordingSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void assignLiteral(int p) {
-		phase[var(p)] = p;
-	}
+    public void assignLiteral(int p) {
+        this.phase[var(p)] = p;
+    }
 
-	@Override
-	public String toString() {
-		return "lightweight component caching from RSAT inverting phase for variables at conflict decision level";
-	}
+    @Override
+    public String toString() {
+        return "lightweight component caching from RSAT inverting phase for variables at conflict decision level";
+    }
 
-	public void updateVar(int p) {
-	}
+    public void updateVar(int p) {
+    }
 
-	public void updateVarAtDecisionLevel(int p) {
-		phase[var(p)] = p;
-	}
+    public void updateVarAtDecisionLevel(int p) {
+        this.phase[var(p)] = p;
+    }
 }

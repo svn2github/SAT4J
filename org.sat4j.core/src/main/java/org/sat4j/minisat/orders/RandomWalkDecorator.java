@@ -41,106 +41,106 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
  */
 public class RandomWalkDecorator implements IOrder {
 
-	private final VarOrderHeap decorated;
+    private final VarOrderHeap decorated;
 
-	private double p;
+    private double p;
 
-	private static final Random rand = new Random(123456789);
-	private ILits voc;
-	private int nbRandomWalks;
+    private static final Random rand = new Random(123456789);
+    private ILits voc;
+    private int nbRandomWalks;
 
-	public RandomWalkDecorator(VarOrderHeap order) {
-		this(order, 0.01);
-	}
+    public RandomWalkDecorator(VarOrderHeap order) {
+        this(order, 0.01);
+    }
 
-	public RandomWalkDecorator(VarOrderHeap order, double p) {
-		decorated = order;
-		this.p = p;
-	}
+    public RandomWalkDecorator(VarOrderHeap order, double p) {
+        this.decorated = order;
+        this.p = p;
+    }
 
-	public void assignLiteral(int q) {
-		decorated.assignLiteral(q);
-	}
+    public void assignLiteral(int q) {
+        this.decorated.assignLiteral(q);
+    }
 
-	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
-		return decorated.getPhaseSelectionStrategy();
-	}
+    public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
+        return this.decorated.getPhaseSelectionStrategy();
+    }
 
-	public double getProbability() {
-		return p;
-	}
+    public double getProbability() {
+        return this.p;
+    }
 
-	public void setProbability(double p) {
-		this.p = p;
-	}
+    public void setProbability(double p) {
+        this.p = p;
+    }
 
-	public void init() {
-		decorated.init();
-	}
+    public void init() {
+        this.decorated.init();
+    }
 
-	public void printStat(PrintWriter out, String prefix) {
-		out.println(prefix + "random walks\t: " + nbRandomWalks);
-		decorated.printStat(out, prefix);
-	}
+    public void printStat(PrintWriter out, String prefix) {
+        out.println(prefix + "random walks\t: " + this.nbRandomWalks);
+        this.decorated.printStat(out, prefix);
+    }
 
-	public int select() {
-		if (rand.nextDouble() < p) {
-			int var, lit, max;
+    public int select() {
+        if (rand.nextDouble() < this.p) {
+            int var, lit, max;
 
-			while (!decorated.heap.empty()) {
-				max = decorated.heap.size();
-				var = decorated.heap.get(rand.nextInt(max) + 1);
-				lit = getPhaseSelectionStrategy().select(var);
-				if (voc.isUnassigned(lit)) {
-					nbRandomWalks++;
-					return lit;
-				}
-			}
-		}
-		return decorated.select();
-	}
+            while (!this.decorated.heap.empty()) {
+                max = this.decorated.heap.size();
+                var = this.decorated.heap.get(rand.nextInt(max) + 1);
+                lit = getPhaseSelectionStrategy().select(var);
+                if (this.voc.isUnassigned(lit)) {
+                    this.nbRandomWalks++;
+                    return lit;
+                }
+            }
+        }
+        return this.decorated.select();
+    }
 
-	public void setLits(ILits lits) {
-		decorated.setLits(lits);
-		voc = lits;
-		nbRandomWalks = 0;
-	}
+    public void setLits(ILits lits) {
+        this.decorated.setLits(lits);
+        this.voc = lits;
+        this.nbRandomWalks = 0;
+    }
 
-	public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy) {
-		decorated.setPhaseSelectionStrategy(strategy);
-	}
+    public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy) {
+        this.decorated.setPhaseSelectionStrategy(strategy);
+    }
 
-	public void setVarDecay(double d) {
-		decorated.setVarDecay(d);
-	}
+    public void setVarDecay(double d) {
+        this.decorated.setVarDecay(d);
+    }
 
-	public void undo(int x) {
-		decorated.undo(x);
-	}
+    public void undo(int x) {
+        this.decorated.undo(x);
+    }
 
-	public void updateVar(int q) {
-		decorated.updateVar(q);
-	}
+    public void updateVar(int q) {
+        this.decorated.updateVar(q);
+    }
 
-	public double varActivity(int q) {
-		return decorated.varActivity(q);
-	}
+    public double varActivity(int q) {
+        return this.decorated.varActivity(q);
+    }
 
-	public void varDecayActivity() {
-		decorated.varDecayActivity();
-	}
+    public void varDecayActivity() {
+        this.decorated.varDecayActivity();
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-		decorated.updateVarAtDecisionLevel(q);
-	}
+    public void updateVarAtDecisionLevel(int q) {
+        this.decorated.updateVarAtDecisionLevel(q);
+    }
 
-	@Override
-	public String toString() {
-		return decorated.toString() + " with random walks " + p;
-	}
+    @Override
+    public String toString() {
+        return this.decorated.toString() + " with random walks " + this.p;
+    }
 
-	public double[] getVariableHeuristics() {
-		return decorated.getVariableHeuristics();
-	}
+    public double[] getVariableHeuristics() {
+        return this.decorated.getVariableHeuristics();
+    }
 
 }

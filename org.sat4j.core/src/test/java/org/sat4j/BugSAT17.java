@@ -42,49 +42,49 @@ import org.sat4j.specs.TimeoutException;
 
 public class BugSAT17 {
 
-	private ISolver solver;
+    private ISolver solver;
 
-	@Before
-	public void setup() throws ContradictionException {
-		solver = SolverFactory.newDefault();
-		solver.addClause(new VecInt(new int[] { 1 }));
-		solver.addClause(new VecInt(new int[] { 2 }));
-	}
+    @Before
+    public void setup() throws ContradictionException {
+        this.solver = SolverFactory.newDefault();
+        this.solver.addClause(new VecInt(new int[] { 1 }));
+        this.solver.addClause(new VecInt(new int[] { 2 }));
+    }
 
-	@Test
-	public void testAll() throws ContradictionException, TimeoutException {
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -2 })));
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 2, -2 })));
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 1, -2 })));
-		assertTrue(solver.isSatisfiable(new VecInt(new int[] { 2, 1 })));
-	}
+    @Test
+    public void testAll() throws ContradictionException, TimeoutException {
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { -2 })));
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { 2, -2 })));
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { 1, -2 })));
+        assertTrue(this.solver.isSatisfiable(new VecInt(new int[] { 2, 1 })));
+    }
 
-	@Test
-	public void testSingleLit() throws ContradictionException, TimeoutException {
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -2 })));
-	}
+    @Test
+    public void testSingleLit() throws ContradictionException, TimeoutException {
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { -2 })));
+    }
 
-	@Test
-	public void testInconsistentLits() throws ContradictionException,
-			TimeoutException {
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 2, -2 })));
-	}
+    @Test
+    public void testInconsistentLits() throws ContradictionException,
+            TimeoutException {
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { 2, -2 })));
+    }
 
-	@Test
-	public void testTwoLits() throws ContradictionException, TimeoutException {
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 1, -2 })));
-	}
+    @Test
+    public void testTwoLits() throws ContradictionException, TimeoutException {
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { 1, -2 })));
+    }
 
-	@Test
-	public void testSameLits() throws ContradictionException, TimeoutException {
-		assertTrue(solver.isSatisfiable(new VecInt(new int[] { 2, 1 })));
-	}
+    @Test
+    public void testSameLits() throws ContradictionException, TimeoutException {
+        assertTrue(this.solver.isSatisfiable(new VecInt(new int[] { 2, 1 })));
+    }
 
-	@Test
-	public void testOneSameOneContradictory() throws ContradictionException,
-			TimeoutException {
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { 2, -1 })));
-		assertFalse(solver.isSatisfiable(new VecInt(new int[] { -2 })));
-	}
+    @Test
+    public void testOneSameOneContradictory() throws ContradictionException,
+            TimeoutException {
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { 2, -1 })));
+        assertFalse(this.solver.isSatisfiable(new VecInt(new int[] { -2 })));
+    }
 
 }

@@ -36,8 +36,9 @@ import java.util.Comparator;
  * A simple comparator for comparable objects.
  * 
  * @author daniel
- *
- * @param <A> a class of Comparable objects.
+ * 
+ * @param <A>
+ *            a class of Comparable objects.
  */
 public final class DefaultComparator<A extends Comparable<A>> implements
         Comparator<A>, Serializable {

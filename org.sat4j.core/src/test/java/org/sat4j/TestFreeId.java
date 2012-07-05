@@ -41,46 +41,46 @@ import org.sat4j.specs.IVecInt;
 
 public class TestFreeId {
 
-	private ISolver solver;
-	
-	@Before
-	public void setUp() {
-		solver = SolverFactory.newDefault();
-	}
-	
-	@Test
-	public void testEmptySolver() {
-		assertEquals(1,solver.nextFreeVarId(false));
-		solver.newVar(100);
-		assertEquals(101,solver.nextFreeVarId(false));
-	}
-	
-	@Test
-	public void testIncrementalFeed() throws ContradictionException {
-		assertEquals(1,solver.nextFreeVarId(false));
-		IVecInt clause = new VecInt();
-		clause.push(3).push(-5);
-		solver.addClause(clause);
-		assertEquals(6,solver.nextFreeVarId(false));
-		clause.clear();
-		clause.push(1).push(-2);
-		solver.addClause(clause);
-		assertEquals(6,solver.nextFreeVarId(false));
-		clause.clear();
-		clause.push(1000).push(-31);
-		solver.addClause(clause);
-		assertEquals(1001,solver.nextFreeVarId(false));
-	}
-	
-	@Test
-	public void testReserveParameter() {
-		assertEquals(1,solver.nextFreeVarId(false));
-		assertEquals(1,solver.nextFreeVarId(false));
-		assertEquals(1,solver.nextFreeVarId(false));
-		assertEquals(1,solver.nextFreeVarId(false));
-		assertEquals(1,solver.nextFreeVarId(true));
-		assertEquals(2,solver.nextFreeVarId(true));
-		assertEquals(3,solver.nextFreeVarId(false));
-		assertEquals(3,solver.nextFreeVarId(false));
-	}
+    private ISolver solver;
+
+    @Before
+    public void setUp() {
+        this.solver = SolverFactory.newDefault();
+    }
+
+    @Test
+    public void testEmptySolver() {
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        this.solver.newVar(100);
+        assertEquals(101, this.solver.nextFreeVarId(false));
+    }
+
+    @Test
+    public void testIncrementalFeed() throws ContradictionException {
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        IVecInt clause = new VecInt();
+        clause.push(3).push(-5);
+        this.solver.addClause(clause);
+        assertEquals(6, this.solver.nextFreeVarId(false));
+        clause.clear();
+        clause.push(1).push(-2);
+        this.solver.addClause(clause);
+        assertEquals(6, this.solver.nextFreeVarId(false));
+        clause.clear();
+        clause.push(1000).push(-31);
+        this.solver.addClause(clause);
+        assertEquals(1001, this.solver.nextFreeVarId(false));
+    }
+
+    @Test
+    public void testReserveParameter() {
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        assertEquals(1, this.solver.nextFreeVarId(false));
+        assertEquals(1, this.solver.nextFreeVarId(true));
+        assertEquals(2, this.solver.nextFreeVarId(true));
+        assertEquals(3, this.solver.nextFreeVarId(false));
+        assertEquals(3, this.solver.nextFreeVarId(false));
+    }
 }

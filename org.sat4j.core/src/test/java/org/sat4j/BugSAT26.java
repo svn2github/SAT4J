@@ -48,29 +48,29 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Xplain;
 
 public class BugSAT26 {
-	private Xplain<ISolver> xplain;
+    private Xplain<ISolver> xplain;
 
-	@Before
-	public void setUp() throws FileNotFoundException, ParseFormatException,
-			IOException, ContradictionException {
-		xplain = new Xplain<ISolver>(SolverFactory.newDefault());
-		xplain.setTimeout(3600); // 1 hour timeout
-		Reader reader = new DimacsReader(xplain);
-		String dimacs = "src/test/testfiles/eb42.dimacs";
-		reader.parseInstance(dimacs);
-	}
+    @Before
+    public void setUp() throws FileNotFoundException, ParseFormatException,
+            IOException, ContradictionException {
+        this.xplain = new Xplain<ISolver>(SolverFactory.newDefault());
+        this.xplain.setTimeout(3600); // 1 hour timeout
+        Reader reader = new DimacsReader(this.xplain);
+        String dimacs = "src/test/testfiles/eb42.dimacs";
+        reader.parseInstance(dimacs);
+    }
 
-	@Test
-	public void testConsecutiveCallToSolver() throws ContradictionException,
-			TimeoutException {
-		assertTrue(xplain.isSatisfiable());
-		int i = 0;
-		while (i < 5) {
-			VecInt assumption = new VecInt();
-			assumption.push(1187);
-			IConstr constr = xplain.addClause(assumption);
-			xplain.removeConstr(constr);
-			i++;
-		}
-	}
+    @Test
+    public void testConsecutiveCallToSolver() throws ContradictionException,
+            TimeoutException {
+        assertTrue(this.xplain.isSatisfiable());
+        int i = 0;
+        while (i < 5) {
+            VecInt assumption = new VecInt();
+            assumption.push(1187);
+            IConstr constr = this.xplain.addClause(assumption);
+            this.xplain.removeConstr(constr);
+            i++;
+        }
+    }
 }

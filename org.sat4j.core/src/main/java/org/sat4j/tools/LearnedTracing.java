@@ -35,46 +35,47 @@ import org.sat4j.specs.IVec;
 
 public class LearnedTracing extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private ISolverService solverService;
+    private static final long serialVersionUID = 1L;
+    private ISolverService solverService;
 
-	private final IVisualizationTool visuTool;
+    private final IVisualizationTool visuTool;
 
-	public LearnedTracing(IVisualizationTool visuTool) {
-		this.visuTool = visuTool;
-	}
+    public LearnedTracing(IVisualizationTool visuTool) {
+        this.visuTool = visuTool;
+    }
 
-	@Override
-	public void solutionFound(int[] model) {
-		trace();
-	}
+    @Override
+    public void solutionFound(int[] model) {
+        trace();
+    }
 
-	@Override
-	public void restarting() {
-		trace();
-	}
+    @Override
+    public void restarting() {
+        trace();
+    }
 
-	private void trace() {
-		visuTool.init();
-		IVec<? extends IConstr> constrs = solverService.getLearnedConstraints();
-		int n = constrs.size();
-		for (int i = 0; i < n; i++) {
-			visuTool.addPoint(i, constrs.get(i).getActivity());
-		}
-		visuTool.end();
+    private void trace() {
+        this.visuTool.init();
+        IVec<? extends IConstr> constrs = this.solverService
+                .getLearnedConstraints();
+        int n = constrs.size();
+        for (int i = 0; i < n; i++) {
+            this.visuTool.addPoint(i, constrs.get(i).getActivity());
+        }
+        this.visuTool.end();
 
-	}
+    }
 
-	@Override
-	public void init(ISolverService solverService) {
-		this.solverService = solverService;
-	}
+    @Override
+    public void init(ISolverService solverService) {
+        this.solverService = solverService;
+    }
 
-	@Override
-	public void cleaning() {
-		trace();
-	}
+    @Override
+    public void cleaning() {
+        trace();
+    }
 }

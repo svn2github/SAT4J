@@ -44,42 +44,42 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
  * 
  */
 public final class RandomLiteralSelectionStrategy implements
-		IPhaseSelectionStrategy {
+        IPhaseSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @since 2.2
-	 */
-	public static final Random RAND = new Random(123456789);
+    /**
+     * @since 2.2
+     */
+    public static final Random RAND = new Random(123456789);
 
-	public void assignLiteral(int p) {
-	}
+    public void assignLiteral(int p) {
+    }
 
-	public void init(int nlength) {
-	}
+    public void init(int nlength) {
+    }
 
-	public void init(int var, int p) {
-	}
+    public void init(int var, int p) {
+    }
 
-	public int select(int var) {
-		if (RAND.nextBoolean()) {
-			return posLit(var);
-		}
-		return negLit(var);
-	}
+    public int select(int var) {
+        if (RAND.nextBoolean()) {
+            return posLit(var);
+        }
+        return negLit(var);
+    }
 
-	public void updateVar(int p) {
-	}
+    public void updateVar(int p) {
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-	}
+    public void updateVarAtDecisionLevel(int q) {
+    }
 
-	@Override
-	public String toString() {
-		return "random phase selection";
-	}
+    @Override
+    public String toString() {
+        return "random phase selection";
+    }
 }

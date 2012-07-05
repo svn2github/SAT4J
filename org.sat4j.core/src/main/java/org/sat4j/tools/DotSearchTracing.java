@@ -56,173 +56,174 @@ import org.sat4j.specs.Lbool;
  */
 public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Vec<String> pile;
+    private final Vec<String> pile;
 
-	private String currentNodeName = null;
+    private String currentNodeName = null;
 
-	private transient Writer out;
+    private transient Writer out;
 
-	private boolean estOrange = false;
+    private boolean estOrange = false;
 
-	private final Map<Integer, T> mapping;
+    private final Map<Integer, T> mapping;
 
-	/**
-	 * @since 2.1
-	 */
-	public DotSearchTracing(final String fileNameToSave, Map<Integer, T> mapping) {
-		pile = new Vec<String>();
-		this.mapping = mapping;
-		try {
-			out = new FileWriter(fileNameToSave);
-		} catch (IOException e) {
-			System.err.println("Problem when created file.");
-		}
-	}
+    /**
+     * @since 2.1
+     */
+    public DotSearchTracing(final String fileNameToSave, Map<Integer, T> mapping) {
+        this.pile = new Vec<String>();
+        this.mapping = mapping;
+        try {
+            this.out = new FileWriter(fileNameToSave);
+        } catch (IOException e) {
+            System.err.println("Problem when created file.");
+        }
+    }
 
-	private String node(int dimacs) {
-		if (mapping != null) {
-			int var = Math.abs(dimacs);
-			T t = mapping.get(var);
-			if (t != null) {
-				if (dimacs > 0)
-					return t.toString();
-				return "-" + t.toString();
-			}
-		}
-		return Integer.toString(dimacs);
-	}
+    private String node(int dimacs) {
+        if (this.mapping != null) {
+            int var = Math.abs(dimacs);
+            T t = this.mapping.get(var);
+            if (t != null) {
+                if (dimacs > 0) {
+                    return t.toString();
+                }
+                return "-" + t.toString();
+            }
+        }
+        return Integer.toString(dimacs);
+    }
 
-	@Override
-	public final void assuming(final int p) {
-		final int absP = Math.abs(p);
-		String newName;
+    @Override
+    public final void assuming(final int p) {
+        final int absP = Math.abs(p);
+        String newName;
 
-		if (currentNodeName == null) {
-			newName = "" + absP;
-			pile.push(newName);
-			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
-					+ "\", shape=circle, color=blue, style=filled]"));
-		} else {
-			newName = currentNodeName;
-			pile.push(newName);
-			saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
-					+ "\", shape=circle, color=blue, style=filled]"));
-		}
-		currentNodeName = newName;
-	}
+        if (this.currentNodeName == null) {
+            newName = "" + absP;
+            this.pile.push(newName);
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+                    + "\", shape=circle, color=blue, style=filled]"));
+        } else {
+            newName = this.currentNodeName;
+            this.pile.push(newName);
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+                    + "\", shape=circle, color=blue, style=filled]"));
+        }
+        this.currentNodeName = newName;
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	public final void propagating(final int p, IConstr reason) {
-		String newName = currentNodeName + "." + p;
+    /**
+     * @since 2.1
+     */
+    @Override
+    public final void propagating(final int p, IConstr reason) {
+        String newName = this.currentNodeName + "." + p;
 
-		if (currentNodeName == null) {
-			saveLine(lineTab("\"null\" [label=\"\", shape=point]"));
-		}
-		final String couleur = estOrange ? "orange" : "green";
+        if (this.currentNodeName == null) {
+            saveLine(lineTab("\"null\" [label=\"\", shape=point]"));
+        }
+        final String couleur = this.estOrange ? "orange" : "green";
 
-		saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
-				+ "\",shape=point, color=black]"));
-		saveLine(lineTab("\"" + currentNodeName + "\"" + " -- " + "\""
-				+ newName + "\"" + "[label=" + "\" " + node(p)
-				+ "\", fontcolor =" + couleur + ", color = " + couleur
-				+ ", style = bold]"));
-		currentNodeName = newName;
-		estOrange = false;
-	}
+        saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+                + "\",shape=point, color=black]"));
+        saveLine(lineTab("\"" + this.currentNodeName + "\"" + " -- " + "\""
+                + newName + "\"" + "[label=" + "\" " + node(p)
+                + "\", fontcolor =" + couleur + ", color = " + couleur
+                + ", style = bold]"));
+        this.currentNodeName = newName;
+        this.estOrange = false;
+    }
 
-	@Override
-	public final void backtracking(final int p) {
-		final String temp = pile.last();
-		pile.pop();
-		saveLine("\"" + temp + "\"" + "--" + "\"" + currentNodeName + "\""
-				+ "[label=\"\", color=red, style=dotted]");
-		currentNodeName = temp;
-	}
+    @Override
+    public final void backtracking(final int p) {
+        final String temp = this.pile.last();
+        this.pile.pop();
+        saveLine("\"" + temp + "\"" + "--" + "\"" + this.currentNodeName + "\""
+                + "[label=\"\", color=red, style=dotted]");
+        this.currentNodeName = temp;
+    }
 
-	@Override
-	public final void adding(final int p) {
-		estOrange = true;
-	}
+    @Override
+    public final void adding(final int p) {
+        this.estOrange = true;
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	public final void learn(final IConstr clause) {
-	}
+    /**
+     * @since 2.1
+     */
+    @Override
+    public final void learn(final IConstr clause) {
+    }
 
-	@Override
-	public final void delete(final int[] clause) {
-	}
+    @Override
+    public final void delete(final int[] clause) {
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	public final void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-		saveLine(lineTab("\"" + currentNodeName
-				+ "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
-	}
+    /**
+     * @since 2.1
+     */
+    @Override
+    public final void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        saveLine(lineTab("\"" + this.currentNodeName
+                + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	public final void conflictFound(int p) {
-		saveLine(lineTab("\"" + currentNodeName
-				+ "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
-	}
+    /**
+     * @since 2.1
+     */
+    @Override
+    public final void conflictFound(int p) {
+        saveLine(lineTab("\"" + this.currentNodeName
+                + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
+    }
 
-	@Override
-	public final void solutionFound(int[] model) {
-		saveLine(lineTab("\"" + currentNodeName
-				+ "\" [label=\"\", shape=box, color=\"green\", style=filled]"));
-	}
+    @Override
+    public final void solutionFound(int[] model) {
+        saveLine(lineTab("\"" + this.currentNodeName
+                + "\" [label=\"\", shape=box, color=\"green\", style=filled]"));
+    }
 
-	@Override
-	public final void beginLoop() {
-	}
+    @Override
+    public final void beginLoop() {
+    }
 
-	@Override
-	public final void start() {
-		saveLine("graph G {");
-	}
+    @Override
+    public final void start() {
+        saveLine("graph G {");
+    }
 
-	/**
-	 * @since 2.1
-	 */
-	@Override
-	public final void end(Lbool result) {
-		saveLine("}");
-	}
+    /**
+     * @since 2.1
+     */
+    @Override
+    public final void end(Lbool result) {
+        saveLine("}");
+    }
 
-	private final String lineTab(final String line) {
-		return "\t" + line;
-	}
+    private final String lineTab(final String line) {
+        return "\t" + line;
+    }
 
-	private final void saveLine(final String line) {
-		try {
-			out.write(line + '\n');
-			if ("}".equals(line)) {
-				out.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    private final void saveLine(final String line) {
+        try {
+            this.out.write(line + '\n');
+            if ("}".equals(line)) {
+                this.out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-	private void readObject(ObjectInputStream stream) throws IOException,
-			ClassNotFoundException {
-		// if the solver is serialized, out is linked to stdout
-		stream.defaultReadObject();
-		out = new PrintWriter(System.out);
-	}
+    private void readObject(ObjectInputStream stream) throws IOException,
+            ClassNotFoundException {
+        // if the solver is serialized, out is linked to stdout
+        stream.defaultReadObject();
+        this.out = new PrintWriter(System.out);
+    }
 }

@@ -41,55 +41,55 @@ import org.sat4j.minisat.core.SearchParams;
  */
 public final class MiniSATRestarts implements RestartStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private double nofConflicts;
+    private double nofConflicts;
 
-	private SearchParams params;
+    private SearchParams params;
 
-	private int conflictcount;
+    private int conflictcount;
 
-	public void init(SearchParams theParams) {
-		this.params = theParams;
-		nofConflicts = theParams.getInitConflictBound();
-	}
+    public void init(SearchParams theParams) {
+        this.params = theParams;
+        this.nofConflicts = theParams.getInitConflictBound();
+    }
 
-	public long nextRestartNumberOfConflict() {
-		return Math.round(nofConflicts);
-	}
+    public long nextRestartNumberOfConflict() {
+        return Math.round(this.nofConflicts);
+    }
 
-	public void onRestart() {
-		nofConflicts *= params.getConflictBoundIncFactor();
-	}
+    public void onRestart() {
+        this.nofConflicts *= this.params.getConflictBoundIncFactor();
+    }
 
-	@Override
-	public String toString() {
-		return "MiniSAT restarts strategy";
-	}
+    @Override
+    public String toString() {
+        return "MiniSAT restarts strategy";
+    }
 
-	public boolean shouldRestart() {
-		return conflictcount >= nofConflicts;
-	}
+    public boolean shouldRestart() {
+        return this.conflictcount >= this.nofConflicts;
+    }
 
-	public void onBackjumpToRootLevel() {
-		conflictcount = 0;
-	}
+    public void onBackjumpToRootLevel() {
+        this.conflictcount = 0;
+    }
 
-	public void reset() {
-		conflictcount = 0;
-	}
+    public void reset() {
+        this.conflictcount = 0;
+    }
 
-	public void newConflict() {
-		conflictcount++;
-	}
+    public void newConflict() {
+        this.conflictcount++;
+    }
 
-	public SearchParams getSearchParams() {
-		return params;
-	}
+    public SearchParams getSearchParams() {
+        return this.params;
+    }
 
-	public void newLearnedClause(Constr learned, int trailLevel) {
-	}
+    public void newLearnedClause(Constr learned, int trailLevel) {
+    }
 }

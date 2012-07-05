@@ -55,187 +55,187 @@ import org.sat4j.specs.IVecInt;
  */
 public class Product extends EncodingStrategyAdapter {
 
-	public IConstr addAtMostNonOpt(ISolver solver, IVecInt literals, int k)
-			throws ContradictionException {
+    public IConstr addAtMostNonOpt(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
 
-		ConstrGroup group = new ConstrGroup();
+        ConstrGroup group = new ConstrGroup();
 
-		IVecInt clause = new VecInt();
+        IVecInt clause = new VecInt();
 
-		final int n = literals.size();
+        final int n = literals.size();
 
-		if (k > n) {
-			return group;
-		}
-		if (n == k + 1) {
-			for (int i = 0; i < n; i++) {
-				clause.push(-literals.get(i));
-			}
-			group.add(solver.addClause(clause));
-			clause.clear();
-			return group;
-		}
-		if (n < 7) {
-			Binomial binomial = new Binomial();
+        if (k > n) {
+            return group;
+        }
+        if (n == k + 1) {
+            for (int i = 0; i < n; i++) {
+                clause.push(-literals.get(i));
+            }
+            group.add(solver.addClause(clause));
+            clause.clear();
+            return group;
+        }
+        if (n < 7) {
+            Binomial binomial = new Binomial();
 
-			return binomial.addAtMost(solver, literals, k);
-		}
+            return binomial.addAtMost(solver, literals, k);
+        }
 
-		final int p = (int) Math.ceil(Math.pow(n, (1 / (double) (k + 1))));
+        final int p = (int) Math.ceil(Math.pow(n, 1 / (double) (k + 1)));
 
-		int[][] a = new int[n][k + 1];
-		int[] result;
+        int[][] a = new int[n][k + 1];
+        int[] result;
 
-		// This affectation does not work !!
-		// for (int i = 0; i < n; i++) {
-		// result = decompositionBase10VersBaseP(i, p, k + 1);
-		// a[i] = result;
-		// }
+        // This affectation does not work !!
+        // for (int i = 0; i < n; i++) {
+        // result = decompositionBase10VersBaseP(i, p, k + 1);
+        // a[i] = result;
+        // }
 
-		result = decompositionBase10VersBaseP(0, p, k + 1);
-		a[0] = result;
-		ArrayList<Integer> dejaPris = new ArrayList<Integer>();
-		dejaPris.add(0);
-		int tmp = 1;
-		for (int i = 1; i <= k + 1; i++) {
-			a[i] = decompositionBase10VersBaseP(tmp, p, k + 1);
-			dejaPris.add(tmp);
-			tmp = tmp * p;
-		}
-		tmp = 2;
-		for (int i = k + 2; i < n; i++) {
-			while (dejaPris.contains(tmp)) {
-				tmp++;
-			}
-			a[i] = decompositionBase10VersBaseP(tmp, p, k + 1);
-			tmp++;
-		}
+        result = decompositionBase10VersBaseP(0, p, k + 1);
+        a[0] = result;
+        ArrayList<Integer> dejaPris = new ArrayList<Integer>();
+        dejaPris.add(0);
+        int tmp = 1;
+        for (int i = 1; i <= k + 1; i++) {
+            a[i] = decompositionBase10VersBaseP(tmp, p, k + 1);
+            dejaPris.add(tmp);
+            tmp = tmp * p;
+        }
+        tmp = 2;
+        for (int i = k + 2; i < n; i++) {
+            while (dejaPris.contains(tmp)) {
+                tmp++;
+            }
+            a[i] = decompositionBase10VersBaseP(tmp, p, k + 1);
+            tmp++;
+        }
 
-		ArrayList<Integer>[] hashTupleSetTable = new ArrayList[k + 1];
+        ArrayList<Integer>[] hashTupleSetTable = new ArrayList[k + 1];
 
-		int[][][] aWithoutD = new int[n][k + 1][k];
+        int[][][] aWithoutD = new int[n][k + 1][k];
 
-		int hash;
-		HashMap<Integer, Integer>[] ady = new HashMap[k + 1];
-		VecInt[] adxd = new VecInt[k + 1];
-		int varId;
+        int hash;
+        HashMap<Integer, Integer>[] ady = new HashMap[k + 1];
+        VecInt[] adxd = new VecInt[k + 1];
+        int varId;
 
-		for (int d = 0; d < k + 1; d++) {
-			hashTupleSetTable[d] = new ArrayList<Integer>();
-			ady[d] = new HashMap<Integer, Integer>();
-			adxd[d] = new VecInt();
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < k; j++) {
-					if (j < d) {
-						aWithoutD[i][d][j] = a[i][j];
-					} else {
-						aWithoutD[i][d][j] = a[i][j + 1];
-					}
-				}
-				hash = recompositionBase10DepuisBaseP(aWithoutD[i][d], p);
-				if (!hashTupleSetTable[d].contains(new Integer(hash))) {
-					hashTupleSetTable[d].add(new Integer(hash));
-					varId = solver.nextFreeVarId(true);
-					ady[d].put(hash, varId);
-					adxd[d].push(varId);
-				}
-			}
-		}
+        for (int d = 0; d < k + 1; d++) {
+            hashTupleSetTable[d] = new ArrayList<Integer>();
+            ady[d] = new HashMap<Integer, Integer>();
+            adxd[d] = new VecInt();
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < k; j++) {
+                    if (j < d) {
+                        aWithoutD[i][d][j] = a[i][j];
+                    } else {
+                        aWithoutD[i][d][j] = a[i][j + 1];
+                    }
+                }
+                hash = recompositionBase10DepuisBaseP(aWithoutD[i][d], p);
+                if (!hashTupleSetTable[d].contains(new Integer(hash))) {
+                    hashTupleSetTable[d].add(new Integer(hash));
+                    varId = solver.nextFreeVarId(true);
+                    ady[d].put(hash, varId);
+                    adxd[d].push(varId);
+                }
+            }
+        }
 
-		for (int d = 0; d < k + 1; d++) {
-			for (int i = 0; i < n; i++) {
-				clause.push(-literals.get(i));
-				clause.push(ady[d].get(recompositionBase10DepuisBaseP(
-						aWithoutD[i][d], p)));
-				group.add(solver.addClause(clause));
-				clause.clear();
-			}
-			group.add(addAtMost(solver, adxd[d], k));
-		}
+        for (int d = 0; d < k + 1; d++) {
+            for (int i = 0; i < n; i++) {
+                clause.push(-literals.get(i));
+                clause.push(ady[d].get(recompositionBase10DepuisBaseP(
+                        aWithoutD[i][d], p)));
+                group.add(solver.addClause(clause));
+                clause.clear();
+            }
+            group.add(addAtMost(solver, adxd[d], k));
+        }
 
-		return group;
-	}
+        return group;
+    }
 
-	@Override
-	public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
-			throws ContradictionException {
-		return super.addAtMost(solver, literals, k);
-	}
+    @Override
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
+        return super.addAtMost(solver, literals, k);
+    }
 
-	@Override
-	public IConstr addAtMostOne(ISolver solver, IVecInt literals)
-			throws ContradictionException {
+    @Override
+    public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
 
-		ConstrGroup group = new ConstrGroup(false);
+        ConstrGroup group = new ConstrGroup(false);
 
-		IVecInt clause = new VecInt();
+        IVecInt clause = new VecInt();
 
-		final int n = literals.size();
+        final int n = literals.size();
 
-		if (n < 7) {
-			Binomial binomial = new Binomial();
-			return binomial.addAtMostOne(solver, literals);
-		}
+        if (n < 7) {
+            Binomial binomial = new Binomial();
+            return binomial.addAtMostOne(solver, literals);
+        }
 
-		final int p = (int) Math.ceil(Math.sqrt(n));
-		final int q = (int) Math.ceil((double) n / (double) p);
+        final int p = (int) Math.ceil(Math.sqrt(n));
+        final int q = (int) Math.ceil((double) n / (double) p);
 
-		int[] u = new int[p];
-		int[] v = new int[q];
+        int[] u = new int[p];
+        int[] v = new int[q];
 
-		for (int i = 0; i < p; i++) {
-			u[i] = solver.nextFreeVarId(true);
-		}
-		for (int i = 0; i < q; i++) {
-			v[i] = solver.nextFreeVarId(true);
-		}
+        for (int i = 0; i < p; i++) {
+            u[i] = solver.nextFreeVarId(true);
+        }
+        for (int i = 0; i < q; i++) {
+            v[i] = solver.nextFreeVarId(true);
+        }
 
-		int cpt = 0;
-		for (int i = 0; i < p; i++) {
-			for (int j = 0; j < q; j++) {
-				if (cpt < n) {
-					clause.push(-literals.get(cpt));
-					clause.push(u[i]);
-					group.add(solver.addClause(clause));
-					clause.clear();
-					clause.push(-literals.get(cpt));
-					clause.push(v[j]);
-					group.add(solver.addClause(clause));
-					clause.clear();
-					cpt++;
-				}
-			}
-		}
+        int cpt = 0;
+        for (int i = 0; i < p; i++) {
+            for (int j = 0; j < q; j++) {
+                if (cpt < n) {
+                    clause.push(-literals.get(cpt));
+                    clause.push(u[i]);
+                    group.add(solver.addClause(clause));
+                    clause.clear();
+                    clause.push(-literals.get(cpt));
+                    clause.push(v[j]);
+                    group.add(solver.addClause(clause));
+                    clause.clear();
+                    cpt++;
+                }
+            }
+        }
 
-		group.add(addAtMostOne(solver, new VecInt(u)));
-		group.add(addAtMostOne(solver, new VecInt(v)));
-		return group;
-	}
+        group.add(addAtMostOne(solver, new VecInt(u)));
+        group.add(addAtMostOne(solver, new VecInt(v)));
+        return group;
+    }
 
-	private int[] decompositionBase10VersBaseP(int n, int p, int nbBits) {
-		int[] result = new int[nbBits];
+    private int[] decompositionBase10VersBaseP(int n, int p, int nbBits) {
+        int[] result = new int[nbBits];
 
-		int reste;
-		int pow;
-		int quotient;
-		reste = n;
-		for (int j = 0; j < nbBits - 1; j++) {
-			pow = (int) Math.pow(p, nbBits - j - 1);
-			quotient = reste / pow;
-			result[j] = quotient + 1;
-			reste = reste - quotient * pow;
-		}
-		result[nbBits - 1] = reste + 1;
-		return result;
-	}
+        int reste;
+        int pow;
+        int quotient;
+        reste = n;
+        for (int j = 0; j < nbBits - 1; j++) {
+            pow = (int) Math.pow(p, nbBits - j - 1);
+            quotient = reste / pow;
+            result[j] = quotient + 1;
+            reste = reste - quotient * pow;
+        }
+        result[nbBits - 1] = reste + 1;
+        return result;
+    }
 
-	private int recompositionBase10DepuisBaseP(int[] tab, int p) {
-		int result = 0;
-		for (int i = 0; i < tab.length - 1; i++) {
-			result = (result + tab[i] - 1) * p;
-		}
-		result += tab[tab.length - 1] - 1;
-		return result;
-	}
+    private int recompositionBase10DepuisBaseP(int[] tab, int p) {
+        int result = 0;
+        for (int i = 0; i < tab.length - 1; i++) {
+            result = (result + tab[i] - 1) * p;
+        }
+        result += tab[tab.length - 1] - 1;
+        return result;
+    }
 
 }

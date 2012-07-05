@@ -35,59 +35,60 @@ package org.sat4j.minisat.orders;
  */
 public final class PureOrder extends VarOrderHeap {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = 1L;
 
-	private int period;
+    private int period;
 
-	private int cpt;
+    private int cpt;
 
-	public PureOrder() {
-		this(20);
-	}
+    public PureOrder() {
+        this(20);
+    }
 
-	public PureOrder(int p) {
-		setPeriod(p);
-	}
+    public PureOrder(int p) {
+        setPeriod(p);
+    }
 
-	public final void setPeriod(int p) {
-		period = p;
-		cpt = period;
-	}
+    public final void setPeriod(int p) {
+        this.period = p;
+        this.cpt = this.period;
+    }
 
-	public int getPeriod() {
-		return period;
-	}
+    public int getPeriod() {
+        return this.period;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.sat4j.minisat.core.VarOrder#select()
-	 */
-	@Override
-	public int select() {
-		// wait period branching
-		if (cpt < period) {
-			cpt++;
-		} else {
-			// try to find a pure literal
-			cpt = 0;
-			int nblits = 2 * lits.nVars();
-			for (int i = 2; i <= nblits; i++) {
-				if (lits.isUnassigned(i) && lits.watches(i).size() > 0
-						&& lits.watches(i ^ 1).size() == 0) {
-					return i;
-				}
-			}
-		}
-		// not found: using normal order
-		return super.select();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.minisat.core.VarOrder#select()
+     */
+    @Override
+    public int select() {
+        // wait period branching
+        if (this.cpt < this.period) {
+            this.cpt++;
+        } else {
+            // try to find a pure literal
+            this.cpt = 0;
+            int nblits = 2 * this.lits.nVars();
+            for (int i = 2; i <= nblits; i++) {
+                if (this.lits.isUnassigned(i)
+                        && this.lits.watches(i).size() > 0
+                        && this.lits.watches(i ^ 1).size() == 0) {
+                    return i;
+                }
+            }
+        }
+        // not found: using normal order
+        return super.select();
+    }
 
-	@Override
-	public String toString() {
-		return "tries to first branch on a single phase watched unassigned variable (pure literal if using a CB data structure) else VSIDS from MiniSAT"; //$NON-NLS-1$
-	}
+    @Override
+    public String toString() {
+        return "tries to first branch on a single phase watched unassigned variable (pure literal if using a CB data structure) else VSIDS from MiniSAT"; //$NON-NLS-1$
+    }
 }

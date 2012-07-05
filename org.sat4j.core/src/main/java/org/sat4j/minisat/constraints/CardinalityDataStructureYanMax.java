@@ -48,11 +48,13 @@ public class CardinalityDataStructureYanMax extends
     /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype.VecInt)
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype
+     * .VecInt)
      */
     public Constr createClause(IVecInt literals) throws ContradictionException {
-        return MaxWatchCard.maxWatchCardNew(solver, getVocabulary(), literals,
-                MinWatchCard.ATLEAST, 1);
+        return MaxWatchCard.maxWatchCardNew(this.solver, getVocabulary(),
+                literals, MinWatchCard.ATLEAST, 1);
     }
 
     public Constr createUnregisteredClause(IVecInt literals) {
@@ -62,14 +64,15 @@ public class CardinalityDataStructureYanMax extends
     /*
      * (non-Javadoc)
      * 
-     * @see org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org.sat4j.datatype.VecInt,
-     *      int)
+     * @see
+     * org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org
+     * .sat4j.datatype.VecInt, int)
      */
     @Override
     public Constr createCardinalityConstraint(IVecInt literals, int degree)
             throws ContradictionException {
-        return MaxWatchCard.maxWatchCardNew(solver, getVocabulary(), literals,
-                MinWatchCard.ATLEAST, degree);
+        return MaxWatchCard.maxWatchCardNew(this.solver, getVocabulary(),
+                literals, MinWatchCard.ATLEAST, degree);
     }
 
 }

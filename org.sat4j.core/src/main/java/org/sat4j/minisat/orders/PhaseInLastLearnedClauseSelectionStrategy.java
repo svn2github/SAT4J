@@ -38,25 +38,25 @@ import static org.sat4j.core.LiteralsUtils.var;
  * 
  */
 public final class PhaseInLastLearnedClauseSelectionStrategy extends
-		AbstractPhaserecordingSelectionStrategy {
+        AbstractPhaserecordingSelectionStrategy {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void updateVar(int p) {
-		phase[var(p)] = p;
-	}
+    public void updateVar(int p) {
+        this.phase[var(p)] = p;
+    }
 
-	@Override
-	public String toString() {
-		return "phase appearing in latest learned clause";
-	}
+    @Override
+    public String toString() {
+        return "phase appearing in latest learned clause";
+    }
 
-	public void assignLiteral(int p) {
-	}
+    public void assignLiteral(int p) {
+    }
 
-	public void updateVarAtDecisionLevel(int q) {
-	}
+    public void updateVarAtDecisionLevel(int q) {
+    }
 }
