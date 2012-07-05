@@ -1332,22 +1332,29 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         if (this.learnedLiterals.size() > 0) {
             this.qhead = 0;
         }
-        IVecInt prime = new VecInt(this.implied.size() + this.decisions.size());
-        this.implied.copyTo(prime);
+        int[] prime = new int[this.implied.size() + this.decisions.size() + 1];
+        // this.implied.copyTo(prime);
+        int p;
+        for (int i = 0; i < prime.length; i++) {
+            prime[i] = 0;
+        }
         for (IteratorInt it = this.implied.iterator(); it.hasNext();) {
-            setAndPropagate(toInternal(it.next()));
+            p = it.next();
+            prime[Math.abs(p)] = p;
+            setAndPropagate(toInternal(p));
         }
         int d;
         boolean ok;
         int rightlevel;
+        int removed = 0;
         for (int i = 0; i < this.decisions.size(); i++) {
             d = this.decisions.get(i);
             if (this.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
-                prime.push(d);
+                prime[Math.abs(d)] = d;
             } else if (!setAndPropagate(toInternal(-d))) {
                 // conflict, literal is necessary
-                prime.push(d);
+                prime[Math.abs(d)] = d;
                 cancel();
                 setAndPropagate(toInternal(d));
             } else {
@@ -1363,16 +1370,22 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 if (ok) {
                     // it is not a necessary literal
                     forget(Math.abs(d));
+                    removed++;
                 } else {
-                    prime.push(d);
+                    prime[Math.abs(d)] = d;
                     cancel();
                     setAndPropagate(toInternal(d));
                 }
             }
         }
         cancelUntil(0);
-        int[] implicant = new int[prime.size()];
-        prime.copyTo(implicant);
+        int[] implicant = new int[prime.length - removed - 1];
+        int index = 0;
+        for (int i : prime) {
+            if (i != 0) {
+                implicant[index++] = i;
+            }
+        }
         return implicant;
     }
 
