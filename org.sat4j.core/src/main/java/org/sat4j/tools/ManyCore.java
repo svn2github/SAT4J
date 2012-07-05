@@ -37,7 +37,9 @@ import java.util.Map;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.ConstrGroup;
+import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.core.Counter;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -80,6 +82,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     private volatile int sleepTime;
     private volatile boolean solved;
 
+    private final IVec<Counter> solversStats = new Vec<Counter>();
+
     public ManyCore(ASolverFactory<S> factory, String... solverNames) {
         this.availableSolvers = solverNames;
         this.numberOfSolvers = solverNames.length;
@@ -87,6 +91,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.add(factory
                     .createSolverByName(this.availableSolvers[i]));
+            this.solversStats.push(new Counter());
         }
     }
 
@@ -114,6 +119,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         this.solvers = new ArrayList<S>(this.numberOfSolvers);
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.add(solverObjects[i]);
+            this.solversStats.push(new Counter());
         }
     }
 
@@ -199,16 +205,18 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     @Deprecated
     public void printStat(PrintStream out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
-                    prefix, i);
+            out.printf(
+                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<\n",
+                    prefix, i, solversStats.get(i).getValue());
             this.solvers.get(i).printStat(out, prefix);
         }
     }
 
     public void printStat(PrintWriter out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
-                    prefix, i);
+            out.printf(
+                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<\n",
+                    prefix, i, solversStats.get(i).getValue());
             this.solvers.get(i).printStat(out, prefix);
         }
     }
@@ -360,6 +368,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
             boolean result, int index) {
         if (finished && !this.solved) {
             this.winnerId = index;
+            solversStats.get(index).inc();
             this.solved = true;
             this.resultFound = result;
             for (int i = 0; i < this.numberOfSolvers; i++) {
