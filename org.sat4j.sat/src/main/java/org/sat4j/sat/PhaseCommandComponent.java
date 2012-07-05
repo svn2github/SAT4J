@@ -16,134 +16,127 @@ import javax.swing.border.TitledBorder;
 
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 
-public class PhaseCommandComponent extends CommandComponent{
+public class PhaseCommandComponent extends CommandComponent {
 
-	
-	
-	private String currentPhaseSelectionStrategy;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	private JComboBox phaseList;
-	private JLabel phaseListLabel;
-	private final static String PHASE_STRATEGY = "Choose phase strategy :";
+    private String currentPhaseSelectionStrategy;
 
-	private JButton phaseApplyButton;
-	private final static String PHASE_APPLY = "Apply";
+    private JComboBox phaseList;
+    private JLabel phaseListLabel;
+    private final static String PHASE_STRATEGY = "Choose phase strategy :";
 
-	private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
-	private final static String PHASE_PATH_SAT="org.sat4j.minisat.orders";
+    private JButton phaseApplyButton;
+    private final static String PHASE_APPLY = "Apply";
 
-	
-//	private RemoteControlStrategy telecomStrategy;
-	
-	private SolverController solverController;
-	
-	public PhaseCommandComponent(String name, SolverController commandPanel, String initialPhaseStrategyName){
-		this.currentPhaseSelectionStrategy = initialPhaseStrategyName;
-		this.solverController = commandPanel;
-		this.setName(name);
-		createPanel();
-	}
-	
-	
-	@Override
-	public void createPanel() {
-		createPhasePanel();
-	}
+    private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+    private final static String PHASE_PATH_SAT = "org.sat4j.minisat.orders";
 
-	
-	
-	
-	public void createPhasePanel(){
-		
-		
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    // private RemoteControlStrategy telecomStrategy;
 
-		this.setLayout(new BorderLayout());
+    private SolverController solverController;
 
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
+    public PhaseCommandComponent(String name, SolverController commandPanel,
+            String initialPhaseStrategyName) {
+        this.currentPhaseSelectionStrategy = initialPhaseStrategyName;
+        this.solverController = commandPanel;
+        this.setName(name);
+        createPanel();
+    }
 
-		phaseListLabel = new JLabel(PHASE_STRATEGY);
+    @Override
+    public void createPanel() {
+        createPhasePanel();
+    }
 
-		phaseList = new JComboBox(getListOfPhaseStrategies().toArray());	
-		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
+    public void createPhasePanel() {
 
-		//		phaseList.addActionListener(new ActionListener() {
-		//			public void actionPerformed(ActionEvent e) {
-		//				modifyRestartParamPanel();
-		//			}
-		//		});
+        this.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		tmpPanel1.add(phaseListLabel);
-		tmpPanel1.add(phaseList);
+        this.setLayout(new BorderLayout());
 
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.setLayout(new FlowLayout());
 
+        this.phaseListLabel = new JLabel(PHASE_STRATEGY);
 
+        this.phaseList = new JComboBox(getListOfPhaseStrategies().toArray());
+        this.phaseList.setSelectedItem(this.currentPhaseSelectionStrategy);
 
-		phaseApplyButton = new JButton(PHASE_APPLY);
+        // phaseList.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // modifyRestartParamPanel();
+        // }
+        // });
 
-		phaseApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplyPhase();
-			}
-		});
+        tmpPanel1.add(this.phaseListLabel);
+        tmpPanel1.add(this.phaseList);
 
-		JPanel tmpPanel2 = new JPanel();
-		tmpPanel2.add(phaseApplyButton);
+        this.phaseApplyButton = new JButton(PHASE_APPLY);
 
-		this.add(tmpPanel1,BorderLayout.CENTER);
-		this.add(tmpPanel2,BorderLayout.SOUTH);
-	}
-	
-	
-	public void hasClickedOnApplyPhase(){
-		String phaseName = (String)phaseList.getSelectedItem();
-		currentPhaseSelectionStrategy = phaseName;
-		IPhaseSelectionStrategy phase = null;
-		try{
-			phase= (IPhaseSelectionStrategy)Class.forName(PHASE_PATH_SAT+"."+phaseName).newInstance();
-			phase.init(this.solverController.getNVar()+1);
-			solverController.setPhaseSelectionStrategy(phase);
-			
-		}
-		catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}
-		catch(IllegalAccessException e){
-			e.printStackTrace();
-		}
-		catch(InstantiationException e){
-			e.printStackTrace();
-		}
+        this.phaseApplyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnApplyPhase();
+            }
+        });
 
-	} 
-	
-	public void setPhasePanelEnabled(boolean enabled){
-		phaseList.setEnabled(enabled);
-		phaseListLabel.setEnabled(enabled);
-		phaseApplyButton.setEnabled(enabled);
-		repaint();
-	}
-	
-	public List<String> getListOfPhaseStrategies(){
-		List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
-		List<String> finalResult = new ArrayList<String>();
+        JPanel tmpPanel2 = new JPanel();
+        tmpPanel2.add(this.phaseApplyButton);
 
-		//		finalResult.add(RESTART_NO_STRATEGY);
+        this.add(tmpPanel1, BorderLayout.CENTER);
+        this.add(tmpPanel2, BorderLayout.SOUTH);
+    }
 
-		for(String s:resultRTSI){
-			if(!s.contains("Remote")){
-				finalResult.add(s);
-			}
-		}
+    public void hasClickedOnApplyPhase() {
+        String phaseName = (String) this.phaseList.getSelectedItem();
+        this.currentPhaseSelectionStrategy = phaseName;
+        IPhaseSelectionStrategy phase = null;
+        try {
+            phase = (IPhaseSelectionStrategy) Class.forName(
+                    PHASE_PATH_SAT + "." + phaseName).newInstance();
+            phase.init(this.solverController.getNVar() + 1);
+            this.solverController.setPhaseSelectionStrategy(phase);
 
-		return finalResult;
-	}
-	
-	public void setPhaseListSelectedItem(String name){
-		currentPhaseSelectionStrategy = name;
-		phaseList.setSelectedItem(currentPhaseSelectionStrategy);
-		repaint();
-	}
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setPhasePanelEnabled(boolean enabled) {
+        this.phaseList.setEnabled(enabled);
+        this.phaseListLabel.setEnabled(enabled);
+        this.phaseApplyButton.setEnabled(enabled);
+        repaint();
+    }
+
+    public List<String> getListOfPhaseStrategies() {
+        List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
+        List<String> finalResult = new ArrayList<String>();
+
+        // finalResult.add(RESTART_NO_STRATEGY);
+
+        for (String s : resultRTSI) {
+            if (!s.contains("Remote")) {
+                finalResult.add(s);
+            }
+        }
+
+        return finalResult;
+    }
+
+    public void setPhaseListSelectedItem(String name) {
+        this.currentPhaseSelectionStrategy = name;
+        this.phaseList.setSelectedItem(this.currentPhaseSelectionStrategy);
+        repaint();
+    }
 }

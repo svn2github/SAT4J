@@ -10,53 +10,60 @@ import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
-public class HotSolverCommandComponent extends CommandComponent{
+public class HotSolverCommandComponent extends CommandComponent {
 
-	private SolverController controller;
-	
-	private JCheckBox keepSolverHotCB;
-	private final static String KEEP_SOLVER_HOT = "Keep solver hot";
-	private JButton applyHotSolver;
-	private final static String HOT_APPLY = "Apply";
-	
-	public HotSolverCommandComponent(String name, SolverController controller){
-		this.setName(name);
-		this.controller = controller;
-		createPanel();
-	} 
-	
-	@Override
-	public void createPanel() {
-		createHotSolverPanel();
-	}
-	
-	public void createHotSolverPanel(){
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-		this.setLayout(new BorderLayout());
+    private SolverController controller;
 
-		keepSolverHotCB = new JCheckBox(KEEP_SOLVER_HOT);
-		this.add(keepSolverHotCB,BorderLayout.CENTER);
+    private JCheckBox keepSolverHotCB;
+    private final static String KEEP_SOLVER_HOT = "Keep solver hot";
+    private JButton applyHotSolver;
+    private final static String HOT_APPLY = "Apply";
 
-		JPanel tmpPanel = new JPanel();
+    public HotSolverCommandComponent(String name, SolverController controller) {
+        this.setName(name);
+        this.controller = controller;
+        createPanel();
+    }
 
-		applyHotSolver = new JButton(HOT_APPLY);
-		tmpPanel.add(applyHotSolver);
-		this.add(tmpPanel,BorderLayout.SOUTH);
+    @Override
+    public void createPanel() {
+        createHotSolverPanel();
+    }
 
+    public void createHotSolverPanel() {
+        this.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		applyHotSolver.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				controller.setKeepSolverHot(keepSolverHotCB.isSelected());
-			}
-		});
-	}
-	
-	public void setKeepSolverHotPanelEnabled(boolean enabled){
-		keepSolverHotCB.setEnabled(enabled);
-		applyHotSolver.setEnabled(enabled);
-		this.repaint();
-	}
+        this.setLayout(new BorderLayout());
+
+        this.keepSolverHotCB = new JCheckBox(KEEP_SOLVER_HOT);
+        this.add(this.keepSolverHotCB, BorderLayout.CENTER);
+
+        JPanel tmpPanel = new JPanel();
+
+        this.applyHotSolver = new JButton(HOT_APPLY);
+        tmpPanel.add(this.applyHotSolver);
+        this.add(tmpPanel, BorderLayout.SOUTH);
+
+        this.applyHotSolver.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                HotSolverCommandComponent.this.controller
+                        .setKeepSolverHot(HotSolverCommandComponent.this.keepSolverHotCB
+                                .isSelected());
+            }
+        });
+    }
+
+    public void setKeepSolverHotPanelEnabled(boolean enabled) {
+        this.keepSolverHotCB.setEnabled(enabled);
+        this.applyHotSolver.setEnabled(enabled);
+        this.repaint();
+    }
 
 }

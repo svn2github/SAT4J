@@ -47,14 +47,7 @@ package org.sat4j.sat;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.cli.CommandLine;
@@ -69,16 +62,9 @@ import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
-import org.sat4j.minisat.core.IOrder;
-import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
-import org.sat4j.minisat.core.Solver;
-import org.sat4j.minisat.orders.RandomWalkDecorator;
-import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
-import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
-import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
@@ -99,402 +85,420 @@ import org.sat4j.tools.MultiTracing;
 
 public class Lanceur extends AbstractLauncher implements ICDCLLogger {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
+    private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
 
-	private boolean incomplete = false;
+    private boolean incomplete = false;
 
-	private boolean isModeOptimization = false;
+    private boolean isModeOptimization = false;
 
-	private IProblem problem;
-	private ICDCL cdclSolver;
+    private IProblem problem;
+    private ICDCL cdclSolver;
 
-	private boolean modeTracing = false;
+    private boolean modeTracing = false;
 
-	private boolean launchRemoteControl;
+    private boolean launchRemoteControl;
 
-	static AbstractLauncher lanceur;
+    static AbstractLauncher lanceur;
 
-	public static void main(final String[] args) {
-		lanceur = new Lanceur();
-		lanceur.run(args);
+    public static void main(final String[] args) {
+        lanceur = new Lanceur();
+        lanceur.run(args);
 
-	}
+    }
 
-	protected ASolverFactory<ISolver> factory;
+    protected ASolverFactory<ISolver> factory;
 
-	private String filename;
+    private String filename;
 
-	private int k = -1;
+    private int k = -1;
 
+    /**
+     * Configure the solver according to the command line parameters.
+     * 
+     * @param args
+     *            the command line
+     * @return a solver properly configured.
+     */
+    @SuppressWarnings({ "nls", "unchecked" })
+    @Override
+    protected ICDCL configureSolver(String[] args) {
+        Options options = createCLIOptions();
 
-	/**
-	 * Configure the solver according to the command line parameters.
-	 * 
-	 * @param args
-	 *            the command line
-	 * @return a solver properly configured.
-	 */
-	@SuppressWarnings({ "nls", "unchecked" })
-	@Override
-	protected ICDCL configureSolver(String[] args) {
-		Options options = createCLIOptions();
-		
-		try {
-			CommandLine cmd = new PosixParser().parse(options, args);
+        try {
+            CommandLine cmd = new PosixParser().parse(options, args);
 
-			if (cmd.hasOption("opt")) {
-				isModeOptimization = true;
-			}
+            if (cmd.hasOption("opt")) {
+                this.isModeOptimization = true;
+            }
 
-			String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-			if (isModeOptimization) {
-				framework = "pb";
-			} else if (framework == null) { //$NON-NLS-1$
-				framework = "minisat";
-			}
+            String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
+            if (this.isModeOptimization) {
+                framework = "pb";
+            } else if (framework == null) { //$NON-NLS-1$
+                framework = "minisat";
+            }
 
-			try {
-				Class<?> clazz = Class
-						.forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
-				Class<?>[] params = {};
-				Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
-				factory = (ASolverFactory) m.invoke(null, (Object[]) null);
-			} catch (Exception e) { // DLB Findbugs warning ok
-				log("Wrong framework: " + framework
-						+ ". Using minisat instead.");
-				factory = org.sat4j.minisat.SolverFactory.instance();
-			}
+            try {
+                Class<?> clazz = Class
+                        .forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+                Class<?>[] params = {};
+                Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
+                this.factory = (ASolverFactory) m.invoke(null, (Object[]) null);
+            } catch (Exception e) { // DLB Findbugs warning ok
+                log("Wrong framework: " + framework
+                        + ". Using minisat instead.");
+                this.factory = org.sat4j.minisat.SolverFactory.instance();
+            }
 
-			ICDCL asolver = Solvers.configureSolver(args, this);
-			
+            ICDCL asolver = Solvers.configureSolver(args, this);
 
+            this.launchRemoteControl = cmd.hasOption("remote");
 
-			launchRemoteControl = (cmd.hasOption("remote"));
+            this.filename = cmd.getOptionValue("f");
 
-			
-			filename = cmd.getOptionValue("f");
+            if (cmd.hasOption("d")) {
+                String dotfilename = null;
+                if (this.filename != null) {
+                    dotfilename = cmd.getOptionValue("d");
+                }
+                if (dotfilename == null) {
+                    dotfilename = "sat4j.dot";
+                }
+                asolver.setSearchListener(new DotSearchTracing(dotfilename,
+                        null));
+            }
 
-			if (cmd.hasOption("d")) {
-				String dotfilename = null;
-				if (filename != null) {
-					dotfilename = cmd.getOptionValue("d");
-				}
-				if (dotfilename == null) {
-					dotfilename = "sat4j.dot";
-				}
-				asolver.setSearchListener(new DotSearchTracing(dotfilename,
-						null));
-			}
+            if (cmd.hasOption("m")) {
+                setSilent(true);
+            }
 
-			if (cmd.hasOption("m")) {
-				setSilent(true);
-			}
+            if (cmd.hasOption("k")) {
+                Integer myk = Integer.valueOf(cmd.getOptionValue("k"));
+                if (myk != null) {
+                    this.k = myk.intValue();
+                }
+            }
 
-			if (cmd.hasOption("k")) {
-				Integer myk = Integer.valueOf(cmd.getOptionValue("k"));
-				if (myk != null) {
-					k = myk.intValue();
-				}
-			}
+            if (this.isModeOptimization) {
+                assert asolver instanceof IPBSolver;
+                this.problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
+            }
 
-			
+            int others = 0;
+            String[] rargs = cmd.getArgs();
+            if (this.filename == null && rargs.length > 0) {
+                this.filename = rargs[others++];
+            }
 
-			if (isModeOptimization) {
-				assert asolver instanceof IPBSolver;
-				problem = new PseudoOptDecorator((IPBCDCLSolver) asolver);
-			}
+            if (cmd.hasOption("r")) {
+                this.modeTracing = true;
+                if (!cmd.hasOption("remote")) {
+                    asolver.setSearchListener(new MultiTracing(
+                            new ConflictLevelTracing(
+                                    new FileBasedVisualizationTool(
+                                            this.filename + "-conflict-level"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-conflict-level-restart"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-conflict-level-clean")),
+                            new DecisionTracing(
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-decision-indexes-pos"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-decision-indexes-neg"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-decision-indexes-restart"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-decision-indexes-clean")),
+                            new LearnedClausesSizeTracing(
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-learned-clauses-size"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-learned-clauses-size-restart"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-learned-clauses-size-clean")),
+                            new ConflictDepthTracing(
+                                    new FileBasedVisualizationTool(
+                                            this.filename + "-conflict-depth"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-conflict-depth-restart"),
+                                    new FileBasedVisualizationTool(
+                                            this.filename
+                                                    + "-conflict-depth-clean"))));
+                }
+            }
 
-			int others = 0;
-			String[] rargs = cmd.getArgs();
-			if (filename == null && rargs.length > 0) {
-				filename = rargs[others++];
-			}
+            // use remaining data to configure the solver
+            while (others < rargs.length) {
+                String[] param = rargs[others].split("="); //$NON-NLS-1$
+                assert param.length == 2;
+                log("setting " + param[0] + " to " + param[1]); //$NON-NLS-1$ //$NON-NLS-2$
+                try {
+                    BeanUtils.setProperty(asolver, param[0], param[1]);
+                } catch (Exception e) {
+                    log("Cannot set parameter : " //$NON-NLS-1$
+                            + args[others]);
+                }
+                others++;
+            }
 
-			if (cmd.hasOption("r")) {
-				modeTracing = true;
-				if(!cmd.hasOption("remote"))
-					asolver.setSearchListener(new MultiTracing(
-							new ConflictLevelTracing(
-									new FileBasedVisualizationTool(filename + "-conflict-level"), 
-									new FileBasedVisualizationTool(filename + "-conflict-level-restart"),
-									new FileBasedVisualizationTool(filename + "-conflict-level-clean")),
-									new DecisionTracing(
-											new FileBasedVisualizationTool(filename + "-decision-indexes-pos"),
-											new FileBasedVisualizationTool(filename + "-decision-indexes-neg"),
-											new FileBasedVisualizationTool(filename + "-decision-indexes-restart"),
-											new FileBasedVisualizationTool(filename + "-decision-indexes-clean")),
-											new LearnedClausesSizeTracing(
-													new FileBasedVisualizationTool(filename + "-learned-clauses-size"),
-													new FileBasedVisualizationTool(filename + "-learned-clauses-size-restart"),
-													new FileBasedVisualizationTool(filename + "-learned-clauses-size-clean")),
-													new ConflictDepthTracing(
-															new FileBasedVisualizationTool(filename + "-conflict-depth"), 
-															new FileBasedVisualizationTool(filename + "-conflict-depth-restart"),
-															new FileBasedVisualizationTool(filename + "-conflict-depth-clean"))));
-			}
+            getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+            return asolver;
+        } catch (ParseException e1) {
+            HelpFormatter helpf = new HelpFormatter();
+            helpf.printHelp("java -jar sat4j.jar", options, true);
+            usage();
+        }
+        return null;
+    }
 
-			// use remaining data to configure the solver
-			while (others < rargs.length) {
-				String[] param = rargs[others].split("="); //$NON-NLS-1$
-				assert param.length == 2;
-				log("setting " + param[0] + " to " + param[1]); //$NON-NLS-1$ //$NON-NLS-2$
-				try {
-					BeanUtils.setProperty(asolver, param[0], param[1]);
-				} catch (Exception e) {
-					log("Cannot set parameter : " //$NON-NLS-1$
-							+ args[others]);
-				}
-				others++;
-			}
+    @Override
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        if (theSolver instanceof IPBSolver) {
+            return new PBInstanceReader((IPBSolver) theSolver);
+        }
+        return new InstanceReader(theSolver);
+    }
 
-			getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
-			return asolver;
-		} catch (ParseException e1) {
-			HelpFormatter helpf = new HelpFormatter();
-			helpf.printHelp("java -jar sat4j.jar", options, true);
-			usage();
-		}
-		return null;
-	}
+    @Override
+    public void displayLicense() {
+        super.displayLicense();
+        log("This software uses some libraries from the Jakarta Commons project. See jakarta.apache.org for details."); //$NON-NLS-1$
+    }
 
-	@Override
-	protected Reader createReader(ISolver theSolver, String problemname) {
-		if (theSolver instanceof IPBSolver) {
-			return new PBInstanceReader((IPBSolver) theSolver);
-		}
-		return new InstanceReader(theSolver);
-	}
+    @Override
+    protected String getInstanceName(String[] args) {
+        return this.filename;
+    }
 
-	@Override
-	public void displayLicense() {
-		super.displayLicense();
-		log("This software uses some libraries from the Jakarta Commons project. See jakarta.apache.org for details."); //$NON-NLS-1$
-	}
+    @Override
+    protected IProblem readProblem(String problemname)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        ISolver theSolver = (ISolver) super.readProblem(problemname);
+        if (this.k > 0) {
+            IVecInt literals = new VecInt();
+            for (int i = 1; i <= theSolver.nVars(); i++) {
+                literals.push(-i);
+            }
+            theSolver.addAtLeast(literals, this.k);
+            log("Limiting solutions to those having at least " + this.k
+                    + " variables assigned to false");
+        }
+        return theSolver;
+    }
 
-	
-	@Override
-	protected String getInstanceName(String[] args) {
-		return filename;
-	}
+    @Override
+    protected void solve(IProblem problem) throws TimeoutException {
+        if (this.isModeOptimization) {
+            boolean isSatisfiable = false;
 
-	
+            IOptimizationProblem optproblem = (IOptimizationProblem) problem;
 
-	@Override
-	protected IProblem readProblem(String problemname)
-			throws FileNotFoundException, ParseFormatException, IOException,
-			ContradictionException {
-		ISolver theSolver = (ISolver) super.readProblem(problemname);
-		if (k > 0) {
-			IVecInt literals = new VecInt();
-			for (int i = 1; i <= theSolver.nVars(); i++) {
-				literals.push(-i);
-			}
-			theSolver.addAtLeast(literals, k);
-			log("Limiting solutions to those having at least " + k
-					+ " variables assigned to false");
-		}
-		return theSolver;
-	}
+            try {
+                while (optproblem.admitABetterSolution()) {
+                    if (!isSatisfiable) {
+                        if (optproblem.nonOptimalMeansSatisfiable()) {
+                            setExitCode(ExitCode.SATISFIABLE);
+                            if (optproblem.hasNoObjectiveFunction()) {
+                                return;
+                            }
+                            log("SATISFIABLE"); //$NON-NLS-1$
+                        } else if (this.incomplete) {
+                            setExitCode(ExitCode.UPPER_BOUND);
+                        }
+                        isSatisfiable = true;
+                        log("OPTIMIZING..."); //$NON-NLS-1$
+                    }
+                    log("Got one! Elapsed wall clock time (in seconds):" //$NON-NLS-1$
+                            + (System.currentTimeMillis() - getBeginTime())
+                            / 1000.0);
+                    getLogWriter().println(
+                            CURRENT_OPTIMUM_VALUE_PREFIX
+                                    + optproblem.getObjectiveValue());
+                    optproblem.discardCurrentSolution();
+                }
+                if (isSatisfiable) {
+                    setExitCode(ExitCode.OPTIMUM_FOUND);
+                } else {
+                    setExitCode(ExitCode.UNSATISFIABLE);
+                }
+            } catch (ContradictionException ex) {
+                assert isSatisfiable;
+                setExitCode(ExitCode.OPTIMUM_FOUND);
+            }
+        } else {
+            this.exitCode = problem.isSatisfiable() ? ExitCode.SATISFIABLE
+                    : ExitCode.UNSATISFIABLE;
+        }
+    }
 
-	@Override
-	protected void solve(IProblem problem) throws TimeoutException {
-		if (isModeOptimization) {
-			boolean isSatisfiable = false;
+    @Override
+    protected void displayResult() {
+        if (this.isModeOptimization) {
+            displayAnswer();
 
-			IOptimizationProblem optproblem = (IOptimizationProblem) problem;
+            log("Total wall clock time (in seconds): " //$NON-NLS-1$
+                    + (System.currentTimeMillis() - getBeginTime()) / 1000.0);
+        } else {
+            super.displayResult();
+        }
+    }
 
-			try {
-				while (optproblem.admitABetterSolution()) {
-					if (!isSatisfiable) {
-						if (optproblem.nonOptimalMeansSatisfiable()) {
-							setExitCode(ExitCode.SATISFIABLE);
-							if (optproblem.hasNoObjectiveFunction()) {
-								return;
-							}
-							log("SATISFIABLE"); //$NON-NLS-1$
-						} else if (incomplete) {
-							setExitCode(ExitCode.UPPER_BOUND);
-						}
-						isSatisfiable = true;
-						log("OPTIMIZING..."); //$NON-NLS-1$
-					}
-					log("Got one! Elapsed wall clock time (in seconds):" //$NON-NLS-1$
-							+ (System.currentTimeMillis() - getBeginTime())
-							/ 1000.0);
-					getLogWriter().println(
-							CURRENT_OPTIMUM_VALUE_PREFIX
-							+ optproblem.getObjectiveValue());
-					optproblem.discardCurrentSolution();
-				}
-				if (isSatisfiable) {
-					setExitCode(ExitCode.OPTIMUM_FOUND);
-				} else {
-					setExitCode(ExitCode.UNSATISFIABLE);
-				}
-			} catch (ContradictionException ex) {
-				assert isSatisfiable;
-				setExitCode(ExitCode.OPTIMUM_FOUND);
-			}
-		} else {
-			exitCode = problem.isSatisfiable() ? ExitCode.SATISFIABLE
-					: ExitCode.UNSATISFIABLE;
-		}
-	}
+    protected void displayAnswer() {
+        if (this.solver == null) {
+            return;
+        }
+        System.out.flush();
+        PrintWriter out = getLogWriter();
+        out.flush();
+        this.solver.printStat(out, COMMENT_PREFIX);
+        this.solver.printInfos(out, COMMENT_PREFIX);
+        ExitCode exitCode = getExitCode();
+        out.println(ANSWER_PREFIX + exitCode);
+        if (exitCode == ExitCode.SATISFIABLE
+                || exitCode == ExitCode.OPTIMUM_FOUND || this.incomplete
+                && exitCode == ExitCode.UPPER_BOUND) {
+            out.print(SOLUTION_PREFIX);
+            getReader().decode(this.problem.model(), out);
+            out.println();
+            if (this.isModeOptimization) {
+                IOptimizationProblem optproblem = (IOptimizationProblem) this.problem;
+                if (!optproblem.hasNoObjectiveFunction()) {
+                    log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+                }
+            }
+        }
+    }
 
-	protected void displayResult() {
-		if (isModeOptimization) {
-			displayAnswer();
+    @Override
+    public void run(String[] args) {
+        try {
+            displayHeader();
+            this.cdclSolver = configureSolver(args);
+            this.solver = this.cdclSolver;
+            if (this.solver == null) {
+                usage();
+                return;
+            }
+            if (!this.silent) {
+                this.solver.setVerbose(true);
+            }
+            String instanceName = getInstanceName(args);
+            if (instanceName == null) {
+                usage();
+                return;
+            }
+            this.beginTime = System.currentTimeMillis();
+            if (!this.launchRemoteControl) {
+                readProblem(instanceName);
+                try {
+                    if (this.problem != null) {
+                        solve(this.problem);
+                    } else {
+                        solve(this.solver);
+                    }
+                } catch (TimeoutException e) {
+                    log("timeout"); //$NON-NLS-1$
+                }
+                System.exit(lanceur.getExitCode().value());
+            } else {
+                // RemoteControlFrame frame = new RemoteControlFrame(filename,
+                // "",
+                // cdclSolver);
+                RemoteControlFrame frame = new RemoteControlFrame(
+                        this.filename, "", args);
+                frame.activateTracing(this.modeTracing);
+                frame.setOptimisationMode(this.isModeOptimization);
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("FATAL " + e.getLocalizedMessage());
+        } catch (IOException e) {
+            System.err.println("FATAL " + e.getLocalizedMessage());
+        } catch (ContradictionException e) {
+            this.exitCode = ExitCode.UNSATISFIABLE;
+            log("(trivial inconsistency)"); //$NON-NLS-1$
+        } catch (ParseFormatException e) {
+            System.err.println("FATAL " + e.getLocalizedMessage());
+        }
+    }
 
-			log("Total wall clock time (in seconds): " //$NON-NLS-1$
-					+ (System.currentTimeMillis() - getBeginTime()) / 1000.0);
-		} else {
-			super.displayResult();
-		}
-	}
+    @Override
+    public void usage() {
+        Solvers.usage(this);
+    }
 
-	protected void displayAnswer() {
-		if (solver == null)
-			return;
-		System.out.flush();
-		PrintWriter out = getLogWriter();
-		out.flush();
-		solver.printStat(out, COMMENT_PREFIX);
-		solver.printInfos(out, COMMENT_PREFIX);
-		ExitCode exitCode = getExitCode();
-		out.println(ANSWER_PREFIX + exitCode);
-		if (exitCode == ExitCode.SATISFIABLE
-				|| exitCode == ExitCode.OPTIMUM_FOUND
-				|| (incomplete && exitCode == ExitCode.UPPER_BOUND)) {
-			out.print(SOLUTION_PREFIX);
-			getReader().decode(problem.model(), out);
-			out.println();
-			if (isModeOptimization) {
-				IOptimizationProblem optproblem = (IOptimizationProblem) problem;
-				if (!optproblem.hasNoObjectiveFunction()) {
-					log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
-				}
-			}
-		}
-	}
-
-
-
-	@Override
-	public void run(String[] args) {
-		try {
-			displayHeader();
-			cdclSolver = configureSolver(args);
-			solver = cdclSolver;
-			if (solver == null) {
-				usage();
-				return;
-			}
-			if (!silent)
-				solver.setVerbose(true);
-			String instanceName = getInstanceName(args);
-			if (instanceName == null) {
-				usage();
-				return;
-			}
-			beginTime = System.currentTimeMillis();
-			if (!launchRemoteControl) {
-				readProblem(instanceName);
-				try {
-					if (problem != null) {
-						solve(problem);
-					} else {
-						solve(solver);
-					}
-				} catch (TimeoutException e) {
-					log("timeout"); //$NON-NLS-1$
-				}
-				System.exit(lanceur.getExitCode().value());
-			} else {
-//				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
-//						cdclSolver);
-				RemoteControlFrame frame = new RemoteControlFrame(filename, "",
-						args);
-				frame.activateTracing(modeTracing);
-				frame.setOptimisationMode(isModeOptimization);
-			}
-		} catch (FileNotFoundException e) {
-			System.err.println("FATAL " + e.getLocalizedMessage());
-		} catch (IOException e) {
-			System.err.println("FATAL " + e.getLocalizedMessage());
-		} catch (ContradictionException e) {
-			exitCode = ExitCode.UNSATISFIABLE;
-			log("(trivial inconsistency)"); //$NON-NLS-1$
-		} catch (ParseFormatException e) {
-			System.err.println("FATAL " + e.getLocalizedMessage());
-		}
-	}
-
-	@Override
-	public void usage() {
-		Solvers.usage(this);
-	}
-	
-	public static Options createCLIOptions() {
-		Options options = new Options();
-		options.addOption("l", "library", true,
-				"specifies the name of the library used (minisat by default)");
-		options.addOption("s", "solver", true,
-				"specifies the name of a prebuilt solver from the library");
-		options.addOption("S", "Solver", true,
-				"setup a solver using a solver config string");
-		options.addOption("t", "timeout", true,
-				"specifies the timeout (in seconds)");
-		options.addOption("T", "timeoutms", true,
-				"specifies the timeout (in milliseconds)");
-		options.addOption("C", "conflictbased", false,
-				"conflict based timeout (for deterministic behavior)");
-		options.addOption("d", "dot", true,
-				"creates a sat4j.dot file in current directory representing the search");
-		options.addOption("f", "filename", true,
-				"specifies the file to use (in conjunction with -d for instance)");
-		options.addOption("m", "mute", false, "Set launcher in silent mode");
-		options.addOption("k", "kleast", true,
-				"limit the search to models having at least k variables set to false");
-		options.addOption("r", "trace", false,
-				"traces the behavior of the solver");
-		options.addOption("opt", "optimize", false,
-				"uses solver in optimize mode instead of sat mode (default)");
-		options.addOption("rw", "randomWalk", true,
-				"specifies the random walk probability ");
-		options.addOption("remote", "remoteControl", false,
-				"launches remote control");
-		options.addOption("H", "hot", false,
-				"keep the solver hot (do not reset heuristics) when a model is found");
-		options.addOption("y", "simplify", false,
-				"simplify the set of clauses is possible");
-		Option op = options.getOption("l");
-		op.setArgName("libname");
-		op = options.getOption("s");
-		op.setArgName("solvername");
-		op = options.getOption("S");
-		op.setArgName("solverStringDefinition");
-		op = options.getOption("t");
-		op.setArgName("number");
-		op = options.getOption("T");
-		op.setArgName("number");
-		op = options.getOption("C");
-		op.setArgName("number");
-		op = options.getOption("k");
-		op.setArgName("number");
-		op = options.getOption("d");
-		op.setArgName("filename");
-		op = options.getOption("f");
-		op.setArgName("filename");
-		op = options.getOption("r");
-		op.setArgName("searchlistener");
-		op = options.getOption("rw");
-		op.setArgName("number");
-		return options;
-	}
+    public static Options createCLIOptions() {
+        Options options = new Options();
+        options.addOption("l", "library", true,
+                "specifies the name of the library used (minisat by default)");
+        options.addOption("s", "solver", true,
+                "specifies the name of a prebuilt solver from the library");
+        options.addOption("S", "Solver", true,
+                "setup a solver using a solver config string");
+        options.addOption("t", "timeout", true,
+                "specifies the timeout (in seconds)");
+        options.addOption("T", "timeoutms", true,
+                "specifies the timeout (in milliseconds)");
+        options.addOption("C", "conflictbased", false,
+                "conflict based timeout (for deterministic behavior)");
+        options.addOption("d", "dot", true,
+                "creates a sat4j.dot file in current directory representing the search");
+        options.addOption("f", "filename", true,
+                "specifies the file to use (in conjunction with -d for instance)");
+        options.addOption("m", "mute", false, "Set launcher in silent mode");
+        options.addOption("k", "kleast", true,
+                "limit the search to models having at least k variables set to false");
+        options.addOption("r", "trace", false,
+                "traces the behavior of the solver");
+        options.addOption("opt", "optimize", false,
+                "uses solver in optimize mode instead of sat mode (default)");
+        options.addOption("rw", "randomWalk", true,
+                "specifies the random walk probability ");
+        options.addOption("remote", "remoteControl", false,
+                "launches remote control");
+        options.addOption("H", "hot", false,
+                "keep the solver hot (do not reset heuristics) when a model is found");
+        options.addOption("y", "simplify", false,
+                "simplify the set of clauses is possible");
+        Option op = options.getOption("l");
+        op.setArgName("libname");
+        op = options.getOption("s");
+        op.setArgName("solvername");
+        op = options.getOption("S");
+        op.setArgName("solverStringDefinition");
+        op = options.getOption("t");
+        op.setArgName("number");
+        op = options.getOption("T");
+        op.setArgName("number");
+        op = options.getOption("C");
+        op.setArgName("number");
+        op = options.getOption("k");
+        op.setArgName("number");
+        op = options.getOption("d");
+        op.setArgName("filename");
+        op = options.getOption("f");
+        op.setArgName("filename");
+        op = options.getOption("r");
+        op.setArgName("searchlistener");
+        op = options.getOption("rw");
+        op.setArgName("number");
+        return options;
+    }
 
 }

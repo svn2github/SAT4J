@@ -13,271 +13,274 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
-import org.sat4j.minisat.core.ConflictTimer;
-import org.sat4j.minisat.core.ICDCL;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 
-public class CleanCommandComponent extends CommandComponent{
+public class CleanCommandComponent extends CommandComponent {
 
-//	private ICDCLLogger logger;
-	
-	
-	private JSlider cleanSlider;
+    // private ICDCLLogger logger;
 
-	private final static String EVALUATION_TYPE = "Clauses evaluation type";
-	private final static String ACTIVITY_BASED = "Activity";
-	private final static String LBD_BASED = "LBD";
-	private final static String LBD2_BASED = "LBD 2";
-	private JLabel evaluationLabel;
-	private ButtonGroup evaluationGroup;
-	private JRadioButton activityRadio;
-	private JRadioButton lbdRadio;
-	private JRadioButton lbd2Radio;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	private JButton cleanAndEvaluationApplyButton;
+    private JSlider cleanSlider;
 
-	private JButton cleanButton;
-	private final static String CLEAN = "Clean now";
-	private final static String MANUAL_CLEAN = "Manual clean: ";
-	private JLabel manualCleanLabel;
+    private final static String EVALUATION_TYPE = "Clauses evaluation type";
+    private final static String ACTIVITY_BASED = "Activity";
+    private final static String LBD_BASED = "LBD";
+    private final static String LBD2_BASED = "LBD 2";
+    private JLabel evaluationLabel;
+    private ButtonGroup evaluationGroup;
+    private JRadioButton activityRadio;
+    private JRadioButton lbdRadio;
+    private JRadioButton lbd2Radio;
 
-	private JLabel speedLabel;
-	private JLabel speedNameLabel;
-	private final static String SPEED = "Speed :";
-	private JLabel speedUnitLabel;
-	private final static String SPEED_UNIT = " propagations per second";
+    private JButton cleanAndEvaluationApplyButton;
 
-	private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
-	private final static String DELETE_CLAUSES = "Automated clean: ";
+    private JButton cleanButton;
+    private final static String CLEAN = "Clean now";
+    private final static String MANUAL_CLEAN = "Manual clean: ";
+    private JLabel manualCleanLabel;
 
-	private Hashtable<Integer, JLabel> cleanValuesTable;
-	private final JLabel clean5000Label = new JLabel(CLEAN_5000);
-	private final JLabel clean10000Label = new JLabel(CLEAN_10000);
-	private final JLabel clean20000Label = new JLabel(CLEAN_20000);
-	private final JLabel clean50000Label = new JLabel(CLEAN_50000);
-	private final JLabel clean100000Label = new JLabel(CLEAN_100000);
-	private final JLabel clean500000Label = new JLabel(CLEAN_500000);
-	private final static int[] cleanValues ={5000,10000,20000,50000,100000,500000};
-	private final static int CLEAN_MIN = 0;
-	private final static int CLEAN_MAX = 5;
-	private final static int CLEAN_INIT = 1;
-	private final static int CLEAN_SPACE = 1;
+    private JLabel speedLabel;
+    private JLabel speedNameLabel;
+    private final static String SPEED = "Speed :";
+    private JLabel speedUnitLabel;
+    private final static String SPEED_UNIT = " propagations per second";
 
-	private final static String CLEAN_5000 = "5000";
-	private final static String CLEAN_10000 = "10000";
-	private final static String CLEAN_20000 = "20000";
-	private final static String CLEAN_50000 = "50000";
-	private final static String CLEAN_100000 = "100000";
-	private final static String CLEAN_500000 = "500000";
+    private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
+    private final static String DELETE_CLAUSES = "Automated clean: ";
 
-	private SolverController controller;
-	
-	private JCheckBox cleanUseOriginalStrategyCB;
-	private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
+    private Hashtable<Integer, JLabel> cleanValuesTable;
+    private final JLabel clean5000Label = new JLabel(CLEAN_5000);
+    private final JLabel clean10000Label = new JLabel(CLEAN_10000);
+    private final JLabel clean20000Label = new JLabel(CLEAN_20000);
+    private final JLabel clean50000Label = new JLabel(CLEAN_50000);
+    private final JLabel clean100000Label = new JLabel(CLEAN_100000);
+    private final JLabel clean500000Label = new JLabel(CLEAN_500000);
+    private final static int[] cleanValues = { 5000, 10000, 20000, 50000,
+            100000, 500000 };
+    private final static int CLEAN_MIN = 0;
+    private final static int CLEAN_MAX = 5;
+    private final static int CLEAN_INIT = 1;
+    private final static int CLEAN_SPACE = 1;
 
+    private final static String CLEAN_5000 = "5000";
+    private final static String CLEAN_10000 = "10000";
+    private final static String CLEAN_20000 = "20000";
+    private final static String CLEAN_50000 = "50000";
+    private final static String CLEAN_100000 = "100000";
+    private final static String CLEAN_500000 = "500000";
 
-	
-	public CleanCommandComponent(String name, SolverController controller){
-		super();
-		setName(name);
-		this.controller = controller;
-		createPanel();
-	}
-	
-	@Override
-	public void createPanel() {
-		
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    private SolverController controller;
 
-		this.setLayout(new BorderLayout());
+    private JCheckBox cleanUseOriginalStrategyCB;
+    private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
 
+    public CleanCommandComponent(String name, SolverController controller) {
+        super();
+        setName(name);
+        this.controller = controller;
+        createPanel();
+    }
 
-		cleanSlider = new JSlider(JSlider.HORIZONTAL,CLEAN_MIN,CLEAN_MAX,CLEAN_INIT);
+    @Override
+    public void createPanel() {
 
-		cleanSlider.setMajorTickSpacing(CLEAN_SPACE);
-		cleanSlider.setPaintTicks(true);
+        this.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		//Create the label table
-		cleanValuesTable = new Hashtable<Integer, JLabel>();
-		cleanValuesTable.put(new Integer(0),clean5000Label);
-		cleanValuesTable.put(new Integer(1),clean10000Label);
-		cleanValuesTable.put(new Integer(2),clean20000Label);
-		cleanValuesTable.put(new Integer(3),clean50000Label);
-		cleanValuesTable.put(new Integer(4),clean100000Label);
-		cleanValuesTable.put(new Integer(5),clean500000Label);
-		cleanSlider.setLabelTable(cleanValuesTable);
+        this.setLayout(new BorderLayout());
 
-		cleanSlider.setPaintLabels(true);
-		cleanSlider.setSnapToTicks(true);
+        this.cleanSlider = new JSlider(SwingConstants.HORIZONTAL, CLEAN_MIN,
+                CLEAN_MAX, CLEAN_INIT);
 
-		cleanSlider.setPreferredSize(new Dimension(400,50));
+        this.cleanSlider.setMajorTickSpacing(CLEAN_SPACE);
+        this.cleanSlider.setPaintTicks(true);
 
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.add(deleteClauseLabel);
-		tmpPanel1.add(cleanSlider);
+        // Create the label table
+        this.cleanValuesTable = new Hashtable<Integer, JLabel>();
+        this.cleanValuesTable.put(new Integer(0), this.clean5000Label);
+        this.cleanValuesTable.put(new Integer(1), this.clean10000Label);
+        this.cleanValuesTable.put(new Integer(2), this.clean20000Label);
+        this.cleanValuesTable.put(new Integer(3), this.clean50000Label);
+        this.cleanValuesTable.put(new Integer(4), this.clean100000Label);
+        this.cleanValuesTable.put(new Integer(5), this.clean500000Label);
+        this.cleanSlider.setLabelTable(this.cleanValuesTable);
 
-		JPanel tmpPanel4 = new JPanel();
+        this.cleanSlider.setPaintLabels(true);
+        this.cleanSlider.setSnapToTicks(true);
 
-		evaluationLabel = new JLabel(EVALUATION_TYPE);
-		evaluationGroup = new ButtonGroup();
-		activityRadio = new JRadioButton(ACTIVITY_BASED);
-		lbdRadio = new JRadioButton(LBD_BASED);
-		lbd2Radio = new JRadioButton(LBD2_BASED);
+        this.cleanSlider.setPreferredSize(new Dimension(400, 50));
 
-		evaluationGroup.add(activityRadio);
-		evaluationGroup.add(lbdRadio);
-		evaluationGroup.add(lbd2Radio);
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.add(this.deleteClauseLabel);
+        tmpPanel1.add(this.cleanSlider);
 
-		tmpPanel4.add(evaluationLabel);
-		tmpPanel4.add(activityRadio);
-		tmpPanel4.add(lbdRadio);
-		tmpPanel4.add(lbd2Radio);
+        JPanel tmpPanel4 = new JPanel();
 
+        this.evaluationLabel = new JLabel(EVALUATION_TYPE);
+        this.evaluationGroup = new ButtonGroup();
+        this.activityRadio = new JRadioButton(ACTIVITY_BASED);
+        this.lbdRadio = new JRadioButton(LBD_BASED);
+        this.lbd2Radio = new JRadioButton(LBD2_BASED);
 
-		cleanAndEvaluationApplyButton = new JButton("Apply changes");
-		cleanAndEvaluationApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasChangedCleaningValue();
-			}
-		});
+        this.evaluationGroup.add(this.activityRadio);
+        this.evaluationGroup.add(this.lbdRadio);
+        this.evaluationGroup.add(this.lbd2Radio);
 
-		JPanel tmpPanel5 = new JPanel();
-		tmpPanel5.add(cleanAndEvaluationApplyButton);
+        tmpPanel4.add(this.evaluationLabel);
+        tmpPanel4.add(this.activityRadio);
+        tmpPanel4.add(this.lbdRadio);
+        tmpPanel4.add(this.lbd2Radio);
 
-		JPanel tmpPanel = new JPanel();
-		tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "", 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+        this.cleanAndEvaluationApplyButton = new JButton("Apply changes");
+        this.cleanAndEvaluationApplyButton
+                .addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        hasChangedCleaningValue();
+                    }
+                });
 
-		tmpPanel.setLayout(new BorderLayout());
+        JPanel tmpPanel5 = new JPanel();
+        tmpPanel5.add(this.cleanAndEvaluationApplyButton);
 
-		tmpPanel.add(tmpPanel1,BorderLayout.NORTH);
-		tmpPanel.add(tmpPanel4,BorderLayout.CENTER);
-		tmpPanel.add(tmpPanel5,BorderLayout.SOUTH);
+        JPanel tmpPanel = new JPanel();
+        tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "",
+                TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		JPanel tmpPanel2 = new JPanel();
+        tmpPanel.setLayout(new BorderLayout());
 
-		manualCleanLabel = new JLabel(MANUAL_CLEAN);
+        tmpPanel.add(tmpPanel1, BorderLayout.NORTH);
+        tmpPanel.add(tmpPanel4, BorderLayout.CENTER);
+        tmpPanel.add(tmpPanel5, BorderLayout.SOUTH);
 
-		cleanButton = new JButton(CLEAN);
+        JPanel tmpPanel2 = new JPanel();
 
-		cleanButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnClean();
-			}
-		});
+        this.manualCleanLabel = new JLabel(MANUAL_CLEAN);
 
+        this.cleanButton = new JButton(CLEAN);
 
-		tmpPanel2.add(manualCleanLabel);
-		tmpPanel2.add(cleanButton);
+        this.cleanButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnClean();
+            }
+        });
 
-		JPanel tmpPanel3 = new JPanel();
-		cleanUseOriginalStrategyCB = new JCheckBox(USE_ORIGINAL_STRATEGY);
-		cleanUseOriginalStrategyCB.setSelected(true);
+        tmpPanel2.add(this.manualCleanLabel);
+        tmpPanel2.add(this.cleanButton);
 
-		cleanUseOriginalStrategyCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnUseOriginalStrategy();
-			}
-		});
+        JPanel tmpPanel3 = new JPanel();
+        this.cleanUseOriginalStrategyCB = new JCheckBox(USE_ORIGINAL_STRATEGY);
+        this.cleanUseOriginalStrategyCB.setSelected(true);
 
-		tmpPanel3.add(cleanUseOriginalStrategyCB);
+        this.cleanUseOriginalStrategyCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnUseOriginalStrategy();
+            }
+        });
 
+        tmpPanel3.add(this.cleanUseOriginalStrategyCB);
 
-		JPanel tmpPanel6 = new JPanel();
-		speedLabel = new JLabel("");
-		speedNameLabel = new JLabel(SPEED);
-		speedUnitLabel = new JLabel(SPEED_UNIT);
+        JPanel tmpPanel6 = new JPanel();
+        this.speedLabel = new JLabel("");
+        this.speedNameLabel = new JLabel(SPEED);
+        this.speedUnitLabel = new JLabel(SPEED_UNIT);
 
-		tmpPanel6.add(speedNameLabel);
-		tmpPanel6.add(speedLabel);
-		tmpPanel6.add(speedUnitLabel);
+        tmpPanel6.add(this.speedNameLabel);
+        tmpPanel6.add(this.speedLabel);
+        tmpPanel6.add(this.speedUnitLabel);
 
-		JPanel tmpPanel7 = new JPanel();
-		tmpPanel7.setLayout(new BorderLayout());
+        JPanel tmpPanel7 = new JPanel();
+        tmpPanel7.setLayout(new BorderLayout());
 
-		tmpPanel7.add(tmpPanel2,BorderLayout.SOUTH);
-		tmpPanel7.add(tmpPanel6,BorderLayout.CENTER);
+        tmpPanel7.add(tmpPanel2, BorderLayout.SOUTH);
+        tmpPanel7.add(tmpPanel6, BorderLayout.CENTER);
 
+        this.add(tmpPanel3, BorderLayout.NORTH);
+        this.add(tmpPanel7, BorderLayout.CENTER);
+        this.add(tmpPanel, BorderLayout.SOUTH);
 
-		this.add(tmpPanel3,BorderLayout.NORTH);
-		this.add(tmpPanel7,BorderLayout.CENTER);
-		this.add(tmpPanel,BorderLayout.SOUTH);
+    }
 
-	}
-	
-	public void hasChangedCleaningValue(){
-		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
-		if(activityRadio.isSelected()){
-			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
-		}
-		else if(lbdRadio.isSelected()){
-			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD);
-		}
-		else if(lbd2Radio.isSelected()){
-			controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD2);
-		}
-	}
-	
-	public void hasClickedOnUseOriginalStrategy(){
-		int nbConflicts = cleanValues[cleanSlider.getValue()];
-		controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
+    public void hasChangedCleaningValue() {
+        int nbConflicts = cleanValues[this.cleanSlider.getValue()];
+        this.controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
+        if (this.activityRadio.isSelected()) {
+            this.controller
+                    .setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
+        } else if (this.lbdRadio.isSelected()) {
+            this.controller
+                    .setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD);
+        } else if (this.lbd2Radio.isSelected()) {
+            this.controller
+                    .setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.LBD2);
+        }
+    }
 
-		controller.setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy();
+    public void hasClickedOnUseOriginalStrategy() {
+        int nbConflicts = cleanValues[this.cleanSlider.getValue()];
+        this.controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
 
-		controller.setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
-		activityRadio.setSelected(true);
+        this.controller
+                .setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy();
 
-		setCleanPanelOriginalStrategyEnabled(false);
-	}
+        this.controller
+                .setLearnedDeletionStrategyTypeToSolver(LearnedConstraintsEvaluationType.ACTIVITY);
+        this.activityRadio.setSelected(true);
 
-	public int getCleanSliderValue(){
-		return  cleanValues[cleanSlider.getValue()];
-	}
-	
-	public void hasClickedOnClean(){
-		controller.shouldCleanNow();
-	}
-	
-	public void setCleanPanelEnabled(boolean enabled){
-		manualCleanLabel.setEnabled(enabled);
-		deleteClauseLabel.setEnabled(enabled);
-		cleanSlider.setEnabled(enabled);
-		cleanButton.setEnabled(enabled);
-		evaluationLabel.setEnabled(enabled);
-		activityRadio.setEnabled(enabled);
-		lbdRadio.setEnabled(enabled);
-		lbd2Radio.setEnabled(enabled);
-		cleanAndEvaluationApplyButton.setEnabled(enabled);
-		cleanUseOriginalStrategyCB.setEnabled(enabled);
-		speedLabel.setEnabled(enabled);
-		speedUnitLabel.setEnabled(enabled);
-		speedNameLabel.setEnabled(enabled);
-		this.repaint();
-	}
+        setCleanPanelOriginalStrategyEnabled(false);
+    }
 
-	public void setCleanPanelOriginalStrategyEnabled(boolean enabled){
-		cleanUseOriginalStrategyCB.setEnabled(enabled);
-		manualCleanLabel.setEnabled(!enabled);
-		deleteClauseLabel.setEnabled(!enabled);
-		activityRadio.setEnabled(!enabled);
-		evaluationLabel.setEnabled(!enabled);
-		lbdRadio.setEnabled(!enabled);
-		lbd2Radio.setEnabled(!enabled);
-		cleanAndEvaluationApplyButton.setEnabled(!enabled);
-		cleanSlider.setEnabled(!enabled);
-		cleanButton.setEnabled(!enabled);
-		this.repaint();
-	}
-	
-	public void setSpeedLabeltext(String speed){
-		speedLabel.setText(speed);
-		speedLabel.invalidate();
-	}
+    public int getCleanSliderValue() {
+        return cleanValues[this.cleanSlider.getValue()];
+    }
+
+    public void hasClickedOnClean() {
+        this.controller.shouldCleanNow();
+    }
+
+    public void setCleanPanelEnabled(boolean enabled) {
+        this.manualCleanLabel.setEnabled(enabled);
+        this.deleteClauseLabel.setEnabled(enabled);
+        this.cleanSlider.setEnabled(enabled);
+        this.cleanButton.setEnabled(enabled);
+        this.evaluationLabel.setEnabled(enabled);
+        this.activityRadio.setEnabled(enabled);
+        this.lbdRadio.setEnabled(enabled);
+        this.lbd2Radio.setEnabled(enabled);
+        this.cleanAndEvaluationApplyButton.setEnabled(enabled);
+        this.cleanUseOriginalStrategyCB.setEnabled(enabled);
+        this.speedLabel.setEnabled(enabled);
+        this.speedUnitLabel.setEnabled(enabled);
+        this.speedNameLabel.setEnabled(enabled);
+        this.repaint();
+    }
+
+    public void setCleanPanelOriginalStrategyEnabled(boolean enabled) {
+        this.cleanUseOriginalStrategyCB.setEnabled(enabled);
+        this.manualCleanLabel.setEnabled(!enabled);
+        this.deleteClauseLabel.setEnabled(!enabled);
+        this.activityRadio.setEnabled(!enabled);
+        this.evaluationLabel.setEnabled(!enabled);
+        this.lbdRadio.setEnabled(!enabled);
+        this.lbd2Radio.setEnabled(!enabled);
+        this.cleanAndEvaluationApplyButton.setEnabled(!enabled);
+        this.cleanSlider.setEnabled(!enabled);
+        this.cleanButton.setEnabled(!enabled);
+        this.repaint();
+    }
+
+    public void setSpeedLabeltext(String speed) {
+        this.speedLabel.setText(speed);
+        this.speedLabel.invalidate();
+    }
 
 }

@@ -1,17 +1,13 @@
-
 package org.sat4j.sat.visu;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -31,313 +27,347 @@ import javax.swing.border.TitledBorder;
  */
 public class VisuPreferencesFrame extends JFrame {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private VisuPreferences preferences;
-	private JPanel mainPanel;
-	private JPanel generalOptionsPanel;
-	private JPanel gnuplotOptionsPanel;
-	private JPanel graphPanel;
+    private VisuPreferences preferences;
+    private JPanel mainPanel;
+    private JPanel generalOptionsPanel;
+    private JPanel gnuplotOptionsPanel;
+    private JPanel graphPanel;
 
-	private JLabel backgroundColorLabel;
-	private final static String BACKGROUND_COLOR = "Background color: ";
-	private JButton bgButton;
-	private JLabel borderColorLabel;
-	private final static String BORDER_COLOR = "Border color: ";
-	private JButton borderButton;
+    private JLabel backgroundColorLabel;
+    private final static String BACKGROUND_COLOR = "Background color: ";
+    private JButton bgButton;
+    private JLabel borderColorLabel;
+    private final static String BORDER_COLOR = "Border color: ";
+    private JButton borderButton;
 
-	private JLabel nbLinesReadLabel;
-	private final static String NB_LINE = "Number of lines that should be displayed: ";
-	private JTextField nbLinesTextField;
+    private JLabel nbLinesReadLabel;
+    private final static String NB_LINE = "Number of lines that should be displayed: ";
+    private JTextField nbLinesTextField;
 
-	private JLabel refreshTimeLabel;
-	private final static String REFRESH_TIME = "Refresh Time (in ms): ";
-	private JTextField refreshTimeField;
+    private JLabel refreshTimeLabel;
+    private final static String REFRESH_TIME = "Refresh Time (in ms): ";
+    private JTextField refreshTimeField;
 
-	private JLabel timeBeforeLaunchLabel;
-	private final static String TIME_BEFORE_LAUNCHING = "Time before launching gnuplot (in ms): ";
-	private JTextField timeBeforeLaunchField;
+    private JLabel timeBeforeLaunchLabel;
+    private final static String TIME_BEFORE_LAUNCHING = "Time before launching gnuplot (in ms): ";
+    private JTextField timeBeforeLaunchField;
 
-	private JCheckBox displayRestartsCheckBox;
-	private final static String DISPLAY_RESTARTS = "Display restarts";
+    private JCheckBox displayRestartsCheckBox;
+    private final static String DISPLAY_RESTARTS = "Display restarts";
 
-	private JLabel restartColorLabel;
-	private final static String RESTART_COLOR = "Restart color";
-	private JButton restartButton;
+    private JLabel restartColorLabel;
+    private final static String RESTART_COLOR = "Restart color";
+    private JButton restartButton;
 
-	private JCheckBox slidingWindows;
-	private final static String SLIDING_WINDOWS = "Use sliding windows"; 
+    private JCheckBox slidingWindows;
+    private final static String SLIDING_WINDOWS = "Use sliding windows";
 
-	private JCheckBox displayDecisionIndexesCB;
-	private final static String DECISION_INDEX = "Show index of decision variables";
-	private JCheckBox displaySpeedCB;
-	private final static String SPEED = "Show number of propagations per second";
-	private JCheckBox displayConflictsTrailCB;
-	private final static String CONFLICTS_TRAIL = "Show trail level when a conflict occurs";
-	private JCheckBox displayConflictsDecisionCB;
-	private final static String CONFLICTS_DECISION = "Show decision level when a conflict occurs";
-	private JCheckBox displayVariablesEvaluationCB;
-	private final static String VARIABLE_EVALUATION = "Show variables evaluation";
-	private JCheckBox displayClausesEvaluationCB;
-	private final static String CLAUSES_EVALUATION = "Show clauses evauluation";
-	private JCheckBox displayClausesSizeCB;
-	private final static String CLAUSES_SIZE = "Show size of learned clauses";
-	
-	private JButton okButton;
-	private final static String OK = "OK";
+    private JCheckBox displayDecisionIndexesCB;
+    private final static String DECISION_INDEX = "Show index of decision variables";
+    private JCheckBox displaySpeedCB;
+    private final static String SPEED = "Show number of propagations per second";
+    private JCheckBox displayConflictsTrailCB;
+    private final static String CONFLICTS_TRAIL = "Show trail level when a conflict occurs";
+    private JCheckBox displayConflictsDecisionCB;
+    private final static String CONFLICTS_DECISION = "Show decision level when a conflict occurs";
+    private JCheckBox displayVariablesEvaluationCB;
+    private final static String VARIABLE_EVALUATION = "Show variables evaluation";
+    private JCheckBox displayClausesEvaluationCB;
+    private final static String CLAUSES_EVALUATION = "Show clauses evauluation";
+    private JCheckBox displayClausesSizeCB;
+    private final static String CLAUSES_SIZE = "Show size of learned clauses";
 
-	public VisuPreferencesFrame(){
-		this(new VisuPreferences());
-	}
+    private JButton okButton;
+    private final static String OK = "OK";
 
-	public VisuPreferencesFrame(VisuPreferences pref){
-		super("Visualisation preferences");
-		this.preferences = pref;
-		createAndShowGUI();
-	}
+    public VisuPreferencesFrame() {
+        this(new VisuPreferences());
+    }
 
-	public void createAndShowGUI(){
-		Container c = this.getContentPane();
-		c.setLayout(new BorderLayout());
+    public VisuPreferencesFrame(VisuPreferences pref) {
+        super("Visualisation preferences");
+        this.preferences = pref;
+        createAndShowGUI();
+    }
 
-		createMainPanel();
+    public void createAndShowGUI() {
+        Container c = this.getContentPane();
+        c.setLayout(new BorderLayout());
 
-		JScrollPane scrollPane = new JScrollPane(mainPanel);
-		this.add(scrollPane);
+        createMainPanel();
 
-		this.pack();
-		this.setVisible(false);
-	}
+        JScrollPane scrollPane = new JScrollPane(this.mainPanel);
+        this.add(scrollPane);
 
-	public void createMainPanel(){
-		mainPanel = new JPanel();
-		mainPanel.setLayout(new BorderLayout());
-		
-		generalOptionsPanel = new JPanel();
-		
-		generalOptionsPanel.setName("General options");
-		generalOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(null, generalOptionsPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
+        this.pack();
+        this.setVisible(false);
+    }
 
-		generalOptionsPanel.setLayout(new GridLayout(0, 2,5,5));
-		
-		backgroundColorLabel = new JLabel(BACKGROUND_COLOR);
-		bgButton = new JButton("");
-		bgButton.setOpaque(true);
-		bgButton.setBorderPainted(false);
-		bgButton.setBackground(preferences.getBackgroundColor());
+    public void createMainPanel() {
+        this.mainPanel = new JPanel();
+        this.mainPanel.setLayout(new BorderLayout());
 
-		bgButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(getFrame(), "Background Color", 
-						bgButton.getBackground());
-				preferences.setBackgroundColor(color);
-				bgButton.setBackground(color);
-			}
-		});
+        this.generalOptionsPanel = new JPanel();
 
-		generalOptionsPanel.add(backgroundColorLabel);
-		generalOptionsPanel.add(bgButton);
+        this.generalOptionsPanel.setName("General options");
+        this.generalOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(
+                null, this.generalOptionsPanel.getName(), TitledBorder.LEFT,
+                TitledBorder.TOP), new EmptyBorder(5, 5, 5, 5)));
 
-		borderColorLabel = new JLabel(BORDER_COLOR);
-		borderButton=new JButton("");
-		borderButton.setOpaque(true);
-		borderButton.setBorderPainted(false);
-		borderButton.setBackground(preferences.getBorderColor());
+        this.generalOptionsPanel.setLayout(new GridLayout(0, 2, 5, 5));
 
-		borderButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(getFrame(), "Border Color", 
-						borderButton.getBackground());
-				preferences.setBorderColor(color);
-				borderButton.setBackground(color);
-			}
-		});
+        this.backgroundColorLabel = new JLabel(BACKGROUND_COLOR);
+        this.bgButton = new JButton("");
+        this.bgButton.setOpaque(true);
+        this.bgButton.setBorderPainted(false);
+        this.bgButton.setBackground(this.preferences.getBackgroundColor());
 
-		generalOptionsPanel.add(borderColorLabel);
-		generalOptionsPanel.add(borderButton);
-		
-		restartColorLabel = new JLabel(RESTART_COLOR);
-		restartButton = new JButton("");
-		restartButton.setOpaque(true);
-		restartButton.setBorderPainted(false);
-		restartButton.setBackground(preferences.getRestartColor());
-		
-//		restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
-//		restartButton.setEnabled(displayRestartsCheckBox.isSelected());
+        this.bgButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Color color = JColorChooser.showDialog(getFrame(),
+                        "Background Color",
+                        VisuPreferencesFrame.this.bgButton.getBackground());
+                VisuPreferencesFrame.this.preferences.setBackgroundColor(color);
+                VisuPreferencesFrame.this.bgButton.setBackground(color);
+            }
+        });
 
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Color color = JColorChooser.showDialog(getFrame(), "Restart Color", 
-						restartButton.getBackground());
-				preferences.setRestartColor(color);
-				restartButton.setBackground(color);
-			}
-		});
+        this.generalOptionsPanel.add(this.backgroundColorLabel);
+        this.generalOptionsPanel.add(this.bgButton);
 
-		generalOptionsPanel.add(restartColorLabel);
-		generalOptionsPanel.add(restartButton);
-		
-		
-		
-		gnuplotOptionsPanel = new JPanel();
-		
-		gnuplotOptionsPanel.setName("Gnuplot options");
-		gnuplotOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(null, gnuplotOptionsPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
+        this.borderColorLabel = new JLabel(BORDER_COLOR);
+        this.borderButton = new JButton("");
+        this.borderButton.setOpaque(true);
+        this.borderButton.setBorderPainted(false);
+        this.borderButton.setBackground(this.preferences.getBorderColor());
 
-		gnuplotOptionsPanel.setLayout(new GridLayout(0, 2,5,5));
+        this.borderButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Color color = JColorChooser.showDialog(getFrame(),
+                        "Border Color",
+                        VisuPreferencesFrame.this.borderButton.getBackground());
+                VisuPreferencesFrame.this.preferences.setBorderColor(color);
+                VisuPreferencesFrame.this.borderButton.setBackground(color);
+            }
+        });
 
-		
+        this.generalOptionsPanel.add(this.borderColorLabel);
+        this.generalOptionsPanel.add(this.borderButton);
 
-		slidingWindows = new JCheckBox(SLIDING_WINDOWS);
-		slidingWindows.setSelected(preferences.isSlidingWindows());
+        this.restartColorLabel = new JLabel(RESTART_COLOR);
+        this.restartButton = new JButton("");
+        this.restartButton.setOpaque(true);
+        this.restartButton.setBorderPainted(false);
+        this.restartButton.setBackground(this.preferences.getRestartColor());
 
-		slidingWindows.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				nbLinesReadLabel.setEnabled(slidingWindows.isSelected());
-				nbLinesTextField.setEnabled(slidingWindows.isSelected());
-				preferences.setSlidingWindows(slidingWindows.isSelected());
-			}
-		});
+        // restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
+        // restartButton.setEnabled(displayRestartsCheckBox.isSelected());
 
-		gnuplotOptionsPanel.add(slidingWindows);
-		gnuplotOptionsPanel.add(new JLabel());
+        this.restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Color color = JColorChooser
+                        .showDialog(getFrame(), "Restart Color",
+                                VisuPreferencesFrame.this.restartButton
+                                        .getBackground());
+                VisuPreferencesFrame.this.preferences.setRestartColor(color);
+                VisuPreferencesFrame.this.restartButton.setBackground(color);
+            }
+        });
 
-		nbLinesReadLabel = new JLabel(NB_LINE);
-		nbLinesTextField = new JTextField(preferences.getNbLinesRead()+"");
-		
-		nbLinesReadLabel.setEnabled(slidingWindows.isSelected());
-		nbLinesTextField.setEnabled(slidingWindows.isSelected());
+        this.generalOptionsPanel.add(this.restartColorLabel);
+        this.generalOptionsPanel.add(this.restartButton);
 
-		gnuplotOptionsPanel.add(nbLinesReadLabel);
-		gnuplotOptionsPanel.add(nbLinesTextField);
+        this.gnuplotOptionsPanel = new JPanel();
 
-		refreshTimeLabel = new JLabel(REFRESH_TIME);
-		refreshTimeField = new JTextField(preferences.getRefreshTime()+"");
+        this.gnuplotOptionsPanel.setName("Gnuplot options");
+        this.gnuplotOptionsPanel.setBorder(new CompoundBorder(new TitledBorder(
+                null, this.gnuplotOptionsPanel.getName(), TitledBorder.LEFT,
+                TitledBorder.TOP), new EmptyBorder(5, 5, 5, 5)));
 
-		gnuplotOptionsPanel.add(refreshTimeLabel);
-		gnuplotOptionsPanel.add(refreshTimeField);
+        this.gnuplotOptionsPanel.setLayout(new GridLayout(0, 2, 5, 5));
 
-		timeBeforeLaunchLabel = new JLabel(TIME_BEFORE_LAUNCHING);
-		timeBeforeLaunchField = new JTextField(preferences.getTimeBeforeLaunching()+"");
+        this.slidingWindows = new JCheckBox(SLIDING_WINDOWS);
+        this.slidingWindows.setSelected(this.preferences.isSlidingWindows());
 
-		gnuplotOptionsPanel.add(timeBeforeLaunchLabel);
-		gnuplotOptionsPanel.add(timeBeforeLaunchField);
+        this.slidingWindows.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.nbLinesReadLabel
+                        .setEnabled(VisuPreferencesFrame.this.slidingWindows
+                                .isSelected());
+                VisuPreferencesFrame.this.nbLinesTextField
+                        .setEnabled(VisuPreferencesFrame.this.slidingWindows
+                                .isSelected());
+                VisuPreferencesFrame.this.preferences
+                        .setSlidingWindows(VisuPreferencesFrame.this.slidingWindows
+                                .isSelected());
+            }
+        });
 
-		displayRestartsCheckBox = new JCheckBox(DISPLAY_RESTARTS);
-		displayRestartsCheckBox.setSelected(preferences.isDisplayRestarts());
+        this.gnuplotOptionsPanel.add(this.slidingWindows);
+        this.gnuplotOptionsPanel.add(new JLabel());
 
-		displayRestartsCheckBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
-				restartButton.setEnabled(displayRestartsCheckBox.isSelected());
-				preferences.setDisplayRestarts(displayRestartsCheckBox.isSelected());
-			}
-		});
+        this.nbLinesReadLabel = new JLabel(NB_LINE);
+        this.nbLinesTextField = new JTextField(
+                this.preferences.getNbLinesRead() + "");
 
-		gnuplotOptionsPanel.add(displayRestartsCheckBox);
-		gnuplotOptionsPanel.add(new JLabel());
+        this.nbLinesReadLabel.setEnabled(this.slidingWindows.isSelected());
+        this.nbLinesTextField.setEnabled(this.slidingWindows.isSelected());
 
-		
+        this.gnuplotOptionsPanel.add(this.nbLinesReadLabel);
+        this.gnuplotOptionsPanel.add(this.nbLinesTextField);
 
-		okButton = new JButton(OK);
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				getFrame().setVisible(false);
-			}
-		});
-		
-//		graphOptionsPanel.add(new JLabel());
-		graphPanel = new JPanel();
-		graphPanel.setLayout(new BoxLayout(graphPanel, BoxLayout.Y_AXIS));
-		
-		graphPanel.setName("Possible Graphs");
-		graphPanel.setBorder(new CompoundBorder(new TitledBorder(null, graphPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(5,5,5,5)));
-		
-		
-		displayClausesEvaluationCB = new JCheckBox(CLAUSES_EVALUATION);
-		graphPanel.add(displayClausesEvaluationCB);
-		displayClausesEvaluationCB.setSelected(preferences.isDisplayClausesEvaluation());
-		displayClausesEvaluationCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayClausesEvaluation(displayClausesEvaluationCB.isSelected());
-			}
-		});
-		
-		displayClausesSizeCB = new JCheckBox(CLAUSES_SIZE);
-		graphPanel.add(displayClausesSizeCB);
-		displayClausesSizeCB.setSelected(preferences.isDisplayClausesSize());
-		displayClausesSizeCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayClausesSize(displayClausesSizeCB.isSelected());
-			}
-		});
-		
-		displayConflictsDecisionCB = new JCheckBox(CONFLICTS_DECISION);
-		graphPanel.add(displayConflictsDecisionCB);
-		displayConflictsDecisionCB.setSelected(preferences.isDisplayConflictsDecision());
-		displayConflictsDecisionCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayConflictsDecision(displayConflictsDecisionCB.isSelected());
-			}
-		});
-		
-		displayConflictsTrailCB = new JCheckBox(CONFLICTS_TRAIL);
-		graphPanel.add(displayConflictsTrailCB);
-		displayConflictsTrailCB.setSelected(preferences.isDisplayConflictsTrail());
-		displayConflictsTrailCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayConflictsTrail(displayConflictsTrailCB.isSelected());
-			}
-		});
-		
-		displayDecisionIndexesCB = new JCheckBox(DECISION_INDEX);
-		graphPanel.add(displayDecisionIndexesCB);
-		displayDecisionIndexesCB.setSelected(preferences.isDisplayDecisionIndexes());
-		displayDecisionIndexesCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayDecisionIndexes(displayDecisionIndexesCB.isSelected());
-			}
-		});
-		
-		displaySpeedCB = new JCheckBox(SPEED);
-		graphPanel.add(displaySpeedCB);
-		displaySpeedCB.setSelected(preferences.isDisplaySpeed());
-		displaySpeedCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplaySpeed(displaySpeedCB.isSelected());
-			}
-		});
-		
-		displayVariablesEvaluationCB = new JCheckBox(VARIABLE_EVALUATION);
-		graphPanel.add(displayVariablesEvaluationCB);
-		displayVariablesEvaluationCB.setSelected(preferences.isDisplayVariablesEvaluation());
-		displayVariablesEvaluationCB.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				preferences.setDisplayVariablesEvaluation(displayVariablesEvaluationCB.isSelected());
-			}
-		});
-		
-		
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		
-		topPanel.add(generalOptionsPanel);
-		topPanel.add(gnuplotOptionsPanel);
-		
-		mainPanel.add(topPanel,BorderLayout.NORTH);
-		mainPanel.add(graphPanel,BorderLayout.CENTER);
-		mainPanel.add(okButton,BorderLayout.SOUTH);
-	}
+        this.refreshTimeLabel = new JLabel(REFRESH_TIME);
+        this.refreshTimeField = new JTextField(
+                this.preferences.getRefreshTime() + "");
 
-	public JFrame getFrame(){
-		return this;
-	}
+        this.gnuplotOptionsPanel.add(this.refreshTimeLabel);
+        this.gnuplotOptionsPanel.add(this.refreshTimeField);
 
+        this.timeBeforeLaunchLabel = new JLabel(TIME_BEFORE_LAUNCHING);
+        this.timeBeforeLaunchField = new JTextField(
+                this.preferences.getTimeBeforeLaunching() + "");
 
+        this.gnuplotOptionsPanel.add(this.timeBeforeLaunchLabel);
+        this.gnuplotOptionsPanel.add(this.timeBeforeLaunchField);
 
+        this.displayRestartsCheckBox = new JCheckBox(DISPLAY_RESTARTS);
+        this.displayRestartsCheckBox.setSelected(this.preferences
+                .isDisplayRestarts());
 
+        this.displayRestartsCheckBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.restartColorLabel
+                        .setEnabled(VisuPreferencesFrame.this.displayRestartsCheckBox
+                                .isSelected());
+                VisuPreferencesFrame.this.restartButton
+                        .setEnabled(VisuPreferencesFrame.this.displayRestartsCheckBox
+                                .isSelected());
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayRestarts(VisuPreferencesFrame.this.displayRestartsCheckBox
+                                .isSelected());
+            }
+        });
+
+        this.gnuplotOptionsPanel.add(this.displayRestartsCheckBox);
+        this.gnuplotOptionsPanel.add(new JLabel());
+
+        this.okButton = new JButton(OK);
+        this.okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getFrame().setVisible(false);
+            }
+        });
+
+        // graphOptionsPanel.add(new JLabel());
+        this.graphPanel = new JPanel();
+        this.graphPanel.setLayout(new BoxLayout(this.graphPanel,
+                BoxLayout.Y_AXIS));
+
+        this.graphPanel.setName("Possible Graphs");
+        this.graphPanel.setBorder(new CompoundBorder(
+                new TitledBorder(null, this.graphPanel.getName(),
+                        TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(
+                        5, 5, 5, 5)));
+
+        this.displayClausesEvaluationCB = new JCheckBox(CLAUSES_EVALUATION);
+        this.graphPanel.add(this.displayClausesEvaluationCB);
+        this.displayClausesEvaluationCB.setSelected(this.preferences
+                .isDisplayClausesEvaluation());
+        this.displayClausesEvaluationCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayClausesEvaluation(VisuPreferencesFrame.this.displayClausesEvaluationCB
+                                .isSelected());
+            }
+        });
+
+        this.displayClausesSizeCB = new JCheckBox(CLAUSES_SIZE);
+        this.graphPanel.add(this.displayClausesSizeCB);
+        this.displayClausesSizeCB.setSelected(this.preferences
+                .isDisplayClausesSize());
+        this.displayClausesSizeCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayClausesSize(VisuPreferencesFrame.this.displayClausesSizeCB
+                                .isSelected());
+            }
+        });
+
+        this.displayConflictsDecisionCB = new JCheckBox(CONFLICTS_DECISION);
+        this.graphPanel.add(this.displayConflictsDecisionCB);
+        this.displayConflictsDecisionCB.setSelected(this.preferences
+                .isDisplayConflictsDecision());
+        this.displayConflictsDecisionCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayConflictsDecision(VisuPreferencesFrame.this.displayConflictsDecisionCB
+                                .isSelected());
+            }
+        });
+
+        this.displayConflictsTrailCB = new JCheckBox(CONFLICTS_TRAIL);
+        this.graphPanel.add(this.displayConflictsTrailCB);
+        this.displayConflictsTrailCB.setSelected(this.preferences
+                .isDisplayConflictsTrail());
+        this.displayConflictsTrailCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayConflictsTrail(VisuPreferencesFrame.this.displayConflictsTrailCB
+                                .isSelected());
+            }
+        });
+
+        this.displayDecisionIndexesCB = new JCheckBox(DECISION_INDEX);
+        this.graphPanel.add(this.displayDecisionIndexesCB);
+        this.displayDecisionIndexesCB.setSelected(this.preferences
+                .isDisplayDecisionIndexes());
+        this.displayDecisionIndexesCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplayDecisionIndexes(VisuPreferencesFrame.this.displayDecisionIndexesCB
+                                .isSelected());
+            }
+        });
+
+        this.displaySpeedCB = new JCheckBox(SPEED);
+        this.graphPanel.add(this.displaySpeedCB);
+        this.displaySpeedCB.setSelected(this.preferences.isDisplaySpeed());
+        this.displaySpeedCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                VisuPreferencesFrame.this.preferences
+                        .setDisplaySpeed(VisuPreferencesFrame.this.displaySpeedCB
+                                .isSelected());
+            }
+        });
+
+        this.displayVariablesEvaluationCB = new JCheckBox(VARIABLE_EVALUATION);
+        this.graphPanel.add(this.displayVariablesEvaluationCB);
+        this.displayVariablesEvaluationCB.setSelected(this.preferences
+                .isDisplayVariablesEvaluation());
+        this.displayVariablesEvaluationCB
+                .addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        VisuPreferencesFrame.this.preferences
+                                .setDisplayVariablesEvaluation(VisuPreferencesFrame.this.displayVariablesEvaluationCB
+                                        .isSelected());
+                    }
+                });
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
+        topPanel.add(this.generalOptionsPanel);
+        topPanel.add(this.gnuplotOptionsPanel);
+
+        this.mainPanel.add(topPanel, BorderLayout.NORTH);
+        this.mainPanel.add(this.graphPanel, BorderLayout.CENTER);
+        this.mainPanel.add(this.okButton, BorderLayout.SOUTH);
+    }
+
+    public JFrame getFrame() {
+        return this;
+    }
 
 }

@@ -53,7 +53,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
-import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.sat.visu.VisuPreferencesFrame;
@@ -63,311 +62,312 @@ import org.sat4j.sat.visu.VisuPreferencesFrame;
  * JFrame for the remote control.
  * 
  * @author sroussel
- *
+ * 
  */
-public class RemoteControlFrame extends JFrame implements ICDCLLogger{
+public class RemoteControlFrame extends JFrame implements ICDCLLogger {
 
-
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
+    private String lookAndFeel;
 
-	private String lookAndFeel;
+    public static final Dimension dim = Toolkit.getDefaultToolkit()
+            .getScreenSize();
 
+    private JMenuBar barreMenu;
+    private JMenu menu;
+    private JMenuItem activateTracing;
 
-	public static final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    private DetailedCommandPanel commandePanel;
+    private String filename;
 
-	private JMenuBar barreMenu;
-	private JMenu menu;
-	private JMenuItem activateTracing;
-	
-	private DetailedCommandPanel commandePanel;
-	private String filename;
-	
-	private String ramdisk;
+    private String ramdisk;
 
-	private RemoteControlStrategy telecomStrategy;
-	private RandomWalkDecorator randomWalk;
-//	private ICDCL solver;
-	private String[] args;
-	private VisuPreferencesFrame visuFrame;
-	
-	private final static String ACTIVATE  = "Activate Tracing";
-	private final static String DEACTIVATE  = "Deactivate Tracing";
-	
-	private JRadioButtonMenuItem gnuplotBasedRadio;
-	private JRadioButtonMenuItem jChartBasedRadio;
+    private RemoteControlStrategy telecomStrategy;
+    private RandomWalkDecorator randomWalk;
+    // private ICDCL solver;
+    private String[] args;
+    private VisuPreferencesFrame visuFrame;
 
-	public RemoteControlFrame(String filename, String ramdisk, String[] args){
-		super("Remote Control");
-		
-		this.filename=filename;
-		this.ramdisk=ramdisk;
-//		this.solver=solver;
-		this.args=args;
-		initLookAndFeel();
+    private final static String ACTIVATE = "Activate Tracing";
+    private final static String DEACTIVATE = "Deactivate Tracing";
 
-		createAndShowGUI();
-	}
-	
-//	public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
-//		super("Remote Control");
-//		
-//		this.filename=filename;
-//		this.ramdisk=ramdisk;
-//		this.solver=solver;
-//		initLookAndFeel();
-//
-//		createAndShowGUI();
-//	}
-	
-	public RemoteControlFrame(String filename, String ramdisk){	
-		this(filename, ramdisk,new String[]{});
-	}
-	
-	public RemoteControlFrame(String filename){	
-		this(filename, "",new String[]{});
-	}
-	
-//	public RemoteControlFrame(String filename, ICDCL solver){	
-//		this(filename, "",solver);
-//	}
+    private JRadioButtonMenuItem gnuplotBasedRadio;
+    private JRadioButtonMenuItem jChartBasedRadio;
 
-	public RemoteControlFrame(String filename, String[] args){	
-		this(filename, "",args);
-	}
+    public RemoteControlFrame(String filename, String ramdisk, String[] args) {
+        super("Remote Control");
 
-	public void reinitialiser(){
-	}
+        this.filename = filename;
+        this.ramdisk = ramdisk;
+        // this.solver=solver;
+        this.args = args;
+        initLookAndFeel();
 
-	
-	public void setActivateGnuplot(boolean b){
-		activateTracing.setSelected(b);
-		activateTracing(b);
-	}
+        createAndShowGUI();
+    }
 
-	public void initLookAndFeel(){
-		JFrame.setDefaultLookAndFeelDecorated(true);
-	}
+    // public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
+    // super("Remote Control");
+    //
+    // this.filename=filename;
+    // this.ramdisk=ramdisk;
+    // this.solver=solver;
+    // initLookAndFeel();
+    //
+    // createAndShowGUI();
+    // }
 
-	public void createAndShowGUI(){
-		Container c = this.getContentPane();
-		c.setLayout(new BorderLayout());
+    public RemoteControlFrame(String filename, String ramdisk) {
+        this(filename, ramdisk, new String[] {});
+    }
 
-		
-		createMenuBar();
-		
-		commandePanel = new DetailedCommandPanel(filename,ramdisk,args,this);
-		
-		commandePanel.setChartBased(true);
-		commandePanel.activateGnuplotTracing(true);
-		
-		visuFrame = new VisuPreferencesFrame(
-				commandePanel.getGnuplotPreferences());
-		
-		JScrollPane scrollPane = new JScrollPane(commandePanel);
-		
-		this.add(scrollPane);
+    public RemoteControlFrame(String filename) {
+        this(filename, "", new String[] {});
+    }
 
-		// this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter() {
-			
-			public void windowClosing(WindowEvent e) {
-				commandePanel.stopVisu();
-				System.exit(NORMAL);				
-			}
-			
-		});
-		
-		this.pack();
-		this.setVisible(true);
-	}
-	
-	public void clickOnAboutSolver(){
-		if(commandePanel.getSolver()!=null)
-		JOptionPane.showMessageDialog(this,
-			    commandePanel.getSolver().toString());
-		else{
-			JOptionPane.showMessageDialog(this,
-				    "No solver is running at the moment. Please start solver.");
-		}
-	}
-	
-	public void setActivateTracingEditableUnderCondition(boolean b){
-		if(activateTracing.getText().equals(ACTIVATE))
-			this.activateTracing.setEnabled(b);
-	}
-	
-	public void setActivateTracingEditable(boolean b){
-			this.activateTracing.setEnabled(b);
-	}
+    // public RemoteControlFrame(String filename, ICDCL solver){
+    // this(filename, "",solver);
+    // }
 
-	public void createMenuBar(){
-		barreMenu = new JMenuBar();
-		menu = new JMenu("File");
-		barreMenu.add(menu);
-		
-//		JMenuItem aboutSolver = new JMenuItem("About Solver");
-//		menu.add(aboutSolver);
-//		
-//		aboutSolver.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				clickOnAboutSolver();
-//			}
-//		});
-		
-		activateTracing = new JMenuItem(DEACTIVATE);
-		menu.add(activateTracing);
-		
-		activateTracing.addActionListener(new ActionListener() {		
-			public void actionPerformed(ActionEvent e) {
-				activateTracing(activateTracing.getText().equals(ACTIVATE));
-			}
-		});
-		
-		menu.addSeparator();
+    public RemoteControlFrame(String filename, String[] args) {
+        this(filename, "", args);
+    }
 
-		gnuplotBasedRadio = new JRadioButtonMenuItem("Trace with Gnuplot");
-		jChartBasedRadio = new JRadioButtonMenuItem("Trace with Java");
-		
-		ButtonGroup visuGroup = new ButtonGroup();
-		visuGroup.add(gnuplotBasedRadio);
-		visuGroup.add(jChartBasedRadio);
-		
-		menu.add(gnuplotBasedRadio);
-		
-		gnuplotBasedRadio.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				commandePanel.setGnuplotBased(true);
-				commandePanel.setChartBased(false);
-				commandePanel.activateGnuplotTracing(activateTracing.getText().equals(DEACTIVATE));
-//				activateTracing(is)
-				log("Use gnuplot tracing");
-			}
-		});
-		jChartBasedRadio.setSelected(true);
-		
-		menu.add(jChartBasedRadio);
-		
-		jChartBasedRadio.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				commandePanel.setGnuplotBased(false);
-				commandePanel.setChartBased(true);
-				commandePanel.activateGnuplotTracing(activateTracing.getText().equals(DEACTIVATE));
-				log("Use java tracing");
-			}
-		});
-		
-//		JMenuItem reinitialiserItem = new JMenuItem("RŽinitialiser");
-//		menu.add(reinitialiserItem);
-//
-//		reinitialiserItem.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				reinitialiser();
-//			}
-//		});
-		
-		menu.addSeparator();
+    public void reinitialiser() {
+    }
 
-		JMenuItem quit = new JMenuItem("Exit");
-		menu.add(quit);
+    public void setActivateGnuplot(boolean b) {
+        this.activateTracing.setSelected(b);
+        activateTracing(b);
+    }
 
-		quit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-//				String[] cmdarray = new String[]{"killall","gnuplot"};
-//				try{
-//					Runtime.getRuntime().exec(cmdarray);
-//				}
-//				catch(IOException ex){
-//					ex.printStackTrace();
-//				}
-//				System.exit(NORMAL);
-				commandePanel.stopVisu();
-				System.exit(NORMAL);
-			}
-		});
-		
-		JMenu preferences = new JMenu("Preferences");
-		JMenuItem gnuplotPreferencesItem = new JMenuItem("Visualisation preferences");
-		
-		gnuplotPreferencesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				visuFrame.setVisible(true);
-			}
-		});
-		
-		preferences.add(gnuplotPreferencesItem);
+    public void initLookAndFeel() {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+    }
 
-		barreMenu.add(preferences);
-		
-		
-		barreMenu.add(Box.createHorizontalGlue());
-		
-		//...create the rightmost menu...
-		JLabel version = new JLabel(getVersion());
-		barreMenu.add(version);
-		
-		this.setJMenuBar(barreMenu);
-		
-	}
-	
-	public void log(String message){
-		commandePanel.log(message);
-	}
-	
-	private String getVersion(){
-		URL url = RemoteControlFrame.class.getResource("/sat4j.version"); //$NON-NLS-1$
-		String s="";
-		if (url == null) {
-			s = "no version file found!!!"; //$NON-NLS-1$			
-		} else {
-			BufferedReader in = null;
-			try {
-				in = new BufferedReader(new InputStreamReader(url.openStream()));
-				s = "version " + in.readLine(); //$NON-NLS-1$
-			} catch (IOException e) {
-				s = "c ERROR: " + e.getMessage();
-			} finally {
-				if (in != null) {
-					try {
-						in.close();
-					} catch (IOException e) {
-						s = "c ERROR: " + e.getMessage();
-					}
-				}
-			}
-		}
-		return s;
-	}
-	
-	public void activateTracing(boolean b){
-		if(b){
-			log("Activated tracing");
-			activateTracing.setText(DEACTIVATE);
-//			commandePanel.startVisu();
-			commandePanel.setPlotActivated(true);
-		}
-		else{
-			log("Deactivated tracing.");
-			activateTracing.setText(ACTIVATE);
-			commandePanel.stopVisu();
-			commandePanel.setPlotActivated(false);
-//			commandePanel.activateGnuplotTracing(b);
-		}
-		if(commandePanel.getStartStopText().equals("Stop") && activateTracing.getText().equals(ACTIVATE)){
-			activateTracing.setEnabled(false);
-		}
-		else 
-			activateTracing.setEnabled(true);
-	}
-	
-	public void setOptimisationMode(boolean optimizationMode){
-		commandePanel.setOptimisationMode(optimizationMode);
-	}
+    public void createAndShowGUI() {
+        Container c = this.getContentPane();
+        c.setLayout(new BorderLayout());
 
+        createMenuBar();
 
+        this.commandePanel = new DetailedCommandPanel(this.filename,
+                this.ramdisk, this.args, this);
 
+        this.commandePanel.setChartBased(true);
+        this.commandePanel.activateGnuplotTracing(true);
+
+        this.visuFrame = new VisuPreferencesFrame(
+                this.commandePanel.getGnuplotPreferences());
+
+        JScrollPane scrollPane = new JScrollPane(this.commandePanel);
+
+        this.add(scrollPane);
+
+        // this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                RemoteControlFrame.this.commandePanel.stopVisu();
+                System.exit(NORMAL);
+            }
+
+        });
+
+        this.pack();
+        this.setVisible(true);
+    }
+
+    public void clickOnAboutSolver() {
+        if (this.commandePanel.getSolver() != null) {
+            JOptionPane.showMessageDialog(this, this.commandePanel.getSolver()
+                    .toString());
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "No solver is running at the moment. Please start solver.");
+        }
+    }
+
+    public void setActivateTracingEditableUnderCondition(boolean b) {
+        if (this.activateTracing.getText().equals(ACTIVATE)) {
+            this.activateTracing.setEnabled(b);
+        }
+    }
+
+    public void setActivateTracingEditable(boolean b) {
+        this.activateTracing.setEnabled(b);
+    }
+
+    public void createMenuBar() {
+        this.barreMenu = new JMenuBar();
+        this.menu = new JMenu("File");
+        this.barreMenu.add(this.menu);
+
+        // JMenuItem aboutSolver = new JMenuItem("About Solver");
+        // menu.add(aboutSolver);
+        //
+        // aboutSolver.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // clickOnAboutSolver();
+        // }
+        // });
+
+        this.activateTracing = new JMenuItem(DEACTIVATE);
+        this.menu.add(this.activateTracing);
+
+        this.activateTracing.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                activateTracing(RemoteControlFrame.this.activateTracing
+                        .getText().equals(ACTIVATE));
+            }
+        });
+
+        this.menu.addSeparator();
+
+        this.gnuplotBasedRadio = new JRadioButtonMenuItem("Trace with Gnuplot");
+        this.jChartBasedRadio = new JRadioButtonMenuItem("Trace with Java");
+
+        ButtonGroup visuGroup = new ButtonGroup();
+        visuGroup.add(this.gnuplotBasedRadio);
+        visuGroup.add(this.jChartBasedRadio);
+
+        this.menu.add(this.gnuplotBasedRadio);
+
+        this.gnuplotBasedRadio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RemoteControlFrame.this.commandePanel.setGnuplotBased(true);
+                RemoteControlFrame.this.commandePanel.setChartBased(false);
+                RemoteControlFrame.this.commandePanel
+                        .activateGnuplotTracing(RemoteControlFrame.this.activateTracing
+                                .getText().equals(DEACTIVATE));
+                // activateTracing(is)
+                log("Use gnuplot tracing");
+            }
+        });
+        this.jChartBasedRadio.setSelected(true);
+
+        this.menu.add(this.jChartBasedRadio);
+
+        this.jChartBasedRadio.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RemoteControlFrame.this.commandePanel.setGnuplotBased(false);
+                RemoteControlFrame.this.commandePanel.setChartBased(true);
+                RemoteControlFrame.this.commandePanel
+                        .activateGnuplotTracing(RemoteControlFrame.this.activateTracing
+                                .getText().equals(DEACTIVATE));
+                log("Use java tracing");
+            }
+        });
+
+        // JMenuItem reinitialiserItem = new JMenuItem("Rï¿½initialiser");
+        // menu.add(reinitialiserItem);
+        //
+        // reinitialiserItem.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // reinitialiser();
+        // }
+        // });
+
+        this.menu.addSeparator();
+
+        JMenuItem quit = new JMenuItem("Exit");
+        this.menu.add(quit);
+
+        quit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // String[] cmdarray = new String[]{"killall","gnuplot"};
+                // try{
+                // Runtime.getRuntime().exec(cmdarray);
+                // }
+                // catch(IOException ex){
+                // ex.printStackTrace();
+                // }
+                // System.exit(NORMAL);
+                RemoteControlFrame.this.commandePanel.stopVisu();
+                System.exit(NORMAL);
+            }
+        });
+
+        JMenu preferences = new JMenu("Preferences");
+        JMenuItem gnuplotPreferencesItem = new JMenuItem(
+                "Visualisation preferences");
+
+        gnuplotPreferencesItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RemoteControlFrame.this.visuFrame.setVisible(true);
+            }
+        });
+
+        preferences.add(gnuplotPreferencesItem);
+
+        this.barreMenu.add(preferences);
+
+        this.barreMenu.add(Box.createHorizontalGlue());
+
+        // ...create the rightmost menu...
+        JLabel version = new JLabel(getVersion());
+        this.barreMenu.add(version);
+
+        this.setJMenuBar(this.barreMenu);
+
+    }
+
+    public void log(String message) {
+        this.commandePanel.log(message);
+    }
+
+    private String getVersion() {
+        URL url = RemoteControlFrame.class.getResource("/sat4j.version"); //$NON-NLS-1$
+        String s = "";
+        if (url == null) {
+            s = "no version file found!!!"; //$NON-NLS-1$			
+        } else {
+            BufferedReader in = null;
+            try {
+                in = new BufferedReader(new InputStreamReader(url.openStream()));
+                s = "version " + in.readLine(); //$NON-NLS-1$
+            } catch (IOException e) {
+                s = "c ERROR: " + e.getMessage();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        s = "c ERROR: " + e.getMessage();
+                    }
+                }
+            }
+        }
+        return s;
+    }
+
+    public void activateTracing(boolean b) {
+        if (b) {
+            log("Activated tracing");
+            this.activateTracing.setText(DEACTIVATE);
+            // commandePanel.startVisu();
+            this.commandePanel.setPlotActivated(true);
+        } else {
+            log("Deactivated tracing.");
+            this.activateTracing.setText(ACTIVATE);
+            this.commandePanel.stopVisu();
+            this.commandePanel.setPlotActivated(false);
+            // commandePanel.activateGnuplotTracing(b);
+        }
+        if (this.commandePanel.getStartStopText().equals("Stop")
+                && this.activateTracing.getText().equals(ACTIVATE)) {
+            this.activateTracing.setEnabled(false);
+        } else {
+            this.activateTracing.setEnabled(true);
+        }
+    }
+
+    public void setOptimisationMode(boolean optimizationMode) {
+        this.commandePanel.setOptimisationMode(optimizationMode);
+    }
 
 }

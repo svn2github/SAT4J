@@ -40,275 +40,268 @@ import org.sat4j.minisat.restarts.NoRestarts;
 
 /**
  * 
- * Strategy used by the solver when launched with the remote control. 
+ * Strategy used by the solver when launched with the remote control.
  * 
  * @author sroussel
- *
+ * 
  */
-public class RemoteControlStrategy implements RestartStrategy, IPhaseSelectionStrategy{
+public class RemoteControlStrategy implements RestartStrategy,
+        IPhaseSelectionStrategy {
 
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
+    private RestartStrategy restart;
+    private IPhaseSelectionStrategy phaseSelectionStrategy;
 
-	private RestartStrategy restart;
-	private IPhaseSelectionStrategy phaseSelectionStrategy;
+    private ICDCLLogger logger;
 
+    private boolean isInterrupted;
 
-	private ICDCLLogger logger;
+    private boolean hasClickedOnRestart;
+    private boolean hasClickedOnClean;
 
-	private boolean isInterrupted;
+    private int conflictNumber;
+    private int nbClausesAtWhichWeShouldClean;
 
-	private boolean hasClickedOnRestart;
-	private boolean hasClickedOnClean;
+    private boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
 
-	private int conflictNumber;
-	private int nbClausesAtWhichWeShouldClean;
-	
-	private boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
+    private ICDCL solver;
 
-	private ICDCL solver;
+    public RemoteControlStrategy(ICDCLLogger log) {
+        this.hasClickedOnClean = false;
+        this.hasClickedOnRestart = false;
+        this.restart = new NoRestarts();
+        this.phaseSelectionStrategy = new RSATPhaseSelectionStrategy();
+        this.logger = log;
+        this.isInterrupted = false;
+        this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = false;
+    }
 
-	public RemoteControlStrategy(ICDCLLogger log){
-		hasClickedOnClean = false;
-		hasClickedOnRestart = false;
-		restart=new NoRestarts();
-		phaseSelectionStrategy=new RSATPhaseSelectionStrategy();
-		this.logger=log;
-		this.isInterrupted=false;
-		this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = false;
-	}
+    public RemoteControlStrategy() {
+        this(null);
+    }
 
-	public RemoteControlStrategy(){
-		this(null);
-	}
+    public boolean isHasClickedOnRestart() {
+        return this.hasClickedOnRestart;
+    }
 
+    public void setHasClickedOnRestart(boolean hasClickedOnRestart) {
+        this.hasClickedOnRestart = hasClickedOnRestart;
+    }
 
-	public boolean isHasClickedOnRestart() {
-		return hasClickedOnRestart;
-	}
+    public boolean isHasClickedOnClean() {
+        return this.hasClickedOnClean;
+    }
 
-	public void setHasClickedOnRestart(boolean hasClickedOnRestart) {
-		this.hasClickedOnRestart = hasClickedOnRestart;
-	}
+    public void setHasClickedOnClean(boolean hasClickedOnClean) {
+        this.hasClickedOnClean = hasClickedOnClean;
+        clickedOnClean();
+    }
 
+    public boolean isUseTelecomStrategyAsLearnedConstraintsDeletionStrategy() {
+        return this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
+    }
 
-	public boolean isHasClickedOnClean() {
-		return hasClickedOnClean;
-	}
+    public void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(
+            boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
+        this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
+    }
 
+    public void clickedOnClean() {
+        if (this.hasClickedOnClean) {
+            this.solver.setNeedToReduceDB(true);
+            this.hasClickedOnClean = false;
+        }
+    }
 
-	public void setHasClickedOnClean(boolean hasClickedOnClean) {
-		this.hasClickedOnClean = hasClickedOnClean;
-		clickedOnClean();
-	}
-	
+    public RestartStrategy getRestartStrategy() {
+        return this.restart;
+    }
 
-	public boolean isUseTelecomStrategyAsLearnedConstraintsDeletionStrategy() {
-		return useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
-	}
+    public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
+        return this.phaseSelectionStrategy;
+    }
 
-	public void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy(
-			boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
-		this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy = useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
-	}
+    public void setPhaseSelectionStrategy(
+            IPhaseSelectionStrategy phaseSelectionStrategy) {
+        this.phaseSelectionStrategy = phaseSelectionStrategy;
+    }
 
-	public void clickedOnClean(){
-		if(hasClickedOnClean){
-			solver.setNeedToReduceDB(true);
-			hasClickedOnClean=false;
-		}
-	}
+    public void setRestartStrategy(RestartStrategy restart) {
+        this.restart = restart;
+    }
 
-	public RestartStrategy getRestartStrategy() {
-		return restart;
-	}
+    public int getNbClausesAtWhichWeShouldClean() {
+        return this.nbClausesAtWhichWeShouldClean;
+    }
 
-	public IPhaseSelectionStrategy getPhaseSelectionStrategy() {
-		return phaseSelectionStrategy;
-	}
+    public void setNbClausesAtWhichWeShouldClean(
+            int nbClausesAtWhichWeShouldClean) {
+        this.nbClausesAtWhichWeShouldClean = nbClausesAtWhichWeShouldClean;
+    }
 
-	public void setPhaseSelectionStrategy(
-			IPhaseSelectionStrategy phaseSelectionStrategy) {
-		this.phaseSelectionStrategy = phaseSelectionStrategy;
-	}
+    public ICDCLLogger getLogger() {
+        return this.logger;
+    }
 
-	public void setRestartStrategy(RestartStrategy restart) {
-		this.restart = restart;
-	}
+    public void setLogger(ICDCLLogger logger) {
+        this.logger = logger;
+    }
 
-	public int getNbClausesAtWhichWeShouldClean() {
-		return nbClausesAtWhichWeShouldClean;
-	}
+    public void init(SearchParams params) {
+        this.restart.init(params);
+    }
 
-	public void setNbClausesAtWhichWeShouldClean(int nbClausesAtWhichWeShouldClean) {
-		this.nbClausesAtWhichWeShouldClean = nbClausesAtWhichWeShouldClean;
-	}
+    public long nextRestartNumberOfConflict() {
+        return this.restart.nextRestartNumberOfConflict();
+    }
 
-	public ICDCLLogger getLogger() {
-		return logger;
-	}
+    public boolean shouldRestart() {
+        if (this.hasClickedOnRestart) {
+            this.hasClickedOnRestart = false;
+            this.logger.log("Told the solver to restart");
+            return true;
+        }
+        return this.restart.shouldRestart();
+    }
 
-	public void setLogger(ICDCLLogger logger) {
-		this.logger = logger;
-	}
+    public void onRestart() {
+        // logger.log("Has restarted");
+        this.restart.onRestart();
+    }
 
-	public void init(SearchParams params) {
-		restart.init(params);
-	}
+    public void onBackjumpToRootLevel() {
+        this.restart.onBackjumpToRootLevel();
+    }
 
-	public long nextRestartNumberOfConflict() {
-		return restart.nextRestartNumberOfConflict();
-	}
+    public SearchParams getSearchParams() {
+        return this.restart.getSearchParams();
+    }
 
-	public boolean shouldRestart() {
-		if(hasClickedOnRestart){
-			hasClickedOnRestart=false;
-			logger.log("Told the solver to restart");
-			return true;
-		}
-		return restart.shouldRestart();
-	}
+    public ICDCL getSolver() {
+        return this.solver;
+    }
 
-	public void onRestart() {
-		//logger.log("Has restarted");
-		restart.onRestart();
-	}
+    public void setSolver(ICDCL solver) {
+        this.solver = solver;
+    }
 
-	public void onBackjumpToRootLevel() {
-		restart.onBackjumpToRootLevel();
-	}
+    public void reset() {
+        this.restart.newConflict();
+    }
 
-	public SearchParams getSearchParams(){
-		return restart.getSearchParams();
-	}
+    public void newConflict() {
+        this.restart.newConflict();
+        this.conflictNumber++;
+        if (this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
+            if (this.conflictNumber > this.nbClausesAtWhichWeShouldClean) {
+                // logger.log("we should clean now because " + conflictNumber +
+                // " > " + nbClausesAtWhichWeShouldClean);
+                // hasClickedOnClean=true;
+                this.conflictNumber = 0;
+                this.solver.setNeedToReduceDB(true);
+            }
+        }
+    }
 
+    // public void init() {
+    //
+    // }
+    //
+    // public ConflictTimer getTimer() {
+    // return this;
+    // }
 
-	public ICDCL getSolver() {
-		return solver;
-	}
+    // public void reduce(IVec<Constr> learnts) {
+    // //System.out.println("je suis lï¿½ ??");
+    // //assert hasClickedOnClean;
+    //
+    // int i, j;
+    // for (i = j = 0; i < learnts.size() / 2; i++) {
+    // Constr c = learnts.get(i);
+    // if (c.locked() || c.size() == 2) {
+    // learnts.set(j++, learnts.get(i));
+    // } else {
+    // c.remove(getSolver());
+    // }
+    // }
+    // for (; i < learnts.size(); i++) {
+    // learnts.set(j++, learnts.get(i));
+    // }
+    // if (true) {
+    //			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
+    //					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
+    // }
+    // learnts.shrinkTo(j);
+    //
+    // hasClickedOnClean=false;
+    // }
 
+    // public void onConflict(Constr outLearnt) {
+    // conflictNumber++;
+    // if(conflictNumber>nbClausesAtWhichWeShouldClean){
+    // //hasClickedOnClean=true;
+    // conflictNumber=0;
+    // solver.setNeedToReduceDB(true);
+    // }
+    // }
+    //
+    // public void onConflictAnalysis(Constr reason) {
+    // // TODO Auto-generated method stub
+    //
+    // }
 
-	public void setSolver(ICDCL solver) {
-		this.solver = solver;
-	}
+    public void updateVar(int p) {
+        this.phaseSelectionStrategy.updateVar(p);
+    }
 
-	public void reset() {
-		restart.newConflict();
-	}
+    public void init(int nlength) {
+        this.phaseSelectionStrategy.init(nlength);
+    }
 
-	public void newConflict() {
-		restart.newConflict();
-		conflictNumber++;
-		if(useTelecomStrategyAsLearnedConstraintsDeletionStrategy){
-			if(conflictNumber>nbClausesAtWhichWeShouldClean){
-//				logger.log("we should clean now because " + conflictNumber + " > " +  nbClausesAtWhichWeShouldClean);
-				//hasClickedOnClean=true;
-				conflictNumber=0;
-				solver.setNeedToReduceDB(true);
-			}
-		}
-	}
+    public void init(int var, int p) {
+        this.phaseSelectionStrategy.init(var, p);
+    }
 
-	//	public void init() {
-	//
-	//	}
-	//
-	//	public ConflictTimer getTimer() {
-	//		return this;
-	//	}
+    public void assignLiteral(int p) {
+        while (this.isInterrupted) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.phaseSelectionStrategy.assignLiteral(p);
+    }
 
-	//	public void reduce(IVec<Constr> learnts) {
-	//		//System.out.println("je suis lˆ ??");
-	//		//assert hasClickedOnClean;
-	//
-	//		int i, j;
-	//		for (i = j = 0; i < learnts.size() / 2; i++) {
-	//			Constr c = learnts.get(i);
-	//			if (c.locked() || c.size() == 2) {
-	//				learnts.set(j++, learnts.get(i));
-	//			} else {
-	//				c.remove(getSolver());
-	//			}
-	//		}
-	//		for (; i < learnts.size(); i++) {
-	//			learnts.set(j++, learnts.get(i));
-	//		}
-	//		if (true) {
-	//			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
-	//					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-	//		}
-	//		learnts.shrinkTo(j);
-	//
-	//		hasClickedOnClean=false;
-	//	}
+    public int select(int var) {
+        return this.phaseSelectionStrategy.select(var);
+    }
 
-	//	public void onConflict(Constr outLearnt) {
-	//		conflictNumber++;
-	//		if(conflictNumber>nbClausesAtWhichWeShouldClean){
-	//			//hasClickedOnClean=true;
-	//			conflictNumber=0;
-	//			solver.setNeedToReduceDB(true);
-	//		}
-	//	}
-	//
-	//	public void onConflictAnalysis(Constr reason) {
-	//		// TODO Auto-generated method stub
-	//
-	//	}
+    public void updateVarAtDecisionLevel(int q) {
+        this.phaseSelectionStrategy.updateVarAtDecisionLevel(q);
+    }
 
+    @Override
+    public String toString() {
+        return "RemoteControlStrategy [restartStrategy = " + this.restart
+                + ", learnedClausesDeletionStrategy = clean after "
+                + this.nbClausesAtWhichWeShouldClean
+                + " conflicts, phaseSelectionStrategy = "
+                + this.phaseSelectionStrategy + "]";
+    }
 
-	public void updateVar(int p) {
-		phaseSelectionStrategy.updateVar(p);
-	}
+    public void setInterrupted(boolean b) {
+        this.isInterrupted = b;
+        if (this.isInterrupted) {
+            this.logger.log("Solver paused");
+        } else {
+            this.logger.log("Resume solving");
+        }
+    }
 
-	public void init(int nlength) {
-		phaseSelectionStrategy.init(nlength);
-	}
-
-	public void init(int var, int p) {
-		phaseSelectionStrategy.init(var, p);
-	}
-
-	public void assignLiteral(int p) {
-		while(isInterrupted){
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		phaseSelectionStrategy.assignLiteral(p);
-	}
-
-	public int select(int var) {
-		return phaseSelectionStrategy.select(var);
-	}
-
-	public void updateVarAtDecisionLevel(int q) {
-		phaseSelectionStrategy.updateVarAtDecisionLevel(q);
-	}
-
-
-	@Override
-	public String toString(){
-		return "RemoteControlStrategy [restartStrategy = "+ restart+", learnedClausesDeletionStrategy = clean after "+ nbClausesAtWhichWeShouldClean + " conflicts, phaseSelectionStrategy = " +phaseSelectionStrategy + "]";
-	}
-
-
-
-	public void setInterrupted(boolean b){
-		this.isInterrupted=b;
-		if(isInterrupted){
-			logger.log("Solver paused");
-		}
-		else{
-			logger.log("Resume solving");
-		}
-	}
-
-	public void newLearnedClause(Constr learned, int trailLevel) {
-		restart.newLearnedClause(learned, trailLevel);	
-	}
-
+    public void newLearnedClause(Constr learned, int trailLevel) {
+        this.restart.newLearnedClause(learned, trailLevel);
+    }
 
 }

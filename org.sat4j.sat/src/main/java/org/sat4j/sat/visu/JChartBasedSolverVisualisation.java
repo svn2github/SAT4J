@@ -1,13 +1,5 @@
 package org.sat4j.sat.visu;
 
-import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.IAxis.AxisTitle;
-import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.rangepolicies.RangePolicyHighestValues;
-import info.monitorenter.gui.chart.traces.Trace2DLtd;
-import info.monitorenter.gui.chart.traces.Trace2DSimple;
-import info.monitorenter.gui.chart.traces.painters.TracePainterVerticalBar;
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
@@ -16,501 +8,551 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 
-public class JChartBasedSolverVisualisation implements SolverVisualisation{
+public class JChartBasedSolverVisualisation implements SolverVisualisation {
 
-	private JFrame visuFrame;
-	
-	private int nVar;
-	
-	private Chart2D variablesEvaluationChart;
-	private Chart2D clausesEvaluationChart;
-	private Chart2D learnedClausesSizeChart;
-	private Chart2D decisionLevelWhenConflictChart;
-	private Chart2D trailLevelWhenConflictChart;
-	private Chart2D positiveDecisionVariableChart;
-	private Chart2D negativeDecisionVariableChart;
-	private Chart2D propagationPerSecondChart;
-//	private Chart2D solutionValueChart;
-	
-	private MyChartPanel variablesEvaluationPanel;
-	private MyChartPanel clausesEvaluationPanel;
-	private MyChartPanel learnedClausesSizePanel;
-	private MyChartPanel decisionLevelWhenConflictPanel;
-	private MyChartPanel trailLevelWhenConflictPanel;
-	private MyChartPanel positiveDecisionVariablePanel;
-	private MyChartPanel negativeDecisionVariablePanel;
-	private MyChartPanel propagationPerSecondPanel;
-	
-	
-	private ITrace2D positiveDecisionTrace;
-	private ITrace2D negativeDecisionTrace;
-	private ITrace2D restartPosDecisionTrace;
-	private ITrace2D restartNegDecisionTrace;
-	private ITrace2D cleanPosDecisionTrace;
-	private ITrace2D cleanNegDecisionTrace;
-	
-	private ITrace2D learnedClausesSizeTrace;
-	private ITrace2D learnedClausesSizeRestartTrace;
-	private ITrace2D learnedClausesSizeCleanTrace;
-	
-	private ITrace2D conflictDepthTrace;
-	private ITrace2D conflictDepthRestartTrace;
-	private ITrace2D conflictDepthCleanTrace;
-	
-	private ITrace2D clausesEvaluationTrace;
-	
-	private ITrace2D conflictLevelTrace;
-	private ITrace2D conflictLevelRestartTrace;
-	private ITrace2D conflictLevelCleanTrace;
-	
-	private ITrace2D heuristicsTrace;
-	
-	private ITrace2D speedTrace;
-	private ITrace2D speedCleanTrace;
-	private ITrace2D speedRestartTrace;
-	
-	private VisuPreferences pref;
-	
-	public JChartBasedSolverVisualisation(VisuPreferences pref){
-		this(pref,true);
-	}
-	
-	public JChartBasedSolverVisualisation(VisuPreferences pref,boolean isVisible){
-		
-		this.pref=pref;
-		
-		init();
-		
-		
-	}
-	
-	public void init(){
-		visuFrame = new JFrame("Visualisation");
-		
-		Container c = visuFrame.getContentPane();
-		
-		int nbGraphs = pref.getNumberOfDisplayedGraphs();
-		int[] nbLinesTab = new int[]{1,2,3,2};
-	
-		int nbLines = 3;
-		if(nbGraphs<5)
-			nbLines = nbLinesTab[nbGraphs-1];
-		
-		int nbCols = (nbGraphs-1)/3 + 1;
-		
-		c.setLayout(new GridLayout(nbLines,nbCols,5,5));
-		
-		initCharts();
-		
-		addChartsToFrame();
-		
-		initTraces();
-		
-		visuFrame.setBackground(pref.getBackgroundColor());
-		visuFrame.setForeground(pref.getBorderColor());
-		
-		visuFrame.setSize(800,400);
-		
-		// Enable the termination button [cross on the upper right edge]: 
-		visuFrame.addWindowListener(
-				new WindowAdapter(){
-					public void windowClosing(WindowEvent e){
-						
-					}
-				}
-				);
-		
-		
-//		visuFrame.setVisible(false); 
-	}
-	
-	public void initCharts(){
-		variablesEvaluationChart = new Chart2D();
-		clausesEvaluationChart = new Chart2D();
-		learnedClausesSizeChart = new Chart2D();
-		decisionLevelWhenConflictChart = new Chart2D();
-		trailLevelWhenConflictChart = new Chart2D();
-		positiveDecisionVariableChart = new Chart2D();
-		negativeDecisionVariableChart = new Chart2D();
-		propagationPerSecondChart = new Chart2D();
-//		solutionValueChart = new Chart2D();
-		
-		AxisTitle voidTitle = new AxisTitle("");
-		variablesEvaluationChart.getAxisX().setAxisTitle(voidTitle);
-		variablesEvaluationChart.getAxisY().setAxisTitle(voidTitle);
-		clausesEvaluationChart.getAxisX().setAxisTitle(voidTitle);
-		clausesEvaluationChart.getAxisY().setAxisTitle(voidTitle);
-		learnedClausesSizeChart.getAxisX().setAxisTitle(voidTitle);
-		learnedClausesSizeChart.getAxisY().setAxisTitle(voidTitle);
-		decisionLevelWhenConflictChart.getAxisX().setAxisTitle(voidTitle);
-		decisionLevelWhenConflictChart.getAxisY().setAxisTitle(voidTitle);
-		trailLevelWhenConflictChart.getAxisX().setAxisTitle(voidTitle);
-		trailLevelWhenConflictChart.getAxisY().setAxisTitle(voidTitle);
-		positiveDecisionVariableChart.getAxisX().setAxisTitle(voidTitle);
-		positiveDecisionVariableChart.getAxisY().setAxisTitle(voidTitle);
-		negativeDecisionVariableChart.getAxisX().setAxisTitle(voidTitle);
-		negativeDecisionVariableChart.getAxisY().setAxisTitle(voidTitle);
-		propagationPerSecondChart.getAxisX().setAxisTitle(voidTitle);
-		propagationPerSecondChart.getAxisY().setAxisTitle(voidTitle);
-//		solutionValueChart.getAxisX().setAxisTitle(voidTitle);
-//		solutionValueChart.getAxisY().setAxisTitle(voidTitle);
-	}
-	
-	public void addChartsToFrame(){
-		variablesEvaluationPanel = new MyChartPanel(variablesEvaluationChart, "Variables evaluation", pref.getBackgroundColor(), pref.getBorderColor());
-		clausesEvaluationPanel = new MyChartPanel(clausesEvaluationChart, "Clauses evaluation",pref.getBackgroundColor(), pref.getBorderColor());
-		learnedClausesSizePanel = new MyChartPanel(learnedClausesSizeChart, "Size of learned clauses",pref.getBackgroundColor(), pref.getBorderColor());
-		decisionLevelWhenConflictPanel = new MyChartPanel(decisionLevelWhenConflictChart, "Decision level when conflict",pref.getBackgroundColor(), pref.getBorderColor());
-		trailLevelWhenConflictPanel = new MyChartPanel(trailLevelWhenConflictChart, "Trail level when conflict",pref.getBackgroundColor(), pref.getBorderColor());
-		positiveDecisionVariablePanel = new MyChartPanel(positiveDecisionVariableChart, "Positive decision phases",pref.getBackgroundColor(), pref.getBorderColor());
-		negativeDecisionVariablePanel = new MyChartPanel(negativeDecisionVariableChart, "Negative decision phases",pref.getBackgroundColor(), pref.getBorderColor());
-		propagationPerSecondPanel = new MyChartPanel(propagationPerSecondChart, "Number of propagations per second",pref.getBackgroundColor(), pref.getBorderColor());
-		
-		
-		if(pref.isDisplayClausesSize())
-			visuFrame.add(learnedClausesSizePanel);
-		if(pref.isDisplayClausesEvaluation())
-			visuFrame.add(clausesEvaluationPanel);
-		if(pref.isDisplayConflictsTrail())
-			visuFrame.add(trailLevelWhenConflictPanel);
-		if(pref.isDisplayDecisionIndexes())
-			visuFrame.add(negativeDecisionVariablePanel);
-		if(pref.isDisplayVariablesEvaluation())
-			visuFrame.add(variablesEvaluationPanel);
-		if(pref.isDisplayConflictsDecision())
-			visuFrame.add(decisionLevelWhenConflictPanel);
-		if(pref.isDisplayDecisionIndexes())
-			visuFrame.add(positiveDecisionVariablePanel);
-		if(pref.isDisplaySpeed())
-			visuFrame.add(propagationPerSecondPanel);
-//		visuFrame.add(solutionValueChart);
-	}
-	
-	public void initTraces(){
-		//positiveDecisionTrace = new Trace2DLtd(5000, "Positive decision");
-		positiveDecisionTrace = new Trace2DSimple("Positive decision");
-		positiveDecisionTrace.setTracePainter(new TracePainterPlus());
-		positiveDecisionTrace.setColor(new Color(0f,0.78f,0.09f));
-		
-		negativeDecisionTrace = new Trace2DSimple("Negative decision");
-		negativeDecisionTrace.setTracePainter(new TracePainterPlus());
-		negativeDecisionTrace.setColor(Color.RED);
+    private JFrame visuFrame;
 
-		
-		
-		restartPosDecisionTrace = new Trace2DSimple("Restart");
-		restartPosDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,positiveDecisionVariableChart));
-		restartPosDecisionTrace.setColor(Color.LIGHT_GRAY);
-		
-		restartNegDecisionTrace = new Trace2DSimple("Restart");
-		restartNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,negativeDecisionVariableChart));
-		restartNegDecisionTrace.setColor(Color.LIGHT_GRAY);
-		
-		cleanPosDecisionTrace = new Trace2DSimple("Clean");
-		cleanPosDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,positiveDecisionVariableChart));
-		cleanPosDecisionTrace.setColor(Color.ORANGE);
-		
-		cleanNegDecisionTrace = new Trace2DSimple("Clean");
-		cleanNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(2,negativeDecisionVariableChart));
-		cleanNegDecisionTrace.setColor(Color.ORANGE);
-		
-		
-		positiveDecisionVariableChart.addTrace(positiveDecisionTrace);
-		positiveDecisionVariableChart.addTrace(restartPosDecisionTrace);
-		positiveDecisionVariableChart.addTrace(cleanPosDecisionTrace);
-		//positiveDecisionVariableChart.set
-		positiveDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-		
-//		positiveDecisionVariableChart.addTrace(negativeDecisionTrace);
-//		positiveDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
-//		positiveDecisionVariableChart.getAxisY().setRangePolicy(new RangePolicyFixedViewport(new Range(0,nVar)));
-		positiveDecisionVariableChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(8000));
-		
-		//positiveDecisionVariableChart.addTrace(restartDecisionTrace);
-		
-		negativeDecisionVariableChart.addTrace(restartNegDecisionTrace);
-		negativeDecisionVariableChart.addTrace(cleanNegDecisionTrace);
-		negativeDecisionVariableChart.addTrace(negativeDecisionTrace);
-		negativeDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-//		negativeDecisionVariableChart.addTrace(restartDecisionTrace);
-		negativeDecisionVariableChart.getAxisX().setRangePolicy(positiveDecisionVariableChart.getAxisX().getRangePolicy());
-//		negativeDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
-//		negativeDecisionVariableChart.addTrace(negativeDecisionTrace);
-		//negativeDecisionVariableChart.addTrace(restartDecisionTrace);
-		
-		
-		conflictDepthTrace = new Trace2DLtd(15000,"Trail level");
-		conflictDepthTrace.setTracePainter(new TracePainterPlus());
-		conflictDepthTrace.setColor(Color.MAGENTA);
-		trailLevelWhenConflictChart.setName("Trail level when the conflict occurs");
-		trailLevelWhenConflictChart.addTrace(conflictDepthTrace);
-		conflictDepthTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-		
-		conflictDepthRestartTrace = new Trace2DSimple("Restart");
-		conflictDepthRestartTrace.setTracePainter(new TracePainterVerticalBar(2,trailLevelWhenConflictChart));
-		conflictDepthRestartTrace.setColor(Color.LIGHT_GRAY);
-		trailLevelWhenConflictChart.addTrace(conflictDepthRestartTrace);
-		
-		conflictDepthCleanTrace = new Trace2DSimple("Clean");
-		conflictDepthCleanTrace.setTracePainter(new TracePainterVerticalBar(2,trailLevelWhenConflictChart));
-		conflictDepthCleanTrace.setColor(Color.ORANGE);
-		trailLevelWhenConflictChart.addTrace(conflictDepthCleanTrace);
-		trailLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
-		
-		conflictLevelTrace = new Trace2DSimple("Decision level");
-		conflictLevelTrace.setTracePainter(new TracePainterPlus());
-		conflictLevelTrace.setColor(Color.MAGENTA);
-		decisionLevelWhenConflictChart.setName("Decision level chen the conflict occurs");
-		decisionLevelWhenConflictChart.addTrace(conflictLevelTrace);
-		conflictLevelTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-		
-		conflictLevelRestartTrace = new Trace2DSimple("Restart");
-		conflictLevelRestartTrace.setTracePainter(new TracePainterVerticalBar(2,decisionLevelWhenConflictChart));
-		conflictLevelRestartTrace.setColor(Color.LIGHT_GRAY);
-		decisionLevelWhenConflictChart.addTrace(conflictLevelRestartTrace);
-		
-		conflictLevelCleanTrace = new Trace2DSimple("Clean");
-		conflictLevelCleanTrace.setTracePainter(new TracePainterVerticalBar(2,decisionLevelWhenConflictChart));
-		conflictLevelCleanTrace.setColor(Color.ORANGE);
-		decisionLevelWhenConflictChart.addTrace(conflictLevelCleanTrace);
-		
-		decisionLevelWhenConflictChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
-		
-		learnedClausesSizeTrace = new Trace2DSimple("Size");
-		learnedClausesSizeTrace.setTracePainter(new TracePainterPlus());
-		learnedClausesSizeTrace.setColor(Color.BLUE);
-		learnedClausesSizeChart.setName("Learned clauses size");
-		learnedClausesSizeChart.addTrace(learnedClausesSizeTrace);
-		learnedClausesSizeTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-		learnedClausesSizeChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(2000));
-		
-		learnedClausesSizeRestartTrace = new Trace2DSimple("Restart");
-		learnedClausesSizeRestartTrace.setTracePainter(new TracePainterVerticalBar(2,learnedClausesSizeChart));
-		learnedClausesSizeRestartTrace.setColor(Color.LIGHT_GRAY);
-		learnedClausesSizeChart.addTrace(learnedClausesSizeRestartTrace);
-		
-		learnedClausesSizeCleanTrace = new Trace2DSimple("Clean");
-		learnedClausesSizeCleanTrace.setTracePainter(new TracePainterVerticalBar(2,learnedClausesSizeChart));
-		learnedClausesSizeCleanTrace.setColor(Color.ORANGE);
-		learnedClausesSizeChart.addTrace(learnedClausesSizeCleanTrace);
-		
-		clausesEvaluationTrace = new Trace2DSimple("Evaluation");
-		clausesEvaluationTrace.setTracePainter(new TracePainterPlus());
-		clausesEvaluationTrace.setColor(Color.BLUE);
-		clausesEvaluationTrace.setName("Clauses evaluation");
-		clausesEvaluationChart.addTrace(clausesEvaluationTrace);
-		
-		heuristicsTrace = new Trace2DSimple("Evaluation");
-		heuristicsTrace.setTracePainter(new TracePainterPlus());
-		heuristicsTrace.setColor(Color.ORANGE);
-		variablesEvaluationChart.setName("Variables evaluation");
-		variablesEvaluationChart.addTrace(heuristicsTrace);
-		
-		speedTrace  = new Trace2DSimple("Speed");
-		speedTrace.setColor(new Color(0.02f,.78f,.76f));
-		speedCleanTrace = new Trace2DSimple("Clean");
-		speedCleanTrace.setColor(Color.ORANGE);
-		speedCleanTrace.setTracePainter(new TracePainterVerticalBar(2,propagationPerSecondChart));
-		speedRestartTrace = new Trace2DSimple("Restart");
-		speedRestartTrace.setColor(Color.LIGHT_GRAY);
-		speedRestartTrace.setTracePainter(new TracePainterVerticalBar(2,propagationPerSecondChart));
-		
-		propagationPerSecondChart.addTrace(speedCleanTrace);
-		propagationPerSecondChart.addTrace(speedRestartTrace);
-		propagationPerSecondChart.addTrace(speedTrace);
-		propagationPerSecondChart.getAxisX().setRangePolicy(new RangePolicyHighestValues(30));
-		
-		speedTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-		
-	}
-	
-	public void setVisible(boolean b){
-		visuFrame.setVisible(b);
-	}
+    private int nVar;
 
-	public ITrace2D getPositiveDecisionTrace() {
-		return positiveDecisionTrace;
-	}
+    private Chart2D variablesEvaluationChart;
+    private Chart2D clausesEvaluationChart;
+    private Chart2D learnedClausesSizeChart;
+    private Chart2D decisionLevelWhenConflictChart;
+    private Chart2D trailLevelWhenConflictChart;
+    private Chart2D positiveDecisionVariableChart;
+    private Chart2D negativeDecisionVariableChart;
+    private Chart2D propagationPerSecondChart;
+    // private Chart2D solutionValueChart;
 
-	public void setPositiveDecisionTrace(ITrace2D positiveDecisionTrace) {
-		this.positiveDecisionTrace = positiveDecisionTrace;
-	}
+    private MyChartPanel variablesEvaluationPanel;
+    private MyChartPanel clausesEvaluationPanel;
+    private MyChartPanel learnedClausesSizePanel;
+    private MyChartPanel decisionLevelWhenConflictPanel;
+    private MyChartPanel trailLevelWhenConflictPanel;
+    private MyChartPanel positiveDecisionVariablePanel;
+    private MyChartPanel negativeDecisionVariablePanel;
+    private MyChartPanel propagationPerSecondPanel;
 
-	public ITrace2D getNegativeDecisionTrace() {
-		return negativeDecisionTrace;
-	}
+    private ITrace2D positiveDecisionTrace;
+    private ITrace2D negativeDecisionTrace;
+    private ITrace2D restartPosDecisionTrace;
+    private ITrace2D restartNegDecisionTrace;
+    private ITrace2D cleanPosDecisionTrace;
+    private ITrace2D cleanNegDecisionTrace;
 
-	public void setNegativeDecisionTrace(ITrace2D negativeDecisionTrace) {
-		this.negativeDecisionTrace = negativeDecisionTrace;
-	}
+    private ITrace2D learnedClausesSizeTrace;
+    private ITrace2D learnedClausesSizeRestartTrace;
+    private ITrace2D learnedClausesSizeCleanTrace;
 
-	public ITrace2D getRestartNegDecisionTrace() {
-		return restartNegDecisionTrace;
-	}
+    private ITrace2D conflictDepthTrace;
+    private ITrace2D conflictDepthRestartTrace;
+    private ITrace2D conflictDepthCleanTrace;
 
-	public void setRestartNegDecisionTrace(ITrace2D restartNegDecisionTrace) {
-		this.restartNegDecisionTrace = restartNegDecisionTrace;
-	}
-	
-	public ITrace2D getRestartPosDecisionTrace() {
-		return restartPosDecisionTrace;
-	}
+    private ITrace2D clausesEvaluationTrace;
 
-	public void setRestartPosDecisionTrace(ITrace2D restartPosDecisionTrace) {
-		this.restartPosDecisionTrace = restartPosDecisionTrace;
-	}
+    private ITrace2D conflictLevelTrace;
+    private ITrace2D conflictLevelRestartTrace;
+    private ITrace2D conflictLevelCleanTrace;
 
-	public ITrace2D getConflictDepthTrace() {
-		return conflictDepthTrace;
-	}
+    private ITrace2D heuristicsTrace;
 
-	public void setConflictDepthTrace(ITrace2D conflictDepthTrace) {
-		this.conflictDepthTrace = conflictDepthTrace;
-	}
+    private ITrace2D speedTrace;
+    private ITrace2D speedCleanTrace;
+    private ITrace2D speedRestartTrace;
 
+    private VisuPreferences pref;
 
-	public ITrace2D getLearnedClausesSizeTrace() {
-		return learnedClausesSizeTrace;
-	}
+    public JChartBasedSolverVisualisation(VisuPreferences pref) {
+        this(pref, true);
+    }
 
-	public void setLearnedClausesSizeTrace(ITrace2D learnedClausesSizeTrace) {
-		this.learnedClausesSizeTrace = learnedClausesSizeTrace;
-	}
+    public JChartBasedSolverVisualisation(VisuPreferences pref,
+            boolean isVisible) {
 
-	public ITrace2D getClausesEvaluationTrace() {
-		return clausesEvaluationTrace;
-	}
+        this.pref = pref;
 
-	public void setClausesEvaluationTrace(ITrace2D clausesEvaluationTrace) {
-		this.clausesEvaluationTrace = clausesEvaluationTrace;
-	}
-	
-	public ITrace2D getConflictLevelTrace() {
-		return conflictLevelTrace;
-	}
+        init();
 
-	public void setConflictLevelTrace(ITrace2D conflictLevelTrace) {
-		this.conflictLevelTrace = conflictLevelTrace;
-	}
+    }
 
-	public ITrace2D getConflictLevelRestartTrace() {
-		return conflictLevelRestartTrace;
-	}
+    public void init() {
+        this.visuFrame = new JFrame("Visualisation");
 
-	public void setConflictLevelRestartTrace(ITrace2D conflictLevelRestartTrace) {
-		this.conflictLevelRestartTrace = conflictLevelRestartTrace;
-	}
+        Container c = this.visuFrame.getContentPane();
 
-	public ITrace2D getHeuristicsTrace() {
-		return heuristicsTrace;
-	}
+        int nbGraphs = this.pref.getNumberOfDisplayedGraphs();
+        int[] nbLinesTab = new int[] { 1, 2, 3, 2 };
 
-	public void setHeuristicsTrace(ITrace2D heuristicsTrace) {
-		this.heuristicsTrace = heuristicsTrace;
-	}
+        int nbLines = 3;
+        if (nbGraphs < 5) {
+            nbLines = nbLinesTab[nbGraphs - 1];
+        }
 
-	public ITrace2D getSpeedTrace() {
-		return speedTrace;
-	}
+        int nbCols = (nbGraphs - 1) / 3 + 1;
 
-	public void setSpeedTrace(ITrace2D speedTrace) {
-		this.speedTrace = speedTrace;
-	}
-	
-	public ITrace2D getSpeedCleanTrace() {
-		return speedCleanTrace;
-	}
+        c.setLayout(new GridLayout(nbLines, nbCols, 5, 5));
 
-	public void setSpeedCleanTrace(ITrace2D speedCleanTrace) {
-		this.speedCleanTrace = speedCleanTrace;
-	}
+        initCharts();
 
-	public ITrace2D getSpeedRestartTrace() {
-		return speedRestartTrace;
-	}
+        addChartsToFrame();
 
-	public void setSpeedRestartTrace(ITrace2D speedRestartTrace) {
-		this.speedRestartTrace = speedRestartTrace;
-	}
-	
-	public ITrace2D getConflictDepthRestartTrace() {
-		return conflictDepthRestartTrace;
-	}
+        initTraces();
 
-	public void setConflictDepthRestartTrace(ITrace2D conflictDepthRestartTrace) {
-		this.conflictDepthRestartTrace = conflictDepthRestartTrace;
-	}
-	
-	public ITrace2D getLearnedClausesSizeRestartTrace() {
-		return learnedClausesSizeRestartTrace;
-	}
+        this.visuFrame.setBackground(this.pref.getBackgroundColor());
+        this.visuFrame.setForeground(this.pref.getBorderColor());
 
-	public void setLearnedClausesSizeRestartTrace(
-			ITrace2D learnedClausesSizeRestartTrace) {
-		this.learnedClausesSizeRestartTrace = learnedClausesSizeRestartTrace;
-	}
-	
-	public ITrace2D getLearnedClausesSizeCleanTrace() {
-		return learnedClausesSizeCleanTrace;
-	}
+        this.visuFrame.setSize(800, 400);
 
-	public void setLearnedClausesSizeCleanTrace(
-			ITrace2D learnedClausesSizeCleanTrace) {
-		this.learnedClausesSizeCleanTrace = learnedClausesSizeCleanTrace;
-	}
-	
-	public ITrace2D getConflictLevelCleanTrace() {
-		return conflictLevelCleanTrace;
-	}
+        // Enable the termination button [cross on the upper right edge]:
+        this.visuFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
 
-	public void setConflictLevelCleanTrace(ITrace2D conflictLevelCleanTrace) {
-		this.conflictLevelCleanTrace = conflictLevelCleanTrace;
-	}
+            }
+        });
 
-	public ITrace2D getConflictDepthCleanTrace() {
-		return conflictDepthCleanTrace;
-	}
+        // visuFrame.setVisible(false);
+    }
 
-	public void setConflictDepthCleanTrace(ITrace2D conflictDepthCleanTrace) {
-		this.conflictDepthCleanTrace = conflictDepthCleanTrace;
-	}
-	
-	public ITrace2D getCleanPosDecisionTrace() {
-		return cleanPosDecisionTrace;
-	}
+    public void initCharts() {
+        this.variablesEvaluationChart = new Chart2D();
+        this.clausesEvaluationChart = new Chart2D();
+        this.learnedClausesSizeChart = new Chart2D();
+        this.decisionLevelWhenConflictChart = new Chart2D();
+        this.trailLevelWhenConflictChart = new Chart2D();
+        this.positiveDecisionVariableChart = new Chart2D();
+        this.negativeDecisionVariableChart = new Chart2D();
+        this.propagationPerSecondChart = new Chart2D();
+        // solutionValueChart = new Chart2D();
 
-	public void setCleanPosDecisionTrace(ITrace2D cleanPosDecisionTrace) {
-		this.cleanPosDecisionTrace = cleanPosDecisionTrace;
-	}
+        AxisTitle voidTitle = new AxisTitle("");
+        this.variablesEvaluationChart.getAxisX().setAxisTitle(voidTitle);
+        this.variablesEvaluationChart.getAxisY().setAxisTitle(voidTitle);
+        this.clausesEvaluationChart.getAxisX().setAxisTitle(voidTitle);
+        this.clausesEvaluationChart.getAxisY().setAxisTitle(voidTitle);
+        this.learnedClausesSizeChart.getAxisX().setAxisTitle(voidTitle);
+        this.learnedClausesSizeChart.getAxisY().setAxisTitle(voidTitle);
+        this.decisionLevelWhenConflictChart.getAxisX().setAxisTitle(voidTitle);
+        this.decisionLevelWhenConflictChart.getAxisY().setAxisTitle(voidTitle);
+        this.trailLevelWhenConflictChart.getAxisX().setAxisTitle(voidTitle);
+        this.trailLevelWhenConflictChart.getAxisY().setAxisTitle(voidTitle);
+        this.positiveDecisionVariableChart.getAxisX().setAxisTitle(voidTitle);
+        this.positiveDecisionVariableChart.getAxisY().setAxisTitle(voidTitle);
+        this.negativeDecisionVariableChart.getAxisX().setAxisTitle(voidTitle);
+        this.negativeDecisionVariableChart.getAxisY().setAxisTitle(voidTitle);
+        this.propagationPerSecondChart.getAxisX().setAxisTitle(voidTitle);
+        this.propagationPerSecondChart.getAxisY().setAxisTitle(voidTitle);
+        // solutionValueChart.getAxisX().setAxisTitle(voidTitle);
+        // solutionValueChart.getAxisY().setAxisTitle(voidTitle);
+    }
 
-	public ITrace2D getCleanNegDecisionTrace() {
-		return cleanNegDecisionTrace;
-	}
+    public void addChartsToFrame() {
+        this.variablesEvaluationPanel = new MyChartPanel(
+                this.variablesEvaluationChart, "Variables evaluation",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.clausesEvaluationPanel = new MyChartPanel(
+                this.clausesEvaluationChart, "Clauses evaluation",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.learnedClausesSizePanel = new MyChartPanel(
+                this.learnedClausesSizeChart, "Size of learned clauses",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.decisionLevelWhenConflictPanel = new MyChartPanel(
+                this.decisionLevelWhenConflictChart,
+                "Decision level when conflict", this.pref.getBackgroundColor(),
+                this.pref.getBorderColor());
+        this.trailLevelWhenConflictPanel = new MyChartPanel(
+                this.trailLevelWhenConflictChart, "Trail level when conflict",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.positiveDecisionVariablePanel = new MyChartPanel(
+                this.positiveDecisionVariableChart, "Positive decision phases",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.negativeDecisionVariablePanel = new MyChartPanel(
+                this.negativeDecisionVariableChart, "Negative decision phases",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
+        this.propagationPerSecondPanel = new MyChartPanel(
+                this.propagationPerSecondChart,
+                "Number of propagations per second",
+                this.pref.getBackgroundColor(), this.pref.getBorderColor());
 
-	public void setCleanNegDecisionTrace(ITrace2D cleanNegDecisionTrace) {
-		this.cleanNegDecisionTrace = cleanNegDecisionTrace;
-	}
+        if (this.pref.isDisplayClausesSize()) {
+            this.visuFrame.add(this.learnedClausesSizePanel);
+        }
+        if (this.pref.isDisplayClausesEvaluation()) {
+            this.visuFrame.add(this.clausesEvaluationPanel);
+        }
+        if (this.pref.isDisplayConflictsTrail()) {
+            this.visuFrame.add(this.trailLevelWhenConflictPanel);
+        }
+        if (this.pref.isDisplayDecisionIndexes()) {
+            this.visuFrame.add(this.negativeDecisionVariablePanel);
+        }
+        if (this.pref.isDisplayVariablesEvaluation()) {
+            this.visuFrame.add(this.variablesEvaluationPanel);
+        }
+        if (this.pref.isDisplayConflictsDecision()) {
+            this.visuFrame.add(this.decisionLevelWhenConflictPanel);
+        }
+        if (this.pref.isDisplayDecisionIndexes()) {
+            this.visuFrame.add(this.positiveDecisionVariablePanel);
+        }
+        if (this.pref.isDisplaySpeed()) {
+            this.visuFrame.add(this.propagationPerSecondPanel);
+            // visuFrame.add(solutionValueChart);
+        }
+    }
 
-	public int getnVar() {
-		return nVar;
-	}
+    public void initTraces() {
+        // positiveDecisionTrace = new Trace2DLtd(5000, "Positive decision");
+        this.positiveDecisionTrace = new Trace2DSimple("Positive decision");
+        this.positiveDecisionTrace.setTracePainter(new TracePainterPlus());
+        this.positiveDecisionTrace.setColor(new Color(0f, 0.78f, 0.09f));
 
-	public void setnVar(int nVar) {
-		this.nVar = nVar;
-	}
+        this.negativeDecisionTrace = new Trace2DSimple("Negative decision");
+        this.negativeDecisionTrace.setTracePainter(new TracePainterPlus());
+        this.negativeDecisionTrace.setColor(Color.RED);
 
-	public void start() {
-//		init();
-		
-		visuFrame.setVisible(true);
-	}
+        this.restartPosDecisionTrace = new Trace2DSimple("Restart");
+        this.restartPosDecisionTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.positiveDecisionVariableChart));
+        this.restartPosDecisionTrace.setColor(Color.LIGHT_GRAY);
 
-	public void end() {
-		visuFrame.setVisible(false);
-	}
-	
-	
-	
-	
-	
+        this.restartNegDecisionTrace = new Trace2DSimple("Restart");
+        this.restartNegDecisionTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.negativeDecisionVariableChart));
+        this.restartNegDecisionTrace.setColor(Color.LIGHT_GRAY);
+
+        this.cleanPosDecisionTrace = new Trace2DSimple("Clean");
+        this.cleanPosDecisionTrace.setTracePainter(new TracePainterVerticalBar(
+                2, this.positiveDecisionVariableChart));
+        this.cleanPosDecisionTrace.setColor(Color.ORANGE);
+
+        this.cleanNegDecisionTrace = new Trace2DSimple("Clean");
+        this.cleanNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(
+                2, this.negativeDecisionVariableChart));
+        this.cleanNegDecisionTrace.setColor(Color.ORANGE);
+
+        this.positiveDecisionVariableChart.addTrace(this.positiveDecisionTrace);
+        this.positiveDecisionVariableChart
+                .addTrace(this.restartPosDecisionTrace);
+        this.positiveDecisionVariableChart.addTrace(this.cleanPosDecisionTrace);
+        // positiveDecisionVariableChart.set
+        this.positiveDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+
+        // positiveDecisionVariableChart.addTrace(negativeDecisionTrace);
+        // positiveDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
+        // positiveDecisionVariableChart.getAxisY().setRangePolicy(new
+        // RangePolicyFixedViewport(new Range(0,nVar)));
+        this.positiveDecisionVariableChart.getAxisX().setRangePolicy(
+                new RangePolicyHighestValues(8000));
+
+        // positiveDecisionVariableChart.addTrace(restartDecisionTrace);
+
+        this.negativeDecisionVariableChart
+                .addTrace(this.restartNegDecisionTrace);
+        this.negativeDecisionVariableChart.addTrace(this.cleanNegDecisionTrace);
+        this.negativeDecisionVariableChart.addTrace(this.negativeDecisionTrace);
+        this.negativeDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+        // negativeDecisionVariableChart.addTrace(restartDecisionTrace);
+        this.negativeDecisionVariableChart.getAxisX().setRangePolicy(
+                this.positiveDecisionVariableChart.getAxisX().getRangePolicy());
+        // negativeDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
+        // negativeDecisionVariableChart.addTrace(negativeDecisionTrace);
+        // negativeDecisionVariableChart.addTrace(restartDecisionTrace);
+
+        this.conflictDepthTrace = new Trace2DLtd(15000, "Trail level");
+        this.conflictDepthTrace.setTracePainter(new TracePainterPlus());
+        this.conflictDepthTrace.setColor(Color.MAGENTA);
+        this.trailLevelWhenConflictChart
+                .setName("Trail level when the conflict occurs");
+        this.trailLevelWhenConflictChart.addTrace(this.conflictDepthTrace);
+        this.conflictDepthTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+
+        this.conflictDepthRestartTrace = new Trace2DSimple("Restart");
+        this.conflictDepthRestartTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.trailLevelWhenConflictChart));
+        this.conflictDepthRestartTrace.setColor(Color.LIGHT_GRAY);
+        this.trailLevelWhenConflictChart
+                .addTrace(this.conflictDepthRestartTrace);
+
+        this.conflictDepthCleanTrace = new Trace2DSimple("Clean");
+        this.conflictDepthCleanTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.trailLevelWhenConflictChart));
+        this.conflictDepthCleanTrace.setColor(Color.ORANGE);
+        this.trailLevelWhenConflictChart.addTrace(this.conflictDepthCleanTrace);
+        this.trailLevelWhenConflictChart.getAxisX().setRangePolicy(
+                new RangePolicyHighestValues(2000));
+
+        this.conflictLevelTrace = new Trace2DSimple("Decision level");
+        this.conflictLevelTrace.setTracePainter(new TracePainterPlus());
+        this.conflictLevelTrace.setColor(Color.MAGENTA);
+        this.decisionLevelWhenConflictChart
+                .setName("Decision level chen the conflict occurs");
+        this.decisionLevelWhenConflictChart.addTrace(this.conflictLevelTrace);
+        this.conflictLevelTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+
+        this.conflictLevelRestartTrace = new Trace2DSimple("Restart");
+        this.conflictLevelRestartTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.decisionLevelWhenConflictChart));
+        this.conflictLevelRestartTrace.setColor(Color.LIGHT_GRAY);
+        this.decisionLevelWhenConflictChart
+                .addTrace(this.conflictLevelRestartTrace);
+
+        this.conflictLevelCleanTrace = new Trace2DSimple("Clean");
+        this.conflictLevelCleanTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.decisionLevelWhenConflictChart));
+        this.conflictLevelCleanTrace.setColor(Color.ORANGE);
+        this.decisionLevelWhenConflictChart
+                .addTrace(this.conflictLevelCleanTrace);
+
+        this.decisionLevelWhenConflictChart.getAxisX().setRangePolicy(
+                new RangePolicyHighestValues(2000));
+
+        this.learnedClausesSizeTrace = new Trace2DSimple("Size");
+        this.learnedClausesSizeTrace.setTracePainter(new TracePainterPlus());
+        this.learnedClausesSizeTrace.setColor(Color.BLUE);
+        this.learnedClausesSizeChart.setName("Learned clauses size");
+        this.learnedClausesSizeChart.addTrace(this.learnedClausesSizeTrace);
+        this.learnedClausesSizeTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+        this.learnedClausesSizeChart.getAxisX().setRangePolicy(
+                new RangePolicyHighestValues(2000));
+
+        this.learnedClausesSizeRestartTrace = new Trace2DSimple("Restart");
+        this.learnedClausesSizeRestartTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.learnedClausesSizeChart));
+        this.learnedClausesSizeRestartTrace.setColor(Color.LIGHT_GRAY);
+        this.learnedClausesSizeChart
+                .addTrace(this.learnedClausesSizeRestartTrace);
+
+        this.learnedClausesSizeCleanTrace = new Trace2DSimple("Clean");
+        this.learnedClausesSizeCleanTrace
+                .setTracePainter(new TracePainterVerticalBar(2,
+                        this.learnedClausesSizeChart));
+        this.learnedClausesSizeCleanTrace.setColor(Color.ORANGE);
+        this.learnedClausesSizeChart
+                .addTrace(this.learnedClausesSizeCleanTrace);
+
+        this.clausesEvaluationTrace = new Trace2DSimple("Evaluation");
+        this.clausesEvaluationTrace.setTracePainter(new TracePainterPlus());
+        this.clausesEvaluationTrace.setColor(Color.BLUE);
+        this.clausesEvaluationTrace.setName("Clauses evaluation");
+        this.clausesEvaluationChart.addTrace(this.clausesEvaluationTrace);
+
+        this.heuristicsTrace = new Trace2DSimple("Evaluation");
+        this.heuristicsTrace.setTracePainter(new TracePainterPlus());
+        this.heuristicsTrace.setColor(Color.ORANGE);
+        this.variablesEvaluationChart.setName("Variables evaluation");
+        this.variablesEvaluationChart.addTrace(this.heuristicsTrace);
+
+        this.speedTrace = new Trace2DSimple("Speed");
+        this.speedTrace.setColor(new Color(0.02f, .78f, .76f));
+        this.speedCleanTrace = new Trace2DSimple("Clean");
+        this.speedCleanTrace.setColor(Color.ORANGE);
+        this.speedCleanTrace.setTracePainter(new TracePainterVerticalBar(2,
+                this.propagationPerSecondChart));
+        this.speedRestartTrace = new Trace2DSimple("Restart");
+        this.speedRestartTrace.setColor(Color.LIGHT_GRAY);
+        this.speedRestartTrace.setTracePainter(new TracePainterVerticalBar(2,
+                this.propagationPerSecondChart));
+
+        this.propagationPerSecondChart.addTrace(this.speedCleanTrace);
+        this.propagationPerSecondChart.addTrace(this.speedRestartTrace);
+        this.propagationPerSecondChart.addTrace(this.speedTrace);
+        this.propagationPerSecondChart.getAxisX().setRangePolicy(
+                new RangePolicyHighestValues(30));
+
+        this.speedTrace.setZIndex(ITrace2D.ZINDEX_MAX);
+
+    }
+
+    public void setVisible(boolean b) {
+        this.visuFrame.setVisible(b);
+    }
+
+    public ITrace2D getPositiveDecisionTrace() {
+        return this.positiveDecisionTrace;
+    }
+
+    public void setPositiveDecisionTrace(ITrace2D positiveDecisionTrace) {
+        this.positiveDecisionTrace = positiveDecisionTrace;
+    }
+
+    public ITrace2D getNegativeDecisionTrace() {
+        return this.negativeDecisionTrace;
+    }
+
+    public void setNegativeDecisionTrace(ITrace2D negativeDecisionTrace) {
+        this.negativeDecisionTrace = negativeDecisionTrace;
+    }
+
+    public ITrace2D getRestartNegDecisionTrace() {
+        return this.restartNegDecisionTrace;
+    }
+
+    public void setRestartNegDecisionTrace(ITrace2D restartNegDecisionTrace) {
+        this.restartNegDecisionTrace = restartNegDecisionTrace;
+    }
+
+    public ITrace2D getRestartPosDecisionTrace() {
+        return this.restartPosDecisionTrace;
+    }
+
+    public void setRestartPosDecisionTrace(ITrace2D restartPosDecisionTrace) {
+        this.restartPosDecisionTrace = restartPosDecisionTrace;
+    }
+
+    public ITrace2D getConflictDepthTrace() {
+        return this.conflictDepthTrace;
+    }
+
+    public void setConflictDepthTrace(ITrace2D conflictDepthTrace) {
+        this.conflictDepthTrace = conflictDepthTrace;
+    }
+
+    public ITrace2D getLearnedClausesSizeTrace() {
+        return this.learnedClausesSizeTrace;
+    }
+
+    public void setLearnedClausesSizeTrace(ITrace2D learnedClausesSizeTrace) {
+        this.learnedClausesSizeTrace = learnedClausesSizeTrace;
+    }
+
+    public ITrace2D getClausesEvaluationTrace() {
+        return this.clausesEvaluationTrace;
+    }
+
+    public void setClausesEvaluationTrace(ITrace2D clausesEvaluationTrace) {
+        this.clausesEvaluationTrace = clausesEvaluationTrace;
+    }
+
+    public ITrace2D getConflictLevelTrace() {
+        return this.conflictLevelTrace;
+    }
+
+    public void setConflictLevelTrace(ITrace2D conflictLevelTrace) {
+        this.conflictLevelTrace = conflictLevelTrace;
+    }
+
+    public ITrace2D getConflictLevelRestartTrace() {
+        return this.conflictLevelRestartTrace;
+    }
+
+    public void setConflictLevelRestartTrace(ITrace2D conflictLevelRestartTrace) {
+        this.conflictLevelRestartTrace = conflictLevelRestartTrace;
+    }
+
+    public ITrace2D getHeuristicsTrace() {
+        return this.heuristicsTrace;
+    }
+
+    public void setHeuristicsTrace(ITrace2D heuristicsTrace) {
+        this.heuristicsTrace = heuristicsTrace;
+    }
+
+    public ITrace2D getSpeedTrace() {
+        return this.speedTrace;
+    }
+
+    public void setSpeedTrace(ITrace2D speedTrace) {
+        this.speedTrace = speedTrace;
+    }
+
+    public ITrace2D getSpeedCleanTrace() {
+        return this.speedCleanTrace;
+    }
+
+    public void setSpeedCleanTrace(ITrace2D speedCleanTrace) {
+        this.speedCleanTrace = speedCleanTrace;
+    }
+
+    public ITrace2D getSpeedRestartTrace() {
+        return this.speedRestartTrace;
+    }
+
+    public void setSpeedRestartTrace(ITrace2D speedRestartTrace) {
+        this.speedRestartTrace = speedRestartTrace;
+    }
+
+    public ITrace2D getConflictDepthRestartTrace() {
+        return this.conflictDepthRestartTrace;
+    }
+
+    public void setConflictDepthRestartTrace(ITrace2D conflictDepthRestartTrace) {
+        this.conflictDepthRestartTrace = conflictDepthRestartTrace;
+    }
+
+    public ITrace2D getLearnedClausesSizeRestartTrace() {
+        return this.learnedClausesSizeRestartTrace;
+    }
+
+    public void setLearnedClausesSizeRestartTrace(
+            ITrace2D learnedClausesSizeRestartTrace) {
+        this.learnedClausesSizeRestartTrace = learnedClausesSizeRestartTrace;
+    }
+
+    public ITrace2D getLearnedClausesSizeCleanTrace() {
+        return this.learnedClausesSizeCleanTrace;
+    }
+
+    public void setLearnedClausesSizeCleanTrace(
+            ITrace2D learnedClausesSizeCleanTrace) {
+        this.learnedClausesSizeCleanTrace = learnedClausesSizeCleanTrace;
+    }
+
+    public ITrace2D getConflictLevelCleanTrace() {
+        return this.conflictLevelCleanTrace;
+    }
+
+    public void setConflictLevelCleanTrace(ITrace2D conflictLevelCleanTrace) {
+        this.conflictLevelCleanTrace = conflictLevelCleanTrace;
+    }
+
+    public ITrace2D getConflictDepthCleanTrace() {
+        return this.conflictDepthCleanTrace;
+    }
+
+    public void setConflictDepthCleanTrace(ITrace2D conflictDepthCleanTrace) {
+        this.conflictDepthCleanTrace = conflictDepthCleanTrace;
+    }
+
+    public ITrace2D getCleanPosDecisionTrace() {
+        return this.cleanPosDecisionTrace;
+    }
+
+    public void setCleanPosDecisionTrace(ITrace2D cleanPosDecisionTrace) {
+        this.cleanPosDecisionTrace = cleanPosDecisionTrace;
+    }
+
+    public ITrace2D getCleanNegDecisionTrace() {
+        return this.cleanNegDecisionTrace;
+    }
+
+    public void setCleanNegDecisionTrace(ITrace2D cleanNegDecisionTrace) {
+        this.cleanNegDecisionTrace = cleanNegDecisionTrace;
+    }
+
+    public int getnVar() {
+        return this.nVar;
+    }
+
+    public void setnVar(int nVar) {
+        this.nVar = nVar;
+    }
+
+    public void start() {
+        // init();
+
+        this.visuFrame.setVisible(true);
+    }
+
+    public void end() {
+        this.visuFrame.setVisible(false);
+    }
+
 }

@@ -41,85 +41,81 @@ import javax.swing.JTextArea;
 
 /**
  * 
- * This panel contains buttons that control restart and clean on solver.
- * It also displays history of commands.
+ * This panel contains buttons that control restart and clean on solver. It also
+ * displays history of commands.
  * 
  * @author sroussel
- *
+ * 
  */
-public class VerySimpleCommandPanel extends JPanel{
-	
-	
-	private static final long serialVersionUID = 1L;
+public class VerySimpleCommandPanel extends JPanel {
 
-	private RemoteControlStrategy telecomStrategy;
-	
-	public final static String RESTART = "Restart";
-	public final static String CLEAN = "Clean";
-	
-	private JButton restartButton;
-	private JButton cleanButton;
-	
-	private JTextArea console;
-	
-	public VerySimpleCommandPanel(RemoteControlStrategy telecomStrategy){
-		super();
-		
-		this.setPreferredSize(new Dimension(200,200));
-		
-		this.telecomStrategy = telecomStrategy;
-		
-		restartButton = new JButton(RESTART);
-		
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnRestart();
-			}
-		});
-		
-		cleanButton = new JButton(CLEAN);
-		
-		cleanButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnClean();
-			}
-		});
-		
-		console = new JTextArea();
-		
-		JScrollPane scrollPane = new JScrollPane(console);
+    private static final long serialVersionUID = 1L;
 
-		//scrollPane.setMinimumSize(new Dimension(100,100));
-		scrollPane.setPreferredSize(new Dimension(100,100));	
-		
-		
-		
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.add(restartButton);
-		this.add(cleanButton);
-		this.add(scrollPane);
-	
-		
-	}
-	
-	public void hasClickedOnRestart(){
-		telecomStrategy.setHasClickedOnRestart(true);
-		console.append("Has clicked on " + RESTART + "\n");
-		console.repaint();
-		this.repaint();
-	}
-	
-	public void hasClickedOnClean(){
-		telecomStrategy.setHasClickedOnClean(true);
-		console.append("Has clicked on " + CLEAN + "\n");
-		console.repaint();
-		this.repaint();
-	}
-	
-//	public void maj(){
-//		console.append(fauxModele.getLastCommande() + "\n");
-//		console.repaint();
-//		this.repaint();
-//	}
+    private RemoteControlStrategy telecomStrategy;
+
+    public final static String RESTART = "Restart";
+    public final static String CLEAN = "Clean";
+
+    private JButton restartButton;
+    private JButton cleanButton;
+
+    private JTextArea console;
+
+    public VerySimpleCommandPanel(RemoteControlStrategy telecomStrategy) {
+        super();
+
+        this.setPreferredSize(new Dimension(200, 200));
+
+        this.telecomStrategy = telecomStrategy;
+
+        this.restartButton = new JButton(RESTART);
+
+        this.restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnRestart();
+            }
+        });
+
+        this.cleanButton = new JButton(CLEAN);
+
+        this.cleanButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnClean();
+            }
+        });
+
+        this.console = new JTextArea();
+
+        JScrollPane scrollPane = new JScrollPane(this.console);
+
+        // scrollPane.setMinimumSize(new Dimension(100,100));
+        scrollPane.setPreferredSize(new Dimension(100, 100));
+
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(this.restartButton);
+        this.add(this.cleanButton);
+        this.add(scrollPane);
+
+    }
+
+    public void hasClickedOnRestart() {
+        this.telecomStrategy.setHasClickedOnRestart(true);
+        this.console.append("Has clicked on " + RESTART + "\n");
+        this.console.repaint();
+        this.repaint();
+    }
+
+    public void hasClickedOnClean() {
+        this.telecomStrategy.setHasClickedOnClean(true);
+        this.console.append("Has clicked on " + CLEAN + "\n");
+        this.console.repaint();
+        this.repaint();
+    }
+
+    // public void maj(){
+    // console.append(fauxModele.getLastCommande() + "\n");
+    // console.repaint();
+    // this.repaint();
+    // }
 
 }

@@ -12,87 +12,88 @@ import javax.swing.JTextField;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
 
-public class RandomWalkCommandComponent extends CommandComponent{
+public class RandomWalkCommandComponent extends CommandComponent {
 
-	private SolverController controller;
-	
-	private JLabel probaRWLabel;
-	private JTextField probaRWField;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	private JButton applyRWButton;
+    private SolverController controller;
 
-	
-	private final static String RW_LABEL = "Probabilty : ";
-	private final static String RW_APPLY = "Apply";
+    private JLabel probaRWLabel;
+    private JTextField probaRWField;
 
-	
-	public RandomWalkCommandComponent(String name, SolverController controller){
-		this.controller = controller;
-		this.setName(name);
-		createPanel();
-	}
-	
-	
-	@Override
-	public void createPanel() {
-		createRWPanel();
-	}
-	
-	public void createRWPanel(){
-		
-		
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    private JButton applyRWButton;
 
-		this.setLayout(new BorderLayout());
+    private final static String RW_LABEL = "Probabilty : ";
+    private final static String RW_APPLY = "Apply";
 
-		probaRWLabel = new JLabel(RW_LABEL);
-		probaRWField = new JTextField("0",10);
+    public RandomWalkCommandComponent(String name, SolverController controller) {
+        this.controller = controller;
+        this.setName(name);
+        createPanel();
+    }
 
-		probaRWLabel.setLabelFor(probaRWField);
+    @Override
+    public void createPanel() {
+        createRWPanel();
+    }
 
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
+    public void createRWPanel() {
 
-		tmpPanel1.add(probaRWLabel);
-		tmpPanel1.add(probaRWField);
+        this.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		JPanel tmpPanel2 = new JPanel();
-		applyRWButton = new JButton(RW_APPLY);
+        this.setLayout(new BorderLayout());
 
-		applyRWButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplyRW();
-			}
-		});
+        this.probaRWLabel = new JLabel(RW_LABEL);
+        this.probaRWField = new JTextField("0", 10);
 
-		tmpPanel2.add(applyRWButton);
+        this.probaRWLabel.setLabelFor(this.probaRWField);
 
-		this.add(tmpPanel1, BorderLayout.CENTER);
-		this.add(tmpPanel2, BorderLayout.SOUTH);
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.setLayout(new FlowLayout());
 
+        tmpPanel1.add(this.probaRWLabel);
+        tmpPanel1.add(this.probaRWField);
 
-	}
-	
-	public void hasClickedOnApplyRW(){
-		double proba=0;
-		if(probaRWField!=null)
-			proba = Double.parseDouble(probaRWField.getText());
+        JPanel tmpPanel2 = new JPanel();
+        this.applyRWButton = new JButton(RW_APPLY);
 
-		controller.setRandomWalkProba(proba);
-	}
+        this.applyRWButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnApplyRW();
+            }
+        });
 
-	
-	public void setRWPanelEnabled(boolean enabled){
-		probaRWLabel.setEnabled(enabled);
-		probaRWField.setEnabled(enabled);
-		applyRWButton.setEnabled(enabled);
-		this.repaint();
-	}
-	
-	public void setProba(double proba){
-		probaRWField.setText(proba+"");
-		this.repaint();
-	}
-	
+        tmpPanel2.add(this.applyRWButton);
+
+        this.add(tmpPanel1, BorderLayout.CENTER);
+        this.add(tmpPanel2, BorderLayout.SOUTH);
+
+    }
+
+    public void hasClickedOnApplyRW() {
+        double proba = 0;
+        if (this.probaRWField != null) {
+            proba = Double.parseDouble(this.probaRWField.getText());
+        }
+
+        this.controller.setRandomWalkProba(proba);
+    }
+
+    public void setRWPanelEnabled(boolean enabled) {
+        this.probaRWLabel.setEnabled(enabled);
+        this.probaRWField.setEnabled(enabled);
+        this.applyRWButton.setEnabled(enabled);
+        this.repaint();
+    }
+
+    public void setProba(double proba) {
+        this.probaRWField.setText(proba + "");
+        this.repaint();
+    }
+
 }

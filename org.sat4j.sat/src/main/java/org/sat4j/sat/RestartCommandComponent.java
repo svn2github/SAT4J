@@ -23,254 +23,251 @@ import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.NoRestarts;
 
-public class RestartCommandComponent extends CommandComponent{
-	
-	
-	private static final long serialVersionUID = 1L;
-	
-	private JPanel restartPropertiesPanel;
-	private JPanel restartButtonPanel;
+public class RestartCommandComponent extends CommandComponent {
 
-	private JLabel chooseRestartStrategyLabel;
-	private JLabel noParameterLabel;
-	private JComboBox listeRestarts;
-	private JButton restartButton;
-	
-	private JButton changeRestartMode;
-	
-	private JLabel factorLabel;
-	private final static String FACTOR = "Factor: ";
-	private JTextField factorField;
-	
-	public String currentRestart;
-	
-	private final static String RESTART = "Restart";
-	private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
-	private final static String CHANGE_RESTART_STRATEGY = "Apply";
-	private final static String MANUAL_RESTART = "Manual Restart";
-	private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
-	private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
-	private final static String RESTART_PATH="org.sat4j.minisat.restarts";
-	
-	private SolverController controller;
-	
-	public RestartCommandComponent(String name, SolverController controller, String initialRestartStrategy) {
-		this.setName(name);
-		currentRestart = initialRestartStrategy;
-		this.controller = controller;
-		createPanel();
-		initFactorParam();
-	}
+    private static final long serialVersionUID = 1L;
 
-	
-	public void createPanel(){
+    private JPanel restartPropertiesPanel;
+    private JPanel restartButtonPanel;
 
-		this.setLayout(new BorderLayout());
+    private JLabel chooseRestartStrategyLabel;
+    private JLabel noParameterLabel;
+    private JComboBox listeRestarts;
+    private JButton restartButton;
 
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new FlowLayout());
-		
-		tmpPanel1.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    private JButton changeRestartMode;
 
-		chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
+    private JLabel factorLabel;
+    private final static String FACTOR = "Factor: ";
+    private JTextField factorField;
 
-		listeRestarts = new JComboBox(getListOfRestartStrategies().toArray());	
-		
-		listeRestarts.setSelectedItem(currentRestart);
+    public String currentRestart;
 
-		listeRestarts.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				modifyRestartParamPanel();
-			}
-		});
+    private final static String RESTART = "Restart";
+    private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
+    private final static String CHANGE_RESTART_STRATEGY = "Apply";
+    private final static String MANUAL_RESTART = "Manual Restart";
+    private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
+    private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
+    private final static String RESTART_PATH = "org.sat4j.minisat.restarts";
 
-		tmpPanel1.add(chooseRestartStrategyLabel);
-		tmpPanel1.add(listeRestarts);
-		
-		changeRestartMode = new JButton(CHANGE_RESTART_STRATEGY);
-		
-		changeRestartMode.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnChange();
-			}
-		});
-		
-		tmpPanel1.add(changeRestartMode);
+    private SolverController controller;
 
-		noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
+    public RestartCommandComponent(String name, SolverController controller,
+            String initialRestartStrategy) {
+        this.setName(name);
+        this.currentRestart = initialRestartStrategy;
+        this.controller = controller;
+        createPanel();
+        initFactorParam();
+    }
 
-		Font newLabelFont=new Font(noParameterLabel.getFont().getName(),Font.ITALIC,noParameterLabel.getFont().getSize());
+    @Override
+    public void createPanel() {
 
-		noParameterLabel.setFont(newLabelFont);
+        this.setLayout(new BorderLayout());
 
-		restartPropertiesPanel = new JPanel();
-		restartPropertiesPanel.add(noParameterLabel);
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.setLayout(new FlowLayout());
 
-		
+        tmpPanel1.setBorder(new CompoundBorder(new TitledBorder(null, this
+                .getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		restartButton = new JButton(RESTART);
+        this.chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
 
-		restartButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnRestart();
-			}
-		});
+        this.listeRestarts = new JComboBox(getListOfRestartStrategies()
+                .toArray());
 
-		restartButtonPanel = new JPanel();
-		restartButtonPanel.setName(MANUAL_RESTART);
-		restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(null, restartButtonPanel.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+        this.listeRestarts.setSelectedItem(this.currentRestart);
 
-		restartButtonPanel.add(restartButton);
-		
-		restartPropertiesPanel.setPreferredSize(new Dimension(100,50));
+        this.listeRestarts.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                modifyRestartParamPanel();
+            }
+        });
 
-		this.add(tmpPanel1,BorderLayout.NORTH);
-		this.add(restartPropertiesPanel,BorderLayout.CENTER);
-		this.add(restartButtonPanel,BorderLayout.SOUTH);
-	}
-	
-	
-	public void initFactorParam(){
-		//		lubyPanel = new JPanel();
-		//		//		lubyPanel.setLayout(new FlowLayout());
+        tmpPanel1.add(this.chooseRestartStrategyLabel);
+        tmpPanel1.add(this.listeRestarts);
 
-		factorLabel = new JLabel(FACTOR);
-		factorField = new JTextField(LubyRestarts.DEFAULT_LUBY_FACTOR+"",5);
-		//factorField.setMargin(new Insets(0, 0, 0, 0));
-		//factorLabel.setLabelFor(factorField);
+        this.changeRestartMode = new JButton(CHANGE_RESTART_STRATEGY);
 
-		//		lubyPanel.add(factorLabel);
-		//		lubyPanel.add(factorField);
+        this.changeRestartMode.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnChange();
+            }
+        });
 
-	}
-	
-	public void modifyRestartParamPanel(){
-		restartPropertiesPanel.removeAll();
-		if(listeRestarts.getSelectedItem().equals("LubyRestarts")){
-			restartPropertiesPanel.add(factorLabel);
-			restartPropertiesPanel.add(factorField);
-		}
-		else{
-			restartPropertiesPanel.add(noParameterLabel);
-		}
-		setRestartPropertiesPanelEnabled(true);
-		restartPropertiesPanel.repaint();
-		this.repaint();
-		this.paintAll(this.getGraphics());
-		this.repaint();
-	}
-	
-	public void setRestartPanelEnabled(boolean enabled){
-		listeRestarts.setEnabled(enabled);
-		restartButton.setEnabled(enabled);
-		chooseRestartStrategyLabel.setEnabled(enabled);
-		setRestartPropertiesPanelEnabled(enabled);
-		this.repaint();
-	}
+        tmpPanel1.add(this.changeRestartMode);
 
-	public void setRestartPropertiesPanelEnabled(boolean enabled){
-		for(Component c:restartPropertiesPanel.getComponents()){
-			c.setEnabled(enabled);
-		}
-		restartPropertiesPanel.repaint();
-	}
-	
-	public void updateRestartStrategyPanel(){
-		listeRestarts.setSelectedItem(currentRestart);
-	}
-	
-	public void hasClickedOnChange(){
-		controller.shouldRestartNow();
-	
-		String choix = (String)listeRestarts.getSelectedItem();
+        this.noParameterLabel = new JLabel(NO_PARAMETER_FOR_THIS_STRATEGY);
 
-		boolean isNotSameRestart = !choix.equals(currentRestart);
-		boolean shouldInit = isNotSameRestart;
+        Font newLabelFont = new Font(this.noParameterLabel.getFont().getName(),
+                Font.ITALIC, this.noParameterLabel.getFont().getSize());
 
-		RestartStrategy restart = new NoRestarts();
-		SearchParams params = controller.getSearchParams();
+        this.noParameterLabel.setFont(newLabelFont);
 
-		if(choix.equals("LubyRestarts")){
-			boolean factorChanged = false;
-			int factor = LubyRestarts.DEFAULT_LUBY_FACTOR;
-			if(factorField.getText()!=null){
-				factor = Integer.parseInt(factorField.getText());
-			}
-			// if the current restart is a LubyRestart
-			if(isNotSameRestart){
-				restart = new LubyRestarts(factor);
-				controller.setRestartStrategy(restart);
-			}
-			else{
-				factorChanged = !(factor==((LubyRestarts)controller.getRestartStrategy()).getFactor());
-			}
-			// if the factor has changed
-			if(factorChanged){
-				restart = controller.getRestartStrategy();
-				((LubyRestarts)restart).setFactor(factor);
-			}
-			shouldInit = isNotSameRestart || factorChanged;
+        this.restartPropertiesPanel = new JPanel();
+        this.restartPropertiesPanel.add(this.noParameterLabel);
 
-			if(shouldInit){
-				controller.init(params);
-			}
+        this.restartButton = new JButton(RESTART);
 
-		}
+        this.restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnRestart();
+            }
+        });
 
-		else try{
-			restart = (RestartStrategy)Class.forName(RESTART_PATH+"."+choix).newInstance();
-			assert restart!=null;
-			controller.setRestartStrategy(restart);
-			controller.init(params);
+        this.restartButtonPanel = new JPanel();
+        this.restartButtonPanel.setName(MANUAL_RESTART);
+        this.restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(
+                null, this.restartButtonPanel.getName(), TitledBorder.LEFT,
+                TitledBorder.TOP), DetailedCommandPanel.border5));
 
-		}
-		catch(ClassNotFoundException e){
-			e.printStackTrace();
-		}
-		catch(IllegalAccessException e){
-			e.printStackTrace();
-		}
-		catch(InstantiationException e){
-			e.printStackTrace();
-		}
+        this.restartButtonPanel.add(this.restartButton);
 
-		currentRestart = choix;
+        this.restartPropertiesPanel.setPreferredSize(new Dimension(100, 50));
 
+        this.add(tmpPanel1, BorderLayout.NORTH);
+        this.add(this.restartPropertiesPanel, BorderLayout.CENTER);
+        this.add(this.restartButtonPanel, BorderLayout.SOUTH);
+    }
 
-		//		if(shouldInit)
-		//			telecomStrategy.setRestartStrategy(restart,params);
+    public void initFactorParam() {
+        // lubyPanel = new JPanel();
+        // // lubyPanel.setLayout(new FlowLayout());
 
-		
-	}
-	
-	public void hasClickedOnRestart(){
-		controller.shouldRestartNow();	
-	}
-	
-	public List<String> getListOfRestartStrategies(){
-		List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
-		List<String> finalResult = new ArrayList<String>();
+        this.factorLabel = new JLabel(FACTOR);
+        this.factorField = new JTextField(
+                LubyRestarts.DEFAULT_LUBY_FACTOR + "", 5);
+        // factorField.setMargin(new Insets(0, 0, 0, 0));
+        // factorLabel.setLabelFor(factorField);
 
-		//		finalResult.add(RESTART_NO_STRATEGY);
+        // lubyPanel.add(factorLabel);
+        // lubyPanel.add(factorField);
 
-		for(String s:resultRTSI){
-			if(!s.contains("Remote")){
-				finalResult.add(s);
-			}
-		}
+    }
 
-		return finalResult;
-	}
-	
-	public String getCurrentRestart(){
-		return currentRestart;
-	}
-	
-	public void setCurrentRestart(String currentRestart){
-		this.currentRestart = currentRestart;
-		updateRestartStrategyPanel();
-		modifyRestartParamPanel();
-	}
+    public void modifyRestartParamPanel() {
+        this.restartPropertiesPanel.removeAll();
+        if (this.listeRestarts.getSelectedItem().equals("LubyRestarts")) {
+            this.restartPropertiesPanel.add(this.factorLabel);
+            this.restartPropertiesPanel.add(this.factorField);
+        } else {
+            this.restartPropertiesPanel.add(this.noParameterLabel);
+        }
+        setRestartPropertiesPanelEnabled(true);
+        this.restartPropertiesPanel.repaint();
+        this.repaint();
+        this.paintAll(this.getGraphics());
+        this.repaint();
+    }
+
+    public void setRestartPanelEnabled(boolean enabled) {
+        this.listeRestarts.setEnabled(enabled);
+        this.restartButton.setEnabled(enabled);
+        this.chooseRestartStrategyLabel.setEnabled(enabled);
+        setRestartPropertiesPanelEnabled(enabled);
+        this.repaint();
+    }
+
+    public void setRestartPropertiesPanelEnabled(boolean enabled) {
+        for (Component c : this.restartPropertiesPanel.getComponents()) {
+            c.setEnabled(enabled);
+        }
+        this.restartPropertiesPanel.repaint();
+    }
+
+    public void updateRestartStrategyPanel() {
+        this.listeRestarts.setSelectedItem(this.currentRestart);
+    }
+
+    public void hasClickedOnChange() {
+        this.controller.shouldRestartNow();
+
+        String choix = (String) this.listeRestarts.getSelectedItem();
+
+        boolean isNotSameRestart = !choix.equals(this.currentRestart);
+        boolean shouldInit = isNotSameRestart;
+
+        RestartStrategy restart = new NoRestarts();
+        SearchParams params = this.controller.getSearchParams();
+
+        if (choix.equals("LubyRestarts")) {
+            boolean factorChanged = false;
+            int factor = LubyRestarts.DEFAULT_LUBY_FACTOR;
+            if (this.factorField.getText() != null) {
+                factor = Integer.parseInt(this.factorField.getText());
+            }
+            // if the current restart is a LubyRestart
+            if (isNotSameRestart) {
+                restart = new LubyRestarts(factor);
+                this.controller.setRestartStrategy(restart);
+            } else {
+                factorChanged = !(factor == ((LubyRestarts) this.controller
+                        .getRestartStrategy()).getFactor());
+            }
+            // if the factor has changed
+            if (factorChanged) {
+                restart = this.controller.getRestartStrategy();
+                ((LubyRestarts) restart).setFactor(factor);
+            }
+            shouldInit = isNotSameRestart || factorChanged;
+
+            if (shouldInit) {
+                this.controller.init(params);
+            }
+
+        } else {
+            try {
+                restart = (RestartStrategy) Class.forName(
+                        RESTART_PATH + "." + choix).newInstance();
+                assert restart != null;
+                this.controller.setRestartStrategy(restart);
+                this.controller.init(params);
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.currentRestart = choix;
+
+        // if(shouldInit)
+        // telecomStrategy.setRestartStrategy(restart,params);
+
+    }
+
+    public void hasClickedOnRestart() {
+        this.controller.shouldRestartNow();
+    }
+
+    public List<String> getListOfRestartStrategies() {
+        List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
+        List<String> finalResult = new ArrayList<String>();
+
+        // finalResult.add(RESTART_NO_STRATEGY);
+
+        for (String s : resultRTSI) {
+            if (!s.contains("Remote")) {
+                finalResult.add(s);
+            }
+        }
+
+        return finalResult;
+    }
+
+    public String getCurrentRestart() {
+        return this.currentRestart;
+    }
+
+    public void setCurrentRestart(String currentRestart) {
+        this.currentRestart = currentRestart;
+        updateRestartStrategyPanel();
+        modifyRestartParamPanel();
+    }
 }

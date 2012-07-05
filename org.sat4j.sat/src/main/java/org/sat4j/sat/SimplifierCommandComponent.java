@@ -14,107 +14,108 @@ import javax.swing.border.TitledBorder;
 
 import org.sat4j.minisat.core.SimplificationType;
 
-public class SimplifierCommandComponent extends CommandComponent{
+public class SimplifierCommandComponent extends CommandComponent {
 
-	private SolverController controller;
-	
-	private final static String SIMPLIFICATION_APPLY = "Apply";
-	public final static String SIMPLIFICATION_NO = "No reason simplification";
-	public final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
-	public final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	private JButton simplificationApplyButton;
-	private ButtonGroup simplificationGroup;
-	private JRadioButton simplificationNoRadio;
-	private JRadioButton simplificationSimpleRadio;
-	private JRadioButton simplificationExpensiveRadio;
-	
-	
-	public SimplifierCommandComponent(String name, SolverController controller){
-		this.setName(name);
-		this.controller=controller;
-		createPanel();
-	}
-	
-	@Override
-	public void createPanel() {
-		createSimplifierPanel();
-	}
+    private SolverController controller;
 
-	
-	public void createSimplifierPanel(){
-		
-		this.setBorder(new CompoundBorder(new TitledBorder(null, this.getName(), 
-				TitledBorder.LEFT, TitledBorder.TOP), DetailedCommandPanel.border5));
+    private final static String SIMPLIFICATION_APPLY = "Apply";
+    public final static String SIMPLIFICATION_NO = "No reason simplification";
+    public final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
+    public final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
 
-		this.setLayout(new BorderLayout());
+    private JButton simplificationApplyButton;
+    private ButtonGroup simplificationGroup;
+    private JRadioButton simplificationNoRadio;
+    private JRadioButton simplificationSimpleRadio;
+    private JRadioButton simplificationExpensiveRadio;
 
-		//		simplificationRadio = new Radio
-		simplificationGroup = new ButtonGroup();
-		simplificationExpensiveRadio = new JRadioButton(SIMPLIFICATION_EXPENSIVE);
-		simplificationNoRadio = new JRadioButton(SIMPLIFICATION_NO);
-		simplificationSimpleRadio = new JRadioButton(SIMPLIFICATION_SIMPLE);
+    public SimplifierCommandComponent(String name, SolverController controller) {
+        this.setName(name);
+        this.controller = controller;
+        createPanel();
+    }
 
-		JPanel tmpPanel1 = new JPanel();
-		tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
+    @Override
+    public void createPanel() {
+        createSimplifierPanel();
+    }
 
-		simplificationGroup.add(simplificationNoRadio);
-		simplificationGroup.add(simplificationSimpleRadio);
-		simplificationGroup.add(simplificationExpensiveRadio);
+    public void createSimplifierPanel() {
 
+        this.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
-		tmpPanel1.add(simplificationNoRadio);
-		tmpPanel1.add(simplificationSimpleRadio);
-		tmpPanel1.add(simplificationExpensiveRadio);
+        this.setLayout(new BorderLayout());
 
-		simplificationApplyButton = new JButton(SIMPLIFICATION_APPLY);
+        // simplificationRadio = new Radio
+        this.simplificationGroup = new ButtonGroup();
+        this.simplificationExpensiveRadio = new JRadioButton(
+                SIMPLIFICATION_EXPENSIVE);
+        this.simplificationNoRadio = new JRadioButton(SIMPLIFICATION_NO);
+        this.simplificationSimpleRadio = new JRadioButton(SIMPLIFICATION_SIMPLE);
 
-		simplificationApplyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				hasClickedOnApplySimplification();
-			}
-		});
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
 
-		JPanel tmpPanel2 = new JPanel();
-		tmpPanel2.add(simplificationApplyButton);
+        this.simplificationGroup.add(this.simplificationNoRadio);
+        this.simplificationGroup.add(this.simplificationSimpleRadio);
+        this.simplificationGroup.add(this.simplificationExpensiveRadio);
 
-		this.add(tmpPanel1,BorderLayout.NORTH);
-		this.add(tmpPanel2,BorderLayout.SOUTH);
+        tmpPanel1.add(this.simplificationNoRadio);
+        tmpPanel1.add(this.simplificationSimpleRadio);
+        tmpPanel1.add(this.simplificationExpensiveRadio);
 
-	}
-	
-	public void setSelectedSimplification(String simplification){
-		if(simplification.equals(SIMPLIFICATION_EXPENSIVE)){
-			simplificationExpensiveRadio.setSelected(true);
-		}
-		else if(simplification.equals(SIMPLIFICATION_SIMPLE)){
-			simplificationSimpleRadio.setSelected(true);
-		}
-		else{
-			simplificationNoRadio.setSelected(true);
-		}
-	}
-	
-	public void hasClickedOnApplySimplification(){
-		if(simplificationSimpleRadio.isSelected()){
-			controller.setSimplifier(SimplificationType.SIMPLE_SIMPLIFICATION);
-		}
-		else if(simplificationExpensiveRadio.isSelected()){
-			controller.setSimplifier(SimplificationType.EXPENSIVE_SIMPLIFICATION);
-		}
-		else{
-			controller.setSimplifier(SimplificationType.NO_SIMPLIFICATION);
-		}
+        this.simplificationApplyButton = new JButton(SIMPLIFICATION_APPLY);
 
-	}
-	
-	public void setSimplifierPanelEnabled(boolean enabled){
-		simplificationNoRadio.setEnabled(enabled);
-		simplificationExpensiveRadio.setEnabled(enabled);
-		simplificationSimpleRadio.setEnabled(enabled);
-		simplificationApplyButton.setEnabled(enabled);
-		this.repaint();
-	}
-	
-	
+        this.simplificationApplyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                hasClickedOnApplySimplification();
+            }
+        });
+
+        JPanel tmpPanel2 = new JPanel();
+        tmpPanel2.add(this.simplificationApplyButton);
+
+        this.add(tmpPanel1, BorderLayout.NORTH);
+        this.add(tmpPanel2, BorderLayout.SOUTH);
+
+    }
+
+    public void setSelectedSimplification(String simplification) {
+        if (simplification.equals(SIMPLIFICATION_EXPENSIVE)) {
+            this.simplificationExpensiveRadio.setSelected(true);
+        } else if (simplification.equals(SIMPLIFICATION_SIMPLE)) {
+            this.simplificationSimpleRadio.setSelected(true);
+        } else {
+            this.simplificationNoRadio.setSelected(true);
+        }
+    }
+
+    public void hasClickedOnApplySimplification() {
+        if (this.simplificationSimpleRadio.isSelected()) {
+            this.controller
+                    .setSimplifier(SimplificationType.SIMPLE_SIMPLIFICATION);
+        } else if (this.simplificationExpensiveRadio.isSelected()) {
+            this.controller
+                    .setSimplifier(SimplificationType.EXPENSIVE_SIMPLIFICATION);
+        } else {
+            this.controller.setSimplifier(SimplificationType.NO_SIMPLIFICATION);
+        }
+
+    }
+
+    public void setSimplifierPanelEnabled(boolean enabled) {
+        this.simplificationNoRadio.setEnabled(enabled);
+        this.simplificationExpensiveRadio.setEnabled(enabled);
+        this.simplificationSimpleRadio.setEnabled(enabled);
+        this.simplificationApplyButton.setEnabled(enabled);
+        this.repaint();
+    }
+
 }
