@@ -198,11 +198,19 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
     @Deprecated
     public void printStat(PrintStream out, String prefix) {
-        this.solvers.get(this.winnerId).printStat(out, prefix);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+                    prefix, i);
+            this.solvers.get(i).printStat(out, prefix);
+        }
     }
 
     public void printStat(PrintWriter out, String prefix) {
-        this.solvers.get(this.winnerId).printStat(out, prefix);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+                    prefix, i);
+            this.solvers.get(i).printStat(out, prefix);
+        }
     }
 
     public boolean removeConstr(IConstr c) {
@@ -261,6 +269,10 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         res.append(" solvers running in parallel");
         res.append("\n");
         for (int i = 0; i < this.numberOfSolvers; i++) {
+            res.append(prefix);
+            res.append(">>>>>>>>>> Solver number ");
+            res.append(i);
+            res.append(" <<<<<<<<<<<<<<<<<<\n");
             res.append(this.solvers.get(i).toString(prefix));
             if (i < this.numberOfSolvers - 1) {
                 res.append("\n");
@@ -338,6 +350,8 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
     public void printInfos(PrintWriter out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+                    prefix, i);
             this.solvers.get(i).printInfos(out, prefix);
         }
     }
@@ -354,7 +368,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
                 }
             }
             this.sleepTime = FAST_SLEEP;
-            System.out.println(getLogPrefix() + " And the winner is "
+            System.out.println(getLogPrefix() + "And the winner is "
                     + this.availableSolvers[this.winnerId]);
         }
         this.remainingSolvers--;
