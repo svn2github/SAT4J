@@ -63,8 +63,33 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private boolean isSolutionOptimal;
 
+    private final boolean nonOptimalMeansSatisfiable;
+
+    /**
+     * Create a PB decorator for which a non optimal solution means that the
+     * problem is satisfiable.
+     * 
+     * @param solver
+     *            a PB solver.
+     */
     public PseudoOptDecorator(IPBSolver solver) {
+        this(solver, true);
+    }
+
+    /**
+     * Create a PB decorator with a specific semantic of non optimal solution.
+     * 
+     * @param solver
+     *            a PB solver
+     * @param nonOptimalMeansSatisfiable
+     *            true if a suboptimal solution means that the problem is
+     *            satisfiable (e.g. as in the PB competition), else false (e.g.
+     *            as in the MAXSAT competition).
+     */
+    public PseudoOptDecorator(IPBSolver solver,
+            boolean nonOptimalMeansSatisfiable) {
         super(solver);
+        this.nonOptimalMeansSatisfiable = nonOptimalMeansSatisfiable;
     }
 
     @Override
@@ -150,7 +175,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     }
 
     public boolean nonOptimalMeansSatisfiable() {
-        return true;
+        return nonOptimalMeansSatisfiable;
     }
 
     public Number calculateObjective() {
