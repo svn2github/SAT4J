@@ -53,139 +53,140 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericOptLauncher extends AbstractOptimizationLauncher {
 
-	
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
-	
-	@SuppressWarnings("nls")
-	private Options createCLIOptions() {
-		Options options = new Options();
-		options.addOption("t", "timeout", true,
-				"specifies the timeout (in seconds)");
-		options.addOption("p", "parallel", false,
-				"uses CP and RES pseudo-boolean solvers in parallel");
-		options.addOption("T", "timeoutms", true,
-				"specifies the timeout (in milliseconds)");
-		options.addOption("k", "kind", true,
-				"kind of problem: minone, maxsat, etc.");
-		options.addOption("i", "incomplete", false,
-				"incomplete mode for maxsat");
-		options.addOption("c", "clean databases", false,
-				"clean up the database at root level");
-		options.addOption("k", "keep Hot", false,
-				"Keep heuristics accross calls to the SAT solver");
-		options.addOption("e", "equivalence", false,
-				"Use an equivalence instead of an implication for the selector variables");
-		options.addOption("n", "no solution line", false,
-				"Do not display a solution line (useful if the solution is large)");
-		options.addOption("l", "lower bounding", false,
-				"search solution by lower bounding instead of by upper bounding");
-		options.addOption("m", "mystery", false,
-				"mystery option");
-		return options;
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void displayLicense() {
-		super.displayLicense();
-		log("This software uses some libraries from the Jakarta Commons project. See jakarta.apache.org for details."); //$NON-NLS-1$
-	}
+    @SuppressWarnings("nls")
+    private Options createCLIOptions() {
+        Options options = new Options();
+        options.addOption("t", "timeout", true,
+                "specifies the timeout (in seconds)");
+        options.addOption("p", "parallel", false,
+                "uses CP and RES pseudo-boolean solvers in parallel");
+        options.addOption("T", "timeoutms", true,
+                "specifies the timeout (in milliseconds)");
+        options.addOption("k", "kind", true,
+                "kind of problem: minone, maxsat, etc.");
+        options.addOption("i", "incomplete", false,
+                "incomplete mode for maxsat");
+        options.addOption("c", "clean databases", false,
+                "clean up the database at root level");
+        options.addOption("k", "keep Hot", false,
+                "Keep heuristics accross calls to the SAT solver");
+        options.addOption("e", "equivalence", false,
+                "Use an equivalence instead of an implication for the selector variables");
+        options.addOption("n", "no solution line", false,
+                "Do not display a solution line (useful if the solution is large)");
+        options.addOption("l", "lower bounding", false,
+                "search solution by lower bounding instead of by upper bounding");
+        options.addOption("m", "mystery", false, "mystery option");
+        return options;
+    }
 
-	@Override
-	public void usage() {
-		out.println("java -jar sat4j-maxsat.jar instance-name"); //$NON-NLS-1$
-	}
+    @Override
+    public void displayLicense() {
+        super.displayLicense();
+        log("This software uses some libraries from the Jakarta Commons project. See jakarta.apache.org for details."); //$NON-NLS-1$
+    }
 
-	@Override
-	protected Reader createReader(ISolver aSolver, String problemname) {
-		Reader reader;
-		if (problemname.contains(".wcnf")) { //$NON-NLS-1$
-			reader = new WDimacsReader(wmsd); //$NON-NLS-1$
-		} else {
-			reader = new DimacsReader(wmsd);
-		}
-		reader.setVerbosity(true);
-		return reader;
-	}
+    @Override
+    public void usage() {
+        this.out.println("java -jar sat4j-maxsat.jar instance-name"); //$NON-NLS-1$
+    }
 
-	@Override
-	protected String getInstanceName(String[] args) {
-		return args[args.length - 1];
-	}
+    @Override
+    protected Reader createReader(ISolver aSolver, String problemname) {
+        Reader reader;
+        if (problemname.contains(".wcnf")) { //$NON-NLS-1$
+            reader = new WDimacsReader(this.wmsd);
+        } else {
+            reader = new DimacsReader(this.wmsd);
+        }
+        reader.setVerbosity(true);
+        return reader;
+    }
 
-	private WeightedMaxSatDecorator wmsd;
+    @Override
+    protected String getInstanceName(String[] args) {
+        return args[args.length - 1];
+    }
 
-	@Override
-	protected ISolver configureSolver(String[] args) {
-		ISolver asolver = null;
-		Options options = createCLIOptions();
-		if (args.length == 0) {
-			HelpFormatter helpf = new HelpFormatter();
-			helpf.printHelp("java -jar sat4j-maxsat.jar", options, true);
-		} else {
-			try {
-				CommandLine cmd = new PosixParser().parse(options, args);
-				int problemindex = args.length - 1;
-			    setDisplaySolutionLine(!cmd.hasOption("n"));
-				boolean equivalence = cmd.hasOption("e");
-				String kind = cmd.getOptionValue("k"); //$NON-NLS-1$
-				if (kind == null) { //$NON-NLS-1$
-					kind = "maxsat";
-				}
-				if ("minone".equalsIgnoreCase(kind)) {
-					asolver = new MinOneDecorator(SolverFactory.newDefault());
-				} else if ("mincost".equalsIgnoreCase(kind)
-						|| args[problemindex].endsWith(".p2cnf")) {
-					asolver = new MinCostDecorator(SolverFactory.newDefault());
-				} else {
-					assert "maxsat".equalsIgnoreCase(kind);
-					if (cmd.hasOption("m")) {
-						wmsd = new WeightedMaxSatDecorator(
-								org.sat4j.pb.SolverFactory.newSATUNSAT(),equivalence);
-					} else if (cmd.hasOption("p")) {
-						wmsd = new WeightedMaxSatDecorator(
-								org.sat4j.pb.SolverFactory.newBoth(),equivalence);
-					} else {
-						wmsd = new WeightedMaxSatDecorator(
-								SolverFactory.newDefault(),equivalence);
-					}
-					if (cmd.hasOption("l")) {
-						asolver = new ConstraintRelaxingPseudoOptDecorator(wmsd);
-					} else {
-						asolver = new PseudoOptDecorator(wmsd);
-					}
-				}
-				if (cmd.hasOption("i")) {
-					setIncomplete(true);
-				}
-				if (cmd.hasOption("c")) {
-					asolver.setDBSimplificationAllowed(true);
-				}
-				if (cmd.hasOption("k")) {
-					asolver.setKeepSolverHot(true);
-				}
-				String timeout = cmd.getOptionValue("t");
-				if (timeout == null) {
-					timeout = cmd.getOptionValue("T");
-					if (timeout != null) {
-						asolver.setTimeoutMs(Long.parseLong(timeout));
-					}
-				} else {
-					asolver.setTimeout(Integer.parseInt(timeout));
-				}
-				getLogWriter().println(asolver.toString(COMMENT_PREFIX));
-			} catch (ParseException e1) {
-				HelpFormatter helpf = new HelpFormatter();
-				helpf.printHelp("java -jar sat4jopt.jar", options, true);
-			}
-		}
-		return asolver;
-	}
+    private WeightedMaxSatDecorator wmsd;
 
-	public static void main(String[] args) {
-		AbstractLauncher lanceur = new GenericOptLauncher();
-		lanceur.run(args);
-	}
+    @Override
+    protected ISolver configureSolver(String[] args) {
+        ISolver asolver = null;
+        Options options = createCLIOptions();
+        if (args.length == 0) {
+            HelpFormatter helpf = new HelpFormatter();
+            helpf.printHelp("java -jar sat4j-maxsat.jar", options, true);
+        } else {
+            try {
+                CommandLine cmd = new PosixParser().parse(options, args);
+                int problemindex = args.length - 1;
+                setDisplaySolutionLine(!cmd.hasOption("n"));
+                boolean equivalence = cmd.hasOption("e");
+                String kind = cmd.getOptionValue("k"); //$NON-NLS-1$
+                if (kind == null) {
+                    kind = "maxsat";
+                }
+                if ("minone".equalsIgnoreCase(kind)) {
+                    asolver = new MinOneDecorator(SolverFactory.newDefault());
+                } else if ("mincost".equalsIgnoreCase(kind)
+                        || args[problemindex].endsWith(".p2cnf")) {
+                    asolver = new MinCostDecorator(SolverFactory.newDefault());
+                } else {
+                    assert "maxsat".equalsIgnoreCase(kind);
+                    if (cmd.hasOption("m")) {
+                        this.wmsd = new WeightedMaxSatDecorator(
+                                org.sat4j.pb.SolverFactory.newSATUNSAT(),
+                                equivalence);
+                    } else if (cmd.hasOption("p")) {
+                        this.wmsd = new WeightedMaxSatDecorator(
+                                org.sat4j.pb.SolverFactory.newBoth(),
+                                equivalence);
+                    } else {
+                        this.wmsd = new WeightedMaxSatDecorator(
+                                SolverFactory.newDefault(), equivalence);
+                    }
+                    if (cmd.hasOption("l")) {
+                        asolver = new ConstraintRelaxingPseudoOptDecorator(
+                                this.wmsd);
+                    } else {
+                        asolver = new PseudoOptDecorator(this.wmsd);
+                    }
+                }
+                if (cmd.hasOption("i")) {
+                    setIncomplete(true);
+                }
+                if (cmd.hasOption("c")) {
+                    asolver.setDBSimplificationAllowed(true);
+                }
+                if (cmd.hasOption("k")) {
+                    asolver.setKeepSolverHot(true);
+                }
+                String timeout = cmd.getOptionValue("t");
+                if (timeout == null) {
+                    timeout = cmd.getOptionValue("T");
+                    if (timeout != null) {
+                        asolver.setTimeoutMs(Long.parseLong(timeout));
+                    }
+                } else {
+                    asolver.setTimeout(Integer.parseInt(timeout));
+                }
+                getLogWriter().println(asolver.toString(COMMENT_PREFIX));
+            } catch (ParseException e1) {
+                HelpFormatter helpf = new HelpFormatter();
+                helpf.printHelp("java -jar sat4jopt.jar", options, true);
+            }
+        }
+        return asolver;
+    }
+
+    public static void main(String[] args) {
+        AbstractLauncher lanceur = new GenericOptLauncher();
+        lanceur.run(args);
+    }
 }

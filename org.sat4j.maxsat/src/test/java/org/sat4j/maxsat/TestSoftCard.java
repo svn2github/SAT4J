@@ -29,8 +29,8 @@
  *******************************************************************************/
 package org.sat4j.maxsat;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,70 +41,71 @@ import org.sat4j.specs.TimeoutException;
 
 public class TestSoftCard {
 
-	private WeightedMaxSatDecorator wms;
-	
-	@Before
-	public void setUp() {
-		wms = new WeightedMaxSatDecorator(SolverFactory.newDefault());
-	}
-	@Test
-	public void test() throws ContradictionException, TimeoutException {
-		wms.newVar(5);
-		IVecInt clause = new VecInt();
-		clause.push(1).push(2).push(3);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(-2);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(2);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(-1).push(3);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(3);
-		wms.addAtMost(clause,1);
-		clause.clear();
-		assertFalse(wms.isSatisfiable());
-	}
-	
-	@Test
-	public void test2() throws ContradictionException, TimeoutException {
-		wms.newVar(5);
-		IVecInt clause = new VecInt();
-		clause.push(1).push(2).push(3);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(-2);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(2);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(-1).push(3);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(3);
-		wms.addSoftAtMost(clause,1);
-		clause.clear();
-		assertTrue(wms.isSatisfiable());
-	}
+    private WeightedMaxSatDecorator wms;
 
-	@Test
-	public void test3() throws ContradictionException, TimeoutException {
-		wms.newVar(6);
-		IVecInt clause = new VecInt();
-		clause.push(1).push(2).push(3);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(4).push(5).push(6);
-		wms.addHardClause(clause);
-		clause.clear();
-		clause.push(1).push(2).push(3).push(4).push(5).push(6);
-		wms.addSoftAtMost(clause,1);
-		clause.clear();
-		assertTrue(wms.isSatisfiable());
-	}
+    @Before
+    public void setUp() {
+        this.wms = new WeightedMaxSatDecorator(SolverFactory.newDefault());
+    }
+
+    @Test
+    public void test() throws ContradictionException, TimeoutException {
+        this.wms.newVar(5);
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(-2);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(2);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(-1).push(3);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(3);
+        this.wms.addAtMost(clause, 1);
+        clause.clear();
+        assertFalse(this.wms.isSatisfiable());
+    }
+
+    @Test
+    public void test2() throws ContradictionException, TimeoutException {
+        this.wms.newVar(5);
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(-2);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(2);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(-1).push(3);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(3);
+        this.wms.addSoftAtMost(clause, 1);
+        clause.clear();
+        assertTrue(this.wms.isSatisfiable());
+    }
+
+    @Test
+    public void test3() throws ContradictionException, TimeoutException {
+        this.wms.newVar(6);
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(4).push(5).push(6);
+        this.wms.addHardClause(clause);
+        clause.clear();
+        clause.push(1).push(2).push(3).push(4).push(5).push(6);
+        this.wms.addSoftAtMost(clause, 1);
+        clause.clear();
+        assertTrue(this.wms.isSatisfiable());
+    }
 
 }

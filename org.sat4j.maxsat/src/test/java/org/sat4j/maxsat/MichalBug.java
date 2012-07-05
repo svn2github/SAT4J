@@ -42,85 +42,86 @@ import org.sat4j.tools.OptToSatAdapter;
 
 public class MichalBug {
 
-	@Test
-	public void testMichalReportedProblem() throws ContradictionException,
-			TimeoutException {
-		WeightedMaxSatDecorator maxSATSolver = new WeightedMaxSatDecorator(
-				SolverFactory.newLight());
+    @Test
+    public void testMichalReportedProblem() throws ContradictionException,
+            TimeoutException {
+        WeightedMaxSatDecorator maxSATSolver = new WeightedMaxSatDecorator(
+                SolverFactory.newLight());
 
-		final int OPTIMUM_FOUND = 0;
-		final int UNSATISFIABLE = 1;
+        final int OPTIMUM_FOUND = 0;
+        final int UNSATISFIABLE = 1;
 
-		maxSATSolver.newVar(2);
-		maxSATSolver.setExpectedNumberOfClauses(4);
+        maxSATSolver.newVar(2);
+        maxSATSolver.setExpectedNumberOfClauses(4);
 
-		int[] clause_1 = { 1, 1, 2 };
-		maxSATSolver.addClause(new VecInt(clause_1));
+        int[] clause_1 = { 1, 1, 2 };
+        maxSATSolver.addClause(new VecInt(clause_1));
 
-		int[] clause_2 = { 100, -1, -2 };
-		maxSATSolver.addClause(new VecInt(clause_2));
+        int[] clause_2 = { 100, -1, -2 };
+        maxSATSolver.addClause(new VecInt(clause_2));
 
-		int[] clause_3 = { 1000, 1, -2 };
-		maxSATSolver.addClause(new VecInt(clause_3));
+        int[] clause_3 = { 1000, 1, -2 };
+        maxSATSolver.addClause(new VecInt(clause_3));
 
-		int[] clause_4 = { 100000, -1, 2 };
-		maxSATSolver.addClause(new VecInt(clause_4));
+        int[] clause_4 = { 100000, -1, 2 };
+        maxSATSolver.addClause(new VecInt(clause_4));
 
-		IOptimizationProblem problem = new PseudoOptDecorator(maxSATSolver);
+        IOptimizationProblem problem = new PseudoOptDecorator(maxSATSolver);
 
-		int exitCode = UNSATISFIABLE;
-		boolean isSatisfiable = false;
-		try {
-			while (problem.admitABetterSolution()) {
-				isSatisfiable = true;
-				problem.discardCurrentSolution();
-			}
-			if (isSatisfiable) {
-				exitCode = OPTIMUM_FOUND;
-			} else {
-				exitCode = UNSATISFIABLE;
-			}
-		} catch (ContradictionException ex) {
-			assert (isSatisfiable);
-			exitCode = OPTIMUM_FOUND;
-		}
+        int exitCode = UNSATISFIABLE;
+        boolean isSatisfiable = false;
+        try {
+            while (problem.admitABetterSolution()) {
+                isSatisfiable = true;
+                problem.discardCurrentSolution();
+            }
+            if (isSatisfiable) {
+                exitCode = OPTIMUM_FOUND;
+            } else {
+                exitCode = UNSATISFIABLE;
+            }
+        } catch (ContradictionException ex) {
+            assert isSatisfiable;
+            exitCode = OPTIMUM_FOUND;
+        }
 
-		assertEquals(OPTIMUM_FOUND,exitCode);
-		int[] model = problem.model();
-		assertEquals(2,model.length);
-		assertEquals(-1,model[0]);
-		assertEquals(-2,model[1]);
-	}
-	
-	@Test
-	public void testMichalWithOptAdapter() throws ContradictionException,
-			TimeoutException {
-		WeightedMaxSatDecorator maxSATSolver = new WeightedMaxSatDecorator(
-				SolverFactory.newLight());
+        assertEquals(OPTIMUM_FOUND, exitCode);
+        int[] model = problem.model();
+        assertEquals(2, model.length);
+        assertEquals(-1, model[0]);
+        assertEquals(-2, model[1]);
+    }
 
-		maxSATSolver.newVar(2);
-		maxSATSolver.setExpectedNumberOfClauses(4);
+    @Test
+    public void testMichalWithOptAdapter() throws ContradictionException,
+            TimeoutException {
+        WeightedMaxSatDecorator maxSATSolver = new WeightedMaxSatDecorator(
+                SolverFactory.newLight());
 
-		int[] clause_1 = { 1, 1, 2 };
-		maxSATSolver.addClause(new VecInt(clause_1));
+        maxSATSolver.newVar(2);
+        maxSATSolver.setExpectedNumberOfClauses(4);
 
-		int[] clause_2 = { 100, -1, -2 };
-		maxSATSolver.addClause(new VecInt(clause_2));
+        int[] clause_1 = { 1, 1, 2 };
+        maxSATSolver.addClause(new VecInt(clause_1));
 
-		int[] clause_3 = { 1000, 1, -2 };
-		maxSATSolver.addClause(new VecInt(clause_3));
+        int[] clause_2 = { 100, -1, -2 };
+        maxSATSolver.addClause(new VecInt(clause_2));
 
-		int[] clause_4 = { 100000, -1, 2 };
-		maxSATSolver.addClause(new VecInt(clause_4));
+        int[] clause_3 = { 1000, 1, -2 };
+        maxSATSolver.addClause(new VecInt(clause_3));
 
-		IProblem problem = new OptToSatAdapter(new PseudoOptDecorator(maxSATSolver));
+        int[] clause_4 = { 100000, -1, 2 };
+        maxSATSolver.addClause(new VecInt(clause_4));
 
-		boolean isSatisfiable = problem.isSatisfiable();
+        IProblem problem = new OptToSatAdapter(new PseudoOptDecorator(
+                maxSATSolver));
 
-		assertEquals(true, isSatisfiable);
-		int[] model = problem.model();
-		assertEquals(2,model.length);
-		assertEquals(-1,model[0]);
-		assertEquals(-2,model[1]);
-	}
+        boolean isSatisfiable = problem.isSatisfiable();
+
+        assertEquals(true, isSatisfiable);
+        int[] model = problem.model();
+        assertEquals(2, model.length);
+        assertEquals(-1, model[0]);
+        assertEquals(-2, model[1]);
+    }
 }

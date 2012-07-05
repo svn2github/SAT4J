@@ -51,15 +51,14 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static Solver<DataStructureFactory> newMiniMaxSAT() {
         MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
-        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(learning,
-                new MixedDataStructureDanielWL(), new SearchParams(1.2,
-                        100000), new VarOrderHeap(),
-                new MiniSATRestarts());
+        Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
+                learning, new MixedDataStructureDanielWL(), new SearchParams(
+                        1.2, 100000), new VarOrderHeap(), new MiniSATRestarts());
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
         return solver;
     }
-    
+
     @Override
     public IPBSolver defaultSolver() {
         return newDefault();
@@ -73,7 +72,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
     public static IPBSolver newDefault() {
         return org.sat4j.pb.SolverFactory.newResolutionGlucoseExpSimp();
     }
- 
+
     public static IPBSolver newLight() {
         return org.sat4j.pb.SolverFactory.newLight();
     }

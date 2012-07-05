@@ -54,9 +54,10 @@ import org.sat4j.specs.IteratorInt;
  */
 public class WeightedMaxSatDecorator extends PBSolverDecorator {
 
-    public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger("100000000000000000000000000000000000000000");
+    public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger(
+            "100000000000000000000000000000000000000000");
 
-	/**
+    /**
      * 
      */
     private static final long serialVersionUID = 1L;
@@ -64,30 +65,30 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     private BigInteger falsifiedWeight = BigInteger.ZERO;
 
     protected int nbnewvar;
-	private boolean maxVarIdFixed = false;
-	private final boolean equivalence;
+    private boolean maxVarIdFixed = false;
+    private final boolean equivalence;
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
-        this(solver,false);
+        this(solver, false);
     }
-    
+
     public WeightedMaxSatDecorator(IPBSolver solver, boolean equivalence) {
         super(solver);
-        solver.setObjectiveFunction(obj);
+        solver.setObjectiveFunction(this.obj);
         this.equivalence = equivalence;
     }
 
-	@Override
-	public int newVar(int howmany) {
-		int res = super.newVar(howmany);
-		maxVarIdFixed = true;
-		return res;
-	}
-        
+    @Override
+    public int newVar(int howmany) {
+        int res = super.newVar(howmany);
+        this.maxVarIdFixed = true;
+        return res;
+    }
+
     @Override
     public void setExpectedNumberOfClauses(int nb) {
-        lits.ensure(nb);
-        falsifiedWeight = BigInteger.ZERO;
+        this.lits.ensure(nb);
+        this.falsifiedWeight = BigInteger.ZERO;
         super.setExpectedNumberOfClauses(nb);
     }
 
@@ -97,80 +98,81 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
         this.top = top;
     }
 
-	protected void checkMaxVarId() {
-		if (!maxVarIdFixed) {
-			throw new IllegalStateException(
-					"Please call newVar(int) before adding constraints!!!");
-		}
-	}
-	
-	/**
-	 * Add a soft clause to the solver.
-	 * 
-	 * That method allows to read a clause in a CNF and to consider it as soft,
-	 * in order to solve MAXSAT problems.
-	 * 
-	 * Note that the behavior of that method changed in release 2.3.1. Prior to
-	 * that, the method was expecting a weight as first element of the list of literals.
-	 * 
-	 * @param literals
-	 *            a weighted clause, the weight being the first element of the
-	 *            vector.
-	 * @see #setTopWeight(int)
-	 */
+    protected void checkMaxVarId() {
+        if (!this.maxVarIdFixed) {
+            throw new IllegalStateException(
+                    "Please call newVar(int) before adding constraints!!!");
+        }
+    }
+
+    /**
+     * Add a soft clause to the solver.
+     * 
+     * That method allows to read a clause in a CNF and to consider it as soft,
+     * in order to solve MAXSAT problems.
+     * 
+     * Note that the behavior of that method changed in release 2.3.1. Prior to
+     * that, the method was expecting a weight as first element of the list of
+     * literals.
+     * 
+     * @param literals
+     *            a weighted clause, the weight being the first element of the
+     *            vector.
+     * @see #setTopWeight(int)
+     */
     @Override
-    public IConstr addClause(IVecInt literals) throws ContradictionException {	
-		return addSoftClause(1, literals);
-	}
+    public IConstr addClause(IVecInt literals) throws ContradictionException {
+        return addSoftClause(1, literals);
+    }
 
-	/**
-	 * Add a hard clause in the solver, i.e. a clause that must be satisfied.
-	 * 
-	 * @param literals
-	 *            the clause
-	 * @return the constraint is it is not trivially satisfied.
-	 * @throws ContradictionException
-	 */
-	public IConstr addHardClause(IVecInt literals)
-			throws ContradictionException {
-		return super.addClause(literals);
-	}
+    /**
+     * Add a hard clause in the solver, i.e. a clause that must be satisfied.
+     * 
+     * @param literals
+     *            the clause
+     * @return the constraint is it is not trivially satisfied.
+     * @throws ContradictionException
+     */
+    public IConstr addHardClause(IVecInt literals)
+            throws ContradictionException {
+        return super.addClause(literals);
+    }
 
-	/**
-	 * Add a soft clause in the solver, i.e. a clause with a weight of 1.
-	 * 
-	 * @param literals
-	 *            the clause.
-	 * @return the constraint is it is not trivially satisfied.
-	 * @throws ContradictionException
-	 */
-	public IConstr addSoftClause(IVecInt literals)
-			throws ContradictionException {
-		return addSoftClause(1, literals);
-	}
+    /**
+     * Add a soft clause in the solver, i.e. a clause with a weight of 1.
+     * 
+     * @param literals
+     *            the clause.
+     * @return the constraint is it is not trivially satisfied.
+     * @throws ContradictionException
+     */
+    public IConstr addSoftClause(IVecInt literals)
+            throws ContradictionException {
+        return addSoftClause(1, literals);
+    }
 
-	/**
-	 * Add a soft clause to the solver.
-	 * 
-	 * if the weight of the clause is greater of equal to the top weight, the
-	 * clause will be considered as a hard clause.
-	 * 
-	 * @param weight
-	 *            the weight of the clause
-	 * @param literals
-	 *            the clause
-	 * @return the constraint is it is not trivially satisfied.
-	 * @throws ContradictionException
-	 */
-	public IConstr addSoftClause(int weight, IVecInt literals)
-			throws ContradictionException {
-		return addSoftClause(BigInteger.valueOf(weight),literals);
-	}
+    /**
+     * Add a soft clause to the solver.
+     * 
+     * if the weight of the clause is greater of equal to the top weight, the
+     * clause will be considered as a hard clause.
+     * 
+     * @param weight
+     *            the weight of the clause
+     * @param literals
+     *            the clause
+     * @return the constraint is it is not trivially satisfied.
+     * @throws ContradictionException
+     */
+    public IConstr addSoftClause(int weight, IVecInt literals)
+            throws ContradictionException {
+        return addSoftClause(BigInteger.valueOf(weight), literals);
+    }
 
-	public IConstr addSoftClause(BigInteger weight, IVecInt literals)
-		throws ContradictionException {
-		checkMaxVarId();
-        if (weight.compareTo(top)<0) {
+    public IConstr addSoftClause(BigInteger weight, IVecInt literals)
+            throws ContradictionException {
+        checkMaxVarId();
+        if (weight.compareTo(this.top) < 0) {
 
             if (literals.size() == 1) {
                 // if there is only a coefficient and a literal, no need to
@@ -178,236 +180,270 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                 // a new variable
                 // check first if the literal is already in the list:
                 int lit = -literals.get(0);
-                int index = lits.containsAt(lit);
+                int index = this.lits.containsAt(lit);
                 if (index != -1) {
-                    coefs.set(index, coefs.get(index).add(weight));
+                    this.coefs.set(index, this.coefs.get(index).add(weight));
                 } else {
                     // check if the opposite literal is already there
-                    index = lits.containsAt(-lit);
+                    index = this.lits.containsAt(-lit);
                     if (index != -1) {
-                    	falsifiedWeight = falsifiedWeight.add(weight);
-                        BigInteger oldw = coefs.get(index);
+                        this.falsifiedWeight = this.falsifiedWeight.add(weight);
+                        BigInteger oldw = this.coefs.get(index);
                         BigInteger diff = oldw.subtract(weight);
                         if (diff.signum() > 0) {
-                            coefs.set(index, diff);
+                            this.coefs.set(index, diff);
                         } else if (diff.signum() < 0) {
-                            lits.set(index, lit);
-                            coefs.set(index, diff.abs());
+                            this.lits.set(index, lit);
+                            this.coefs.set(index, diff.abs());
                             // remove from falsifiedWeight the
-                            // part of the weight that will remain 
+                            // part of the weight that will remain
                             // in the objective function
-                            falsifiedWeight = falsifiedWeight.add(diff);
+                            this.falsifiedWeight = this.falsifiedWeight
+                                    .add(diff);
                         } else {
-                            assert diff.signum() == 0;                            
-                            lits.delete(index);
-                            coefs.delete(index);
+                            assert diff.signum() == 0;
+                            this.lits.delete(index);
+                            this.coefs.delete(index);
                         }
-                        obj.setCorrection(falsifiedWeight);
+                        this.obj.setCorrection(this.falsifiedWeight);
                     } else {
-                    	registerLiteral(lit);
-                        lits.push(lit);
-                        coefs.push(weight);
+                        registerLiteral(lit);
+                        this.lits.push(lit);
+                        this.coefs.push(weight);
                     }
                 }
                 return UnitWeightedClause.instance();
             }
-            coefs.push(weight);
+            this.coefs.push(weight);
             int newvar = nextFreeVarId(true);
-			literals.push(newvar);
-            lits.push(newvar);
-            if (equivalence) {
-    			ConstrGroup constrs = new ConstrGroup();
-    			constrs.add(super.addClause(literals));
-    			IVecInt clause = new VecInt(2);
-    			clause.push(-newvar);
-    			for (int i = 0; i < literals.size() - 1; i++) {
-    				clause.push(-literals.get(i));
-    				constrs.add(super.addClause(clause));
-    			}
-    			clause.pop();
-    			return constrs;
-    		}
+            literals.push(newvar);
+            this.lits.push(newvar);
+            if (this.equivalence) {
+                ConstrGroup constrs = new ConstrGroup();
+                constrs.add(super.addClause(literals));
+                IVecInt clause = new VecInt(2);
+                clause.push(-newvar);
+                for (int i = 0; i < literals.size() - 1; i++) {
+                    clause.push(-literals.get(i));
+                    constrs.add(super.addClause(clause));
+                }
+                clause.pop();
+                return constrs;
+            }
         }
         return super.addClause(literals);
     }
 
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtLeast(IVecInt literals,int degree) throws ContradictionException {
-		return addSoftAtLeast(BigInteger.ONE,literals,degree);
-	}
-	
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param weight the weight of the constraint.
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtLeast(int weight,IVecInt literals,int degree) throws ContradictionException {
-		return addSoftAtLeast(BigInteger.valueOf(weight),literals,degree);
-	}
-	
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param weight the weight of the constraint.
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtLeast(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
-		checkMaxVarId();
-		if (weight.compareTo(top)<0) {
-			coefs.push(weight);
-            int newvar = nextFreeVarId(true);
-            lits.push(newvar);
-            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
-            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
-			literals.push(newvar);			
-			BigInteger bigDegree = BigInteger.valueOf(degree);
-			cardcoeffs.push(bigDegree);
-			return addPseudoBoolean(literals,cardcoeffs,true,bigDegree);
-		} else {
-			return addAtLeast(literals, degree);
-		}
-	}
-	
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtMost(IVecInt literals,int degree) throws ContradictionException {
-		return addSoftAtMost(BigInteger.ONE,literals,degree);
-	}
-	
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param weight the weight of the constraint.
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtMost(int weight,IVecInt literals,int degree) throws ContradictionException {
-		return addSoftAtMost(BigInteger.valueOf(weight),literals,degree);
-	}
-	
-	/**
-	 * Allow adding a new soft cardinality constraint in the solver.
-	 * 
-	 * @param weight the weight of the constraint.
-	 * @param literals the literals of the cardinality constraint.
-	 * @param degree the degree of the cardinality constraint.
-	 * @return a pseudo boolean constraint encoding that soft constraint.
-	 * @throws ContradictionException if a trivial contradiction is found.
-	 * @since 2.3
-	 */
-	public IConstr addSoftAtMost(BigInteger weight,IVecInt literals,int degree) throws ContradictionException {
-		checkMaxVarId();
-		if (weight.compareTo(top)<0) {
-			coefs.push(weight);
-            int newvar = nextFreeVarId(true);
-            lits.push(newvar);
-            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(literals.size()+1);
-            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
-			literals.push(newvar);
-			BigInteger bigDegree = BigInteger.valueOf(degree);
-			cardcoeffs.push(bigDegree.negate());
-			return addPseudoBoolean(literals,cardcoeffs,true,bigDegree);
-		} else {
-			return addAtMost(literals, degree);
-		}
-	}
-	
-	/**
-	 * Set some literals whose sum must be minimized.
-	 * 
-	 * @param literals
-	 *            the sum of those literals must be minimized.
-	 */
-	public void addLiteralsToMinimize(IVecInt literals) {
-		for (IteratorInt it = literals.iterator(); it.hasNext();) {
-			lits.push(it.next());
-			coefs.push(BigInteger.ONE);
-		}
-	}
-
-	/**
-	 * Set some literals whose sum must be minimized.
-	 * 
-	 * @param literals
-	 *            the sum of those literals must be minimized.
-	 * @param coefficients
-	 *            the weight of the literals.
-	 */
-	public void addWeightedLiteralsToMinimize(IVecInt literals,
-			IVec<BigInteger> coefficients) {
-		if (literals.size() != coefs.size())
-			throw new IllegalArgumentException();
-		for (int i = 0; i < literals.size(); i++) {
-			lits.push(literals.get(i));
-			coefs.push(coefficients.get(i));
-		}
-	}
-
-	/**
-	 * Set some literals whose sum must be minimized.
-	 * 
-	 * @param literals
-	 *            the sum of those literals must be minimized.
-	 * @param coefficients
-	 *            the weight of the literals.
-	 */
-	public void addWeightedLiteralsToMinimize(IVecInt literals,
-			IVecInt coefficients) {
-		if (literals.size() != coefficients.size())
-			throw new IllegalArgumentException();
-		for (int i = 0; i < literals.size(); i++) {
-			lits.push(literals.get(i));
-			coefs.push(BigInteger.valueOf(coefficients.get(i)));
-		}
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtLeast(IVecInt literals, int degree)
+            throws ContradictionException {
+        return addSoftAtLeast(BigInteger.ONE, literals, degree);
     }
-    
-     @Override
+
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param weight
+     *            the weight of the constraint.
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtLeast(int weight, IVecInt literals, int degree)
+            throws ContradictionException {
+        return addSoftAtLeast(BigInteger.valueOf(weight), literals, degree);
+    }
+
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param weight
+     *            the weight of the constraint.
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtLeast(BigInteger weight, IVecInt literals,
+            int degree) throws ContradictionException {
+        checkMaxVarId();
+        if (weight.compareTo(this.top) < 0) {
+            this.coefs.push(weight);
+            int newvar = nextFreeVarId(true);
+            this.lits.push(newvar);
+            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(
+                    literals.size() + 1);
+            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
+            literals.push(newvar);
+            BigInteger bigDegree = BigInteger.valueOf(degree);
+            cardcoeffs.push(bigDegree);
+            return addPseudoBoolean(literals, cardcoeffs, true, bigDegree);
+        } else {
+            return addAtLeast(literals, degree);
+        }
+    }
+
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtMost(IVecInt literals, int degree)
+            throws ContradictionException {
+        return addSoftAtMost(BigInteger.ONE, literals, degree);
+    }
+
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param weight
+     *            the weight of the constraint.
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtMost(int weight, IVecInt literals, int degree)
+            throws ContradictionException {
+        return addSoftAtMost(BigInteger.valueOf(weight), literals, degree);
+    }
+
+    /**
+     * Allow adding a new soft cardinality constraint in the solver.
+     * 
+     * @param weight
+     *            the weight of the constraint.
+     * @param literals
+     *            the literals of the cardinality constraint.
+     * @param degree
+     *            the degree of the cardinality constraint.
+     * @return a pseudo boolean constraint encoding that soft constraint.
+     * @throws ContradictionException
+     *             if a trivial contradiction is found.
+     * @since 2.3
+     */
+    public IConstr addSoftAtMost(BigInteger weight, IVecInt literals, int degree)
+            throws ContradictionException {
+        checkMaxVarId();
+        if (weight.compareTo(this.top) < 0) {
+            this.coefs.push(weight);
+            int newvar = nextFreeVarId(true);
+            this.lits.push(newvar);
+            IVec<BigInteger> cardcoeffs = new Vec<BigInteger>(
+                    literals.size() + 1);
+            cardcoeffs.growTo(literals.size(), BigInteger.ONE);
+            literals.push(newvar);
+            BigInteger bigDegree = BigInteger.valueOf(degree);
+            cardcoeffs.push(bigDegree.negate());
+            return addPseudoBoolean(literals, cardcoeffs, true, bigDegree);
+        } else {
+            return addAtMost(literals, degree);
+        }
+    }
+
+    /**
+     * Set some literals whose sum must be minimized.
+     * 
+     * @param literals
+     *            the sum of those literals must be minimized.
+     */
+    public void addLiteralsToMinimize(IVecInt literals) {
+        for (IteratorInt it = literals.iterator(); it.hasNext();) {
+            this.lits.push(it.next());
+            this.coefs.push(BigInteger.ONE);
+        }
+    }
+
+    /**
+     * Set some literals whose sum must be minimized.
+     * 
+     * @param literals
+     *            the sum of those literals must be minimized.
+     * @param coefficients
+     *            the weight of the literals.
+     */
+    public void addWeightedLiteralsToMinimize(IVecInt literals,
+            IVec<BigInteger> coefficients) {
+        if (literals.size() != this.coefs.size()) {
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < literals.size(); i++) {
+            this.lits.push(literals.get(i));
+            this.coefs.push(coefficients.get(i));
+        }
+    }
+
+    /**
+     * Set some literals whose sum must be minimized.
+     * 
+     * @param literals
+     *            the sum of those literals must be minimized.
+     * @param coefficients
+     *            the weight of the literals.
+     */
+    public void addWeightedLiteralsToMinimize(IVecInt literals,
+            IVecInt coefficients) {
+        if (literals.size() != coefficients.size()) {
+            throw new IllegalArgumentException();
+        }
+        for (int i = 0; i < literals.size(); i++) {
+            this.lits.push(literals.get(i));
+            this.coefs.push(BigInteger.valueOf(coefficients.get(i)));
+        }
+    }
+
+    @Override
     public void reset() {
-        coefs.clear();
-        lits.clear();
-        nbnewvar = 0;
+        this.coefs.clear();
+        this.lits.clear();
+        this.nbnewvar = 0;
         super.reset();
     }
-
 
     private final IVecInt lits = new VecInt();
 
     private final IVec<BigInteger> coefs = new Vec<BigInteger>();
 
-    private final ObjectiveFunction obj = new ObjectiveFunction(lits, coefs);
+    private final ObjectiveFunction obj = new ObjectiveFunction(this.lits,
+            this.coefs);
 
- 
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		if (lits.size() > 0) 
-			// there is at least one soft clause
-			super.addPseudoBoolean(lits, coefs, false, (BigInteger)forcedValue);
-	}
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        if (this.lits.size() > 0) {
+            // there is at least one soft clause
+            super.addPseudoBoolean(this.lits, this.coefs, false,
+                    (BigInteger) forcedValue);
+        }
+    }
 }

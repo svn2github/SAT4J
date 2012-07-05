@@ -41,84 +41,83 @@ import org.sat4j.specs.ContradictionException;
  * Simple reader for the weighted maxsat problem.
  * 
  * @author daniel
- *
+ * 
  */
 public class WDimacsReader extends DimacsReader {
 
-	protected BigInteger weight;
-	protected BigInteger top;
-	
+    protected BigInteger weight;
+    protected BigInteger top;
+
     @Override
-	protected void flushConstraint() throws ContradictionException {
-    	try {
-    		decorator.addSoftClause(weight, literals);
-		} catch (IllegalArgumentException ex) {
-			if (isVerbose()) {
-				System.err.println("c Skipping constraint " + literals);
-			}
-		}
-    	
-	}
+    protected void flushConstraint() throws ContradictionException {
+        try {
+            this.decorator.addSoftClause(this.weight, this.literals);
+        } catch (IllegalArgumentException ex) {
+            if (isVerbose()) {
+                System.err.println("c Skipping constraint " + this.literals);
+            }
+        }
 
-	@Override
-	protected boolean handleLine() throws ContradictionException, IOException, ParseFormatException {
-		weight = scanner.nextBigInteger();
-		return super.handleLine();
-	}
+    }
 
-	/**
+    @Override
+    protected boolean handleLine() throws ContradictionException, IOException,
+            ParseFormatException {
+        this.weight = this.scanner.nextBigInteger();
+        return super.handleLine();
+    }
+
+    /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
     private final WeightedMaxSatDecorator decorator;
-    
+
     public WDimacsReader(WeightedMaxSatDecorator solver) {
-        super(solver,"wcnf");
-        decorator = solver;
+        super(solver, "wcnf");
+        this.decorator = solver;
     }
 
     public WDimacsReader(WeightedMaxSatDecorator solver, String format) {
         super(solver, format);
-        decorator = solver;
+        this.decorator = solver;
     }
 
     @Override
-    protected void readProblemLine() throws IOException,
-            ParseFormatException {
-    	String line = scanner.nextLine().trim();
+    protected void readProblemLine() throws IOException, ParseFormatException {
+        String line = this.scanner.nextLine().trim();
 
-		if (line == null) {
-			throw new ParseFormatException(
-					"premature end of file: <p cnf ...> expected");
-		}
-		String[] tokens = line.split("\\s+");
-		if (tokens.length < 4 || !"p".equals(tokens[0])
-				|| !formatString.equals(tokens[1])) {
-			throw new ParseFormatException("problem line expected (p cnf ...)");
-		}
+        if (line == null) {
+            throw new ParseFormatException(
+                    "premature end of file: <p cnf ...> expected");
+        }
+        String[] tokens = line.split("\\s+");
+        if (tokens.length < 4 || !"p".equals(tokens[0])
+                || !this.formatString.equals(tokens[1])) {
+            throw new ParseFormatException("problem line expected (p cnf ...)");
+        }
 
-		int vars;
+        int vars;
 
-		// reads the max var id
-		vars = Integer.parseInt(tokens[2]);
-		assert vars > 0;
-		solver.newVar(vars);
-		// reads the number of clauses
-		expectedNbOfConstr = Integer.parseInt(tokens[3]);
-		assert expectedNbOfConstr > 0;
-		solver.setExpectedNumberOfClauses(expectedNbOfConstr);
-		
-        if ("wcnf".equals(formatString)) {
+        // reads the max var id
+        vars = Integer.parseInt(tokens[2]);
+        assert vars > 0;
+        this.solver.newVar(vars);
+        // reads the number of clauses
+        this.expectedNbOfConstr = Integer.parseInt(tokens[3]);
+        assert this.expectedNbOfConstr > 0;
+        this.solver.setExpectedNumberOfClauses(this.expectedNbOfConstr);
+
+        if ("wcnf".equals(this.formatString)) {
             // assume we are in weighted MAXSAT mode
-            if (tokens.length==5) {
-                top = new BigInteger(tokens[4]);
+            if (tokens.length == 5) {
+                this.top = new BigInteger(tokens[4]);
             } else {
-                top = WeightedMaxSatDecorator.SAT4J_MAX_BIG_INTEGER;
-            }             
-            decorator.setTopWeight(top);
+                this.top = WeightedMaxSatDecorator.SAT4J_MAX_BIG_INTEGER;
+            }
+            this.decorator.setTopWeight(this.top);
         }
     }
 
-    
 }

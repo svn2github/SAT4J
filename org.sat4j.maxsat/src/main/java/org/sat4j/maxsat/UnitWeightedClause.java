@@ -33,33 +33,34 @@ import org.sat4j.specs.IConstr;
 
 public class UnitWeightedClause implements IConstr {
 
-	private static final UnitWeightedClause instance = new UnitWeightedClause();
-	
-	public static UnitWeightedClause instance() {
-		return instance;
-	}
-	
-	private UnitWeightedClause() {
-		// singleton design pattern
-	}
-	public boolean learnt() {
-		throw new UnsupportedOperationException();
-	}
+    private static final UnitWeightedClause instance = new UnitWeightedClause();
 
-	public int size() {
-		throw new UnsupportedOperationException();
-	}
+    public static UnitWeightedClause instance() {
+        return instance;
+    }
 
-	public int get(int i) {
-		throw new UnsupportedOperationException();
-	}
+    private UnitWeightedClause() {
+        // singleton design pattern
+    }
 
-	public double getActivity() {
-		throw new UnsupportedOperationException();
-	}
+    public boolean learnt() {
+        throw new UnsupportedOperationException();
+    }
 
-	public boolean canBePropagatedMultipleTimes() {
-		throw new UnsupportedOperationException();
-	}
+    public int size() {
+        throw new UnsupportedOperationException();
+    }
+
+    public int get(int i) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double getActivity() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean canBePropagatedMultipleTimes() {
+        throw new UnsupportedOperationException();
+    }
 
 }

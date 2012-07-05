@@ -47,55 +47,62 @@ import org.sat4j.tools.OptToSatAdapter;
 
 public class MarcelBugsTests {
 
-	private WeightedMaxSatDecorator maxsat;
-	private WDimacsReader reader;
-	
-	@Before
-	public void init() {
-		maxsat = new WeightedMaxSatDecorator(SolverFactory.newLight());
-		reader = new WDimacsReader(maxsat);
-	}
-	
-	@Test
-	public void testProblemWithDuplicatedOppositeLiterals2() {
-		testProblemWithExpectedAnswer("Inconsistent2.wcnf", new int[] {-1,2,3},5);
-	}
-	
-	@Test
-	public void testProblemWithDuplicatedOppositeLiterals1() {
-		testProblemWithExpectedAnswer("Inconsistent1.wcnf", new int[] {1,2,3},4);
-	}
-	
-	@Test
-	public void testSimpleProblemWithTwoOppositeLiterals() {
-		testProblemWithExpectedAnswer("Inconsistent_Example.wcnf", new int[] {-1},1);
-	}
+    private WeightedMaxSatDecorator maxsat;
+    private WDimacsReader reader;
 
-	@Test
-	public void testProblemWithNegatedLiterals() {
-		testProblemWithExpectedAnswer("Example.wcnf", new int[] {1,2,-3,4},0);
-	}
-	
-	@Test
-	public void testProblemWithDuplicatedLiterals() {
-		testProblemWithExpectedAnswer("AnotherExample.wcnf", new int[] {1},2);
-	}
-	
-	private void testProblemWithExpectedAnswer(String filename, int [] expectation, int expectedValue) {
-		URL url = MarcelBugsTests.class.getResource(filename);
-		try {
-			IProblem problem = reader.parseInstance(url.getFile());
-			assertNotNull(problem);
-			IOptimizationProblem optproblem = new PseudoOptDecorator(maxsat);
-			IProblem satproblem = new OptToSatAdapter(optproblem);
-			assertTrue(satproblem.isSatisfiable());
-			int [] model = satproblem.model();
-			assertNotNull(model);
-			assertArrayEquals(expectation, model);
-			assertEquals(expectedValue,optproblem.getObjectiveValue().intValue());
-			
-		} catch (Exception e) {
-			fail(" Problem when reading instance : "+e);
-		}		
-	}
+    @Before
+    public void init() {
+        this.maxsat = new WeightedMaxSatDecorator(SolverFactory.newLight());
+        this.reader = new WDimacsReader(this.maxsat);
+    }
+
+    @Test
+    public void testProblemWithDuplicatedOppositeLiterals2() {
+        testProblemWithExpectedAnswer("Inconsistent2.wcnf", new int[] { -1, 2,
+                3 }, 5);
+    }
+
+    @Test
+    public void testProblemWithDuplicatedOppositeLiterals1() {
+        testProblemWithExpectedAnswer("Inconsistent1.wcnf",
+                new int[] { 1, 2, 3 }, 4);
+    }
+
+    @Test
+    public void testSimpleProblemWithTwoOppositeLiterals() {
+        testProblemWithExpectedAnswer("Inconsistent_Example.wcnf",
+                new int[] { -1 }, 1);
+    }
+
+    @Test
+    public void testProblemWithNegatedLiterals() {
+        testProblemWithExpectedAnswer("Example.wcnf",
+                new int[] { 1, 2, -3, 4 }, 0);
+    }
+
+    @Test
+    public void testProblemWithDuplicatedLiterals() {
+        testProblemWithExpectedAnswer("AnotherExample.wcnf", new int[] { 1 }, 2);
+    }
+
+    private void testProblemWithExpectedAnswer(String filename,
+            int[] expectation, int expectedValue) {
+        URL url = MarcelBugsTests.class.getResource(filename);
+        try {
+            IProblem problem = this.reader.parseInstance(url.getFile());
+            assertNotNull(problem);
+            IOptimizationProblem optproblem = new PseudoOptDecorator(
+                    this.maxsat);
+            IProblem satproblem = new OptToSatAdapter(optproblem);
+            assertTrue(satproblem.isSatisfiable());
+            int[] model = satproblem.model();
+            assertNotNull(model);
+            assertArrayEquals(expectation, model);
+            assertEquals(expectedValue, optproblem.getObjectiveValue()
+                    .intValue());
+
+        } catch (Exception e) {
+            fail(" Problem when reading instance : " + e);
+        }
+    }
 }
