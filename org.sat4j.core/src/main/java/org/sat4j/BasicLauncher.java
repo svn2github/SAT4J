@@ -51,8 +51,6 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 
     private final ASolverFactory<T> factory;
 
-    private boolean prime = false;
-
     public BasicLauncher(ASolverFactory<T> factory) {
         this.factory = factory;
     }
@@ -65,7 +63,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
      *            compress?.
      */
     public static void main(final String[] args) {
-        BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
+        AbstractLauncher lanceur = new BasicLauncher<ISolver>(
                 SolverFactory.instance());
         if (args.length != 1) {
             lanceur.usage();
@@ -77,7 +75,6 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
 
     @Override
     protected ISolver configureSolver(String[] args) {
-        this.prime = System.getProperty("prime") != null;
         ISolver asolver = this.factory.defaultSolver();
         asolver.setTimeout(Integer.MAX_VALUE);
         asolver.setDBSimplificationAllowed(true);
@@ -102,21 +99,4 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
         }
         return args[0];
     }
-
-    @Override
-    protected void displayResult() {
-        super.displayResult();
-        if (this.prime && this.exitCode == ExitCode.SATISFIABLE) {
-            log("For information, a prime implicant:");
-            long begin = System.currentTimeMillis();
-            int[] implicant = this.solver.primeImplicant();
-            this.out.println(COMMENT_PREFIX);
-            this.reader.decode(implicant, this.out);
-            this.out.println();
-            log(" prime computation time: "
-                    + (System.currentTimeMillis() - begin) / 1000 + "s");
-        }
-
-    }
-
 }

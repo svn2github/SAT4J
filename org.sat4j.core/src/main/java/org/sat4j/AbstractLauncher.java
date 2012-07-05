@@ -86,6 +86,8 @@ public abstract class AbstractLauncher implements Serializable {
 
     public boolean silent = false;
 
+    protected boolean prime = System.getProperty("prime") != null;;
+
     protected AbstractLauncher() {
         Runtime.getRuntime().addShutdownHook(this.shutdownHook);
     }
@@ -99,7 +101,12 @@ public abstract class AbstractLauncher implements Serializable {
             this.solver.printInfos(this.out, COMMENT_PREFIX);
             this.out.println(ANSWER_PREFIX + this.exitCode);
             if (this.exitCode == ExitCode.SATISFIABLE) {
-                int[] model = this.solver.model();
+                int[] model;
+                if (prime) {
+                    model = this.solver.primeImplicant();
+                } else {
+                    model = this.solver.model();
+                }
                 this.out.print(SOLUTION_PREFIX);
                 this.reader.decode(model, this.out);
                 this.out.println();
