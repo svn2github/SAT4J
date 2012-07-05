@@ -57,16 +57,22 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     public static final BigInteger SAT4J_MAX_BIG_INTEGER = new BigInteger(
             "100000000000000000000000000000000000000000");
 
-    /**
-     * 
-     */
+    protected int nbnewvar;
+
     private static final long serialVersionUID = 1L;
 
     private BigInteger falsifiedWeight = BigInteger.ZERO;
 
-    protected int nbnewvar;
     private boolean maxVarIdFixed = false;
     private final boolean equivalence;
+
+    private final IVecInt lits = new VecInt();
+
+    private final IVec<BigInteger> coefs = new Vec<BigInteger>();
+
+    private final ObjectiveFunction obj = new ObjectiveFunction(this.lits,
+            this.coefs);
+
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
         this(solver, false);
@@ -431,13 +437,13 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
         super.reset();
     }
 
-    private final IVecInt lits = new VecInt();
-
-    private final IVec<BigInteger> coefs = new Vec<BigInteger>();
-
-    private final ObjectiveFunction obj = new ObjectiveFunction(this.lits,
-            this.coefs);
-
+    /**
+     * Force the solver to find a solution with a specific value
+     * (nice to find all optimal solutions for instance).
+     * 
+     * @param forcedValue the expected value of the solution
+     * @throws ContradictionException if that value is trivially not possible.
+     */
     public void forceObjectiveValueTo(Number forcedValue)
             throws ContradictionException {
         if (this.lits.size() > 0) {
