@@ -48,40 +48,117 @@ public class Policy extends EncodingStrategyAdapter {
     private final Binary binary = new Binary();
     private final Product product = new Product();
     private final Commander commander = new Commander();
+    private final Binomial binomial = new Binomial();
+    private final Ladder ladder = new Ladder();
+
+    private EncodingStrategyAdapter atMostOneEncoding;
+    private EncodingStrategyAdapter atMostKEncoding;
+    private EncodingStrategyAdapter exactlyOneEncoding;
+    private EncodingStrategyAdapter exactlyKEncoding;
+
+    private EncodingStrategyAdapter getAdapterFromEncodingName(
+            EncodingStrategy encodingName) {
+        switch (encodingName) {
+        case BINARY:
+            return binary;
+        case BINOMIAL:
+            return binomial;
+        case COMMANDER:
+            return commander;
+        case LADDER:
+            return ladder;
+        case PRODUCT:
+            return product;
+        case SEQUENTIAL:
+            return seq;
+        default:
+            return null;
+        }
+    }
+
+    public EncodingStrategyAdapter getAtMostOneEncoding() {
+        return atMostOneEncoding;
+    }
+
+    public void setAtMostOneEncoding(EncodingStrategyAdapter atMostOneEncoding) {
+        this.atMostOneEncoding = atMostOneEncoding;
+    }
+
+    public void setAtMostOneEncoding(EncodingStrategy atMostOneEncoding) {
+        this.atMostOneEncoding = getAdapterFromEncodingName(atMostOneEncoding);
+    }
+
+    public EncodingStrategyAdapter getAtMostKEncoding() {
+        return atMostKEncoding;
+    }
+
+    public void setAtMostKEncoding(EncodingStrategyAdapter atMostKEncoding) {
+        this.atMostKEncoding = atMostKEncoding;
+    }
+
+    public void setAtMostKEncoding(EncodingStrategy atMostKEncoding) {
+        this.atMostKEncoding = getAdapterFromEncodingName(atMostKEncoding);
+    }
+
+    public EncodingStrategyAdapter getExactlyOneEncoding() {
+        return exactlyOneEncoding;
+    }
+
+    public void setExactlyOneEncoding(EncodingStrategyAdapter exactlyOneEncoding) {
+        this.exactlyOneEncoding = exactlyOneEncoding;
+    }
+
+    public void setExactlyOneEncoding(EncodingStrategy exactlyOneEncoding) {
+        this.exactlyOneEncoding = getAdapterFromEncodingName(exactlyOneEncoding);
+    }
+
+    public EncodingStrategyAdapter getExactlyKEncoding() {
+        return exactlyKEncoding;
+    }
+
+    public void setExactlyKEncoding(EncodingStrategyAdapter exactlyKEncoding) {
+        this.exactlyKEncoding = exactlyKEncoding;
+    }
+
+    public void setExactlyKEncoding(EncodingStrategy exactlyKEncoding) {
+        this.exactlyKEncoding = getAdapterFromEncodingName(exactlyKEncoding);
+    }
 
     @Override
     public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
             throws ContradictionException {
 
+        if (k == 0 || literals.size() == 1) {
+            // will propagate unit literals
+            return super.addAtMost(solver, literals, k);
+        }
+        if (literals.size() <= 1) {
+            throw new UnsupportedOperationException(
+                    "requires at least 2 literals");
+        }
+        if (k == 1 && atMostOneEncoding != null) {
+            return atMostOneEncoding.addAtMostOne(solver, literals);
+        }
+        if (atMostKEncoding != null) {
+            if (k == 1)
+                return atMostKEncoding.addAtMostOne(solver, literals);
+            else
+                return atMostKEncoding.addAtMost(solver, literals, k);
+        }
         return super.addAtMost(solver, literals, k);
-        // Commander commander = new Commander();
-        // Product product = new Product();
-        // if (k == 0 || literals.size() == 1) {
-        // // will propagate unit literals
-        // return super.addAtMost(solver, literals, k);
-        // }
-        // if (literals.size() <= 1) {
-        // throw new UnsupportedOperationException(
-        // "requires at least 2 literals");
-        // }
-        // if (k == 1) {
-        // // return ladder.addAtMostOne(solver, literals);
-        // // return binary.addAtMostOne(solver, literals);
-        // return commander.addAtMostOne(solver, literals);
-        // // return product.addAtMostOne(solver, literals);
-        // }
-        // return seq.addAtMost(solver, literals, k);
-        // return product.addAtMost(solver, literals, k);
-        // return commander.addAtMost(solver, literals, k);
     }
 
     @Override
     public IConstr addExactly(ISolver solver, IVecInt literals, int n)
             throws ContradictionException {
-        // Ladder ladder = new Ladder();
-        // if (n == 1) {
-        // return ladder.addExactlyOne(solver, literals);
-        // }
+        if (n == 1 && exactlyOneEncoding != null) {
+            return exactlyOneEncoding.addExactlyOne(solver, literals);
+        } else if (exactlyKEncoding != null) {
+            if (n == 1) {
+                return exactlyKEncoding.addExactlyOne(solver, literals);
+            } else
+                return exactlyKEncoding.addExactly(solver, literals, n);
+        }
 
         return super.addExactly(solver, literals, n);
     }
