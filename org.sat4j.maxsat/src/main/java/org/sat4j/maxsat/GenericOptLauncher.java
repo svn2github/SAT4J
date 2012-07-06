@@ -155,7 +155,7 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
                         asolver = new ConstraintRelaxingPseudoOptDecorator(
                                 this.wmsd);
                     } else {
-                        asolver = new PseudoOptDecorator(this.wmsd,false,true);
+                        asolver = new PseudoOptDecorator(this.wmsd,false,!equivalence);
                     }
                 }
                 if (cmd.hasOption("i")) {
