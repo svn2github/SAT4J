@@ -102,6 +102,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
      *            true if a suboptimal solution means that the problem is
      *            satisfiable (e.g. as in the PB competition), else false (e.g.
      *            as in the MAXSAT competition).
+     * @param useAnImplicantForEvaluation
+     *            uses an implicant (a prime implicant computed using
+     *            {@link #primeImplicant()}) instead of a plain model to
+     *            evaluate the objective function.
      */
     public PseudoOptDecorator(IPBSolver solver,
             boolean nonOptimalMeansSatisfiable,
