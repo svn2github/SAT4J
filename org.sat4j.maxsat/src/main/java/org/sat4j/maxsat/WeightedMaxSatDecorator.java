@@ -232,8 +232,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                 for (int i = 0; i < literals.size() - 1; i++) {
                     clause.push(-literals.get(i));
                     constrs.add(super.addClause(clause));
-                }
-                clause.pop();
+                    clause.pop();
+                }         
                 return constrs;
             }
         }
