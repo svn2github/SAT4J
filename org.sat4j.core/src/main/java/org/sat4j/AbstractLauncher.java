@@ -101,15 +101,18 @@ public abstract class AbstractLauncher implements Serializable {
             this.solver.printInfos(this.out, COMMENT_PREFIX);
             this.out.println(ANSWER_PREFIX + this.exitCode);
             if (this.exitCode == ExitCode.SATISFIABLE) {
-                int[] model;
+                int[] model = this.solver.model();
                 if (prime) {
+                    int initiallength = model.length;
                     log("returning a prime implicant ...");
                     long beginpi = System.currentTimeMillis();
                     model = this.solver.primeImplicant();
                     long endpi = System.currentTimeMillis();
+                    log("removed " + (initiallength - model.length)
+                            + " literals");
                     log("pi computation time: " + (endpi - beginpi) + " ms");
                 } else {
-                    model = this.solver.model();
+
                 }
                 this.out.print(SOLUTION_PREFIX);
                 this.reader.decode(model, this.out);
