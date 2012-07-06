@@ -55,6 +55,10 @@ public class Binomial extends EncodingStrategyAdapter {
 
         IVecInt clause = new VecInt();
 
+        if (degree == 1) {
+            return addAtMostOne(solver, literals);
+        }
+
         for (IVecInt vec : literals.subset(degree + 1)) {
             for (int i = 0; i < vec.size(); i++) {
                 clause.push(-vec.get(i));
@@ -71,7 +75,7 @@ public class Binomial extends EncodingStrategyAdapter {
             throws ContradictionException {
         ConstrGroup group = new ConstrGroup();
 
-        VecInt clause = new VecInt();
+        IVecInt clause = new VecInt();
 
         for (int i = 0; i < literals.size() - 1; i++) {
             for (int j = i + 1; j < literals.size(); j++) {
@@ -84,4 +88,55 @@ public class Binomial extends EncodingStrategyAdapter {
         return group;
     }
 
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addAtLeast(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        if (degree == 1) {
+            return addAtLeastOne(solver, literals);
+        }
+
+        IVecInt negLiterals = new VecInt();
+
+        for (int i = 0; i < literals.size(); i++) {
+            negLiterals.push(-literals.get(i));
+        }
+
+        return addAtMost(solver, negLiterals, literals.size() - degree);
+    }
+
+    @Override
+    public IConstr addAtLeastOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+        IVecInt clause = new VecInt();
+
+        for (int i = 0; i < literals.size(); i++) {
+            clause.push(literals.get(i));
+        }
+        group.add(solver.addClause(clause));
+
+        return group;
+    }
 }

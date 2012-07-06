@@ -55,6 +55,8 @@ public class Policy extends EncodingStrategyAdapter {
     private EncodingStrategyAdapter atMostKEncoding;
     private EncodingStrategyAdapter exactlyOneEncoding;
     private EncodingStrategyAdapter exactlyKEncoding;
+    private EncodingStrategyAdapter atLeastOneEncoding;
+    private EncodingStrategyAdapter atLeastKEncoding;
 
     private EncodingStrategyAdapter getAdapterFromEncodingName(
             EncodingStrategy encodingName) {
@@ -124,6 +126,30 @@ public class Policy extends EncodingStrategyAdapter {
         this.exactlyKEncoding = getAdapterFromEncodingName(exactlyKEncoding);
     }
 
+    public EncodingStrategyAdapter getAtLeastOneEncoding() {
+        return atLeastOneEncoding;
+    }
+
+    public void setAtLeastOneEncoding(EncodingStrategyAdapter atLeastOneEncoding) {
+        this.atLeastOneEncoding = atLeastOneEncoding;
+    }
+
+    public void setAtLeastOneEncoding(EncodingStrategy atLeastOneEncoding) {
+        this.atLeastOneEncoding = getAdapterFromEncodingName(atLeastOneEncoding);
+    }
+
+    public EncodingStrategyAdapter getAtLeastKEncoding() {
+        return atLeastKEncoding;
+    }
+
+    public void setAtLeastKEncoding(EncodingStrategyAdapter atLeastKEncoding) {
+        this.atLeastKEncoding = atLeastKEncoding;
+    }
+
+    public void setAtLeastKEncoding(EncodingStrategy atLeastKEncoding) {
+        this.atLeastKEncoding = getAdapterFromEncodingName(atLeastKEncoding);
+    }
+
     @Override
     public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
             throws ContradictionException {
@@ -161,6 +187,19 @@ public class Policy extends EncodingStrategyAdapter {
         }
 
         return super.addExactly(solver, literals, n);
+    }
+
+    @Override
+    public IConstr addAtLeast(ISolver solver, IVecInt literals, int n)
+            throws ContradictionException {
+        if (n == 1) {
+            if (atLeastOneEncoding != null)
+                return atLeastOneEncoding.addAtLeastOne(solver, literals);
+        } else if (atLeastKEncoding != null)
+            return atLeastKEncoding.addAtLeast(solver, literals, n);
+
+        return super.addAtLeast(solver, literals, n);
+
     }
 
 }
