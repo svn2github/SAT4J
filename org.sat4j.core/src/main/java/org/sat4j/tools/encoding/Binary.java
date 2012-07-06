@@ -113,9 +113,60 @@ public class Binary extends EncodingStrategyAdapter {
     }
 
     @Override
-    public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
+    public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
             throws ContradictionException {
-        // TODO Implement binary at most k method
-        return super.addAtMost(solver, literals, degree);
+
+        final int n = literals.size();
+        final int p = (int) Math.ceil(Math.log(n) / Math.log(2));
+
+        ConstrGroup group = new ConstrGroup(false);
+
+        int[][] b = new int[k][p];
+
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < p; j++) {
+                b[i][j] = solver.nextFreeVarId(true);
+            }
+        }
+
+        int[][] t = new int[k][n];
+
+        for (int i = 0; i < k; i++) {
+            for (int j = 0; j < n; j++) {
+                t[i][j] = solver.nextFreeVarId(true);
+            }
+        }
+
+        int max, min;
+        IVecInt clause1 = new VecInt();
+        IVecInt clause2 = new VecInt();
+        String binary = "";
+        for (int i = 0; i < n; i++) {
+            max = Math.max(1, k - n + i + 1);
+            min = Math.min(i + 1, k);
+            clause1.push(-literals.get(i));
+
+            binary = Integer.toBinaryString(i);
+            while (binary.length() != p) {
+                binary = "0" + binary;
+            }
+
+            for (int g = max - 1; g < min; g++) {
+                clause1.push(t[g][i]);
+                for (int j = 0; j < p; j++) {
+                    clause2.push(-t[g][i]);
+                    if (binary.charAt(j) == '0') {
+                        clause2.push(-b[g][j]);
+                    } else
+                        clause2.push(b[g][j]);
+                    group.add(solver.addClause(clause2));
+                    clause2.clear();
+                }
+            }
+            group.add(solver.addClause(clause1));
+            clause1.clear();
+        }
+
+        return group;
     }
 }

@@ -45,7 +45,7 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.encoding.EncodingStrategy;
 import org.sat4j.tools.encoding.Policy;
 
-public class TestClausalCardinalitiesBinomialEncoding {
+public class TestClausalCardinalitiesBinaryEncoding {
 
     private ISolver solver;
     private Policy policy;
@@ -54,12 +54,12 @@ public class TestClausalCardinalitiesBinomialEncoding {
     @Before
     public void setUp() {
         this.policy = new Policy();
-        this.policy.setAtMostOneEncoding(EncodingStrategy.BINOMIAL);
-        this.policy.setAtMostKEncoding(EncodingStrategy.BINOMIAL);
-        this.policy.setAtLeastOneEncoding(EncodingStrategy.BINOMIAL);
-        this.policy.setAtLeastKEncoding(EncodingStrategy.BINOMIAL);
-        this.policy.setExactlyOneEncoding(EncodingStrategy.BINOMIAL);
-        this.policy.setExactlyKEncoding(EncodingStrategy.BINOMIAL);
+        this.policy.setAtMostOneEncoding(EncodingStrategy.BINARY);
+        this.policy.setAtMostKEncoding(EncodingStrategy.BINARY);
+        this.policy.setAtLeastOneEncoding(EncodingStrategy.BINARY);
+        this.policy.setAtLeastKEncoding(EncodingStrategy.BINARY);
+        this.policy.setExactlyOneEncoding(EncodingStrategy.BINARY);
+        this.policy.setExactlyKEncoding(EncodingStrategy.BINARY);
 
         this.solver = new ClausalCardinalitiesDecorator<ISolver>(
                 SolverFactory.newDefault(), policy);
@@ -78,7 +78,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialAtMostOne");
+            System.out.println("testBinaryAtMostOne");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -89,7 +89,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialAtMostOne models");
+            System.out.println("testBinaryAtMostOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
@@ -113,7 +113,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialExactlyOne");
+            System.out.println("testBinaryExactlyOne");
             for (int i = 0; i < constr.size(); i++) {
                 if (constr instanceof ConstrGroup)
                     System.out.println(((ConstrGroup) constr).getConstr(i));
@@ -127,7 +127,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialExactlyOne models");
+            System.out.println("testBinaryExactlyOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
@@ -151,7 +151,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialAtLeastOne");
+            System.out.println("testBinaryAtLeastOne");
             for (int i = 0; i < constr.size(); i++) {
                 if (constr instanceof ConstrGroup)
                     System.out.println(((ConstrGroup) constr).getConstr(i));
@@ -165,7 +165,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialAtLeastOne models");
+            System.out.println("testBinaryAtLeastOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
@@ -189,7 +189,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialAtMost2");
+            System.out.println("testBinaryAtMost2");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -200,7 +200,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialAtMost2 models");
+            System.out.println("testBinaryAtMost2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
@@ -224,7 +224,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialAtLeast2");
+            System.out.println("testBinaryAtLeast2");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -235,7 +235,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialAtLeast2 models");
+            System.out.println("testBinaryAtLeast2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
@@ -259,7 +259,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinomialExactly2");
+            System.out.println("testBinaryExactly2");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -270,7 +270,7 @@ public class TestClausalCardinalitiesBinomialEncoding {
         int cpt = 0;
 
         if (MODE_DEBUG)
-            System.out.println("testBinomialExactly2 models");
+            System.out.println("testBinaryExactly2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
