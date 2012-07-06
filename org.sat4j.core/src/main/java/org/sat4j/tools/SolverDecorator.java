@@ -482,4 +482,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
         this.solver.setKeepSolverHot(value);
     }
 
+    /**
+     * @since 2.3.2
+     */
+    public boolean primeImplicant(int p) {
+        return this.solver.primeImplicant(p);
+    }
+
 }

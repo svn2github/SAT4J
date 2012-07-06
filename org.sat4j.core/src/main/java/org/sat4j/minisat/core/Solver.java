@@ -1303,6 +1303,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     if (!this.voc.isUnassigned(p)) {
                         tempmodel.push(this.voc.isSatisfied(p) ? i : -i);
                         this.userbooleanmodel[i - 1] = this.voc.isSatisfied(p);
+                        if (this.voc.getReason(p) == null) {
+                            this.decisions.push(tempmodel.last());
+                        } else {
+                            this.implied.push(tempmodel.last());
+                        }
                     }
                 }
             }
@@ -1326,14 +1331,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return assume(p) && propagate() == null;
     }
 
+    private int[] prime;
+
     public int[] primeImplicant() {
         assert this.qhead == this.trail.size()
                 || this.qhead == this.learnedLiterals.size();
         if (this.learnedLiterals.size() > 0) {
             this.qhead = 0;
         }
-        int[] prime = new int[this.implied.size() + this.decisions.size() + 1];
-        // this.implied.copyTo(prime);
+        this.prime = new int[this.implied.size() + this.decisions.size() + 1];
         int p;
         for (int i = 0; i < prime.length; i++) {
             prime[i] = 0;
@@ -1387,6 +1393,18 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             }
         }
         return implicant;
+    }
+
+    public boolean primeImplicant(int p) {
+        if (p == 0 || Math.abs(p) > realNumberOfVariables()) {
+            throw new IllegalArgumentException(
+                    "Use a valid Dimacs var id as argument!"); //$NON-NLS-1$
+        }
+        if (this.prime == null) {
+            throw new UnsupportedOperationException(
+                    "Call the primeImplicant method first!!!"); //$NON-NLS-1$
+        }
+        return prime[Math.abs(p)] == p;
     }
 
     public boolean model(int var) {
@@ -1804,6 +1822,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.slistener.start();
         this.model = null; // forget about previous model
         this.userbooleanmodel = null;
+        this.prime = null;
         this.unsatExplanationInTermsOfAssumptions = null;
         if (!alreadylaunched || !this.keepHot) {
             this.order.init();

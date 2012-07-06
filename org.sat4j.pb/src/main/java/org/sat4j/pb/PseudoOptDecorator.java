@@ -65,6 +65,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private final boolean nonOptimalMeansSatisfiable;
 
+    private final boolean useAnImplicantForEvaluation;
+
     /**
      * Create a PB decorator for which a non optimal solution means that the
      * problem is satisfiable.
@@ -88,8 +90,25 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
      */
     public PseudoOptDecorator(IPBSolver solver,
             boolean nonOptimalMeansSatisfiable) {
+        this(solver, nonOptimalMeansSatisfiable, false);
+    }
+
+    /**
+     * Create a PB decorator with a specific semantic of non optimal solution.
+     * 
+     * @param solver
+     *            a PB solver
+     * @param nonOptimalMeansSatisfiable
+     *            true if a suboptimal solution means that the problem is
+     *            satisfiable (e.g. as in the PB competition), else false (e.g.
+     *            as in the MAXSAT competition).
+     */
+    public PseudoOptDecorator(IPBSolver solver,
+            boolean nonOptimalMeansSatisfiable,
+            boolean useAnImplicantForEvaluation) {
         super(solver);
         this.nonOptimalMeansSatisfiable = nonOptimalMeansSatisfiable;
+        this.useAnImplicantForEvaluation = useAnImplicantForEvaluation;
     }
 
     @Override
@@ -183,8 +202,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             throw new UnsupportedOperationException(
                     "The problem does not contain an objective function");
         }
-        this.objectiveValue = decorated().getObjectiveFunction()
-                .calculateDegree(decorated());
+        if (this.useAnImplicantForEvaluation) {
+            this.objectiveValue = decorated().getObjectiveFunction()
+                    .calculateDegreeImplicant(decorated());
+        } else {
+            this.objectiveValue = decorated().getObjectiveFunction()
+                    .calculateDegree(decorated());
+        }
         return getObjectiveValue();
     }
 

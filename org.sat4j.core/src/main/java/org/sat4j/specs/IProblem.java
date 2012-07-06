@@ -65,13 +65,22 @@ public interface IProblem {
      * Provide a prime implicant, i.e. a set of literal that is sufficient to
      * satisfy all constraints of the problem.
      * 
-     * NOTE THAT THIS FEATURE IS HIGHLY EXPERIMENTAL FOR NOW.
      * 
      * @return a prime implicant of the formula as an array of literal, Dimacs
      *         format.
      * @since 2.3
      */
     int[] primeImplicant();
+
+    /**
+     * Check if a given literal is part of the prime implicant computed by the
+     * {@link #primeImplicant()} method.
+     * 
+     * @param p
+     *            a literal in Dimacs format
+     * @return true iff p belongs to {@link #primeImplicant()}
+     */
+    boolean primeImplicant(int p);
 
     /**
      * Check the satisfiability of the set of constraints contained inside the

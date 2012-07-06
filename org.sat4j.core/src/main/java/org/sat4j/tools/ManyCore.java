@@ -472,6 +472,13 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         return this.solvers.get(this.winnerId).primeImplicant();
     }
 
+    /**
+     * @since 2.3.2
+     */
+    public boolean primeImplicant(int p) {
+        return this.solvers.get(this.winnerId).primeImplicant(p);
+    }
+
     public List<S> getSolvers() {
         return new ArrayList<S>(this.solvers);
     }

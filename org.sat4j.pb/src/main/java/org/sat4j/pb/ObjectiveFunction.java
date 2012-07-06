@@ -68,13 +68,30 @@ public class ObjectiveFunction implements Serializable {
     // calculate the degree of the objective function
     public BigInteger calculateDegree(ISolver solver) {
         BigInteger tempDegree = BigInteger.ZERO;
-
         for (int i = 0; i < this.vars.size(); i++) {
             BigInteger coeff = this.coeffs.get(i);
             if (varInModel(this.vars.get(i), solver)) {
                 tempDegree = tempDegree.add(coeff);
             } else if (coeff.signum() < 0
                     && !varInModel(-this.vars.get(i), solver)) {
+                // the variable does not appear in the model: it can be assigned
+                // either way
+                tempDegree = tempDegree.add(coeff);
+            }
+        }
+        return tempDegree;
+    }
+
+    // calculate the degree of the objective function
+    public BigInteger calculateDegreeImplicant(ISolver solver) {
+        BigInteger tempDegree = BigInteger.ZERO;
+        solver.primeImplicant();
+        for (int i = 0; i < this.vars.size(); i++) {
+            BigInteger coeff = this.coeffs.get(i);
+            if (solver.primeImplicant(this.vars.get(i))) {
+                tempDegree = tempDegree.add(coeff);
+            } else if (coeff.signum() < 0
+                    && !solver.primeImplicant(-this.vars.get(i))) {
                 // the variable does not appear in the model: it can be assigned
                 // either way
                 tempDegree = tempDegree.add(coeff);
