@@ -1,5 +1,13 @@
 package org.sat4j.sat.visu;
 
+import info.monitorenter.gui.chart.Chart2D;
+import info.monitorenter.gui.chart.IErrorBarPolicy;
+import info.monitorenter.gui.chart.IPointPainter;
+import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.ITrace2D.DistancePoint;
+import info.monitorenter.gui.chart.ITracePainter;
+import info.monitorenter.gui.chart.ITracePoint2D;
+
 import java.awt.Color;
 import java.awt.Stroke;
 import java.beans.PropertyChangeEvent;

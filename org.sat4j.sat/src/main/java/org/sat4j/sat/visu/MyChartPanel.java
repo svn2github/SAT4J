@@ -1,5 +1,7 @@
 package org.sat4j.sat.visu;
 
+import info.monitorenter.gui.chart.Chart2D;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;

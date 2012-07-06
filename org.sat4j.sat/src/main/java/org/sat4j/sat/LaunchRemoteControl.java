@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
-
 /**
  * Launches the solver with the remote controller. This controller allows the
  * user to restart the solver and to clean clauses.

@@ -1,5 +1,8 @@
 package org.sat4j.sat.visu;
 
+import info.monitorenter.gui.chart.ITracePoint2D;
+import info.monitorenter.gui.chart.traces.painters.ATracePainter;
+
 import java.awt.Graphics;
 
 public class TracePainterPlus extends ATracePainter {
