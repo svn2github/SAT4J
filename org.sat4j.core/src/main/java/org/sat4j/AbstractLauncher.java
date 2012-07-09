@@ -111,8 +111,6 @@ public abstract class AbstractLauncher implements Serializable {
                     log("removed " + (initiallength - model.length)
                             + " literals");
                     log("pi computation time: " + (endpi - beginpi) + " ms");
-                } else {
-
                 }
                 this.out.print(SOLUTION_PREFIX);
                 this.reader.decode(model, this.out);
