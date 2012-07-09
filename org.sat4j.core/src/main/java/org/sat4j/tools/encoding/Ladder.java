@@ -38,8 +38,10 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
- * For the cases "at most one" and "exactly one", we can use the ladder encoding
- * described in: I. P. Gent and P. Nightingale,
+ * 
+ * Ladder encoding for the "at most one" and "exactly one" cases.
+ * 
+ * The ladder encoding described in: I. P. Gent and P. Nightingale,
  * "A new encoding for AllDifferent into SAT", in International Workshop on
  * Modeling and Reformulating Constraint Satisfaction Problems, 2004
  * 

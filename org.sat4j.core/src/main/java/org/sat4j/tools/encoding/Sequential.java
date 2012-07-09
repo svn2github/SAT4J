@@ -38,6 +38,8 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
+ * Implementation of the sequential encoding for the at most k constraint.
+ * 
  * For the cases "at most k", we can use the sequential encoding described in:
  * C. Sinz,
  * "Towards an Optimal CNF Encoding of Boolean Cardinality Constraints", in
@@ -108,4 +110,5 @@ public class Sequential extends EncodingStrategyAdapter {
         }
         return group;
     }
+
 }

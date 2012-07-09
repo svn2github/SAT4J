@@ -38,12 +38,18 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
+ * Binary encoding for the "at most one" and "at most k" cases.
  * 
  * For the case "at most one", we can use the binary encoding (also called
  * birwise encoding) first described in A. M. Frisch, T. J. Peugniez, A. J.
  * Dogget and P. Nightingale, "Solving Non-Boolean Satisfiability Problems With
  * Stochastic Local Search: A Comparison of Encodings" in Journal of Automated
- * Reasoning, vol. 35, n 1-3, 2005
+ * Reasoning, vol. 35, n 1-3, 2005.
+ * 
+ * The approach is generalized for the "at most k" case in A. M. Frisch and P.
+ * A. Giannaros, "SAT Encodings of the At-Most-k Constraint", in International
+ * Workshop on Modelling and Reformulating Constraint Satisfaction Problems,
+ * 2010
  * 
  * @author sroussel
  * @since 2.3.1
@@ -167,6 +173,40 @@ public class Binary extends EncodingStrategyAdapter {
             group.add(solver.addClause(clause1));
             clause1.clear();
         }
+
+        return group;
+    }
+
+    @Override
+    public IConstr addAtLeast(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
+
+        IVecInt newLits = new VecInt();
+        for (int i = 0; i < literals.size(); i++) {
+            newLits.push(-literals.get(i));
+        }
+
+        return addAtMost(solver, newLits, literals.size() - k);
+    }
+
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
 
         return group;
     }

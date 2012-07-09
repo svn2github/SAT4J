@@ -41,6 +41,8 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
+ * Implementation of product encoding for at most one and at most k constraints.
+ * 
  * The encoding for "at most one" constraints was introduced by J. Chen in
  * "A New SAT Encoding for the At-Most-One Constraint" in Proceedings of the
  * Tenth International Workshop of Constraint Modeling and Reformulation, 2010
@@ -236,6 +238,40 @@ public class Product extends EncodingStrategyAdapter {
         }
         result += tab[tab.length - 1] - 1;
         return result;
+    }
+
+    @Override
+    public IConstr addAtLeast(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
+
+        IVecInt newLits = new VecInt();
+        for (int i = 0; i < literals.size(); i++) {
+            newLits.push(-literals.get(i));
+        }
+
+        return addAtMost(solver, newLits, literals.size() - k);
+    }
+
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
+        return group;
     }
 
 }

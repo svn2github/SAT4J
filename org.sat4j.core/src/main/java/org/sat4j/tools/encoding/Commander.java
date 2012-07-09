@@ -38,6 +38,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
 /**
+ * Commander encoding for "at most one" and "at most k" cases.
  * 
  * The case "at most one" is introduced in W. Klieber and G. Kwon
  * "Efficient CNF encoding for selecting 1 from N objects" in Fourth Workshop on
@@ -247,5 +248,39 @@ public class Commander extends EncodingStrategyAdapter {
         constrGroup.add(addAtMost(solver, vecC, k));
 
         return constrGroup;
+    }
+
+    @Override
+    public IConstr addAtLeast(ISolver solver, IVecInt literals, int k)
+            throws ContradictionException {
+
+        IVecInt newLits = new VecInt();
+        for (int i = 0; i < literals.size(); i++) {
+            newLits.push(-literals.get(i));
+        }
+
+        return addAtMost(solver, newLits, literals.size() - k);
+    }
+
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
+        return group;
     }
 }
