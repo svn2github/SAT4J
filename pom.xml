@@ -4,15 +4,15 @@
   <groupId>org.sat4j</groupId>
   <artifactId>org.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.3.2-SNAPSHOT</version>
+  <version>2.3.2</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org/</url>
   <description>
 The aim of the SAT4J library is to provide an efficient library of SAT solvers in Java. Compared to the OpenSAT project, the SAT4J library targets first users of SAT "black boxes", willing to embed  SAT technologies into their application without worrying about the details. Since we use the library for our own research, it is also possible for SAT researchers to use it as a basis for their work.
   </description>
   <scm>
-    <connection>scm:svn:svn://svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</connection>
-    <url>http://fisheye.ow2.org/browse/Sat4J/maven/trunk</url>
+    <connection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.3.2</connection>
+    <url>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/tags/org.sat4j.pom-2.3.2</url>
   </scm>
   <licenses>
   <license>
