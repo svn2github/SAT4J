@@ -1358,12 +1358,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             if (this.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
                 this.prime[Math.abs(d)] = d;
-            } else if (!setAndPropagate(toInternal(-d))) {
-                // conflict, literal is necessary
-                this.prime[Math.abs(d)] = d;
-                cancel();
-                setAndPropagate(toInternal(d));
-            } else {
+            } else if (setAndPropagate(toInternal(-d))) {
                 ok = true;
                 rightlevel = currentDecisionLevel();
                 for (int j = i + 1; j < this.decisions.size(); j++) {
@@ -1382,6 +1377,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     cancel();
                     setAndPropagate(toInternal(d));
                 }
+            } else {
+                // conflict, literal is necessary
+                this.prime[Math.abs(d)] = d;
+                cancel();
+                setAndPropagate(toInternal(d));
             }
         }
         cancelUntil(0);
