@@ -187,9 +187,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                 // check first if the literal is already in the list:
                 int lit = -literals.get(0);
                 int index = this.lits.containsAt(lit);
-                if (index != -1) {
-                    this.coefs.set(index, this.coefs.get(index).add(weight));
-                } else {
+                if (index == -1) {
                     // check if the opposite literal is already there
                     index = this.lits.containsAt(-lit);
                     if (index != -1) {
@@ -217,6 +215,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                         this.lits.push(lit);
                         this.coefs.push(weight);
                     }
+                } else {
+                    this.coefs.set(index, this.coefs.get(index).add(weight));
                 }
                 return UnitWeightedClause.instance();
             }
