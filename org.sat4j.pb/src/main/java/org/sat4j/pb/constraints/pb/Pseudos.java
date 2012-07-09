@@ -145,10 +145,10 @@ public abstract class Pseudos {
         for (int i = 0; i < initLits.size(); i++) {
             lit = initLits.get(i);
             BigInteger oldCoef = reduced.get(lit);
-            if (oldCoef != null) {
-                reduced.put(lit, oldCoef.add(initCoeffs.get(i)));
-            } else {
+            if (oldCoef == null) {
                 reduced.put(lit, initCoeffs.get(i));
+            } else {
+                reduced.put(lit, oldCoef.add(initCoeffs.get(i)));
             }
         }
         assert reduced.size() <= initLits.size();
