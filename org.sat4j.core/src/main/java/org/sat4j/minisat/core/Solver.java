@@ -1167,13 +1167,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
                     this.slistener.solutionFound(this.model);
-                    if (this.sharedConflict != null) {
+                    if (this.sharedConflict == null) {
+                        cancelUntil(this.rootLevel);
+                        return Lbool.TRUE;
+                    } else {
                         // listener called ISolverService.backtrack()
                         confl = this.sharedConflict;
                         this.sharedConflict = null;
-                    } else {
-                        cancelUntil(this.rootLevel);
-                        return Lbool.TRUE;
                     }
                 } else {
                     if (this.restarter.shouldRestart()) {
@@ -1187,11 +1187,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                         this.needToReduceDB = false;
                         // Runtime.getRuntime().gc();
                     }
-                    if (this.sharedConflict != null) {
-                        // listener called ISolverService.backtrack()
-                        confl = this.sharedConflict;
-                        this.sharedConflict = null;
-                    } else {
+                    if (this.sharedConflict == null) {
                         // New variable decision
                         this.stats.decisions++;
                         int p = this.order.select();
@@ -1204,6 +1200,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                             boolean ret = assume(p);
                             assert ret;
                         }
+                    } else {
+                        // listener called ISolverService.backtrack()
+                        confl = this.sharedConflict;
+                        this.sharedConflict = null;
                     }
                 }
             }
