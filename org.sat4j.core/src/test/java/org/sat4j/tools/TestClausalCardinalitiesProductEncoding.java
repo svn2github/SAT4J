@@ -45,7 +45,7 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.encoding.EncodingStrategy;
 import org.sat4j.tools.encoding.Policy;
 
-public class TestClausalCardinalitiesBinaryEncoding {
+public class TestClausalCardinalitiesProductEncoding {
 
     private ISolver solver;
     private Policy policy;
@@ -54,15 +54,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
     @Before
     public void setUp() {
         this.policy = new Policy();
-        this.policy.setAtMostOneEncoding(EncodingStrategy.BINARY);
-        this.policy.setAtMostKEncoding(EncodingStrategy.BINARY);
-        this.policy.setAtLeastOneEncoding(EncodingStrategy.BINARY);
-        this.policy.setAtLeastKEncoding(EncodingStrategy.BINARY);
-        this.policy.setExactlyOneEncoding(EncodingStrategy.BINARY);
-        this.policy.setExactlyKEncoding(EncodingStrategy.BINARY);
+        this.policy.setAtMostOneEncoding(EncodingStrategy.PRODUCT);
+        this.policy.setAtMostKEncoding(EncodingStrategy.PRODUCT);
+        this.policy.setAtLeastOneEncoding(EncodingStrategy.PRODUCT);
+        this.policy.setAtLeastKEncoding(EncodingStrategy.PRODUCT);
+        this.policy.setExactlyOneEncoding(EncodingStrategy.PRODUCT);
+        this.policy.setExactlyKEncoding(EncodingStrategy.PRODUCT);
 
         this.solver = new ClausalCardinalitiesDecorator<ISolver>(
-                SolverFactory.newDefault(), this.policy);
+                SolverFactory.newDefault(), policy);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryAtMostOne");
+            System.out.println("testProductAtMostOne");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -88,15 +88,13 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryAtMostOne models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductAtMostOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(6, cpt);
@@ -115,13 +113,12 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryExactlyOne");
+            System.out.println("testProductExactlyOne");
             for (int i = 0; i < constr.size(); i++) {
-                if (constr instanceof ConstrGroup) {
+                if (constr instanceof ConstrGroup)
                     System.out.println(((ConstrGroup) constr).getConstr(i));
-                } else {
+                else
                     System.out.println(constr);
-                }
             }
         }
 
@@ -129,15 +126,13 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryExactlyOne models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductExactlyOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(5, cpt);
@@ -156,13 +151,12 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryAtLeastOne");
+            System.out.println("testProductAtLeastOne");
             for (int i = 0; i < constr.size(); i++) {
-                if (constr instanceof ConstrGroup) {
+                if (constr instanceof ConstrGroup)
                     System.out.println(((ConstrGroup) constr).getConstr(i));
-                } else {
+                else
                     System.out.println(constr);
-                }
             }
         }
 
@@ -170,15 +164,13 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryAtLeastOne models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductAtLeastOne models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(31, cpt);
@@ -197,9 +189,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryAtMost2");
-            for (int i = 0; i < constr.size(); i++) {
-                System.out.println(((ConstrGroup) constr).getConstr(i));
+            System.out.println("testProductAtMost2");
+            if (constr instanceof ConstrGroup) {
+                for (int i = 0; i < constr.size(); i++) {
+
+                    System.out.println(((ConstrGroup) constr).getConstr(i));
+
+                }
+            } else {
+                System.out.println(constr);
             }
         }
 
@@ -207,15 +205,13 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryAtMost2 models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductAtMost2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(16, cpt);
@@ -234,9 +230,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryAtLeast2");
-            for (int i = 0; i < constr.size(); i++) {
-                System.out.println(((ConstrGroup) constr).getConstr(i));
+            System.out.println("testProductAtLeast2");
+            if (constr instanceof ConstrGroup) {
+                for (int i = 0; i < constr.size(); i++) {
+
+                    System.out.println(((ConstrGroup) constr).getConstr(i));
+
+                }
+            } else {
+                System.out.println(constr);
             }
         }
 
@@ -244,15 +246,13 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryAtLeast2 models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductAtLeast2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(26, cpt);
@@ -271,7 +271,7 @@ public class TestClausalCardinalitiesBinaryEncoding {
 
         if (MODE_DEBUG) {
             System.out.println();
-            System.out.println("testBinaryExactly2");
+            System.out.println("testProductExactly2");
             for (int i = 0; i < constr.size(); i++) {
                 System.out.println(((ConstrGroup) constr).getConstr(i));
             }
@@ -281,18 +281,137 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG) {
-            System.out.println("testBinaryExactly2 models");
-        }
+        if (MODE_DEBUG)
+            System.out.println("testProductExactly2 models");
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG) {
+            if (MODE_DEBUG)
                 System.out.println(new VecInt(model));
-            }
             cpt++;
         }
         assertEquals(10, cpt);
     }
 
+    @Test
+    public void testAtMostOneWith8Vars() throws ContradictionException,
+            TimeoutException {
+
+        this.solver.newVar(8);
+
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3).push(4).push(5).push(6).push(7).push(8);
+
+        IConstr constr = this.solver.addAtMost(clause, 1);
+        assertNotNull(constr);
+
+        if (MODE_DEBUG) {
+            System.out.println();
+            System.out.println("testProductAtMostOneWith8Vars");
+            for (int i = 0; i < constr.size(); i++) {
+                System.out.println(((ConstrGroup) constr).getConstr(i));
+            }
+        }
+
+        ModelIterator iterator = new ModelIterator(this.solver);
+        int[] model = null;
+        int cpt = 0;
+
+        if (MODE_DEBUG)
+            System.out.println("testProductAtMostOneWith8Vars models");
+        while (iterator.isSatisfiable()) {
+            model = iterator.model();
+            assertNotNull(model);
+            if (MODE_DEBUG)
+                System.out.println(new VecInt(model));
+            cpt++;
+        }
+        assertEquals(9, cpt);
+    }
+
+    @Test
+    public void testExactly4With11Vars() throws ContradictionException,
+            TimeoutException {
+
+        int nVar = 11;
+        this.solver.newVar(nVar);
+
+        int degree = 4;
+
+        IVecInt clause = new VecInt();
+        for (int i = 1; i <= nVar; i++) {
+            clause.push(i);
+        }
+
+        IConstr constr = this.solver.addExactly(clause, degree);
+        assertNotNull(constr);
+
+        if (MODE_DEBUG) {
+            System.out.println();
+            System.out.println("testExactly4With11Vars");
+            for (int i = 0; i < constr.size(); i++) {
+                System.out.println(((ConstrGroup) constr).getConstr(i));
+            }
+        }
+
+        ModelIterator iterator = new ModelIterator(this.solver);
+        int[] model = null;
+        int cpt = 0;
+
+        if (MODE_DEBUG)
+            System.out.println("testExactly4With11Vars models");
+        while (iterator.isSatisfiable()) {
+            model = iterator.model();
+            assertNotNull(model);
+            if (MODE_DEBUG)
+                System.out.println(new VecInt(model));
+            cpt++;
+        }
+        assertEquals(330, cpt);
+    }
+
+    @Test
+    public void testAtMost4With11Vars() throws ContradictionException,
+            TimeoutException {
+
+        int nVar = 11;
+        this.solver.newVar(nVar);
+
+        int degree = 4;
+
+        IVecInt clause = new VecInt();
+        for (int i = 1; i <= nVar; i++) {
+            clause.push(i);
+        }
+
+        IConstr constr = this.solver.addAtMost(clause, degree);
+        assertNotNull(constr);
+
+        if (MODE_DEBUG) {
+            System.out.println();
+            System.out.println("testAtMost4With11Vars");
+            if (constr instanceof ConstrGroup) {
+                for (int i = 0; i < constr.size(); i++) {
+                    System.out.println(((ConstrGroup) constr).getConstr(i));
+                }
+            } else {
+                System.out.println(constr);
+            }
+        }
+
+        ModelIterator iterator = new ModelIterator(this.solver);
+        int[] model = null;
+        int cpt = 0;
+
+        if (MODE_DEBUG)
+            System.out.println("testAtMost4With11Vars models");
+        while (iterator.isSatisfiable()) {
+            model = iterator.model();
+            assertNotNull(model);
+            if (MODE_DEBUG)
+                System.out.println(new VecInt(model));
+            cpt++;
+        }
+        assertEquals(562, cpt);
+    }
 }
