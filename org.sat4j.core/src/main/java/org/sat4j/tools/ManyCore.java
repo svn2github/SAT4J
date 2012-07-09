@@ -91,7 +91,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.add(factory
                     .createSolverByName(this.availableSolvers[i]));
-            this.solversStats.push(new Counter());
+            this.solversStats.push(new Counter(0));
         }
     }
 
