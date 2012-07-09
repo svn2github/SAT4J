@@ -723,7 +723,7 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static IPBSolver newDefaultNonNormalized() {
         PBSolver solver = newDefault();
-        AbstractPBDataStructureFactory ds = new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure();
+        CompetResolutionPBLongMixedWLClauseCardConstrDataStructure ds = new CompetResolutionPBLongMixedWLClauseCardConstrDataStructure();
         ds.setNormalizer(AbstractPBDataStructureFactory.NO_COMPETITION);
         solver.setDataStructureFactory(ds);
         return solver;
