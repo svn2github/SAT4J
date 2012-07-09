@@ -63,7 +63,7 @@ public class BasicLauncher<T extends ISolver> extends AbstractLauncher {
      *            compress?.
      */
     public static void main(final String[] args) {
-        AbstractLauncher lanceur = new BasicLauncher<ISolver>(
+        BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
                 SolverFactory.instance());
         if (args.length != 1) {
             lanceur.usage();
