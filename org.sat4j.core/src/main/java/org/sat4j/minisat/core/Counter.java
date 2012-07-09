@@ -33,7 +33,15 @@ package org.sat4j.minisat.core;
  * @since 2.1
  */
 public class Counter {
-    private int value = 1;
+    private int value;
+
+    public Counter() {
+        this(1);
+    }
+
+    public Counter(int initialValue) {
+        this.value = initialValue;
+    }
 
     public void inc() {
         this.value++;
