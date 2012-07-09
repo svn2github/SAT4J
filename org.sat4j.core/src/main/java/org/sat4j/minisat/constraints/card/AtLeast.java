@@ -271,9 +271,9 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
     }
 
     /**
-     * Cha?ne repr?sentant la contrainte
+     * Textual representation of the constraint
      * 
-     * @return Cha?ne repr?sentant la contrainte
+     * @return a string representing the constraint.
      */
     @Override
     public String toString() {
@@ -287,9 +287,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
             stb.append(this.voc.valueToString(lit));
             stb.append("@");
             stb.append(this.voc.getLevel(lit));
-            stb.append("]");
-            stb.append(" ");
-            stb.append(" "); //$NON-NLS-1$
+            stb.append("]  ");
         }
         stb.append(">= "); //$NON-NLS-1$
         stb.append(size() - this.maxUnsatisfied);
