@@ -157,8 +157,9 @@ public class Binary extends EncodingStrategyAdapter {
                     clause2.push(-t[g][i]);
                     if (binary.charAt(j) == '0') {
                         clause2.push(-b[g][j]);
-                    } else
+                    } else {
                         clause2.push(b[g][j]);
+                    }
                     group.add(solver.addClause(clause2));
                     clause2.clear();
                 }

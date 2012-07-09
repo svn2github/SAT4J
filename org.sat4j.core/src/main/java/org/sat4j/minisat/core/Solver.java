@@ -1341,12 +1341,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
         this.prime = new int[this.implied.size() + this.decisions.size() + 1];
         int p;
-        for (int i = 0; i < prime.length; i++) {
-            prime[i] = 0;
+        for (int i = 0; i < this.prime.length; i++) {
+            this.prime[i] = 0;
         }
         for (IteratorInt it = this.implied.iterator(); it.hasNext();) {
             p = it.next();
-            prime[Math.abs(p)] = p;
+            this.prime[Math.abs(p)] = p;
             setAndPropagate(toInternal(p));
         }
         int d;
@@ -1357,10 +1357,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             d = this.decisions.get(i);
             if (this.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
-                prime[Math.abs(d)] = d;
+                this.prime[Math.abs(d)] = d;
             } else if (!setAndPropagate(toInternal(-d))) {
                 // conflict, literal is necessary
-                prime[Math.abs(d)] = d;
+                this.prime[Math.abs(d)] = d;
                 cancel();
                 setAndPropagate(toInternal(d));
             } else {
@@ -1378,16 +1378,16 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     forget(Math.abs(d));
                     removed++;
                 } else {
-                    prime[Math.abs(d)] = d;
+                    this.prime[Math.abs(d)] = d;
                     cancel();
                     setAndPropagate(toInternal(d));
                 }
             }
         }
         cancelUntil(0);
-        int[] implicant = new int[prime.length - removed - 1];
+        int[] implicant = new int[this.prime.length - removed - 1];
         int index = 0;
-        for (int i : prime) {
+        for (int i : this.prime) {
             if (i != 0) {
                 implicant[index++] = i;
             }
@@ -1404,7 +1404,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             throw new UnsupportedOperationException(
                     "Call the primeImplicant method first!!!"); //$NON-NLS-1$
         }
-        return prime[Math.abs(p)] == p;
+        return this.prime[Math.abs(p)] == p;
     }
 
     public boolean model(int var) {

@@ -90,7 +90,7 @@ public class LightFactory extends ASolverFactory<ISolver> {
     }
 
     public static void main(final String[] args) {
-        BasicLauncher<ISolver> lanceur = new BasicLauncher<ISolver>(
+        AbstractLauncher lanceur = new BasicLauncher<ISolver>(
                 LightFactory.instance());
         if (args.length != 1) {
             lanceur.usage();

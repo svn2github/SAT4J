@@ -62,7 +62,7 @@ public class TestClausalCardinalitiesBinaryEncoding {
         this.policy.setExactlyKEncoding(EncodingStrategy.BINARY);
 
         this.solver = new ClausalCardinalitiesDecorator<ISolver>(
-                SolverFactory.newDefault(), policy);
+                SolverFactory.newDefault(), this.policy);
     }
 
     @Test
@@ -88,13 +88,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryAtMostOne models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(6, cpt);
@@ -115,10 +117,11 @@ public class TestClausalCardinalitiesBinaryEncoding {
             System.out.println();
             System.out.println("testBinaryExactlyOne");
             for (int i = 0; i < constr.size(); i++) {
-                if (constr instanceof ConstrGroup)
+                if (constr instanceof ConstrGroup) {
                     System.out.println(((ConstrGroup) constr).getConstr(i));
-                else
+                } else {
                     System.out.println(constr);
+                }
             }
         }
 
@@ -126,13 +129,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryExactlyOne models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(5, cpt);
@@ -153,10 +158,11 @@ public class TestClausalCardinalitiesBinaryEncoding {
             System.out.println();
             System.out.println("testBinaryAtLeastOne");
             for (int i = 0; i < constr.size(); i++) {
-                if (constr instanceof ConstrGroup)
+                if (constr instanceof ConstrGroup) {
                     System.out.println(((ConstrGroup) constr).getConstr(i));
-                else
+                } else {
                     System.out.println(constr);
+                }
             }
         }
 
@@ -164,13 +170,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryAtLeastOne models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(31, cpt);
@@ -199,13 +207,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryAtMost2 models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(16, cpt);
@@ -234,13 +244,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryAtLeast2 models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(26, cpt);
@@ -269,13 +281,15 @@ public class TestClausalCardinalitiesBinaryEncoding {
         int[] model = null;
         int cpt = 0;
 
-        if (MODE_DEBUG)
+        if (MODE_DEBUG) {
             System.out.println("testBinaryExactly2 models");
+        }
         while (iterator.isSatisfiable()) {
             model = iterator.model();
             assertNotNull(model);
-            if (MODE_DEBUG)
+            if (MODE_DEBUG) {
                 System.out.println(new VecInt(model));
+            }
             cpt++;
         }
         assertEquals(10, cpt);
