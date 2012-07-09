@@ -62,24 +62,24 @@ public class Policy extends EncodingStrategyAdapter {
             EncodingStrategy encodingName) {
         switch (encodingName) {
         case BINARY:
-            return binary;
+            return this.binary;
         case BINOMIAL:
-            return binomial;
+            return this.binomial;
         case COMMANDER:
-            return commander;
+            return this.commander;
         case LADDER:
-            return ladder;
+            return this.ladder;
         case PRODUCT:
-            return product;
+            return this.product;
         case SEQUENTIAL:
-            return seq;
+            return this.seq;
         default:
             return null;
         }
     }
 
     public EncodingStrategyAdapter getAtMostOneEncoding() {
-        return atMostOneEncoding;
+        return this.atMostOneEncoding;
     }
 
     public void setAtMostOneEncoding(EncodingStrategyAdapter atMostOneEncoding) {
@@ -91,7 +91,7 @@ public class Policy extends EncodingStrategyAdapter {
     }
 
     public EncodingStrategyAdapter getAtMostKEncoding() {
-        return atMostKEncoding;
+        return this.atMostKEncoding;
     }
 
     public void setAtMostKEncoding(EncodingStrategyAdapter atMostKEncoding) {
@@ -103,7 +103,7 @@ public class Policy extends EncodingStrategyAdapter {
     }
 
     public EncodingStrategyAdapter getExactlyOneEncoding() {
-        return exactlyOneEncoding;
+        return this.exactlyOneEncoding;
     }
 
     public void setExactlyOneEncoding(EncodingStrategyAdapter exactlyOneEncoding) {
@@ -115,7 +115,7 @@ public class Policy extends EncodingStrategyAdapter {
     }
 
     public EncodingStrategyAdapter getExactlyKEncoding() {
-        return exactlyKEncoding;
+        return this.exactlyKEncoding;
     }
 
     public void setExactlyKEncoding(EncodingStrategyAdapter exactlyKEncoding) {
@@ -127,7 +127,7 @@ public class Policy extends EncodingStrategyAdapter {
     }
 
     public EncodingStrategyAdapter getAtLeastOneEncoding() {
-        return atLeastOneEncoding;
+        return this.atLeastOneEncoding;
     }
 
     public void setAtLeastOneEncoding(EncodingStrategyAdapter atLeastOneEncoding) {
@@ -139,7 +139,7 @@ public class Policy extends EncodingStrategyAdapter {
     }
 
     public EncodingStrategyAdapter getAtLeastKEncoding() {
-        return atLeastKEncoding;
+        return this.atLeastKEncoding;
     }
 
     public void setAtLeastKEncoding(EncodingStrategyAdapter atLeastKEncoding) {
@@ -162,14 +162,15 @@ public class Policy extends EncodingStrategyAdapter {
             throw new UnsupportedOperationException(
                     "requires at least 2 literals");
         }
-        if (k == 1 && atMostOneEncoding != null) {
-            return atMostOneEncoding.addAtMostOne(solver, literals);
+        if (k == 1 && this.atMostOneEncoding != null) {
+            return this.atMostOneEncoding.addAtMostOne(solver, literals);
         }
-        if (atMostKEncoding != null) {
-            if (k == 1)
-                return atMostKEncoding.addAtMostOne(solver, literals);
-            else
-                return atMostKEncoding.addAtMost(solver, literals, k);
+        if (this.atMostKEncoding != null) {
+            if (k == 1) {
+                return this.atMostKEncoding.addAtMostOne(solver, literals);
+            } else {
+                return this.atMostKEncoding.addAtMost(solver, literals, k);
+            }
         }
         return super.addAtMost(solver, literals, k);
     }
@@ -177,13 +178,14 @@ public class Policy extends EncodingStrategyAdapter {
     @Override
     public IConstr addExactly(ISolver solver, IVecInt literals, int n)
             throws ContradictionException {
-        if (n == 1 && exactlyOneEncoding != null) {
-            return exactlyOneEncoding.addExactlyOne(solver, literals);
-        } else if (exactlyKEncoding != null) {
+        if (n == 1 && this.exactlyOneEncoding != null) {
+            return this.exactlyOneEncoding.addExactlyOne(solver, literals);
+        } else if (this.exactlyKEncoding != null) {
             if (n == 1) {
-                return exactlyKEncoding.addExactlyOne(solver, literals);
-            } else
-                return exactlyKEncoding.addExactly(solver, literals, n);
+                return this.exactlyKEncoding.addExactlyOne(solver, literals);
+            } else {
+                return this.exactlyKEncoding.addExactly(solver, literals, n);
+            }
         }
 
         return super.addExactly(solver, literals, n);
@@ -193,10 +195,12 @@ public class Policy extends EncodingStrategyAdapter {
     public IConstr addAtLeast(ISolver solver, IVecInt literals, int n)
             throws ContradictionException {
         if (n == 1) {
-            if (atLeastOneEncoding != null)
-                return atLeastOneEncoding.addAtLeastOne(solver, literals);
-        } else if (atLeastKEncoding != null)
-            return atLeastKEncoding.addAtLeast(solver, literals, n);
+            if (this.atLeastOneEncoding != null) {
+                return this.atLeastOneEncoding.addAtLeastOne(solver, literals);
+            }
+        } else if (this.atLeastKEncoding != null) {
+            return this.atLeastKEncoding.addAtLeast(solver, literals, n);
+        }
 
         return super.addAtLeast(solver, literals, n);
 
