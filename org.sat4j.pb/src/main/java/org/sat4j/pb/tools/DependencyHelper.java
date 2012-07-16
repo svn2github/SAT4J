@@ -95,6 +95,11 @@ public class DependencyHelper<T, C> {
         Object getThing() {
             return this.thing;
         }
+
+        @Override
+        public String toString() {
+            return "-" + thing;
+        }
     }
 
     /**
@@ -293,7 +298,12 @@ public class DependencyHelper<T, C> {
      *             If the argument of the method is unknown to the solver.
      */
     public boolean getBooleanValueFor(T t) {
-        return this.solver.model(getIntValue(t, false));
+        int dimacsValue = getIntValue(t, false);
+        if (dimacsValue > 0) {
+            return this.solver.model(dimacsValue);
+        } else {
+            return !this.solver.model(-dimacsValue);
+        }
     }
 
     /**
