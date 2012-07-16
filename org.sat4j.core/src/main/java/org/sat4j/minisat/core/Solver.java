@@ -1014,7 +1014,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     /**
      * @return null if not conflict is found, else a conflicting constraint.
      */
-    public Constr propagate() {
+    public final Constr propagate() {
         IVecInt ltrail = this.trail;
         ILits lvoc = this.voc;
         SolverStats lstats = this.stats;
@@ -1035,7 +1035,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return null;
     }
 
-    private Constr reduceClausesForFalsifiedLiteral(int p) {
+    private final Constr reduceClausesForFalsifiedLiteral(int p) {
         // p is the literal to propagate
         // Moved original MiniSAT code to dsfactory to avoid
         // watches manipulation in counter Based clauses for instance.
@@ -1428,7 +1428,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.learnedLiterals.clear();
     }
 
-    protected void reduceDB() {
+    protected final void reduceDB() {
         this.stats.reduceddb++;
         this.slistener.cleaning();
         this.learnedConstraintsDeletionStrategy.reduce(this.learnts);
