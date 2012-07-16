@@ -99,7 +99,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
     @Override
     public int[] model() {
-        return model(new PrintWriter(System.out));
+        return model(new PrintWriter(System.out, true));
     }
 
     /**
