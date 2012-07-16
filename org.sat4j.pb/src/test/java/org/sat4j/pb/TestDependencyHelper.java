@@ -394,4 +394,17 @@ public class TestDependencyHelper {
         assertTrue(solution.contains("A"));
         assertFalse(solution.contains("B"));
     }
+
+    @Test
+    // testcase for SAT-77
+    public void testThatWeCanRetrieveTheTruthValueOfNegatedObjects()
+            throws ContradictionException, TimeoutException {
+        this.helper.setNegator(StringNegator.instance);
+        this.helper.clause("C0", "-A", "-B");
+        this.helper.clause("C1", "A", "-B");
+        this.helper.clause("C3", "A", "B");
+        assertTrue(this.helper.hasASolution());
+        assertTrue(this.helper.getBooleanValueFor("A"));
+        assertTrue(this.helper.getBooleanValueFor("-B"));
+    }
 }
