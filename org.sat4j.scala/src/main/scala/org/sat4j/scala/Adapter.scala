@@ -13,7 +13,7 @@ case object Unknown extends Status {}
 
 object Problem {
 
-  val problem = SolverFactory.newDefault;
+  val problem = SolverFactory.newDefault
 
   def +=(clause: IVecInt): IProblem = {
     problem addClause clause
@@ -24,17 +24,16 @@ object Problem {
   def solve: Status = {
     try {
       if (problem.isSatisfiable) 
-        return Satisfiable
+         Satisfiable
        else 
-        return Unsatisfiable
-      
+         Unsatisfiable
     } catch {
-      case _ => return Unknown
+      case _ =>  Unknown
     }
   }
 
   def model = {
-    problem.model;
+    problem.model
   }
 }
 
