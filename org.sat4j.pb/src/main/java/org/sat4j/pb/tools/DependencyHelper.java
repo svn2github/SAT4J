@@ -690,6 +690,10 @@ public class DependencyHelper<T, C> {
         if (this.canonicalOptFunction
                 && (index = this.objLiterals.indexOf(lit)) != -1) {
             this.objCoefs.set(index, this.objCoefs.get(index).add(weight));
+            if (this.objCoefs.get(index).equals(BigInteger.ZERO)) {
+                this.objLiterals.delete(index);
+                this.objCoefs.delete(index);
+            }
         } else {
             this.objLiterals.push(lit);
             this.objCoefs.push(weight);
