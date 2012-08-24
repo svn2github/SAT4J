@@ -127,6 +127,13 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
                             / 1000.0 + "s)");
                 }
             } while (this.problem.admitABetterSolution(this.assumps));
+            if (isVerbose()) {
+                out.println(getLogPrefix()
+                        + "Optimal objective function value: "
+                        + this.problem.getObjectiveValue() + "("
+                        + (System.currentTimeMillis() - this.begin) / 1000.0
+                        + "s)");
+            }
         } catch (TimeoutException e) {
             if (isVerbose()) {
                 out.println(getLogPrefix() + "Solver timed out after "
