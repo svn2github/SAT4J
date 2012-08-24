@@ -1901,6 +1901,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         boolean firstTimeGlobal = false;
         if (this.timeBasedTimeout) {
             if (!global || this.timer == null) {
+                if (this.timer != null) {
+                    this.timer.cancel();
+                }
                 firstTimeGlobal = true;
                 this.undertimeout = true;
                 TimerTask stopMe = new TimerTask() {
