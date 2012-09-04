@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.ILogAble;
 import org.sat4j.specs.ISolver;
 
 /**
@@ -120,7 +121,7 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 
     void setNeedToReduceDB(boolean needToReduceDB);
 
-    void setLogger(ICDCLLogger out);
+    void setLogger(ILogAble out);
 
-    ICDCLLogger getLogger();
+    ILogAble getLogger();
 }

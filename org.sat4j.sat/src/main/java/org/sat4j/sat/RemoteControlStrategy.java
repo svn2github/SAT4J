@@ -29,9 +29,9 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
+import org.sat4j.ILogAble;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
@@ -53,7 +53,7 @@ public class RemoteControlStrategy implements RestartStrategy,
     private RestartStrategy restart;
     private IPhaseSelectionStrategy phaseSelectionStrategy;
 
-    private ICDCLLogger logger;
+    private ILogAble logger;
 
     private boolean isInterrupted;
 
@@ -67,7 +67,7 @@ public class RemoteControlStrategy implements RestartStrategy,
 
     private ICDCL solver;
 
-    public RemoteControlStrategy(ICDCLLogger log) {
+    public RemoteControlStrategy(ILogAble log) {
         this.hasClickedOnClean = false;
         this.hasClickedOnRestart = false;
         this.restart = new NoRestarts();
@@ -140,11 +140,11 @@ public class RemoteControlStrategy implements RestartStrategy,
         this.nbClausesAtWhichWeShouldClean = nbClausesAtWhichWeShouldClean;
     }
 
-    public ICDCLLogger getLogger() {
+    public ILogAble getLogger() {
         return this.logger;
     }
 
-    public void setLogger(ICDCLLogger logger) {
+    public void setLogger(ILogAble logger) {
         this.logger = logger;
     }
 

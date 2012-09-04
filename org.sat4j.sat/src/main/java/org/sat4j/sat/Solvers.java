@@ -17,10 +17,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
@@ -69,7 +69,7 @@ public class Solvers {
     }
 
     protected final static ICDCL configureFromString(String solverconfig,
-            ICDCL theSolver, ICDCLLogger logger) {
+            ICDCL theSolver, ILogAble logger) {
         // AFAIK, there is no easy way to solve parameterized problems
         // when building the solver at runtime.
         StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -130,7 +130,7 @@ public class Solvers {
     }
 
     private final static <T> T setupObject(String component, Properties pf,
-            ICDCLLogger logger) {
+            ILogAble logger) {
         try {
             String configline = pf.getProperty(component);
             String qualification = qualif.get(component);
@@ -275,12 +275,12 @@ public class Solvers {
     // return options;
     // }
 
-    public static void stringUsage(ICDCLLogger logger) {
+    public static void stringUsage(ILogAble logger) {
         logger.log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS, CLEANING");
         logger.log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
     }
 
-    public static ICDCL configureSolver(String[] args, ICDCLLogger logger) {
+    public static ICDCL configureSolver(String[] args, ILogAble logger) {
         Options options = createCLIOptions();
         if (args.length == 0) {
             HelpFormatter helpf = new HelpFormatter();
@@ -392,7 +392,7 @@ public class Solvers {
         return null;
     }
 
-    public static void showAvailableRestarts(ICDCLLogger logger) {
+    public static void showAvailableRestarts(ILogAble logger) {
         Vector<String> classNames = new Vector<String>();
         Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
         Set<String> keySet;
@@ -428,7 +428,7 @@ public class Solvers {
                 + classNames);
     }
 
-    public static void showAvailablePhase(ICDCLLogger logger) {
+    public static void showAvailablePhase(ILogAble logger) {
         Vector<String> classNames = new Vector<String>();
         Vector<String> resultRTSI = RTSI.find(PHASE_NAME);
         Set<String> keySet;
@@ -462,7 +462,7 @@ public class Solvers {
                 + classNames);
     }
 
-    public static void showAvailableLearning(ICDCLLogger logger) {
+    public static void showAvailableLearning(ILogAble logger) {
         Vector<String> classNames = new Vector<String>();
         Vector<String> resultRTSI = RTSI.find(LEARNING_NAME);
         Set<String> keySet;
@@ -496,7 +496,7 @@ public class Solvers {
                 + classNames);
     }
 
-    public static void showAvailableOrders(ICDCLLogger logger) {
+    public static void showAvailableOrders(ILogAble logger) {
         Vector<String> classNames = new Vector<String>();
         Vector<String> resultRTSI = RTSI.find(ORDER_NAME);
         Set<String> keySet = null;
@@ -539,7 +539,7 @@ public class Solvers {
         logger.log("Available orders (" + Solvers.ORDERS + "): " + classNames);
     }
 
-    public static void showParams(ICDCLLogger logger) {
+    public static void showParams(ILogAble logger) {
 
         Set<String> keySet = null;
         try {
@@ -561,18 +561,18 @@ public class Solvers {
                 + "): [SearchParams" + keySet + "]");
     }
 
-    public static void showSimplifiers(ICDCLLogger logger) {
+    public static void showSimplifiers(ILogAble logger) {
         logger.log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
     }
 
     public static void showAvailableConstraintsCleaningStrategies(
-            ICDCLLogger logger) {
+            ILogAble logger) {
         logger.log("Available learned constraints cleaning strategies"
                 + Arrays.asList(LearnedConstraintsEvaluationType.values()));
     }
 
     public static <T extends ISolver> void showAvailableSolvers(
-            ASolverFactory<T> afactory, ICDCLLogger logger) {
+            ASolverFactory<T> afactory, ILogAble logger) {
         // if (afactory != null) {
         //			log("Available solvers: "); //$NON-NLS-1$
         // String[] names = afactory.solverNames();
@@ -584,7 +584,7 @@ public class Solvers {
     }
 
     public static <T extends ISolver> void showAvailableSolvers(
-            ASolverFactory<T> afactory, String framework, ICDCLLogger logger) {
+            ASolverFactory<T> afactory, String framework, ILogAble logger) {
         if (afactory != null) {
             if (framework.length() > 0) {
                 logger.log("Available solvers for " + framework + ": "); //$NON-NLS-1$
@@ -598,7 +598,7 @@ public class Solvers {
         }
     }
 
-    public static void usage(ICDCLLogger logger) {
+    public static void usage(ILogAble logger) {
         ASolverFactory<ISolver> factory;
         factory = org.sat4j.minisat.SolverFactory.instance();
         // log("SAT");

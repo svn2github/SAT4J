@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.sat4j.ILogAble;
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
@@ -71,7 +72,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private static final double CLAUSE_RESCALE_BOUND = 1 / CLAUSE_RESCALE_FACTOR;
 
-    protected ICDCLLogger out;
+    protected ILogAble out;
 
     /**
      * Set of original constraints.
@@ -196,11 +197,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
             IOrder order, RestartStrategy restarter) {
-        this(learner, dsf, params, order, restarter, ICDCLLogger.CONSOLE);
+        this(learner, dsf, params, order, restarter, ILogAble.CONSOLE);
     }
 
     public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
-            IOrder order, RestartStrategy restarter, ICDCLLogger logger) {
+            IOrder order, RestartStrategy restarter, ILogAble logger) {
         this.learner = learner;
         this.order = order;
         this.params = params;
@@ -2381,11 +2382,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.needToReduceDB = needToReduceDB;
     }
 
-    public void setLogger(ICDCLLogger out) {
+    public void setLogger(ILogAble out) {
         this.out = out;
     }
 
-    public ICDCLLogger getLogger() {
+    public ILogAble getLogger() {
         return this.out;
     }
 

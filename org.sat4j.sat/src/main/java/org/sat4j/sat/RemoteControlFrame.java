@@ -53,7 +53,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
-import org.sat4j.minisat.core.ICDCLLogger;
+import org.sat4j.ILogAble;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.sat.visu.VisuPreferencesFrame;
 
@@ -64,7 +64,7 @@ import org.sat4j.sat.visu.VisuPreferencesFrame;
  * @author sroussel
  * 
  */
-public class RemoteControlFrame extends JFrame implements ICDCLLogger {
+public class RemoteControlFrame extends JFrame implements ILogAble {
 
     /**
 	 * 

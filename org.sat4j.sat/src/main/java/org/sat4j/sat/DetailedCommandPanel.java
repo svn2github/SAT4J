@@ -62,9 +62,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
+import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.ICDCL;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
@@ -116,7 +116,7 @@ import org.sat4j.tools.SpeedTracing;
  * 
  */
 public class DetailedCommandPanel extends JPanel implements SolverController,
-        SearchListener, ICDCLLogger {
+        SearchListener, ILogAble {
 
     private static final long serialVersionUID = 1L;
 
@@ -236,6 +236,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public DetailedCommandPanel(String filename, String ramdisk,
             RemoteControlFrame frame) {
+            
         this(filename, ramdisk, null, frame);
     }
 

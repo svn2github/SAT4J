@@ -34,8 +34,8 @@ import java.io.IOException;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.AbstractOptimizationLauncher;
+import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.pb.reader.OPBReader2006;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -56,7 +56,7 @@ import org.sat4j.tools.MultiTracing;
  * @author mederic
  */
 public class LanceurPseudo2005 extends AbstractOptimizationLauncher implements
-        ICDCLLogger {
+        ILogAble {
 
     ASolverFactory<IPBSolver> factory;
 

@@ -58,10 +58,10 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
+import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ICDCL;
-import org.sat4j.minisat.core.ICDCLLogger;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.core.IPBCDCLSolver;
@@ -83,11 +83,11 @@ import org.sat4j.tools.FileBasedVisualizationTool;
 import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.MultiTracing;
 
-public class Lanceur extends AbstractLauncher implements ICDCLLogger {
+public class Lanceur extends AbstractLauncher implements ILogAble {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o "; //$NON-NLS-1$
@@ -135,7 +135,8 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
             if (cmd.hasOption("opt")) {
                 this.isModeOptimization = true;
             }
-
+            
+            
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (this.isModeOptimization) {
                 framework = "pb";
@@ -202,44 +203,44 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
                             new ConflictLevelTracing(
                                     new FileBasedVisualizationTool(
                                             this.filename + "-conflict-level"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
+                                            new FileBasedVisualizationTool(
+                                                    this.filename
                                                     + "-conflict-level-restart"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-conflict-level-clean")),
-                            new DecisionTracing(
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-decision-indexes-pos"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-decision-indexes-neg"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-decision-indexes-restart"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-decision-indexes-clean")),
-                            new LearnedClausesSizeTracing(
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-learned-clauses-size"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-learned-clauses-size-restart"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-learned-clauses-size-clean")),
-                            new ConflictDepthTracing(
-                                    new FileBasedVisualizationTool(
-                                            this.filename + "-conflict-depth"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-conflict-depth-restart"),
-                                    new FileBasedVisualizationTool(
-                                            this.filename
-                                                    + "-conflict-depth-clean"))));
+                                                    new FileBasedVisualizationTool(
+                                                            this.filename
+                                                            + "-conflict-level-clean")),
+                                                            new DecisionTracing(
+                                                                    new FileBasedVisualizationTool(
+                                                                            this.filename
+                                                                            + "-decision-indexes-pos"),
+                                                                            new FileBasedVisualizationTool(
+                                                                                    this.filename
+                                                                                    + "-decision-indexes-neg"),
+                                                                                    new FileBasedVisualizationTool(
+                                                                                            this.filename
+                                                                                            + "-decision-indexes-restart"),
+                                                                                            new FileBasedVisualizationTool(
+                                                                                                    this.filename
+                                                                                                    + "-decision-indexes-clean")),
+                                                                                                    new LearnedClausesSizeTracing(
+                                                                                                            new FileBasedVisualizationTool(
+                                                                                                                    this.filename
+                                                                                                                    + "-learned-clauses-size"),
+                                                                                                                    new FileBasedVisualizationTool(
+                                                                                                                            this.filename
+                                                                                                                            + "-learned-clauses-size-restart"),
+                                                                                                                            new FileBasedVisualizationTool(
+                                                                                                                                    this.filename
+                                                                                                                                    + "-learned-clauses-size-clean")),
+                                                                                                                                    new ConflictDepthTracing(
+                                                                                                                                            new FileBasedVisualizationTool(
+                                                                                                                                                    this.filename + "-conflict-depth"),
+                                                                                                                                                    new FileBasedVisualizationTool(
+                                                                                                                                                            this.filename
+                                                                                                                                                            + "-conflict-depth-restart"),
+                                                                                                                                                            new FileBasedVisualizationTool(
+                                                                                                                                                                    this.filename
+                                                                                                                                                                    + "-conflict-depth-clean"))));
                 }
             }
 
@@ -330,7 +331,7 @@ public class Lanceur extends AbstractLauncher implements ICDCLLogger {
                             / 1000.0);
                     getLogWriter().println(
                             CURRENT_OPTIMUM_VALUE_PREFIX
-                                    + optproblem.getObjectiveValue());
+                            + optproblem.getObjectiveValue());
                     optproblem.discardCurrentSolution();
                 }
                 if (isSatisfiable) {
