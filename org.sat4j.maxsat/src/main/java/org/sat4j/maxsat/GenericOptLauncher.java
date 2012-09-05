@@ -35,7 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
-import org.sat4j.AbstractOptimizationLauncher;
+import org.sat4j.ILauncherMode;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
@@ -51,12 +51,16 @@ import org.sat4j.specs.ISolver;
  * @since 2.0
  * 
  */
-public class GenericOptLauncher extends AbstractOptimizationLauncher {
+public class GenericOptLauncher extends AbstractLauncher {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    public GenericOptLauncher() {
+        setLauncherMode(ILauncherMode.OPTIMIZATION);
+    }
 
     @SuppressWarnings("nls")
     private Options createCLIOptions() {
@@ -155,7 +159,8 @@ public class GenericOptLauncher extends AbstractOptimizationLauncher {
                         asolver = new ConstraintRelaxingPseudoOptDecorator(
                                 this.wmsd);
                     } else {
-                        asolver = new PseudoOptDecorator(this.wmsd,false,!equivalence);
+                        asolver = new PseudoOptDecorator(this.wmsd, false,
+                                !equivalence);
                     }
                 }
                 if (cmd.hasOption("i")) {

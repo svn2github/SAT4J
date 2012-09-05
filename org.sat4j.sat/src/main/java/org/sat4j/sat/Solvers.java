@@ -34,6 +34,7 @@ import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.DotSearchTracing;
 
 public class Solvers {
 
@@ -173,10 +174,10 @@ public class Solvers {
         return null;
     }
 
-    private static Options createCLIOptions() {
+    public static Options createCLIOptions() {
         Options options = new Options();
         options.addOption("l", "library", true,
-                "specifies the name of the library used (minisat by default)");
+                "specifies the name of the library used (if not present, the library depends on the file extension)");
         options.addOption("s", "solver", true,
                 "specifies the name of a prebuilt solver from the library");
         options.addOption("S", "Solver", true,
@@ -194,7 +195,7 @@ public class Solvers {
         options.addOption("m", "mute", false, "Set launcher in silent mode");
         options.addOption("k", "kleast", true,
                 "limit the search to models having at least k variables set to false");
-        options.addOption("r", "trace", false,
+        options.addOption("tr", "trace", false,
                 "traces the behavior of the solver");
         options.addOption("opt", "optimize", false,
                 "uses solver in optimize mode instead of sat mode (default)");
@@ -202,10 +203,20 @@ public class Solvers {
                 "specifies the random walk probability ");
         options.addOption("remote", "remoteControl", false,
                 "launches remote control");
+        options.addOption("r", "trace", false,
+                "traces the behavior of the solver");
         options.addOption("H", "hot", false,
                 "keep the solver hot (do not reset heuristics) when a model is found");
         options.addOption("y", "simplify", false,
                 "simplify the set of clauses is possible");
+        options.addOption("lo", "lower", false, 
+                "search solution by lower bounding instead of by upper bounding (for maxsat only)");
+        options.addOption("e","equivalence", false, 
+                "Use an equivalence instead of an implication for the selector variables");
+        options.addOption("i","incomplete",false, 
+                "incomplete mode for maxsat");     
+        options.addOption("n", "no solution line", false,
+                "Do not display a solution line (useful if the solution is large)");
         Option op = options.getOption("l");
         op.setArgName("libname");
         op = options.getOption("s");
@@ -224,56 +235,10 @@ public class Solvers {
         op.setArgName("filename");
         op = options.getOption("f");
         op.setArgName("filename");
-        op = options.getOption("r");
-        op.setArgName("searchlistener");
         op = options.getOption("rw");
         op.setArgName("number");
         return options;
     }
-
-    // private static Map<String, String> createMapOptions(String args[]) {
-    // Map<String, String> options = new HashMap<String, String>();
-    //
-    // int i = 0;
-    // while (i < args.length) {
-    // if (args[i].equals("l") || args[i].equals("library")) {
-    // options.put("l", args[i + 1]);
-    // } else if (args[i].equals("s") || args[i].equals("solver")) {
-    // options.put("s", args[i + 1]);
-    // } else if (args[i].equals("S") || args[i].equals("Solver")) {
-    // options.put("S", args[i + 1]);
-    // } else if (args[i].equals("t") || args[i].equals("timeout")) {
-    // options.put("t", args[i + 1]);
-    // } else if (args[i].equals("T") || args[i].equals("timeoutms")) {
-    // options.put("T", args[i + 1]);
-    // } else if (args[i].equals("C") || args[i].equals("conflictbased")) {
-    // options.put("C", "true");
-    // } else if (args[i].equals("d") || args[i].equals("dot")) {
-    // options.put("d", args[i + 1]);
-    // } else if (args[i].equals("f") || args[i].equals("filename")) {
-    // options.put("f", args[i + 1]);
-    // } else if (args[i].equals("m") || args[i].equals("mute")) {
-    // options.put("m", "true");
-    // } else if (args[i].equals("k") || args[i].equals("kleast")) {
-    // options.put("k", args[i + 1]);
-    // }
-    //
-    // options.addOption("r", "trace", false,
-    // "traces the behavior of the solver");
-    // options.addOption("opt", "optimize", false,
-    // "uses solver in optimize mode instead of sat mode (default)");
-    // options.addOption("rw", "randomWalk", true,
-    // "specifies the random walk probability ");
-    // options.addOption("remote", "remoteControl", false,
-    // "launches remote control");
-    // options.addOption("H", "hot", false,
-    // "keep the solver hot (do not reset heuristics) when a model is found");
-    // options.addOption("y", "simplify", false,
-    // "simplify the set of clauses is possible");
-    // }
-    //
-    // return options;
-    // }
 
     public static void stringUsage(ILogAble logger) {
         logger.log("Available building blocks: DSF, LEARNING, ORDERS, PHASE, RESTARTS, SIMP, PARAMS, CLEANING");
@@ -304,11 +269,24 @@ public class Solvers {
                 isModeOptimization = true;
             }
 
+            String filename=cmd.getOptionValue("f");
+            
+            int others = 0;
+            String[] rargs = cmd.getArgs();
+            if (filename == null && rargs.length > 0) {
+                filename = rargs[others++];
+            }
+            
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-            if (isModeOptimization) {
-                framework = "pb";
-            } else if (framework == null) {
-                framework = "minisat";
+            if(framework==null){
+                if(isModeOptimization){
+                    if(filename!=null && filename.endsWith("cnf"))
+                        framework="maxsat";
+                    else
+                        framework="pb";
+                }
+                else 
+                    framework="minisat";
             }
 
             try {
@@ -381,6 +359,18 @@ public class Solvers {
 
             if (cmd.hasOption("y")) {
                 asolver.setDBSimplificationAllowed(true);
+            }
+            
+            if (cmd.hasOption("d")) {
+                String dotfilename = null;
+                if (filename != null) {
+                    dotfilename = cmd.getOptionValue("d");
+                }
+                if (dotfilename == null) {
+                    dotfilename = "sat4j.dot";
+                }
+                asolver.setSearchListener(new DotSearchTracing(dotfilename,
+                        null));
             }
 
             return asolver;
@@ -601,18 +591,26 @@ public class Solvers {
     public static void usage(ILogAble logger) {
         ASolverFactory<ISolver> factory;
         factory = org.sat4j.minisat.SolverFactory.instance();
-        // log("SAT");
         showAvailableSolvers(factory, "sat", logger);
         logger.log("-------------------");
         factory = (ASolverFactory) org.sat4j.pb.SolverFactory.instance();
-        // log("PB");
         showAvailableSolvers(factory, "pb", logger);
+        logger.log("-------------------");
+        factory = (ASolverFactory) org.sat4j.maxsat.SolverFactory.instance();
+        showAvailableSolvers(factory, "maxsat", logger);
+        logger.log("-------------------");
         showAvailableRestarts(logger);
+        logger.log("-------------------");
         showAvailableOrders(logger);
+        logger.log("-------------------");
         showAvailableLearning(logger);
+        logger.log("-------------------");
         showAvailablePhase(logger);
+        logger.log("-------------------");
         showParams(logger);
+        logger.log("-------------------");
         showSimplifiers(logger);
+        logger.log("-------------------");
         stringUsage(logger);
     }
 

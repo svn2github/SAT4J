@@ -41,9 +41,14 @@ import org.sat4j.specs.TimeoutException;
  * problems, i.e. problems for which a loop is needed to find the optimal
  * solution.
  * 
+ * This class is no longer used since 2.3.3
+ * 
+ * @see ILauncherMode
+ * 
  * @author leberre
  * 
  */
+@Deprecated
 public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 
     /**
@@ -57,10 +62,12 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
 
     private boolean displaySolutionLine = true;
 
+    @Override
     protected void setIncomplete(boolean value) {
         this.incomplete = value;
     }
 
+    @Override
     protected void setDisplaySolutionLine(boolean value) {
         this.displaySolutionLine = value;
     }
@@ -83,12 +90,12 @@ public abstract class AbstractOptimizationLauncher extends AbstractLauncher {
         this.solver.printStat(out, COMMENT_PREFIX);
         this.solver.printInfos(out, COMMENT_PREFIX);
         ExitCode exitCode = getExitCode();
-        out.println(ANSWER_PREFIX + exitCode);
+        out.println(ILauncherMode.ANSWER_PREFIX + exitCode);
         if (exitCode == ExitCode.SATISFIABLE
                 || exitCode == ExitCode.OPTIMUM_FOUND || this.incomplete
                 && exitCode == ExitCode.UPPER_BOUND) {
             if (this.displaySolutionLine) {
-                out.print(SOLUTION_PREFIX);
+                out.print(ILauncherMode.SOLUTION_PREFIX);
                 getReader().decode(this.solver.model(), out);
                 out.println();
             }

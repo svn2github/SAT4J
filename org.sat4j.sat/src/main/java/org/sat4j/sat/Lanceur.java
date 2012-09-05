@@ -58,6 +58,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
+import org.sat4j.ILauncherMode;
 import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
@@ -371,11 +372,11 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
         this.solver.printStat(out, COMMENT_PREFIX);
         this.solver.printInfos(out, COMMENT_PREFIX);
         ExitCode exitCode = getExitCode();
-        out.println(ANSWER_PREFIX + exitCode);
+        out.println(ILauncherMode.ANSWER_PREFIX + exitCode);
         if (exitCode == ExitCode.SATISFIABLE
                 || exitCode == ExitCode.OPTIMUM_FOUND || this.incomplete
                 && exitCode == ExitCode.UPPER_BOUND) {
-            out.print(SOLUTION_PREFIX);
+            out.print(ILauncherMode.SOLUTION_PREFIX);
             getReader().decode(this.problem.model(), out);
             out.println();
             if (this.isModeOptimization) {

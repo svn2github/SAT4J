@@ -33,7 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.sat4j.AbstractLauncher;
-import org.sat4j.AbstractOptimizationLauncher;
+import org.sat4j.ILauncherMode;
 import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2006;
@@ -55,8 +55,7 @@ import org.sat4j.tools.MultiTracing;
  * 
  * @author mederic
  */
-public class LanceurPseudo2005 extends AbstractOptimizationLauncher implements
-        ILogAble {
+public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
 
     ASolverFactory<IPBSolver> factory;
 
@@ -66,6 +65,7 @@ public class LanceurPseudo2005 extends AbstractOptimizationLauncher implements
 
     LanceurPseudo2005(ASolverFactory<IPBSolver> factory) {
         this.factory = factory;
+        setLauncherMode(ILauncherMode.OPTIMIZATION);
     }
 
     /**

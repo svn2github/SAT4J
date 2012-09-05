@@ -92,8 +92,8 @@ public class LanceurPseudo2007Eclipse extends LanceurPseudo2007 {
     }
 
     @Override
-    protected void displayAnswer() {
-        super.displayAnswer();
+    protected void displayResult() {
+        super.displayResult();
         ExitCode exitCode = getExitCode();
 
         if (exitCode == ExitCode.UNSATISFIABLE) {

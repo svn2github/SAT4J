@@ -42,6 +42,8 @@ import org.sat4j.pb.IPBSolver;
 public class SolverFactory extends ASolverFactory<IPBSolver> {
 
     private static final long serialVersionUID = 1L;
+    
+    private static SolverFactory instance;
 
     /**
      * Builds a SAT solver for the MAX sat evaluation. Full clause learning, no
@@ -57,6 +59,33 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
         return solver;
+    }
+    
+    /**
+     * Private contructor. Use singleton method instance() instead.
+     * 
+     * @see #instance()
+     */
+    private SolverFactory() {
+
+    }
+    
+    private static synchronized void createInstance() {
+        if (instance == null) {
+            instance = new SolverFactory();
+        }
+    }
+
+    /**
+     * Access to the single instance of the factory.
+     * 
+     * @return the singleton of that class.
+     */
+    public static SolverFactory instance() {
+        if (instance == null) {
+            createInstance();
+        }
+        return instance;
     }
 
     @Override

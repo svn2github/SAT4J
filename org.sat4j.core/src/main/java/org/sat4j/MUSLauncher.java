@@ -115,15 +115,15 @@ public class MUSLauncher extends AbstractLauncher {
             double wallclocktime = (System.currentTimeMillis() - this.beginTime) / 1000.0;
             this.solver.printStat(this.out, COMMENT_PREFIX);
             this.solver.printInfos(this.out, COMMENT_PREFIX);
-            this.out.println(ANSWER_PREFIX + this.exitCode);
+            this.out.println(ILauncherMode.ANSWER_PREFIX + this.exitCode);
             if (this.exitCode == ExitCode.SATISFIABLE) {
                 int[] model = this.solver.model();
-                this.out.print(SOLUTION_PREFIX);
+                this.out.print(ILauncherMode.SOLUTION_PREFIX);
                 this.reader.decode(model, this.out);
                 this.out.println();
             } else if (this.exitCode == ExitCode.UNSATISFIABLE
                     && this.mus != null) {
-                this.out.print(SOLUTION_PREFIX);
+                this.out.print(ILauncherMode.SOLUTION_PREFIX);
                 this.reader.decode(this.mus, this.out);
                 this.out.println();
             }

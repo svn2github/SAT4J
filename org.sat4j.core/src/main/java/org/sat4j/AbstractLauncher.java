@@ -54,16 +54,12 @@ import org.sat4j.specs.TimeoutException;
  * @author leberre
  * 
  */
-public abstract class AbstractLauncher implements Serializable {
+public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-
-    public static final String SOLUTION_PREFIX = "v "; //$NON-NLS-1$
-
-    public static final String ANSWER_PREFIX = "s "; //$NON-NLS-1$
 
     public static final String COMMENT_PREFIX = "c "; //$NON-NLS-1$
 
@@ -75,6 +71,8 @@ public abstract class AbstractLauncher implements Serializable {
 
     protected transient PrintWriter out = new PrintWriter(System.out, true);
 
+    private boolean displaySolutionLine = true;
+
     protected transient Thread shutdownHook = new Thread() {
         @Override
         public void run() {
@@ -84,40 +82,29 @@ public abstract class AbstractLauncher implements Serializable {
 
     protected ISolver solver;
 
+    protected IProblem problem;
+
     public boolean silent = false;
 
-    protected boolean prime = System.getProperty("prime") != null;;
+    protected boolean prime = System.getProperty("prime") != null;
+
+    private ILauncherMode launcherMode = ILauncherMode.DECISION;
+
+    protected void setLauncherMode(ILauncherMode launcherMode) {
+        this.launcherMode = launcherMode;
+    }
+
+    protected void setIncomplete(boolean isIncomplete) {
+        this.launcherMode.setIncomplete(isIncomplete);
+    }
 
     protected AbstractLauncher() {
         Runtime.getRuntime().addShutdownHook(this.shutdownHook);
     }
 
     protected void displayResult() {
-        if (this.solver != null) {
-            System.out.flush();
-            this.out.flush();
-            double wallclocktime = (System.currentTimeMillis() - this.beginTime) / 1000.0;
-            this.solver.printStat(this.out, COMMENT_PREFIX);
-            this.solver.printInfos(this.out, COMMENT_PREFIX);
-            this.out.println(ANSWER_PREFIX + this.exitCode);
-            if (this.exitCode == ExitCode.SATISFIABLE) {
-                int[] model = this.solver.model();
-                if (this.prime) {
-                    int initiallength = model.length;
-                    log("returning a prime implicant ...");
-                    long beginpi = System.currentTimeMillis();
-                    model = this.solver.primeImplicant();
-                    long endpi = System.currentTimeMillis();
-                    log("removed " + (initiallength - model.length)
-                            + " literals");
-                    log("pi computation time: " + (endpi - beginpi) + " ms");
-                }
-                this.out.print(SOLUTION_PREFIX);
-                this.reader.decode(model, this.out);
-                this.out.println();
-            }
-            log("Total wall clock time (in seconds) : " + wallclocktime); //$NON-NLS-1$
-        }
+        launcherMode.displayResult(solver, problem, this, out, exitCode,
+                reader, beginTime, displaySolutionLine);
     }
 
     public abstract void usage();
@@ -129,7 +116,7 @@ public abstract class AbstractLauncher implements Serializable {
         displayLicense();
         URL url = AbstractLauncher.class.getResource("/sat4j.version"); //$NON-NLS-1$
         if (url == null) {
-            log("no version file found!!!"); //$NON-NLS-1$			
+            log("no version file found!!!"); //$NON-NLS-1$                      
         } else {
             BufferedReader in = null;
             try {
@@ -254,8 +241,17 @@ public abstract class AbstractLauncher implements Serializable {
     }
 
     protected void solve(IProblem problem) throws TimeoutException {
-        this.exitCode = problem.isSatisfiable() ? ExitCode.SATISFIABLE
-                : ExitCode.UNSATISFIABLE;
+        this.setExitCode(launcherMode.solve(problem, this, out, beginTime));
+    }
+
+    /**
+     * To change the display so that solution line appears or not. Recommended
+     * if solution is very large.
+     * 
+     * @param value
+     */
+    protected void setDisplaySolutionLine(boolean value) {
+        this.displaySolutionLine = value;
     }
 
     /**
@@ -328,7 +324,7 @@ public abstract class AbstractLauncher implements Serializable {
     protected <T extends ISolver> void showAvailableSolvers(
             ASolverFactory<T> afactory) {
         // if (afactory != null) {
-        //			log("Available solvers: "); //$NON-NLS-1$
+        //                      log("Available solvers: "); //$NON-NLS-1$
         // String[] names = afactory.solverNames();
         // for (int i = 0; i < names.length; i++) {
         // log(names[i]);
