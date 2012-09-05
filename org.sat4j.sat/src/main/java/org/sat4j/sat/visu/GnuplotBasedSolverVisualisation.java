@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-import org.sat4j.minisat.core.ICDCLLogger;
+import org.sat4j.ILogAble;
 
 public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
@@ -15,10 +15,10 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
     private int nVar;
     private Process gnuplotProcess;
     private String dataPath;
-    private ICDCLLogger logger;
+    private ILogAble logger;
 
     public GnuplotBasedSolverVisualisation(VisuPreferences visuPref, int nbVar,
-            String path, ICDCLLogger logger) {
+            String path, ILogAble logger) {
         this.visuPreferences = visuPref;
         this.nVar = nbVar;
         this.dataPath = path;
