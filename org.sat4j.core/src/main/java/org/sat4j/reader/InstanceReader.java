@@ -32,7 +32,6 @@ package org.sat4j.reader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.Locale;
 
 import org.sat4j.specs.ContradictionException;
@@ -99,36 +98,26 @@ public class InstanceReader extends Reader {
             throws FileNotFoundException, ParseFormatException, IOException,
             ContradictionException {
         String fname;
-        boolean isHttp = false;
-        String tempFileName = "";
         String prefix = "";
 
         if (filename.startsWith("http://")) {
-            isHttp = true;
-            tempFileName = filename;
             filename = filename.substring(filename.lastIndexOf('/'),
                     filename.length() - 1);
         }
 
         if (filename.indexOf(':') != -1) {
-
             String[] parts = filename.split(":");
             filename = parts[1];
             prefix = parts[0].toUpperCase(Locale.getDefault());
 
         }
 
-        if (filename.endsWith(".gz")) {
+        if (filename.endsWith(".gz") || filename.endsWith(".bz2")) {
             fname = filename.substring(0, filename.lastIndexOf('.'));
         } else {
             fname = filename;
         }
         this.reader = handleFileName(fname, prefix);
-
-        if (isHttp) {
-            return this.reader
-                    .parseInstance(new URL(tempFileName).openStream());
-        }
         return this.reader.parseInstance(filename);
     }
 
