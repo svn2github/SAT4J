@@ -123,22 +123,26 @@ public class InstanceReader extends Reader {
         } else {
             fname = filename;
         }
-        if ("EZCNF".equals(prefix)) {
-            this.reader = getEZSATReader();
-        } else if (fname.endsWith(".aag")) {
-            this.reader = getAAGReader();
-        } else if (fname.endsWith(".aig")) {
-            this.reader = getAIGReader();
-
-        } else {
-            this.reader = getDefaultSATReader();
-        }
+        this.reader = handleFileName(fname, prefix);
 
         if (isHttp) {
             return this.reader
                     .parseInstance(new URL(tempFileName).openStream());
         }
         return this.reader.parseInstance(filename);
+    }
+
+    protected Reader handleFileName(String fname, String prefix) {
+        if ("EZCNF".equals(prefix)) {
+            return getEZSATReader();
+        }
+        if (fname.endsWith(".aag")) {
+            return getAAGReader();
+        }
+        if (fname.endsWith(".aig")) {
+            return getAIGReader();
+        }
+        return getDefaultSATReader();
     }
 
     @Override
