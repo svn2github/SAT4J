@@ -29,18 +29,9 @@
  *******************************************************************************/
 package org.sat4j.pb.reader;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.Locale;
-
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.InstanceReader;
-import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IProblem;
 
 /**
  * An reader having the responsibility to choose the right reader according to
@@ -51,8 +42,6 @@ import org.sat4j.specs.IProblem;
 public class PBInstanceReader extends InstanceReader {
 
     private OPBReader2007 opb;
-
-    private Reader reader = null;
 
     private final IPBSolver solver;
 
@@ -73,55 +62,10 @@ public class PBInstanceReader extends InstanceReader {
     }
 
     @Override
-    public IProblem parseInstance(String filename)
-            throws FileNotFoundException, ParseFormatException, IOException,
-            ContradictionException {
-        String fname;
-        boolean isHttp = false;
-        String tempFileName = "";
-        String prefix = "";
-
-        if (filename.startsWith("http://")) {
-            isHttp = true;
-            tempFileName = filename;
-            filename = filename.substring(filename.lastIndexOf('/'),
-                    filename.length() - 1);
-        }
-
-        if (filename.indexOf(':') != -1) {
-
-            String[] parts = filename.split(":");
-            filename = parts[1];
-            prefix = parts[0].toUpperCase(Locale.getDefault());
-
-        }
-
-        if (filename.endsWith(".gz")) {
-            fname = filename.substring(0, filename.lastIndexOf('.'));
-        } else {
-            fname = filename;
-        }
+    protected Reader handleFileName(String fname, String prefix) {
         if (fname.endsWith(".opb") || "PB".equals(prefix)) {
-            this.reader = getDefaultOPBReader();
-        } else {
-            return super.parseInstance(filename);
+            return getDefaultOPBReader();
         }
-
-        if (isHttp) {
-            return this.reader
-                    .parseInstance(new URL(tempFileName).openStream());
-        }
-        return this.reader.parseInstance(filename);
-    }
-
-    @Override
-    @Deprecated
-    public String decode(int[] model) {
-        return this.reader.decode(model);
-    }
-
-    @Override
-    public void decode(int[] model, PrintWriter out) {
-        this.reader.decode(model, out);
+        return super.handleFileName(fname, prefix);
     }
 }
