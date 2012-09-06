@@ -58,13 +58,22 @@ public interface ILauncherMode {
      * Output of the launcher when the solver stops
      * 
      * @param solver
+     *            the solver that is launched by the launcher
      * @param problem
+     *            the problem that is solved
      * @param logger
+     *            the element that is able to log the result
      * @param out
+     *            the printwriter to associate to the solver
      * @param exitCode
+     *            the status of the solver's result
      * @param reader
+     *            the problem reader
      * @param beginTime
+     *            the time at which the solver was launched
      * @param displaySolutionLine
+     *            indicates whether the solution line shound be displayed or not
+     *            (not recommended for large solutions)
      */
     void displayResult(ISolver solver, IProblem problem, ILogAble logger,
             PrintWriter out, ExitCode exitCode, Reader reader, long beginTime,
@@ -75,9 +84,13 @@ public interface ILauncherMode {
      * optimization problem.
      * 
      * @param problem
+     *            the problem to solve
      * @param logger
+     *            the element that is able to log the result
      * @param out
+     *            the printwriter to associate to the solver
      * @param beginTime
+     *            the time at which the solver starts
      * @return
      */
     ExitCode solve(IProblem problem, ILogAble logger, PrintWriter out,
