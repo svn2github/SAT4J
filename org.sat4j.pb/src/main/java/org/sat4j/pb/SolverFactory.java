@@ -43,6 +43,7 @@ import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.ArminRestarts;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
+import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.pb.constraints.AbstractPBDataStructureFactory;
 import org.sat4j.pb.constraints.CompetMinHTmixedClauseCardConstrDataStructureFactory;
 import org.sat4j.pb.constraints.CompetResolutionMinPBLongMixedWLClauseCardConstrDataStructure;
@@ -613,7 +614,10 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
      * @return a solver for unsatisfiable benchmarks.
      */
     public static PBSolverResolution newUNSAT() {
-        return newResolutionGlucose();
+        PBSolverResolution solver = newResolutionGlucose();
+        solver.setRestartStrategy(new NoRestarts());
+        solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+        return solver;
     }
 
     /**
