@@ -44,9 +44,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -64,6 +66,8 @@ import javax.swing.border.TitledBorder;
 
 import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
+import org.sat4j.maxsat.WeightedMaxSatDecorator;
+import org.sat4j.maxsat.reader.MSInstanceReader;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
@@ -73,6 +77,7 @@ import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SimplificationType;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
+import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
@@ -91,6 +96,7 @@ import org.sat4j.sat.visu.TraceComposite;
 import org.sat4j.sat.visu.VisuPreferences;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
@@ -126,10 +132,13 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private RemoteControlStrategy telecomStrategy;
     private RandomWalkDecorator randomWalk;
-    private ICDCL solver;
+    private ISolver solver;
     private Reader reader;
     private IProblem problem;
-    private boolean optimizationMode = false;
+    private ProblemType problemType;
+    private boolean optimizationMode;
+    private boolean equivalenceMode;
+    private boolean lowerMode;
 
     private String[] commandLines;
 
@@ -162,15 +171,22 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private final static String MINISAT_PREFIX = "minisat";
     private final static String PB_PREFIX = "pb";
+    private final static String MAXSAT_PREFIX = "maxsat";
     private JPanel choixSolverPanel;
     private final static String CHOIX_SOLVER_PANEL = "Solver";
     private JLabel choixSolver;
     private final static String CHOIX_SOLVER = "Choose solver: ";
     private String selectedSolver;
-    private JComboBox listeSolvers;
+    private JComboBox<String> listeSolvers;
 
-    private final static String OPTMIZATION_MODE = "Use optimization mode";
+    private final static String OPTMIZATION_MODE = "Optimization problem";
     private JCheckBox optimisationModeCB;
+
+    private final static String EQUIVALENCE = "Use equivalence instead of implication";
+    private JCheckBox equivalenceCB;
+
+    private final static String LOWER = "Search solution by lower bounding instead of by upper bounding";
+    private JCheckBox lowerCB;
 
     // private JCheckBox useCustomizedSolverCB;
     // private final static String USE_CUSTOMIZED_SOLVER =
@@ -236,7 +252,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public DetailedCommandPanel(String filename, String ramdisk,
             RemoteControlFrame frame) {
-            
+
         this(filename, ramdisk, null, frame);
     }
 
@@ -257,7 +273,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.commandLines = args;
         if (args.length > 0) {
             this.solver = Solvers.configureSolver(args, this);
+            this.optimizationMode = Solvers.containsOptValue(args);
         }
+
+        this.equivalenceMode = false;
+        this.lowerMode = false;
 
         this.isPlotActivated = false;
 
@@ -373,24 +393,68 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.instancePathField = new JTextField(20);
         this.instancePathField.setText(this.instancePath);
 
-        this.instanceLabel.setLabelFor(this.instancePathField);
+        // this.instancePathField.setEditable(false);
 
-        JPanel tmpPanel1 = new JPanel();
-        tmpPanel1.add(this.instanceLabel);
-        tmpPanel1.add(this.instancePathField);
+        this.instanceLabel.setLabelFor(this.instancePathField);
 
         this.browseButton = new JButton(BROWSE);
 
         this.browseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 openFileChooser();
+                updateListOfSolvers();
             }
         });
 
-        JPanel tmpPanel2 = new JPanel();
-        tmpPanel2.add(this.browseButton);
+        this.optimisationModeCB = new JCheckBox(OPTMIZATION_MODE);
+        this.optimisationModeCB.setSelected(this.optimizationMode);
+
+        this.equivalenceCB = new JCheckBox(EQUIVALENCE);
+        this.equivalenceCB.setSelected(this.equivalenceMode);
+
+        this.lowerCB = new JCheckBox(LOWER);
+        this.lowerCB.setSelected(this.lowerMode);
+
+        JPanel tmpPanel11 = new JPanel();
+        tmpPanel11.add(this.instanceLabel);
+        tmpPanel11.add(this.instancePathField);
+        tmpPanel11.add(this.browseButton);
+
+        JPanel tmpPanel12 = new JPanel();
+        tmpPanel12.setLayout(new BoxLayout(tmpPanel12, BoxLayout.Y_AXIS));
+        tmpPanel12.add(this.optimisationModeCB);
+        tmpPanel12.add(this.equivalenceCB);
+        tmpPanel12.add(this.lowerCB);
+
+        JPanel tmpPanel1 = new JPanel();
+        tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
+
+        tmpPanel1.add(tmpPanel11);
+        tmpPanel1.add(tmpPanel12);
+
+        this.optimisationModeCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setOptimisationMode(optimisationModeCB.isSelected());
+                log("use optimization mode: "
+                        + DetailedCommandPanel.this.optimizationMode);
+                updateListOfSolvers();
+            }
+        });
+
+        this.equivalenceCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                equivalenceMode = equivalenceCB.isSelected();
+            }
+        });
+
+        this.lowerCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                lowerMode = lowerCB.isSelected();
+            }
+        });
 
         this.instancePanel.add(tmpPanel1, BorderLayout.CENTER);
+        // this.instancePanel.add(tmpPanel2, BorderLayout.EAST);
     }
 
     public void createChoixSolverPanel() {
@@ -404,24 +468,14 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.choixSolverPanel.setLayout(new BorderLayout());
 
         this.choixSolver = new JLabel(CHOIX_SOLVER);
-        updateListOfSolvers();
 
-        this.optimisationModeCB = new JCheckBox(OPTMIZATION_MODE);
-        this.optimisationModeCB.setSelected(this.optimizationMode);
+        this.listeSolvers = new JComboBox<String>();
+
+        updateListOfSolvers();
 
         JPanel tmpPanel1 = new JPanel();
         tmpPanel1.add(this.choixSolver);
         tmpPanel1.add(this.listeSolvers);
-        tmpPanel1.add(this.optimisationModeCB);
-
-        this.optimisationModeCB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                DetailedCommandPanel.this.optimizationMode = DetailedCommandPanel.this.optimisationModeCB
-                        .isSelected();
-                log("use optimization mode: "
-                        + DetailedCommandPanel.this.optimizationMode);
-            }
-        });
 
         this.startStopButton = new JButton(START);
 
@@ -588,115 +642,63 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void launchSolverWithConfigs() {
-        if (this.startConfig.equals(StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT)) {
+        ICDCL cdclSolver;
+        ASolverFactory factory;
+        String[] partsSelectedSolver;
+        IOrder order;
+        double proba;
+
+        switch (startConfig) {
+        case SOLVER_LIST_PARAM_REMOTE:
             this.selectedSolver = (String) this.listeSolvers.getSelectedItem();
-            String[] partsSelectedSolver = this.selectedSolver.split("\\.");
+            partsSelectedSolver = this.selectedSolver.split("\\.");
 
             assert partsSelectedSolver.length == 2;
             assert partsSelectedSolver[0].equals(MINISAT_PREFIX)
-                    || partsSelectedSolver[0].equals(PB_PREFIX);
-
-            ASolverFactory factory;
+                    || partsSelectedSolver[0].equals(PB_PREFIX)
+                    || partsSelectedSolver[0].equals(MAXSAT_PREFIX);
 
             if (partsSelectedSolver[0].equals(MINISAT_PREFIX)) {
                 factory = org.sat4j.minisat.SolverFactory.instance();
-            } else {
+            } else if (partsSelectedSolver[0].equals(PB_PREFIX)) {
                 factory = org.sat4j.pb.SolverFactory.instance();
+            } else {
+                factory = org.sat4j.maxsat.SolverFactory.instance();
             }
             this.solver = (ICDCL) factory
                     .createSolverByName(partsSelectedSolver[1]);
 
-            this.telecomStrategy.setSolver(this.solver);
-            this.telecomStrategy.setRestartStrategy(this.solver
-                    .getRestartStrategy());
-            this.solver.setRestartStrategy(this.telecomStrategy);
+            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
 
-            this.restartPanel.setCurrentRestart(this.telecomStrategy
-                    .getRestartStrategy().getClass().getSimpleName());
+            this.telecomStrategy.setSolver(cdclSolver);
 
-            IOrder order = this.solver.getOrder();
-
-            double proba = 0;
-
-            if (this.optimizationMode) {
-                if (order instanceof RandomWalkDecoratorObjective) {
-                    this.randomWalk = (RandomWalkDecorator) order;
-                    proba = this.randomWalk.getProbability();
-                } else if (order instanceof VarOrderHeapObjective) {
-                    this.randomWalk = new RandomWalkDecoratorObjective(
-                            (VarOrderHeapObjective) order, 0);
-                }
-            } else if (this.solver.getOrder() instanceof RandomWalkDecorator) {
-                this.randomWalk = (RandomWalkDecorator) order;
-                proba = this.randomWalk.getProbability();
-            } else {
-                this.randomWalk = new RandomWalkDecorator((VarOrderHeap) order,
-                        0);
-            }
-
-            this.randomWalk.setProbability(proba);
-            this.rwPanel.setProba(proba);
-
-            this.solver.setOrder(this.randomWalk);
-
-            this.telecomStrategy.setPhaseSelectionStrategy(this.solver
-                    .getOrder().getPhaseSelectionStrategy());
-            this.phasePanel.setPhaseListSelectedItem(this.telecomStrategy
-                    .getPhaseSelectionStrategy().getClass().getSimpleName());
-            this.solver.getOrder().setPhaseSelectionStrategy(
-                    this.telecomStrategy);
-            this.simplifierPanel.setSelectedSimplification(this.solver
-                    .getSimplifier().toString());
-        }
-
-        else if (this.startConfig
-                .equals(StartSolverEnum.SOLVER_LIST_PARAM_REMOTE)) {
-            this.selectedSolver = (String) this.listeSolvers.getSelectedItem();
-            String[] partsSelectedSolver = this.selectedSolver.split("\\.");
-
-            assert partsSelectedSolver.length == 2;
-            assert partsSelectedSolver[0].equals(MINISAT_PREFIX)
-                    || partsSelectedSolver[0].equals(PB_PREFIX);
-
-            ASolverFactory factory;
-
-            if (partsSelectedSolver[0].equals(MINISAT_PREFIX)) {
-                factory = org.sat4j.minisat.SolverFactory.instance();
-            } else {
-                factory = org.sat4j.pb.SolverFactory.instance();
-            }
-            this.solver = (ICDCL) factory
-                    .createSolverByName(partsSelectedSolver[1]);
-
-            this.telecomStrategy.setSolver(this.solver);
-
-            this.solver.setRestartStrategy(this.telecomStrategy);
-            this.solver.setOrder(this.randomWalk);
-            this.solver.getOrder().setPhaseSelectionStrategy(
+            cdclSolver.setRestartStrategy(this.telecomStrategy);
+            cdclSolver.setOrder(this.randomWalk);
+            cdclSolver.getOrder().setPhaseSelectionStrategy(
                     this.telecomStrategy);
 
             this.restartPanel.hasClickedOnRestart();
             this.rwPanel.hasClickedOnApplyRW();
             this.phasePanel.hasClickedOnApplyPhase();
             this.simplifierPanel.hasClickedOnApplySimplification();
-        }
+            break;
 
-        else if (this.startConfig
-                .equals(StartSolverEnum.SOLVER_LINE_PARAM_LINE)) {
-
+        case SOLVER_LINE_PARAM_LINE:
             this.solver = Solvers.configureSolver(this.commandLines, this);
 
-            this.telecomStrategy.setSolver(this.solver);
-            this.telecomStrategy.setRestartStrategy(this.solver
+            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+
+            this.telecomStrategy.setSolver(cdclSolver);
+            this.telecomStrategy.setRestartStrategy(cdclSolver
                     .getRestartStrategy());
-            this.solver.setRestartStrategy(this.telecomStrategy);
+            cdclSolver.setRestartStrategy(this.telecomStrategy);
 
             this.restartPanel.setCurrentRestart(this.telecomStrategy
                     .getRestartStrategy().getClass().getSimpleName());
 
-            IOrder order = this.solver.getOrder();
+            order = cdclSolver.getOrder();
 
-            double proba = 0;
+            proba = 0;
 
             if (this.optimizationMode) {
                 if (order instanceof RandomWalkDecoratorObjective) {
@@ -706,7 +708,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                     this.randomWalk = new RandomWalkDecoratorObjective(
                             (VarOrderHeapObjective) order, 0);
                 }
-            } else if (this.solver.getOrder() instanceof RandomWalkDecorator) {
+            } else if (cdclSolver.getOrder() instanceof RandomWalkDecorator) {
                 this.randomWalk = (RandomWalkDecorator) order;
                 proba = this.randomWalk.getProbability();
             } else {
@@ -716,33 +718,98 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
             this.randomWalk.setProbability(proba);
             this.rwPanel.setProba(proba);
-            this.solver.setOrder(this.randomWalk);
-            this.telecomStrategy.setPhaseSelectionStrategy(this.solver
+            cdclSolver.setOrder(this.randomWalk);
+            this.telecomStrategy.setPhaseSelectionStrategy(cdclSolver
                     .getOrder().getPhaseSelectionStrategy());
-            this.solver.getOrder().setPhaseSelectionStrategy(
+            cdclSolver.getOrder().setPhaseSelectionStrategy(
                     this.telecomStrategy);
             this.phasePanel.setPhaseListSelectedItem(this.telecomStrategy
                     .getPhaseSelectionStrategy().getClass().getSimpleName());
-            this.simplifierPanel.setSelectedSimplification(this.solver
+            this.simplifierPanel.setSelectedSimplification(cdclSolver
                     .getSimplifier().toString());
 
             this.phasePanel.repaint();
-        }
+            break;
 
-        else if (this.startConfig
-                .equals(StartSolverEnum.SOLVER_LINE_PARAM_REMOTE)) {
-
+        case SOLVER_LINE_PARAM_REMOTE:
             this.solver = Solvers.configureSolver(this.commandLines, this);
 
-            this.solver.setRestartStrategy(this.telecomStrategy);
-            this.solver.setOrder(this.randomWalk);
-            this.solver.getOrder().setPhaseSelectionStrategy(
+            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+
+            cdclSolver.setRestartStrategy(this.telecomStrategy);
+            cdclSolver.setOrder(this.randomWalk);
+            cdclSolver.getOrder().setPhaseSelectionStrategy(
                     this.telecomStrategy);
 
             this.restartPanel.hasClickedOnRestart();
             this.rwPanel.hasClickedOnApplyRW();
             this.phasePanel.hasClickedOnApplyPhase();
             this.simplifierPanel.hasClickedOnApplySimplification();
+            break;
+
+        default:
+            this.selectedSolver = (String) this.listeSolvers.getSelectedItem();
+            partsSelectedSolver = this.selectedSolver.split("\\.");
+
+            assert partsSelectedSolver.length == 2;
+            assert partsSelectedSolver[0].equals(MINISAT_PREFIX)
+                    || partsSelectedSolver[0].equals(PB_PREFIX)
+                    || partsSelectedSolver[0].equals(MAXSAT_PREFIX);
+
+            if (partsSelectedSolver[0].equals(MINISAT_PREFIX)) {
+                factory = org.sat4j.minisat.SolverFactory.instance();
+            } else if (partsSelectedSolver[0].equals(PB_PREFIX)) {
+                factory = org.sat4j.pb.SolverFactory.instance();
+            } else {
+                factory = org.sat4j.maxsat.SolverFactory.instance();
+            }
+
+            this.solver = factory.createSolverByName(partsSelectedSolver[1]);
+
+            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+
+            this.telecomStrategy.setSolver(cdclSolver);
+            this.telecomStrategy.setRestartStrategy(cdclSolver
+                    .getRestartStrategy());
+            cdclSolver.setRestartStrategy(this.telecomStrategy);
+
+            this.restartPanel.setCurrentRestart(this.telecomStrategy
+                    .getRestartStrategy().getClass().getSimpleName());
+
+            order = cdclSolver.getOrder();
+
+            proba = 0;
+
+            if (this.optimizationMode) {
+                if (order instanceof RandomWalkDecoratorObjective) {
+                    this.randomWalk = (RandomWalkDecorator) order;
+                    proba = this.randomWalk.getProbability();
+                } else if (order instanceof VarOrderHeapObjective) {
+                    this.randomWalk = new RandomWalkDecoratorObjective(
+                            (VarOrderHeapObjective) order, 0);
+                }
+            } else if (cdclSolver.getOrder() instanceof RandomWalkDecorator) {
+                this.randomWalk = (RandomWalkDecorator) order;
+                proba = this.randomWalk.getProbability();
+            } else {
+                this.randomWalk = new RandomWalkDecorator((VarOrderHeap) order,
+                        0);
+            }
+
+            this.randomWalk.setProbability(proba);
+            this.rwPanel.setProba(proba);
+
+            cdclSolver.setOrder(this.randomWalk);
+
+            this.telecomStrategy.setPhaseSelectionStrategy(cdclSolver
+                    .getOrder().getPhaseSelectionStrategy());
+            this.phasePanel.setPhaseListSelectedItem(this.telecomStrategy
+                    .getPhaseSelectionStrategy().getClass().getSimpleName());
+            cdclSolver.getOrder().setPhaseSelectionStrategy(
+                    this.telecomStrategy);
+            this.simplifierPanel.setSelectedSimplification(cdclSolver
+                    .getSimplifier().toString());
+            break;
         }
 
         this.whereToWriteFiles = this.instancePath;
@@ -755,11 +822,47 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.solver.setVerbose(true);
         initSearchListeners();
-        this.solver.setLogger(this);
-        this.reader = createReader(this.solver, this.instancePath);
+        cdclSolver.setLogger(this);
 
         try {
-            this.problem = this.reader.parseInstance(this.instancePath);
+            switch (problemType) {
+            case PB_OPT:
+                if (lowerMode) {
+                    this.solver = new ConstraintRelaxingPseudoOptDecorator(
+                            (IPBSolver) solver);
+                } else {
+                    this.solver = new PseudoOptDecorator((IPBSolver) solver);
+                }
+                this.reader = createReader(this.solver, this.instancePath);
+                this.problem = this.reader.parseInstance(this.instancePath);
+                this.problem = new OptToPBSATAdapter(
+                        (IOptimizationProblem) this.problem);
+                break;
+            case CNF_MAXSAT:
+            case WCNF_MAXSAT:
+                this.solver = new WeightedMaxSatDecorator(
+                        (IPBCDCLSolver) solver, equivalenceMode);
+                this.reader = createReader(this.solver, this.instancePath);
+                this.problem = this.reader.parseInstance(this.instancePath);
+
+                if (lowerMode) {
+                    this.problem = new ConstraintRelaxingPseudoOptDecorator(
+                            (WeightedMaxSatDecorator) this.problem);
+                } else {
+                    this.problem = new PseudoOptDecorator(
+                            (WeightedMaxSatDecorator) this.problem, false,
+                            !equivalenceMode);
+                }
+
+                this.problem = new OptToPBSATAdapter(
+                        (IOptimizationProblem) this.problem);
+                break;
+            default:
+                this.reader = createReader(this.solver, this.instancePath);
+                this.problem = this.reader.parseInstance(this.instancePath);
+                break;
+            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (ParseFormatException e) {
@@ -770,19 +873,31 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             log("Unsatisfiable (trivial)!");
         }
 
-        boolean optimisation = false;
-        if (this.reader instanceof PBInstanceReader) {
-            optimisation = ((PBInstanceReader) this.reader)
-                    .hasObjectiveFunction();
-            if (optimisation) {
-                this.problem = new OptToPBSATAdapter(new PseudoOptDecorator(
-                        (IPBCDCLSolver) this.solver));
-            }
-        }
+        // switch (problemType) {
+        // case PB_OPT:
+        // this.problem = new PseudoOptDecorator((IPBCDCLSolver) this.solver);
+        // break;
+        // case CNF_MAXSAT:
+        // case WCNF_MAXSAT:
+        // this.solver = new WeightedMaxSatDecorator(
+        // (IPBCDCLSolver) this.solver, true);
+        // if (cmd.hasOption("lo")) {
+        // this.problem = new ConstraintRelaxingPseudoOptDecorator(
+        // (WeightedMaxSatDecorator) asolver);
+        // } else {
+        // this.problem = new PseudoOptDecorator(
+        // (WeightedMaxSatDecorator) asolver, false, !equivalence);
+        // }
+        // break;
+        // default:
+        // setLauncherMode(ILauncherMode.DECISION);
+        // break;
+        // }
 
-        log("# Started solver " + this.solver.getClass().getSimpleName());
+        log("# Started solver "
+                + this.solver.getSolvingEngine().getClass().getSimpleName());
         log("# on instance " + this.instancePath);
-        log("# Optimisation = " + optimisation);
+        log("# Optimisation = " + this.optimizationMode);
         log("# Restart strategy = "
                 + this.telecomStrategy.getRestartStrategy().getClass()
                         .getSimpleName());
@@ -1081,8 +1196,9 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public void setLearnedDeletionStrategyTypeToSolver(
             LearnedConstraintsEvaluationType type) {
-        this.solver.setLearnedConstraintsDeletionStrategy(this.telecomStrategy,
-                type);
+        ((ICDCL) this.solver.getSolvingEngine())
+                .setLearnedConstraintsDeletionStrategy(this.telecomStrategy,
+                        type);
         log("Changed clauses evaluation type to " + type);
     }
 
@@ -1135,14 +1251,14 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void setSimplifier(SimplificationType type) {
-        this.solver.setSimplifier(type);
+        ((ICDCL) this.solver.getSolvingEngine()).setSimplifier(type);
         log("Told the solver to use " + type);
     }
 
-    public List<String> getListOfSolvers() {
+    public Vector<String> getVectorOfSolvers() {
         ASolverFactory factory;
 
-        List<String> result = new ArrayList<String>();
+        Vector<String> result = new Vector<String>();
 
         factory = org.sat4j.minisat.SolverFactory.instance();
         for (String s : factory.solverNames()) {
@@ -1156,17 +1272,52 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         Collections.sort(result);
 
+        factory = org.sat4j.maxsat.SolverFactory.instance();
+        for (String s : factory.solverNames()) {
+            result.add(MAXSAT_PREFIX + "." + s);
+        }
+
+        Collections.sort(result);
+
         return result;
     }
 
-    public List<String> getListOfPBSolvers() {
+    public Vector<String> getVectorOfSatSolvers() {
         ASolverFactory factory;
 
-        List<String> result = new ArrayList<String>();
+        Vector<String> result = new Vector<String>();
+
+        factory = org.sat4j.pb.SolverFactory.instance();
+        for (String s : factory.solverNames()) {
+            result.add(MINISAT_PREFIX + "." + s);
+        }
+        Collections.sort(result);
+
+        return result;
+    }
+
+    public Vector<String> getVectorOfPBSolvers() {
+        ASolverFactory factory;
+
+        Vector<String> result = new Vector<String>();
 
         factory = org.sat4j.pb.SolverFactory.instance();
         for (String s : factory.solverNames()) {
             result.add(PB_PREFIX + "." + s);
+        }
+        Collections.sort(result);
+
+        return result;
+    }
+
+    public Vector<String> getVectorOfMaxsatSolvers() {
+        ASolverFactory factory;
+
+        Vector<String> result = new Vector<String>();
+
+        factory = org.sat4j.pb.SolverFactory.instance();
+        for (String s : factory.solverNames()) {
+            result.add(MAXSAT_PREFIX + "." + s);
         }
         Collections.sort(result);
 
@@ -1198,23 +1349,84 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         }
     }
 
-    protected Reader createReader(ICDCL theSolver, String problemname) {
-        if (theSolver instanceof IPBSolver) {
-            return new PBInstanceReader((IPBSolver) theSolver);
+    protected Reader createReader(ISolver theSolver, String problemname) {
+        InstanceReader instance = new InstanceReader(theSolver);
+        switch (problemType) {
+        case CNF_MAXSAT:
+        case WCNF_MAXSAT:
+            instance = new MSInstanceReader((WeightedMaxSatDecorator) theSolver);
+            break;
+        case PB_OPT:
+        case PB_SAT:
+            instance = new PBInstanceReader((IPBSolver) theSolver);
+            break;
+        case CNF_SAT:
+            instance = new InstanceReader(theSolver);
+            break;
         }
-        return new InstanceReader(theSolver);
+
+        return instance;
     }
 
     public void updateListOfSolvers() {
-        if (this.instancePath.endsWith(".opb")) {
-            this.listeSolvers = new JComboBox(getListOfPBSolvers().toArray());
-            this.listeSolvers.setSelectedItem("pb.Default");
-            this.selectedSolver = "pb.Default";
-        } else {
-            this.listeSolvers = new JComboBox(getListOfSolvers().toArray());
-            this.listeSolvers.setSelectedItem("minisat.Default");
-            this.selectedSolver = "minisat.Default";
+        Vector<String> theVector = new Vector<String>();
+        // List<String> theList = new ArrayList<String>();
+        String defaultSolver = "";
+
+        if (instancePath == null || instancePath.length() == 0) {
+            theVector = getVectorOfSolvers();
+            defaultSolver = "minisat.Default";
+            problemType = ProblemType.CNF_SAT;
+            equivalenceCB.setEnabled(false);
+            lowerCB.setEnabled(false);
+        } else if (instancePath.endsWith(".cnf")) {
+            optimisationModeCB.setEnabled(true);
+            if (optimizationMode) {
+                theVector.addAll(getVectorOfMaxsatSolvers());
+                theVector.addAll(getVectorOfPBSolvers());
+                defaultSolver = "maxsat.Default";
+                equivalenceCB.setEnabled(true);
+                lowerCB.setEnabled(true);
+                problemType = ProblemType.CNF_MAXSAT;
+                log("cnf file + opt => pb/maxsat solvers");
+            } else {
+                theVector.addAll(getVectorOfSatSolvers());
+                theVector.addAll(getVectorOfPBSolvers());
+                defaultSolver = "minisat.Default";
+                log("cnf file + non opt => sat/pb solvers");
+                problemType = ProblemType.CNF_SAT;
+                equivalenceCB.setEnabled(false);
+                lowerCB.setEnabled(false);
+            }
+        } else if (instancePath.endsWith(".opb")) {
+            optimisationModeCB.setEnabled(true);
+            theVector.addAll(getVectorOfPBSolvers());
+            defaultSolver = "pb.Default";
+            if (optimizationMode) {
+                problemType = ProblemType.PB_OPT;
+                equivalenceCB.setEnabled(true);
+                lowerCB.setEnabled(true);
+            } else {
+                problemType = ProblemType.PB_SAT;
+                equivalenceCB.setEnabled(false);
+                lowerCB.setEnabled(false);
+            }
+            log("opb file => pb solvers");
+        } else if (instancePath.endsWith(".wcnf")) {
+            equivalenceCB.setEnabled(true);
+            lowerCB.setEnabled(true);
+            theVector.addAll(getVectorOfMaxsatSolvers());
+            theVector.addAll(getVectorOfPBSolvers());
+            defaultSolver = "maxsat.Default";
+            optimisationModeCB.setSelected(true);
+            optimisationModeCB.setEnabled(false);
+            problemType = ProblemType.WCNF_MAXSAT;
+            log("wcnf file => pb/maxsat solvers");
         }
+        this.listeSolvers.setModel(new DefaultComboBoxModel<String>(theVector));
+        this.listeSolvers.setSelectedItem(defaultSolver);
+        this.choixSolverPanel.repaint();
+        // this.repaint();
     }
 
     public void setInstancePanelEnabled(boolean enabled) {

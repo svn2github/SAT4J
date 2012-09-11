@@ -176,7 +176,10 @@ public class Solvers {
 
     public static Options createCLIOptions() {
         Options options = new Options();
-        options.addOption("l", "library", true,
+        options.addOption(
+                "l",
+                "library",
+                true,
                 "specifies the name of the library used (if not present, the library depends on the file extension)");
         options.addOption("s", "solver", true,
                 "specifies the name of a prebuilt solver from the library");
@@ -209,12 +212,12 @@ public class Solvers {
                 "keep the solver hot (do not reset heuristics) when a model is found");
         options.addOption("y", "simplify", false,
                 "simplify the set of clauses is possible");
-        options.addOption("lo", "lower", false, 
-                "search solution by lower bounding instead of by upper bounding (for maxsat only)");
-        options.addOption("e","equivalence", false, 
+        options.addOption("lo", "lower", false,
+                "search solution by lower bounding instead of by upper bounding");
+        options.addOption("e", "equivalence", false,
                 "Use an equivalence instead of an implication for the selector variables");
-        options.addOption("i","incomplete",false, 
-                "incomplete mode for maxsat");     
+        options.addOption("i", "incomplete", false,
+                "incomplete mode for maxsat");
         options.addOption("n", "no solution line", false,
                 "Do not display a solution line (useful if the solution is large)");
         Option op = options.getOption("l");
@@ -245,18 +248,22 @@ public class Solvers {
         logger.log("Example: -S RESTARTS=LubyRestarts/factor:512,LEARNING=MiniSATLearning");
     }
 
+    public static boolean containsOptValue(String[] args) {
+        Options options = createCLIOptions();
+        try {
+            CommandLine cmd = new PosixParser().parse(options, args);
+            return cmd.hasOption("opt");
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
     public static ICDCL configureSolver(String[] args, ILogAble logger) {
         Options options = createCLIOptions();
         if (args.length == 0) {
             HelpFormatter helpf = new HelpFormatter();
             helpf.printHelp("java -jar sat4j.jar", options, true);
 
-            // log("Available solvers: "
-            // + Arrays.asList(factory.solverNames()));
-            // showAvailableLearning();
-            // showAvailableOrders();
-            // showAvailablePhase();
-            // showAvailableRestarts();
             return null;
         }
         try {
@@ -269,24 +276,23 @@ public class Solvers {
                 isModeOptimization = true;
             }
 
-            String filename=cmd.getOptionValue("f");
-            
+            String filename = cmd.getOptionValue("f");
+
             int others = 0;
             String[] rargs = cmd.getArgs();
             if (filename == null && rargs.length > 0) {
                 filename = rargs[others++];
             }
-            
+
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-            if(framework==null){
-                if(isModeOptimization){
-                    if(filename!=null && filename.endsWith("cnf"))
-                        framework="maxsat";
+            if (framework == null) {
+                if (isModeOptimization) {
+                    if (filename != null && filename.endsWith("cnf"))
+                        framework = "maxsat";
                     else
-                        framework="pb";
-                }
-                else 
-                    framework="minisat";
+                        framework = "pb";
+                } else
+                    framework = "minisat";
             }
 
             try {
@@ -360,7 +366,7 @@ public class Solvers {
             if (cmd.hasOption("y")) {
                 asolver.setDBSimplificationAllowed(true);
             }
-            
+
             if (cmd.hasOption("d")) {
                 String dotfilename = null;
                 if (filename != null) {

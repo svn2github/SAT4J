@@ -54,7 +54,6 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
 import org.sat4j.ILogAble;
-import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.sat.visu.VisuPreferencesFrame;
 
 /**
@@ -71,7 +70,7 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 	 */
     private static final long serialVersionUID = 1L;
 
-    private String lookAndFeel;
+    // private String lookAndFeel;
 
     public static final Dimension dim = Toolkit.getDefaultToolkit()
             .getScreenSize();
@@ -85,8 +84,8 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
     private String ramdisk;
 
-    private RemoteControlStrategy telecomStrategy;
-    private RandomWalkDecorator randomWalk;
+    // private RemoteControlStrategy telecomStrategy;
+    // private RandomWalkDecorator randomWalk;
     // private ICDCL solver;
     private String[] args;
     private VisuPreferencesFrame visuFrame;
