@@ -488,4 +488,18 @@ public interface ISolver extends IProblem, Serializable {
      * @since 2.3.2
      */
     void setKeepSolverHot(boolean keepHot);
+
+    /**
+     * Retrieve the real engine in case the engine is decorated by one or
+     * several decorator. This can be used for instance to setup the engine,
+     * which requires to bypass all the decorators.
+     * 
+     * It is thus safe to downcast the ISolver to an ICDCL interface. We cannot
+     * directly return an ICDCL object because we are not on the same
+     * abstraction level here.
+     * 
+     * @return the solver
+     * @since 2.3.3
+     */
+    ISolver getSolvingEngine();
 }

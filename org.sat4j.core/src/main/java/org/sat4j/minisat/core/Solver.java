@@ -49,6 +49,7 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -2458,5 +2459,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public void addClause(int[] literals) {
         throw new UnsupportedOperationException("Not implemented yet");
 
+    }
+
+    public ISolver getSolvingEngine() {
+        return this;
     }
 }

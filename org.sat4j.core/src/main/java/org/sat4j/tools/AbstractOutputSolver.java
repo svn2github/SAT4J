@@ -248,4 +248,8 @@ public abstract class AbstractOutputSolver implements ISolver {
 
     public void setKeepSolverHot(boolean value) {
     }
+
+    public ISolver getSolvingEngine() {
+        throw new UnsupportedOperationException();
+    }
 }

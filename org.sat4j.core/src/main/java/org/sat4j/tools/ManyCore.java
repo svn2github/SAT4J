@@ -508,6 +508,10 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         }
 
     }
+
+    public ISolver getSolvingEngine() {
+        throw new UnsupportedOperationException("Not supported yet in ManyCore");
+    }
 }
 
 class RunnableSolver implements Runnable {

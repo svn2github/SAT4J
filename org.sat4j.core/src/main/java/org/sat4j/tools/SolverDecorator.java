@@ -489,4 +489,11 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
         return this.solver.primeImplicant(p);
     }
 
+    /**
+     * @since 2.3.3
+     */
+    public ISolver getSolvingEngine() {
+        return this.solver.getSolvingEngine();
+    }
+
 }
