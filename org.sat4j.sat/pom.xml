@@ -20,6 +20,12 @@
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.sat4j</groupId>
+      <artifactId>org.sat4j.maxsat</artifactId>
+      <version>${project.version}</version>
+      <scope>compile</scope>
+    </dependency>
         <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
