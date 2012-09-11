@@ -292,6 +292,11 @@ public interface ISolver extends IProblem, Serializable {
 
     /**
      * Clean up the internal state of the solver.
+     * 
+     * Note that such method should also be called when you no longer need the
+     * solver because the state of the solver may prevent the GC to proceed.
+     * There is a known issue for instance where failing to call reset() on a
+     * solver will keep timer threads alive and exhausts memory.
      */
     void reset();
 
