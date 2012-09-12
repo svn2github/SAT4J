@@ -146,7 +146,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
                 learning, dsf, new VarOrderHeap(
                         new RSATPhaseSelectionStrategy()), new ArminRestarts());
         solver.setSearchParams(new SearchParams(1.1, 100));
-        learning.setSolver(solver);
         solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
         return solver;
     }
@@ -162,7 +161,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
                 new RandomWalkDecorator(new VarOrderHeap(
                         new RSATPhaseSelectionStrategy())), new NoRestarts());
         // solver.setSearchParams(new SearchParams(1.1, 100));
-        learning.setSolver(solver);
         solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
         return solver;
     }
@@ -219,8 +217,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
         LimitedLearning<DataStructureFactory> learning = new PercentLengthLearning<DataStructureFactory>(
                 10);
-        solver.setLearner(learning);
-        learning.setSolver(solver);
+        solver.setLearningStrategy(learning);
         return solver;
     }
 
@@ -276,7 +273,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
         Solver<DataStructureFactory> solver = new Solver<DataStructureFactory>(
                 learning, dsf, order, new MiniSATRestarts());
-        learning.setSolver(solver);
         return solver;
     }
 

@@ -203,7 +203,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
             IOrder order, RestartStrategy restarter, ILogAble logger) {
-        this.learner = learner;
+        setLearningStrategy(learner);
         this.order = order;
         this.params = params;
         setDataStructureFactory(dsf);
@@ -266,8 +266,23 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * @see org.sat4j.minisat.core.ICDCL#setLearner(org.sat4j.minisat.core.
      * LearningStrategy)
      */
-    public void setLearner(LearningStrategy<D> learner) {
-        this.learner = learner;
+    public void setLearner(LearningStrategy<D> strategy) {
+        setLearningStrategy(strategy);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.sat4j.minisat.core.ICDCL#setLearningStrategy(org.sat4j.minisat.core.
+     * LearningStrategy)
+     */
+    public void setLearningStrategy(LearningStrategy<D> strategy) {
+        if (this.learner != null) {
+            this.learner.setSolver(null);
+        }
+        this.learner = strategy;
+        strategy.setSolver(this);
     }
 
     public void setTimeout(int t) {

@@ -54,9 +54,22 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
     void setDataStructureFactory(D dsf);
 
     /**
+     * 
      * @since 2.2
+     * @deprecated renamed into setLearningStrategy()
+     * @see #setLearningStrategy(LearningStrategy)
      */
+    @Deprecated
     void setLearner(LearningStrategy<D> learner);
+
+    /**
+     * Allow to change the learning strategy, i.e. to decide which
+     * clauses/constraints should be learned by the solver after conflict
+     * analysis.
+     * 
+     * @since 2.3.3
+     */
+    void setLearningStrategy(LearningStrategy<D> strategy);
 
     void setSearchParams(SearchParams sp);
 
