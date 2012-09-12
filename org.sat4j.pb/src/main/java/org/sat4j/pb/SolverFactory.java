@@ -70,10 +70,7 @@ import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
-import org.sat4j.pb.tools.ClausalConstraintsDecorator;
 import org.sat4j.pb.tools.ManyCorePB;
-import org.sat4j.specs.ISolver;
-import org.sat4j.tools.DimacsOutputSolver;
 
 /**
  * User friendly access to pre-constructed solvers.
@@ -747,10 +744,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
     @Override
     public IPBSolver lightSolver() {
         return newLight();
-    }
-
-    public static ISolver newDimacsOutput() {
-        return new ClausalConstraintsDecorator(new DimacsOutputSolver());
     }
 
     public static IPBSolver newEclipseP2() {
