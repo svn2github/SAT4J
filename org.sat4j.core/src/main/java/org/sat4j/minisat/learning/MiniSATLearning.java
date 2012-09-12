@@ -56,7 +56,9 @@ public final class MiniSATLearning<D extends DataStructureFactory> extends
     @Override
     public void setSolver(Solver<D> s) {
         super.setSolver(s);
-        this.dsf = s.getDSFactory();
+        if (s != null) {
+            this.dsf = s.getDSFactory();
+        }
     }
 
     public void learns(Constr constr) {

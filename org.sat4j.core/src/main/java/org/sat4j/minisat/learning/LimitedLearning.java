@@ -62,10 +62,12 @@ public abstract class LimitedLearning<D extends DataStructureFactory>
     }
 
     public void setSolver(Solver<D> s) {
-        this.lits = s.getVocabulary();
-        setVarActivityListener(s);
-        this.all.setDataStructureFactory(s.getDSFactory());
-        this.stats = s.getStats();
+        if (s != null) {
+            this.lits = s.getVocabulary();
+            setVarActivityListener(s);
+            this.all.setDataStructureFactory(s.getDSFactory());
+            this.stats = s.getStats();
+        }
     }
 
     public void learns(Constr constr) {
