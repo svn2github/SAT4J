@@ -1034,7 +1034,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      */
     public final Constr propagate() {
         IVecInt ltrail = this.trail;
-        ILits lvoc = this.voc;
         SolverStats lstats = this.stats;
         IOrder lorder = this.order;
         SearchListener lslistener = this.slistener;
