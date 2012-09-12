@@ -194,7 +194,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverCP solver = new PBSolverCP(learning,
                 new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective());
-        learning.setSolver(solver);
         return solver;
     }
 
@@ -203,7 +202,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverCP solver = new PBSolverCP(learning,
                 new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective());
-        learning.setSolver(solver);
         return solver;
     }
 
@@ -212,7 +210,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverCP solver = new PBSolverCP(learning,
                 new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective(phase));
-        learning.setSolver(solver);
         return solver;
     }
 
@@ -233,7 +230,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverCP solver = new PBSolverCP(learning,
                 new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective(phase));
-        learning.setSolver(solver);
         return solver;
     }
 
@@ -281,7 +277,6 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverCP solver = new PBSolverCP(learning,
                 new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective());
-        learning.setSolver(solver);
         learning.setVarActivityListener(solver);
         return solver;
     }
