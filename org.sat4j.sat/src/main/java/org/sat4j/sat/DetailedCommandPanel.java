@@ -32,6 +32,8 @@ package org.sat4j.sat;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -85,6 +87,7 @@ import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
+import org.sat4j.pb.tools.ClausalConstraintsDecorator;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -103,6 +106,7 @@ import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.ClausalCardinalitiesDecorator;
 import org.sat4j.tools.ConflictDepthTracing;
 import org.sat4j.tools.ConflictLevelTracing;
 import org.sat4j.tools.DecisionTracing;
@@ -112,6 +116,8 @@ import org.sat4j.tools.LearnedClausesSizeTracing;
 import org.sat4j.tools.LearnedTracing;
 import org.sat4j.tools.MultiTracing;
 import org.sat4j.tools.SpeedTracing;
+import org.sat4j.tools.encoding.EncodingStrategy;
+import org.sat4j.tools.encoding.Policy;
 
 /**
  * 
@@ -123,6 +129,13 @@ import org.sat4j.tools.SpeedTracing;
  */
 public class DetailedCommandPanel extends JPanel implements SolverController,
         SearchListener, ILogAble {
+
+    private static final String EXACTLY_1 = "Exactly 1:";
+    private static final String EXACTLY_K = "Exactly K:";
+    private static final String AT_MOST_1 = "At Most 1:";
+    private static final String AT_MOST_K = "At Most K:";
+
+    private Policy encodingPolicy;
 
     private static final long serialVersionUID = 1L;
 
@@ -187,6 +200,15 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private final static String LOWER = "Search solution by lower bounding instead of by upper bounding";
     private JCheckBox lowerCB;
+
+    private JLabel atMostKLabel;
+    private JLabel atMost1Label;
+    private JComboBox atMostKCB;
+    private JComboBox atMost1CB;
+    private JLabel exactlyKLabel;
+    private JComboBox exactlyKCB;
+    private JLabel exactly1Label;
+    private JComboBox exactly1CB;
 
     // private JCheckBox useCustomizedSolverCB;
     // private final static String USE_CUSTOMIZED_SOLVER =
@@ -259,6 +281,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public DetailedCommandPanel(String filename, String ramdisk, String[] args,
             RemoteControlFrame frame) {
         super();
+
+        this.encodingPolicy = new Policy();
 
         this.frame = frame;
 
@@ -461,10 +485,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 null, this.choixSolverPanel.getName(), TitledBorder.LEFT,
                 TitledBorder.TOP), border5));
 
-        // this.choixSolverPanel.setLayout(new BoxLayout(choixSolverPanel,
-        // BoxLayout.Y_AXIS));
+        this.choixSolverPanel.setLayout(new BoxLayout(choixSolverPanel,
+                BoxLayout.Y_AXIS));
 
-        this.choixSolverPanel.setLayout(new BorderLayout(0, 0));
+        // this.choixSolverPanel.setLayout(new BorderLayout(0, 0));
 
         this.choixSolver = new JLabel(CHOIX_SOLVER);
 
@@ -482,7 +506,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             public void actionPerformed(ActionEvent e) {
                 if (DetailedCommandPanel.this.startStopButton.getText().equals(
                         START)) {
-                    // launchSolver();
                     launchSolverWithConfigs();
                     DetailedCommandPanel.this.pauseButton.setEnabled(true);
                     setInstancePanelEnabled(false);
@@ -506,24 +529,16 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                             .setActivateTracingEditableUnderCondition(false);
                 } else {
 
-                    // assert solveurThread!=null;
                     ((ISolver) DetailedCommandPanel.this.problem)
                             .expireTimeout();
                     DetailedCommandPanel.this.pauseButton.setEnabled(false);
                     log("Asked the solver to stop");
                     setInstancePanelEnabled(true);
                     setChoixSolverPanelEnabled(true);
-                    // setRestartPanelEnabled(false);
-                    // setRWPanelEnabled(false);
-                    // setCleanPanelEnabled(false);
-                    // setPhasePanelEnabled(false);
-                    // setSimplifierPanelEnabled(false);
-                    // setKeepSolverHotPanelEnabled(false);
                     DetailedCommandPanel.this.startStopButton.setText(START);
                     getThis().paintAll(getThis().getGraphics());
                     DetailedCommandPanel.this.frame
                             .setActivateTracingEditable(true);
-
                 }
             }
         });
@@ -547,10 +562,84 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             }
         });
 
+        // this.chooseStartConfigLabel = new JLabel(CHOOSE_START_CONFIG);
+
+        JPanel tmpPanel = new JPanel();
+        tmpPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+
+        tmpPanel.setName("Cardinality Constraints Encodings");
+        tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, tmpPanel
+                .getName(), TitledBorder.LEFT, TitledBorder.TOP), border5));
+
+        atMostKLabel = new JLabel(AT_MOST_K);
+        atMostKCB = new JComboBox(new DefaultComboBoxModel(
+                getVectorOfEncodings(AT_MOST_K)));
+
+        atMost1Label = new JLabel(AT_MOST_1);
+        atMost1CB = new JComboBox(new DefaultComboBoxModel(
+                getVectorOfEncodings(AT_MOST_1)));
+
+        exactlyKLabel = new JLabel(EXACTLY_K);
+        exactlyKCB = new JComboBox(new DefaultComboBoxModel(
+                getVectorOfEncodings(EXACTLY_K)));
+
+        exactly1Label = new JLabel(EXACTLY_1);
+        exactly1CB = new JComboBox(new DefaultComboBoxModel(
+                getVectorOfEncodings(EXACTLY_1)));
+
+        c.fill = GridBagConstraints.NONE;
+        c.weightx = 0.2;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.LINE_END;
+
+        tmpPanel.add(atMostKLabel, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        tmpPanel.add(atMost1Label, c);
+
+        c.gridx = 2;
+        c.gridy = 1;
+        tmpPanel.add(exactly1Label, c);
+
+        c.gridx = 2;
+        c.gridy = 0;
+        tmpPanel.add(exactlyKLabel, c);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.LINE_START;
+        c.weightx = 0.8;
+        c.gridx = 1;
+        c.gridy = 0;
+        tmpPanel.add(atMostKCB, c);
+
+        c.gridx = 3;
+        c.gridy = 0;
+        tmpPanel.add(exactlyKCB, c);
+
+        c.gridx = 1;
+        c.gridy = 1;
+        tmpPanel.add(atMost1CB, c);
+
+        c.gridx = 3;
+        c.gridy = 1;
+        tmpPanel.add(exactly1CB, c);
+
         JPanel tmpPanel2 = new JPanel();
-        tmpPanel2.setLayout(new FlowLayout());
-        tmpPanel2.add(this.startStopButton);
-        tmpPanel2.add(this.pauseButton);
+        tmpPanel2.setLayout(new GridBagLayout());
+
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.anchor = GridBagConstraints.LINE_START;
+        c2.fill = GridBagConstraints.NONE;
+        c2.weightx = 1;
+        c2.gridx = 0;
+
+        tmpPanel2.setName(CHOOSE_START_CONFIG);
+        tmpPanel2.setBorder(new CompoundBorder(new TitledBorder(null, tmpPanel2
+                .getName(), TitledBorder.LEFT, TitledBorder.TOP), border5));
 
         this.solverLineParamLineRadio = new JRadioButton(
                 SOLVER_LINE_PARAM_LINE_CONFIG);
@@ -567,16 +656,55 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.solverConfigGroup.add(this.solverListParamListRadio);
         this.solverConfigGroup.add(this.solverListParamRemoteRadio);
 
-        this.chooseStartConfigLabel = new JLabel(CHOOSE_START_CONFIG);
+        c2.gridy = 0;
+        tmpPanel2.add(this.solverLineParamLineRadio, c2);
+        c2.gridy = 1;
+        tmpPanel2.add(this.solverLineParamRemoteRadio, c2);
+        c2.gridy = 2;
+        tmpPanel2.add(this.solverListParamListRadio, c2);
+        c2.gridy = 3;
+        tmpPanel2.add(this.solverListParamRemoteRadio, c2);
 
         JPanel tmpPanel3 = new JPanel();
-        tmpPanel3.setLayout(new BoxLayout(tmpPanel3, BoxLayout.Y_AXIS));
+        tmpPanel3.setLayout(new FlowLayout());
+        tmpPanel3.add(this.startStopButton);
+        tmpPanel3.add(this.pauseButton);
 
-        tmpPanel3.add(this.chooseStartConfigLabel);
-        tmpPanel3.add(this.solverLineParamLineRadio);
-        tmpPanel3.add(this.solverLineParamRemoteRadio);
-        tmpPanel3.add(this.solverListParamListRadio);
-        tmpPanel3.add(this.solverListParamRemoteRadio);
+        this.choixSolverPanel.add(tmpPanel1);
+        this.choixSolverPanel.add(tmpPanel);
+        this.choixSolverPanel.add(tmpPanel2);
+        this.choixSolverPanel.add(tmpPanel3);
+
+        atMostKCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                encodingPolicy.setAtMostKEncoding((EncodingStrategy) atMostKCB
+                        .getSelectedItem());
+            }
+        });
+
+        atMost1CB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                encodingPolicy
+                        .setAtMostOneEncoding((EncodingStrategy) atMost1CB
+                                .getSelectedItem());
+            }
+        });
+
+        exactlyKCB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                encodingPolicy
+                        .setExactlyKEncoding((EncodingStrategy) exactlyKCB
+                                .getSelectedItem());
+            }
+        });
+
+        exactly1CB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                encodingPolicy
+                        .setExactlyOneEncoding((EncodingStrategy) exactly1CB
+                                .getSelectedItem());
+            }
+        });
 
         this.solverLineParamLineRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -625,11 +753,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             this.solverLineParamRemoteRadio.setEnabled(false);
             this.solverListParamRemoteRadio.setEnabled(false);
         }
-
-        tmpPanel3.add(tmpPanel2);
-
-        this.choixSolverPanel.add(tmpPanel1, BorderLayout.NORTH);
-        this.choixSolverPanel.add(tmpPanel3, BorderLayout.CENTER);
 
         // this.choixSolverPanel.add(tmpPanel2, BorderLayout.SOUTH);
     }
@@ -829,12 +952,15 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         try {
             switch (problemType) {
             case PB_OPT:
+                this.solver = new ClausalConstraintsDecorator(
+                        (IPBSolver) this.solver, this.encodingPolicy);
                 if (lowerMode) {
                     this.solver = new ConstraintRelaxingPseudoOptDecorator(
                             (IPBSolver) solver);
                 } else {
                     this.solver = new PseudoOptDecorator((IPBSolver) solver);
                 }
+
                 this.reader = createReader(this.solver, this.instancePath);
                 this.problem = this.reader.parseInstance(this.instancePath);
                 this.problem = new OptToPBSATAdapter(
@@ -842,8 +968,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 break;
             case CNF_MAXSAT:
             case WCNF_MAXSAT:
+                this.solver = new ClausalConstraintsDecorator(
+                        (IPBSolver) this.solver, this.encodingPolicy);
                 this.solver = new WeightedMaxSatDecorator(
-                        (IPBCDCLSolver) solver, equivalenceMode);
+                        (IPBCDCLSolver) this.solver, equivalenceMode);
+
                 this.reader = createReader(this.solver, this.instancePath);
                 this.problem = this.reader.parseInstance(this.instancePath);
 
@@ -859,7 +988,16 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 this.problem = new OptToPBSATAdapter(
                         (IOptimizationProblem) this.problem);
                 break;
+            case PB_SAT:
+                this.solver = new ClausalConstraintsDecorator(
+                        (IPBSolver) this.solver, this.encodingPolicy);
+                this.reader = createReader(this.solver, this.instancePath);
+                this.problem = this.reader.parseInstance(this.instancePath);
+                break;
+            case CNF_SAT:
             default:
+                this.solver = new ClausalCardinalitiesDecorator<ISolver>(
+                        this.solver, this.encodingPolicy);
                 this.reader = createReader(this.solver, this.instancePath);
                 this.problem = this.reader.parseInstance(this.instancePath);
                 break;
@@ -1326,6 +1464,31 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return result;
     }
 
+    public Vector<EncodingStrategy> getVectorOfEncodings(String typeOfConstraint) {
+        Vector<EncodingStrategy> v = new Vector<EncodingStrategy>();
+
+        v.add(EncodingStrategy.NATIVE);
+
+        if (typeOfConstraint.equals(AT_MOST_K)
+                || typeOfConstraint.equals(AT_MOST_1)) {
+            v.add(EncodingStrategy.BINARY);
+            v.add(EncodingStrategy.BINOMIAL);
+            v.add(EncodingStrategy.COMMANDER);
+        }
+        if (typeOfConstraint.equals(AT_MOST_K)) {
+            v.add(EncodingStrategy.SEQUENTIAL);
+        }
+        if (typeOfConstraint.equals(AT_MOST_1)
+                || typeOfConstraint.equals(EXACTLY_1)) {
+            v.add(EncodingStrategy.LADDER);
+        }
+        if (typeOfConstraint.equals(AT_MOST_1)) {
+            v.add(EncodingStrategy.PRODUCT);
+        }
+
+        return v;
+    }
+
     public void log(String message) {
         logsameline(message + "\n");
     }
@@ -1445,9 +1608,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.solverLineParamRemoteRadio.setEnabled(enabled);
         this.solverListParamListRadio.setEnabled(enabled);
         this.solverListParamRemoteRadio.setEnabled(enabled);
-        this.optimisationModeCB.setEnabled(enabled);
-        // TODO regarder si le customized solver etait en mode optimisation ou
-        // pas
         this.choixSolverPanel.repaint();
     }
 

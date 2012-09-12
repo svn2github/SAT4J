@@ -35,13 +35,14 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.ClausalCardinalitiesDecorator;
+import org.sat4j.tools.encoding.EncodingStrategyAdapter;
+import org.sat4j.tools.encoding.Policy;
 
 public class ClausalConstraintsDecorator extends
-        ClausalCardinalitiesDecorator<ISolver> implements IPBSolver {
+        ClausalCardinalitiesDecorator<IPBSolver> implements IPBSolver {
 
     /**
 	 * 
@@ -50,52 +51,83 @@ public class ClausalConstraintsDecorator extends
 
     private final IPBSolver solver;
 
+    public ClausalConstraintsDecorator(IPBSolver solver,
+            EncodingStrategyAdapter encodingAd) {
+        super(solver, encodingAd);
+        this.solver = solver;
+    }
+
     public ClausalConstraintsDecorator(IPBSolver solver) {
-        super(solver);
+        super(solver, new Policy());
         this.solver = solver;
     }
 
     public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
             boolean moreThan, BigInteger d) throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            if (moreThan) {
+                return super.addAtLeast(lits, d.intValue());
+            } else
+                return super.addAtMost(lits, d.intValue());
+        } else {
+            return solver.addPseudoBoolean(lits, coeffs, moreThan, d);
+        }
     }
 
     public void setObjectiveFunction(ObjectiveFunction obj) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        solver.setObjectiveFunction(obj);
     }
 
     public ObjectiveFunction getObjectiveFunction() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return solver.getObjectiveFunction();
     }
 
     public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addAtMost(literals, degree);
+        } else
+            return solver.addAtMost(literals, coeffs, degree);
     }
 
     public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addAtMost(literals, degree.intValue());
+        } else
+            return solver.addAtMost(literals, coeffs, degree);
     }
 
     public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addAtLeast(literals, degree);
+        } else
+            return solver.addAtLeast(literals, coeffs, degree);
     }
 
     public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addAtLeast(literals, degree.intValue());
+        } else
+            return solver.addAtLeast(literals, coeffs, degree);
     }
 
     public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
             throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addExactly(literals, weight);
+        } else
+            return solver.addExactly(literals, coeffs, weight);
     }
 
     public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger weight) throws ContradictionException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (isCardinality(coeffs)) {
+            return super.addExactly(literals, weight.intValue());
+        } else
+            return solver.addExactly(literals, coeffs, weight);
     }
 
     public static boolean isCardinality(IVecInt coeffs) {
@@ -103,6 +135,16 @@ public class ClausalConstraintsDecorator extends
         int i = 0;
         while (result && i < coeffs.size()) {
             result = (coeffs.get(i) == 1);
+            i++;
+        }
+        return result;
+    }
+
+    public static boolean isCardinality(IVec<BigInteger> coeffs) {
+        boolean result = true;
+        int i = 0;
+        while (result && i < coeffs.size()) {
+            result = (coeffs.get(i) == BigInteger.ONE);
             i++;
         }
         return result;
