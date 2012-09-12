@@ -17,6 +17,7 @@ Export-Package: org.sat4j;version="9.9.9.token",
  org.sat4j.reader;version="9.9.9.token",
  org.sat4j.specs;version="9.9.9.token",
  org.sat4j.tools;version="9.9.9.token",
+ org.sat4j.tools.encoding;version="9.9.9.token",
  org.sat4j.tools.xplain;version="9.9.9.token"
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
