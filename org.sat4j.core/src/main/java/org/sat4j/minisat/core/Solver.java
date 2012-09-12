@@ -203,12 +203,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public Solver(LearningStrategy<D> learner, D dsf, SearchParams params,
             IOrder order, RestartStrategy restarter, ILogAble logger) {
-        setLearningStrategy(learner);
         this.order = order;
         this.params = params;
-        setDataStructureFactory(dsf);
         this.restarter = restarter;
         this.out = logger;
+        setDataStructureFactory(dsf);
+        // should be called after dsf has been set up
+        setLearningStrategy(learner);
     }
 
     /*
