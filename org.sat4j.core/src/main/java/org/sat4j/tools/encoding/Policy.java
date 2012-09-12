@@ -73,6 +73,7 @@ public class Policy extends EncodingStrategyAdapter {
             return this.product;
         case SEQUENTIAL:
             return this.seq;
+        case NATIVE:
         default:
             return null;
         }
