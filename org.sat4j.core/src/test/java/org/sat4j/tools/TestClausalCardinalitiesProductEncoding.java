@@ -49,7 +49,7 @@ public class TestClausalCardinalitiesProductEncoding {
 
     private ISolver solver;
     private Policy policy;
-    private final static boolean MODE_DEBUG = true;
+    private final static boolean MODE_DEBUG = false;
 
     @Before
     public void setUp() {
