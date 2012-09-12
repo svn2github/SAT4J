@@ -38,26 +38,18 @@ package org.sat4j.tools.encoding;
  * 
  */
 public enum EncodingStrategy {
-    BINARY, BINOMIAL, COMMANDER, LADDER, PRODUCT, SEQUENTIAL, NATIVE;
+    BINARY("Binary"), BINOMIAL("Binomial"), COMMANDER("Commander"), LADDER(
+            "Ladder"), PRODUCT("Product"), SEQUENTIAL("Sequential"), NATIVE(
+            "Native");
 
-    public String toString(EncodingStrategy e) {
-        switch (e) {
-        case BINARY:
-            return "Binary";
-        case BINOMIAL:
-            return "Binomial";
-        case COMMANDER:
-            return "Commander";
-        case LADDER:
-            return "Ladder";
-        case PRODUCT:
-            return "Product";
-        case SEQUENTIAL:
-            return "Sequential";
-        case NATIVE:
-            return "Native";
-        default:
-            return "Native";
-        }
+    private String name;
+
+    EncodingStrategy(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }
