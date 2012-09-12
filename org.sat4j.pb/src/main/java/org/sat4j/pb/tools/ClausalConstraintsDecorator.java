@@ -48,8 +48,11 @@ public class ClausalConstraintsDecorator extends
 	 */
     private static final long serialVersionUID = 1L;
 
-    public ClausalConstraintsDecorator(ISolver solver) {
+    private final IPBSolver solver;
+
+    public ClausalConstraintsDecorator(IPBSolver solver) {
         super(solver);
+        this.solver = solver;
     }
 
     public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
@@ -93,5 +96,15 @@ public class ClausalConstraintsDecorator extends
     public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger weight) throws ContradictionException {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public static boolean isCardinality(IVecInt coeffs) {
+        boolean result = true;
+        int i = 0;
+        while (result && i < coeffs.size()) {
+            result = (coeffs.get(i) == 1);
+            i++;
+        }
+        return result;
     }
 }
