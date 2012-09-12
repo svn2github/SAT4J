@@ -1,8 +1,6 @@
 package org.sat4j.sat;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -65,7 +64,7 @@ public class RestartCommandComponent extends CommandComponent {
     @Override
     public void createPanel() {
 
-        this.setLayout(new BorderLayout());
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         JPanel tmpPanel1 = new JPanel();
         tmpPanel1.setLayout(new FlowLayout());
@@ -126,11 +125,15 @@ public class RestartCommandComponent extends CommandComponent {
 
         this.restartButtonPanel.add(this.restartButton);
 
-        this.restartPropertiesPanel.setPreferredSize(new Dimension(100, 50));
+        // this.restartPropertiesPanel.setPreferredSize(new Dimension(100, 50));
 
-        this.add(tmpPanel1, BorderLayout.NORTH);
-        this.add(this.restartPropertiesPanel, BorderLayout.CENTER);
-        this.add(this.restartButtonPanel, BorderLayout.SOUTH);
+        // this.add(tmpPanel1, BorderLayout.NORTH);
+        // this.add(this.restartPropertiesPanel, BorderLayout.CENTER);
+        // this.add(this.restartButtonPanel, BorderLayout.SOUTH);
+
+        this.add(tmpPanel1);
+        this.add(this.restartPropertiesPanel);
+        this.add(this.restartButtonPanel);
     }
 
     public void initFactorParam() {

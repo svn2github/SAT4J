@@ -177,7 +177,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private JLabel choixSolver;
     private final static String CHOIX_SOLVER = "Choose solver: ";
     private String selectedSolver;
-    private JComboBox<String> listeSolvers;
+    private JComboBox listeSolvers;
 
     private final static String OPTMIZATION_MODE = "Optimization problem";
     private JCheckBox optimisationModeCB;
@@ -426,12 +426,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         tmpPanel12.add(this.equivalenceCB);
         tmpPanel12.add(this.lowerCB);
 
-        JPanel tmpPanel1 = new JPanel();
-        tmpPanel1.setLayout(new BoxLayout(tmpPanel1, BoxLayout.Y_AXIS));
-
-        tmpPanel1.add(tmpPanel11);
-        tmpPanel1.add(tmpPanel12);
-
         this.optimisationModeCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setOptimisationMode(optimisationModeCB.isSelected());
@@ -453,8 +447,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             }
         });
 
-        this.instancePanel.add(tmpPanel1, BorderLayout.CENTER);
-        // this.instancePanel.add(tmpPanel2, BorderLayout.EAST);
+        instancePanel.setLayout(new BoxLayout(instancePanel, BoxLayout.Y_AXIS));
+
+        instancePanel.add(tmpPanel11);
+        instancePanel.add(tmpPanel12);
     }
 
     public void createChoixSolverPanel() {
@@ -465,11 +461,14 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 null, this.choixSolverPanel.getName(), TitledBorder.LEFT,
                 TitledBorder.TOP), border5));
 
-        this.choixSolverPanel.setLayout(new BorderLayout());
+        // this.choixSolverPanel.setLayout(new BoxLayout(choixSolverPanel,
+        // BoxLayout.Y_AXIS));
+
+        this.choixSolverPanel.setLayout(new BorderLayout(0, 0));
 
         this.choixSolver = new JLabel(CHOIX_SOLVER);
 
-        this.listeSolvers = new JComboBox<String>();
+        this.listeSolvers = new JComboBox();
 
         updateListOfSolvers();
 
@@ -627,9 +626,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             this.solverListParamRemoteRadio.setEnabled(false);
         }
 
+        tmpPanel3.add(tmpPanel2);
+
         this.choixSolverPanel.add(tmpPanel1, BorderLayout.NORTH);
         this.choixSolverPanel.add(tmpPanel3, BorderLayout.CENTER);
-        this.choixSolverPanel.add(tmpPanel2, BorderLayout.SOUTH);
+
+        // this.choixSolverPanel.add(tmpPanel2, BorderLayout.SOUTH);
     }
 
     public String getStartStopText() {
@@ -1423,7 +1425,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             problemType = ProblemType.WCNF_MAXSAT;
             log("wcnf file => pb/maxsat solvers");
         }
-        this.listeSolvers.setModel(new DefaultComboBoxModel<String>(theVector));
+        this.listeSolvers.setModel(new DefaultComboBoxModel(theVector));
         this.listeSolvers.setSelectedItem(defaultSolver);
         this.choixSolverPanel.repaint();
         // this.repaint();
