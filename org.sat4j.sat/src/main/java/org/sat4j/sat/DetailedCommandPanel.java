@@ -541,6 +541,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                     DetailedCommandPanel.this.hotSolverPanel
                             .setKeepSolverHotPanelEnabled(true);
                     DetailedCommandPanel.this.startStopButton.setText(STOP);
+                    solverListParamListRadio.setSelected(true);
+                    startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
                     getThis().paintAll(getThis().getGraphics());
                     DetailedCommandPanel.this.frame
                             .setActivateTracingEditableUnderCondition(false);
@@ -672,6 +674,9 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.solverConfigGroup.add(this.solverLineParamRemoteRadio);
         this.solverConfigGroup.add(this.solverListParamListRadio);
         this.solverConfigGroup.add(this.solverListParamRemoteRadio);
+
+        this.solverListParamListRadio.setSelected(true);
+        this.startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
 
         c2.gridy = 0;
         tmpPanel2.add(this.solverLineParamLineRadio, c2);
