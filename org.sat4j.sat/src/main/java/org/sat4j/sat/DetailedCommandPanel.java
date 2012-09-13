@@ -83,7 +83,6 @@ import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
-import org.sat4j.pb.core.IPBCDCLSolver;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
 import org.sat4j.pb.reader.PBInstanceReader;
@@ -971,7 +970,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 this.solver = new ClausalConstraintsDecorator(
                         (IPBSolver) this.solver, this.encodingPolicy);
                 this.solver = new WeightedMaxSatDecorator(
-                        (IPBCDCLSolver) this.solver, equivalenceMode);
+                        (IPBSolver) this.solver, equivalenceMode);
 
                 this.reader = createReader(this.solver, this.instancePath);
                 this.problem = this.reader.parseInstance(this.instancePath);
