@@ -351,20 +351,38 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 "instance & solver options");
 
         JPanel restartBigPanel = new JPanel();
-        restartBigPanel.setLayout(new BoxLayout(restartBigPanel,
-                BoxLayout.Y_AXIS));
-        restartBigPanel.add(this.restartPanel);
+        restartBigPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints cRestart = new GridBagConstraints();
+        cRestart.anchor = GridBagConstraints.PAGE_START;
+        cRestart.fill = GridBagConstraints.HORIZONTAL;
+        cRestart.weightx = 1;
+        cRestart.weighty = 1;
+        // cRestart.gridx = 0;
+        // cRestart.gridy=0;
+
+        restartBigPanel.add(this.restartPanel, cRestart);
         // restartBigPanel.add(hotSolverPanel);
 
         this.tabbedPane.addTab("Restart", null, restartBigPanel,
                 "restart strategy & options");
 
         JPanel rwPhaseBigPanel = new JPanel();
-        rwPhaseBigPanel.setLayout(new BoxLayout(rwPhaseBigPanel,
-                BoxLayout.Y_AXIS));
-        rwPhaseBigPanel.add(this.rwPanel);
-        rwPhaseBigPanel.add(this.phasePanel);
-        rwPhaseBigPanel.add(this.hotSolverPanel);
+        rwPhaseBigPanel.setLayout(new GridBagLayout());
+        GridBagConstraints cPhase = new GridBagConstraints();
+        // cPhase.anchor = GridBagConstraints.PAGE_START;
+        cPhase.fill = GridBagConstraints.HORIZONTAL;
+        cPhase.weightx = 1;
+        cPhase.weighty = .2;
+
+        rwPhaseBigPanel.add(this.rwPanel, cPhase);
+
+        cPhase.gridy = 1;
+        cPhase.weighty = .2;
+        rwPhaseBigPanel.add(this.phasePanel, cPhase);
+
+        cPhase.gridy = 2;
+        rwPhaseBigPanel.add(this.hotSolverPanel, cPhase);
 
         this.tabbedPane.addTab("Heuristics", null, rwPhaseBigPanel,
                 "random walk and phase strategy");
@@ -1010,6 +1028,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             e.printStackTrace();
         } catch (ContradictionException e) {
             log("Unsatisfiable (trivial)!");
+            return;
         }
 
         // switch (problemType) {
@@ -1041,6 +1060,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 + this.telecomStrategy.getRestartStrategy().getClass()
                         .getSimpleName());
         log("# Random walk probability = " + this.randomWalk.getProbability());
+        log("# variables : " + this.solver.nVars());
         // log("# Number of conflicts before cleaning = " + nbConflicts);
 
         this.solveurThread = new Thread() {
