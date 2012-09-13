@@ -139,6 +139,7 @@
 		   <zipgroupfileset dir="${dist}/${release}">
                            <include name="org.sat4j.core.jar"/>
                            <include name="org.sat4j.pb.jar"/>
+                           <include name="org.sat4j.maxsat.jar"/>
 			   <include name="org.sat4j.sat.jar"/>
 		   </zipgroupfileset>
                    <zipgroupfileset dir="${lib}">
@@ -169,7 +170,7 @@
                 <jar destfile="${dist}/${release}/sat4j-remotecontrol.jar" basedir="${build}">
                        <manifest>
                                 <attribute name="Built-By" value="Stephanie Roussel"/>
-                                <attribute name="Main-Class" value="org.sat4j.sat.LaunchRemoteControl"/>
+                                <attribute name="Main-Class" value="org.sat4j.sat.Launcher"/>
                        </manifest>
 		   <zipgroupfileset dir="${dist}/${release}">
                            <include name="org.sat4j.core.jar"/>
