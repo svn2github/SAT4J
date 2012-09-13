@@ -122,7 +122,7 @@
                 </antcall>
 	</target>
 
-	<target name="sat" depends="core,pseudo" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
+	<target name="sat" depends="core,pseudo,maxsat" description="Build a jar file suitable for experimenting with SAT solvers from  current source tree">
 		<echo>Building the Java SAT Solvers toolkit</echo>
                 <antcall target="build">
 		   <param name="package" value="sat"/>
