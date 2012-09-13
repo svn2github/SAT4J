@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Built-By: Daniel Le Berre
-Main-Class: org.sat4j.sat.Lanceur
+Main-Class: org.sat4j.sat.Launcher
 Specification-Title: SAT4J
 Specification-Version: NA
 Specification-Vendor: Daniel Le Berre
