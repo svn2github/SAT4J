@@ -197,7 +197,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private final static String EQUIVALENCE = "Use equivalence instead of implication";
     private JCheckBox equivalenceCB;
 
-    private final static String LOWER = "Search solution by lower bounding instead of by upper bounding";
+    private final static String LOWER = "Search solution by lower bounding instead of upper bounding";
     private JCheckBox lowerCB;
 
     private JLabel atMostKLabel;
