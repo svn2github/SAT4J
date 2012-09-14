@@ -79,6 +79,26 @@ public class Policy extends EncodingStrategyAdapter {
         }
     }
 
+    private EncodingStrategy getEncodingTypeFromAdapter(
+            EncodingStrategyAdapter adapter) {
+        if (adapter instanceof Binary) {
+            return EncodingStrategy.BINARY;
+        } else if (adapter instanceof Binomial) {
+            return EncodingStrategy.BINOMIAL;
+        } else if (adapter instanceof Commander) {
+            return EncodingStrategy.COMMANDER;
+        } else if (adapter instanceof Ladder) {
+            return EncodingStrategy.LADDER;
+        } else if (adapter instanceof Product) {
+            return EncodingStrategy.PRODUCT;
+        } else if (adapter instanceof Sequential) {
+            return EncodingStrategy.SEQUENTIAL;
+        } else {
+            return EncodingStrategy.NATIVE;
+        }
+
+    }
+
     public EncodingStrategyAdapter getAtMostOneEncoding() {
         return this.atMostOneEncoding;
     }
@@ -205,6 +225,21 @@ public class Policy extends EncodingStrategyAdapter {
 
         return super.addAtLeast(solver, literals, n);
 
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        s += "Policy = [At most K: "
+                + getEncodingTypeFromAdapter(getAtMostKEncoding())
+                + ", at most 1: "
+                + getEncodingTypeFromAdapter(getAtMostOneEncoding())
+                + ", exactly K: "
+                + getEncodingTypeFromAdapter(getExactlyKEncoding())
+                + ", exactly 1: "
+                + getEncodingTypeFromAdapter(getExactlyOneEncoding()) + "]";
+
+        return s;
     }
 
 }
