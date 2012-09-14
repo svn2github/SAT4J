@@ -3,12 +3,13 @@ package org.sat4j.sat;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -64,14 +65,29 @@ public class RestartCommandComponent extends CommandComponent {
     @Override
     public void createPanel() {
 
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.anchor = GridBagConstraints.PAGE_START;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1;
+        c.gridx = 0;
+
+        JPanel chooseRestartPanel = new JPanel();
+        chooseRestartPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints c1 = new GridBagConstraints();
+        c1.anchor = GridBagConstraints.PAGE_START;
+        c1.fill = GridBagConstraints.HORIZONTAL;
+        c1.weightx = 1;
+        c1.gridx = 0;
+
+        chooseRestartPanel.setBorder(new CompoundBorder(new TitledBorder(null,
+                this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
+                DetailedCommandPanel.border5));
 
         JPanel tmpPanel1 = new JPanel();
         tmpPanel1.setLayout(new FlowLayout());
-
-        tmpPanel1.setBorder(new CompoundBorder(new TitledBorder(null, this
-                .getName(), TitledBorder.LEFT, TitledBorder.TOP),
-                DetailedCommandPanel.border5));
 
         this.chooseRestartStrategyLabel = new JLabel(CHOOSE_RESTART_STRATEGY);
 
@@ -131,9 +147,17 @@ public class RestartCommandComponent extends CommandComponent {
         // this.add(this.restartPropertiesPanel, BorderLayout.CENTER);
         // this.add(this.restartButtonPanel, BorderLayout.SOUTH);
 
-        this.add(tmpPanel1);
-        this.add(this.restartPropertiesPanel);
-        this.add(this.restartButtonPanel);
+        c1.gridy = 0;
+        chooseRestartPanel.add(tmpPanel1, c1);
+
+        c1.gridy = 1;
+        chooseRestartPanel.add(this.restartPropertiesPanel, c1);
+
+        c.gridy = 0;
+        this.add(chooseRestartPanel, c);
+
+        c.gridy = 1;
+        this.add(this.restartButtonPanel, c);
     }
 
     public void initFactorParam() {

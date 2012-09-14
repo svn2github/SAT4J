@@ -369,29 +369,58 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         JPanel rwPhaseBigPanel = new JPanel();
         rwPhaseBigPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints cP = new GridBagConstraints();
+        cP.anchor = GridBagConstraints.PAGE_START;
+        cP.fill = GridBagConstraints.HORIZONTAL;
+        cP.weightx = 1;
+        cP.weighty = 1;
+
+        JPanel tmpPhasePanel = new JPanel();
+        tmpPhasePanel.setLayout(new GridBagLayout());
         GridBagConstraints cPhase = new GridBagConstraints();
         // cPhase.anchor = GridBagConstraints.PAGE_START;
         cPhase.fill = GridBagConstraints.HORIZONTAL;
         cPhase.weightx = 1;
         cPhase.weighty = .2;
 
-        rwPhaseBigPanel.add(this.rwPanel, cPhase);
+        tmpPhasePanel.add(this.rwPanel, cPhase);
 
         cPhase.gridy = 1;
         cPhase.weighty = .2;
-        rwPhaseBigPanel.add(this.phasePanel, cPhase);
+        tmpPhasePanel.add(this.phasePanel, cPhase);
 
         cPhase.gridy = 2;
-        rwPhaseBigPanel.add(this.hotSolverPanel, cPhase);
+        tmpPhasePanel.add(this.hotSolverPanel, cPhase);
+
+        rwPhaseBigPanel.add(tmpPhasePanel, cP);
 
         this.tabbedPane.addTab("Heuristics", null, rwPhaseBigPanel,
                 "random walk and phase strategy");
 
         JPanel clausesBigPanel = new JPanel();
-        clausesBigPanel.setLayout(new BoxLayout(clausesBigPanel,
-                BoxLayout.Y_AXIS));
-        clausesBigPanel.add(this.cleanPanel);
-        clausesBigPanel.add(this.simplifierPanel);
+        clausesBigPanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints cC = new GridBagConstraints();
+        cC.anchor = GridBagConstraints.PAGE_START;
+        cC.fill = GridBagConstraints.HORIZONTAL;
+        cC.weightx = 1;
+        cC.weighty = 1;
+
+        JPanel tmpClausesPanel = new JPanel();
+        tmpClausesPanel.setLayout(new GridBagLayout());
+        GridBagConstraints cClauses = new GridBagConstraints();
+        // cPhase.anchor = GridBagConstraints.PAGE_START;
+        cClauses.fill = GridBagConstraints.HORIZONTAL;
+        cClauses.weightx = 1;
+        cClauses.weighty = .2;
+
+        tmpClausesPanel.add(this.cleanPanel, cClauses);
+
+        cClauses.gridy = 1;
+        tmpClausesPanel.add(this.simplifierPanel, cClauses);
+
+        clausesBigPanel.add(tmpClausesPanel, cC);
 
         this.tabbedPane.addTab("Learned Constraints", null, clausesBigPanel,
                 "deletion and simplification strategy");
