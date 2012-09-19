@@ -71,6 +71,7 @@ public class Solvers {
 
     protected final static ICDCL configureFromString(String solverconfig,
             ICDCL theSolver, ILogAble logger) {
+        assert theSolver != null;
         // AFAIK, there is no easy way to solve parameterized problems
         // when building the solver at runtime.
         StringTokenizer stk = new StringTokenizer(solverconfig, ",");
@@ -90,7 +91,7 @@ public class Solvers {
         }
         LearningStrategy learning = setupObject(LEARNING, pf, logger);
         if (learning != null) {
-            theSolver.setLearner(learning);
+            theSolver.setLearningStrategy(learning);
             learning.setSolver(aSolver);
         }
         IOrder order = setupObject(ORDERS, pf, logger);
@@ -211,7 +212,7 @@ public class Solvers {
         options.addOption("H", "hot", false,
                 "keep the solver hot (do not reset heuristics) when a model is found");
         options.addOption("y", "simplify", false,
-                "simplify the set of clauses is possible");
+                "simplify the set of clauses if possible");
         options.addOption("lo", "lower", false,
                 "search solution by lower bounding instead of by upper bounding");
         options.addOption("e", "equivalence", false,
@@ -283,7 +284,6 @@ public class Solvers {
             if (filename == null && rargs.length > 0) {
                 filename = rargs[others++];
             }
-
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
                 if (isModeOptimization) {
@@ -291,8 +291,11 @@ public class Solvers {
                         framework = "maxsat";
                     else
                         framework = "pb";
-                } else
+                } else if (filename != null && filename.endsWith("opb")) {
+                    framework = "pb";
+                } else {
                     framework = "minisat";
+                }
             }
 
             try {
