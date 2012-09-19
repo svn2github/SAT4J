@@ -42,7 +42,7 @@ public class FixedFrequencyRestarts implements RestartStrategy {
 
     private long conflictCount;
 
-    private long frequency;
+    private long period;
 
     public void reset() {
         conflictCount = 0;
@@ -58,11 +58,11 @@ public class FixedFrequencyRestarts implements RestartStrategy {
 
     @Deprecated
     public long nextRestartNumberOfConflict() {
-        return frequency;
+        return period;
     }
 
     public boolean shouldRestart() {
-        if (conflictCount < frequency)
+        if (conflictCount < period)
             return false;
         conflictCount = 0;
         return true;
@@ -81,11 +81,16 @@ public class FixedFrequencyRestarts implements RestartStrategy {
     public void newLearnedClause(Constr learned, int trailLevel) {
     }
 
-    public long getFrequency() {
-        return frequency;
+    public long getPeriod() {
+        return period;
     }
 
-    public void setFrequency(long frequency) {
-        this.frequency = frequency;
+    public void setPeriod(long period) {
+        this.period = period;
+    }
+
+    @Override
+    public String toString() {
+        return "constant restarts strategy every " + this.period + " conflicts";
     }
 }
