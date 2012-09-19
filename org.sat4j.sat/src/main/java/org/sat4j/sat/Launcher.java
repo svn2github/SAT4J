@@ -117,10 +117,10 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             break;
         case PB_OPT:
         case PB_SAT:
-            reader = new PBInstanceReader((IPBSolver) theSolver);
+            instance = new PBInstanceReader((IPBSolver) theSolver);
             break;
         case CNF_SAT:
-            reader = new InstanceReader(theSolver);
+            instance = new InstanceReader(theSolver);
             break;
         }
 
