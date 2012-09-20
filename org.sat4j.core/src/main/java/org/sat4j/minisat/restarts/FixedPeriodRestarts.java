@@ -33,7 +33,7 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 
-public class FixedFrequencyRestarts implements RestartStrategy {
+public class FixedPeriodRestarts implements RestartStrategy {
 
     /**
      * 
