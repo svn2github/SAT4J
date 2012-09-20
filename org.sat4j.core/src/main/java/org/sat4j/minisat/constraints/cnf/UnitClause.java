@@ -43,6 +43,7 @@ import org.sat4j.specs.IVecInt;
 public class UnitClause implements Constr {
 
     protected final int literal;
+    protected double activity;
 
     public UnitClause(int value) {
         this.literal = value;
@@ -59,7 +60,7 @@ public class UnitClause implements Constr {
     }
 
     public double getActivity() {
-        throw new UnsupportedOperationException();
+        return activity;
     }
 
     public void incActivity(double claInc) {
@@ -67,7 +68,7 @@ public class UnitClause implements Constr {
     }
 
     public void setActivity(double claInc) {
-        // do nothing
+        activity = claInc;
     }
 
     public boolean locked() {
