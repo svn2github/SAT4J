@@ -319,8 +319,21 @@ public interface ISolver extends IProblem, Serializable {
      * @param prefix
      *            the prefix to put in front of each line
      * @since 1.6
+     * @deprecated using the prefix does no longer makes sense because the
+     *             solver owns it.
      */
+    @Deprecated
     void printStat(PrintWriter out, String prefix);
+
+    /**
+     * Display statistics to the given output writer
+     * 
+     * @param out
+     * @since 2.3.3
+     * 
+     * @see #setLogPrefix(String)
+     */
+    void printStat(PrintWriter out);
 
     /**
      * To obtain a map of the available statistics from the solver. Note that

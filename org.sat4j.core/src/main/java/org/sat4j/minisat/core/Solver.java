@@ -1983,6 +1983,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return status == Lbool.TRUE;
     }
 
+    public void printInfos(PrintWriter out) {
+        printInfos(out, prefix);
+    }
+
     public void printInfos(PrintWriter out, String prefix) {
         out.print(prefix);
         out.println("constraints type ");
@@ -2135,6 +2139,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      */
     public void printStat(PrintStream out, String prefix) {
         printStat(new PrintWriter(out, true), prefix);
+    }
+
+    public void printStat(PrintWriter out) {
+        printStat(out, prefix);
     }
 
     public void printStat(PrintWriter out, String prefix) {

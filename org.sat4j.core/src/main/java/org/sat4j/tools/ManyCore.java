@@ -512,6 +512,26 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     public ISolver getSolvingEngine() {
         throw new UnsupportedOperationException("Not supported yet in ManyCore");
     }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printStat(PrintWriter out) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printInfos(PrintWriter out) {
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+                    getLogPrefix(), i);
+            this.solvers.get(i).printInfos(out);
+        }
+
+    }
 }
 
 class RunnableSolver implements Runnable {

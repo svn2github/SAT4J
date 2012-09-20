@@ -198,4 +198,20 @@ public class DimacsOutputSolver extends AbstractOutputSolver {
     public boolean primeImplicant(int p) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printStat(PrintWriter out) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printInfos(PrintWriter out) {
+        throw new UnsupportedOperationException();
+
+    }
 }

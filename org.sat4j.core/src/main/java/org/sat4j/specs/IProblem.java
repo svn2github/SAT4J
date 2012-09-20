@@ -208,7 +208,19 @@ public interface IProblem {
      *            the place to print the information
      * @param prefix
      *            the prefix to put in front of each line
+     * 
      */
+    @Deprecated
     void printInfos(PrintWriter out, String prefix);
 
+    /**
+     * To print additional informations regarding the problem.
+     * 
+     * @param out
+     *            the place to print the information
+     * @see #setLogPrefix(String)
+     * @since 2.3.3
+     * 
+     */
+    void printInfos(PrintWriter out);
 }

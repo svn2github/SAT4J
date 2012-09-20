@@ -124,8 +124,8 @@ public interface ILauncherMode {
             if (solver != null) {
                 out.flush();
                 double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
-                solver.printStat(out, solver.getLogPrefix());
-                solver.printInfos(out, solver.getLogPrefix());
+                solver.printStat(out);
+                solver.printInfos(out);
                 out.println(ANSWER_PREFIX + exitCode);
                 if (exitCode == ExitCode.SATISFIABLE) {
                     int[] model = solver.model();
@@ -195,15 +195,15 @@ public interface ILauncherMode {
             }
             System.out.flush();
             out.flush();
-            solver.printStat(out, solver.getLogPrefix());
-            solver.printInfos(out, solver.getLogPrefix());
+            solver.printStat(out);
+            solver.printInfos(out);
             out.println(ANSWER_PREFIX + exitCode);
             if (exitCode == ExitCode.SATISFIABLE
                     || exitCode == ExitCode.OPTIMUM_FOUND || isIncomplete
                     && exitCode == ExitCode.UPPER_BOUND) {
                 if (displaySolutionLine) {
                     out.print(SOLUTION_PREFIX);
-                    reader.decode(solver.model(), out);
+                    reader.decode(problem.model(), out);
                     out.println();
                 }
                 IOptimizationProblem optproblem = (IOptimizationProblem) problem;

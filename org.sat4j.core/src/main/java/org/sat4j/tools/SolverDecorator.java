@@ -86,6 +86,16 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
     /*
      * (non-Javadoc)
      * 
+     * @see org.sat4j.specs.IProblem#printInfos(java.io.PrintWriter,
+     * java.lang.String)
+     */
+    public void printInfos(PrintWriter out) {
+        this.solver.printInfos(out);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.sat4j.specs.IProblem#isSatisfiable(boolean)
      */
     public boolean isSatisfiable(boolean global) throws TimeoutException {
@@ -186,6 +196,10 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 
     public void printStat(PrintWriter out, String prefix) {
         this.solver.printStat(out, prefix);
+    }
+
+    public void printStat(PrintWriter out) {
+        this.solver.printStat(out);
     }
 
     private T solver;

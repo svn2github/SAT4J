@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import java.io.PrintWriter;
+
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVecInt;
@@ -222,5 +224,21 @@ public class DimacsStringSolver extends AbstractOutputSolver {
      */
     public boolean primeImplicant(int p) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printStat(PrintWriter out) {
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * @since 2.3.3
+     */
+    public void printInfos(PrintWriter out) {
+        throw new UnsupportedOperationException();
+
     }
 }
