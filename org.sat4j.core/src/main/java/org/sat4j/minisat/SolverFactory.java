@@ -43,12 +43,12 @@ import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.learning.NoLearningButHeuristics;
 import org.sat4j.minisat.learning.PercentLengthLearning;
 import org.sat4j.minisat.orders.PhaseCachingAutoEraseStrategy;
-import org.sat4j.minisat.orders.PureOrder;
 import org.sat4j.minisat.orders.RSATLastLearnedClausesPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.ArminRestarts;
+import org.sat4j.minisat.restarts.Glucose21Restarts;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.minisat.restarts.NoRestarts;
@@ -139,6 +139,13 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         return solver;
     }
 
+    public static ICDCL<DataStructureFactory> newGlucose21() {
+        Solver<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
+        solver.setRestartStrategy(new Glucose21Restarts(solver.getStats()));
+        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        return solver;
+    }
+
     private static Solver<DataStructureFactory> newBestCurrentSolverConfiguration(
             DataStructureFactory dsf) {
         MiniSATLearning<DataStructureFactory> learning = new MiniSATLearning<DataStructureFactory>();
@@ -203,14 +210,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
      * 
      * @since 2.2
      */
-    public static ICDCL<DataStructureFactory> newBestSingleWL() {
-        return newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
-    }
-
-    /**
-     * 
-     * @since 2.2
-     */
     public static ICDCL<DataStructureFactory> newBest17() {
         Solver<DataStructureFactory> solver = newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
         solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION_WLONLY);
@@ -241,18 +240,6 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
     public static Solver<DataStructureFactory> newMiniLearningHeap(
             DataStructureFactory dsf) {
         return newMiniLearning(dsf, new VarOrderHeap());
-    }
-
-    /**
-     * @return a default minilearning SAT solver choosing periodically to branch
-     *         on "pure watched" literals if any. (a pure watched literal l is a
-     *         literal that is watched on at least one clause such that its
-     *         negation is not watched at all. It is not necessarily a watched
-     *         literal.)
-     */
-    public static ICDCL<DataStructureFactory> newMiniLearningPure() {
-        return newMiniLearning(new MixedDataStructureDanielWL(),
-                new PureOrder());
     }
 
     /**
@@ -368,7 +355,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
      *      instance of ASolverFactory.
      */
     public static ISolver newDefault() {
-        return newMiniLearningHeapRsatExpSimpBiere();
+        return newGlucose21(); // newMiniLearningHeapRsatExpSimpBiere();
     }
 
     @Override
