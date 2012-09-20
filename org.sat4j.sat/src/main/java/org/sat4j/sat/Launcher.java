@@ -335,6 +335,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             HelpFormatter helpf = new HelpFormatter();
             helpf.printHelp("java -jar sat4j.jar", options, true);
             usage();
+            System.exit(0);
         }
         return null;
     }
@@ -346,7 +347,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             this.solver = configureSolver(args);
             if (this.solver == null) {
                 usage();
-                return;
+                System.exit(0);
             }
             if (!this.silent) {
                 this.solver.setVerbose(true);
@@ -354,7 +355,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             String instanceName = getInstanceName(args);
             if (instanceName == null) {
                 usage();
-                return;
+                System.exit(0);
             }
             this.beginTime = System.currentTimeMillis();
             if (!this.launchRemoteControl) {
