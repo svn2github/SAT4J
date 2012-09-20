@@ -82,6 +82,11 @@ import org.sat4j.tools.MultiTracing;
  */
 public class Launcher extends AbstractLauncher implements ILogAble {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     private boolean isModeOptimization = false;
 
     private boolean modeTracing = false;
@@ -150,8 +155,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             this.isModeOptimization = cmd.hasOption("opt");
 
             this.filename = cmd.getOptionValue("f");
-
-            setDisplaySolutionLine(!cmd.hasOption("n"));
+            
             boolean equivalence = cmd.hasOption("e");
 
             int others = 0;
@@ -178,22 +182,6 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             } else {
                 typeProbleme = ProblemType.CNF_SAT;
             }
-
-            //            String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
-
-            // if (framework == null) {
-            // if (isModeOptimization) {
-            // if (filename.endsWith("cnf")) {
-            // framework = "maxsat";
-            // } else {
-            // framework = "pb";
-            // }
-            // } else {
-            // framework = "minisat";
-            // }
-            // } else if (framework.equalsIgnoreCase("maxsat")) {
-            // isModeOptimization = true;
-            // }
 
             ISolver asolver = Solvers.configureSolver(args, this);
 
@@ -287,33 +275,9 @@ public class Launcher extends AbstractLauncher implements ILogAble {
                 break;
             }
 
-            // if (this.isModeOptimization) {
-            // setLauncherMode(ILauncherMode.OPTIMIZATION);
-            // // assert asolver instanceof IPBSolver;
-            // if (framework.equalsIgnoreCase("pb")) {
-            // this.problem = new PseudoOptDecorator(
-            // (IPBCDCLSolver) asolver);
-            // } else if (framework.equalsIgnoreCase("maxsat")) {
-            // // WeightedMaxSatDecorator wmsd;
-            // asolver = new WeightedMaxSatDecorator(
-            // (IPBCDCLSolver) asolver, equivalence);
-            // if (cmd.hasOption("lo")) {
-            // this.problem = new ConstraintRelaxingPseudoOptDecorator(
-            // (WeightedMaxSatDecorator) asolver);
-            // } else {
-            // this.problem = new PseudoOptDecorator(
-            // (WeightedMaxSatDecorator) asolver, false,
-            // !equivalence);
-            // }
-            //
-            // }
-            // } else {
-            // setLauncherMode(ILauncherMode.DECISION);
-            // }
-
             setIncomplete(cmd.hasOption("i"));
 
-            setDisplaySolutionLine(cmd.hasOption("n"));
+            setDisplaySolutionLine(!cmd.hasOption("n"));
 
             // use remaining data to configure the solver
             while (others < rargs.length) {
