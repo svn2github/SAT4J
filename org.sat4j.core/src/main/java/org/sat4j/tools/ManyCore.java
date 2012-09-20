@@ -517,8 +517,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
      * @since 2.3.3
      */
     public void printStat(PrintWriter out) {
-        throw new UnsupportedOperationException();
-
+        printStat(out, getLogPrefix());
     }
 
     /**
