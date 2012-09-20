@@ -103,8 +103,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
     }
 
     protected void displayResult() {
-        launcherMode.displayResult(solver, problem, this, out, exitCode,
-                reader, beginTime, displaySolutionLine);
+        launcherMode.displayResult(solver, problem, this, out, reader,
+                beginTime, displaySolutionLine);
     }
 
     public abstract void usage();
@@ -241,7 +241,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
     }
 
     protected void solve(IProblem problem) throws TimeoutException {
-        this.setExitCode(launcherMode.solve(problem, this, out, beginTime));
+        launcherMode.solve(problem, this, out, beginTime);
+        this.setExitCode(launcherMode.getCurrentExitCode());
     }
 
     /**

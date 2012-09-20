@@ -65,8 +65,6 @@ public interface ILauncherMode {
      *            the element that is able to log the result
      * @param out
      *            the printwriter to associate to the solver
-     * @param exitCode
-     *            the status of the solver's result
      * @param reader
      *            the problem reader
      * @param beginTime
@@ -76,7 +74,7 @@ public interface ILauncherMode {
      *            (not recommended for large solutions)
      */
     void displayResult(ISolver solver, IProblem problem, ILogAble logger,
-            PrintWriter out, ExitCode exitCode, Reader reader, long beginTime,
+            PrintWriter out, Reader reader, long beginTime,
             boolean displaySolutionLine);
 
     /**
@@ -93,7 +91,7 @@ public interface ILauncherMode {
      *            the time at which the solver starts
      * @return
      */
-    ExitCode solve(IProblem problem, ILogAble logger, PrintWriter out,
+    void solve(IProblem problem, ILogAble logger, PrintWriter out,
             long beginTime);
 
     /**
@@ -105,13 +103,24 @@ public interface ILauncherMode {
     void setIncomplete(boolean isIncomplete);
 
     /**
+     * Allow the launcher to get the current status of the problem: SAT, UNSAT,
+     * UPPER_BOUND, etc.
+     * 
+     * @return
+     */
+    ExitCode getCurrentExitCode();
+
+    /**
      * The launcher is in decision mode: the answer is either SAT, UNSAT or
      * UNKNOWN
      */
     ILauncherMode DECISION = new ILauncherMode() {
+
+        private ExitCode exitCode = ExitCode.UNKNOWN;
+
         public void displayResult(ISolver solver, IProblem problem,
-                ILogAble logger, PrintWriter out, ExitCode exitCode,
-                Reader reader, long beginTime, boolean displaySolutionLine) {
+                ILogAble logger, PrintWriter out, Reader reader,
+                long beginTime, boolean displaySolutionLine) {
             if (solver != null) {
                 out.flush();
                 double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
@@ -139,21 +148,26 @@ public interface ILauncherMode {
             }
         }
 
-        public ExitCode solve(IProblem problem, ILogAble logger,
-                PrintWriter out, long beginTime) {
+        public void solve(IProblem problem, ILogAble logger, PrintWriter out,
+                long beginTime) {
+            exitCode = ExitCode.UNKNOWN;
             try {
                 if (problem.isSatisfiable()) {
-                    return ExitCode.SATISFIABLE;
+                    exitCode = ExitCode.SATISFIABLE;
+                } else {
+                    exitCode = ExitCode.UNSATISFIABLE;
                 }
-                return ExitCode.UNSATISFIABLE;
             } catch (TimeoutException e) {
                 logger.log("timeout");
-                return ExitCode.UNKNOWN;
             }
 
         }
 
         public void setIncomplete(boolean isIncomplete) {
+        }
+
+        public ExitCode getCurrentExitCode() {
+            return exitCode;
         };
     };
 
@@ -165,6 +179,8 @@ public interface ILauncherMode {
      */
     ILauncherMode OPTIMIZATION = new ILauncherMode() {
 
+        private ExitCode exitCode = ExitCode.UNKNOWN;
+
         private boolean isIncomplete = false;
 
         public void setIncomplete(boolean isIncomplete) {
@@ -172,8 +188,8 @@ public interface ILauncherMode {
         }
 
         public void displayResult(ISolver solver, IProblem problem,
-                ILogAble logger, PrintWriter out, ExitCode exitCode,
-                Reader reader, long beginTime, boolean displaySolutionLine) {
+                ILogAble logger, PrintWriter out, Reader reader,
+                long beginTime, boolean displaySolutionLine) {
             if (solver == null) {
                 return;
             }
@@ -200,22 +216,21 @@ public interface ILauncherMode {
                     + (System.currentTimeMillis() - beginTime) / 1000.0);
         }
 
-        public ExitCode solve(IProblem problem, ILogAble logger,
-                PrintWriter out, long beginTime) {
+        public void solve(IProblem problem, ILogAble logger, PrintWriter out,
+                long beginTime) {
             boolean isSatisfiable = false;
             IOptimizationProblem optproblem = (IOptimizationProblem) problem;
-            ExitCode exitCode = ExitCode.UNKNOWN;
+            exitCode = ExitCode.UNKNOWN;
 
             try {
                 while (optproblem.admitABetterSolution()) {
                     if (!isSatisfiable) {
                         if (optproblem.nonOptimalMeansSatisfiable()) {
                             logger.log("SATISFIABLE");
-                            if (optproblem.hasNoObjectiveFunction()) {
-
-                                return ExitCode.SATISFIABLE;
-                            }
                             exitCode = ExitCode.SATISFIABLE;
+                            if (optproblem.hasNoObjectiveFunction()) {
+                                return;
+                            }
                         } else if (isIncomplete) {
                             exitCode = ExitCode.UPPER_BOUND;
                         }
@@ -229,18 +244,21 @@ public interface ILauncherMode {
                     optproblem.discardCurrentSolution();
                 }
                 if (isSatisfiable) {
-                    return ExitCode.OPTIMUM_FOUND;
+                    exitCode = ExitCode.OPTIMUM_FOUND;
                 } else {
-                    return ExitCode.UNSATISFIABLE;
+                    exitCode = ExitCode.UNSATISFIABLE;
                 }
             } catch (ContradictionException ex) {
                 assert isSatisfiable;
-                return ExitCode.OPTIMUM_FOUND;
+                exitCode = ExitCode.OPTIMUM_FOUND;
             } catch (TimeoutException e) {
                 logger.log("timeout");
-                return exitCode;
             }
 
+        }
+
+        public ExitCode getCurrentExitCode() {
+            return exitCode;
         }
     };
 
