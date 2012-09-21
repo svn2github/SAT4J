@@ -285,7 +285,7 @@ public class StatisticsSolver implements ISolver {
             }
 
         }
-        System.out.println("c Distribution of constraints :");
+        System.out.println("c Distribution of constraints size:");
         int nbclauses = 0;
         for (Map.Entry<Integer, Counter> entry : sizes.entrySet()) {
             System.out.printf("c %d => %d\n", entry.getKey(), entry.getValue()
