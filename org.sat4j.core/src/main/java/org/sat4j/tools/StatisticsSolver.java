@@ -298,7 +298,7 @@ public class StatisticsSolver implements ISolver {
         System.out.printf("variable occurrences (min/max/avg) ");
         System.out.printf("literals occurrences (min/max/avg) ");
         System.out
-                .println("Specific clauses: #positive  #negative #horn  #dualhorn #remaining #total");
+                .println("Specific clauses: #positive  #negative #horn  #dualhorn #remaining");
 
         System.out.printf("c %d %d %d %d %d %d %d %d %d ",
                 realNumberOfVariables, realNumberOfLiterals, nbclauses,
