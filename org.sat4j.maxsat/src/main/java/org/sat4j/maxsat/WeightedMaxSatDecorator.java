@@ -30,6 +30,8 @@
 package org.sat4j.maxsat;
 
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.Vec;
@@ -72,6 +74,10 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
 
     private final ObjectiveFunction obj = new ObjectiveFunction(this.lits,
             this.coefs);
+
+    private final Set<Integer> unitClauses = new HashSet<Integer>();
+    
+    private boolean noNewVarForUnitSoftClauses = true;
 
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
@@ -180,13 +186,16 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
         checkMaxVarId();
         if (weight.compareTo(this.top) < 0) {
 
-            if (literals.size() == 1) {
+            if (literals.size() == 1 && noNewVarForUnitSoftClauses) {
                 // if there is only a coefficient and a literal, no need to
                 // create
                 // a new variable
                 // check first if the literal is already in the list:
                 int lit = -literals.get(0);
                 int index = this.lits.containsAt(lit);
+                
+                this.unitClauses.add(-lit);
+                
                 if (index == -1) {
                     // check if the opposite literal is already there
                     index = this.lits.containsAt(-lit);
@@ -210,6 +219,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                             this.coefs.delete(index);
                         }
                         this.obj.setCorrection(this.falsifiedWeight);
+
                     } else {
                         registerLiteral(lit);
                         this.lits.push(lit);
@@ -452,4 +462,29 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                     (BigInteger) forcedValue);
         }
     }
+
+    /**
+     * Returns the set of unit clauses added to the solver. 
+     */
+    public Set<Integer> getUnitClauses(){
+        return this.unitClauses;
+    }
+
+    /**
+     * Returns true if no new variable should be created when adding a soft unit clause, false otherwise. By default, this is set to true.
+     * @return
+     */
+    public boolean isNoNewVarForUnitSoftClauses() {
+        return noNewVarForUnitSoftClauses;
+    }
+
+    /**
+     * Sets whether new variables should be created when adding new clauses. By default, this is set to true. This can be useful when computing all muses.
+     * @param noNewVarForUnitSoftClauses
+     */
+    public void setNoNewVarForUnitSoftClauses(boolean noNewVarForUnitSoftClauses) {
+        this.noNewVarForUnitSoftClauses = noNewVarForUnitSoftClauses;
+    }
+    
+    
 }
