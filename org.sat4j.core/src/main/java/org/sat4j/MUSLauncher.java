@@ -113,8 +113,8 @@ public class MUSLauncher extends AbstractLauncher {
     protected void displayResult() {
         if (this.solver != null) {
             double wallclocktime = (System.currentTimeMillis() - this.beginTime) / 1000.0;
-            this.solver.printStat(this.out, COMMENT_PREFIX);
-            this.solver.printInfos(this.out, COMMENT_PREFIX);
+            this.solver.printStat(this.out);
+            this.solver.printInfos(this.out);
             this.out.println(ILauncherMode.ANSWER_PREFIX + this.exitCode);
             if (this.exitCode == ExitCode.SATISFIABLE) {
                 int[] model = this.solver.model();
