@@ -247,6 +247,7 @@ public class StatisticsSolver implements ISolver {
     public void printStat(PrintWriter out) {
         int realNumberOfVariables = 0;
         int realNumberOfLiterals = 0;
+        int pureLiterals = 0;
         int minOccV = Integer.MAX_VALUE;
         int maxOccV = Integer.MIN_VALUE;
         int sumV = 0;
@@ -255,12 +256,16 @@ public class StatisticsSolver implements ISolver {
         int maxOccL = Integer.MIN_VALUE;
         int sumL = 0;
         IVecInt list;
+        boolean oneNull;
         int max = sizeoccurrences.length - 1;
         for (int i = 1; i < max; i += 2) {
             sizeV = 0;
+            oneNull = false;
             for (int k = 0; k < 2; k++) {
                 list = sizeoccurrences[i + k];
-                if (list != null) {
+                if (list == null) {
+                    oneNull = true;
+                } else {
                     realNumberOfLiterals++;
                     sizeL = list.size();
                     sizeV += sizeL;
@@ -273,7 +278,11 @@ public class StatisticsSolver implements ISolver {
                     sumL += sizeL;
                 }
             }
+
             if (sizeV > 0) {
+                if (oneNull) {
+                    pureLiterals++;
+                }
                 realNumberOfVariables++;
                 if (minOccV > sizeV) {
                     minOccV = sizeV;
@@ -294,16 +303,16 @@ public class StatisticsSolver implements ISolver {
         }
 
         System.out
-                .printf("c Real number of variables, literals, number of clauses ");
+                .printf("c Real number of variables, literals, number of clauses, #pureliterals, ");
         System.out.printf("variable occurrences (min/max/avg) ");
         System.out.printf("literals occurrences (min/max/avg) ");
         System.out
                 .println("Specific clauses: #positive  #negative #horn  #dualhorn #remaining");
 
-        System.out.printf("c %d %d %d %d %d %d %d %d %d ",
+        System.out.printf("%d %d %d %d %d %d %d %d %d %d ",
                 realNumberOfVariables, realNumberOfLiterals, nbclauses,
-                minOccV, maxOccV, sumV / realNumberOfVariables, minOccL,
-                maxOccL, sumL / realNumberOfLiterals);
+                pureLiterals, minOccV, maxOccV, sumV / realNumberOfVariables,
+                minOccL, maxOccL, sumL / realNumberOfLiterals);
         System.out.printf("%d %d %d %d %d\n", allpositive, allnegative, horn,
                 dualhorn, nbclauses - allpositive - allnegative - horn
                         - dualhorn);
