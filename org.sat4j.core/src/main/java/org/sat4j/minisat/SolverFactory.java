@@ -56,6 +56,7 @@ import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;
 import org.sat4j.tools.OptToSatAdapter;
+import org.sat4j.tools.StatisticsSolver;
 
 /**
  * User friendly access to pre-constructed solvers.
@@ -381,6 +382,10 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 
     public static ISolver newDimacsOutput() {
         return new DimacsOutputSolver();
+    }
+
+    public static ISolver newStatistics() {
+        return new StatisticsSolver();
     }
 
 }
