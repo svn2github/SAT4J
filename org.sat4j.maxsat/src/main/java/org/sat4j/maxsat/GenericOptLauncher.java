@@ -29,6 +29,9 @@
  *******************************************************************************/
 package org.sat4j.maxsat;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -41,7 +44,10 @@ import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.reader.DimacsReader;
+import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 
 /**
@@ -112,6 +118,7 @@ public class GenericOptLauncher extends AbstractLauncher {
         return reader;
     }
 
+    
     @Override
     protected String getInstanceName(String[] args) {
         return args[args.length - 1];
@@ -126,6 +133,7 @@ public class GenericOptLauncher extends AbstractLauncher {
         if (args.length == 0) {
             HelpFormatter helpf = new HelpFormatter();
             helpf.printHelp("java -jar sat4j-maxsat.jar", options, true);
+            System.exit(0);
         } else {
             try {
                 CommandLine cmd = new PosixParser().parse(options, args);
@@ -193,5 +201,13 @@ public class GenericOptLauncher extends AbstractLauncher {
     public static void main(String[] args) {
         AbstractLauncher lanceur = new GenericOptLauncher();
         lanceur.run(args);
+    }
+
+    @Override
+    protected IProblem readProblem(String problemname)
+            throws FileNotFoundException, ParseFormatException, IOException,
+            ContradictionException {
+        super.readProblem(problemname);
+        return solver;
     }
 }
