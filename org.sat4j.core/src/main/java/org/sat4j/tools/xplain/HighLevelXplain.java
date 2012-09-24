@@ -38,6 +38,7 @@ import java.util.Map;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
@@ -55,7 +56,7 @@ import org.sat4j.tools.SolverDecorator;
  * @since 2.1
  */
 public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
-        implements Explainer {
+        implements Explainer, IGroupSolver {
 
     protected Map<Integer, Integer> constrs = new HashMap<Integer, Integer>();
 
@@ -71,14 +72,12 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         super(solver);
     }
 
-    /**
+    /*
+     * (non-Javadoc)
      * 
-     * @param literals
-     *            a clause
-     * @param desc
-     *            the level of the clause set
-     * @return on object representing that clause in the solver.
-     * @throws ContradictionException
+     * @see
+     * org.sat4j.tools.xplain.IGroupSolver#addClause(org.sat4j.specs.IVecInt,
+     * int)
      */
     public IConstr addClause(IVecInt literals, int desc)
             throws ContradictionException {

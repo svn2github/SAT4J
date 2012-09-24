@@ -32,8 +32,7 @@ package org.sat4j.reader;
 import java.io.IOException;
 
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
-import org.sat4j.tools.xplain.HighLevelXplain;
+import org.sat4j.specs.IGroupSolver;
 
 public class GroupedCNFReader extends DimacsReader {
 
@@ -44,13 +43,13 @@ public class GroupedCNFReader extends DimacsReader {
 
     private int numberOfComponents;
 
-    private final HighLevelXplain<ISolver> hlxplain;
+    private final IGroupSolver groupSolver;
 
     private int currentComponentIndex;
 
-    public GroupedCNFReader(HighLevelXplain<ISolver> solver) {
+    public GroupedCNFReader(IGroupSolver solver) {
         super(solver, "gcnf");
-        this.hlxplain = solver;
+        this.groupSolver = solver;
     }
 
     /**
@@ -136,9 +135,9 @@ public class GroupedCNFReader extends DimacsReader {
     protected void flushConstraint() throws ContradictionException {
         try {
             if (this.currentComponentIndex == 0) {
-                this.hlxplain.addClause(this.literals);
+                this.groupSolver.addClause(this.literals);
             } else {
-                this.hlxplain.addClause(this.literals,
+                this.groupSolver.addClause(this.literals,
                         this.currentComponentIndex);
             }
         } catch (IllegalArgumentException ex) {
