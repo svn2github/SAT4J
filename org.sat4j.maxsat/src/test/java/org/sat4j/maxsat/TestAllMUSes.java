@@ -315,10 +315,179 @@ public class TestAllMUSes {
         clause.push(-4).push(1);
         this.solver.addClause(clause);
         clause.clear();
-        IVecInt assump = new VecInt();
-        assump.push(4);
         List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
         assertEquals(0, muses.size());
     }
+    
+    @Test
+    public void testExample1CADECedric() throws ContradictionException,
+    TimeoutException{
+        this.solver.newVar(5);
+        IVecInt clause = new VecInt();
+        
+        clause.push(-4).push(5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(2);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(-3).push(-5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(3).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-2);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        assertEquals(2, muses.size());
+    }
+    
+    @Test
+    public void testExample3CADECedric() throws ContradictionException,
+    TimeoutException{
+        this.solver.newVar(6);
+        IVecInt clause = new VecInt();
+        
+        clause.push(1);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-2).push(-5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(6);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(3).push(-4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(4).push(6);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-6).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-5).push(-6);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(-3).push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        assertEquals(9, muses.size());
+    }        
 
+    @Test
+    public void testExample3IJCAICedric() throws ContradictionException,
+    TimeoutException{
+        this.solver.newVar(5);
+        IVecInt clause = new VecInt();
+        
+        clause.push(4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(2);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-2).push(-5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(-2);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(-5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(2).push(5);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(2).push(-3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(-1).push(2).push(-4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(-2).push(3);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        clause.push(1).push(-2).push(-4);
+        this.solver.addClause(clause);
+        clause.clear();
+        
+        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        
+        assertEquals(17, muses.size());
+    }        
+    
 }
