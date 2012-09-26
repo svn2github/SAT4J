@@ -57,7 +57,7 @@ public class RTSI {
 
     public static Vector<String> alreadySeenPckges;
 
-    public static Vector<String> find(String tosubclassname) {
+    public static Vector<String> find(String tosubclassname, boolean fullname) {
         alreadySeenPckges = new Vector<String>();
         Set<String> v = new HashSet<String>();
         Set<String> tmp;
@@ -67,7 +67,7 @@ public class RTSI {
             Class<?> tosubclass = Class.forName(tosubclassname);
             Package[] pcks = Package.getPackages();
             for (Package pck : pcks) {
-                tmp = find(pck.getName(), tosubclass);
+                tmp = find(pck.getName(), tosubclass, fullname);
                 if (tmp != null) {
                     v.addAll(tmp);
                 }
@@ -78,28 +78,48 @@ public class RTSI {
         return new Vector<String>(v);
     }
 
-    public static Set<String> find(String pckname, String tosubclassname) {
+    public static Set<String> find(String pckname, String tosubclassname,
+            boolean fullname) {
         Set<String> v = new HashSet<String>();
         try {
             Class<?> tosubclass = Class.forName(tosubclassname);
-            v = find(pckname, tosubclass);
+            v = find(pckname, tosubclass, fullname);
         } catch (ClassNotFoundException ex) {
             System.err.println("Class " + tosubclassname + " not found!");
         }
         return v;
     }
 
-    public static Set<String> find(String pckgname, Class<?> tosubclass) {
+    public static Set<String> find(String pckgname, Class<?> tosubclass,
+            boolean fullname) {
         if (alreadySeenPckges.contains(pckgname)) {
             return new HashSet<String>();
         } else {
             alreadySeenPckges.add(pckgname);
-            return findnames(pckgname, tosubclass);
+            return findnames(pckgname, tosubclass, fullname);
         }
     }
 
+    public static Vector<String> find(String tosubclassname) {
+        return find(tosubclassname, false);
+    }
+
+    public static Set<String> find(String pckname, String tosubclassname) {
+        return find(pckname, tosubclassname, false);
+    }
+
+    public static Set<String> find(String pckgname, Class<?> tosubclass) {
+        return find(pckgname, tosubclass, false);
+    }
+
     public static Set<String> findnames(String pckgname, Class<?> tosubclass) {
+        return findnames(pckgname, tosubclass, false);
+    }
+
+    public static Set<String> findnames(String pckgname, Class<?> tosubclass,
+            boolean fullname) {
         Set<String> v = new HashSet<String>();
+
         // Code from JWhich
         // ======
         // Translate the package name into an absolute path
@@ -111,24 +131,7 @@ public class RTSI {
 
         // Get a File object for the package
         URL url = RTSI.class.getResource(name);
-        // URL url = tosubclass.getResource(name);
-        // URL url = ClassLoader.getSystemClassLoader().getResource(name);
-        // System.out.println(name+"->"+url);
 
-        // Happens only if the jar file is not well constructed, i.e.
-        // if the directories do not appear alone in the jar file like here:
-        //
-        // meta-inf/
-        // meta-inf/manifest.mf
-        // commands/ <== IMPORTANT
-        // commands/Command.class
-        // commands/DoorClose.class
-        // commands/DoorLock.class
-        // commands/DoorOpen.class
-        // commands/LightOff.class
-        // commands/LightOn.class
-        // RTSI.class
-        //
         if (url == null) {
             return null;
         }
@@ -144,7 +147,7 @@ public class RTSI {
 
                 // we are only interested in .class files
                 if (file.endsWith(".class")) {
-                    // removes the .class extension
+
                     String classname = file.substring(0, file.length() - 6);
                     try {
                         // Try to create an instance of the object
@@ -152,22 +155,18 @@ public class RTSI {
 
                         if (tosubclass.isAssignableFrom(o) && !o.isInterface()
                                 && !Modifier.isAbstract(o.getModifiers())) {
-                            // System.out.println(classname);
-                            v.add(classname);
+                            if (fullname) {
+                                v.add(pckgname + "." + classname);
+                            } else {
+                                v.add(classname);
+                            }
                         }
                     } catch (NoClassDefFoundError cnfex) {
-                        // System.out.println("Warning : no classDefFoundError : "
-                        // + classname);
+
                     } catch (ClassNotFoundException cnfex) {
                         System.err.println(cnfex);
                     }
-                    // catch (InstantiationException iex) {
-                    // // We try to instanciate an interface
-                    // // or an object that does not have a
-                    // // default constructor
-                    // } catch (IllegalAccessException iaex) {
-                    // // The class is not public
-                    // }
+
                 }
             }
             File[] dirs = directory.listFiles(new FilenameFilter() {
@@ -179,7 +178,7 @@ public class RTSI {
             Set<String> tmp;
             for (File dir : dirs) {
                 String newName = pckgname + "." + dir.getName();
-                tmp = find(newName, tosubclass);
+                tmp = find(newName, tosubclass, fullname);
                 if (tmp != null) {
                     v.addAll(tmp);
                 }
@@ -219,8 +218,12 @@ public class RTSI {
                                     && !o.isInterface()
                                     && !Modifier.isAbstract(o.getModifiers())) {
                                 // System.out.println(classname.substring(classname.lastIndexOf('.')+1));
-                                v.add(classname.substring(classname
-                                        .lastIndexOf('.') + 1));
+                                if (fullname) {
+                                    v.add(classname);
+                                } else {
+                                    v.add(classname.substring(classname
+                                            .lastIndexOf('.') + 1));
+                                }
                             }
                         } catch (NoClassDefFoundError cnfex) {
                             // System.out.println("Warning : no classDefFoundError : "
