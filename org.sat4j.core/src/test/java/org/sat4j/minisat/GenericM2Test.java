@@ -42,7 +42,7 @@ import org.sat4j.specs.ISolver;
  */
 public class GenericM2Test extends AbstractM2Test<ISolver> {
 
-    private String solvername;
+    private final String solvername;
 
     private static final SolverFactory FACTORY = SolverFactory.instance();
 
@@ -70,7 +70,8 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
         String name;
         for (String name2 : names) {
             name = name2;
-            if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name)) {
+            if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name)
+                    && !"Statistics".equals(name)) {
                 suite.addTest(new GenericM2Test(name));
             }
         }
