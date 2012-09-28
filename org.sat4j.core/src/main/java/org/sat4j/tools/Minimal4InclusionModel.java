@@ -53,11 +53,35 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
 
     private static final long serialVersionUID = 1L;
 
+    private final IVecInt pLiterals;
+
+    private int[] prevfullmodel;
+
+    /**
+     * 
+     * @param solver
+     * @param p
+     *            the set of literals on which the minimality for inclusion is
+     *            computed.
+     * @param trueLits
+     *            indicates whether the minimality should concern positive
+     *            literals or negative literals
+     */
+    public Minimal4InclusionModel(ISolver solver, IVecInt p) {
+        super(solver);
+        this.pLiterals = new VecInt(p.size());
+        p.copyTo(this.pLiterals);
+    }
+
     /**
      * @param solver
      */
     public Minimal4InclusionModel(ISolver solver) {
         super(solver);
+        this.pLiterals = new VecInt(solver.nVars());
+        for (int i = 0; i < solver.nVars() + 1; i++) {
+            this.pLiterals.push(-i);
+        }
     }
 
     /*
@@ -67,37 +91,47 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      */
     @Override
     public int[] model() {
+        // int[] prevfullmodel = null;
         int[] prevmodel = null;
         IVecInt vec = new VecInt();
         IVecInt cube = new VecInt();
         // backUp();
         try {
             do {
+                prevfullmodel = super.modelWithInternalVariables();
                 prevmodel = super.model();
                 vec.clear();
                 cube.clear();
-                for (int q : prevmodel) {
-                    if (q < 0) {
+                for (int q : prevfullmodel) {
+                    if (pLiterals.contains(q)) {
                         vec.push(-q);
                     } else {
                         cube.push(q);
                     }
                 }
-                addClause(vec);
+                addBlockingClause(vec);
             } while (isSatisfiable(cube));
         } catch (TimeoutException e) {
             throw new IllegalStateException("Solver timed out");
         } catch (ContradictionException e) {
             // added trivial unsat clauses
         }
-        // restore();
-        int[] newmodel = new int[vec.size()];
-        for (int i = 0, j = 0; i < prevmodel.length; i++) {
-            if (prevmodel[i] < 0) {
-                newmodel[j++] = prevmodel[i];
-            }
-        }
 
-        return newmodel;
+        return prevmodel;
+        // restore();
+        // int[] newmodel = new int[vec.size()];
+        // for (int i = 0, j = 0; i < prevmodel.length; i++) {
+        // if (prevmodel[i] < 0) {
+        // newmodel[j++] = prevmodel[i];
+        // }
+        // }
+        //
+        // return newmodel;
+    }
+
+    @Override
+    public int[] modelWithInternalVariables() {
+        model();
+        return prevfullmodel;
     }
 }
