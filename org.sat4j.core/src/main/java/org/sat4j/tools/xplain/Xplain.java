@@ -32,9 +32,7 @@ package org.sat4j.tools.xplain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -43,6 +41,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.FullClauseSelectorSolver;
 import org.sat4j.tools.SolverDecorator;
 
 /**
@@ -59,74 +58,19 @@ import org.sat4j.tools.SolverDecorator;
  *            a subinterface to ISolver.
  * @since 2.1
  */
-public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
-        Explainer {
-
-    protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
+public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
+        implements Explainer {
 
     protected IVecInt assump;
-
-    private int lastCreatedVar;
-    private boolean pooledVarId = false;
-    private final IVecInt lastClause = new VecInt();
-    private IConstr lastConstr;
-    private final boolean skipDuplicatedEntries;
 
     private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 
     public Xplain(T solver, boolean skipDuplicatedEntries) {
-        super(solver);
-        this.skipDuplicatedEntries = skipDuplicatedEntries;
+        super(solver, skipDuplicatedEntries);
     }
 
     public Xplain(T solver) {
         this(solver, true);
-    }
-
-    @Override
-    public IConstr addClause(IVecInt literals) throws ContradictionException {
-        if (this.skipDuplicatedEntries) {
-            if (literals.equals(this.lastClause)) {
-                // System.err.println("c Duplicated entry: " + literals);
-                return null;
-            }
-            this.lastClause.clear();
-            literals.copyTo(this.lastClause);
-        }
-        int newvar = createNewVar(literals);
-        literals.push(newvar);
-        this.lastConstr = super.addClause(literals);
-        if (this.lastConstr == null) {
-            discardLastestVar();
-        } else {
-            this.constrs.put(newvar, this.lastConstr);
-        }
-        return this.lastConstr;
-    }
-
-    /**
-     * 
-     * @param literals
-     * @return
-     * @since 2.1
-     */
-    protected int createNewVar(IVecInt literals) {
-        for (IteratorInt it = literals.iterator(); it.hasNext();) {
-            if (Math.abs(it.next()) > nextFreeVarId(false)) {
-                throw new IllegalStateException(
-                        "Please call newVar(int) before adding constraints!!!");
-            }
-        }
-        if (this.pooledVarId) {
-            this.pooledVarId = false;
-            return this.lastCreatedVar;
-        }
-        this.lastCreatedVar = nextFreeVarId(true);
-        return this.lastCreatedVar;
-    }
-
-    protected void discardLastestVar() {
-        this.pooledVarId = true;
     }
 
     @Override
@@ -203,14 +147,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
         this.xplainStrategy.cancelExplanationComputation();
     }
 
-    /**
-     * 
-     * @since 2.1
-     */
-    public Collection<IConstr> getConstraints() {
-        return this.constrs.values();
-    }
-
     @Override
     public int[] findModel() throws TimeoutException {
         this.assump = VecInt.EMPTY;
@@ -273,22 +209,6 @@ public class Xplain<T extends ISolver> extends SolverDecorator<T> implements
             extraVariables.push(-p);
         }
         return super.isSatisfiable(extraVariables, global);
-    }
-
-    @Override
-    public int[] model() {
-        int[] fullmodel = super.modelWithInternalVariables();
-        if (fullmodel == null) {
-            return null;
-        }
-        int[] model = new int[fullmodel.length - this.constrs.size()];
-        int j = 0;
-        for (int element : fullmodel) {
-            if (this.constrs.get(Math.abs(element)) == null) {
-                model[j++] = element;
-            }
-        }
-        return model;
     }
 
     @Override

@@ -31,18 +31,16 @@ package org.sat4j.tools.xplain;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.GroupClauseSelectorSolver;
 import org.sat4j.tools.SolverDecorator;
 
 /**
@@ -55,63 +53,15 @@ import org.sat4j.tools.SolverDecorator;
  *            a subinterface to ISolver.
  * @since 2.1
  */
-public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
-        implements Explainer, IGroupSolver {
-
-    protected Map<Integer, Integer> constrs = new HashMap<Integer, Integer>();
+public class HighLevelXplain<T extends ISolver> extends
+        GroupClauseSelectorSolver<T> implements Explainer {
 
     protected IVecInt assump;
 
-    private int lastCreatedVar;
-    private boolean pooledVarId = false;
-
     private MinimizationStrategy xplainStrategy = new DeletionStrategy();
-    private final Map<Integer, Integer> highLevelToVar = new HashMap<Integer, Integer>();
 
     public HighLevelXplain(T solver) {
         super(solver);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.sat4j.tools.xplain.IGroupSolver#addClause(org.sat4j.specs.IVecInt,
-     * int)
-     */
-    public IConstr addClause(IVecInt literals, int desc)
-            throws ContradictionException {
-        if (desc == 0) {
-            return addClause(literals);
-        }
-        Integer hlvar = this.highLevelToVar.get(desc);
-        if (hlvar == null) {
-            hlvar = createNewVar(literals);
-            this.highLevelToVar.put(desc, hlvar);
-            this.constrs.put(hlvar, desc);
-        }
-        literals.push(hlvar);
-        IConstr constr = super.addClause(literals);
-        return constr;
-    }
-
-    /**
-     * 
-     * @param literals
-     * @return
-     * @since 2.1
-     */
-    protected int createNewVar(IVecInt literals) {
-        if (this.pooledVarId) {
-            this.pooledVarId = false;
-            return this.lastCreatedVar;
-        }
-        this.lastCreatedVar = nextFreeVarId(true);
-        return this.lastCreatedVar;
-    }
-
-    protected void discardLastestVar() {
-        this.pooledVarId = true;
     }
 
     @Override
@@ -142,7 +92,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         if (solver instanceof SolverDecorator<?>) {
             solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
         }
-        return this.xplainStrategy.explain(solver, this.constrs, this.assump);
+        return this.xplainStrategy.explain(solver, this.varToHighLevel, this.assump);
     }
 
     public int[] minimalExplanation() throws TimeoutException {
@@ -165,7 +115,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         IVecInt keys = explanationKeys();
         Collection<Integer> explanation = new HashSet<Integer>(keys.size());
         for (IteratorInt it = keys.iterator(); it.hasNext();) {
-            explanation.add(this.constrs.get(it.next()));
+            explanation.add(this.varToHighLevel.get(it.next()));
         }
         return explanation;
     }
@@ -181,7 +131,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
     public int[] findModel() throws TimeoutException {
         this.assump = VecInt.EMPTY;
         IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.findModel(extraVariables);
@@ -192,7 +142,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         this.assump = assumps;
         IVecInt extraVariables = new VecInt();
         assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.findModel(extraVariables);
@@ -202,7 +152,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
     public boolean isSatisfiable() throws TimeoutException {
         this.assump = VecInt.EMPTY;
         IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.isSatisfiable(extraVariables);
@@ -212,7 +162,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
     public boolean isSatisfiable(boolean global) throws TimeoutException {
         this.assump = VecInt.EMPTY;
         IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.isSatisfiable(extraVariables, global);
@@ -223,7 +173,7 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         this.assump = assumps;
         IVecInt extraVariables = new VecInt();
         assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.isSatisfiable(extraVariables);
@@ -235,26 +185,10 @@ public class HighLevelXplain<T extends ISolver> extends SolverDecorator<T>
         this.assump = assumps;
         IVecInt extraVariables = new VecInt();
         assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
+        for (Integer p : this.varToHighLevel.keySet()) {
             extraVariables.push(-p);
         }
         return super.isSatisfiable(extraVariables, global);
-    }
-
-    @Override
-    public int[] model() {
-        int[] fullmodel = super.model();
-        if (fullmodel == null) {
-            return null;
-        }
-        int[] model = new int[fullmodel.length - this.constrs.size()];
-        int j = 0;
-        for (int element : fullmodel) {
-            if (this.constrs.get(Math.abs(element)) == null) {
-                model[j++] = element;
-            }
-        }
-        return model;
     }
 
     @Override
