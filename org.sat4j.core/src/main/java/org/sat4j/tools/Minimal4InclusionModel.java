@@ -57,31 +57,57 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
 
     private int[] prevfullmodel;
 
+    private final ModelListener modelListener;
+
     /**
      * 
      * @param solver
      * @param p
      *            the set of literals on which the minimality for inclusion is
      *            computed.
-     * @param trueLits
-     *            indicates whether the minimality should concern positive
-     *            literals or negative literals
+     * @param modelListener
+     *            an object to be notified when a new model is found.
      */
-    public Minimal4InclusionModel(ISolver solver, IVecInt p) {
+    public Minimal4InclusionModel(ISolver solver, IVecInt p,
+            ModelListener modelListener) {
         super(solver);
         this.pLiterals = new VecInt(p.size());
         p.copyTo(this.pLiterals);
+        this.modelListener = modelListener;
+    }
+
+    /**
+     * 
+     * @param solver
+     * @param p
+     *            the set of literals on which the minimality for inclusion is
+     *            computed.
+     */
+    public Minimal4InclusionModel(ISolver solver, IVecInt p) {
+        this(solver, p, ModelListener.VOID);
     }
 
     /**
      * @param solver
      */
     public Minimal4InclusionModel(ISolver solver) {
-        super(solver);
-        this.pLiterals = new VecInt(solver.nVars());
-        for (int i = 0; i < solver.nVars() + 1; i++) {
-            this.pLiterals.push(-i);
+        this(solver, negativeLiterals(solver), ModelListener.VOID);
+    }
+
+    public static IVecInt positiveLiterals(ISolver solver) {
+        IVecInt literals = new VecInt(solver.nVars());
+        for (int i = 1; i <= solver.nVars(); i++) {
+            literals.push(i);
         }
+        return literals;
+    }
+
+    public static IVecInt negativeLiterals(ISolver solver) {
+        IVecInt literals = new VecInt(solver.nVars());
+        for (int i = 1; i <= solver.nVars(); i++) {
+            literals.push(-i);
+        }
+        return literals;
     }
 
     /*
@@ -100,6 +126,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
             do {
                 prevfullmodel = super.modelWithInternalVariables();
                 prevmodel = super.model();
+                modelListener.onModelFound(prevmodel);
                 vec.clear();
                 cube.clear();
                 for (int q : prevfullmodel) {
