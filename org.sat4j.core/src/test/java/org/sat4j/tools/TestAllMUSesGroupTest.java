@@ -13,10 +13,12 @@ import org.sat4j.specs.IVecInt;
 
 public class TestAllMUSesGroupTest {
     private IGroupSolver solver;
+    private AllMUSes allMUSes;
 
     @Before
     public void setUp() throws Exception {
-        this.solver = AllMUSesGroup.getSolverInstance();
+        this.allMUSes = new AllMUSes(true);
+        this.solver = allMUSes.getSolverInstance();
     }
 
     @Test
@@ -43,7 +45,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c4, 4);
             this.solver.addClause(c5, 5);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 2);
 
@@ -78,7 +80,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c4, 2);
             this.solver.addClause(c5, 2);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 2);
 
@@ -112,7 +114,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c4, 2);
             this.solver.addClause(c5, 1);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 1);
 
@@ -146,7 +148,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c4, 2);
             this.solver.addClause(c5, 1);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 1);
 
@@ -180,7 +182,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c4, 4);
             this.solver.addClause(c5, 1);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 2);
 
@@ -204,7 +206,7 @@ public class TestAllMUSesGroupTest {
             this.solver.addClause(c1, 1);
             this.solver.addClause(c2, 2);
 
-            List<IVecInt> muses = AllMUSesGroup.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 1);
 

@@ -49,14 +49,26 @@ import org.sat4j.specs.TimeoutException;
  */
 public class AllMUSesGroup {
 
+    private final GroupClauseSelectorSolver<ISolver> gcss;
+    private final List<IVecInt> mssList;
+    private final List<IVecInt> secondPhaseClauses;
+    private final List<IVecInt> musList;
+
+    public AllMUSesGroup() {
+        this.gcss = new GroupClauseSelectorSolver<ISolver>(
+                SolverFactory.newDefault());
+        mssList = new ArrayList<IVecInt>();
+        musList = new ArrayList<IVecInt>();
+        secondPhaseClauses = new ArrayList<IVecInt>();
+    }
+
     /**
      * Gets an instance of ISolver that can be used to compute all MUSes
      * 
      * @return the instance of ISolver to which the clauses will be added
      */
-    public static IGroupSolver getSolverInstance() {
-        return new GroupClauseSelectorSolver<ISolver>(
-                SolverFactory.newDefault());
+    public IGroupSolver getSolverInstance() {
+        return this.gcss;
     }
 
     /**

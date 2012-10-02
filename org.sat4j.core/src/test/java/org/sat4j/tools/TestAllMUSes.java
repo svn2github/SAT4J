@@ -44,11 +44,13 @@ import org.sat4j.specs.TimeoutException;
 
 public class TestAllMUSes {
 
+    private AllMUSes allMUSes;
     private ISolver solver;
 
     @Before
     public void setUp() throws Exception {
-        this.solver = AllMUSes.getSolverInstance();
+        this.allMUSes = new AllMUSes();
+        this.solver = allMUSes.getSolverInstance();
     }
 
     @Test
@@ -74,7 +76,7 @@ public class TestAllMUSes {
             this.solver.addClause(c4);
             this.solver.addClause(c5);
 
-            List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 2);
 
@@ -98,7 +100,7 @@ public class TestAllMUSes {
             this.solver.addClause(c1);
             this.solver.addClause(c2);
 
-            List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+            List<IVecInt> muses = allMUSes.computeAllMUSes();
 
             assertEquals(muses.size(), 1);
 
@@ -124,7 +126,7 @@ public class TestAllMUSes {
         clause.push(-1).push(-2);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -145,7 +147,7 @@ public class TestAllMUSes {
         clause.push(-1).push(-2);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -169,7 +171,7 @@ public class TestAllMUSes {
         clause.push(1).push(3);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -193,7 +195,7 @@ public class TestAllMUSes {
         clause.push(1).push(3);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -217,7 +219,7 @@ public class TestAllMUSes {
         clause.push(-1).push(-2);
         IConstr c5 = this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
 
     }
@@ -242,7 +244,7 @@ public class TestAllMUSes {
         clause.push(-1).push(-2);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -269,7 +271,7 @@ public class TestAllMUSes {
         clause.push(-1).push(-4);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(2, muses.size());
     }
 
@@ -290,7 +292,7 @@ public class TestAllMUSes {
         clause.push(2);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(1, muses.size());
     }
 
@@ -311,7 +313,7 @@ public class TestAllMUSes {
         clause.push(-4).push(1);
         this.solver.addClause(clause);
         clause.clear();
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(0, muses.size());
     }
 
@@ -353,7 +355,7 @@ public class TestAllMUSes {
         this.solver.addClause(clause);
         clause.clear();
 
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(2, muses.size());
     }
 
@@ -419,7 +421,7 @@ public class TestAllMUSes {
         this.solver.addClause(clause);
         clause.clear();
 
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
         assertEquals(9, muses.size());
     }
 
@@ -481,7 +483,7 @@ public class TestAllMUSes {
         this.solver.addClause(clause);
         clause.clear();
 
-        List<IVecInt> muses = AllMUSes.computeAllMUSes(this.solver);
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
 
         assertEquals(17, muses.size());
     }

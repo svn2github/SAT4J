@@ -48,14 +48,42 @@ import org.sat4j.specs.TimeoutException;
  */
 public class AllMUSes {
 
+    private AbstractClauseSelectorSolver<ISolver> css;
+    private final List<IVecInt> mssList;
+    private final List<IVecInt> secondPhaseClauses;
+    private final List<IVecInt> musList;
+
+    private final boolean group;
+
+    public AllMUSes(boolean group) {
+        if (!group) {
+            this.css = new FullClauseSelectorSolver<ISolver>(
+                    SolverFactory.newDefault(), false);
+        } else {
+            this.css = new GroupClauseSelectorSolver<ISolver>(
+                    SolverFactory.newDefault());
+        }
+        mssList = new ArrayList<IVecInt>();
+        musList = new ArrayList<IVecInt>();
+        secondPhaseClauses = new ArrayList<IVecInt>();
+        this.group = group;
+    }
+
+    public AllMUSes() {
+        this(false);
+    }
+
     /**
      * Gets an instance of ISolver that can be used to compute all MUSes
      * 
      * @return the instance of ISolver to which the clauses will be added
      */
-    public static ISolver getSolverInstance() {
-        return new FullClauseSelectorSolver<ISolver>(
-                SolverFactory.newDefault(), false);
+    public <T extends ISolver> T getSolverInstance() {
+        return (T) this.css;
+    }
+
+    public List<IVecInt> computeAllMUSes() {
+        return computeAllMUSes(ModelListener.VOID);
     }
 
     /**
@@ -66,90 +94,37 @@ public class AllMUSes {
      *            the <code>ISolver</code> that contains the set of clauses
      * @return a list containing all the MUSes
      */
-    public static List<IVecInt> computeAllMUSes(ISolver solver) {
-        List<IVecInt> muses = new ArrayList<IVecInt>();
+    public List<IVecInt> computeAllMUSes(ModelListener listener) {
+        computeAllMSS();
 
-        FullClauseSelectorSolver<ISolver> fcss;
-
-        int nVar = solver.nVars();
-
-        if (!(solver instanceof FullClauseSelectorSolver<?>)) {
-            throw new IllegalArgumentException(
-                    "Requires the solver to be an instance of FullClauseSelectorSolver");
-        }
-        fcss = (FullClauseSelectorSolver<ISolver>) solver;
-
-        IVecInt pLits = new VecInt();
-        for (Integer i : fcss.getAddedVars()) {
-            pLits.push(i);
-        }
-
-        Minimal4InclusionModel min4Inc = new Minimal4InclusionModel(fcss, pLits);
-
-        IVecInt blockingClause;
-
-        List<IVecInt> secondPhase = new ArrayList<IVecInt>();
-        IVecInt secondPhaseClause;
-
-        int clause;
-
-        // first phase
-        try {
-
-            while (min4Inc.isSatisfiable()) {
-                int[] fullmodel = min4Inc.modelWithInternalVariables();
-
-                blockingClause = new VecInt();
-                secondPhaseClause = new VecInt();
-                for (int i = 0; i < pLits.size(); i++) {
-                    clause = Math.abs(pLits.get(i));
-                    if (fullmodel[clause - 1] > 0) {
-                        blockingClause.push(-clause);
-                        secondPhaseClause.push(clause);
-                    }
-                }
-
-                secondPhase.add(secondPhaseClause);
-                fcss.addBlockingClause(blockingClause);
-            }
-
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (ContradictionException e) {
-
-        }
-
-        System.out.println("MSS = " + secondPhase);
-
-        ISolver solver2 = SolverFactory.newDefault();
+        ISolver solver = SolverFactory.newDefault();
 
         IVecInt mus;
 
+        IVecInt blockingClause;
+
         try {
-            for (IVecInt v : secondPhase) {
-                solver2.addClause(v);
+            for (IVecInt v : secondPhaseClauses) {
+                solver.addClause(v);
             }
 
-            Minimal4InclusionModel solver2Phase = new Minimal4InclusionModel(
-                    solver2, pLits);
+            Minimal4InclusionModel minSolver = new Minimal4InclusionModel(
+                    solver, Minimal4InclusionModel.positiveLiterals(solver));
 
-            while (solver2Phase.isSatisfiable()) {
+            while (minSolver.isSatisfiable()) {
                 blockingClause = new VecInt();
                 mus = new VecInt();
 
-                int[] model = solver2Phase.model();
+                int[] model = minSolver.model();
 
                 for (int i = 0; i < model.length; i++) {
                     if (model[i] > 0) {
                         blockingClause.push(-model[i]);
-                        mus.push(model[i] - nVar);
+                        mus.push(model[i]);
                     }
                 }
-
-                muses.add(mus);
-
-                solver2Phase.addBlockingClause(blockingClause);
-
+                musList.add(mus);
+                minSolver.addBlockingClause(blockingClause);
             }
 
         } catch (ContradictionException e) {
@@ -158,8 +133,73 @@ public class AllMUSes {
             e.printStackTrace();
         }
 
-        System.out.println("MUSes = " + muses);
+        System.out.println("MUSes = " + musList);
 
-        return muses;
+        return musList;
+    }
+
+    public List<IVecInt> computeAllMSS() {
+        return computeAllMSS(ModelListener.VOID);
+    }
+
+    public List<IVecInt> computeAllMSS(ModelListener listener) {
+        int nVar = css.nVars();
+
+        IVecInt pLits = new VecInt();
+        for (Integer i : css.getAddedVars()) {
+            pLits.push(i);
+        }
+
+        Minimal4InclusionModel min4Inc = new Minimal4InclusionModel(css, pLits);
+
+        IVecInt blockingClause;
+
+        IVecInt secondPhaseClause;
+
+        IVecInt fullMSS = new VecInt();
+        IVecInt mss;
+
+        int clause;
+
+        for (int i = 0; i < css.getAddedVars().size(); i++) {
+            fullMSS.push(i + 1);
+        }
+
+        // first phase
+        try {
+
+            while (min4Inc.isSatisfiable()) {
+                int[] fullmodel = min4Inc.modelWithInternalVariables();
+
+                mss = new VecInt();
+                fullMSS.copyTo(mss);
+
+                blockingClause = new VecInt();
+                secondPhaseClause = new VecInt();
+                for (int i = 0; i < pLits.size(); i++) {
+                    clause = Math.abs(pLits.get(i));
+                    if (fullmodel[clause - 1] > 0) {
+                        blockingClause.push(-clause);
+                        secondPhaseClause.push(clause - nVar);
+                        mss.remove(clause - nVar);
+                    }
+                }
+
+                mssList.add(mss);
+
+                secondPhaseClauses.add(secondPhaseClause);
+                css.addBlockingClause(blockingClause);
+
+            }
+
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        } catch (ContradictionException e) {
+
+        }
+
+        System.out.println("MSS = " + mssList);
+
+        return mssList;
     }
 }
