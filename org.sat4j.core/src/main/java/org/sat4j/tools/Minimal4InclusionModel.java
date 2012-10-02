@@ -57,7 +57,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
 
     private int[] prevfullmodel;
 
-    private final ModelListener modelListener;
+    private final SolutionFoundListener modelListener;
 
     /**
      * 
@@ -69,7 +69,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      *            an object to be notified when a new model is found.
      */
     public Minimal4InclusionModel(ISolver solver, IVecInt p,
-            ModelListener modelListener) {
+            SolutionFoundListener modelListener) {
         super(solver);
         this.pLiterals = new VecInt(p.size());
         p.copyTo(this.pLiterals);
@@ -84,14 +84,14 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      *            computed.
      */
     public Minimal4InclusionModel(ISolver solver, IVecInt p) {
-        this(solver, p, ModelListener.VOID);
+        this(solver, p, SolutionFoundListener.VOID);
     }
 
     /**
      * @param solver
      */
     public Minimal4InclusionModel(ISolver solver) {
-        this(solver, negativeLiterals(solver), ModelListener.VOID);
+        this(solver, negativeLiterals(solver), SolutionFoundListener.VOID);
     }
 
     public static IVecInt positiveLiterals(ISolver solver) {
@@ -126,7 +126,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
             do {
                 prevfullmodel = super.modelWithInternalVariables();
                 prevmodel = super.model();
-                modelListener.onModelFound(prevmodel);
+                modelListener.onSolutionFound(prevmodel);
                 vec.clear();
                 cube.clear();
                 for (int q : prevfullmodel) {

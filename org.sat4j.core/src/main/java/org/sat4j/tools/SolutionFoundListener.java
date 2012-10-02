@@ -29,28 +29,47 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import org.sat4j.specs.IVecInt;
+
 /**
- * Allows the end user to react when a new model is found. This is typically the
- * case when doing some upper bound optimization, or iterating on the models.
+ * Allows the end user to react when a new solution is found. This is typically
+ * the case when doing some upper bound optimization, or iterating on the
+ * models, or computing all MUses.
  * 
  * @author leberre
  * @since 2.3.3
  * 
  */
-public interface ModelListener {
+public interface SolutionFoundListener {
 
-    ModelListener VOID = new ModelListener() {
+    SolutionFoundListener VOID = new SolutionFoundListener() {
 
-        public void onModelFound(int[] model) {
+        public void onSolutionFound(int[] model) {
+            // do nothing
+        }
+
+        public void onSolutionFound(IVecInt solution) {
             // do nothing
         }
     };
 
     /**
-     * Callback method called when a new model is found
+     * Callback method called when a new solution is found. While a solution
+     * will often be a model, it might also be the case that the solution is
+     * something else (MUS, group MUS, etc).
      * 
-     * @param model
-     *            a model in terms of Dimacs literals.
+     * @param solution
+     *            a set of Dimacs literals.
      */
-    void onModelFound(int[] model);
+    void onSolutionFound(int[] solution);
+
+    /**
+     * Callback method called when a new solution is found. While a solution
+     * will often be a model, it might also be the case that the solution is
+     * something else (MUS, group MUS, etc).
+     * 
+     * @param solution
+     *            a set of Dimacs literals.
+     */
+    void onSolutionFound(IVecInt solution);
 }

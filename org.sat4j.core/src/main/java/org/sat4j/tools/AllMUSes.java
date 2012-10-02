@@ -83,7 +83,7 @@ public class AllMUSes {
     }
 
     public List<IVecInt> computeAllMUSes() {
-        return computeAllMUSes(ModelListener.VOID);
+        return computeAllMUSes(SolutionFoundListener.VOID);
     }
 
     /**
@@ -94,7 +94,7 @@ public class AllMUSes {
      *            the <code>ISolver</code> that contains the set of clauses
      * @return a list containing all the MUSes
      */
-    public List<IVecInt> computeAllMUSes(ModelListener listener) {
+    public List<IVecInt> computeAllMUSes(SolutionFoundListener listener) {
         computeAllMSS();
 
         ISolver solver = SolverFactory.newDefault();
@@ -139,10 +139,10 @@ public class AllMUSes {
     }
 
     public List<IVecInt> computeAllMSS() {
-        return computeAllMSS(ModelListener.VOID);
+        return computeAllMSS(SolutionFoundListener.VOID);
     }
 
-    public List<IVecInt> computeAllMSS(ModelListener listener) {
+    public List<IVecInt> computeAllMSS(SolutionFoundListener listener) {
         int nVar = css.nVars();
 
         IVecInt pLits = new VecInt();
