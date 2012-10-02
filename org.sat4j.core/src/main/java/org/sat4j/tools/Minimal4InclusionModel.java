@@ -145,15 +145,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
         }
 
         return prevmodel;
-        // restore();
-        // int[] newmodel = new int[vec.size()];
-        // for (int i = 0, j = 0; i < prevmodel.length; i++) {
-        // if (prevmodel[i] < 0) {
-        // newmodel[j++] = prevmodel[i];
-        // }
-        // }
-        //
-        // return newmodel;
+
     }
 
     @Override
