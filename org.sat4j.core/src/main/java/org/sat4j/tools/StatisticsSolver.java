@@ -286,6 +286,9 @@ public class StatisticsSolver implements ISolver {
         int sumL = 0;
         IVecInt list;
         boolean oneNull;
+        if (sizeoccurrences == null) {
+            return;
+        }
         int max = sizeoccurrences.length - 1;
         for (int i = 1; i < max; i += 2) {
             sizeV = 0;
