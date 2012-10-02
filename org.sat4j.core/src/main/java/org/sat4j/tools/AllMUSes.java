@@ -124,6 +124,8 @@ public class AllMUSes {
                     }
                 }
                 musList.add(mus);
+                listener.onSolutionFound(mus);
+
                 minSolver.addBlockingClause(blockingClause);
             }
 
@@ -186,6 +188,8 @@ public class AllMUSes {
                 }
 
                 mssList.add(mss);
+
+                listener.onSolutionFound(mss);
 
                 secondPhaseClauses.add(secondPhaseClause);
                 css.addBlockingClause(blockingClause);
