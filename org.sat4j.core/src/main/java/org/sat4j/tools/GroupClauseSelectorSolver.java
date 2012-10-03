@@ -45,8 +45,6 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
     private static final long serialVersionUID = 1L;
 
     protected Map<Integer, Integer> varToHighLevel = new HashMap<Integer, Integer>();
-    private int lastCreatedVar;
-    private boolean pooledVarId = false;
     private final Map<Integer, Integer> highLevelToVar = new HashMap<Integer, Integer>();
 
     public GroupClauseSelectorSolver(T solver) {
@@ -72,26 +70,6 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
     public IConstr addNonControlableClause(IVecInt literals)
             throws ContradictionException {
         return super.addClause(literals);
-    }
-
-    /**
-     * 
-     * @param literals
-     * @return
-     * @since 2.1
-     */
-    @Override
-    protected int createNewVar(IVecInt literals) {
-        if (this.pooledVarId) {
-            this.pooledVarId = false;
-            return this.lastCreatedVar;
-        }
-        this.lastCreatedVar = nextFreeVarId(true);
-        return this.lastCreatedVar;
-    }
-
-    protected void discardLastestVar() {
-        this.pooledVarId = true;
     }
 
     public IConstr addClause(IVecInt literals, int desc)

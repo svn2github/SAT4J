@@ -38,14 +38,15 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
 
 public class FullClauseSelectorSolver<T extends ISolver> extends
         AbstractClauseSelectorSolver<T> {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
-    private int lastCreatedVar;
-    private boolean pooledVarId = false;
     protected final IVecInt lastClause = new VecInt();
     protected IConstr lastConstr;
     protected final boolean skipDuplicatedEntries;
@@ -79,32 +80,6 @@ public class FullClauseSelectorSolver<T extends ISolver> extends
     public IConstr addNonControlableClause(IVecInt literals)
             throws ContradictionException {
         return super.addClause(literals);
-    }
-
-    /**
-     * 
-     * @param literals
-     * @return
-     * @since 2.1
-     */
-    @Override
-    protected int createNewVar(IVecInt literals) {
-        for (IteratorInt it = literals.iterator(); it.hasNext();) {
-            if (Math.abs(it.next()) > nextFreeVarId(false)) {
-                throw new IllegalStateException(
-                        "Please call newVar(int) before adding constraints!!!");
-            }
-        }
-        if (this.pooledVarId) {
-            this.pooledVarId = false;
-            return this.lastCreatedVar;
-        }
-        this.lastCreatedVar = nextFreeVarId(true);
-        return this.lastCreatedVar;
-    }
-
-    protected void discardLastestVar() {
-        this.pooledVarId = true;
     }
 
     @Override

@@ -33,18 +33,43 @@ import java.util.Collection;
 
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 public abstract class AbstractClauseSelectorSolver<T extends ISolver> extends
         SolverDecorator<T> {
 
     private static final long serialVersionUID = 1L;
+    private int lastCreatedVar;
+    private boolean pooledVarId = false;
 
     public AbstractClauseSelectorSolver(T solver) {
         super(solver);
     }
 
-    protected abstract int createNewVar(IVecInt literals);
-
     public abstract Collection<Integer> getAddedVars();
 
+    /**
+     * 
+     * @param literals
+     * @return
+     * @since 2.1
+     */
+    protected int createNewVar(IVecInt literals) {
+        for (IteratorInt it = literals.iterator(); it.hasNext();) {
+            if (Math.abs(it.next()) > nextFreeVarId(false)) {
+                throw new IllegalStateException(
+                        "Please call newVar(int) before adding constraints!!!");
+            }
+        }
+        if (this.pooledVarId) {
+            this.pooledVarId = false;
+            return this.lastCreatedVar;
+        }
+        this.lastCreatedVar = nextFreeVarId(true);
+        return this.lastCreatedVar;
+    }
+
+    protected void discardLastestVar() {
+        this.pooledVarId = true;
+    }
 }
