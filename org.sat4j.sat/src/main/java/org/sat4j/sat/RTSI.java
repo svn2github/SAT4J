@@ -50,6 +50,12 @@ import java.util.zip.ZipEntry;
  * 
  * This class allows dynamic search for classes.
  * 
+ * That code appeared in Java World 113 in an article written by Daniel Le Berre
+ * http://www.javaworld.com/javatips/jw-javatip113.html
+ * 
+ * The initial code of JWhich, on which is based this code, was published in JavaWorld 105 by Mike Clark
+ * http://www.javaworld.com/javaworld/javatips/jw-javatip105.html
+ * 
  * @author sroussel and dleberre
  * 
  */
