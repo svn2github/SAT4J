@@ -98,6 +98,9 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 
     @Override
     protected void fixCriterionValue() throws ContradictionException {
+        if (bigCurrentValue == null) {
+            throw new ContradictionException("no current value computed!");
+        }
         addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
                 this.objs.get(this.currentCriterion).getCoeffs(), true,
                 this.bigCurrentValue);
