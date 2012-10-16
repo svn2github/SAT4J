@@ -105,7 +105,8 @@ public class Backbone {
             if (solver.isSatisfiable(candidates)) {
                 candidates.pop();
                 implicant = solver.primeImplicant();
-                removeVarNotPresent(implicant, litsToTest, solver.nVars());
+                removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
+                        solver.nVars());
             } else {
                 candidates.pop().push(-p);
             }
@@ -113,16 +114,17 @@ public class Backbone {
         return candidates;
     }
 
-    private static void removeVarNotPresent(int[] implicant,
+    private static void removeVarNotPresentAndSatisfiedLits(int[] implicant,
             IVecInt litsToTest, int n) {
-        boolean[] marks = new boolean[n + 1];
+        int[] marks = new int[n + 1];
         for (int p : implicant) {
-            marks[p > 0 ? p : -p] = true;
+            marks[p > 0 ? p : -p] = p;
         }
-        int q;
+        int q, mark;
         for (int i = 0; i < litsToTest.size();) {
             q = litsToTest.get(i);
-            if (!marks[q > 0 ? q : -q]) {
+            mark = marks[q > 0 ? q : -q];
+            if (mark == 0 || mark == q) {
                 litsToTest.delete(i);
             } else {
                 i++;
