@@ -183,7 +183,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             log("internal #vars     " + this.solver.realNumberOfVariables()); //$NON-NLS-1$
         }
         log("#constraints  " + problem.nConstraints()); //$NON-NLS-1$
-        problem.printInfos(this.out, COMMENT_PREFIX);
+        problem.printInfos(this.out);
         return problem;
     }
 
