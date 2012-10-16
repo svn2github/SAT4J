@@ -93,7 +93,9 @@ public class Backbone {
             IVecInt assumptions) throws TimeoutException {
         IVecInt litsToTest = new VecInt();
         for (int p : implicant) {
-            litsToTest.push(-p);
+            if (!assumptions.contains(p)) {
+                litsToTest.push(-p);
+            }
         }
         IVecInt candidates = new VecInt();
         assumptions.copyTo(candidates);
