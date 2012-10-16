@@ -36,7 +36,9 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.Backbone;
 
 /**
  * Allow to change the behavior of the launcher (either decision or optimization
@@ -139,6 +141,23 @@ public interface ILauncherMode {
                                 + " literals");
                         logger.log("pi computation time: " + (endpi - beginpi)
                                 + " ms");
+                    }
+                    if (System.getProperty("backbone") != null) {
+                        logger.log("returning the backbone of the formula ...");
+                        long beginpi = System.currentTimeMillis();
+                        model = solver.primeImplicant();
+                        try {
+                            IVecInt backbone = Backbone.compute(solver, model);
+                            long endpi = System.currentTimeMillis();
+                            out.print(solver.getLogPrefix());
+                            reader.decode(backbone.toArray(), out);
+                            out.println();
+                            logger.log("backbone computation time: "
+                                    + (endpi - beginpi) + " ms");
+                        } catch (TimeoutException e) {
+                            logger.log("timeout, cannot compute the backbone.");
+                        }
+
                     }
                     out.print(SOLUTION_PREFIX);
                     reader.decode(model, out);
