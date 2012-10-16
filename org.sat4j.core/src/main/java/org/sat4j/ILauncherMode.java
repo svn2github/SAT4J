@@ -143,7 +143,7 @@ public interface ILauncherMode {
                                 + " ms");
                     }
                     if (System.getProperty("backbone") != null) {
-                        logger.log("returning the backbone of the formula ...");
+                        logger.log("computing the backbone of the formula ...");
                         long beginpi = System.currentTimeMillis();
                         model = solver.primeImplicant();
                         try {
