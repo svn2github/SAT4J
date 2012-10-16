@@ -47,7 +47,7 @@ public class Backbone {
 
     /**
      * Computes the backbone of a formula following the algorithm described in
-     * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of
+     * Jo√£o Marques-Silva, Mikol√°s Janota, In√™s Lynce: On Computing Backbones of
      * Propositional Theories. ECAI 2010: 15-20
      * 
      * We use Sat4j's ability to compute prime implicants instead of models to
@@ -63,7 +63,7 @@ public class Backbone {
 
     /**
      * Computes the backbone of a formula following the algorithm described in
-     * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of
+     * Jo√£o Marques-Silva, Mikol√°s Janota, In√™s Lynce: On Computing Backbones of
      * Propositional Theories. ECAI 2010: 15-20
      * 
      * We use Sat4j's ability to compute prime implicants instead of models to
