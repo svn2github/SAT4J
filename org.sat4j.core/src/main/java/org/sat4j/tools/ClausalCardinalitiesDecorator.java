@@ -1,5 +1,3 @@
-package org.sat4j.tools;
-
 /*******************************************************************************
  * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2012 Artois University and CNRS
  *
@@ -29,6 +27,7 @@ package org.sat4j.tools;
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
+package org.sat4j.tools;
 
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
