@@ -15,10 +15,10 @@ object Problem {
 
   val problem = SolverFactory.newDefault
 
-  def +=(clause: IVecInt): IProblem = {
+  def +=(clause: IVecInt) = {
     problem addClause clause
     clause.clear
-    problem
+    this
   }
 
   def solve: Status = {
@@ -41,6 +41,13 @@ object Clause {
   def apply(args: Int*) = {
     val clause = new VecInt()
     args foreach { case arg =>
+      clause.push(arg)}
+    clause
+  }
+  
+  def apply(l: List[Int]) = {
+    val clause = new VecInt()
+    l foreach { case arg =>
       clause.push(arg)}
     clause
   }
