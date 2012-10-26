@@ -195,7 +195,7 @@ object Logic {
     val mapRev = m map {
       case (x, y) => (y, x)
     }
-    val problem = Problem
+    val problem = new Problem
     try {
       cnf.foldLeft(problem) { (p, c) => p += Clause(c) }
       val res = problem.solve

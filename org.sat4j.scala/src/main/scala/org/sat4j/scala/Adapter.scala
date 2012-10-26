@@ -11,7 +11,7 @@ case object Satisfiable extends Status {}
 case object Unsatisfiable extends Status {}
 case object Unknown extends Status {}
 
-object Problem {
+class Problem {
 
   val problem = SolverFactory.newDefault
 

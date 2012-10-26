@@ -9,7 +9,7 @@ class AppTest {
 
     @Test
     def testSatisfiable() = {
-       val problem = Problem
+       val problem = new Problem
        problem += Clause(2, -3, 4)
        problem += Clause(-2, 3, -4)
        assertEquals(Satisfiable,(problem solve))

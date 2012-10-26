@@ -58,7 +58,10 @@ object testLogic {
   encode ('a | 'b)                                //> res5: (List[List[Int]], Map[String,Int]) = (List(List(1), List(2, 3, -1), Li
                                                   //| st(-2, 1), List(-3, 1)),Map(_nv0 -> 1, a -> 2, b -> 3))
   
-  isSat ('a | 'b)                                 //> res6: (Boolean, Option[List[String]]) = (true,Some(List(a, ~b)))
+  
+  isSat ('x & ~'x)                                //> res6: (Boolean, Option[List[String]]) = (false,None)
+  isSat ('a | 'b)                                 //> res7: (Boolean, Option[List[String]]) = (true,Some(List(a, ~b)))
+  
 
 
 
