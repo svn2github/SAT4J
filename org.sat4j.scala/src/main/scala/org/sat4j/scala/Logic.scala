@@ -33,8 +33,8 @@ object Logic {
   abstract class BoolExp {
     def &(b: BoolExp) = And(this, b)
     def |(b: BoolExp) = Or(this, b)
-    def ->(b: BoolExp) = Implies(this, b)
-    def <->(b: BoolExp) = Iff(this, b)
+    def ->(b: BoolExp) = implies(this, b)
+    def <->(b: BoolExp) = iff(this, b)
     def unary_~() = Not(this)
 
     def toCnfList = List(Ident("_nv0")) :: (tseitinListSimple(this, List(), List())._2)
@@ -56,30 +56,30 @@ object Logic {
   case class Ident(name: String) extends BoolExp
 
   /** n-ary conjunction. */
-  def And(l: BoolExp*): BoolExp = And(l.toList)
+  def and(l: BoolExp*): BoolExp = and(l.toList)
 
   /** n-ary conjunction. */
-  def And(l: List[BoolExp]): BoolExp = l match {
+  def and(l: List[BoolExp]): BoolExp = l match {
     case Nil => True
     case b :: Nil => b
     case b :: t => l.reduceLeft { (b1, b2) => And(b1, b2) }
   }
 
   /** n-ary disjunction. */
-  def Or(l: BoolExp*): BoolExp = Or(l.toList)
+  def or(l: BoolExp*): BoolExp = or(l.toList)
 
   /** n-ary disjunction. */
-  def Or(l: List[BoolExp]): BoolExp = l match {
+  def or(l: List[BoolExp]): BoolExp = l match {
     case Nil => False
     case b :: Nil => b
     case b :: t => l.reduceLeft { (b1, b2) => Or(b1, b2) }
   }
 
   /** Logical implication. */
-  def Implies(b1: BoolExp, b2: BoolExp) = Or(Not(b1), b2)
+  def implies(b1: BoolExp, b2: BoolExp) = Or(Not(b1), b2)
 
   /** Logical equivalence. */
-  def Iff(b1: BoolExp, b2: BoolExp) = And(Implies(b1, b2), Implies(b2, b1))
+  def iff(b1: BoolExp, b2: BoolExp) = And(implies(b1, b2), implies(b2, b1))
 
   /** Implicit conversion from string to logical identifier */
   implicit def identFromString(s: String): Ident = Ident(s)
