@@ -62,8 +62,11 @@ object testLogic {
   isSat ('x & ~'x)                                //> res6: (Boolean, Option[List[String]]) = (false,None)
   isSat ('a | 'b)                                 //> res7: (Boolean, Option[List[String]]) = (true,Some(List(a, ~b)))
   
+  
 
-
+	isValid ('a | 'b)                         //> res8: (Boolean, Option[List[String]]) = (false,Some(List(~a, ~b)))
+	
+	isValid( 'a | ~'a)                        //> res9: (Boolean, Option[List[String]]) = (true,None)
 
 
 	val x = 'x                                //> x  : Symbol = 'x

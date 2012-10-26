@@ -41,10 +41,13 @@ object testLogic {
   
   
   isSat ('x & ~'x);System.out.println("""res6: (Boolean, Option[List[String]]) = """ + $show(res$6));$skip(18); val res$7 = 
-  isSat ('a | 'b);System.out.println("""res7: (Boolean, Option[List[String]]) = """ + $show(res$7));$skip(19); 
+  isSat ('a | 'b);System.out.println("""res7: (Boolean, Option[List[String]]) = """ + $show(res$7));$skip(26); val res$8 = 
+  
   
 
-
+	isValid ('a | 'b);System.out.println("""res8: (Boolean, Option[List[String]]) = """ + $show(res$8));$skip(22); val res$9 = 
+	
+	isValid( 'a | ~'a);System.out.println("""res9: (Boolean, Option[List[String]]) = """ + $show(res$9));$skip(14); 
 
 
 	val x = 'x;System.out.println("""x  : Symbol = """ + $show(x ))}

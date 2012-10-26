@@ -17,7 +17,7 @@ class Problem {
 
   def +=(clause: IVecInt) = {
     problem addClause clause
-    clause.clear
+    clause.clear 
     this
   }
 

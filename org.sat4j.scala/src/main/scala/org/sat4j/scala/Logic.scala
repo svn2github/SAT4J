@@ -174,7 +174,7 @@ object Logic {
         val n = m.size + 1
         val p = encodeClause0(q, m.updated(s, n))
         (n :: p._1, p._2)
-      }
+      } 
     }
     case Not(Ident(s)) :: q => m.get(s) match {
       case Some(i) => {
@@ -200,14 +200,19 @@ object Logic {
       cnf.foldLeft(problem) { (p, c) => p += Clause(c) }
       val res = problem.solve
       res match {
-        case Satisfiable => (true, Some(problem.model.toList map {x => if(x>0) mapRev(x) else "~" + mapRev(-x)} filter{ x => !(x startsWith "_nv" )}))
+        case Satisfiable => (true, Some(problem.model.toList map {x => if(x>0) mapRev(x) else "~" + mapRev(-x)} filter{ x => !(x startsWith "_nv" ) && !(x startsWith "~_nv" )}))
         case Unsatisfiable => (false, None)
         case _ => throw new IllegalStateException("Got a time out")
       }
     } catch {
       case e: ContradictionException => (false, None)
     }
-
   }
+  
+  def isValid(f: BoolExp) : (Boolean, Option[List[String]]) = {
+    val (b,m) = isSat (~f) 
+    (!b,m) }
+  
+  
 
 }
