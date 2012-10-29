@@ -47,37 +47,40 @@ public class CSPInstanceReader extends InstanceReader {
     private Reader reader = null;
 
     private final ISolver solver;
+    
+    private boolean allDiffCard;
 
-    public CSPInstanceReader(ISolver solver) {
+    public CSPInstanceReader(ISolver solver, boolean allDiffCard) {
         super(solver);
         this.solver = solver;
+        this.allDiffCard = allDiffCard;
     }
 
 
     private Reader getCSPReader1() {
         if (csp == null) {
-            csp = new CSPReader(solver);
+            csp = new CSPReader(solver,allDiffCard);
         }
         return csp;
     }
 
     private Reader getCSPReader2() {
         if (csp2 == null) {
-            csp2 = new CSPSupportReader(solver);
+            csp2 = new CSPSupportReader(solver,allDiffCard);
         }
         return csp2;
     }
 
     private Reader getCSPReader3() {
         if (csp3 == null) {
-            csp3 = new CSPExtSupportReader(solver);
+            csp3 = new CSPExtSupportReader(solver,allDiffCard);
         }
         return csp3;
     }
 
     private Reader getXMLCSPReader() {
         if (xmlcsp == null) {
-            xmlcsp = new XMLCSPReader(solver);
+            xmlcsp = new XMLCSPReader(solver,allDiffCard);
         }
         return xmlcsp;
     }

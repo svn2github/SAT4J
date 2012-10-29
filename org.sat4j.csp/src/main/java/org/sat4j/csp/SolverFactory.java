@@ -102,6 +102,18 @@ public class SolverFactory extends ASolverFactory<ISolver> {
         return solver;
     }
 
+    public static ISolver newSAT() {
+    	return org.sat4j.pb.SolverFactory.newSAT();
+    }
+    
+    public static ISolver newUNSAT() {
+    	return org.sat4j.pb.SolverFactory.newUNSAT();
+    }
+    
+    public static ISolver newCuttingPlanes() {
+    	return org.sat4j.pb.SolverFactory.newCuttingPlanes();
+    }
+    
     @Override
     public ISolver defaultSolver() {
         return newDefault();

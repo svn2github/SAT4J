@@ -64,8 +64,7 @@ public class Var implements Evaluable {
         IVecInt clause = new VecInt(domain.size());
         for (int i = 0; i < domain.size(); i++)
             clause.push(i + startid);
-        solver.addClause(clause);
-        solver.addAtMost(clause, 1);
+        solver.addExactly(clause, 1);
     }
 
     public int findValue(int[] model) {

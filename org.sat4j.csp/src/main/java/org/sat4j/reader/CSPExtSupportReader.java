@@ -23,8 +23,8 @@ import org.sat4j.specs.ISolver;
 
 public class CSPExtSupportReader extends CSPReader {
 
-    public CSPExtSupportReader(ISolver solver) {
-        super(solver);
+    public CSPExtSupportReader(ISolver solver, boolean allDiffCard) {
+        super(solver,allDiffCard);
     }
 
     @Override

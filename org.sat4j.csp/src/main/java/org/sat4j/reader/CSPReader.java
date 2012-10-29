@@ -38,6 +38,7 @@ import org.sat4j.csp.Predicate;
 import org.sat4j.csp.RangeDomain;
 import org.sat4j.csp.Var;
 import org.sat4j.csp.constraints.AllDiff;
+import org.sat4j.csp.constraints.AllDiffCard;
 import org.sat4j.csp.constraints.Nogoods;
 import org.sat4j.csp.constraints.Relation;
 import org.sat4j.csp.constraints.WalshSupports;
@@ -106,11 +107,14 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
 
     private int currentconstraint;
 
-    public CSPReader(ISolver solver) {
+    public CSPReader(ISolver solver,boolean allDiffCard) {
         this.solver = solver;
-        Clausifiable allDiff = new AllDiff(); 
+        Clausifiable allDiff = allDiffCard ? new AllDiffCard() : new AllDiff(); 
         predmapping.put("global:allDifferent",allDiff); // XCSP 2.0 compatibility
         predmapping.put("global:alldifferent",allDiff);
+        if (solver.isVerbose()) {
+        	System.out.println("c "+allDiff);
+        }
     }
 
     @Override

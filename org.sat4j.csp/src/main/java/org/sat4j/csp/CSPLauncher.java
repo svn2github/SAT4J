@@ -38,7 +38,12 @@ public class CSPLauncher extends AbstractLauncher {
 	 */
 	@Override
 	protected ISolver configureSolver(String[] args) {
-		ISolver asolver = SolverFactory.newDefault();
+		ISolver asolver;
+		if (args.length == 2) {
+			asolver = SolverFactory.instance().createSolverByName(args[0]);
+		} else {
+			asolver = SolverFactory.newDefault();
+		}
 		log(asolver.toString(COMMENT_PREFIX));
 		return asolver;
 	}
@@ -49,13 +54,15 @@ public class CSPLauncher extends AbstractLauncher {
 	 * @see org.sat4j.Lanceur#createReader(org.sat4j.specs.ISolver)
 	 */
 	@Override
-	protected Reader createReader(final ISolver aSolver, final String problemname) {
+	protected Reader createReader(final ISolver aSolver,
+			final String problemname) {
 		Reader aReader;
+		boolean allDiffCards = System.getProperty("allDiffCards") != null;
 		if (problemname.endsWith(".txt")) {
-			aReader = new CSPExtSupportReader(aSolver);
+			aReader = new CSPExtSupportReader(aSolver, allDiffCards);
 		} else {
 			assert problemname.endsWith(".xml");
-			aReader = new XMLCSPReader(aSolver);
+			aReader = new XMLCSPReader(aSolver, allDiffCards);
 		}
 		if (System.getProperty("verbose") != null) {
 			log("verbose mode on");
@@ -66,7 +73,7 @@ public class CSPLauncher extends AbstractLauncher {
 
 	public static void main(String[] args) {
 		AbstractLauncher lanceur = new CSPLauncher();
-		if (args.length != 1) {
+		if (args.length > 2 || args.length == 0) {
 			lanceur.usage();
 			return;
 		}
@@ -90,8 +97,9 @@ public class CSPLauncher extends AbstractLauncher {
 
 	@Override
 	protected String getInstanceName(String[] args) {
-		assert args.length == 1;
-		return args[0];
+		if (args.length == 1)
+			return args[0];
+		return args[1];
 	}
 
 }

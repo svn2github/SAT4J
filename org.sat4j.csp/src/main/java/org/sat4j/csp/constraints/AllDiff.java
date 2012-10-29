@@ -56,5 +56,9 @@ public class AllDiff implements Clausifiable {
             }
         }
     }
-
+    
+    @Override
+    public String toString() {
+    	return "AllDiff encoding using binary clauses";
+    }
 }

@@ -16,19 +16,46 @@
 * required by the LGPL. If you do not delete the provisions above, a recipient
 * may use your version of this file under the terms of the EPL or the LGPL.
 *******************************************************************************/
-package org.sat4j.reader;
+package org.sat4j.csp.constraints;
 
-import org.sat4j.csp.constraints.GentSupports;
+import org.sat4j.core.VecInt;
+import org.sat4j.csp.Domain;
+import org.sat4j.csp.Evaluable;
+import org.sat4j.csp.Var;
+import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
-public class CSPSupportReader extends CSPReader {
+public class AllDiffCard extends AllDiff {
 
-    public CSPSupportReader(ISolver solver,boolean allDiffCard) {
-        super(solver,allDiffCard);
+    public void toClause(ISolver solver, IVec<Var> scope, IVec<Evaluable> vars)
+            throws ContradictionException {
+        int n = scope.size();
+        Domain domain = scope.get(0).domain();
+        
+        for (int i=1 ; i<n;i++) {
+        	if (scope.get(i).domain() != domain) {
+        		super.toClause(solver, scope, vars);
+        		return;
+        	}
+        }
+        // all the domains are the same
+        IVecInt clause = new VecInt();
+        int value;
+        for (IteratorInt it = domain.iterator() ; it.hasNext(); ) {
+        	value = it.next();
+        	for (int i=0;i<n;i++) {
+        		clause.push(scope.get(i).translate(value));
+        	}
+        	solver.addAtMost(clause, 1);
+        	clause.clear();
+        }
     }
-
+    
     @Override
-    protected void manageAllowedTuples(int relnum, int arity, int nbtuples) {
-        relations[relnum] = new GentSupports(arity, nbtuples);
+    public String toString() {
+    	return "AllDiff encoding using cardinality constraints";
     }
 }

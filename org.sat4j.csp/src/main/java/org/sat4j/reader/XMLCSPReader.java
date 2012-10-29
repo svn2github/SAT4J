@@ -37,8 +37,8 @@ public class XMLCSPReader extends org.sat4j.reader.Reader {
 
     private final CSPReader cspreader;
 
-    public XMLCSPReader(ISolver solver) {
-        cspreader = new CSPSupportReader(solver);
+    public XMLCSPReader(ISolver solver, boolean allDiffCard) {
+        cspreader = new CSPSupportReader(solver,allDiffCard);
     }
 
     @Override
