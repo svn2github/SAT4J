@@ -65,7 +65,7 @@ object Logic {
 
   case class Ident[U](name: U) extends BoolExp
 
-  case class AnonymousVariable extends Ident {
+  case class AnonymousVariable extends BoolExp {
     private val id = nextVarId
     override def toString = "_nv#" + id
     override def equals(o: Any) = o match {
@@ -79,10 +79,10 @@ object Logic {
   private def nextVarId = { _varId += 1; _varId };
   private var _createdVars = List[AnonymousVariable]()
 
+  /** create new propositional variables for translation into CNF */
   private def newVar = {
     val v = new AnonymousVariable
     _createdVars = v :: _createdVars
-    System.out.println("created vars = " + _createdVars)
     v
   }
 
@@ -118,6 +118,9 @@ object Logic {
   /** Implicit conversion from string to logical identifier */
   implicit def identFromSymbol(i: Symbol): Ident[Symbol] = Ident(i)
 
+  /** Convert any Scala object into a propositional variable */
+  def toProp[U](u: U): Ident[U] = Ident(u)
+  
   def isAlreadyInCnf(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case And(b1, b2) => {
       val (r1, l1) = isAlreadyInCnf(b1)
@@ -256,7 +259,6 @@ object Logic {
   def isSat[U](f: BoolExp): (Boolean, Option[Map[U,Boolean]]) = {
 
     val (cnf, m) = encode(f)
-    System.out.println(cnf)
     val mapRev = m map {
       case (x, y) => (y, x)
     }
