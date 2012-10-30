@@ -139,7 +139,7 @@ object Logic {
       val (r1, l1) = isDisjunction(b1)
       if (r1) {
         val (r2, l2) = isDisjunction(b2)
-        if (r2) (true, Some(l1.get ++ l2.get))
+        if (r2) (true, Some(List(l1.get(0) ++ l2.get(0))))
         else (false, None)
       } else (false, None)
     }
