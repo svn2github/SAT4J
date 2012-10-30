@@ -11,7 +11,9 @@ object Logic {
       case False => "False"
       case Not(True) => "~True"
       case Not(False) => "~False"
-      case Ident(s) => s
+      case v: AnonymousVariable => v.toString
+      case Not(v: AnonymousVariable) => "~" + v.toString
+      case Ident(s) => s.toString
       case Not(Ident(s)) => "~" + s
       case Not(b) => "~(" + apply(b) + ")"
       case And(b1, b2) => "(" + apply(b1) + " & " + apply(b2) + ")"
@@ -37,8 +39,16 @@ object Logic {
     def <->(b: BoolExp) = iff(this, b)
     def unary_~() = Not(this)
 
-    def toCnfList = List(Ident("_nv0")) :: (tseitinListSimple(this, List(), List())._2)
-
+    def toCnfList = {
+      isAlreadyInCnf(this) match {
+        case (true, Some(x)) => x
+        case _ => {
+          val translated = tseitinListSimple(this, List())._2
+          assert(!(_createdVars isEmpty))
+          List(_createdVars.last) :: translated
+        }
+      }
+    }
   }
 
   abstract class BoolValue extends BoolExp
@@ -53,7 +63,28 @@ object Logic {
 
   case class Not(b: BoolExp) extends BoolExp
 
-  case class Ident(name: String) extends BoolExp
+  case class Ident[U](name: U) extends BoolExp
+
+  case class AnonymousVariable extends Ident {
+    private val id = nextVarId
+    override def toString = "_nv#" + id
+    override def equals(o: Any) = o match {
+      case x: AnonymousVariable => id == x.id
+      case _ => false
+    }
+    override def hashCode() = id
+  }
+
+  private var _varId = 0
+  private def nextVarId = { _varId += 1; _varId };
+  private var _createdVars = List[AnonymousVariable]()
+
+  private def newVar = {
+    val v = new AnonymousVariable
+    _createdVars = v :: _createdVars
+    System.out.println("created vars = " + _createdVars)
+    v
+  }
 
   /** n-ary conjunction. */
   def and(l: BoolExp*): BoolExp = and(l.toList)
@@ -82,43 +113,72 @@ object Logic {
   def iff(b1: BoolExp, b2: BoolExp) = And(implies(b1, b2), implies(b2, b1))
 
   /** Implicit conversion from string to logical identifier */
-  implicit def identFromString(s: String): Ident = Ident(s)
+  implicit def identFromString(s: String): Ident[String] = Ident(s)
 
   /** Implicit conversion from string to logical identifier */
-  implicit def identFromString(i: Symbol): Ident = Ident(i.toString.substring(1))
+  implicit def identFromSymbol(i: Symbol): Ident[Symbol] = Ident(i)
 
-  def tseitinListSimple(b: BoolExp, l: List[List[BoolExp]], listVars: List[String]): (BoolExp, List[List[BoolExp]], List[String]) = {
+  def isAlreadyInCnf(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+    case And(b1, b2) => {
+      val (r1, l1) = isAlreadyInCnf(b1)
+      if (r1) {
+        val (r2, l2) = isAlreadyInCnf(b2)
+        if (r2) (true, Some(l1.get ++ l2.get))
+        else (false, None)
+      } else (false, None)
+    }
+    case Or(b1, b2) => isDisjunction(f)
+    case _ => isLiteral(f)
+  }
+
+  def isDisjunction(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+    case Or(b1, b2) => {
+      val (r1, l1) = isDisjunction(b1)
+      if (r1) {
+        val (r2, l2) = isDisjunction(b2)
+        if (r2) (true, Some(l1.get ++ l2.get))
+        else (false, None)
+      } else (false, None)
+    }
+    case _ => isLiteral(f)
+  }
+  def isLiteral(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+    case True => (true, Some(List(List(True))))
+    case False => (true, Some(List(List(False))))
+    case Ident(_) => (true, Some(List(List(f))))
+    case Not(Ident(_)) => (true, Some(List(List(f))))
+    case _ => (false, None)
+  }
+
+  def tseitinListSimple(b: BoolExp, l: List[List[BoolExp]]): (BoolExp, List[List[BoolExp]]) = {
     b match {
 
-      case True => (True, List(), listVars)
-      case Not(False) => (True, List(), listVars)
+      case True => (True, List())
+      case Not(False) => (True, List())
 
-      case False => (False, List(), listVars)
-      case Not(True) => (False, List(), listVars)
+      case False => (False, List())
+      case Not(True) => (False, List())
 
-      case Ident(s) => (Ident(s), List(), if (listVars contains s) listVars else s :: listVars)
+      case Ident(s) => (Ident(s), List())
 
       case Not(b1) => {
-        val name = "_nv" + listVars.size;
-        val v = Ident(name)
-        val t1 = tseitinListSimple(b1, List(), name :: listVars)
-        (v, List(~t1._1, ~v) :: List(t1._1, v) :: t1._2, name :: listVars)
+        val v = newVar
+        val t1 = tseitinListSimple(b1, List())
+        (v, List(~t1._1, ~v) :: List(t1._1, v) :: t1._2)
       }
 
       case And(b1, b2) => {
-        val name = "_nv" + listVars.size;
-        val v = Ident(name)
-        val t1 = tseitinListSimple(b1, List(), name :: listVars)
-        val t2 = tseitinListSimple(b2, List(), name :: listVars)
-        (v, List(~t1._1, ~t2._1, v) :: List(t1._1, ~v) :: List(t2._1, ~v) :: t1._2 ++ t2._2, name :: listVars)
+        val v = newVar
+        val t1 = tseitinListSimple(b1, List())
+        val t2 = tseitinListSimple(b2, List())
+        (v, List(~t1._1, ~t2._1, v) :: List(t1._1, ~v) :: List(t2._1, ~v) :: t1._2 ++ t2._2)
 
       }
       case Or(b1, b2) => {
-        val name = "_nv" + listVars.size;
-        val v = Ident(name)
-        val t1 = tseitinListSimple(b1, List(), name :: listVars)
-        val t2 = tseitinListSimple(b2, List(), name :: listVars)
-        (v, List(t1._1, t2._1, ~v) :: List(~t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2, name :: listVars)
+        val v = newVar
+        val t1 = tseitinListSimple(b1, List())
+        val t2 = tseitinListSimple(b2, List())
+        (v, List(t1._1, t2._1, ~v) :: List(~t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2)
 
       }
     }
@@ -145,11 +205,17 @@ object Logic {
     }
   }
 
-  def encode(cnf: BoolExp): (List[List[Int]], Map[String, Int]) = encode(simplifyCnf(cnf.toCnfList))
+  def encode(cnf: BoolExp): (List[List[Int]], Map[BoolExp, Int]) = {
+    _createdVars = List()
+    _varId = 0
+    encode(simplifyCnf(cnf.toCnfList))
+  }
 
-  def encode(cnf: List[List[BoolExp]]): (List[List[Int]], Map[String, Int]) = encodeCnf0(cnf, Map[String, Int]())
+  def encode(cnf: List[List[BoolExp]]): (List[List[Int]], Map[BoolExp, Int]) = {
+    encodeCnf0(cnf, Map[BoolExp, Int]())
+  }
 
-  def encodeCnf0(cnf: List[List[BoolExp]], m: Map[String, Int]): (List[List[Int]], Map[String, Int]) = cnf match {
+  def encodeCnf0(cnf: List[List[BoolExp]], m: Map[BoolExp, Int]): (List[List[Int]], Map[BoolExp, Int]) = cnf match {
     case Nil => (List(), m)
     case h :: t => {
       val p = encodeClause0(h, m)
@@ -163,35 +229,34 @@ object Logic {
     }
   }
 
-  def encodeClause0(c: List[BoolExp], m: Map[String, Int]): (List[Int], Map[String, Int]) = c match {
+  def inv(x: Int): Int = -x
+
+  def encodeClause0(c: List[BoolExp], m: Map[BoolExp, Int]): (List[Int], Map[BoolExp, Int]) = c match {
     case Nil => (List(), m)
-    case Ident(s) :: q => m.get(s) match {
-      case Some(i) => {
-        val p = encodeClause0(q, m)
-        (i :: p._1, p._2)
-      }
-      case None => {
-        val n = m.size + 1
-        val p = encodeClause0(q, m.updated(s, n))
-        (n :: p._1, p._2)
-      } 
-    }
-    case Not(Ident(s)) :: q => m.get(s) match {
-      case Some(i) => {
-        val p = encodeClause0(q, m)
-        (-i :: p._1, p._2)
-      }
-      case None => {
-        val n = m.size + 1
-        val p = encodeClause0(q, m.updated(s, n))
-        (-n :: p._1, p._2)
-      }
-    }
+    case (s: AnonymousVariable) :: q => encodeClause1(s, q, m, x => x)
+    case (s: Ident[_]) :: q => encodeClause1(s, q, m, x => x)
+    case (Not(s: AnonymousVariable)) :: q => encodeClause1(s, q, m, inv)
+    case (Not(s: Ident[_])) :: q => encodeClause1(s, q, m, inv)
+
     case _ => throw new Exception("There is something that is not a litteral in the clause " + PrettyPrint(List(c)))
   }
 
-  def isSat(f: BoolExp): (Boolean, Option[List[String]]) = {
+  def encodeClause1(c: BoolExp, q: List[BoolExp], m: Map[BoolExp, Int], f: Int => Int): (List[Int], Map[BoolExp, Int]) = m.get(c) match {
+    case Some(i) => {
+      val p = encodeClause0(q, m)
+      (f(i) :: p._1, p._2)
+    }
+    case None => {
+      val n = m.size + 1
+      val p = encodeClause0(q, m.updated(c, n))
+      (f(n) :: p._1, p._2)
+    }
+  }
+
+  def isSat[U](f: BoolExp): (Boolean, Option[Map[U,Boolean]]) = {
+
     val (cnf, m) = encode(f)
+    System.out.println(cnf)
     val mapRev = m map {
       case (x, y) => (y, x)
     }
@@ -200,7 +265,19 @@ object Logic {
       cnf.foldLeft(problem) { (p, c) => p += Clause(c) }
       val res = problem.solve
       res match {
-        case Satisfiable => (true, Some(problem.model.toList map {x => if(x>0) mapRev(x) else "~" + mapRev(-x)} filter{ x => !(x startsWith "_nv" ) && !(x startsWith "~_nv" )}))
+        case Satisfiable => {
+          val listeBoolExp = problem.model.toList map { x => if (x > 0) (mapRev(x)->true)  else (mapRev(-x)->false)}
+          val mapIdentBool = listeBoolExp filter (x => x match {
+            case (s:AnonymousVariable,_) => false 
+            case (Ident(s),_) => true 
+            case _ => false
+          })
+         val mapUBool = mapIdentBool  map (z => z match {
+            case (Ident(s:U),b) => (s,b)
+            case _ => throw new IllegalStateException
+          })
+          (true,Some(mapUBool.toMap))
+        }
         case Unsatisfiable => (false, None)
         case _ => throw new IllegalStateException("Got a time out")
       }
@@ -208,11 +285,10 @@ object Logic {
       case e: ContradictionException => (false, None)
     }
   }
-  
-  def isValid(f: BoolExp) : (Boolean, Option[List[String]]) = {
-    val (b,m) = isSat (~f) 
-    (!b,m) }
-  
-  
+
+  def isValid[U](f: BoolExp): (Boolean, Option[Map[U,Boolean]]) = {
+    val (b, m) = isSat[U](~f)
+    (!b, m)
+  }
 
 }
