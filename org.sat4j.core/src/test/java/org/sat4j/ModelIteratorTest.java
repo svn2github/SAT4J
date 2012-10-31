@@ -49,6 +49,7 @@ import org.sat4j.tools.Minimal4InclusionModel;
 import org.sat4j.tools.ModelIterator;
 import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SolutionCounter;
+import org.sat4j.tools.SolutionFoundListener;
 
 /**
  * @author leberre
@@ -90,7 +91,20 @@ public class ModelIteratorTest {
     public void testInnerModelIterator() {
         try {
             ISolver solver = SolverFactory.newDefault();
-            SearchEnumeratorListener enumerator = new SearchEnumeratorListener();
+            SolutionFoundListener sfl = new SolutionFoundListener() {
+
+                public void onSolutionFound(int[] solution) {
+                    System.out.println(new VecInt(solution));
+                }
+
+                public void onSolutionFound(IVecInt solution) {
+                    throw new UnsupportedOperationException(
+                            "Not implemented yet!");
+                }
+
+            };
+            SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
+                    sfl);
             solver.setSearchListener(enumerator);
             solver.newVar(3);
             IVecInt clause = new VecInt();
