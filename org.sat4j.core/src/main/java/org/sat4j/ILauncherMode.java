@@ -204,7 +204,7 @@ public interface ILauncherMode extends SolutionFoundListener {
         public void onSolutionFound(int[] solution) {
             nbSolutionFound++;
             exitCode = ExitCode.SATISFIABLE;
-            out.printf("\rFound solution #%d", nbSolutionFound);
+            out.printf("\rc Found solution #%d", nbSolutionFound);
         }
 
         public void onSolutionFound(IVecInt solution) {
