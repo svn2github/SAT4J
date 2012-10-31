@@ -23,8 +23,11 @@ import org.sat4j.reader.CSPExtSupportReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.reader.XMLCSPReader;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
+import org.sat4j.tools.SearchEnumeratorListener;
+import org.sat4j.tools.SolutionFoundListener;
 
-public class CSPLauncher extends AbstractLauncher {
+public class CSPLauncher extends AbstractLauncher implements SolutionFoundListener {
 
 	/**
      * 
@@ -44,10 +47,16 @@ public class CSPLauncher extends AbstractLauncher {
 		} else {
 			asolver = SolverFactory.newDefault();
 		}
+		if(System.getProperty("all") != null) {
+			enumerator = new SearchEnumeratorListener(this);
+			asolver.setSearchListener(enumerator);
+		}
 		log(asolver.toString(COMMENT_PREFIX));
 		return asolver;
 	}
 
+	private SearchEnumeratorListener enumerator;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -100,6 +109,18 @@ public class CSPLauncher extends AbstractLauncher {
 		if (args.length == 1)
 			return args[0];
 		return args[1];
+	}
+
+	@Override
+	public void onSolutionFound(int[] solution) {
+		log("Solution number: "+enumerator.getNumberOfSolutionFound());
+		out.print("v ");
+		reader.decode(solution,out);
+		out.println();
+	}
+
+	@Override
+	public void onSolutionFound(IVecInt solution) {
 	}
 
 }
