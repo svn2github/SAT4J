@@ -117,7 +117,7 @@ public class ModelIteratorTest {
             clause.push(-2);
             clause.push(-3);
             solver.addClause(clause);
-            assertFalse(solver.isSatisfiable());
+            assertTrue(solver.isSatisfiable());
             assertEquals(6, enumerator.getNumberOfSolutionFound());
         } catch (ContradictionException e) {
             fail();
