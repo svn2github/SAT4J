@@ -173,12 +173,12 @@ public interface ILauncherMode extends SolutionFoundListener {
 
         private int nbSolutionFound;
 
-        private ILogAble logger;
+        private PrintWriter out;
 
         public void solve(IProblem problem, ILogAble logger, PrintWriter out,
                 long beginTime) {
             exitCode = ExitCode.UNKNOWN;
-            this.logger = logger;
+            this.out = out;
             nbSolutionFound = 0;
             try {
                 if (problem.isSatisfiable()) {
@@ -204,7 +204,7 @@ public interface ILauncherMode extends SolutionFoundListener {
         public void onSolutionFound(int[] solution) {
             nbSolutionFound++;
             exitCode = ExitCode.SATISFIABLE;
-            logger.log("Found solution #" + nbSolutionFound);
+            out.printf("\rFound solution #%d", nbSolutionFound);
         }
 
         public void onSolutionFound(IVecInt solution) {
