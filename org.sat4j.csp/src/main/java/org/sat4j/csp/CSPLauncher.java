@@ -27,7 +27,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SolutionFoundListener;
 
-public class CSPLauncher extends AbstractLauncher implements SolutionFoundListener {
+public class CSPLauncher extends AbstractLauncher {
 
 	/**
      * 
@@ -47,15 +47,11 @@ public class CSPLauncher extends AbstractLauncher implements SolutionFoundListen
 		} else {
 			asolver = SolverFactory.newDefault();
 		}
-		if(System.getProperty("all") != null) {
-			enumerator = new SearchEnumeratorListener(this);
-			asolver.setSearchListener(enumerator);
-		}
 		log(asolver.toString(COMMENT_PREFIX));
 		return asolver;
 	}
 
-	private SearchEnumeratorListener enumerator;
+	
 	
 	/*
 	 * (non-Javadoc)
@@ -110,17 +106,4 @@ public class CSPLauncher extends AbstractLauncher implements SolutionFoundListen
 			return args[0];
 		return args[1];
 	}
-
-	@Override
-	public void onSolutionFound(int[] solution) {
-		log("Solution number: "+enumerator.getNumberOfSolutionFound());
-		out.print("v ");
-		reader.decode(solution,out);
-		out.println();
-	}
-
-	@Override
-	public void onSolutionFound(IVecInt solution) {
-	}
-
 }
