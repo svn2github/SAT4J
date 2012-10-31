@@ -39,6 +39,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Backbone;
+import org.sat4j.tools.SolutionFoundListener;
 
 /**
  * Allow to change the behavior of the launcher (either decision or optimization
@@ -48,7 +49,7 @@ import org.sat4j.tools.Backbone;
  * @author sroussel
  * 
  */
-public interface ILauncherMode {
+public interface ILauncherMode extends SolutionFoundListener {
 
     public static final String SOLUTION_PREFIX = "v "; //$NON-NLS-1$
 
@@ -159,6 +160,9 @@ public interface ILauncherMode {
                         }
 
                     }
+                    if (nbSolutionFound > 1) {
+                        logger.log("Found " + nbSolutionFound + " solutions");
+                    }
                     out.print(SOLUTION_PREFIX);
                     reader.decode(model, out);
                     out.println();
@@ -167,14 +171,23 @@ public interface ILauncherMode {
             }
         }
 
+        private int nbSolutionFound;
+
+        private ILogAble logger;
+
         public void solve(IProblem problem, ILogAble logger, PrintWriter out,
                 long beginTime) {
             exitCode = ExitCode.UNKNOWN;
+            this.logger = logger;
+            nbSolutionFound = 0;
             try {
                 if (problem.isSatisfiable()) {
                     exitCode = ExitCode.SATISFIABLE;
                 } else {
-                    exitCode = ExitCode.UNSATISFIABLE;
+                    if (nbSolutionFound > 0)
+                        exitCode = ExitCode.SATISFIABLE;
+                    else
+                        exitCode = ExitCode.UNSATISFIABLE;
                 }
             } catch (TimeoutException e) {
                 logger.log("timeout");
@@ -188,6 +201,15 @@ public interface ILauncherMode {
         public ExitCode getCurrentExitCode() {
             return exitCode;
         };
+
+        public void onSolutionFound(int[] solution) {
+            nbSolutionFound++;
+            logger.log("Found solution #" + nbSolutionFound);
+        }
+
+        public void onSolutionFound(IVecInt solution) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
     };
 
     /**
@@ -278,6 +300,14 @@ public interface ILauncherMode {
 
         public ExitCode getCurrentExitCode() {
             return exitCode;
+        }
+
+        public void onSolutionFound(int[] solution) {
+            throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        public void onSolutionFound(IVecInt solution) {
+            throw new UnsupportedOperationException("Not implemented yet!");
         }
     };
 

@@ -1980,7 +1980,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         if (status == Lbool.UNDEFINED && !this.lastConflictMeansUnsat) {
             throw new TimeoutException("Cannot decide the satisfiability");
         }
-        return status == Lbool.TRUE;
+        // When using a search enumerator (to compute all models)
+        // the final answer is FALSE, however we are aware of at least one model
+        // (the last one)
+        return model != null;
     }
 
     public void printInfos(PrintWriter out) {

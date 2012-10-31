@@ -46,6 +46,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.SearchEnumeratorListener;
 
 /**
  * That class is used by launchers used to solve decision problems, i.e.
@@ -201,6 +202,11 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             if (!this.silent) {
                 this.solver.setVerbose(true);
             }
+            if (System.getProperty("all") != null) {
+                SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
+                        launcherMode);
+                this.solver.setSearchListener(enumerator);
+            }
             String instanceName = getInstanceName(args);
             if (instanceName == null) {
                 usage();
@@ -348,5 +354,4 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             }
         }
     }
-
 }
