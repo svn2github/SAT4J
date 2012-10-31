@@ -184,10 +184,9 @@ public interface ILauncherMode extends SolutionFoundListener {
                 if (problem.isSatisfiable()) {
                     exitCode = ExitCode.SATISFIABLE;
                 } else {
-                    if (nbSolutionFound > 0)
-                        exitCode = ExitCode.SATISFIABLE;
-                    else
+                    if (exitCode == ExitCode.UNKNOWN) {
                         exitCode = ExitCode.UNSATISFIABLE;
+                    }
                 }
             } catch (TimeoutException e) {
                 logger.log("timeout");
@@ -204,6 +203,7 @@ public interface ILauncherMode extends SolutionFoundListener {
 
         public void onSolutionFound(int[] solution) {
             nbSolutionFound++;
+            exitCode = ExitCode.SATISFIABLE;
             logger.log("Found solution #" + nbSolutionFound);
         }
 
