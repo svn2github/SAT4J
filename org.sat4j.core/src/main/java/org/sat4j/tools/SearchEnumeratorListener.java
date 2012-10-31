@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
@@ -52,6 +51,12 @@ public class SearchEnumeratorListener extends
 
     private int nbsolutions = 0;
 
+    private final SolutionFoundListener sfl;
+
+    public SearchEnumeratorListener(SolutionFoundListener sfl) {
+        this.sfl = sfl;
+    }
+
     @Override
     public void init(ISolverService solverService) {
         this.solverService = solverService;
@@ -65,13 +70,12 @@ public class SearchEnumeratorListener extends
         }
         this.solverService.backtrack(clause);
         this.nbsolutions++;
-        System.out.println(new VecInt(model));
+        sfl.onSolutionFound(model);
     }
 
     @Override
     public void end(Lbool result) {
         assert result != Lbool.TRUE;
-        System.out.println("C'est fini !" + result);
     }
 
     public int getNumberOfSolutionFound() {
