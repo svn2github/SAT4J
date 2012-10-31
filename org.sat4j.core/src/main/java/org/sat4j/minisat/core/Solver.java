@@ -1351,10 +1351,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     private int[] prime;
 
     public int[] primeImplicant() {
-        assert this.qhead == this.trail.size()
-                || this.qhead == this.learnedLiterals.size();
+        assert this.qhead == this.trail.size() + this.learnedLiterals.size();
         if (this.learnedLiterals.size() > 0) {
-            this.qhead = 0;
+            this.qhead = trail.size();
         }
         this.prime = new int[this.implied.size() + this.decisions.size() + 1];
         int p;
