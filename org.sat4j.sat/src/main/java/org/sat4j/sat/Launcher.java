@@ -155,7 +155,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             this.isModeOptimization = cmd.hasOption("opt");
 
             this.filename = cmd.getOptionValue("f");
-            
+
             boolean equivalence = cmd.hasOption("e");
 
             int others = 0;
@@ -323,13 +323,9 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             }
             this.beginTime = System.currentTimeMillis();
             if (!this.launchRemoteControl) {
-                readProblem(instanceName);
+                this.problem = readProblem(instanceName);
                 try {
-                    if (this.problem != null) {
-                        solve(this.problem);
-                    } else {
-                        solve(this.solver);
-                    }
+                    solve(this.problem);
                 } catch (TimeoutException e) {
                     log("timeout"); //$NON-NLS-1$
                 }
