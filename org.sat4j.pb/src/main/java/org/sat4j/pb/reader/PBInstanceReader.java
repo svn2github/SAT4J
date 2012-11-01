@@ -41,7 +41,7 @@ import org.sat4j.reader.Reader;
  */
 public class PBInstanceReader extends InstanceReader {
 
-    private OPBReader2007 opb;
+    private OPBReader2012 opb;
 
     private final IPBSolver solver;
 
@@ -52,7 +52,7 @@ public class PBInstanceReader extends InstanceReader {
 
     private Reader getDefaultOPBReader() {
         if (this.opb == null) {
-            this.opb = new OPBReader2007(this.solver);
+            this.opb = new OPBReader2012(this.solver);
         }
         return this.opb;
     }
