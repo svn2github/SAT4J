@@ -703,7 +703,7 @@ public class OPBReader2005 extends Reader implements Serializable {
         return problem;
     }
 
-    private IProblem parseInstance(LineNumberReader input)
+    protected IProblem parseInstance(LineNumberReader input)
             throws ParseFormatException, ContradictionException {
         this.solver.reset();
         this.in = input;
