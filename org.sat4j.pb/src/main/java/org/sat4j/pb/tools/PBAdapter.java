@@ -54,66 +54,57 @@ import org.sat4j.tools.SolverDecorator;
  */
 public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public PBAdapter(ISolver solver) {
-		super(solver);
-	}
+    public PBAdapter(ISolver solver) {
+        super(solver);
+    }
 
-	@Override
-	public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
-			boolean moreThan, BigInteger d) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
+            boolean moreThan, BigInteger d) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger degree) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger degree) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-			throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-			BigInteger weight) throws ContradictionException {
-		throw new UnsupportedOperationException();
-	}
+    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
+            BigInteger weight) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public void setObjectiveFunction(ObjectiveFunction obj) {
-		throw new UnsupportedOperationException();
+    public void setObjectiveFunction(ObjectiveFunction obj) {
+        throw new UnsupportedOperationException();
 
-	}
+    }
 
-	@Override
-	public ObjectiveFunction getObjectiveFunction() {
-		throw new UnsupportedOperationException();
-	}
+    public ObjectiveFunction getObjectiveFunction() {
+        throw new UnsupportedOperationException();
+    }
 
 }
