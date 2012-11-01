@@ -123,7 +123,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
         return false;
     }
 
-    protected int numberOfCriteria() {
+    public int numberOfCriteria() {
         return this.criteria.size();
     }
 
@@ -159,6 +159,10 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
         return this.currentValue;
     }
 
+    public Number getObjectiveValue(int criterion) {
+        return evaluate(criterion);
+    }
+
     public void forceObjectiveValueTo(Number forcedValue)
             throws ContradictionException {
         throw new UnsupportedOperationException();
@@ -191,6 +195,10 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     }
 
     protected Number evaluate() {
+        return evaluate(this.currentCriterion);
+    }
+
+    protected Number evaluate(int criterion) {
         int value = 0;
         int lit;
         for (IteratorInt it = this.criteria.get(this.currentCriterion)
