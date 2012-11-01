@@ -128,9 +128,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     }
 
     protected void fixCriterionValue() throws ContradictionException {
-        super.addAtMost(this.criteria.get(this.currentCriterion),
-                this.currentValue.intValue());
-        super.addAtLeast(this.criteria.get(this.currentCriterion),
+        super.addExactly(this.criteria.get(this.currentCriterion),
                 this.currentValue.intValue());
     }
 
