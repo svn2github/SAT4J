@@ -69,7 +69,7 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
     }
 
     public ObjectiveFunction getObjectiveFunction() {
-        throw new UnsupportedOperationException();
+        return this.objs.get(this.currentCriterion);
     }
 
     @Override
@@ -97,28 +97,29 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
     }
 
     @Override
+    protected Number evaluate(int criterion) {
+        return this.objs.get(criterion).calculateDegree(this);
+    }
+
+    @Override
     protected void fixCriterionValue() throws ContradictionException {
         if (bigCurrentValue == null) {
             throw new ContradictionException("no current value computed!");
         }
-        addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
-                this.objs.get(this.currentCriterion).getCoeffs(), true,
-                this.bigCurrentValue);
-        addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
-                this.objs.get(this.currentCriterion).getCoeffs(), false,
-                this.bigCurrentValue);
+        addExactly(this.objs.get(this.currentCriterion).getVars(), this.objs
+                .get(this.currentCriterion).getCoeffs(), this.bigCurrentValue);
     }
 
     @Override
     protected IConstr discardSolutionsForOptimizing()
             throws ContradictionException {
-        return addPseudoBoolean(this.objs.get(this.currentCriterion).getVars(),
-                this.objs.get(this.currentCriterion).getCoeffs(), false,
+        return addAtMost(this.objs.get(this.currentCriterion).getVars(),
+                this.objs.get(this.currentCriterion).getCoeffs(),
                 this.bigCurrentValue.subtract(BigInteger.ONE));
     }
 
     @Override
-    protected int numberOfCriteria() {
+    public int numberOfCriteria() {
         return this.objs.size();
     }
 
