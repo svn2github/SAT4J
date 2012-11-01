@@ -31,14 +31,17 @@ package org.sat4j;
 
 import java.io.PrintWriter;
 
+import org.sat4j.core.Vec;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Backbone;
+import org.sat4j.tools.LexicoDecorator;
 import org.sat4j.tools.SolutionFoundListener;
 
 /**
@@ -249,7 +252,19 @@ public interface ILauncherMode extends SolutionFoundListener {
                 }
                 IOptimizationProblem optproblem = (IOptimizationProblem) problem;
                 if (!optproblem.hasNoObjectiveFunction()) {
-                    logger.log("objective function=" + optproblem.getObjectiveValue()); //$NON-NLS-1$
+                    String objvalue;
+                    if (optproblem instanceof LexicoDecorator<?>) {
+                        IVec<Number> values = new Vec<Number>();
+                        LexicoDecorator<?> lexico = (LexicoDecorator<?>) optproblem;
+                        for (int i = 0; i < lexico.numberOfCriteria(); i++) {
+                            values.push(lexico.getObjectiveValue(i));
+                        }
+                        objvalue = values.toString();
+
+                    } else {
+                        objvalue = optproblem.getObjectiveValue().toString();
+                    }
+                    logger.log("objective function=" + objvalue); //$NON-NLS-1$
                 }
             }
 
