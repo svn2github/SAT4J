@@ -31,7 +31,7 @@ package org.sat4j.pb;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.pb.reader.OPBReader2010;
+import org.sat4j.pb.reader.OPBReader2012;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
 
@@ -58,7 +58,7 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
 
     @Override
     protected Reader createReader(ISolver theSolver, String problemname) {
-        return new OPBReader2010((IPBSolver) theSolver);
+        return new OPBReader2012((IPBSolver) theSolver);
     }
 
     /**
