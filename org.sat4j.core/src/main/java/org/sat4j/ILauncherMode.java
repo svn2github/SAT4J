@@ -97,8 +97,8 @@ public interface ILauncherMode extends SolutionFoundListener {
      *            the time at which the solver starts
      * @return
      */
-    void solve(IProblem problem, ILogAble logger, PrintWriter out,
-            long beginTime);
+    void solve(IProblem problem, Reader reader, ILogAble logger,
+            PrintWriter out, long beginTime);
 
     /**
      * Allows the launcher to specifically return an upper bound of the optimal
@@ -177,18 +177,22 @@ public interface ILauncherMode extends SolutionFoundListener {
         private int nbSolutionFound;
 
         private PrintWriter out;
+        private ISolver aSolver;
+        private Reader reader;
 
-        public void solve(IProblem problem, ILogAble logger, PrintWriter out,
-                long beginTime) {
-            exitCode = ExitCode.UNKNOWN;
+        public void solve(IProblem problem, Reader reader, ILogAble logger,
+                PrintWriter out, long beginTime) {
+            this.exitCode = ExitCode.UNKNOWN;
             this.out = out;
-            nbSolutionFound = 0;
+            this.aSolver = (ISolver) problem;
+            this.reader = reader;
+            this.nbSolutionFound = 0;
             try {
                 if (problem.isSatisfiable()) {
-                    exitCode = ExitCode.SATISFIABLE;
+                    this.exitCode = ExitCode.SATISFIABLE;
                 } else {
-                    if (exitCode == ExitCode.UNKNOWN) {
-                        exitCode = ExitCode.UNSATISFIABLE;
+                    if (this.exitCode == ExitCode.UNKNOWN) {
+                        this.exitCode = ExitCode.UNSATISFIABLE;
                     }
                 }
             } catch (TimeoutException e) {
@@ -201,13 +205,20 @@ public interface ILauncherMode extends SolutionFoundListener {
         }
 
         public ExitCode getCurrentExitCode() {
-            return exitCode;
+            return this.exitCode;
         };
 
         public void onSolutionFound(int[] solution) {
-            nbSolutionFound++;
-            exitCode = ExitCode.SATISFIABLE;
-            out.printf("\rc Found solution #%d", nbSolutionFound);
+            this.nbSolutionFound++;
+            this.exitCode = ExitCode.SATISFIABLE;
+            if (this.aSolver.isVerbose()) {
+                this.out.printf("c Found solution #%d\n", nbSolutionFound);
+                this.out.print(SOLUTION_PREFIX);
+                this.reader.decode(solution, this.out);
+                this.out.println();
+            } else {
+                this.out.printf("\rc Found solution #%d", nbSolutionFound);
+            }
         }
 
         public void onSolutionFound(IVecInt solution) {
@@ -272,8 +283,8 @@ public interface ILauncherMode extends SolutionFoundListener {
                     + (System.currentTimeMillis() - beginTime) / 1000.0);
         }
 
-        public void solve(IProblem problem, ILogAble logger, PrintWriter out,
-                long beginTime) {
+        public void solve(IProblem problem, Reader reader, ILogAble logger,
+                PrintWriter out, long beginTime) {
             boolean isSatisfiable = false;
             IOptimizationProblem optproblem = (IOptimizationProblem) problem;
             exitCode = ExitCode.UNKNOWN;
