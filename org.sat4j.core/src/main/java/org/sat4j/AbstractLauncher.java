@@ -247,7 +247,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
     }
 
     protected void solve(IProblem problem) throws TimeoutException {
-        launcherMode.solve(problem, this, out, beginTime);
+        launcherMode.solve(problem, reader, this, out, beginTime);
         this.setExitCode(launcherMode.getCurrentExitCode());
     }
 
