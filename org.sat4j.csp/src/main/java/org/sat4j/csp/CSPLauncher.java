@@ -23,9 +23,6 @@ import org.sat4j.reader.CSPExtSupportReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.reader.XMLCSPReader;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVecInt;
-import org.sat4j.tools.SearchEnumeratorListener;
-import org.sat4j.tools.SolutionFoundListener;
 
 public class CSPLauncher extends AbstractLauncher {
 
@@ -72,6 +69,9 @@ public class CSPLauncher extends AbstractLauncher {
 		if (System.getProperty("verbose") != null) {
 			log("verbose mode on");
 			aReader.setVerbosity(true);
+			aSolver.setVerbose(true);
+		} else {
+			aSolver.setVerbose(false);
 		}
 		return aReader;
 	}
