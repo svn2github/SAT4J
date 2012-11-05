@@ -184,7 +184,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
             if (lit > 0) {
                 out.append("+1 x" + lit + " ");
             } else {
-                out.append("+1 ~x" + -lit + " ");
+                out.append("-1 x" + -lit + " ");
             }
         }
         out.append(">= 1 ;\n");
@@ -329,6 +329,27 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
         out.append(" ;\n");
         return FAKE_CONSTR;
 
+    }
+
+    @Override
+    public IConstr addExactly(IVecInt literals, int weight)
+            throws ContradictionException {
+        StringBuffer out = getOut();
+        this.nbOfConstraints++;
+        int negationweight = 0;
+        int p;
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            p = iterator.next();
+            assert p != 0;
+            if (p > 0) {
+                out.append("+1 x" + p + " ");
+            } else {
+                out.append("-1 x" + -p + " ");
+                negationweight++;
+            }
+        }
+        out.append("= " + (weight - negationweight) + " ;\n");
+        return FAKE_CONSTR;
     }
 
     public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
