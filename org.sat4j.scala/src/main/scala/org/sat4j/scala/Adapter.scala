@@ -40,15 +40,13 @@ class Problem {
 object Clause {
   def apply(args: Int*) = {
     val clause = new VecInt()
-    args foreach { case arg =>
-      clause.push(arg)}
+    args foreach { arg => clause.push(arg) }
     clause
   }
   
   def apply(l: List[Int]) = {
     val clause = new VecInt()
-    l foreach { case arg =>
-      clause.push(arg)}
+    l foreach { arg => clause.push(arg) }
     clause
   }
 }

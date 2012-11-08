@@ -14,10 +14,19 @@ object Logic {
       case v: AnonymousVariable => v.toString
       case Not(v: AnonymousVariable) => "~" + v.toString
       case Ident(s) => s.toString
+      case IndexedIdent(s, is) => s.toString + is.mkString("(", ",", ")")
       case Not(Ident(s)) => "~" + s
+      case Not(IndexedIdent(s, is)) => "~" + s.toString + is.mkString("(", ",", ")")
       case Not(b) => "~(" + apply(b) + ")"
       case And(b1, b2) => "(" + apply(b1) + " & " + apply(b2) + ")"
       case Or(b1, b2) => "(" + apply(b1) + " | " + apply(b2) + ")"
+      case Implies(b1, b2) => "(" + apply(b1) + " -> " + apply(b2) + ")"
+      case Iff(b1, b2) => "(" + apply(b1) + " <-> " + apply(b2) + ")"
+      case CardEQ(bs, k) => "(" + bs.map(apply).mkString(" + ") + " === " + k + ")"
+      case CardLE(bs, k) => "(" + bs.map(apply).mkString(" + ") + " <= " + k + ")"
+      case CardLT(bs, k) => "(" + bs.map(apply).mkString(" + ") + " < " + k + ")"
+      case CardGE(bs, k) => "(" + bs.map(apply).mkString(" + ") + " >= " + k + ")"
+      case CardGT(bs, k) => "(" + bs.map(apply).mkString(" + ") + " > " + k + ")"
     }
 
     def apply(cnfList: List[List[BoolExp]]): String =
@@ -32,13 +41,22 @@ object Logic {
 
   }
 
-  abstract class BoolExp {
+  /** Abstract base class of all DSL expressions. */
+  abstract class Exp
+  
+  /** Abstract base class of all boolean valued expressions. */
+  abstract class BoolExp extends Exp {
     def &(b: BoolExp) = And(this, b)
     def |(b: BoolExp) = Or(this, b)
-    def ->(b: BoolExp) = implies(this, b)
-    def <->(b: BoolExp) = iff(this, b)
+    def ->(b: BoolExp) = Implies(this, b)
+    def <->(b: BoolExp) = Iff(this, b)
     def unary_~() = Not(this)
-
+    def +(b: BoolExp) = Card(List(b, this))
+    def ===(k: Int) = CardEQ(List(this), k)
+    def <= (k: Int) = CardLE(List(this), k)
+    def <  (k: Int) = CardLT(List(this), k)
+    def >= (k: Int) = CardGE(List(this), k)
+    def >  (k: Int) = CardGT(List(this), k)
     def toCnfList = {
       isAlreadyInCnf(this) match {
         case (true, Some(x)) => x
@@ -51,20 +69,68 @@ object Logic {
     }
   }
 
+  /** Base class for boolean constants True and False. */
   abstract class BoolValue extends BoolExp
 
+  /** Truth. */
   case object True extends BoolValue
 
+  /** Falsity. */
   case object False extends BoolValue
 
+  /** Logical conjunction operator. */
   case class And(b1: BoolExp, b2: BoolExp) extends BoolExp
 
+  /** Logical disjunction operator. */
   case class Or(b1: BoolExp, b2: BoolExp) extends BoolExp
+  
+  /** Logical implication operator. */
+  case class Implies(b1: BoolExp, b2: BoolExp) extends BoolExp
+  
+  /** Logical equivalence operator. */
+  case class Iff(b1: BoolExp, b2: BoolExp) extends BoolExp
+  
+  /** Cardinality equals k operator. */  
+  case class CardEQ(bs: List[BoolExp], k: Int) extends BoolExp
+  
+  /** Cardinality less than or equals k operator. */
+  case class CardLE(bs: List[BoolExp], k: Int) extends BoolExp
+  
+  /** Cardinality less than k operator. */
+  case class CardLT(bs: List[BoolExp], k: Int) extends BoolExp
+  
+  /** Cardinality greater than or equals k operator. */  
+  case class CardGE(bs: List[BoolExp], k: Int) extends BoolExp
 
+  /** Cardinality greater than k operator. */  
+  case class CardGT(bs: List[BoolExp], k: Int) extends BoolExp
+
+  /** Abstract base class of all integer valued expressions. */  
+  abstract class IntExp extends Exp
+  
+  /** Cardinality operator. */
+  case class Card(bs: List[BoolExp]) extends IntExp {
+    def +  (b: BoolExp) = Card(b :: bs)
+    def ===(k: Int) = CardEQ(bs.reverse, k)
+    def <= (k: Int) = CardLE(bs.reverse, k)
+    def <  (k: Int) = CardLT(bs.reverse, k)
+    def >= (k: Int) = CardGE(bs.reverse, k)
+    def >  (k: Int) = CardGT(bs.reverse, k)
+  }
+
+  /** Logical negation operator. */
   case class Not(b: BoolExp) extends BoolExp
 
-  case class Ident[U](name: U) extends BoolExp
+  /** Logical proposition identifier. */
+  case class Ident[U](name: U) extends BoolExp {
+	  def apply(indices: Int*) = IndexedIdent(name, indices.toList)
+  }
 
+  /** Logical proposition identifier. */
+  case class IndexedIdent[U](name: U, indices: List[Int]=Nil) extends BoolExp {
+  }
+  
+  /** Anonymous logical proposition. */
   case class AnonymousVariable extends BoolExp {
     private val id = nextVarId
     override def toString = "_nv#" + id
@@ -105,12 +171,6 @@ object Logic {
     case b :: Nil => b
     case b :: t => l.reduceLeft { (b1, b2) => Or(b1, b2) }
   }
-
-  /** Logical implication. */
-  def implies(b1: BoolExp, b2: BoolExp) = Or(Not(b1), b2)
-
-  /** Logical equivalence. */
-  def iff(b1: BoolExp, b2: BoolExp) = And(implies(b1, b2), implies(b2, b1))
 
   /** Implicit conversion from string to logical identifier */
   implicit def identFromString(s: String): Ident[String] = Ident(s)
