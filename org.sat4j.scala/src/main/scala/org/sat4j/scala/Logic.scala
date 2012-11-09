@@ -223,6 +223,8 @@ object Logic {
       case Not(True) => (False, List())
 
       case Ident(s) => (Ident(s), List())
+      
+      case IndexedIdent(s,l) => (IndexedIdent(s,l), List())
 
       case Not(b1) => {
         val v = newVar
@@ -237,12 +239,26 @@ object Logic {
         (v, List(~t1._1, ~t2._1, v) :: List(t1._1, ~v) :: List(t2._1, ~v) :: t1._2 ++ t2._2)
 
       }
+      
       case Or(b1, b2) => {
         val v = newVar
         val t1 = tseitinListSimple(b1, List())
         val t2 = tseitinListSimple(b2, List())
         (v, List(t1._1, t2._1, ~v) :: List(~t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2)
-
+      }
+      
+      case Implies(b1, b2) => {
+        val v = newVar
+        val t1 = tseitinListSimple(b1, List())
+        val t2 = tseitinListSimple(b2, List())
+        (v, List(~t1._1, t2._1, ~v) :: List(t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2)
+      }
+      
+      case Iff(b1, b2) => {
+        val v = newVar
+        val t1 = tseitinListSimple(b1, List())
+        val t2 = tseitinListSimple(b2, List())
+        (v, List(~t1._1, t2._1, ~v) :: List(t1._1, ~t2._1, ~v) :: List(t1._1, t2._1, v) :: List(~t1._1, ~t2._1, v) :: t1._2 ++ t2._2)
       }
     }
   }
@@ -298,8 +314,10 @@ object Logic {
     case Nil => (List(), m)
     case (s: AnonymousVariable) :: q => encodeClause1(s, q, m, x => x)
     case (s: Ident[_]) :: q => encodeClause1(s, q, m, x => x)
+    case (s: IndexedIdent[_]) :: q => encodeClause1(s, q, m, x => x)
     case (Not(s: AnonymousVariable)) :: q => encodeClause1(s, q, m, inv)
     case (Not(s: Ident[_])) :: q => encodeClause1(s, q, m, inv)
+    case (Not(s: IndexedIdent[_])) :: q => encodeClause1(s, q, m, inv)
 
     case _ => throw new Exception("There is something that is not a litteral in the clause " + PrettyPrint(List(c)))
   }
