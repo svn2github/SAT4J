@@ -68,7 +68,7 @@ public class SearchEnumeratorListener extends
         for (int i = 0; i < model.length; i++) {
             clause[i] = -model[i];
         }
-        this.solverService.backtrack(clause);
+        this.solverService.addClause(clause);
         this.nbsolutions++;
         sfl.onSolutionFound(model);
     }

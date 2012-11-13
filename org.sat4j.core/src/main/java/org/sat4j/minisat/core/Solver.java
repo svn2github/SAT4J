@@ -2362,9 +2362,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             clause.push(LiteralsUtils.toInternal(d));
         }
         this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);
-        // learn(this.sharedConflict);
-        this.sharedConflict.register();
-        addConstr(this.sharedConflict);
+        learn(this.sharedConflict);
     }
 
     /**
@@ -2484,8 +2482,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     }
 
     public void addClause(int[] literals) {
-        throw new UnsupportedOperationException("Not implemented yet");
-
+        IVecInt clause = new VecInt(literals.length);
+        for (int d : literals) {
+            clause.push(LiteralsUtils.toInternal(d));
+        }
+        this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);
+        this.sharedConflict.register();
+        addConstr(this.sharedConflict);
     }
 
     public ISolver getSolvingEngine() {
