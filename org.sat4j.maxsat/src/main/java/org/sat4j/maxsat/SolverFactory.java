@@ -35,9 +35,12 @@ import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
+import org.sat4j.minisat.orders.NegativeLiteralSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
+import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.core.PBSolverResolution;
 
 public class SolverFactory extends ASolverFactory<IPBSolver> {
 
@@ -99,7 +102,13 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
     }
 
     public static IPBSolver newDefault() {
-        return org.sat4j.pb.SolverFactory.newResolutionGlucoseExpSimp();
+        PBSolverResolution solver = org.sat4j.pb.SolverFactory.newResolutionGlucoseExpSimp();
+        solver.setRestartStrategy(new NoRestarts());
+        // solver.setOrder(new RandomWalkDecorator(new VarOrderHeap(new NegativeLiteralSelectionStrategy()),0.01));
+        solver.getOrder().setPhaseSelectionStrategy(new NegativeLiteralSelectionStrategy());
+        solver.setSimplifier(Solver.NO_SIMPLIFICATION);
+        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        return solver;
     }
 
     public static IPBSolver newLight() {

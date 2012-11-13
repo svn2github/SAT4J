@@ -217,4 +217,9 @@ public class MinCostDecorator extends PBSolverDecorator implements
     public boolean isOptimal() {
         return this.isSolutionOptimal;
     }
+
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        // TODO
+        throw new UnsupportedOperationException("No implemented yet");
+    }
 }
