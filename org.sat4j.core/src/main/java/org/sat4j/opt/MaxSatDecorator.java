@@ -171,4 +171,8 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
         super.addAtMost(this.lits, forcedValue.intValue());
     }
 
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        // TODO
+        throw new UnsupportedOperationException("No implemented yet");
+    }
 }

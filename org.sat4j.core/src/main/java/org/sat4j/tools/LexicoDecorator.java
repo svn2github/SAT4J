@@ -216,4 +216,9 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
         return this.isSolutionOptimal;
     }
 
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        // TODO
+        throw new UnsupportedOperationException("No implemented yet");
+    }
+
 }

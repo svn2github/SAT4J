@@ -165,4 +165,9 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
     public boolean isOptimal() {
         return this.isSolutionOptimal;
     }
+
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        // TODO
+        throw new UnsupportedOperationException("No implemented yet");
+    }
 }
