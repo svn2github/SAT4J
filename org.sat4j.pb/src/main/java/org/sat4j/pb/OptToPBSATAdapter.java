@@ -174,4 +174,17 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
     public Number getCurrentObjectiveValue() {
         return this.problem.getObjectiveValue();
     }
+
+    /**
+     * Allow to set a specific timeout when the solver is in optimization mode.
+     * The solver internal timeout will be set to that value once it has found a
+     * solution. That way, the original timeout of the solver may be reduced if
+     * the solver finds quickly a solution, or increased if the solver finds
+     * regularly new solutions (thus giving more time to the solver each time).
+     * 
+     * @see IOptimizationProblem#setTimeoutForFindingBetterSolution(int)
+     */
+    void setTimeoutForFindingBetterSolution(int seconds) {
+        this.problem.setTimeoutForFindingBetterSolution(seconds);
+    }
 }
