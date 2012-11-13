@@ -2362,7 +2362,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             clause.push(LiteralsUtils.toInternal(d));
         }
         this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);
-        learn(this.sharedConflict);
+        // learn(this.sharedConflict);
+        addConstr(this.sharedConflict);
     }
 
     /**
