@@ -191,4 +191,8 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
                 + super.toString(prefix);
     }
 
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        throw new UnsupportedOperationException("Does not make sense here");
+    }
+
 }

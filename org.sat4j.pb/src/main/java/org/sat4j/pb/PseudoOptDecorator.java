@@ -67,6 +67,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private final boolean useAnImplicantForEvaluation;
 
+    private int solverTimeout = Integer.MAX_VALUE;
+
+    private int optimizationTimeout = -1;
+
     /**
      * Create a PB decorator for which a non optimal solution means that the
      * problem is satisfiable.
@@ -137,11 +141,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             for (int i = 0; i < nVars(); i++) {
                 this.prevfullmodel[i] = decorated().model(i + 1);
             }
+            super.setTimeout(optimizationTimeout);
         } else {
             if (this.previousPBConstr != null) {
                 decorated().removeConstr(this.previousPBConstr);
                 this.previousPBConstr = null;
             }
+            super.setTimeout(solverTimeout);
         }
         return result;
     }
@@ -275,5 +281,15 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     @Override
     public int[] modelWithInternalVariables() {
         return this.prevmodelwithadditionalvars;
+    }
+
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        optimizationTimeout = seconds;
+    }
+
+    @Override
+    public void setTimeout(int t) {
+        solverTimeout = t;
+        super.setTimeout(t);
     }
 }
