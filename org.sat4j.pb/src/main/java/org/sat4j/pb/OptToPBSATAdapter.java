@@ -184,7 +184,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
      * 
      * @see IOptimizationProblem#setTimeoutForFindingBetterSolution(int)
      */
-    void setTimeoutForFindingBetterSolution(int seconds) {
+    public void setTimeoutForFindingBetterSolution(int seconds) {
         this.problem.setTimeoutForFindingBetterSolution(seconds);
     }
 }
