@@ -141,7 +141,11 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             for (int i = 0; i < nVars(); i++) {
                 this.prevfullmodel[i] = decorated().model(i + 1);
             }
-            super.setTimeout(optimizationTimeout);
+            if (optimizationTimeout > 0) {
+                super.expireTimeout();
+                super.setTimeout(optimizationTimeout);
+            }
+
         } else {
             if (this.previousPBConstr != null) {
                 decorated().removeConstr(this.previousPBConstr);
@@ -181,6 +185,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
                 }
                 if (decorated().getObjectiveFunction() != null) {
                     calculateObjective();
+                }
+                if (optimizationTimeout > 0) {
+                    super.expireTimeout();
+                    super.setTimeout(optimizationTimeout);
                 }
             } else {
                 this.isSolutionOptimal = true;
