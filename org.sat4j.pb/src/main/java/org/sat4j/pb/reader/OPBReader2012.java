@@ -73,6 +73,7 @@ public class OPBReader2012 extends OPBReader2010 {
             lexico = new LexicoDecoratorPB(solver);
         } else {
             this.in.readLine();
+            get(); // remove trailing \n
         }
     }
 
