@@ -43,7 +43,7 @@ import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
 import org.sat4j.pb.PseudoOptDecorator;
-import org.sat4j.reader.DimacsReader;
+import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
@@ -112,7 +112,7 @@ public class GenericOptLauncher extends AbstractLauncher {
         if (problemname.contains(".wcnf")) { //$NON-NLS-1$
             reader = new WDimacsReader(this.wmsd);
         } else {
-            reader = new DimacsReader(this.wmsd);
+            reader = new LecteurDimacs(this.wmsd);
         }
         reader.setVerbosity(true);
         return reader;
