@@ -63,6 +63,12 @@ public class MixedDataStructureSingleWL extends AbstractDataStructureFactory {
                 degree);
     }
 
+    @Override
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        return new AtLeast(getVocabulary(), literals, degree);
+    }
+
     /*
      * (non-Javadoc)
      * 

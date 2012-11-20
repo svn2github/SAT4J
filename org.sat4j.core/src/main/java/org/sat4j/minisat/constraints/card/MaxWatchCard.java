@@ -80,7 +80,7 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
      * @param learnt
      *            indique si la contrainte est apprise
      */
-    private MaxWatchCard(ILits voc, IVecInt ps, boolean moreThan, int degree) {
+    public MaxWatchCard(ILits voc, IVecInt ps, boolean moreThan, int degree) {
 
         // On met en place les valeurs
         this.voc = voc;

@@ -27,56 +27,57 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.minisat.constraints;
+package org.sat4j.tools;
 
-import org.sat4j.minisat.constraints.card.MinWatchCard;
-import org.sat4j.minisat.constraints.cnf.LearntWLClause;
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.Lbool;
 
 /**
- * @author leberre To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Generation - Code and Comments
+ * That class allows to iterate over the models from the inside: conflicts are
+ * created to ask the solver to backtrack.
+ * 
+ * @author leberre
+ * 
  */
-public class CardinalityDataStructureYanMin extends
-        AbstractCardinalityDataStructure {
+public class SearchMinOneListener extends SearchListenerAdapter<ISolverService> {
 
+    /**
+	 * 
+	 */
     private static final long serialVersionUID = 1L;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.sat4j.minisat.DataStructureFactory#createClause(org.sat4j.datatype
-     * .VecInt)
-     */
-    public Constr createClause(IVecInt literals) throws ContradictionException {
-        return MinWatchCard.minWatchCardNew(this.solver, getVocabulary(),
-                literals, MinWatchCard.ATLEAST, 1);
+    private ISolverService solverService;
+
+    private final SolutionFoundListener sfl;
+
+    public SearchMinOneListener(SolutionFoundListener sfl) {
+        this.sfl = sfl;
     }
 
-    public Constr createUnregisteredClause(IVecInt literals) {
-        return new LearntWLClause(literals, getVocabulary());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.sat4j.minisat.DataStructureFactory#createCardinalityConstraint(org
-     * .sat4j.datatype.VecInt, int)
-     */
     @Override
-    public Constr createCardinalityConstraint(IVecInt literals, int degree)
-            throws ContradictionException {
-        return MinWatchCard.minWatchCardNew(this.solver, getVocabulary(),
-                literals, MinWatchCard.ATLEAST, degree);
+    public void init(ISolverService solverService) {
+        this.solverService = solverService;
     }
 
-    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
-            int degree) {
-        return new MinWatchCard(getVocabulary(), literals,
-                MinWatchCard.ATLEAST, degree);
+    @Override
+    public void solutionFound(int[] model) {
+        int degree = 0;
+        int[] variables = new int[model.length];
+        for (int i = 0; i < model.length; i++) {
+            if (model[i] > 0) {
+                degree++;
+                variables[i] = model[i];
+            } else {
+                variables[i] = -model[i];
+            }
+        }
+        System.out.println("#one " + degree);
+        this.solverService.addAtMost(variables, degree - 1);
+        sfl.onSolutionFound(model);
+    }
+
+    @Override
+    public void end(Lbool result) {
+        assert result != Lbool.TRUE;
     }
 }

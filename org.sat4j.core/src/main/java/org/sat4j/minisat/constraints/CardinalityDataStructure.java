@@ -72,4 +72,9 @@ public class CardinalityDataStructure extends AbstractCardinalityDataStructure {
                 degree);
     }
 
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        return new AtLeast(getVocabulary(), literals, degree);
+    }
+
 }

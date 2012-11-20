@@ -127,4 +127,9 @@ public abstract class AbstractDataStructureFactory implements
             throws ContradictionException {
         throw new UnsupportedOperationException();
     }
+
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -1108,7 +1108,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     }
 
     /**
-     * Revert to the state before the last push()
+     * Revert to the state before the last assume()
      */
     private void cancel() {
         // assert trail.size() == qhead || !undertimeout;
@@ -2193,6 +2193,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             stb.append("Heuristics kept accross calls (keep the solver \"hot\")\n");
             stb.append(prefix);
         }
+        stb.append("Listener: ");
+        stb.append(slistener);
+        stb.append("\n");
+        stb.append(prefix);
         stb.append("--- End Solver configuration ---"); //$NON-NLS-1$
         return stb.toString();
     }
@@ -2493,5 +2497,31 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public ISolver getSolvingEngine() {
         return this;
+    }
+
+    /**
+     * 
+     * @param literals
+     */
+    public void addAtMost(int[] literals, int degree) {
+        IVecInt clause = new VecInt(literals.length);
+        for (int d : literals) {
+            clause.push(LiteralsUtils.toInternal(-d));
+        }
+        IVecInt copy = new VecInt(clause.size());
+        clause.copyTo(copy);
+        this.sharedConflict = this.dsfactory
+                .createUnregisteredCardinalityConstraint(copy, literals.length
+                        - degree);
+        this.sharedConflict.register();
+        addConstr(this.sharedConflict);
+        // backtrack to the first decision level with a reason
+        // for falsifying that constraint
+        while (clause.contains(trail.last())) {
+            undoOne();
+            if (trailLim.last() == trail.size()) {
+                trailLim.pop();
+            }
+        }
     }
 }

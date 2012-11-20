@@ -67,15 +67,12 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
      * @param degree
      *            the minimal number of satisfied literals
      */
-    protected AtLeast(ILits voc, IVecInt ps, int degree) {
+    public AtLeast(ILits voc, IVecInt ps, int degree) {
         this.maxUnsatisfied = ps.size() - degree;
         this.voc = voc;
         this.counter = 0;
         this.lits = new int[ps.size()];
         ps.moveTo(this.lits);
-        for (int q : this.lits) {
-            voc.watch(q ^ 1, this);
-        }
     }
 
     protected static int niceParameters(UnitPropagationListener s, ILits voc,
@@ -133,7 +130,9 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         if (degree == 0) {
             return new UnitClauses(ps);
         }
-        return new AtLeast(voc, ps, degree);
+        Constr constr = new AtLeast(voc, ps, degree);
+        constr.register();
+        return constr;
     }
 
     /**
@@ -200,7 +199,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         for (int q : this.lits) {
             if (this.voc.isFalsified(q)) {
                 outReason.push(q ^ 1);
-                if (++c == this.maxUnsatisfied) {
+                if (++c > this.maxUnsatisfied) {
                     return;
                 }
             }
@@ -251,7 +250,14 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
     }
 
     public void register() {
-        throw new UnsupportedOperationException();
+        this.counter = 0;
+        for (int q : this.lits) {
+            voc.watch(q ^ 1, this);
+            if (voc.isFalsified(q)) {
+                this.counter++;
+                this.voc.undos(q ^ 1).push(this);
+            }
+        }
     }
 
     public int size() {

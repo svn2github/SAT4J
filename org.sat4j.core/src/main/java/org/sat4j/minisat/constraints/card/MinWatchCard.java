@@ -252,7 +252,6 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
      * @see Constr#locked()
      */
     public boolean locked() {
-        // TODO locked
         return true;
     }
 

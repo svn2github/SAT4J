@@ -72,6 +72,17 @@ public interface ISolverService {
     void addClause(int[] literals);
 
     /**
+     * Add a new pseudo cardinality constraint sum literals <= degree in the
+     * solver. The constraint must be falsified under current assignment.
+     * 
+     * @param literals
+     *            a set of literals in Dimacs format.
+     * @param degree
+     *            the maximal number of literals which can be satisfied.
+     */
+    void addAtMost(int[] literals, int degree);
+
+    /**
      * To access the truth value of a specific literal under current assignment.
      * 
      * @param literal

@@ -254,7 +254,8 @@ public final class Vec<T> implements IVec<T> {
         // assert size() > 0;
         int j = 0;
         for (; this.myarray[j] != elem; j++) {
-            assert j < size();
+            if (j == size())
+                throw new NoSuchElementException();
         }
         // arraycopy is always faster than manual copy
         System.arraycopy(this.myarray, j + 1, this.myarray, j, size() - j - 1);

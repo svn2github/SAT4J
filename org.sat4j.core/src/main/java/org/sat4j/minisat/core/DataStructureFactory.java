@@ -70,6 +70,8 @@ public interface DataStructureFactory {
     Constr createCardinalityConstraint(IVecInt literals, int degree)
             throws ContradictionException;
 
+    Constr createUnregisteredCardinalityConstraint(IVecInt literals, int degree);
+
     void setUnitPropagationListener(UnitPropagationListener s);
 
     void setLearner(Learner l);

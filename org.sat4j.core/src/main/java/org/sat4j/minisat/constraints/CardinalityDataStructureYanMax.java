@@ -75,4 +75,10 @@ public class CardinalityDataStructureYanMax extends
                 literals, MinWatchCard.ATLEAST, degree);
     }
 
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        return new MaxWatchCard(getVocabulary(), literals,
+                MinWatchCard.ATLEAST, degree);
+    }
+
 }
