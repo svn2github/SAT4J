@@ -33,9 +33,12 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.pb.constraints.pb.MapPb;
 import org.sat4j.pb.constraints.pb.MinWatchPb;
 import org.sat4j.pb.constraints.pb.PBConstr;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
 
 /**
  * @author leberre To change the template for this generated type comment go to
@@ -70,6 +73,19 @@ public class PBMinDataStructure extends AbstractPBDataStructureFactory {
     @Override
     protected Constr learntConstraintFactory(IDataStructurePB dspb) {
         return MinWatchPb.normalizedWatchPbNew(getVocabulary(), dspb);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
+     */
+    @Override
+    protected Constr learntConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return MinWatchPb.normalizedWatchPbNew(getVocabulary(), new MapPb(
+                literals, coefs, degree));
     }
 
 }

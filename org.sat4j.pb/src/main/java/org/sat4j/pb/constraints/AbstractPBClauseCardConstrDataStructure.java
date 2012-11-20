@@ -36,6 +36,7 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
+import org.sat4j.pb.constraints.pb.MapPb;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -128,6 +129,18 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         return constructLearntPB(dspb);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
+     * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
+     */
+    @Override
+    protected Constr learntConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return constructLearntPB(literals, coefs, degree);
+    }
+
     static boolean coefficientsEqualToOne(BigInteger[] coefs) {
         for (int i = 0; i < coefs.length; i++) {
             if (!coefs[i].equals(BigInteger.ONE)) {
@@ -163,6 +176,12 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
 
     protected Constr constructLearntPB(IDataStructurePB dspb) {
         return this.ipbc.constructLearntPB(getVocabulary(), dspb);
+    }
+
+    protected Constr constructLearntPB(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return this.ipbc.constructLearntPB(getVocabulary(), new MapPb(literals,
+                coefs, degree));
     }
 
     public static final BigInteger sumOfCoefficients(BigInteger[] coefs) {

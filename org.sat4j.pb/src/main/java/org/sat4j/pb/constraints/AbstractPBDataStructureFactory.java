@@ -226,11 +226,19 @@ public abstract class AbstractPBDataStructureFactory extends
         return learntConstraintFactory(dspb);
     }
 
+    public Constr createUnregisteredPseudoBooleanConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return learntConstraintFactory(literals, coefs, degree);
+    }
+
     protected abstract Constr constraintFactory(int[] literals,
             BigInteger[] coefs, BigInteger degree)
             throws ContradictionException;
 
     protected abstract Constr learntConstraintFactory(IDataStructurePB dspb);
+
+    protected abstract Constr learntConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree);
 
     @Override
     protected ILits createLits() {

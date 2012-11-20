@@ -63,6 +63,13 @@ public class MapPb implements IDataStructurePB {
         this.degree = BigInteger.ZERO;
     }
 
+    // temporarily : just for the case where an InternalMapPBStructure
+    // is used to embed in one object literals and coefs
+    public MapPb(IVecInt literals, IVec<BigInteger> coefs, BigInteger degree) {
+        this.weightedLits = new InternalMapPBStructure(literals, coefs);
+        this.degree = degree;
+    }
+
     public boolean isCardinality() {
         for (int i = 0; i < size(); i++) {
             if (!this.weightedLits.getCoef(i).equals(BigInteger.ONE)) {

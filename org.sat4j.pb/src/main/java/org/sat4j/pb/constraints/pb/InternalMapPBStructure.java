@@ -46,6 +46,13 @@ public class InternalMapPBStructure {
     IVec<BigInteger> coefs;
     IVecInt allLits;
 
+    // temporarily : just for the case where an InternalMapPBStructure
+    // is used to embed in one object literals and coefs
+    InternalMapPBStructure(IVecInt lits, IVec<BigInteger> coefs) {
+        this.lits = lits;
+        this.coefs = coefs;
+    }
+
     InternalMapPBStructure(int size) {
         assert size > 0;
         this.allLits = new VecInt(size, -1);
