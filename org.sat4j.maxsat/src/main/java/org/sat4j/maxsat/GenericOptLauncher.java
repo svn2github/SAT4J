@@ -77,7 +77,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                 "uses CP and RES pseudo-boolean solvers in parallel");
         options.addOption("T", "timeoutms", true,
                 "specifies the timeout (in milliseconds)");
-        options.addOption("k", "kind", true,
+        options.addOption("K", "kind", true,
                 "kind of problem: minone, maxsat, etc.");
         options.addOption("i", "incomplete", false,
                 "incomplete mode for maxsat");
@@ -112,7 +112,7 @@ public class GenericOptLauncher extends AbstractLauncher {
         if (problemname.contains(".wcnf")) { //$NON-NLS-1$
             reader = new WDimacsReader(this.wmsd);
         } else {
-            reader = new LecteurDimacs(this.wmsd);
+            reader = new LecteurDimacs(aSolver);
         }
         reader.setVerbosity(true);
         return reader;
@@ -140,7 +140,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                 int problemindex = args.length - 1;
                 setDisplaySolutionLine(!cmd.hasOption("n"));
                 boolean equivalence = cmd.hasOption("e");
-                String kind = cmd.getOptionValue("k"); //$NON-NLS-1$
+                String kind = cmd.getOptionValue("K"); //$NON-NLS-1$
                 if (kind == null) {
                     kind = "maxsat";
                 }
