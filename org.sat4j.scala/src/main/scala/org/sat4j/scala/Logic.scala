@@ -6,7 +6,7 @@ object Logic {
 
   /** A pretty printer for logic syntax trees. */
   object PrettyPrint {
-    def apply(e: BoolExp): String = e match {
+    def apply(e: Exp): String = e match {
       case True => "True"
       case False => "False"
       case Not(True) => "~True"
@@ -20,8 +20,8 @@ object Logic {
       case Not(b) => "~(" + apply(b) + ")"
       case And(b1, b2) => "(" + apply(b1) + " & " + apply(b2) + ")"
       case Or(b1, b2) => "(" + apply(b1) + " | " + apply(b2) + ")"
-      case Implies(b1, b2) => "(" + apply(b1) + " -> " + apply(b2) + ")"
-      case Iff(b1, b2) => "(" + apply(b1) + " <-> " + apply(b2) + ")"
+      case Implies(b1, b2) => "(" + apply(b1) + " implies " + apply(b2) + ")"
+      case Iff(b1, b2) => "(" + apply(b1) + " iff " + apply(b2) + ")"
       case CardEQ(bs, k) => "(" + bs.map(apply).mkString(" + ") + " === " + k + ")"
       case CardLE(bs, k) => "(" + bs.map(apply).mkString(" + ") + " <= " + k + ")"
       case CardLT(bs, k) => "(" + bs.map(apply).mkString(" + ") + " < " + k + ")"
@@ -48,15 +48,15 @@ object Logic {
   abstract class BoolExp extends Exp {
     def &(b: BoolExp) = And(this, b)
     def |(b: BoolExp) = Or(this, b)
-    def ->(b: BoolExp) = Implies(this, b)
-    def <->(b: BoolExp) = Iff(this, b)
+    def implies(b: BoolExp) = Implies(this, b)
+    def iff(b: BoolExp) = Iff(this, b)
     def unary_~() = Not(this)
     def +(b: BoolExp) = Card(List(b, this))
     def ===(k: Int) = CardEQ(List(this), k)
-    def <= (k: Int) = CardLE(List(this), k)
-    def <  (k: Int) = CardLT(List(this), k)
-    def >= (k: Int) = CardGE(List(this), k)
-    def >  (k: Int) = CardGT(List(this), k)
+    def <=(k: Int) = CardLE(List(this), k)
+    def <(k: Int) = CardLT(List(this), k)
+    def >=(k: Int) = CardGE(List(this), k)
+    def >(k: Int) = CardGT(List(this), k)
     def toCnfList = {
       isAlreadyInCnf(this) match {
         case (true, Some(x)) => x
@@ -90,20 +90,23 @@ object Logic {
   /** Logical equivalence operator. */
   case class Iff(b1: BoolExp, b2: BoolExp) extends BoolExp
   
+  /** Base class for cardinality operators. */
+  abstract class CardExp extends BoolExp
+  
   /** Cardinality equals k operator. */  
-  case class CardEQ(bs: List[BoolExp], k: Int) extends BoolExp
+  case class CardEQ(bs: List[BoolExp], k: Int) extends CardExp
   
   /** Cardinality less than or equals k operator. */
-  case class CardLE(bs: List[BoolExp], k: Int) extends BoolExp
+  case class CardLE(bs: List[BoolExp], k: Int) extends CardExp
   
   /** Cardinality less than k operator. */
-  case class CardLT(bs: List[BoolExp], k: Int) extends BoolExp
+  case class CardLT(bs: List[BoolExp], k: Int) extends CardExp
   
   /** Cardinality greater than or equals k operator. */  
-  case class CardGE(bs: List[BoolExp], k: Int) extends BoolExp
+  case class CardGE(bs: List[BoolExp], k: Int) extends CardExp
 
   /** Cardinality greater than k operator. */  
-  case class CardGT(bs: List[BoolExp], k: Int) extends BoolExp
+  case class CardGT(bs: List[BoolExp], k: Int) extends CardExp
 
   /** Abstract base class of all integer valued expressions. */  
   abstract class IntExp extends Exp
@@ -121,13 +124,15 @@ object Logic {
   /** Logical negation operator. */
   case class Not(b: BoolExp) extends BoolExp
 
+  abstract class Identifier extends BoolExp
   /** Logical proposition identifier. */
-  case class Ident[U](name: U) extends BoolExp {
+  case class Ident[U](name: U) extends Identifier {
 	  def apply(indices: Int*) = IndexedIdent(name, indices.toList)
   }
 
   /** Logical proposition identifier. */
-  case class IndexedIdent[U](name: U, indices: List[Int]=Nil) extends BoolExp {
+  case class IndexedIdent[U](name: U, indices: List[Int]=Nil) extends Identifier {
+    
   }
   
   /** Anonymous logical proposition. */
@@ -181,6 +186,7 @@ object Logic {
   /** Convert any Scala object into a propositional variable */
   def toProp[U](u: U): Ident[U] = Ident(u)
   
+  /** Returns true iff the given expression is already in conjunctive normal form. */
   def isAlreadyInCnf(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case And(b1, b2) => {
       val (r1, l1) = isAlreadyInCnf(b1)
@@ -205,6 +211,7 @@ object Logic {
     }
     case _ => isLiteral(f)
   }
+  
   def isLiteral(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case True => (true, Some(List(List(True))))
     case False => (true, Some(List(List(False))))
