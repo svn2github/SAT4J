@@ -15,12 +15,28 @@ class Problem {
 
   val problem = SolverFactory.newDefault
 
+  /** Adds a clause in the problem. */	  
   def +=(clause: IVecInt) = {
     problem addClause clause
     clause.clear 
     this
   }
+  
+  /** Adds a cardinality constraint in the problem. */
+  def addAtMost(literals: IVecInt, k: Int) = {
+    problem addAtMost(literals, k)
+  }
+  
+  /** Adds a cardinality constraint in the problem. */
+  def addAtLeast(literals: IVecInt, k: Int) = {
+    problem addAtLeast(literals, k)
+  }
 
+  /** Adds a cardinality constraint in the problem. */
+  def addEq(literals: IVecInt, k: Int) = {
+    problem addExactly(literals, k)
+  }
+  
   def solve: Status = {
     try {
       if (problem.isSatisfiable) 
