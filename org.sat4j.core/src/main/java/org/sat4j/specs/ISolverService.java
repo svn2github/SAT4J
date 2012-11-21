@@ -69,7 +69,7 @@ public interface ISolverService {
      * @param literals
      *            a set of literals in Dimacs format.
      */
-    void addClause(int[] literals);
+    void addClauseOnTheFly(int[] literals);
 
     /**
      * Add a new pseudo cardinality constraint sum literals <= degree in the
@@ -80,7 +80,7 @@ public interface ISolverService {
      * @param degree
      *            the maximal number of literals which can be satisfied.
      */
-    void addAtMost(int[] literals, int degree);
+    void addAtMostOnTheFly(int[] literals, int degree);
 
     /**
      * To access the truth value of a specific literal under current assignment.

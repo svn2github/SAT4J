@@ -2485,7 +2485,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.keepHot = keepHot;
     }
 
-    public void addClause(int[] literals) {
+    public void addClauseOnTheFly(int[] literals) {
         IVecInt clause = new VecInt(literals.length);
         for (int d : literals) {
             clause.push(LiteralsUtils.toInternal(d));
@@ -2503,7 +2503,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * 
      * @param literals
      */
-    public void addAtMost(int[] literals, int degree) {
+    public void addAtMostOnTheFly(int[] literals, int degree) {
         IVecInt clause = new VecInt(literals.length);
         for (int d : literals) {
             clause.push(LiteralsUtils.toInternal(-d));
