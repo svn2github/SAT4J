@@ -35,6 +35,7 @@ import java.math.BigInteger;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.AbstractDataStructureFactory;
+import org.sat4j.minisat.constraints.card.AtLeast;
 import org.sat4j.minisat.constraints.cnf.Clauses;
 import org.sat4j.minisat.constraints.cnf.LearntBinaryClause;
 import org.sat4j.minisat.constraints.cnf.LearntHTClause;
@@ -223,6 +224,12 @@ public abstract class AbstractPBDataStructureFactory extends
     @Override
     protected ILits createLits() {
         return new Lits();
+    }
+
+    @Override
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        return new AtLeast(getVocabulary(), literals, degree);
     }
 
 }

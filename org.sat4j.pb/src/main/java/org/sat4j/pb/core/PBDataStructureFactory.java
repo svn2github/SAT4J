@@ -50,31 +50,11 @@ public interface PBDataStructureFactory extends DataStructureFactory {
     Constr createAtLeastPBConstraint(IVecInt literals, IVec<BigInteger> coefs,
             BigInteger degree) throws ContradictionException;
 
-    // Constr createPseudoBooleanConstraint(IVecInt literals, IVecInt coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-    //
-    // Constr createAtMostPBConstraint(IVecInt literals, IVecInt coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-    //
-    // Constr createAtLeastPBConstraint(IVecInt literals, IVecInt coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-    //
-    // Constr createAtMostPBConstraint(IVecInt literals, long[] coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-    //
-    // Constr createAtLeastPBConstraint(IVecInt literals, long[] coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-    //
-    // Constr createPseudoBooleanConstraint(IVecInt literals, long[] coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-
     Constr createUnregisteredPseudoBooleanConstraint(IDataStructurePB dspb);
 
     Constr createUnregisteredAtMostConstraint(IVecInt literals,
-            IVec<BigInteger> coefs, BigInteger degree)
-            throws ContradictionException;
+            IVec<BigInteger> coefs, BigInteger degree);
 
     Constr createUnregisteredAtLeastConstraint(IVecInt literals,
-            IVec<BigInteger> coefs, BigInteger degree)
-            throws ContradictionException;
+            IVec<BigInteger> coefs, BigInteger degree);
 }

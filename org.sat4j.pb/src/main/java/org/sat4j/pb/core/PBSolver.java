@@ -34,15 +34,18 @@ import java.math.BigInteger;
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ConflictTimer;
 import org.sat4j.minisat.core.ConflictTimerAdapter;
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.orders.IOrderObjective;
 import org.sat4j.specs.ContradictionException;
@@ -52,7 +55,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
 public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
-        IPBCDCLSolver<PBDataStructureFactory> {
+        IPBCDCLSolver<PBDataStructureFactory>, IPBSolverService {
 
     private ObjectiveFunction objf;
 
@@ -158,6 +161,33 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         group.add(addConstr(this.dsfactory.createPseudoBooleanConstraint(vlits,
                 coeffs, true, weight)));
         return group;
+    }
+
+    public void addAtMostOnTheFly(IVecInt literals, IVec<BigInteger> coefs,
+            BigInteger degree) {
+        IVecInt vlits = dimacs2internal(literals);
+        this.sharedConflict = this.dsfactory
+                .createUnregisteredAtMostConstraint(vlits, coefs, degree);
+        this.sharedConflict.register();
+        addConstr(this.sharedConflict);
+        // backtrack to the first decision level with a reason
+        // for falsifying that constraint
+        IVecInt outReason = new VecInt();
+        this.sharedConflict.calcReason(ILits.UNDEFINED, outReason);
+        while (!outReason.contains(trail.last())) {
+            undoOne();
+            if (trailLim.last() == trail.size()) {
+                trailLim.pop();
+            }
+        }
+    }
+
+    public void addAtMostOnTheFly(IVecInt literals, IVecInt coefs, int degree) {
+        IVec<BigInteger> coeffsCpy = new Vec<BigInteger>(coefs.size());
+        for (IteratorInt iterator = coefs.iterator(); iterator.hasNext();) {
+            coeffsCpy.push(BigInteger.valueOf(iterator.next()));
+        }
+        addAtMostOnTheFly(literals, coeffsCpy, BigInteger.valueOf(degree));
     }
 
     /**
