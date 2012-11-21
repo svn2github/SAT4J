@@ -2517,7 +2517,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         addConstr(this.sharedConflict);
         // backtrack to the first decision level with a reason
         // for falsifying that constraint
-        while (clause.contains(trail.last())) {
+        while (!clause.contains(trail.last() ^ 1)) {
             undoOne();
             if (trailLim.last() == trail.size()) {
                 trailLim.pop();
