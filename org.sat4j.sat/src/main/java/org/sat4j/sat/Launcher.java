@@ -323,9 +323,13 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             }
             this.beginTime = System.currentTimeMillis();
             if (!this.launchRemoteControl) {
-                this.problem = readProblem(instanceName);
+                readProblem(instanceName);
                 try {
-                    solve(this.problem);
+                    if (this.problem != null) {
+                        solve(this.problem);
+                    } else {
+                        solve(this.solver);
+                    }
                 } catch (TimeoutException e) {
                     log("timeout"); //$NON-NLS-1$
                 }
