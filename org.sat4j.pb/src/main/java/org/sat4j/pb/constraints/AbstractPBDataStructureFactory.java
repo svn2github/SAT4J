@@ -193,42 +193,19 @@ public abstract class AbstractPBDataStructureFactory extends
         return createPseudoBooleanConstraint(literals, coefs, true, degree);
     }
 
-    // public Constr createPseudoBooleanConstraint(IVecInt literals,
-    // IVecInt coefs, boolean moreThan, BigInteger degree)
-    // throws ContradictionException;
-    //
-    // public Constr createAtMostPBConstraint(IVecInt literals, IVecInt coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException {
-    // return createPseudoBooleanConstraint(literals, coefs, false, degree);
-    // }
-    //
-    // public Constr createAtLeastPBConstraint(IVecInt literals, IVecInt coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException {
-    // return createPseudoBooleanConstraint(literals, coefs, true, degree);
-    // }
-    //
-    // public Constr createAtMostPBConstraint(IVecInt literals, long[] coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException {
-    // return createPseudoBooleanConstraint(literals, coefs, false, degree);
-    // }
-    //
-    // public Constr createAtLeastPBConstraint(IVecInt literals, long[] coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException {
-    // return createPseudoBooleanConstraint(literals, coefs, true, degree);
-    // }
-    //
-    // public Constr createPseudoBooleanConstraint(IVecInt literals, long[]
-    // coefs,
-    // boolean moreThan, BigInteger degree) throws ContradictionException;
-
     public Constr createUnregisteredPseudoBooleanConstraint(
             IDataStructurePB dspb) {
         return learntConstraintFactory(dspb);
     }
 
-    public Constr createUnregisteredPseudoBooleanConstraint(IVecInt literals,
+    public Constr createUnregisteredAtLeastConstraint(IVecInt literals,
             IVec<BigInteger> coefs, BigInteger degree) {
-        return learntConstraintFactory(literals, coefs, degree);
+        return learntAtLeastConstraintFactory(literals, coefs, degree);
+    }
+
+    public Constr createUnregisteredAtMostConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return learntAtMostConstraintFactory(literals, coefs, degree);
     }
 
     protected abstract Constr constraintFactory(int[] literals,
@@ -237,7 +214,10 @@ public abstract class AbstractPBDataStructureFactory extends
 
     protected abstract Constr learntConstraintFactory(IDataStructurePB dspb);
 
-    protected abstract Constr learntConstraintFactory(IVecInt literals,
+    protected abstract Constr learntAtLeastConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree);
+
+    protected abstract Constr learntAtMostConstraintFactory(IVecInt literals,
             IVec<BigInteger> coefs, BigInteger degree);
 
     @Override

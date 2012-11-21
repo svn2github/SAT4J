@@ -70,4 +70,11 @@ public interface PBDataStructureFactory extends DataStructureFactory {
 
     Constr createUnregisteredPseudoBooleanConstraint(IDataStructurePB dspb);
 
+    Constr createUnregisteredAtMostConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree)
+            throws ContradictionException;
+
+    Constr createUnregisteredAtLeastConstraint(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree)
+            throws ContradictionException;
 }

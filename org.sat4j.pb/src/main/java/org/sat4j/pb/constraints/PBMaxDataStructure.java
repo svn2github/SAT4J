@@ -35,6 +35,7 @@ import org.sat4j.minisat.core.Constr;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MapPb;
 import org.sat4j.pb.constraints.pb.MaxWatchPb;
+import org.sat4j.pb.constraints.pb.Pseudos;
 import org.sat4j.pb.constraints.pb.WatchPb;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
@@ -84,11 +85,29 @@ public class PBMaxDataStructure extends AbstractPBDataStructureFactory {
      * @seeorg.sat4j.minisat.constraints.AbstractPBDataStructureFactory#
      * constraintFactory(org.sat4j.specs.VecInt, org.sat4j.specs.VecInt, int)
      */
-    @Override
-    protected Constr learntConstraintFactory(IVecInt literals,
-            IVec<BigInteger> coefs, BigInteger degree) {
+    private Constr learntConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree, boolean moreThan) {
+        int[] lits = new int[literals.size()];
+        literals.copyTo(lits);
+        BigInteger[] bc = new BigInteger[coefs.size()];
+        coefs.copyTo(bc);
+        degree = Pseudos.niceCheckedParametersForCompetition(lits, bc,
+                moreThan, degree);
+
         return MaxWatchPb.normalizedWatchPbNew(getVocabulary(), new MapPb(
                 literals, coefs, degree));
+    }
+
+    @Override
+    protected Constr learntAtLeastConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return learntConstraintFactory(literals, coefs, degree, true);
+    }
+
+    @Override
+    protected Constr learntAtMostConstraintFactory(IVecInt literals,
+            IVec<BigInteger> coefs, BigInteger degree) {
+        return learntConstraintFactory(literals, coefs, degree, false);
     }
 
 }
