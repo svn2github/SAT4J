@@ -2355,7 +2355,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         expireTimeout();
     }
 
-    private Constr sharedConflict;
+    protected Constr sharedConflict;
 
     /**
      * @since 2.3.2
