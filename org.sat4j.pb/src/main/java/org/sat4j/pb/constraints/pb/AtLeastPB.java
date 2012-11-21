@@ -57,11 +57,13 @@ public final class AtLeastPB extends AtLeast implements PBConstr {
         if (degree == 0) {
             return new UnitClausesPB(ps);
         }
-        return new AtLeastPB(voc, ps, degree);
+        return atLeastNew(voc, ps, degree);
     }
 
     public static AtLeastPB atLeastNew(ILits voc, IVecInt ps, int n) {
-        return new AtLeastPB(voc, ps, n);
+        AtLeastPB atleast = new AtLeastPB(voc, ps, n);
+        atleast.register();
+        return atleast;
     }
 
     public BigInteger getCoef(int literal) {
@@ -109,12 +111,6 @@ public final class AtLeastPB extends AtLeast implements PBConstr {
     @Override
     public void setLearnt() {
         this.learnt = true;
-    }
-
-    @Override
-    public void register() {
-        assert this.learnt;
-        // countFalsified();
     }
 
     @Override
