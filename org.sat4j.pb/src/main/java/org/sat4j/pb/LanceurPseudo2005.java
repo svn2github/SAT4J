@@ -37,6 +37,7 @@ import org.sat4j.ILauncherMode;
 import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2006;
+import org.sat4j.pb.tools.SearchOptimizerListener;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
@@ -122,10 +123,15 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
         } else {
             theSolver = this.factory.defaultSolver();
         }
-        if (lower) {
-            theSolver = new ConstraintRelaxingPseudoOptDecorator(theSolver);
+        if (System.getProperty("INTERNAL") != null) {
+            theSolver.setSearchListener(new SearchOptimizerListener());
+            setLauncherMode(ILauncherMode.DECISION);
         } else {
-            theSolver = new PseudoOptDecorator(theSolver);
+            if (lower) {
+                theSolver = new ConstraintRelaxingPseudoOptDecorator(theSolver);
+            } else {
+                theSolver = new PseudoOptDecorator(theSolver);
+            }
         }
         if (args.length == 3) {
             theSolver.setTimeout(Integer.valueOf(args[1]));
