@@ -312,7 +312,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.firstStart = true;
 
-        this.setPreferredSize(new Dimension(750, 800));
+        this.setPreferredSize(new Dimension(800, 800));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         createInstancePanel();
@@ -1778,8 +1778,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public void restarting() {
         this.end = System.currentTimeMillis();
-        this.cleanPanel.setSpeedLabeltext(this.propagationsCounter
-                / (this.end - this.begin) * 1000 + "");
+        if (this.end != this.begin)
+            this.cleanPanel.setSpeedLabeltext(this.propagationsCounter
+                    / (this.end - this.begin) * 1000 + "");
+
     }
 
     public void backjump(int backjumpLevel) {
