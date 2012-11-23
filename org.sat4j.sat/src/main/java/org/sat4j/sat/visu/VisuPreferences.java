@@ -50,7 +50,7 @@ public class VisuPreferences {
         this.displayConflictsTrail = true;
         this.displaySpeed = false;
         this.displayConflictsDecision = true;
-        this.displayVariablesEvaluation = true;
+        this.displayVariablesEvaluation = false;
         this.displayClausesEvaluation = true;
         this.displayClausesSize = true;
     }
