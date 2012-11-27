@@ -124,7 +124,8 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
             theSolver = this.factory.defaultSolver();
         }
         if (System.getProperty("INTERNAL") != null) {
-            theSolver.setSearchListener(new SearchOptimizerListener());
+            theSolver.setSearchListener(new SearchOptimizerListener(
+                    ILauncherMode.DECISION));
             setLauncherMode(ILauncherMode.DECISION);
         } else {
             if (lower) {

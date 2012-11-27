@@ -5,12 +5,11 @@ import java.math.BigInteger;
 import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.tools.SolutionFoundListener;
 
-public class SearchOptimizerListener implements SolutionFoundListener,
+public class SearchOptimizerListener implements
         SearchListener<IPBSolverService> {
 
     /**
@@ -24,15 +23,10 @@ public class SearchOptimizerListener implements SolutionFoundListener,
 
     private int nbSolFound = 0;
 
-    public void onSolutionFound(int[] solution) {
-        BigInteger modelDegree = obj.calculateDegree(solution);
-        System.out.println("#" + (++nbSolFound) + ", value=" + modelDegree);
-        this.solverService.addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
-                modelDegree.subtract(BigInteger.ONE));
-    }
+    private final SolutionFoundListener sfl;
 
-    public void onSolutionFound(IVecInt solution) {
-        onSolutionFound(solution.toArray());
+    public SearchOptimizerListener(SolutionFoundListener sfl) {
+        this.sfl = sfl;
     }
 
     public void init(IPBSolverService solverService) {
@@ -81,7 +75,11 @@ public class SearchOptimizerListener implements SolutionFoundListener,
     }
 
     public void solutionFound(int[] model) {
-        onSolutionFound(model);
+        BigInteger modelDegree = obj.calculateDegree(model);
+        System.out.println("#" + (++nbSolFound) + ", value=" + modelDegree);
+        this.solverService.addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
+                modelDegree.subtract(BigInteger.ONE));
+        sfl.onSolutionFound(model);
     }
 
     public void beginLoop() {
@@ -113,5 +111,4 @@ public class SearchOptimizerListener implements SolutionFoundListener,
         // TODO Auto-generated method stub
 
     }
-
 }
