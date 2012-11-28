@@ -133,7 +133,7 @@ public interface ILauncherMode extends SolutionFoundListener {
                 solver.printStat(out);
                 solver.printInfos(out);
                 out.println(ANSWER_PREFIX + exitCode);
-                if (exitCode == ExitCode.SATISFIABLE) {
+                if (exitCode != ExitCode.UNKNOWN) {
                     int[] model = solver.model();
                     if (System.getProperty("prime") != null) {
                         int initiallength = model.length;
@@ -179,6 +179,7 @@ public interface ILauncherMode extends SolutionFoundListener {
         private PrintWriter out;
         private ISolver aSolver;
         private Reader reader;
+        private long beginTime;
 
         public void solve(IProblem problem, Reader reader, ILogAble logger,
                 PrintWriter out, long beginTime) {
@@ -187,9 +188,12 @@ public interface ILauncherMode extends SolutionFoundListener {
             this.aSolver = (ISolver) problem;
             this.reader = reader;
             this.nbSolutionFound = 0;
+            this.beginTime = beginTime;
             try {
                 if (problem.isSatisfiable()) {
-                    this.exitCode = ExitCode.SATISFIABLE;
+                    if (this.exitCode == ExitCode.UNKNOWN) {
+                        this.exitCode = ExitCode.SATISFIABLE;
+                    }
                 } else {
                     if (this.exitCode == ExitCode.UNKNOWN) {
                         this.exitCode = ExitCode.UNSATISFIABLE;
@@ -211,18 +215,18 @@ public interface ILauncherMode extends SolutionFoundListener {
         public void onSolutionFound(int[] solution) {
             this.nbSolutionFound++;
             this.exitCode = ExitCode.SATISFIABLE;
-            if (this.aSolver.isVerbose()) {
-                this.out.printf("c Found solution #%d\n", nbSolutionFound);
-                this.out.print(SOLUTION_PREFIX);
-                this.reader.decode(solution, this.out);
-                this.out.println();
-            } else {
-                this.out.printf("\rc Found solution #%d", nbSolutionFound);
-            }
+            this.out.printf("c Found solution #%d  (%.2f)s\n", nbSolutionFound,
+                    (System.currentTimeMillis() - beginTime) / 1000.0);
         }
 
         public void onSolutionFound(IVecInt solution) {
             throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        public void onUnsatTermination() {
+            if (this.exitCode == ExitCode.SATISFIABLE) {
+                this.exitCode = ExitCode.OPTIMUM_FOUND;
+            }
         }
     };
 
@@ -334,6 +338,10 @@ public interface ILauncherMode extends SolutionFoundListener {
 
         public void onSolutionFound(IVecInt solution) {
             throw new UnsupportedOperationException("Not implemented yet!");
+        }
+
+        public void onUnsatTermination() {
+            // do nothing
         }
     };
 

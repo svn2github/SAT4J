@@ -136,4 +136,8 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
         else
             System.out.println(solution + " is not a MUS \n" + explain);
     }
+
+    public void onUnsatTermination() {
+        // do nothing
+    }
 }

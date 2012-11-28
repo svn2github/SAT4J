@@ -102,6 +102,10 @@ public class ModelIteratorTest {
                             "Not implemented yet!");
                 }
 
+                public void onUnsatTermination() {
+                    // do nothing
+                }
+
             };
             SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
                     sfl);

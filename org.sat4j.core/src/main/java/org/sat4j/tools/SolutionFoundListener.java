@@ -51,6 +51,10 @@ public interface SolutionFoundListener {
         public void onSolutionFound(IVecInt solution) {
             // do nothing
         }
+
+        public void onUnsatTermination() {
+            // do nothing
+        }
     };
 
     /**
@@ -72,4 +76,10 @@ public interface SolutionFoundListener {
      *            a set of Dimacs literals.
      */
     void onSolutionFound(IVecInt solution);
+
+    /**
+     * Callback method called when the search is finished (either unsat problem
+     * or no more solutions found)
+     */
+    void onUnsatTermination();
 }
