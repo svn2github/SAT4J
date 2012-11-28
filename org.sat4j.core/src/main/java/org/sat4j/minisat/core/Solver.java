@@ -2497,7 +2497,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
         while (!reason.contains(trail.last())) {
             undoOne();
-            if (trailLim.last() == trail.size()) {
+            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
             }
         }
@@ -2529,7 +2529,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
         while (!reason.contains(trail.last())) {
             undoOne();
-            if (trailLim.last() == trail.size()) {
+            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
             }
         }
