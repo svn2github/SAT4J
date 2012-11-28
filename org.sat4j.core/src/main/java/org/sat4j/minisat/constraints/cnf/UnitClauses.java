@@ -117,4 +117,8 @@ public class UnitClauses implements Constr {
     public boolean canBePropagatedMultipleTimes() {
         return false;
     }
+
+    public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        calcReason(p, outReason);
+    }
 }

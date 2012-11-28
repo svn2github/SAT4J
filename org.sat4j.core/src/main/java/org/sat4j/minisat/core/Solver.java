@@ -2493,6 +2493,14 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
+        IVecInt reason = new VecInt();
+        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
+        while (!reason.contains(trail.last())) {
+            undoOne();
+            if (trailLim.last() == trail.size()) {
+                trailLim.pop();
+            }
+        }
     }
 
     public ISolver getSolvingEngine() {
@@ -2517,7 +2525,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         addConstr(this.sharedConflict);
         // backtrack to the first decision level with a reason
         // for falsifying that constraint
-        while (!clause.contains(trail.last() ^ 1)) {
+        IVecInt reason = new VecInt();
+        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
+        while (!reason.contains(trail.last())) {
             undoOne();
             if (trailLim.last() == trail.size()) {
                 trailLim.pop();

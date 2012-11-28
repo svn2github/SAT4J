@@ -452,4 +452,8 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
     public Constr toConstraint() {
         return this;
     }
+
+    public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
 }

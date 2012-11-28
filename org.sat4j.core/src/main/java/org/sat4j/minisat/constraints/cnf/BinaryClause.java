@@ -227,4 +227,8 @@ public abstract class BinaryClause implements Propagatable, Constr,
     public Constr toConstraint() {
         return this;
     }
+
+    public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        calcReason(p, outReason);
+    }
 }

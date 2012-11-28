@@ -257,4 +257,8 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
     public Constr toConstraint() {
         return this;
     }
+
+    public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        calcReason(p, outReason);
+    }
 }

@@ -66,7 +66,10 @@ public interface Constr extends IConstr {
      * Compute the reason for a given assignment.
      * 
      * If the constraint is a clause, it is supposed to be either a unit clause
-     * or a falsified one.
+     * or a falsified one. It is expected that the falsification of the
+     * constraint has been detected as soon at is occurs (e.g. using
+     * {@link Propagatable#propagate(UnitPropagationListener, int)}.
+     * 
      * 
      * @param p
      *            a satisfied literal (or Lit.UNDEFINED)
@@ -75,6 +78,25 @@ public interface Constr extends IConstr {
      *            the assignment of p to true.
      */
     void calcReason(int p, IVecInt outReason);
+
+    /**
+     * Compute the reason for a given assignment in a the constraint created on
+     * the fly in the solver. Compared to the method
+     * {@link #calcReason(int, IVecInt)}, the falsification may not have been
+     * detected as soon as possible. As such, it is necessary to take into
+     * account the order of the literals in the trail.
+     * 
+     * @param p
+     *            a satisfied literal (or Lit.UNDEFINED)
+     * @param trail
+     *            all the literals satisfied in the solvers, should not be
+     *            modified.
+     * @param outReason
+     *            a list of falsified literals whose negation is the reason of
+     *            the assignment of p to true.
+     * @since 2.3.3
+     */
+    void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason);
 
     /**
      * Increase the constraint activity.
