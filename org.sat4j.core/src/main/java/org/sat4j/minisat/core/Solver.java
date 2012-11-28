@@ -2485,7 +2485,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.keepHot = keepHot;
     }
 
-    public void addClauseOnTheFly(int[] literals) {
+    public IConstr addClauseOnTheFly(int[] literals) {
         IVecInt clause = new VecInt(literals.length);
         for (int d : literals) {
             clause.push(LiteralsUtils.toInternal(d));
@@ -2501,6 +2501,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 trailLim.pop();
             }
         }
+        return this.sharedConflict;
     }
 
     public ISolver getSolvingEngine() {
@@ -2511,7 +2512,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * 
      * @param literals
      */
-    public void addAtMostOnTheFly(int[] literals, int degree) {
+    public IConstr addAtMostOnTheFly(int[] literals, int degree) {
         IVecInt clause = new VecInt(literals.length);
         for (int d : literals) {
             clause.push(LiteralsUtils.toInternal(-d));
@@ -2533,5 +2534,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 trailLim.pop();
             }
         }
+        return this.sharedConflict;
     }
 }

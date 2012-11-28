@@ -69,7 +69,7 @@ public interface ISolverService {
      * @param literals
      *            a set of literals in Dimacs format.
      */
-    void addClauseOnTheFly(int[] literals);
+    IConstr addClauseOnTheFly(int[] literals);
 
     /**
      * Add a new pseudo cardinality constraint sum literals <= degree in the
@@ -80,7 +80,7 @@ public interface ISolverService {
      * @param degree
      *            the maximal number of literals which can be satisfied.
      */
-    void addAtMostOnTheFly(int[] literals, int degree);
+    IConstr addAtMostOnTheFly(int[] literals, int degree);
 
     /**
      * To access the truth value of a specific literal under current assignment.
@@ -138,4 +138,25 @@ public interface ISolverService {
      * @return the maximum variable id (Dimacs format) reserved in the solver.
      */
     int nVars();
+
+    /**
+     * Remove a constraint returned by one of the add method from the solver
+     * that is subsumed by a constraint already in the solver or to be added to
+     * the solver.
+     * 
+     * Unlike the removeConstr() method, learned clauses will NOT be cleared.
+     * 
+     * That method is expected to be used to remove constraints used in the
+     * optimization process.
+     * 
+     * In order to prevent a wrong from the user, the method will only work if
+     * the argument is the last constraint added to the solver. An illegal
+     * argument exception will be thrown in other cases.
+     * 
+     * @param c
+     *            a constraint returned by one of the add method. It must be the
+     *            latest constr added to the solver.
+     * @return true if the constraint was successfully removed.
+     */
+    boolean removeSubsumedConstr(IConstr c);
 }
