@@ -163,13 +163,19 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         return group;
     }
 
-    public void addAtMostOnTheFly(IVecInt literals, IVec<BigInteger> coefs,
+    private IConstr previousConstr = null;
+
+    public IConstr addAtMostOnTheFly(IVecInt literals, IVec<BigInteger> coefs,
             BigInteger degree) {
         IVecInt vlits = dimacs2internal(literals);
+        if (previousConstr != null) {
+            removeSubsumedConstr(previousConstr);
+        }
         this.sharedConflict = this.dsfactory
                 .createUnregisteredAtMostConstraint(vlits, coefs, degree);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
+        previousConstr = this.sharedConflict;
         // backtrack to the first decision level with a reason
         // for falsifying that constraint
         IVecInt outReason = new VecInt();
@@ -181,14 +187,16 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
                 trailLim.pop();
             }
         }
+        return this.sharedConflict;
     }
 
-    public void addAtMostOnTheFly(IVecInt literals, IVecInt coefs, int degree) {
+    public IConstr addAtMostOnTheFly(IVecInt literals, IVecInt coefs, int degree) {
         IVec<BigInteger> coeffsCpy = new Vec<BigInteger>(coefs.size());
         for (IteratorInt iterator = coefs.iterator(); iterator.hasNext();) {
             coeffsCpy.push(BigInteger.valueOf(iterator.next()));
         }
-        addAtMostOnTheFly(literals, coeffsCpy, BigInteger.valueOf(degree));
+        return addAtMostOnTheFly(literals, coeffsCpy,
+                BigInteger.valueOf(degree));
     }
 
     /**
