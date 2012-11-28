@@ -173,10 +173,11 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         // backtrack to the first decision level with a reason
         // for falsifying that constraint
         IVecInt outReason = new VecInt();
-        this.sharedConflict.calcReason(ILits.UNDEFINED, outReason);
+        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail,
+                outReason);
         while (!outReason.contains(trail.last())) {
             undoOne();
-            if (trailLim.last() == trail.size()) {
+            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
             }
         }

@@ -41,6 +41,7 @@ import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
         Serializable {
@@ -622,5 +623,24 @@ public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
 
     public Constr toConstraint() {
         return this;
+    }
+
+    public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        long sumfalsified = 0;
+        IVecInt vlits = new VecInt(this.lits);
+        int index;
+        for (IteratorInt it = trail.iterator(); it.hasNext();) {
+            int q = it.next();
+            if (vlits.contains(q ^ 1)) {
+                assert voc.isFalsified(q ^ 1);
+                outReason.push(q);
+                index = vlits.indexOf(q ^ 1);
+                sumfalsified += coefs[index];
+                if (this.sumcoefs - sumfalsified < this.degree) {
+                    return;
+                }
+            }
+        }
+
     }
 }
