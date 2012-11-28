@@ -233,24 +233,26 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
     }
 
     public void setObjectiveFunction(ObjectiveFunction obj) {
-        IVecInt newVars = new VecInt();
-        IVec<BigInteger> newCoeffs = new Vec<BigInteger>();
-        Set<Integer> oldVarsToIgnore = new HashSet<Integer>();
-        IVecInt oldObjVars = obj.getVars();
-        IVec<BigInteger> oldObjCoeffs = obj.getCoeffs();
-        int nbReduc;
-        nbReduc = processAtMostOneCstrs(obj, newVars, newCoeffs,
-                oldVarsToIgnore);
-        System.out.println("c " + nbReduc
-                + " reductions due to atMostOne constraints");
-        for (int i = 0; i < oldObjVars.size(); ++i) {
-            if (!oldVarsToIgnore.contains(oldObjVars.get(i))) {
-                newVars.push(oldObjVars.get(i));
-                newCoeffs.push(oldObjCoeffs.get(i));
+        if (obj != null) {
+            IVecInt newVars = new VecInt();
+            IVec<BigInteger> newCoeffs = new Vec<BigInteger>();
+            Set<Integer> oldVarsToIgnore = new HashSet<Integer>();
+            IVecInt oldObjVars = obj.getVars();
+            IVec<BigInteger> oldObjCoeffs = obj.getCoeffs();
+            int nbReduc;
+            nbReduc = processAtMostOneCstrs(obj, newVars, newCoeffs,
+                    oldVarsToIgnore);
+            System.out.println("c " + nbReduc
+                    + " reductions due to atMostOne constraints");
+            for (int i = 0; i < oldObjVars.size(); ++i) {
+                if (!oldVarsToIgnore.contains(oldObjVars.get(i))) {
+                    newVars.push(oldObjVars.get(i));
+                    newCoeffs.push(oldObjCoeffs.get(i));
+                }
             }
+            obj = new ObjectiveFunction(newVars, newCoeffs);
         }
-        ObjectiveFunction newObj = new ObjectiveFunction(newVars, newCoeffs);
-        decorated.setObjectiveFunction(newObj);
+        decorated.setObjectiveFunction(obj);
     }
 
     private int processAtMostOneCstrs(ObjectiveFunction obj, IVecInt newVars,
