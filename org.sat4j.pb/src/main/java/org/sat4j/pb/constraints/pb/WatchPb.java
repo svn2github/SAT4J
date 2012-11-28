@@ -41,6 +41,7 @@ import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 /**
  * Abstract data structure for pseudo-boolean constraint with watched literals.
@@ -638,6 +639,20 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     }
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        BigInteger sumfalsified = BigInteger.ZERO;
+        IVecInt vlits = new VecInt(this.lits);
+        int index;
+        for (IteratorInt it = trail.iterator(); it.hasNext();) {
+            int q = it.next();
+            if (vlits.contains(q ^ 1)) {
+                assert voc.isFalsified(q ^ 1);
+                outReason.push(q);
+                index = vlits.indexOf(q ^ 1);
+                sumfalsified = sumfalsified.add(this.coefs[index]);
+                if (this.sumcoefs.subtract(sumfalsified).compareTo(this.degree) < 0) {
+                    return;
+                }
+            }
+        }
     }
 }

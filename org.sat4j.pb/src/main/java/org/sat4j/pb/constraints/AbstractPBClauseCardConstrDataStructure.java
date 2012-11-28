@@ -146,12 +146,12 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
                 moreThan, degree);
 
         if (degree.equals(BigInteger.ONE)) {
-            return constructLearntClause(literals);
+            return constructLearntClause(new VecInt(lits));
         }
         if (coefficientsEqualToOne(bc)) {
             return constructLearntCard(new VecInt(lits), coefs, degree);
         }
-        return constructLearntPB(literals, coefs, degree);
+        return constructLearntPB(new VecInt(lits), coefs, degree);
     }
 
     @Override

@@ -21,8 +21,6 @@ public class SearchOptimizerListener implements
 
     private ObjectiveFunction obj;
 
-    private int nbSolFound = 0;
-
     private final SolutionFoundListener sfl;
 
     public SearchOptimizerListener(SolutionFoundListener sfl) {
@@ -76,7 +74,7 @@ public class SearchOptimizerListener implements
 
     public void solutionFound(int[] model) {
         BigInteger modelDegree = obj.calculateDegree(model);
-        System.out.println("#" + (++nbSolFound) + ", value=" + modelDegree);
+        System.out.println("c objective function value = " + modelDegree);
         this.solverService.addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
                 modelDegree.subtract(BigInteger.ONE));
         sfl.onSolutionFound(model);
@@ -93,8 +91,8 @@ public class SearchOptimizerListener implements
     }
 
     public void end(Lbool result) {
-        // TODO Auto-generated method stub
-
+        if (result == Lbool.FALSE)
+            sfl.onUnsatTermination();
     }
 
     public void restarting() {
