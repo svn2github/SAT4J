@@ -73,10 +73,12 @@ public class SearchOptimizerListener implements
     }
 
     public void solutionFound(int[] model) {
-        BigInteger modelDegree = obj.calculateDegree(model);
-        System.out.println("c objective function value = " + modelDegree);
-        this.solverService.addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
-                modelDegree.subtract(BigInteger.ONE));
+        if (obj != null) {
+            BigInteger modelDegree = obj.calculateDegree(model);
+            System.out.println("c objective function value = " + modelDegree);
+            this.solverService.addAtMostOnTheFly(obj.getVars(),
+                    obj.getCoeffs(), modelDegree.subtract(BigInteger.ONE));
+        }
         sfl.onSolutionFound(model);
     }
 
