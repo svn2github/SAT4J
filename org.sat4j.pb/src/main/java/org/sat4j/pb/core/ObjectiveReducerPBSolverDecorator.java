@@ -97,14 +97,12 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
     public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        if (degree == 1) {
-            for (IteratorInt it = coeffs.iterator(); it.hasNext();) {
-                if (it.next() != 1) {
-                    return decorated.addAtMost(literals, coeffs, degree);
-                }
+        for (IteratorInt it = coeffs.iterator(); it.hasNext();) {
+            if (it.next() != degree) {
+                return decorated.addAtMost(literals, coeffs, degree);
             }
-            this.atMostOneCstrs.add(literals);
         }
+        this.atMostOneCstrs.add(literals);
         return decorated.addAtMost(literals, coeffs, degree);
     }
 
@@ -127,14 +125,12 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
     public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        if (degree.equals(BigInteger.ONE)) {
-            for (Iterator<BigInteger> it = coeffs.iterator(); it.hasNext();) {
-                if (!it.next().equals(BigInteger.ONE)) {
-                    return decorated.addAtMost(literals, coeffs, degree);
-                }
+        for (Iterator<BigInteger> it = coeffs.iterator(); it.hasNext();) {
+            if (!it.next().equals(degree)) {
+                return decorated.addAtMost(literals, coeffs, degree);
             }
-            this.atMostOneCstrs.add(literals);
         }
+        this.atMostOneCstrs.add(literals);
         return decorated.addAtMost(literals, coeffs, degree);
     }
 
