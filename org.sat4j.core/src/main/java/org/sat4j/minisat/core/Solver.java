@@ -1355,7 +1355,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         if (this.learnedLiterals.size() > 0) {
             this.qhead = trail.size();
         }
-        this.prime = new int[this.implied.size() + this.decisions.size() + 1];
+        this.prime = new int[nVars() + 1];
         int p;
         for (int i = 0; i < this.prime.length; i++) {
             this.prime[i] = 0;
