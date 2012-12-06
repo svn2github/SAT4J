@@ -212,6 +212,18 @@ public final class VecInt implements IVecInt {
             return new IVecInt[0];
         };
 
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof IVecInt) {
+                return ((IVecInt) o).isEmpty();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
     };
 
     public VecInt() {
