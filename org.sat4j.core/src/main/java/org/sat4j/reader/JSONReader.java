@@ -123,12 +123,14 @@ public class JSONReader extends Reader {
     @Override
     @Deprecated
     public String decode(int[] model) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        return "[" + new VecInt(model) + "]";
     }
 
     @Override
     public void decode(int[] model, PrintWriter out) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        out.print("[");
+        out.print(new VecInt(model));
+        out.print("]");
     }
 
 }
