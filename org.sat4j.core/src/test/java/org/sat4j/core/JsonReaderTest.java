@@ -1,5 +1,6 @@
 package org.sat4j.core;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -7,15 +8,19 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.sat4j.minisat.SolverFactory;
 import org.sat4j.reader.JSONReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.TimeoutException;
 
 public class JsonReaderTest {
 
@@ -129,5 +134,19 @@ public class JsonReaderTest {
         reader.parseInstance(new ByteArrayInputStream(json.getBytes()));
         IVecInt clause = new VecInt().push(1).push(-2).push(3);
         verify(solver).addAtLeast(clause, 3);
+    }
+
+    @Test
+    public void testJsonOutput() throws ParseFormatException,
+            ContradictionException, TimeoutException {
+        String json = "[[1,-2,3],[1,2,3],[1,-3],[-1,-3],[-1,2,3]]";
+        ISolver realSolver = SolverFactory.newDefault();
+        JSONReader jsonReader = new JSONReader(realSolver);
+        jsonReader.parseString(json);
+        int[] model = realSolver.findModel();
+        StringWriter strw = new StringWriter();
+        PrintWriter out = new PrintWriter(strw);
+        jsonReader.decode(model, out);
+        assertEquals("[1,2,-3]", strw.toString());
     }
 }
