@@ -74,7 +74,7 @@ public class JSONReader extends Reader {
 
             int degree = Integer.valueOf(str[2]);
             String comparator = str[1].substring(1, str[1].length() - 1);
-            if ("=".equals(comparator)) {
+            if ("=".equals(comparator) || ("==".equals(comparator))) {
                 solver.addExactly(clause, degree);
             } else if ("<=".equals(comparator)) {
                 solver.addAtMost(clause, degree);
