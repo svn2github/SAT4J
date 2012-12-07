@@ -128,6 +128,20 @@ public class JsonReaderTest {
     }
 
     @Test
+    public void testOrderofMixedConstraints() throws ParseFormatException,
+            ContradictionException {
+        String json = "[[-1,-2,-3],[[1,-2,3],'>',2],[4,-3,6]]";
+        reader.parseString(json);
+        IVecInt clause1 = new VecInt().push(-1).push(-2).push(-3);
+        IVecInt card = new VecInt().push(1).push(-2).push(3);
+        IVecInt clause2 = new VecInt().push(4).push(-3).push(6);
+        InOrder inOrder = inOrder(solver);
+        inOrder.verify(solver).addClause(clause1);
+        inOrder.verify(solver).addAtLeast(card, 3);
+        inOrder.verify(solver).addClause(clause2);
+    }
+
+    @Test
     public void testInputStream() throws ParseFormatException,
             ContradictionException, IOException {
         String json = "[[[1,-2,3],'>',2]]";
