@@ -33,8 +33,21 @@ public class JSONReader extends Reader {
 
     private static final Pattern card = Pattern.compile(CARD);
 
+    private static final Pattern constraint = Pattern.compile(CONSTRAINT);
+
     public JSONReader(ISolver solver) {
         this.solver = solver;
+    }
+
+    private void handleConstraint(String constraint)
+            throws ParseFormatException, ContradictionException {
+        if (card.matcher(constraint).matches()) {
+            handleCard(constraint);
+        } else if (clause.matcher(constraint).matches()) {
+            handleClause(constraint);
+        } else {
+            throw new ParseFormatException("Unknown constraint: " + constraint);
+        }
     }
 
     private void handleClause(String constraint) throws ParseFormatException,
@@ -44,10 +57,6 @@ public class JSONReader extends Reader {
 
     private IVecInt getLiterals(String constraint) throws ParseFormatException {
         String trimmed = constraint.trim();
-        if (!(trimmed.charAt(0) == '[')
-                || !(trimmed.charAt(trimmed.length() - 1) == ']')) {
-            throw new ParseFormatException("Wrong clause " + constraint);
-        }
         trimmed = trimmed.substring(1, trimmed.length() - 1);
         String[] literals = trimmed.split(",");
         IVecInt clause = new VecInt();
@@ -61,10 +70,6 @@ public class JSONReader extends Reader {
     private void handleCard(String constraint) throws ParseFormatException,
             ContradictionException {
         String trimmed = constraint.trim();
-        if (!(trimmed.charAt(0) == '[')
-                || !(trimmed.charAt(trimmed.length() - 1) == ']')) {
-            throw new ParseFormatException("Wrong card " + constraint);
-        }
         trimmed = trimmed.substring(1, trimmed.length() - 1);
         Matcher matcher = clause.matcher(trimmed);
         if (matcher.find()) {
@@ -106,17 +111,10 @@ public class JSONReader extends Reader {
         if (!trimmed.matches(FORMULA)) {
             throw new ParseFormatException("Wrong input " + json);
         }
-
-        Matcher matcher = card.matcher(trimmed);
+        Matcher matcher = constraint.matcher(trimmed);
         while (matcher.find()) {
-            handleCard(matcher.group());
+            handleConstraint(matcher.group());
         }
-        trimmed = matcher.replaceAll("");
-        matcher = clause.matcher(trimmed);
-        while (matcher.find()) {
-            handleClause(matcher.group());
-        }
-
         return solver;
     }
 
