@@ -15,28 +15,33 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 
-public class JSONReader extends Reader {
+public class JSONReader<S extends ISolver> extends Reader {
 
-    private final ISolver solver;
+    protected final S solver;
 
-    private static final String CLAUSE = "(\\[(-?(\\d+)(,-?(\\d+))*)?\\])";
+    public static final String CLAUSE = "(\\[(-?(\\d+)(,-?(\\d+))*)?\\])";
 
-    private static final String CARD = "(\\[" + CLAUSE
-            + ",'[=<>]=?',-?\\d+\\])";
+    public static final String CARD = "(\\[" + CLAUSE + ",'[=<>]=?',-?\\d+\\])";
 
-    private static final String CONSTRAINT = "(" + CLAUSE + "|" + CARD + ")";
+    public final String CONSTRAINT;
 
-    private static final String FORMULA = "^\\[(" + CONSTRAINT + "(,"
-            + CONSTRAINT + ")*)?\\]$";
+    public final String FORMULA;
 
     private static final Pattern clause = Pattern.compile(CLAUSE);
 
     private static final Pattern card = Pattern.compile(CARD);
 
-    private static final Pattern constraint = Pattern.compile(CONSTRAINT);
+    private final Pattern constraint;
 
-    public JSONReader(ISolver solver) {
+    public JSONReader(S solver) {
         this.solver = solver;
+        CONSTRAINT = constraintPattern();
+        FORMULA = "^\\[(" + CONSTRAINT + "(," + CONSTRAINT + ")*)?\\]$";
+        constraint = Pattern.compile(CONSTRAINT);
+    }
+
+    protected String constraintPattern() {
+        return "(" + CLAUSE + "|" + CARD + ")";
     }
 
     private void handleConstraint(String constraint)
@@ -46,8 +51,13 @@ public class JSONReader extends Reader {
         } else if (clause.matcher(constraint).matches()) {
             handleClause(constraint);
         } else {
-            throw new ParseFormatException("Unknown constraint: " + constraint);
+            handleNotHandled(constraint);
         }
+    }
+
+    protected void handleNotHandled(String constraint)
+            throws ParseFormatException, ContradictionException {
+        throw new ParseFormatException("Unknown constraint: " + constraint);
     }
 
     private void handleClause(String constraint) throws ParseFormatException,
@@ -55,7 +65,8 @@ public class JSONReader extends Reader {
         solver.addClause(getLiterals(constraint));
     }
 
-    private IVecInt getLiterals(String constraint) throws ParseFormatException {
+    protected IVecInt getLiterals(String constraint)
+            throws ParseFormatException {
         String trimmed = constraint.trim();
         trimmed = trimmed.substring(1, trimmed.length() - 1);
         String[] literals = trimmed.split(",");
@@ -67,7 +78,7 @@ public class JSONReader extends Reader {
         return clause;
     }
 
-    private void handleCard(String constraint) throws ParseFormatException,
+    protected void handleCard(String constraint) throws ParseFormatException,
             ContradictionException {
         String trimmed = constraint.trim();
         trimmed = trimmed.substring(1, trimmed.length() - 1);
