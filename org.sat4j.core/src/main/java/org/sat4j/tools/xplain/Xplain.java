@@ -113,6 +113,16 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
         return this.xplainStrategy.explain(solver, this.constrs, this.assump);
     }
 
+    /**
+     * Provide an explanation of the inconsistency in terms of a subset minimal
+     * set of constraints, each constraint being referred to as its index
+     * (order) in the solver: first constraint is numbered 1, the second 2, etc.
+     * 
+     * @return an array of indexes such that the set of indexed constraints is
+     *         inconsistent.
+     * @throws TimeoutException
+     * @see {@link #explain()}
+     */
     public int[] minimalExplanation() throws TimeoutException {
         IVecInt keys = explanationKeys();
         keys.sort();
@@ -127,9 +137,14 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
     }
 
     /**
+     * Provide an explanation of the inconsistency in term of a subset minimal
+     * set of constraints. Compared to {@link #minimalExplanation()}, the method
+     * returns a reference to the constraint object, instead of an index.
+     * 
      * @since 2.1
      * @return
      * @throws TimeoutException
+     * @see {@link #minimalExplanation()}
      */
     public Collection<IConstr> explain() throws TimeoutException {
         IVecInt keys = explanationKeys();
