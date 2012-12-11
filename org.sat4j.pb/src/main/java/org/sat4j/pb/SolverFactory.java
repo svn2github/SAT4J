@@ -742,9 +742,28 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
 		return solver;
 	}
 
+	/**
+	 * Provides the best available PB solver of the library ready to solve
+	 * satisfaction problems. If you need to solve optimization problems, please
+	 * use {@link #newDefaultOptimizer()}
+	 * 
+	 * @return a solver ready to solve satisfaction problems.
+	 */
 	@Override
 	public PBSolver defaultSolver() {
 		return newDefault();
+	}
+
+	/**
+	 * Provides the best available PB solver of the library ready to solve
+	 * optimization problems. If you only need to solve satisfaction problems,
+	 * please use {@link #newDefault()} instead.
+	 * 
+	 * @return a solver ready to solve optimization problems.
+	 * @since 2.3.3
+	 */
+	public static IPBSolver newDefaultOptimizer() {
+		return new OptToPBSATAdapter(new PseudoOptDecorator(newDefault()));
 	}
 
 	/**
