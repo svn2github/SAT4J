@@ -98,7 +98,7 @@ public class DimacsStringSolver extends AbstractOutputSolver {
     public IConstr addClause(IVecInt literals) throws ContradictionException {
         if (this.firstConstr) {
             if (!this.fixedNbClauses) {
-                this.firstCharPos = 7 + Integer.toString(this.nbvars).length();
+                this.firstCharPos = 0;
                 this.out.append("                    ");
                 this.out.append("\n");
                 this.nbclauses = 0;
