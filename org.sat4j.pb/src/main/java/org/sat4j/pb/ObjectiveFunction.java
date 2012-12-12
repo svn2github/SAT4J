@@ -177,4 +177,24 @@ public class ObjectiveFunction implements Serializable {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return this.coeffs.hashCode() / 3 + this.vars.hashCode() / 3
+                + this.correction.hashCode() / 3;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ObjectiveFunction) {
+            System.out.println(this + "/" + obj);
+            ObjectiveFunction of = (ObjectiveFunction) obj;
+            System.out.println(of.correction.equals(this.correction));
+            System.out.println(of.coeffs.equals(this.coeffs));
+            System.out.println(of.vars.equals(this.vars));
+            return of.correction.equals(this.correction)
+                    && of.coeffs.equals(this.coeffs)
+                    && of.vars.equals(this.vars);
+        }
+        return false;
+    }
 }
