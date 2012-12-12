@@ -178,4 +178,14 @@ public final class ReadOnlyVec<T> implements IVec<T> {
         return this.vec.toString();
     }
 
+    @Override
+    public int hashCode() {
+        return this.vec.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.vec.equals(obj);
+    }
+
 }

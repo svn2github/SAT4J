@@ -599,13 +599,13 @@ public final class VecInt implements IVecInt {
      */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof VecInt) {
-            VecInt v = (VecInt) obj;
-            if (v.nbelem != this.nbelem) {
+        if (obj instanceof IVecInt) {
+            IVecInt v = (IVecInt) obj;
+            if (v.size() != this.nbelem) {
                 return false;
             }
             for (int i = 0; i < this.nbelem; i++) {
-                if (v.myarray[i] != this.myarray[i]) {
+                if (v.get(i) != this.myarray[i]) {
                     return false;
                 }
             }

@@ -199,4 +199,14 @@ public final class ReadOnlyVecInt implements IVecInt {
         return null;
     }
 
+    @Override
+    public int hashCode() {
+        return this.vec.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.vec.equals(obj);
+    }
+
 }
