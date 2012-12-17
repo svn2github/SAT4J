@@ -68,7 +68,6 @@ public abstract class AbstractPBXplainTest extends
         clause.clear();
         assertFalse(this.solver.isSatisfiable());
         Collection<IConstr> explanation = this.solver.explain();
-        System.out.println(explanation);
         assertEquals(5, explanation.size());
         assertTrue(explanation.contains(c1));
     }
