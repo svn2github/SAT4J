@@ -165,65 +165,38 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
     @Override
     public int[] findModel() throws TimeoutException {
         this.assump = VecInt.EMPTY;
-        IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.findModel(extraVariables);
+        return super.findModel();
     }
 
     @Override
     public int[] findModel(IVecInt assumps) throws TimeoutException {
         this.assump = assumps;
-        IVecInt extraVariables = new VecInt();
-        assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.findModel(extraVariables);
+        return super.findModel(assumps);
     }
 
     @Override
     public boolean isSatisfiable() throws TimeoutException {
         this.assump = VecInt.EMPTY;
-        IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.isSatisfiable(extraVariables);
+        return super.isSatisfiable();
     }
 
     @Override
     public boolean isSatisfiable(boolean global) throws TimeoutException {
         this.assump = VecInt.EMPTY;
-        IVecInt extraVariables = new VecInt();
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.isSatisfiable(extraVariables, global);
+        return super.isSatisfiable(global);
     }
 
     @Override
     public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
         this.assump = assumps;
-        IVecInt extraVariables = new VecInt();
-        assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.isSatisfiable(extraVariables);
+        return super.isSatisfiable(assumps);
     }
 
     @Override
     public boolean isSatisfiable(IVecInt assumps, boolean global)
             throws TimeoutException {
         this.assump = assumps;
-        IVecInt extraVariables = new VecInt();
-        assumps.copyTo(extraVariables);
-        for (Integer p : this.constrs.keySet()) {
-            extraVariables.push(-p);
-        }
-        return super.isSatisfiable(extraVariables, global);
+        return super.isSatisfiable(assumps, global);
     }
 
     @Override

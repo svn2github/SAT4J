@@ -96,7 +96,7 @@ public class AllMUSes {
      */
     public List<IVecInt> computeAllMUSes(SolutionFoundListener listener) {
         computeAllMSS();
-
+        css.internalState();
         ISolver solver = SolverFactory.newDefault();
 
         IVecInt mus;
@@ -134,9 +134,7 @@ public class AllMUSes {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
-        System.out.println("MUSes = " + musList);
-
+        css.externalState();
         return musList;
     }
 
@@ -145,6 +143,7 @@ public class AllMUSes {
     }
 
     public List<IVecInt> computeAllMSS(SolutionFoundListener listener) {
+        css.internalState();
         int nVar = css.nVars();
 
         IVecInt pLits = new VecInt();
@@ -201,9 +200,7 @@ public class AllMUSes {
         } catch (ContradictionException e) {
 
         }
-
-        System.out.println("MSS = " + mssList);
-
+        css.externalState();
         return mssList;
     }
 }
