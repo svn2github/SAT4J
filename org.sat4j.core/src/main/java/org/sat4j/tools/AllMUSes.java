@@ -95,7 +95,9 @@ public class AllMUSes {
      * @return a list containing all the MUSes
      */
     public List<IVecInt> computeAllMUSes(SolutionFoundListener listener) {
-        computeAllMSS();
+        if (secondPhaseClauses.isEmpty()) {
+            computeAllMSS();
+        }
         css.internalState();
         ISolver solver = SolverFactory.newDefault();
 
