@@ -53,8 +53,6 @@ public class AllMUSes {
     private final List<IVecInt> secondPhaseClauses;
     private final List<IVecInt> musList;
 
-    private final boolean group;
-
     public AllMUSes(boolean group) {
         if (!group) {
             this.css = new FullClauseSelectorSolver<ISolver>(
@@ -66,7 +64,6 @@ public class AllMUSes {
         mssList = new ArrayList<IVecInt>();
         musList = new ArrayList<IVecInt>();
         secondPhaseClauses = new ArrayList<IVecInt>();
-        this.group = group;
     }
 
     public AllMUSes() {
@@ -97,6 +94,9 @@ public class AllMUSes {
     public List<IVecInt> computeAllMUSes(SolutionFoundListener listener) {
         if (secondPhaseClauses.isEmpty()) {
             computeAllMSS();
+        }
+        if (css.isVerbose()) {
+            System.out.println(css.getLogPrefix() + "Computing all MUSes ...");
         }
         css.internalState();
         ISolver solver = SolverFactory.newDefault();
@@ -136,6 +136,9 @@ public class AllMUSes {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
+        if (css.isVerbose()) {
+            System.out.println(css.getLogPrefix() + "... done.");
+        }
         css.externalState();
         return musList;
     }
@@ -147,7 +150,9 @@ public class AllMUSes {
     public List<IVecInt> computeAllMSS(SolutionFoundListener listener) {
         css.internalState();
         int nVar = css.nVars();
-
+        if (css.isVerbose()) {
+            System.out.println(css.getLogPrefix() + "Computing all MSSes ...");
+        }
         IVecInt pLits = new VecInt();
         for (Integer i : css.getAddedVars()) {
             pLits.push(i);
@@ -201,6 +206,9 @@ public class AllMUSes {
             e.printStackTrace();
         } catch (ContradictionException e) {
 
+        }
+        if (css.isVerbose()) {
+            System.out.println(css.getLogPrefix() + "... done.");
         }
         css.externalState();
         return mssList;
