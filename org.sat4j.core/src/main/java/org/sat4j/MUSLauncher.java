@@ -43,8 +43,7 @@ import org.sat4j.tools.xplain.HighLevelXplain;
 import org.sat4j.tools.xplain.MinimizationStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
-public class MUSLauncher extends AbstractLauncher implements
-        SolutionFoundListener {
+public class MUSLauncher extends AbstractLauncher {
 
     /**
 	 * 
@@ -154,7 +153,21 @@ public class MUSLauncher extends AbstractLauncher implements
                         + wallclocktime);
                 double beginmus = System.currentTimeMillis();
                 if (allMuses != null) {
-                    allMuses.computeAllMUSes(this);
+                    allMuses.computeAllMUSes(new SolutionFoundListener() {
+                        public void onSolutionFound(int[] solution) {
+                        }
+
+                        public void onSolutionFound(IVecInt solution) {
+                            System.out.printf("\r found mus number %d",
+                                    ++muscount);
+                            out.print(ILauncherMode.SOLUTION_PREFIX);
+                            reader.decode(solution.toArray(), out);
+                            out.println();
+                        }
+
+                        public void onUnsatTermination() {
+                        }
+                    });
                     log("All MUSes computation wall clock time (in seconds) : "
                             + (System.currentTimeMillis() - beginmus) / 1000.0);
                 } else {
@@ -188,18 +201,5 @@ public class MUSLauncher extends AbstractLauncher implements
         }
         lanceur.run(args);
         System.exit(lanceur.getExitCode().value());
-    }
-
-    public void onSolutionFound(int[] solution) {
-    }
-
-    public void onSolutionFound(IVecInt solution) {
-        System.out.printf("\r found mus number %d", ++muscount);
-        this.out.print(ILauncherMode.SOLUTION_PREFIX);
-        this.reader.decode(solution.toArray(), this.out);
-        this.out.println();
-    }
-
-    public void onUnsatTermination() {
     }
 }
