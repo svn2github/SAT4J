@@ -49,15 +49,11 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @see org.sat4j.specs.ISolver#addClause(IVecInt)
  */
-public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
+public class Minimal4InclusionModel extends AbstractMinimalModel {
 
     private static final long serialVersionUID = 1L;
 
-    private final IVecInt pLiterals;
-
     private int[] prevfullmodel;
-
-    private final SolutionFoundListener modelListener;
 
     /**
      * 
@@ -70,10 +66,7 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      */
     public Minimal4InclusionModel(ISolver solver, IVecInt p,
             SolutionFoundListener modelListener) {
-        super(solver);
-        this.pLiterals = new VecInt(p.size());
-        p.copyTo(this.pLiterals);
-        this.modelListener = modelListener;
+        super(solver,p,modelListener);
     }
 
     /**
@@ -92,22 +85,6 @@ public class Minimal4InclusionModel extends SolverDecorator<ISolver> {
      */
     public Minimal4InclusionModel(ISolver solver) {
         this(solver, negativeLiterals(solver), SolutionFoundListener.VOID);
-    }
-
-    public static IVecInt positiveLiterals(ISolver solver) {
-        IVecInt literals = new VecInt(solver.nVars());
-        for (int i = 1; i <= solver.nVars(); i++) {
-            literals.push(i);
-        }
-        return literals;
-    }
-
-    public static IVecInt negativeLiterals(ISolver solver) {
-        IVecInt literals = new VecInt(solver.nVars());
-        for (int i = 1; i <= solver.nVars(); i++) {
-            literals.push(-i);
-        }
-        return literals;
     }
 
     /*

@@ -31,6 +31,7 @@ package org.sat4j.tools;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -44,15 +45,31 @@ import org.sat4j.specs.TimeoutException;
  * @author leberre
  * @see org.sat4j.specs.ISolver#addAtMost(IVecInt, int)
  */
-public class Minimal4CardinalityModel extends SolverDecorator<ISolver> {
+public class Minimal4CardinalityModel extends AbstractMinimalModel {
 
     private static final long serialVersionUID = 1L;
+
+    private int[] prevfullmodel;
 
     /**
      * @param solver
      */
     public Minimal4CardinalityModel(ISolver solver) {
         super(solver);
+    }
+
+    public Minimal4CardinalityModel(ISolver solver, IVecInt p,
+            SolutionFoundListener modelListener) {
+        super(solver, p, modelListener);
+    }
+
+    public Minimal4CardinalityModel(ISolver solver, IVecInt p) {
+        super(solver, p);
+    }
+
+    public Minimal4CardinalityModel(ISolver solver,
+            SolutionFoundListener modelListener) {
+        super(solver, modelListener);
     }
 
     /*
@@ -64,27 +81,33 @@ public class Minimal4CardinalityModel extends SolverDecorator<ISolver> {
     public int[] model() {
         int[] prevmodel = null;
         IVecInt vec = new VecInt();
+        IConstr lastOne = null;
         try {
             do {
+                prevfullmodel = super.modelWithInternalVariables();
                 prevmodel = super.model();
-                vec.clear();
-                for (int i = 1; i <= nVars(); i++) {
-                    vec.push(-i);
-                }
                 int counter = 0;
-                for (int q : prevmodel) {
-                    if (q < 0) {
+                for (int q : prevfullmodel) {
+                    if (pLiterals.contains(q)) {
                         counter++;
                     }
                 }
-                addAtMost(vec, counter - 1);
+                lastOne = addAtMost(pLiterals, counter - 1);
             } while (isSatisfiable());
         } catch (TimeoutException e) {
             throw new IllegalStateException("Solver timed out"); //$NON-NLS-1$
         } catch (ContradictionException e) {
             // added trivial unsat clauses
         }
-        // restore();
+        if (lastOne != null) {
+            removeConstr(lastOne);
+        }
         return prevmodel;
+    }
+
+    @Override
+    public int[] modelWithInternalVariables() {
+        model();
+        return prevfullmodel;
     }
 }
