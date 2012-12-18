@@ -34,13 +34,17 @@ import org.sat4j.reader.GroupedCNFReader;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.AllMUSes;
+import org.sat4j.tools.SolutionFoundListener;
 import org.sat4j.tools.xplain.Explainer;
 import org.sat4j.tools.xplain.HighLevelXplain;
 import org.sat4j.tools.xplain.MinimizationStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
-public class MUSLauncher extends AbstractLauncher {
+public class MUSLauncher extends AbstractLauncher implements
+        SolutionFoundListener {
 
     /**
 	 * 
@@ -52,6 +56,8 @@ public class MUSLauncher extends AbstractLauncher {
     private Explainer xplain;
 
     private boolean highLevel = false;
+
+    private AllMUSes allMuses;
 
     @Override
     public void usage() {
@@ -94,13 +100,19 @@ public class MUSLauncher extends AbstractLauncher {
         }
         if (args.length == 2) {
             // retrieve minimization strategy
-            String className = "org.sat4j.tools.xplain." + args[0] + "Strategy";
-            try {
-                this.xplain
-                        .setMinimizationStrategy((MinimizationStrategy) Class
-                                .forName(className).newInstance());
-            } catch (Exception e) {
-                log(e.getMessage());
+            if ("all".equals(args[0])) {
+                allMuses = new AllMUSes(highLevel);
+                solver = allMuses.getSolverInstance();
+            } else {
+                String className = "org.sat4j.tools.xplain." + args[0]
+                        + "Strategy";
+                try {
+                    this.xplain
+                            .setMinimizationStrategy((MinimizationStrategy) Class
+                                    .forName(className).newInstance());
+                } catch (Exception e) {
+                    log(e.getMessage());
+                }
             }
         }
         solver.setTimeout(Integer.MAX_VALUE);
@@ -140,17 +152,24 @@ public class MUSLauncher extends AbstractLauncher {
             try {
                 log("Unsat detection wall clock time (in seconds) : "
                         + wallclocktime);
-                log("Size of initial " + (this.highLevel ? "high level " : "")
-                        + "unsat subformula: "
-                        + this.solver.unsatExplanation().size());
-                log("Computing " + (this.highLevel ? "high level " : "")
-                        + "MUS ...");
                 double beginmus = System.currentTimeMillis();
-                this.mus = this.xplain.minimalExplanation();
-                log("Size of the " + (this.highLevel ? "high level " : "")
-                        + "MUS: " + this.mus.length);
-                log("Unsat core  computation wall clock time (in seconds) : "
-                        + (System.currentTimeMillis() - beginmus) / 1000.0);
+                if (allMuses != null) {
+                    allMuses.computeAllMUSes(this);
+                    log("All MUSes computation wall clock time (in seconds) : "
+                            + (System.currentTimeMillis() - beginmus) / 1000.0);
+                } else {
+                    log("Size of initial "
+                            + (this.highLevel ? "high level " : "")
+                            + "unsat subformula: "
+                            + this.solver.unsatExplanation().size());
+                    log("Computing " + (this.highLevel ? "high level " : "")
+                            + "MUS ...");
+                    this.mus = this.xplain.minimalExplanation();
+                    log("Size of the " + (this.highLevel ? "high level " : "")
+                            + "MUS: " + this.mus.length);
+                    log("Unsat core  computation wall clock time (in seconds) : "
+                            + (System.currentTimeMillis() - beginmus) / 1000.0);
+                }
             } catch (TimeoutException e) {
                 log("Cannot compute " + (this.highLevel ? "high level " : "")
                         + "MUS within the timeout.");
@@ -158,6 +177,8 @@ public class MUSLauncher extends AbstractLauncher {
         }
 
     }
+
+    private int muscount = 0;
 
     public static void main(final String[] args) {
         MUSLauncher lanceur = new MUSLauncher();
@@ -167,5 +188,18 @@ public class MUSLauncher extends AbstractLauncher {
         }
         lanceur.run(args);
         System.exit(lanceur.getExitCode().value());
+    }
+
+    public void onSolutionFound(int[] solution) {
+    }
+
+    public void onSolutionFound(IVecInt solution) {
+        System.out.printf("\r found mus number %d", ++muscount);
+        this.out.print(ILauncherMode.SOLUTION_PREFIX);
+        this.reader.decode(solution.toArray(), this.out);
+        this.out.println();
+    }
+
+    public void onUnsatTermination() {
     }
 }
