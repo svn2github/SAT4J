@@ -161,9 +161,7 @@ public class MUSLauncher extends AbstractLauncher {
                             System.out.println(solver.getLogPrefix()
                                     + "found mus number " + ++muscount);
                             out.print(ILauncherMode.SOLUTION_PREFIX);
-                            int[] currentMus = new int[solution.size()];
-                            solution.copyTo(currentMus);
-                            reader.decode(currentMus, out);
+                            reader.decode(solution.toArray(), out);
                             out.println();
                         }
 
