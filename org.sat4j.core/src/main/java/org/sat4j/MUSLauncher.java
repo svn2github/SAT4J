@@ -97,6 +97,7 @@ public class MUSLauncher extends AbstractLauncher {
             this.xplain = xp;
             solver = xp;
         }
+        solver.setDBSimplificationAllowed(true);
         if (args.length == 2) {
             // retrieve minimization strategy
             if ("all".equals(args[0])) {
@@ -115,7 +116,6 @@ public class MUSLauncher extends AbstractLauncher {
             }
         }
         solver.setTimeout(Integer.MAX_VALUE);
-        solver.setDBSimplificationAllowed(true);
         getLogWriter().println(solver.toString(COMMENT_PREFIX));
         return solver;
     }
@@ -158,10 +158,12 @@ public class MUSLauncher extends AbstractLauncher {
                         }
 
                         public void onSolutionFound(IVecInt solution) {
-                            System.out.printf("\r found mus number %d",
-                                    ++muscount);
+                            System.out.println(solver.getLogPrefix()
+                                    + "found mus number " + ++muscount);
                             out.print(ILauncherMode.SOLUTION_PREFIX);
-                            reader.decode(solution.toArray(), out);
+                            int[] currentMus = new int[solution.size()];
+                            solution.copyTo(currentMus);
+                            reader.decode(currentMus, out);
                             out.println();
                         }
 
