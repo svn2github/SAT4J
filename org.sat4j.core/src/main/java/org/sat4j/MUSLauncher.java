@@ -153,7 +153,7 @@ public class MUSLauncher extends AbstractLauncher {
                         + wallclocktime);
                 double beginmus = System.currentTimeMillis();
                 if (allMuses != null) {
-                    allMuses.computeAllMUSes(new SolutionFoundListener() {
+                    SolutionFoundListener listener = new SolutionFoundListener() {
                         public void onSolutionFound(int[] solution) {
                         }
 
@@ -161,13 +161,20 @@ public class MUSLauncher extends AbstractLauncher {
                             System.out.println(solver.getLogPrefix()
                                     + "found mus number " + ++muscount);
                             out.print(ILauncherMode.SOLUTION_PREFIX);
-                            reader.decode(solution.toArray(), out);
+                            int[] localMus = new int[solution.size()];
+                            solution.copyTo(localMus);
+                            reader.decode(localMus, out);
                             out.println();
                         }
 
                         public void onUnsatTermination() {
                         }
-                    });
+                    };
+                    if ("card".equals(System.getProperty("min"))) {
+                        allMuses.computeAllMUSesOrdered(listener);
+                    } else {
+                        allMuses.computeAllMUSes(listener);
+                    }
                     log("All MUSes computation wall clock time (in seconds) : "
                             + (System.currentTimeMillis() - beginmus) / 1000.0);
                 } else {
