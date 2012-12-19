@@ -183,9 +183,6 @@ public class AllMUSes {
     }
 
     public List<IVecInt> computeAllMSSOrdered(SolutionFoundListener listener) {
-        if (css.isVerbose()) {
-            System.out.println(css.getLogPrefix() + "Computing all MSSes ...");
-        }
         IVecInt pLits = new VecInt();
         for (Integer i : css.getAddedVars()) {
             pLits.push(i);
@@ -197,6 +194,9 @@ public class AllMUSes {
 
     private List<IVecInt> computeAllMSS(SolutionFoundListener listener,
             ISolver min4Inc, IVecInt pLits) {
+        if (css.isVerbose()) {
+            System.out.println(css.getLogPrefix() + "Computing all MSSes ...");
+        }
         css.internalState();
         int nVar = css.nVars();
 
