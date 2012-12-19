@@ -153,7 +153,25 @@ public class MUSLauncher extends AbstractLauncher {
                         + wallclocktime);
                 double beginmus = System.currentTimeMillis();
                 if (allMuses != null) {
-                    SolutionFoundListener listener = new SolutionFoundListener() {
+                    SolutionFoundListener mssListener = new SolutionFoundListener() {
+                        private int msscount = 0;
+
+                        public void onUnsatTermination() {
+                            throw new UnsupportedOperationException(
+                                    "Not implemented yet!");
+                        }
+
+                        public void onSolutionFound(IVecInt solution) {
+                            System.out.print("\r" + solver.getLogPrefix()
+                                    + "found mss number " + ++msscount);
+                        }
+
+                        public void onSolutionFound(int[] solution) {
+                            throw new UnsupportedOperationException(
+                                    "Not implemented yet!");
+                        }
+                    };
+                    SolutionFoundListener musListener = new SolutionFoundListener() {
                         public void onSolutionFound(int[] solution) {
                         }
 
@@ -170,10 +188,11 @@ public class MUSLauncher extends AbstractLauncher {
                         public void onUnsatTermination() {
                         }
                     };
+                    allMuses.computeAllMSS(mssListener);
                     if ("card".equals(System.getProperty("min"))) {
-                        allMuses.computeAllMUSesOrdered(listener);
+                        allMuses.computeAllMUSesOrdered(musListener);
                     } else {
-                        allMuses.computeAllMUSes(listener);
+                        allMuses.computeAllMUSes(musListener);
                     }
                     log("All MUSes computation wall clock time (in seconds) : "
                             + (System.currentTimeMillis() - beginmus) / 1000.0);
