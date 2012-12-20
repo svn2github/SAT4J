@@ -61,9 +61,10 @@ object Logic {
       isAlreadyInCnf(this) match {
         case (true, Some(x)) => x
         case _ => {
+          val next = nextAnonymousVar
           val translated = tseitinListSimple(this, List())._2
           assert(!(_createdVars isEmpty))
-          List(_createdVars.last) :: translated
+          List(next) :: translated
         }
       }
     }
@@ -151,11 +152,17 @@ object Logic {
   private var _createdVars = List[AnonymousVariable]()
 
   /** create new propositional variables for translation into CNF */
-  private def newVar = {
+  private def newVar = if(_cachedVar != null) {val tmp = _cachedVar; _cachedVar = null; tmp} else uncachedNewVar 
+   
+  def uncachedNewVar = {
     val v = new AnonymousVariable
     _createdVars = v :: _createdVars
     v
   }
+  
+  private def nextAnonymousVar = if(_cachedVar == null) {_cachedVar = uncachedNewVar; _cachedVar} else _cachedVar;
+  
+  var _cachedVar = uncachedNewVar
 
   /** n-ary conjunction. */
   def and(l: BoolExp*): BoolExp = and(l.toList)
