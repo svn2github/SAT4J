@@ -253,4 +253,9 @@ public class AllMUSes {
         css.externalState();
         return mssList;
     }
+
+    public List<IVecInt> getMssList() {
+        return mssList;
+    }
+
 }
