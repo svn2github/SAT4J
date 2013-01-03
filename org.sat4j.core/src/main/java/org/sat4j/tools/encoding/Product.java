@@ -135,8 +135,8 @@ public class Product extends EncodingStrategyAdapter {
                     }
                 }
                 hash = recompositionBase10DepuisBaseP(aWithoutD[i][d], p);
-                if (!hashTupleSetTable[d].contains(new Integer(hash))) {
-                    hashTupleSetTable[d].add(new Integer(hash));
+                if (!hashTupleSetTable[d].contains(hash)) {
+                    hashTupleSetTable[d].add(hash);
                     varId = solver.nextFreeVarId(true);
                     ady[d].put(hash, varId);
                     adxd[d].push(varId);
