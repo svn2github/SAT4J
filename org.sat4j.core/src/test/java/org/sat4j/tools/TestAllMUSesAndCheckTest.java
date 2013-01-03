@@ -36,6 +36,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -50,7 +51,7 @@ public class TestAllMUSesAndCheckTest {
 
     @Before
     public void setUp() throws Exception {
-        this.allMUSes = new AllMUSes();
+        this.allMUSes = new AllMUSes(SolverFactory.instance());
         this.solver = allMUSes.getSolverInstance();
         this.checkListener = new CheckMUSSolutionListener();
     }

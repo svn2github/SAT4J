@@ -101,7 +101,7 @@ public class MUSLauncher extends AbstractLauncher {
         if (args.length == 2) {
             // retrieve minimization strategy
             if ("all".equals(args[0])) {
-                allMuses = new AllMUSes(highLevel);
+                allMuses = new AllMUSes(highLevel, SolverFactory.instance());
                 solver = allMuses.getSolverInstance();
             } else {
                 String className = "org.sat4j.tools.xplain." + args[0]

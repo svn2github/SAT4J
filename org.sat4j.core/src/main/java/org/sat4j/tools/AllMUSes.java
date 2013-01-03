@@ -32,8 +32,8 @@ package org.sat4j.tools;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
@@ -52,22 +52,24 @@ public class AllMUSes {
     private final List<IVecInt> mssList;
     private final List<IVecInt> secondPhaseClauses;
     private final List<IVecInt> musList;
+    private final ASolverFactory<? extends ISolver> factory;
 
-    public AllMUSes(boolean group) {
+    public AllMUSes(boolean group, ASolverFactory<? extends ISolver> factory) {
         if (!group) {
             this.css = new FullClauseSelectorSolver<ISolver>(
-                    SolverFactory.newDefault(), false);
+                    factory.defaultSolver(), false);
         } else {
             this.css = new GroupClauseSelectorSolver<ISolver>(
-                    SolverFactory.newDefault());
+                    factory.defaultSolver());
         }
-        mssList = new ArrayList<IVecInt>();
-        musList = new ArrayList<IVecInt>();
-        secondPhaseClauses = new ArrayList<IVecInt>();
+        this.mssList = new ArrayList<IVecInt>();
+        this.musList = new ArrayList<IVecInt>();
+        this.secondPhaseClauses = new ArrayList<IVecInt>();
+        this.factory = factory;
     }
 
-    public AllMUSes() {
-        this(false);
+    public AllMUSes(ASolverFactory<? extends ISolver> factory) {
+        this(false, factory);
     }
 
     /**
@@ -95,7 +97,7 @@ public class AllMUSes {
         if (secondPhaseClauses.isEmpty()) {
             computeAllMSS();
         }
-        ISolver solver = SolverFactory.newDefault();
+        ISolver solver = factory.defaultSolver();
         for (IVecInt v : secondPhaseClauses) {
             try {
                 solver.addClause(v);
@@ -112,7 +114,7 @@ public class AllMUSes {
         if (secondPhaseClauses.isEmpty()) {
             computeAllMSS();
         }
-        ISolver solver = SolverFactory.newDefault();
+        ISolver solver = factory.defaultSolver();
         for (IVecInt v : secondPhaseClauses) {
             try {
                 solver.addClause(v);
