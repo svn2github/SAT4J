@@ -50,6 +50,11 @@ import org.sat4j.specs.IVecInt;
  */
 public class Ladder extends EncodingStrategyAdapter {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     @Override
     /**
      * If n is the number of variables in the constraint, 

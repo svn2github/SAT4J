@@ -44,6 +44,10 @@ import org.sat4j.specs.IVecInt;
  */
 public class Policy extends EncodingStrategyAdapter {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private final Sequential seq = new Sequential();
     private final Binary binary = new Binary();
     private final Product product = new Product();

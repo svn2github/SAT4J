@@ -57,6 +57,11 @@ import org.sat4j.specs.IVecInt;
 public class Binary extends EncodingStrategyAdapter {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * p being the smaller integer greater than log_2(n), this encoding adds p
      * variables and n*p clauses.
      * 

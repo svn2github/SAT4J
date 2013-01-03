@@ -57,6 +57,11 @@ import org.sat4j.specs.IVecInt;
  */
 public class Product extends EncodingStrategyAdapter {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     public IConstr addAtMostNonOpt(ISolver solver, IVecInt literals, int k)
             throws ContradictionException {
 

@@ -55,6 +55,11 @@ import org.sat4j.specs.IVecInt;
 public class Commander extends EncodingStrategyAdapter {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * In this encoding, variables are partitioned in groups. Kwon and Klieber
      * claim that the fewest clauses are produced when the size of the groups is
      * 3, thus leading to 3.5 clauses and introducing n/2 variables.

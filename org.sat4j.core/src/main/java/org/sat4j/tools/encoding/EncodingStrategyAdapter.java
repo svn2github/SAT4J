@@ -30,6 +30,8 @@
 
 package org.sat4j.tools.encoding;
 
+import java.io.Serializable;
+
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
@@ -43,7 +45,12 @@ import org.sat4j.specs.IVecInt;
  * @author sroussel
  * @since 2.3.1
  */
-public abstract class EncodingStrategyAdapter {
+public abstract class EncodingStrategyAdapter implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     public IConstr addAtLeast(ISolver solver, IVecInt literals, int degree)
             throws ContradictionException {

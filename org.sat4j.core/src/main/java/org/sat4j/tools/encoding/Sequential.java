@@ -53,6 +53,11 @@ import org.sat4j.specs.IVecInt;
 public class Sequential extends EncodingStrategyAdapter {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
      * This encoding adds (n-1)*k variables (n is the number of variables in the
      * at most constraint and k is the degree of the constraint) and 2nk+n-3k-1
      * clauses.

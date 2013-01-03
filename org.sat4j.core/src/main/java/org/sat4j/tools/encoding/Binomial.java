@@ -52,6 +52,11 @@ import org.sat4j.specs.IVecInt;
  */
 public class Binomial extends EncodingStrategyAdapter {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     @Override
     public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
             throws ContradictionException {
