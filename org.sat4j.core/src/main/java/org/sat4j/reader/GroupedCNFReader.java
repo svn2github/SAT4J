@@ -65,11 +65,7 @@ public class GroupedCNFReader extends DimacsReader {
     protected void readProblemLine() throws IOException, ParseFormatException {
 
         String line = this.scanner.nextLine();
-
-        if (line == null) {
-            throw new ParseFormatException("premature end of file: <p "
-                    + this.formatString + " ...> expected");
-        }
+        assert line != null;
         line = line.trim();
         String[] tokens = line.split("\\s+");
         if (tokens.length < 5 || !"p".equals(tokens[0])
