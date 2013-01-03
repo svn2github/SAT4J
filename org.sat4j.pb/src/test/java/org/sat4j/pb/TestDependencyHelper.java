@@ -268,7 +268,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testCathyExamples() throws ContradictionException,
 			TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		// A <=> B and C and D
 		this.helper.and("C1", "A", "B", "C", "D");
 		// not A or B implies E
@@ -284,7 +284,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testCardinalityConstraints() throws ContradictionException,
 			TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		// A + B + C <= 2
 		this.helper.atMost("C1", 2, "A", "B", "C");
 		this.helper.atLeast("C2", 2, "A", "B", "C");
@@ -298,7 +298,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testPseudoConstraints() throws ContradictionException,
 			TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		// 3A + 2B + C <= 5
 		this.helper.atMost("C1", BigInteger.valueOf(5),
 				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
@@ -315,7 +315,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testPseudoConstraintsNegativeLiterals()
 			throws ContradictionException, TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		// 3A + 2B + C <= 5
 		this.helper.atMost("C1", BigInteger.valueOf(5),
 				WeightedObject.newWO("A", 3), WeightedObject.newWO("B", 2),
@@ -333,7 +333,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testIgnoreContiguousDuplicatedEntry()
 			throws ContradictionException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C1", "A", "-B", "C");
 		this.helper.clause("C2", "A", "-B", "C");
 		this.helper.clause("C3", "A", "-B", "C");
@@ -347,7 +347,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testNonDuplicatedEntryNotCatched()
 			throws ContradictionException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C1", "A", "-B", "C");
 		this.helper.clause("C2", "A", "B", "C");
 		this.helper.clause("C3", "A", "-B", "C");
@@ -360,7 +360,7 @@ public class TestDependencyHelper {
 
 	@Test
 	public void testLimitofHashFunction() throws ContradictionException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C0", "A", "B", "C", "D");
 		this.helper.clause("C1", "A", "-B", "C");
 		this.helper.clause("C2", "D", "-B");
@@ -375,7 +375,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testVariablesIntroducedInNegativeFormFirst()
 			throws ContradictionException, TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C0", "-A", "-B");
 		this.helper.clause("C1", "A", "-B");
 		this.helper.clause("C2", "-A", "B");
@@ -386,7 +386,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testVariablesIntroducedInNegativeFormFirstStoredCorrectly()
 			throws ContradictionException, TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C0", "-A", "-B");
 		this.helper.clause("C1", "A", "-B");
 		this.helper.clause("C3", "A", "B");
@@ -400,7 +400,7 @@ public class TestDependencyHelper {
 	// testcase for SAT-77
 	public void testThatWeCanRetrieveTheTruthValueOfNegatedObjects()
 			throws ContradictionException, TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C0", "-A", "-B");
 		this.helper.clause("C1", "A", "-B");
 		this.helper.clause("C3", "A", "B");
@@ -412,7 +412,7 @@ public class TestDependencyHelper {
 	@Test
 	public void testImpliedObjects() throws ContradictionException,
 			TimeoutException {
-		this.helper.setNegator(StringNegator.instance);
+		this.helper.setNegator(StringNegator.INSTANCE);
 		this.helper.clause("C0", "A", "B", "C");
 		this.helper.clause("C1", "-A", "-B");
 		this.helper.clause("C2", "-A", "-C");
