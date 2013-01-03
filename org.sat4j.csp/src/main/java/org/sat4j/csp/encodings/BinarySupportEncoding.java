@@ -87,10 +87,10 @@ public class BinarySupportEncoding implements Encoding {
             ISolver solver) throws ContradictionException {
         IVecInt clause = new VecInt();
         for (IteratorInt  it =  v.domain().iterator() ; it.hasNext();) {
-            Integer key = new Integer(it.next());
+            int key = it.next();
             clause.clear();
             IVecInt support = supports.get(key);
-            clause.push(-v.translate(key.intValue()));
+            clause.push(-v.translate(key));
             if (support != null) {
                 for (IteratorInt  iterator = support.iterator() ; iterator.hasNext();)
                     clause.push(iterator.next());
