@@ -192,6 +192,7 @@ public interface IOptimizationProblem extends IProblem {
      * the solver finds quickly a solution, or increased if the solver finds
      * regularly new solutions (thus giving more time to the solver each time).
      * 
+     * @since 2.3.3
      */
     void setTimeoutForFindingBetterSolution(int seconds);
 }
