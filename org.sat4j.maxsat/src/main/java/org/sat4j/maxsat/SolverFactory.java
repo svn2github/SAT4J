@@ -35,12 +35,9 @@ import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
-import org.sat4j.minisat.orders.NegativeLiteralSelectionStrategy;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
-import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.core.PBSolverResolution;
 
 public class SolverFactory extends ASolverFactory<IPBSolver> {
 
