@@ -73,8 +73,8 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
     <testTarget>1.5</testTarget>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
     <!-- common distribution locations -->
-    <siteRepositoryId />
-    <siteRepositoryUrl />
+    <siteRepositoryId/>
+    <siteRepositoryUrl/>
     <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
     <sat4j.custom.version>${project.version}.v${maven.build.timestamp}</sat4j.custom.version>
     <next.eclipse.release.date>June, 2010</next.eclipse.release.date>
@@ -100,6 +100,12 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.9.5</version>
       <scope>test</scope>
     </dependency>
  </dependencies>
@@ -274,7 +280,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
             <configuration>
           <tasks>
           <echo>Changing ${bundle-manifest}</echo>
-        <copy file="META-INF/MANIFEST.MF" tofile="${bundle-manifest}" overwrite="true" />
+        <copy file="META-INF/MANIFEST.MF" tofile="${bundle-manifest}" overwrite="true"/>
         <replace file="${bundle-manifest}" token="9.9.9.token" value="${sat4j.custom.version}">
             </replace>
           </tasks>
