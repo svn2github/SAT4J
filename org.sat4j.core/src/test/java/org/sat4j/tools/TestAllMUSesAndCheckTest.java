@@ -53,7 +53,8 @@ public class TestAllMUSesAndCheckTest {
     public void setUp() throws Exception {
         this.allMUSes = new AllMUSes(SolverFactory.instance());
         this.solver = allMUSes.getSolverInstance();
-        this.checkListener = new CheckMUSSolutionListener();
+        this.checkListener = new CheckMUSSolutionListener(
+                SolverFactory.instance());
     }
 
     @Test

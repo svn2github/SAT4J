@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.IVecInt;
 
 public class TestCheckItIsAMUS {
@@ -14,7 +15,7 @@ public class TestCheckItIsAMUS {
 
     @Before
     public void setUp() throws Exception {
-        check = new CheckMUSSolutionListener();
+        check = new CheckMUSSolutionListener(SolverFactory.instance());
     }
 
     @Test
