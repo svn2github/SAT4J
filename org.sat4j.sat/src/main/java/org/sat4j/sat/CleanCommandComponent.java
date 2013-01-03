@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -56,7 +58,7 @@ public class CleanCommandComponent extends CommandComponent {
     private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
     private final static String DELETE_CLAUSES = "Automated clean: ";
 
-    private Hashtable<Integer, JLabel> cleanValuesTable;
+    private Dictionary<Integer, JLabel> cleanValuesTable;
     private final JLabel clean5000Label = new JLabel(CLEAN_5000);
     private final JLabel clean10000Label = new JLabel(CLEAN_10000);
     private final JLabel clean20000Label = new JLabel(CLEAN_20000);
@@ -106,12 +108,12 @@ public class CleanCommandComponent extends CommandComponent {
 
         // Create the label table
         this.cleanValuesTable = new Hashtable<Integer, JLabel>();
-        this.cleanValuesTable.put(new Integer(0), this.clean5000Label);
-        this.cleanValuesTable.put(new Integer(1), this.clean10000Label);
-        this.cleanValuesTable.put(new Integer(2), this.clean20000Label);
-        this.cleanValuesTable.put(new Integer(3), this.clean50000Label);
-        this.cleanValuesTable.put(new Integer(4), this.clean100000Label);
-        this.cleanValuesTable.put(new Integer(5), this.clean500000Label);
+        this.cleanValuesTable.put(0, this.clean5000Label);
+        this.cleanValuesTable.put(1, this.clean10000Label);
+        this.cleanValuesTable.put(2, this.clean20000Label);
+        this.cleanValuesTable.put(3, this.clean50000Label);
+        this.cleanValuesTable.put(4, this.clean100000Label);
+        this.cleanValuesTable.put(5, this.clean500000Label);
         this.cleanSlider.setLabelTable(this.cleanValuesTable);
 
         this.cleanSlider.setPaintLabels(true);

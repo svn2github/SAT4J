@@ -26,6 +26,11 @@ import java.util.Set;
  */
 public class TraceComposite implements ITrace2D {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
     private List<ITrace2D> traces;
 
     public TraceComposite(List<ITrace2D> traces) {

@@ -18,6 +18,11 @@ import javax.swing.JFrame;
 
 public class JChartBasedSolverVisualisation implements SolverVisualisation {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
     private JFrame visuFrame;
 
     private int nVar;

@@ -1,6 +1,8 @@
 package org.sat4j.sat.visu;
 
-public interface SolverVisualisation {
+import java.io.Serializable;
+
+public interface SolverVisualisation extends Serializable {
 
     public void start();
 

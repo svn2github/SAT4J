@@ -11,6 +11,11 @@ import org.sat4j.specs.ILogAble;
 
 public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
     private VisuPreferences visuPreferences;
     private int nVar;
     private Process gnuplotProcess;
@@ -286,7 +291,7 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                                     true, 50));
                 }
                 out.println("unset multiplot");
-                double pauseTime = this.visuPreferences.getRefreshTime() / 1000;
+                int pauseTime = this.visuPreferences.getRefreshTime() / 1000;
                 out.println("pause " + pauseTime);
                 out.println("reread");
                 out.close();

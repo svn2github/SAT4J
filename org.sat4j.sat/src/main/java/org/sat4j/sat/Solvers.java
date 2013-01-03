@@ -2,13 +2,14 @@ package org.sat4j.sat;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.cli.CommandLine;
@@ -17,7 +18,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.sat4j.specs.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;
@@ -33,10 +33,11 @@ import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.orders.RandomWalkDecoratorObjective;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DotSearchTracing;
 
-public class Solvers {
+public final class Solvers {
 
     public final static String ORDERS = "ORDERS";
     public final static String LEARNING = "LEARNING";
@@ -131,7 +132,7 @@ public class Solvers {
         return theSolver;
     }
 
-    private final static <T> T setupObject(String component, Properties pf,
+    private static <T> T setupObject(String component, Properties pf,
             ILogAble logger) {
         try {
             String configline = pf.getProperty(component);
@@ -392,8 +393,8 @@ public class Solvers {
     }
 
     public static void showAvailableRestarts(ILogAble logger) {
-        Vector<String> classNames = new Vector<String>();
-        Vector<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
+        List<String> classNames = new ArrayList<String>();
+        List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
         Set<String> keySet;
         for (String name : resultRTSI) {
             if (!name.contains("Remote")) {
@@ -428,8 +429,8 @@ public class Solvers {
     }
 
     public static void showAvailablePhase(ILogAble logger) {
-        Vector<String> classNames = new Vector<String>();
-        Vector<String> resultRTSI = RTSI.find(PHASE_NAME);
+        List<String> classNames = new ArrayList<String>();
+        List<String> resultRTSI = RTSI.find(PHASE_NAME);
         Set<String> keySet;
         for (String name : resultRTSI) {
             if (!name.contains("Remote")) {
@@ -462,8 +463,8 @@ public class Solvers {
     }
 
     public static void showAvailableLearning(ILogAble logger) {
-        Vector<String> classNames = new Vector<String>();
-        Vector<String> resultRTSI = RTSI.find(LEARNING_NAME);
+        List<String> classNames = new ArrayList<String>();
+        List<String> resultRTSI = RTSI.find(LEARNING_NAME);
         Set<String> keySet;
         for (String name : resultRTSI) {
             try {
@@ -496,8 +497,8 @@ public class Solvers {
     }
 
     public static void showAvailableOrders(ILogAble logger) {
-        Vector<String> classNames = new Vector<String>();
-        Vector<String> resultRTSI = RTSI.find(ORDER_NAME);
+        List<String> classNames = new ArrayList<String>();
+        List<String> resultRTSI = RTSI.find(ORDER_NAME);
         Set<String> keySet = null;
         for (String name : resultRTSI) {
             if (!name.contains("Remote")) {

@@ -38,8 +38,10 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
@@ -61,10 +63,10 @@ import java.util.zip.ZipEntry;
  */
 public class RTSI {
 
-    public static Vector<String> alreadySeenPckges;
+    public static List<String> alreadySeenPckges;
 
     public static Vector<String> find(String tosubclassname, boolean fullname) {
-        alreadySeenPckges = new Vector<String>();
+        alreadySeenPckges = new ArrayList<String>();
         Set<String> v = new HashSet<String>();
         Set<String> tmp;
         try {
