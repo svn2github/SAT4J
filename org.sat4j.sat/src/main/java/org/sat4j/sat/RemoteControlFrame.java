@@ -53,7 +53,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
-import org.sat4j.ILogAble;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.sat.visu.VisuPreferencesFrame;
 
 /**

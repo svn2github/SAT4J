@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
-import org.sat4j.ILogAble;
+import org.sat4j.specs.ILogAble;
 
 public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 

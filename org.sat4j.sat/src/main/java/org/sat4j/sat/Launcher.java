@@ -41,7 +41,7 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
 import org.sat4j.ILauncherMode;
-import org.sat4j.ILogAble;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.maxsat.WeightedMaxSatDecorator;
 import org.sat4j.maxsat.reader.MSInstanceReader;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;

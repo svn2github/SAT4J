@@ -29,7 +29,7 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
-import org.sat4j.ILogAble;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;

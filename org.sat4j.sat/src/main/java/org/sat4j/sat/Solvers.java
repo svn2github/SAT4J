@@ -17,7 +17,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.sat4j.ILogAble;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;

@@ -66,7 +66,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.maxsat.WeightedMaxSatDecorator;
 import org.sat4j.maxsat.reader.MSInstanceReader;
@@ -98,6 +97,7 @@ import org.sat4j.sat.visu.TraceComposite;
 import org.sat4j.sat.visu.VisuPreferences;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
