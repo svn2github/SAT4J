@@ -280,10 +280,9 @@ public final class Solvers {
 
             String filename = cmd.getOptionValue("f");
 
-            int others = 0;
             String[] rargs = cmd.getArgs();
             if (filename == null && rargs.length > 0) {
-                filename = rargs[others++];
+                filename = rargs[0];
             }
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
