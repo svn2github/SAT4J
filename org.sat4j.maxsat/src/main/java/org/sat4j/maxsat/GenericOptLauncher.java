@@ -42,6 +42,7 @@ import org.sat4j.ILauncherMode;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
+import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.ParseFormatException;
@@ -71,6 +72,8 @@ public class GenericOptLauncher extends AbstractLauncher {
     @SuppressWarnings("nls")
     private Options createCLIOptions() {
         Options options = new Options();
+        options.addOption("s", "solver", true,
+                "specifies the name of a PB solver");
         options.addOption("t", "timeout", true,
                 "specifies the timeout (in seconds)");
         options.addOption("p", "parallel", false,
@@ -144,6 +147,10 @@ public class GenericOptLauncher extends AbstractLauncher {
                 if (kind == null) {
                     kind = "maxsat";
                 }
+                String aPBSolverName = cmd.getOptionValue("s");
+                if (aPBSolverName==null) {
+                    aPBSolverName = "Default";
+                }
                 if ("minone".equalsIgnoreCase(kind)) {
                     asolver = new MinOneDecorator(SolverFactory.newDefault());
                 } else if ("mincost".equalsIgnoreCase(kind)
@@ -161,7 +168,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                                 equivalence);
                     } else {
                         this.wmsd = new WeightedMaxSatDecorator(
-                                SolverFactory.newDefault(), equivalence);
+                                org.sat4j.pb.SolverFactory.instance().createSolverByName(aPBSolverName), equivalence);
                     }
                     if (cmd.hasOption("l")) {
                         asolver = new ConstraintRelaxingPseudoOptDecorator(
