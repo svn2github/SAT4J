@@ -31,6 +31,7 @@ public class NegationDecorator<T extends ISolver> extends
 
     public NegationDecorator(T decorated) {
         super(decorated);
+        internalState();
     }
 
     @Override
