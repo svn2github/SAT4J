@@ -79,7 +79,7 @@ import org.sat4j.pb.tools.ManyCorePB;
  * @author leberre
  * @since 2.0
  */
-public class SolverFactory extends ASolverFactory<IPBSolver> {
+public final class SolverFactory extends ASolverFactory<IPBSolver> {
 
 	/**
      * 
