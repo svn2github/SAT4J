@@ -274,7 +274,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public DetailedCommandPanel(String filename, String ramdisk,
             RemoteControlFrame frame) {
 
-        this(filename, ramdisk, null, frame);
+        this(filename, ramdisk, new String[0], frame);
     }
 
     public DetailedCommandPanel(String filename, String ramdisk, String[] args,
