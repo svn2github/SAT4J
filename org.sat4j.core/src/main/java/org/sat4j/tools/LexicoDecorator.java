@@ -92,6 +92,12 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     }
 
     private boolean manageUnsatCase() {
+        if (this.prevfullmodel == null) {
+            // the problem is UNSAT
+            return false;
+        }
+        // an optimal solution has been found
+        // for one criteria
         if (this.currentCriterion < numberOfCriteria() - 1) {
             if (this.prevConstr != null) {
                 super.removeConstr(this.prevConstr);
