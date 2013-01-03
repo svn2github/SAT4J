@@ -81,7 +81,7 @@ public class Glucose21Restarts implements RestartStrategy {
         // ... trailLevel > 1.4 * bufferTrail.average()
         // uses now only integers to avoid rounding issues
         if (stats.conflicts > 10000 && bufferTrail.isFull()
-                && trailLevel * 5 > 7 * bufferTrail.average()) {
+                && trailLevel * 5L > 7L * bufferTrail.average()) {
             bufferLBD.clear();
         }
     }
@@ -99,7 +99,7 @@ public class Glucose21Restarts implements RestartStrategy {
         // ... && bufferLBD.average() * 0.8 > sumOfAllLBD / stats.conflicts
         // uses now only integers to avoid rounding issues
         return bufferLBD.isFull()
-                && bufferLBD.average() * stats.conflicts * 4 > sumOfAllLBD * 5;
+                && bufferLBD.average() * stats.conflicts * 4L > sumOfAllLBD * 5L;
     }
 
     public void onRestart() {
