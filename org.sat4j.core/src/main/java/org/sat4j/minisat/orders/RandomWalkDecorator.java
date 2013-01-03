@@ -30,6 +30,7 @@
 package org.sat4j.minisat.orders;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.Random;
 
 import org.sat4j.minisat.core.ILits;
@@ -39,7 +40,12 @@ import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 /**
  * @since 2.2
  */
-public class RandomWalkDecorator implements IOrder {
+public class RandomWalkDecorator implements IOrder, Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     private final VarOrderHeap decorated;
 
