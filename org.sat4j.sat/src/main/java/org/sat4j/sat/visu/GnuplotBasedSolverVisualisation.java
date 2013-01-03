@@ -336,6 +336,7 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                                     System.out.println(s);
                                 }
                             }
+                            gnuInt.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
