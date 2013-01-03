@@ -1333,6 +1333,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
     }
 
+    /**
+     * Forget a variable in the formula by falsifying both its positive and
+     * negative literals.
+     * 
+     * @param var
+     *            a variable
+     * @return a conflicting constraint resulting from the disparition of those
+     *         literals.
+     */
     private Constr forget(int var) {
         this.voc.forgets(var);
         Constr confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
@@ -1344,6 +1353,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return confl;
     }
 
+    /**
+     * Assume literal p and perform unit propagation
+     * 
+     * @param p
+     *            a literal
+     * @return true if no conflict is reached, false if a conflict is found.
+     */
     private boolean setAndPropagate(int p) {
         return assume(p) && propagate() == null;
     }
@@ -1366,7 +1382,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             setAndPropagate(toInternal(p));
         }
         int d;
-        boolean ok;
+        boolean canBeRemoved;
         int rightlevel;
         int removed = 0;
         for (int i = 0; i < this.decisions.size(); i++) {
@@ -1375,16 +1391,16 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 // d has been propagated
                 this.prime[Math.abs(d)] = d;
             } else if (setAndPropagate(toInternal(-d))) {
-                ok = true;
+                canBeRemoved = true;
                 rightlevel = currentDecisionLevel();
                 for (int j = i + 1; j < this.decisions.size(); j++) {
                     if (!setAndPropagate(toInternal(this.decisions.get(j)))) {
-                        ok = false;
+                        canBeRemoved = false;
                         break;
                     }
                 }
                 cancelUntil(rightlevel);
-                if (ok) {
+                if (canBeRemoved) {
                     // it is not a necessary literal
                     forget(Math.abs(d));
                     removed++;
