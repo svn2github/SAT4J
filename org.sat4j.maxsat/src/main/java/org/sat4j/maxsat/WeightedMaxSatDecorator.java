@@ -76,9 +76,8 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
             this.coefs);
 
     private final Set<Integer> unitClauses = new HashSet<Integer>();
-    
-    private boolean noNewVarForUnitSoftClauses = true;
 
+    private boolean noNewVarForUnitSoftClauses = true;
 
     public WeightedMaxSatDecorator(IPBSolver solver) {
         this(solver, false);
@@ -193,9 +192,9 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                 // check first if the literal is already in the list:
                 int lit = -literals.get(0);
                 int index = this.lits.containsAt(lit);
-                
+
                 this.unitClauses.add(-lit);
-                
+
                 if (index == -1) {
                     // check if the opposite literal is already there
                     index = this.lits.containsAt(-lit);
@@ -236,14 +235,19 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
             this.lits.push(newvar);
             if (this.equivalence) {
                 ConstrGroup constrs = new ConstrGroup();
-                constrs.add(super.addClause(literals));
-                IVecInt clause = new VecInt(2);
-                clause.push(-newvar);
-                for (int i = 0; i < literals.size() - 1; i++) {
-                    clause.push(-literals.get(i));
-                    constrs.add(super.addClause(clause));
-                    clause.pop();
-                }         
+                try {
+                    constrs.add(super.addClause(literals));
+                    IVecInt clause = new VecInt(2);
+                    clause.push(-newvar);
+                    for (int i = 0; i < literals.size() - 1; i++) {
+                        clause.push(-literals.get(i));
+                        constrs.add(super.addClause(clause));
+                        clause.pop();
+                    }
+                } catch (IllegalArgumentException iae) {
+                    // constraint is satisfied
+                    // no need to create eq clauses.
+                }
                 return constrs;
             }
         }
@@ -448,11 +452,13 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     }
 
     /**
-     * Force the solver to find a solution with a specific value
-     * (nice to find all optimal solutions for instance).
+     * Force the solver to find a solution with a specific value (nice to find
+     * all optimal solutions for instance).
      * 
-     * @param forcedValue the expected value of the solution
-     * @throws ContradictionException if that value is trivially not possible.
+     * @param forcedValue
+     *            the expected value of the solution
+     * @throws ContradictionException
+     *             if that value is trivially not possible.
      */
     public void forceObjectiveValueTo(Number forcedValue)
             throws ContradictionException {
@@ -464,14 +470,16 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     }
 
     /**
-     * Returns the set of unit clauses added to the solver. 
+     * Returns the set of unit clauses added to the solver.
      */
-    public Set<Integer> getUnitClauses(){
+    public Set<Integer> getUnitClauses() {
         return this.unitClauses;
     }
 
     /**
-     * Returns true if no new variable should be created when adding a soft unit clause, false otherwise. By default, this is set to true.
+     * Returns true if no new variable should be created when adding a soft unit
+     * clause, false otherwise. By default, this is set to true.
+     * 
      * @return
      */
     public boolean isNoNewVarForUnitSoftClauses() {
@@ -479,12 +487,14 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
     }
 
     /**
-     * Sets whether new variables should be created when adding new clauses. By default, this is set to true. This can be useful when computing all muses.
+     * Sets whether new variables should be created when adding new clauses. By
+     * default, this is set to true. This can be useful when computing all
+     * muses.
+     * 
      * @param noNewVarForUnitSoftClauses
      */
     public void setNoNewVarForUnitSoftClauses(boolean noNewVarForUnitSoftClauses) {
         this.noNewVarForUnitSoftClauses = noNewVarForUnitSoftClauses;
     }
-    
-    
+
 }
