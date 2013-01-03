@@ -34,7 +34,6 @@ import java.io.IOException;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ILauncherMode;
-import org.sat4j.ILogAble;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.core.ObjectiveReducerPBSolverDecorator;
 import org.sat4j.pb.reader.OPBReader2006;
@@ -42,6 +41,7 @@ import org.sat4j.pb.tools.SearchOptimizerListener;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.ConflictDepthTracing;
