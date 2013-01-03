@@ -51,7 +51,7 @@ public class RandomWalkDecorator implements IOrder, Serializable {
 
     private double p;
 
-    private static final Random rand = new Random(123456789);
+    private static final Random RAND = new Random(123456789);
     private ILits voc;
     private int nbRandomWalks;
 
@@ -90,12 +90,12 @@ public class RandomWalkDecorator implements IOrder, Serializable {
     }
 
     public int select() {
-        if (rand.nextDouble() < this.p) {
+        if (RAND.nextDouble() < this.p) {
             int var, lit, max;
 
             while (!this.decorated.heap.empty()) {
                 max = this.decorated.heap.size();
-                var = this.decorated.heap.get(rand.nextInt(max) + 1);
+                var = this.decorated.heap.get(RAND.nextInt(max) + 1);
                 lit = getPhaseSelectionStrategy().select(var);
                 if (this.voc.isUnassigned(lit)) {
                     this.nbRandomWalks++;
