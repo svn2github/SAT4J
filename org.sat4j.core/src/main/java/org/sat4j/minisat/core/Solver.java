@@ -42,13 +42,13 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.sat4j.ILogAble;
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;

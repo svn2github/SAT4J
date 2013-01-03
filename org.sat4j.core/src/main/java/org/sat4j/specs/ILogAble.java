@@ -27,7 +27,7 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j;
+package org.sat4j.specs;
 
 /**
  * Utility interface to catch objects with logging capability (able to log).

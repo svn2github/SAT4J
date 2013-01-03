@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import org.sat4j.core.Vec;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
