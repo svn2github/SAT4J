@@ -162,7 +162,7 @@ public class MinCostDecorator extends PBSolverDecorator implements
 
     public Number calculateObjective() {
         this.objectivevalue = calculateDegree(this.prevmodel);
-        return new Integer(this.objectivevalue);
+        return this.objectivevalue;
     }
 
     private int calculateDegree(int[] prevmodel2) {
