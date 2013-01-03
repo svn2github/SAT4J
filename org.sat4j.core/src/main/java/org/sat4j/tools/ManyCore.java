@@ -34,6 +34,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.ConstrGroup;
@@ -78,7 +79,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     protected final int numberOfSolvers;
     private int winnerId;
     private boolean resultFound;
-    private volatile int remainingSolvers;
+    private AtomicInteger remainingSolvers;
     private volatile int sleepTime;
     private volatile boolean solved;
 
@@ -311,7 +312,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
     public synchronized boolean isSatisfiable(IVecInt assumps,
             boolean globalTimeout) throws TimeoutException {
-        this.remainingSolvers = this.numberOfSolvers;
+        this.remainingSolvers = new AtomicInteger(this.numberOfSolvers);
         this.solved = false;
         for (int i = 0; i < this.numberOfSolvers; i++) {
             new Thread(new RunnableSolver(i, this.solvers.get(i), assumps,
@@ -321,12 +322,12 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
             this.sleepTime = NORMAL_SLEEP;
             do {
                 wait(this.sleepTime);
-            } while (this.remainingSolvers > 0);
+            } while (this.remainingSolvers.get() > 0);
         } catch (InterruptedException e) {
             // will happen when one solver found a solution
         }
         if (!this.solved) {
-            assert this.remainingSolvers == 0;
+            assert this.remainingSolvers.get() == 0;
             throw new TimeoutException();
         }
         return this.resultFound;
@@ -380,7 +381,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
             System.out.println(getLogPrefix() + "And the winner is "
                     + this.availableSolvers[this.winnerId]);
         }
-        this.remainingSolvers--;
+        this.remainingSolvers.getAndDecrement();
     }
 
     public boolean isDBSimplificationAllowed() {
