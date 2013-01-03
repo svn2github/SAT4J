@@ -101,14 +101,8 @@ public class SolverFactory extends ASolverFactory<IPBSolver> {
         return newLight();
     }
 
-    public static IPBSolver newDefault() {
-        PBSolverResolution solver = org.sat4j.pb.SolverFactory.newResolutionGlucoseExpSimp();
-        solver.setRestartStrategy(new NoRestarts());
-        // solver.setOrder(new RandomWalkDecorator(new VarOrderHeap(new NegativeLiteralSelectionStrategy()),0.01));
-        solver.getOrder().setPhaseSelectionStrategy(new NegativeLiteralSelectionStrategy());
-        solver.setSimplifier(Solver.NO_SIMPLIFICATION);
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
-        return solver;
+    public static IPBSolver newDefault() {    
+        return org.sat4j.pb.SolverFactory.newDefault();
     }
 
     public static IPBSolver newLight() {
