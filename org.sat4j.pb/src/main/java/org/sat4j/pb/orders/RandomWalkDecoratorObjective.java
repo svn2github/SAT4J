@@ -33,17 +33,22 @@ import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.pb.ObjectiveFunction;
 
 public class RandomWalkDecoratorObjective extends RandomWalkDecorator implements
-        IOrderObjective {
+		IOrderObjective {
 
-    private final IOrderObjective objorder;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    public RandomWalkDecoratorObjective(VarOrderHeapObjective order, double p) {
-        super(order, p);
-        this.objorder = order;
-    }
+	private final IOrderObjective objorder;
 
-    public void setObjectiveFunction(ObjectiveFunction obj) {
-        this.objorder.setObjectiveFunction(obj);
-    }
+	public RandomWalkDecoratorObjective(VarOrderHeapObjective order, double p) {
+		super(order, p);
+		this.objorder = order;
+	}
+
+	public void setObjectiveFunction(ObjectiveFunction obj) {
+		this.objorder.setObjectiveFunction(obj);
+	}
 
 }
