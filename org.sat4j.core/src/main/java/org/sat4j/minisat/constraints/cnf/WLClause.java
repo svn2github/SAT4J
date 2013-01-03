@@ -134,7 +134,7 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
         // assert voc.isFalsified(mylits[1]);
         // the clause is now either unit or null
         // move back the literals to their initial position
-        System.arraycopy(mylits, 1, mylits, 0, mylits.length - 1);
+        System.arraycopy(mylits, 2, mylits, 1, mylits.length - 2);
         mylits[mylits.length - 1] = previous;
         this.voc.watch(p, this);
         // propagates first watched literal
