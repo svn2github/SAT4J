@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
@@ -49,9 +49,11 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
     // public CheckThatItIsAMUS(List<IVecInt> clauses) {
     // this.clauses = clauses;
     // }
+    private final ASolverFactory<? extends ISolver> factory;
 
-    public CheckMUSSolutionListener() {
+    public CheckMUSSolutionListener(ASolverFactory<? extends ISolver> factory) {
         this.clauses = new ArrayList<IVecInt>();
+        this.factory = factory;
     }
 
     // public void setOriginalClauses(List<IVecInt> clauses) {
@@ -78,7 +80,7 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
     public boolean checkThatItIsAMUS(IVecInt mus) {
         boolean result = false;
 
-        ISolver solver = SolverFactory.newDefault();
+        ISolver solver = factory.defaultSolver();
 
         try {
             for (int i = 0; i < mus.size(); i++) {
@@ -101,7 +103,7 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
 
         try {
             for (int i = 0; i < mus.size(); i++) {
-                solver = SolverFactory.newDefault();
+                solver = factory.defaultSolver();
                 for (int j = 0; j < mus.size(); j++) {
                     if (j != i) {
                         solver.addClause(clauses.get(mus.get(j) - 1));
