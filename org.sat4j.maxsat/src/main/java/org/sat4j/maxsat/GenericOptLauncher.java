@@ -42,8 +42,8 @@ import org.sat4j.ILauncherMode;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
+import org.sat4j.pb.tools.SearchOptimizerListener;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -84,6 +84,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                 "kind of problem: minone, maxsat, etc.");
         options.addOption("i", "incomplete", false,
                 "incomplete mode for maxsat");
+        options.addOption("I", "inner mode", false, "optimize using inner mode");
         options.addOption("c", "clean databases", false,
                 "clean up the database at root level");
         options.addOption("k", "keep Hot", false,
@@ -173,7 +174,11 @@ public class GenericOptLauncher extends AbstractLauncher {
                     if (cmd.hasOption("l")) {
                         asolver = new ConstraintRelaxingPseudoOptDecorator(
                                 this.wmsd);
-                    } else {
+                    } else if (cmd.hasOption("I")){
+                        this.wmsd.setSearchListener(new SearchOptimizerListener(ILauncherMode.DECISION));
+                        setLauncherMode(ILauncherMode.DECISION);
+                        asolver = this.wmsd;
+                    }else{
                         asolver = new PseudoOptDecorator(this.wmsd, false,
                                 !equivalence);
                     }
