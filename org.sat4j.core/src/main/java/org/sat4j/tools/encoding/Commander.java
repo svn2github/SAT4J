@@ -255,4 +255,26 @@ public class Commander extends EncodingStrategyAdapter {
         return constrGroup;
     }
 
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
+        return group;
+    }
+
 }

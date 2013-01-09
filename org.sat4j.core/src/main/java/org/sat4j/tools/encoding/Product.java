@@ -246,18 +246,6 @@ public class Product extends EncodingStrategyAdapter {
     }
 
     @Override
-    public IConstr addAtLeast(ISolver solver, IVecInt literals, int k)
-            throws ContradictionException {
-
-        IVecInt newLits = new VecInt();
-        for (int i = 0; i < literals.size(); i++) {
-            newLits.push(-literals.get(i));
-        }
-
-        return addAtMost(solver, newLits, literals.size() - k);
-    }
-
-    @Override
     public IConstr addExactlyOne(ISolver solver, IVecInt literals)
             throws ContradictionException {
         ConstrGroup group = new ConstrGroup();

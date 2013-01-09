@@ -75,13 +75,17 @@ public class Binary extends EncodingStrategyAdapter {
         final int p = (int) Math.ceil(Math.log(n) / Math.log(2));
         final int k = (int) Math.pow(2, p) - n;
 
+        IVecInt clause = new VecInt();
+        String binary = "";
+
+        if (p == 0) {
+            return group;
+        }
+
         int y[] = new int[p];
         for (int i = 0; i < p; i++) {
             y[i] = solver.nextFreeVarId(true);
         }
-
-        IVecInt clause = new VecInt();
-        String binary = "";
 
         for (int i = 0; i < k; i++) {
             binary = Integer.toBinaryString(i);
@@ -182,4 +186,25 @@ public class Binary extends EncodingStrategyAdapter {
         return group;
     }
 
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
+        return group;
+    }
 }

@@ -68,6 +68,10 @@ public class Sequential extends EncodingStrategyAdapter {
         ConstrGroup group = new ConstrGroup(false);
         final int n = literals.size();
 
+        if (n == 1) {
+            return group;
+        }
+
         int s[][] = new int[n - 1][k];
         for (int j = 0; j < k; j++) {
             for (int i = 0; i < n - 1; i++) {
@@ -113,6 +117,34 @@ public class Sequential extends EncodingStrategyAdapter {
             group.add(solver.addClause(clause));
             clause.clear();
         }
+        return group;
+    }
+
+    @Override
+    public IConstr addAtMostOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        return addAtMost(solver, literals, 1);
+    }
+
+    @Override
+    public IConstr addExactlyOne(ISolver solver, IVecInt literals)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeastOne(solver, literals));
+        group.add(addAtMostOne(solver, literals));
+
+        return group;
+    }
+
+    @Override
+    public IConstr addExactly(ISolver solver, IVecInt literals, int degree)
+            throws ContradictionException {
+        ConstrGroup group = new ConstrGroup();
+
+        group.add(addAtLeast(solver, literals, degree));
+        group.add(addAtMost(solver, literals, degree));
+
         return group;
     }
 

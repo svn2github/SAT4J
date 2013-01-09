@@ -146,13 +146,19 @@ public class Ladder extends EncodingStrategyAdapter {
         ConstrGroup group = new ConstrGroup(false);
         final int n = literals.size();
 
+        IVecInt clause = new VecInt();
+
+        if (n == 1) {
+            clause.push(literals.get(0));
+            group.add(solver.addClause(clause));
+            return group;
+        }
+
         int y[] = new int[n - 1];
 
         for (int i = 0; i < n - 1; i++) {
             y[i] = solver.nextFreeVarId(true);
         }
-
-        IVecInt clause = new VecInt();
 
         // Constraint \bigwedge_{i=1}{n-2} (\neg y_{i+1} \vee y_i)
         for (int i = 1; i <= n - 2; i++) {
