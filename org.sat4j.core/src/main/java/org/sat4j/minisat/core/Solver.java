@@ -1183,7 +1183,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 assert nAssigns() <= this.voc.realnVars();
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
-                    this.slistener.solutionFound(this.model);
+                    this.slistener
+                            .solutionFound((this.fullmodel != null) ? this.fullmodel
+                                    : this.model);
                     if (this.sharedConflict == null) {
                         cancelUntil(this.rootLevel);
                         return Lbool.TRUE;
