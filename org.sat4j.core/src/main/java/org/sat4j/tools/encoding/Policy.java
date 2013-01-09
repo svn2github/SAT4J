@@ -55,12 +55,12 @@ public class Policy extends EncodingStrategyAdapter {
     private final Binomial binomial = new Binomial();
     private final Ladder ladder = new Ladder();
 
-    private EncodingStrategyAdapter atMostOneEncoding = ladder;
-    private EncodingStrategyAdapter atMostKEncoding = seq;
-    private EncodingStrategyAdapter exactlyOneEncoding = ladder;
-    private EncodingStrategyAdapter exactlyKEncoding = seq;
-    private EncodingStrategyAdapter atLeastOneEncoding = ladder;
-    private EncodingStrategyAdapter atLeastKEncoding = seq;
+    private EncodingStrategyAdapter atMostOneEncoding = null;
+    private EncodingStrategyAdapter atMostKEncoding = null;
+    private EncodingStrategyAdapter exactlyOneEncoding = null;
+    private EncodingStrategyAdapter exactlyKEncoding = null;
+    private EncodingStrategyAdapter atLeastOneEncoding = null;
+    private EncodingStrategyAdapter atLeastKEncoding = null;
 
     private EncodingStrategyAdapter getAdapterFromEncodingName(
             EncodingStrategy encodingName) {
