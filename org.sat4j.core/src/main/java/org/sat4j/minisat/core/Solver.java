@@ -2069,6 +2069,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * @see org.sat4j.minisat.core.ICDCL#setOrder(org.sat4j.minisat.core.IOrder)
      */
     public void setOrder(IOrder h) {
+        if (this.order != null) {
+            this.order.setLits(null);
+            this.order.setPhaseSelectionStrategy(null);
+        }
         this.order = h;
         this.order.setLits(this.voc);
     }
