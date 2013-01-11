@@ -153,7 +153,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                     aPBSolverName = "Default";
                 }
                 if ("minone".equalsIgnoreCase(kind)) {
-                    asolver = new MinOneDecorator(SolverFactory.newDefault());
+                    asolver = new MinOneDecorator(org.sat4j.minisat.SolverFactory.newDefault());
                 } else if ("mincost".equalsIgnoreCase(kind)
                         || args[problemindex].endsWith(".p2cnf")) {
                     asolver = new MinCostDecorator(SolverFactory.newDefault());
@@ -180,7 +180,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                         asolver = this.wmsd;
                     }else{
                         asolver = new PseudoOptDecorator(this.wmsd, false,
-                                !equivalence);
+                                false);
                     }
                 }
                 if (cmd.hasOption("i")) {
