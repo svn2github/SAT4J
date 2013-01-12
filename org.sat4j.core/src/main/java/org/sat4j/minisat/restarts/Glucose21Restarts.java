@@ -65,6 +65,9 @@ public class Glucose21Restarts implements RestartStrategy {
     }
 
     public void reset() {
+        sumOfAllLBD = 0;
+        bufferLBD.clear();
+        bufferTrail.clear();
     }
 
     public void newConflict() {
@@ -88,6 +91,7 @@ public class Glucose21Restarts implements RestartStrategy {
 
     public void init(SearchParams params) {
         this.params = params;
+        reset();
     }
 
     public long nextRestartNumberOfConflict() {

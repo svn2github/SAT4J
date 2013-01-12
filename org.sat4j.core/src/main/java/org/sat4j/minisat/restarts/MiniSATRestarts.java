@@ -55,6 +55,7 @@ public final class MiniSATRestarts implements RestartStrategy {
     public void init(SearchParams theParams) {
         this.params = theParams;
         this.nofConflicts = theParams.getInitConflictBound();
+        this.conflictcount = 0;
     }
 
     public long nextRestartNumberOfConflict() {

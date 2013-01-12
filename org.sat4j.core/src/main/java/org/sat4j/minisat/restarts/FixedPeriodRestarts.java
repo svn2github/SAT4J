@@ -53,7 +53,7 @@ public class FixedPeriodRestarts implements RestartStrategy {
     }
 
     public void init(SearchParams params) {
-        conflictCount = 0;
+        this.conflictCount = 0;
     }
 
     @Deprecated
@@ -62,13 +62,11 @@ public class FixedPeriodRestarts implements RestartStrategy {
     }
 
     public boolean shouldRestart() {
-        if (conflictCount < period)
-            return false;
-        conflictCount = 0;
-        return true;
+        return conflictCount >= period;
     }
 
     public void onRestart() {
+        this.conflictCount = 0;
     }
 
     public void onBackjumpToRootLevel() {
