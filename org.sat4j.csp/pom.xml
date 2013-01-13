@@ -10,7 +10,7 @@
   <dependencies>
     <dependency>
       <groupId>org.sat4j</groupId>
-      <artifactId>org.sat4j.core</artifactId>
+      <artifactId>org.sat4j.pb</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
