@@ -91,6 +91,8 @@ public class GenericOptLauncher extends AbstractLauncher {
                 "Keep heuristics accross calls to the SAT solver");
         options.addOption("e", "equivalence", false,
                 "Use an equivalence instead of an implication for the selector variables");
+        options.addOption("pi", "prime-implicant", false,
+                "Use prime implicants instead of models for evaluating the objective function");
         options.addOption("n", "no solution line", false,
                 "Do not display a solution line (useful if the solution is large)");
         options.addOption("l", "lower bounding", false,
@@ -180,7 +182,7 @@ public class GenericOptLauncher extends AbstractLauncher {
                         asolver = this.wmsd;
                     }else{
                         asolver = new PseudoOptDecorator(this.wmsd, false,
-                                false);
+                                cmd.hasOption("pi"));
                     }
                 }
                 if (cmd.hasOption("i")) {
