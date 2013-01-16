@@ -42,18 +42,6 @@ public abstract class SearchListenerAdapter<S extends ISolverService>
 	 */
     private static final long serialVersionUID = 1L;
 
-    // private Collection<IVisualizationTool> visuTools = new
-    // ArrayList<IVisualizationTool>();
-    //
-    // public SearchListenerAdapter(IVisualizationTool... visuTools) {
-    // this.visuTools = new ArrayList<IVisualizationTool>();
-    // this.visuTools.addAll(Arrays.asList(visuTools));
-    // }
-    //
-    // public SearchListenerAdapter(Collection<IVisualizationTool> visuTools) {
-    // this.visuTools = visuTools;
-    // }
-
     public void init(S solverService) {
     }
 
