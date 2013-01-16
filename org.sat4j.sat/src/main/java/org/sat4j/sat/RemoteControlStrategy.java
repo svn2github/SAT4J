@@ -29,14 +29,15 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
-import org.sat4j.specs.ILogAble;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.restarts.NoRestarts;
+import org.sat4j.specs.ILogAble;
 
 /**
  * 
@@ -65,7 +66,7 @@ public class RemoteControlStrategy implements RestartStrategy,
 
     private boolean useTelecomStrategyAsLearnedConstraintsDeletionStrategy;
 
-    private ICDCL solver;
+    private ICDCL<?> solver;
 
     public RemoteControlStrategy(ILogAble log) {
         this.hasClickedOnClean = false;
@@ -148,10 +149,11 @@ public class RemoteControlStrategy implements RestartStrategy,
         this.logger = logger;
     }
 
-    public void init(SearchParams params) {
-        this.restart.init(params);
+    public void init(SearchParams params, SolverStats stats) {
+        this.restart.init(params, stats);
     }
 
+    @Deprecated
     public long nextRestartNumberOfConflict() {
         return this.restart.nextRestartNumberOfConflict();
     }
@@ -175,14 +177,18 @@ public class RemoteControlStrategy implements RestartStrategy,
     }
 
     public SearchParams getSearchParams() {
-        return this.restart.getSearchParams();
+        return this.solver.getSearchParams();
+    }
+    
+    public SolverStats getSolverStats() {
+        return this.solver.getStats();
     }
 
-    public ICDCL getSolver() {
+    public ICDCL<?> getSolver() {
         return this.solver;
     }
 
-    public void setSolver(ICDCL solver) {
+    public void setSolver(ICDCL<?> solver) {
         this.solver = solver;
     }
 
@@ -195,61 +201,11 @@ public class RemoteControlStrategy implements RestartStrategy,
         this.conflictNumber++;
         if (this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
             if (this.conflictNumber > this.nbClausesAtWhichWeShouldClean) {
-                // logger.log("we should clean now because " + conflictNumber +
-                // " > " + nbClausesAtWhichWeShouldClean);
-                // hasClickedOnClean=true;
                 this.conflictNumber = 0;
                 this.solver.setNeedToReduceDB(true);
             }
         }
     }
-
-    // public void init() {
-    //
-    // }
-    //
-    // public ConflictTimer getTimer() {
-    // return this;
-    // }
-
-    // public void reduce(IVec<Constr> learnts) {
-    // //System.out.println("je suis l� ??");
-    // //assert hasClickedOnClean;
-    //
-    // int i, j;
-    // for (i = j = 0; i < learnts.size() / 2; i++) {
-    // Constr c = learnts.get(i);
-    // if (c.locked() || c.size() == 2) {
-    // learnts.set(j++, learnts.get(i));
-    // } else {
-    // c.remove(getSolver());
-    // }
-    // }
-    // for (; i < learnts.size(); i++) {
-    // learnts.set(j++, learnts.get(i));
-    // }
-    // if (true) {
-    //			logger.log("cleaning " + (learnts.size() - j) //$NON-NLS-1$
-    //					+ " clauses out of " + learnts.size()); //$NON-NLS-1$ //$NON-NLS-2$
-    // }
-    // learnts.shrinkTo(j);
-    //
-    // hasClickedOnClean=false;
-    // }
-
-    // public void onConflict(Constr outLearnt) {
-    // conflictNumber++;
-    // if(conflictNumber>nbClausesAtWhichWeShouldClean){
-    // //hasClickedOnClean=true;
-    // conflictNumber=0;
-    // solver.setNeedToReduceDB(true);
-    // }
-    // }
-    //
-    // public void onConflictAnalysis(Constr reason) {
-    // // TODO Auto-generated method stub
-    //
-    // }
 
     public void updateVar(int p) {
         this.phaseSelectionStrategy.updateVar(p);

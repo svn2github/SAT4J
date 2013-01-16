@@ -422,7 +422,8 @@ public final class Solvers {
                     e.printStackTrace();
                 }
             }
-        }
+        }        
+        classNames.add("Glucose21Restarts");
         logger.log("Available restart strategies (" + Solvers.RESTARTS + "): "
                 + classNames);
     }

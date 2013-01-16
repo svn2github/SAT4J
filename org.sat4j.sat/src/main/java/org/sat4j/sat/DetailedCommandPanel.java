@@ -76,6 +76,7 @@ import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SimplificationType;
+import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.orders.RandomWalkDecorator;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
@@ -1369,8 +1370,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return this.telecomStrategy.getSearchParams();
     }
 
-    public void init(SearchParams params) {
-        this.telecomStrategy.init(params);
+    public SolverStats getSolverStats() {
+        return this.telecomStrategy.getSolverStats();
+    }
+    
+    public void init(SearchParams params, SolverStats stats) {
+        this.telecomStrategy.init(params, stats);
         log("Init restart with params");
     }
 

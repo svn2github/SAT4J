@@ -20,6 +20,7 @@ import javax.swing.border.TitledBorder;
 
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.NoRestarts;
 
@@ -219,7 +220,7 @@ public class RestartCommandComponent extends CommandComponent {
 
         RestartStrategy restart = new NoRestarts();
         SearchParams params = this.controller.getSearchParams();
-
+        SolverStats stats = this.controller.getSolverStats();
         if (choix.equals("LubyRestarts")) {
             boolean factorChanged = false;
             int factor = LubyRestarts.DEFAULT_LUBY_FACTOR;
@@ -242,7 +243,7 @@ public class RestartCommandComponent extends CommandComponent {
             shouldInit = isNotSameRestart || factorChanged;
 
             if (shouldInit) {
-                this.controller.init(params);
+                this.controller.init(params,stats);
             }
 
         } else {
@@ -251,7 +252,7 @@ public class RestartCommandComponent extends CommandComponent {
                         RESTART_PATH + "." + choix).newInstance();
                 assert restart != null;
                 this.controller.setRestartStrategy(restart);
-                this.controller.init(params);
+                this.controller.init(params,stats);
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();

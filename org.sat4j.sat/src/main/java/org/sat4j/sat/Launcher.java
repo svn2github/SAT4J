@@ -293,7 +293,9 @@ public class Launcher extends AbstractLauncher implements ILogAble {
                 others++;
             }
 
-            getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+            if (asolver!=null) {
+                getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
+            }
             return asolver;
         } catch (ParseException e1) {
             HelpFormatter helpf = new HelpFormatter();
