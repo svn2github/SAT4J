@@ -284,14 +284,16 @@ public final class Solvers {
             if (filename == null && rargs.length > 0) {
                 filename = rargs[0];
             }
+            String unzipped = uncompressed(filename);
+            
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
                 if (isModeOptimization) {
-                    if (filename != null && filename.endsWith("cnf"))
+                    if (unzipped != null && unzipped.endsWith("cnf"))
                         framework = "maxsat";
                     else
                         framework = "pb";
-                } else if (filename != null && filename.endsWith("opb")) {
+                } else if (unzipped != null && unzipped.endsWith("opb")) {
                     framework = "pb";
                 } else {
                     framework = "minisat";
@@ -391,6 +393,13 @@ public final class Solvers {
         return null;
     }
 
+    public static String uncompressed(String filename) {
+        if (filename.endsWith(".bz2")||filename.endsWith(".gz")) {
+            return filename.substring(0,filename.lastIndexOf("."));
+        }  
+        return filename;       
+    }
+    
     public static void showAvailableRestarts(ILogAble logger) {
         List<String> classNames = new ArrayList<String>();
         List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);

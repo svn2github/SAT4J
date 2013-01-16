@@ -165,19 +165,14 @@ public class Launcher extends AbstractLauncher implements ILogAble {
             }
 
             if (filename != null) {
-                String unzipped;
-                if (filename.endsWith(".bz2")||filename.endsWith("gz")) {
-                    unzipped = filename.substring(0,filename.lastIndexOf("."));
-                } else {
-                    unzipped = filename;
-                }
+                String unzipped = Solvers.uncompressed(filename);
                 
                 if (unzipped.endsWith(".cnf") && isModeOptimization) {
                     typeProbleme = ProblemType.CNF_MAXSAT;
                 } else if (unzipped.endsWith(".wcnf")) {
                     typeProbleme = ProblemType.WCNF_MAXSAT;
                     isModeOptimization = true;
-                } else if (unzipped.endsWith("opb")) {
+                } else if (unzipped.endsWith(".opb")) {
                     if (isModeOptimization) {
                         typeProbleme = ProblemType.PB_OPT;
                     } else {
