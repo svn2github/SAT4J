@@ -32,6 +32,7 @@ package org.sat4j.minisat.restarts;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SolverStats;
 
 /**
  * Luby series
@@ -106,7 +107,7 @@ public final class LubyRestarts implements RestartStrategy {
         return this.factor;
     }
 
-    public void init(SearchParams params) {
+    public void init(SearchParams params, SolverStats stats) {
         this.un = 1;
         this.vn = 1;
         this.bound = luby() * this.factor;
@@ -141,10 +142,6 @@ public final class LubyRestarts implements RestartStrategy {
 
     public void newConflict() {
         this.conflictcount++;
-    }
-
-    public SearchParams getSearchParams() {
-        return new SearchParams();
     }
 
     public void newLearnedClause(Constr learned, int trailLevel) {

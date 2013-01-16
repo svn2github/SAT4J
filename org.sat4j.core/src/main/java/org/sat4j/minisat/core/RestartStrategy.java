@@ -44,9 +44,12 @@ public interface RestartStrategy extends Serializable, ConflictTimer {
      * 
      * @param params
      *            the user's search parameters.
+     * @param stats
+     *            some statistics about the search (number of conflicts,
+     *            restarts, etc).
      * 
      */
-    void init(SearchParams params);
+    void init(SearchParams params, SolverStats stats);
 
     /**
      * Ask for the next restart in number of conflicts. Deprecated since 2.3.2
@@ -77,7 +80,15 @@ public interface RestartStrategy extends Serializable, ConflictTimer {
      */
     void onBackjumpToRootLevel();
 
-    SearchParams getSearchParams();
-
+    /**
+     * Callback method called when a new clause is learned by the solver, after
+     * conflict analysis.
+     * 
+     * @param learned
+     *            the new clause
+     * @param trailLevel
+     *            the number of literals assigned when the conflict occurred.
+     * @since 2.3.3
+     */
     void newLearnedClause(Constr learned, int trailLevel);
 }

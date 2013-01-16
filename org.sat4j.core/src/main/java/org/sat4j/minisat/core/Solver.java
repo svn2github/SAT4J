@@ -311,6 +311,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.params = sp;
     }
 
+    public SearchParams getSearchParams() {
+        return this.params;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -1964,7 +1968,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             }
         }
         if (!global || firstTimeGlobal) {
-            this.restarter.init(this.params);
+            this.restarter.init(this.params, this.stats);
             this.timebegin = System.currentTimeMillis();
         }
         this.needToReduceDB = false;

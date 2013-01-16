@@ -32,6 +32,7 @@ package org.sat4j.minisat.restarts;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SolverStats;
 
 /**
  * Disable restarts in the solver.
@@ -43,8 +44,7 @@ public final class NoRestarts implements RestartStrategy {
 
     private static final long serialVersionUID = 1L;
 
-    public void init(SearchParams params) {
-        // nothing to do
+    public void init(SearchParams params, SolverStats stats) {
     }
 
     public long nextRestartNumberOfConflict() {
@@ -76,10 +76,7 @@ public final class NoRestarts implements RestartStrategy {
         return "NoRestarts";
     }
 
-    public SearchParams getSearchParams() {
-        return new SearchParams();
-    }
-
     public void newLearnedClause(Constr learned, int trailLevel) {
     }
+
 }

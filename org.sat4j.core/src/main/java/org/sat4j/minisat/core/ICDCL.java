@@ -73,6 +73,10 @@ public interface ICDCL<D extends DataStructureFactory> extends ISolver,
 
     void setSearchParams(SearchParams sp);
 
+    SearchParams getSearchParams();
+
+    SolverStats getStats();
+
     void setRestartStrategy(RestartStrategy restarter);
 
     RestartStrategy getRestartStrategy();

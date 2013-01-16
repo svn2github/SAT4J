@@ -56,13 +56,7 @@ public class Glucose21Restarts implements RestartStrategy {
 
     private long sumOfAllLBD = 0;
 
-    private final SolverStats stats;
-
-    private SearchParams params;
-
-    public Glucose21Restarts(SolverStats stats) {
-        this.stats = stats;
-    }
+    private SolverStats stats;
 
     public void reset() {
         sumOfAllLBD = 0;
@@ -89,8 +83,8 @@ public class Glucose21Restarts implements RestartStrategy {
         }
     }
 
-    public void init(SearchParams params) {
-        this.params = params;
+    public void init(SearchParams params, SolverStats stats) {
+        this.stats = stats;
         reset();
     }
 
@@ -111,10 +105,6 @@ public class Glucose21Restarts implements RestartStrategy {
     }
 
     public void onBackjumpToRootLevel() {
-    }
-
-    public SearchParams getSearchParams() {
-        return params;
     }
 
     @Override

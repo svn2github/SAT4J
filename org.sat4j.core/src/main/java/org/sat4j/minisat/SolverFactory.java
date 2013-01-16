@@ -142,7 +142,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
 
     public static ICDCL<DataStructureFactory> newGlucose21() {
         Solver<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
-        solver.setRestartStrategy(new Glucose21Restarts(solver.getStats()));
+        solver.setRestartStrategy(new Glucose21Restarts());
         solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
         return solver;
     }

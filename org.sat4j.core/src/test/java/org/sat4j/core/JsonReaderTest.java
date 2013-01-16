@@ -25,12 +25,12 @@ import org.sat4j.specs.TimeoutException;
 public class JsonReaderTest {
 
     private ISolver solver;
-    private JSONReader reader;
+    private JSONReader<ISolver> reader;
 
     @Before
     public void setUp() throws Exception {
         solver = mock(ISolver.class);
-        reader = new JSONReader(solver);
+        reader = new JSONReader<ISolver>(solver);
     }
 
     @Test

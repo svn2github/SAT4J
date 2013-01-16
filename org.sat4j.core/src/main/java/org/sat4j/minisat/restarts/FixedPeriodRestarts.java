@@ -32,6 +32,7 @@ package org.sat4j.minisat.restarts;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
+import org.sat4j.minisat.core.SolverStats;
 
 public class FixedPeriodRestarts implements RestartStrategy {
 
@@ -52,7 +53,7 @@ public class FixedPeriodRestarts implements RestartStrategy {
         conflictCount++;
     }
 
-    public void init(SearchParams params) {
+    public void init(SearchParams params, SolverStats stats) {
         this.conflictCount = 0;
     }
 
@@ -70,10 +71,6 @@ public class FixedPeriodRestarts implements RestartStrategy {
     }
 
     public void onBackjumpToRootLevel() {
-    }
-
-    public SearchParams getSearchParams() {
-        return null;
     }
 
     public void newLearnedClause(Constr learned, int trailLevel) {
