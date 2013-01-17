@@ -394,8 +394,8 @@ public final class Solvers {
     }
 
     public static String uncompressed(String filename) {
-        if (filename != null && filename.endsWith(".bz2")
-                || filename.endsWith(".gz")) {
+        if (filename != null && (filename.endsWith(".bz2")
+                || filename.endsWith(".gz"))) {
             return filename.substring(0, filename.lastIndexOf('.'));
         }
         return filename;
