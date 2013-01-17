@@ -292,7 +292,12 @@ public class VisuPreferences {
                     + " | wc -l\")!=0 && system(\"head " + restartFileName
                     + " | wc -l\")!=0){";
         }
-        String s = "plot ";
+
+        StringBuffer buf = new StringBuffer();
+
+        buf.append("plot");
+
+        // String s = "plot ";
         String restartString;
         String tailString = "";
         if (this.slidingWindows && slidingThisWindows) {
@@ -306,7 +311,7 @@ public class VisuPreferences {
             restartString = "\"" + tailString + restartFileName + "\""
                     + " with impulses lc rgb \"#" + rgb
                     + "\" title \"Restart\" axis x1y2";
-            s += restartString + "";
+            buf.append(restartString + "");
         }
         for (int i = 0; i < dataFilesArray.length; i++) {
             String rgb = Integer.toHexString(dataFilesArray[i].getColor()
@@ -320,9 +325,10 @@ public class VisuPreferences {
             if (dataFilesArray[i].getStyle().length() > 0) {
                 style = " with " + dataFilesArray[i].getStyle();
             }
-            s += comma + "\"" + tailString + dataFilesArray[i].getFilename()
-                    + "\"" + style + " lc rgb \"#" + rgb + "\" title \""
-                    + dataFilesArray[i].getTitle() + "\" axis x1y1";
+            buf.append(comma + "\"" + tailString
+                    + dataFilesArray[i].getFilename() + "\"" + style
+                    + " lc rgb \"#" + rgb + "\" title \""
+                    + dataFilesArray[i].getTitle() + "\" axis x1y1");
         }
 
         for (int i = 0; i < functions.length; i++) {
@@ -332,11 +338,11 @@ public class VisuPreferences {
             if (dataFilesArray.length > 0 || useRestart || i != 0) {
                 comma = ",";
             }
-            s += comma + functions[i].getFunctionExpression() + " lc rgb \"#"
-                    + rgb + "\" title \"" + functions[i].getFunctionLegend()
-                    + "\" axis x1y1";
+            buf.append(comma + functions[i].getFunctionExpression()
+                    + " lc rgb \"#" + rgb + "\" title \""
+                    + functions[i].getFunctionLegend() + "\" axis x1y1");
         }
-        result += s + "}";
+        result += buf.toString() + "}";
         return result;
     }
 
@@ -362,7 +368,11 @@ public class VisuPreferences {
     public String generatePlotLineOnDifferenteAxes(GnuplotDataFile[] dfArray1,
             GnuplotDataFile[] dfArray2, GnuplotFunction[] functions,
             boolean slidingThisWindows, int nbLines) {
-        String s = "plot ";
+
+        StringBuffer buf = new StringBuffer();
+
+        buf.append("plot ");
+
         String tailString = "";
         if (this.slidingWindows && slidingThisWindows) {
             tailString = "< tail -" + nbLines + " ";
@@ -380,9 +390,9 @@ public class VisuPreferences {
             if (dfArray2[i].getStyle().length() > 0) {
                 style = " with " + dfArray2[i].getStyle();
             }
-            s += comma + "\"" + tailString + dfArray2[i].getFilename() + "\""
-                    + style + " lc rgb \"#" + rgb + "\" title \""
-                    + dfArray2[i].getTitle() + "\" axis x1y2";
+            buf.append(comma + "\"" + tailString + dfArray2[i].getFilename()
+                    + "\"" + style + " lc rgb \"#" + rgb + "\" title \""
+                    + dfArray2[i].getTitle() + "\" axis x1y2");
         }
 
         for (int i = 0; i < dfArray1.length; i++) {
@@ -396,9 +406,9 @@ public class VisuPreferences {
             if (dfArray1[i].getStyle().length() > 0) {
                 style = " with " + dfArray1[i].getStyle();
             }
-            s += comma + "\"" + tailString + dfArray1[i].getFilename() + "\""
-                    + style + " lc rgb \"#" + rgb + "\" title \""
-                    + dfArray1[i].getTitle() + "\" axis x1y1";
+            buf.append(comma + "\"" + tailString + dfArray1[i].getFilename()
+                    + "\"" + style + " lc rgb \"#" + rgb + "\" title \""
+                    + dfArray1[i].getTitle() + "\" axis x1y1");
         }
 
         for (int i = 0; i < functions.length; i++) {
@@ -408,12 +418,12 @@ public class VisuPreferences {
             if (dfArray1.length > 0 || dfArray2.length > 0 || i != 0) {
                 comma = ",";
             }
-            s += comma + functions[i].getFunctionExpression() + " lc rgb \"#"
-                    + rgb + "\" title \"" + functions[i].getFunctionLegend()
-                    + "\" axis x1y1";
+            buf.append(comma + functions[i].getFunctionExpression()
+                    + " lc rgb \"#" + rgb + "\" title \""
+                    + functions[i].getFunctionLegend() + "\" axis x1y1");
         }
 
-        return s;
+        return buf.toString();
     }
 
     // public String generatePlotLineOnDifferenteAxes(GnuplotDataFile df1,
