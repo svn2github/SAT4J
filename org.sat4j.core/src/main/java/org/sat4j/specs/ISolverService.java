@@ -159,4 +159,11 @@ public interface ISolverService {
      * @return true if the constraint was successfully removed.
      */
     boolean removeSubsumedConstr(IConstr c);
+
+    /**
+     * 
+     * @return the string used to prefix the output.
+     * @since 2.3.3
+     */
+    String getLogPrefix();
 }
