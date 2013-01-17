@@ -52,6 +52,8 @@ public class SearchOptimizerListener extends
 
     private final SolutionFoundListener sfl;
 
+    private BigInteger currentValue;
+
     public SearchOptimizerListener(SolutionFoundListener sfl) {
         this.sfl = sfl;
     }
@@ -60,24 +62,29 @@ public class SearchOptimizerListener extends
     public void init(IPBSolverService solverService) {
         this.obj = solverService.getObjectiveFunction();
         this.solverService = solverService;
+        this.currentValue = null;
     }
 
     @Override
     public void solutionFound(int[] model) {
         if (obj != null) {
-            BigInteger modelDegree = obj.calculateDegree(model);
+            this.currentValue = obj.calculateDegree(model);
             System.out.println(ILauncherMode.CURRENT_OPTIMUM_VALUE_PREFIX
-                    + modelDegree);
-            this.solverService.addAtMostOnTheFly(obj.getVars(),
-                    obj.getCoeffs(), modelDegree.subtract(BigInteger.ONE));
+                    + this.currentValue);
+            this.solverService
+                    .addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
+                            this.currentValue.subtract(BigInteger.ONE));
         }
         sfl.onSolutionFound(model);
     }
 
     @Override
     public void end(Lbool result) {
-        if (result == Lbool.FALSE)
+        if (result == Lbool.FALSE) {
             sfl.onUnsatTermination();
+            System.out.println(solverService.getLogPrefix()
+                    + "objective function=" + currentValue);
+        }
     }
 
     @Override
