@@ -285,7 +285,7 @@ public final class Solvers {
                 filename = rargs[0];
             }
             String unzipped = uncompressed(filename);
-            
+
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
                 if (isModeOptimization) {
@@ -394,12 +394,13 @@ public final class Solvers {
     }
 
     public static String uncompressed(String filename) {
-        if (filename.endsWith(".bz2")||filename.endsWith(".gz")) {
-            return filename.substring(0,filename.lastIndexOf("."));
-        }  
-        return filename;       
+        if (filename != null && filename.endsWith(".bz2")
+                || filename.endsWith(".gz")) {
+            return filename.substring(0, filename.lastIndexOf('.'));
+        }
+        return filename;
     }
-    
+
     public static void showAvailableRestarts(ILogAble logger) {
         List<String> classNames = new ArrayList<String>();
         List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_NAME);
@@ -431,7 +432,7 @@ public final class Solvers {
                     e.printStackTrace();
                 }
             }
-        }        
+        }
         classNames.add("Glucose21Restarts");
         logger.log("Available restart strategies (" + Solvers.RESTARTS + "): "
                 + classNames);
