@@ -4,7 +4,6 @@ import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.IErrorBarPolicy;
 import info.monitorenter.gui.chart.IPointPainter;
 import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.ITrace2D.DistancePoint;
 import info.monitorenter.gui.chart.ITracePainter;
 import info.monitorenter.gui.chart.ITracePoint2D;
 
@@ -30,7 +29,7 @@ public class TraceComposite implements ITrace2D {
      * 
      */
     private static final long serialVersionUID = 1L;
-    
+
     private List<ITrace2D> traces;
 
     public TraceComposite(List<ITrace2D> traces) {
@@ -65,8 +64,10 @@ public class TraceComposite implements ITrace2D {
     }
 
     public int compareTo(ITrace2D o) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (this.equals(o))
+            return 0;
+        else
+            return -1;
     }
 
     public void addComputingTrace(ITrace2D arg0) {
