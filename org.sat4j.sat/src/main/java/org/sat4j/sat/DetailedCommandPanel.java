@@ -294,7 +294,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.console = new JTextArea();
 
-        this.commandLines = args;
+        this.commandLines = args.clone();
         if (args.length > 0) {
             this.solver = Solvers.configureSolver(args, this);
             this.optimizationMode = Solvers.containsOptValue(args);
@@ -1110,6 +1110,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                     DetailedCommandPanel.this.stringWriter = new StringWriter();
                     if (DetailedCommandPanel.this.problem.isSatisfiable()) {
                         log("Satisfiable !");
+
                         if (DetailedCommandPanel.this.problem instanceof OptToPBSATAdapter) {
                             log(((OptToPBSATAdapter) DetailedCommandPanel.this.problem)
                                     .getCurrentObjectiveValue() + "");
