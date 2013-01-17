@@ -2517,7 +2517,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         addConstr(this.sharedConflict);
         IVecInt reason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        while (!reason.contains(trail.last())) {
+        while (!trail.isEmpty() && !reason.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
@@ -2550,7 +2550,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         // for falsifying that constraint
         IVecInt reason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        while (!reason.contains(trail.last())) {
+        while (!trail.isEmpty() && !reason.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
