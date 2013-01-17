@@ -181,7 +181,7 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         IVecInt outReason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail,
                 outReason);
-        while (!outReason.contains(trail.last())) {
+        while (!trail.isEmpty() && !outReason.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
