@@ -53,8 +53,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 
-import org.sat4j.specs.ILogAble;
 import org.sat4j.sat.visu.VisuPreferencesFrame;
+import org.sat4j.specs.ILogAble;
 
 /**
  * 
@@ -102,7 +102,7 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         this.filename = filename;
         this.ramdisk = ramdisk;
         // this.solver=solver;
-        this.args = args;
+        this.args = args.clone();
         initLookAndFeel();
 
         createAndShowGUI();
