@@ -63,9 +63,13 @@ import java.util.zip.ZipEntry;
  */
 public class RTSI {
 
-    public static List<String> alreadySeenPckges;
+    private static List<String> alreadySeenPckges;
 
-    public static Vector<String> find(String tosubclassname, boolean fullname) {
+    private RTSI() {
+        // prevent creation of an instance of that class
+    }
+    
+    public static List<String> find(String tosubclassname, boolean fullname) {
         alreadySeenPckges = new ArrayList<String>();
         Set<String> v = new HashSet<String>();
         Set<String> tmp;
@@ -83,7 +87,7 @@ public class RTSI {
         } catch (ClassNotFoundException ex) {
             System.err.println("Class " + tosubclassname + " not found!");
         }
-        return new Vector<String>(v);
+        return new ArrayList<String>(v);
     }
 
     public static Set<String> find(String pckname, String tosubclassname,
@@ -108,7 +112,7 @@ public class RTSI {
         }
     }
 
-    public static Vector<String> find(String tosubclassname) {
+    public static List<String> find(String tosubclassname) {
         return find(tosubclassname, false);
     }
 
@@ -131,7 +135,7 @@ public class RTSI {
         // Code from JWhich
         // ======
         // Translate the package name into an absolute path
-        String name = new String(pckgname);
+        String name = pckgname;
         if (!name.startsWith("/")) {
             name = "/" + name;
         }
@@ -216,16 +220,11 @@ public class RTSI {
                         classname = classname.replace('/', '.');
                         try {
                             // Try to create an instance of the object
-                            // Object o =
-                            // Class.forName(classname).newInstance();
-                            // if (tosubclass.isInstance(o)) {
-
                             Class<?> o = Class.forName(classname);
 
                             if (tosubclass.isAssignableFrom(o)
                                     && !o.isInterface()
                                     && !Modifier.isAbstract(o.getModifiers())) {
-                                // System.out.println(classname.substring(classname.lastIndexOf('.')+1));
                                 if (fullname) {
                                     v.add(classname);
                                 } else {
