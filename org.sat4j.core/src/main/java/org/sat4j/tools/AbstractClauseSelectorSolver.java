@@ -44,7 +44,7 @@ public abstract class AbstractClauseSelectorSolver<T extends ISolver> extends
     private int lastCreatedVar;
     private boolean pooledVarId = false;
 
-    private static interface SelectorState {
+    private interface SelectorState {
 
         boolean isSatisfiable(boolean global) throws TimeoutException;
 

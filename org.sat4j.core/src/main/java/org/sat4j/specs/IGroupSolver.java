@@ -47,7 +47,6 @@ public interface IGroupSolver extends ISolver {
      * @return on object representing that clause in the solver.
      * @throws ContradictionException
      */
-    public abstract IConstr addClause(IVecInt literals, int desc)
-            throws ContradictionException;
+    IConstr addClause(IVecInt literals, int desc) throws ContradictionException;
 
 }

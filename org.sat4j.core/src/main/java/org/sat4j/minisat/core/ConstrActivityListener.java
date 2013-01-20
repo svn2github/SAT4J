@@ -30,13 +30,12 @@
 package org.sat4j.minisat.core;
 
 /**
- * @author leberre To change the template for this generated type comment go to
- *         Window - Preferences - Java - Code Generation - Code and Comments
+ * @author leberre
  */
 interface ConstrActivityListener {
 
     /**
      * @param outclause
      */
-    public abstract void claBumpActivity(Constr confl);
+    void claBumpActivity(Constr confl);
 }

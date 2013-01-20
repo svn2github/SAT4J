@@ -45,5 +45,5 @@ public interface VarActivityListener extends Serializable {
      * @param p
      *            a literal (v<<1 or v<<1^1)
      */
-    public abstract void varBumpActivity(int p);
+    void varBumpActivity(int p);
 }

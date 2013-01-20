@@ -44,7 +44,7 @@ public interface UnitPropagationListener {
      * @return true if the assignment looks possible, false if a conflict
      *         occurs.
      */
-    public abstract boolean enqueue(int p);
+    boolean enqueue(int p);
 
     /**
      * satisfies a literal
@@ -56,7 +56,7 @@ public interface UnitPropagationListener {
      * @return true if the assignment looks possible, false if a conflict
      *         occurs.
      */
-    public abstract boolean enqueue(int p, Constr from);
+    boolean enqueue(int p, Constr from);
 
     /**
      * Unset a unit clause. The effect of such method is to unset all truth

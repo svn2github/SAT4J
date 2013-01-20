@@ -55,11 +55,11 @@ import org.sat4j.tools.SolutionFoundListener;
  */
 public interface ILauncherMode extends SolutionFoundListener {
 
-    public static final String SOLUTION_PREFIX = "v "; //$NON-NLS-1$
+    static final String SOLUTION_PREFIX = "v "; //$NON-NLS-1$
 
-    public static final String ANSWER_PREFIX = "s "; //$NON-NLS-1$
+    static final String ANSWER_PREFIX = "s "; //$NON-NLS-1$
 
-    public static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o ";
+    static final String CURRENT_OPTIMUM_VALUE_PREFIX = "o ";
 
     /**
      * Output of the launcher when the solver stops
