@@ -51,7 +51,7 @@ import org.sat4j.specs.IVec;
  */
 public interface ILits {
 
-    static int UNDEFINED = -1;
+    int UNDEFINED = -1;
 
     void init(int nvar);
 
