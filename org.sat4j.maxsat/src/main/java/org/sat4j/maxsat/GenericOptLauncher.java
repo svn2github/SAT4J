@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.maxsat;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
@@ -219,7 +218,7 @@ public class GenericOptLauncher extends AbstractLauncher {
 
     @Override
     protected IProblem readProblem(String problemname)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         super.readProblem(problemname);
         return solver;
