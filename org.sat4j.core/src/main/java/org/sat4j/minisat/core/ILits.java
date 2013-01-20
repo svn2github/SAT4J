@@ -53,7 +53,7 @@ public interface ILits {
 
     public static int UNDEFINED = -1;
 
-    public abstract void init(int nvar);
+    void init(int nvar);
 
     /**
      * Translates a Dimacs literal into an internal representation literal.
@@ -62,7 +62,7 @@ public interface ILits {
      *            the Dimacs literal (a non null integer).
      * @return the literal in the internal representation.
      */
-    public abstract int getFromPool(int x);
+    int getFromPool(int x);
 
     /**
      * Returns true iff the variable is used in the set of constraints.
@@ -146,14 +146,14 @@ public interface ILits {
      * @return true iff the truth value of that literal is due to a unit
      *         propagation or a decision.
      */
-    public abstract boolean isImplied(int lit);
+    boolean isImplied(int lit);
 
     /**
      * to obtain the max id of the variable
      * 
      * @return the maximum number of variables in the formula
      */
-    public abstract int nVars();
+    int nVars();
 
     /**
      * to obtain the real number of variables appearing in the formula
@@ -249,7 +249,7 @@ public interface ILits {
      *            a literal in internal representation.
      * @return the list of all the constraints that watch the negation of lit
      */
-    public abstract IVec<Propagatable> watches(int lit);
+    IVec<Propagatable> watches(int lit);
 
     /**
      * Returns a textual representation of the truth value of that literal.
