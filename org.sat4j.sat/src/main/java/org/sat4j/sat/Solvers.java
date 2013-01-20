@@ -70,7 +70,7 @@ public final class Solvers {
     private Solvers() {
     }
 
-    protected final static ICDCL configureFromString(String solverconfig,
+    protected static ICDCL configureFromString(String solverconfig,
             ICDCL theSolver, ILogAble logger) {
         assert theSolver != null;
         // AFAIK, there is no easy way to solve parameterized problems
