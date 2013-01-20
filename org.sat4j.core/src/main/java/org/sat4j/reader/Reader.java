@@ -56,8 +56,6 @@ public abstract class Reader {
      *            extension may by used to detect which type of benchmarks it is
      *            (SAT, OPB, MAXSAT, etc).
      * @return the problem to solve (an ISolver in fact).
-     * @throws FileNotFoundException
-     *             if the file cannot be found.
      * @throws ParseFormatException
      *             if an error occurs during parsing.
      * @throws IOException
@@ -66,7 +64,7 @@ public abstract class Reader {
      *             if the problem is found trivially inconsistent.
      */
     public IProblem parseInstance(final String filename)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         InputStream in = null;
         try {

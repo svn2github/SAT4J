@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.reader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
@@ -95,7 +94,7 @@ public class InstanceReader extends Reader {
 
     @Override
     public IProblem parseInstance(String filename)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         String fname;
         String prefix = "";
