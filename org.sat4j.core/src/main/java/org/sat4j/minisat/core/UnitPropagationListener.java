@@ -66,5 +66,5 @@ public interface UnitPropagationListener {
      * @param p
      * @since 2.1
      */
-    public void unset(int p);
+    void unset(int p);
 }
