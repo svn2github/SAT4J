@@ -295,7 +295,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
 
     @Override
     protected IProblem readProblem(String problemname)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         ISolver theSolver = (ISolver) super.readProblem(problemname);
         if (this.k > 0) {
