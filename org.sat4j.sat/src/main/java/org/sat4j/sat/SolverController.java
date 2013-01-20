@@ -38,34 +38,34 @@ import org.sat4j.minisat.core.SolverStats;
 
 public interface SolverController {
 
-    public int getNVar();
+    int getNVar();
 
-    public void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy);
+    void setPhaseSelectionStrategy(IPhaseSelectionStrategy strategy);
 
-    public void setLearnedDeletionStrategyTypeToSolver(
+    void setLearnedDeletionStrategyTypeToSolver(
             LearnedConstraintsEvaluationType type);
 
-    public void shouldRestartNow();
+    void shouldRestartNow();
 
-    public RestartStrategy getRestartStrategy();
+    RestartStrategy getRestartStrategy();
 
-    public void setRestartStrategy(RestartStrategy strategy);
+    void setRestartStrategy(RestartStrategy strategy);
 
-    public SearchParams getSearchParams();
-    
-    public SolverStats getSolverStats();
+    SearchParams getSearchParams();
 
-    public void init(SearchParams params,SolverStats stats);
+    SolverStats getSolverStats();
 
-    public void setNbClausesAtWhichWeShouldClean(int nbConflicts);
+    void init(SearchParams params, SolverStats stats);
 
-    public void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy();
+    void setNbClausesAtWhichWeShouldClean(int nbConflicts);
 
-    public void shouldCleanNow();
+    void setUseTelecomStrategyAsLearnedConstraintsDeletionStrategy();
 
-    public void setRandomWalkProba(double proba);
+    void shouldCleanNow();
 
-    public void setSimplifier(SimplificationType type);
+    void setRandomWalkProba(double proba);
 
-    public void setKeepSolverHot(boolean keepHot);
+    void setSimplifier(SimplificationType type);
+
+    void setKeepSolverHot(boolean keepHot);
 }
