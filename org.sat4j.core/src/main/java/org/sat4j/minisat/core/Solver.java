@@ -1391,15 +1391,21 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         boolean canBeRemoved;
         int rightlevel;
         int removed = 0;
+        int propagated = 0;
+        int tested = 0;
+        int l2propagation = 0;
         for (int i = 0; i < this.decisions.size(); i++) {
             d = this.decisions.get(i);
             if (this.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
                 this.prime[Math.abs(d)] = d;
+                propagated++;
             } else if (setAndPropagate(toInternal(-d))) {
                 canBeRemoved = true;
+                tested++;
                 rightlevel = currentDecisionLevel();
                 for (int j = i + 1; j < this.decisions.size(); j++) {
+                    l2propagation++;
                     if (!setAndPropagate(toInternal(this.decisions.get(j)))) {
                         canBeRemoved = false;
                         break;
@@ -1429,6 +1435,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             if (i != 0) {
                 implicant[index++] = i;
             }
+        }
+        if (isVerbose()) {
+            System.out.println("%s prime implicant computation statistics");
+            System.out
+                    .printf("%s implied: %d, decision: %d (removed %d, tested %d, propagated %d), l2 propagation:%d\n",
+                            getLogPrefix(), implied.size(), decisions.size(),
+                            removed, tested, propagated, l2propagation);
         }
         return implicant;
     }
