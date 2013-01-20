@@ -163,8 +163,6 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      * @param problemname
      *            the fully qualified name of the problem.
      * @return a reference to the problem to solve
-     * @throws FileNotFoundException
-     *             if the file is not found
      * @throws ParseFormatException
      *             if the problem is not expressed using the right format
      * @throws IOException
@@ -173,7 +171,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      *             if the problem is found trivially unsat
      */
     protected IProblem readProblem(String problemname)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         log("solving " + problemname); //$NON-NLS-1$
         log("reading problem ... "); //$NON-NLS-1$
