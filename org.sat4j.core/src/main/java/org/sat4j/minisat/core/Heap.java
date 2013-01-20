@@ -47,19 +47,19 @@ public final class Heap implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    private static final int left(int i) {
+    private static int left(int i) {
         return i << 1;
     }
 
-    private static final int right(int i) {
+    private static int right(int i) {
         return i << 1 ^ 1;
     }
 
-    private static final int parent(int i) {
+    private static int parent(int i) {
         return i >> 1;
     }
 
-    private final boolean comp(int a, int b) {
+    private boolean comp(int a, int b) {
         return this.activity[a] > this.activity[b];
     }
 
@@ -69,7 +69,7 @@ public final class Heap implements Serializable {
 
     private final double[] activity;
 
-    final void percolateUp(int i) {
+    void percolateUp(int i) {
         int x = this.heap.get(i);
         while (parent(i) != 0 && comp(x, this.heap.get(parent(i)))) {
             this.heap.set(i, this.heap.get(parent(i)));
@@ -80,7 +80,7 @@ public final class Heap implements Serializable {
         this.indices.set(x, i);
     }
 
-    final void percolateDown(int i) {
+    void percolateDown(int i) {
         int x = this.heap.get(i);
         while (left(i) < this.heap.size()) {
             int child = right(i) < this.heap.size()
