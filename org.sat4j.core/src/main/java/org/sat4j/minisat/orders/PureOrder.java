@@ -52,7 +52,7 @@ public final class PureOrder extends VarOrderHeap {
         setPeriod(p);
     }
 
-    public final void setPeriod(int p) {
+    public void setPeriod(int p) {
         this.period = p;
         this.cpt = this.period;
     }

@@ -1056,7 +1056,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return null;
     }
 
-    private final Constr reduceClausesForFalsifiedLiteral(int p) {
+    private Constr reduceClausesForFalsifiedLiteral(int p) {
         // p is the literal to propagate
         // Moved original MiniSAT code to dsfactory to avoid
         // watches manipulation in counter Based clauses for instance.

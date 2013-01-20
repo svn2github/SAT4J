@@ -73,7 +73,7 @@ public final class Lits implements Serializable, ILits {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public final void init(int nvar) {
+    public void init(int nvar) {
         if (nvar < this.pool.length) {
             return;
         }
@@ -178,7 +178,7 @@ public final class Lits implements Serializable, ILits {
         return this.falsified[lit ^ 1];
     }
 
-    public final boolean isFalsified(int lit) {
+    public boolean isFalsified(int lit) {
         return this.falsified[lit];
     }
 

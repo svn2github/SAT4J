@@ -99,7 +99,7 @@ public final class LubyRestarts implements RestartStrategy {
         setFactor(factor);
     }
 
-    public final void setFactor(int factor) {
+    public void setFactor(int factor) {
         this.factor = factor;
     }
 
