@@ -38,28 +38,28 @@ import java.io.Serializable;
  */
 public interface IVecInt extends Serializable {
 
-    public abstract int size();
+    int size();
 
     /**
      * Remove the latest nofelems elements from the vector
      * 
      * @param nofelems
      */
-    public abstract void shrink(int nofelems);
+    void shrink(int nofelems);
 
-    public abstract void shrinkTo(int newsize);
+    void shrinkTo(int newsize);
 
     /**
      * depile le dernier element du vecteur. Si le vecteur est vide, ne fait
      * rien.
      */
-    public abstract IVecInt pop();
+    IVecInt pop();
 
-    public abstract void growTo(int newsize, final int pad);
+    void growTo(int newsize, final int pad);
 
-    public abstract void ensure(int nsize);
+    void ensure(int nsize);
 
-    public abstract IVecInt push(int elem);
+    IVecInt push(int elem);
 
     /**
      * Push the element in the Vector without verifying if there is room for it.
@@ -71,22 +71,22 @@ public interface IVecInt extends Serializable {
 
     int unsafeGet(int eleem);
 
-    public abstract void clear();
+    void clear();
 
-    public abstract int last();
+    int last();
 
-    public abstract int get(int i);
+    int get(int i);
 
-    public abstract void set(int i, int o);
+    void set(int i, int o);
 
-    public abstract boolean contains(int e);
+    boolean contains(int e);
 
     /**
      * @since 2.2
      * @param e
      * @return
      */
-    public abstract int indexOf(int e);
+    int indexOf(int e);
 
     /**
      * returns the index of the first occurrence of e, else -1.
@@ -95,7 +95,7 @@ public interface IVecInt extends Serializable {
      *            an integer
      * @return the index i such that get(i)==e, else -1.
      */
-    public abstract int containsAt(int e);
+    int containsAt(int e);
 
     /**
      * returns the index of the first occurence of e occurring after from
@@ -107,7 +107,7 @@ public interface IVecInt extends Serializable {
      *            the index to start from (excluded).
      * @return the index i such that i>from and get(i)==e, else -1
      */
-    public abstract int containsAt(int e, int from);
+    int containsAt(int e, int from);
 
     /**
      * C'est operations devraient se faire en temps constant. Ce n'est pas le
@@ -115,23 +115,23 @@ public interface IVecInt extends Serializable {
      * 
      * @param copy
      */
-    public abstract void copyTo(IVecInt copy);
+    void copyTo(IVecInt copy);
 
     /**
      * @param is
      */
-    public abstract void copyTo(int[] is);
+    void copyTo(int[] is);
 
     /*
      * Copie un vecteur dans un autre (en vidant le premier), en temps constant.
      */
-    public abstract void moveTo(IVecInt dest);
+    void moveTo(IVecInt dest);
 
-    public abstract void moveTo(int sourceStartingIndex, int[] dest);
+    void moveTo(int sourceStartingIndex, int[] dest);
 
-    public abstract void moveTo2(IVecInt dest);
+    void moveTo2(IVecInt dest);
 
-    public abstract void moveTo(int[] dest);
+    void moveTo(int[] dest);
 
     /**
      * Move elements inside the vector. The content of the method is equivalent
@@ -152,7 +152,7 @@ public interface IVecInt extends Serializable {
      * @param elem
      *            the element to put first in the vector.
      */
-    public abstract void insertFirst(final int elem);
+    void insertFirst(final int elem);
 
     /**
      * Enleve un element qui se trouve dans le vecteur!!!
@@ -160,7 +160,7 @@ public interface IVecInt extends Serializable {
      * @param elem
      *            un element du vecteur
      */
-    public abstract void remove(int elem);
+    void remove(int elem);
 
     /**
      * Delete the ith element of the vector. The latest element of the vector
@@ -171,11 +171,11 @@ public interface IVecInt extends Serializable {
      * @return the former ith element of the vector that is now removed from the
      *         vector
      */
-    public abstract int delete(int i);
+    int delete(int i);
 
-    public abstract void sort();
+    void sort();
 
-    public abstract void sortUnique();
+    void sortUnique();
 
     /**
      * To know if a vector is empty
@@ -206,5 +206,5 @@ public interface IVecInt extends Serializable {
      * @author sroussel
      * @since 2.3.1
      */
-    public IVecInt[] subset(int k);
+    IVecInt[] subset(int k);
 }
