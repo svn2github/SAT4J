@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.pb;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.sat4j.AbstractLauncher;
@@ -199,7 +198,7 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
 
     @Override
     protected IProblem readProblem(String problemname)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         IProblem problem = super.readProblem(problemname);
         ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
