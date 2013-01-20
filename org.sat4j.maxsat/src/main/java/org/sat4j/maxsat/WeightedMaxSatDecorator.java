@@ -235,8 +235,12 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
             this.lits.push(newvar);
             if (this.equivalence) {
                 ConstrGroup constrs = new ConstrGroup();
-                try {
-                    constrs.add(super.addClause(literals));
+                IConstr constr = super.addClause(literals);
+                if (constr==null&&isVerbose()) {
+                    System.out.println(getLogPrefix()+" solft constraint "+literals+"("+weight+") is ignored");
+                }
+                if (constr!=null) {
+                    constrs.add(constr);
                     IVecInt clause = new VecInt(2);
                     clause.push(-newvar);
                     for (int i = 0; i < literals.size() - 1; i++) {
@@ -244,14 +248,15 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
                         constrs.add(super.addClause(clause));
                         clause.pop();
                     }
-                } catch (IllegalArgumentException iae) {
-                    // constraint is satisfied
-                    // no need to create eq clauses.
-                }
+                } 
                 return constrs;
             }
         }
-        return super.addClause(literals);
+        IConstr constr = super.addClause(literals);
+        if (constr==null&&isVerbose()) {
+            System.out.println(getLogPrefix()+" hard constraint "+literals+"("+weight+") is ignored");
+        }
+        return constr;
     }
 
     /**
