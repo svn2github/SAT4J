@@ -133,11 +133,9 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
             throws TimeoutException {
 
         boolean result = super.admitABetterSolution(assumps);
-        if (!result) {
-            if (this.prevConstr != null) {
-                super.removeConstr(this.prevConstr);
-                this.prevConstr = null;
-            }
+        if (!result && this.prevConstr != null) {
+            super.removeConstr(this.prevConstr);
+            this.prevConstr = null;
         }
         return result;
     }
