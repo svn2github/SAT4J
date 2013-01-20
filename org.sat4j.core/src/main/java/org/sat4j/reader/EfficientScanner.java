@@ -51,9 +51,9 @@ public class EfficientScanner implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /* taille du buffer */
-    private final static int TAILLE_BUF = 16384;
+    private static final int TAILLE_BUF = 16384;
 
-    private transient final BufferedInputStream in;
+    private final transient BufferedInputStream in;
 
     private static final char EOF = (char) -1;
 

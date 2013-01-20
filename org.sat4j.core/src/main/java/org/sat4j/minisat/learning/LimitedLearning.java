@@ -79,7 +79,7 @@ public abstract class LimitedLearning<D extends DataStructureFactory>
         }
     }
 
-    abstract protected boolean learningCondition(Constr constr);
+    protected abstract boolean learningCondition(Constr constr);
 
     public void init() {
         this.all.init();

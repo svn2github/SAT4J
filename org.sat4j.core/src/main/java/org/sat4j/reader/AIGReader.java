@@ -46,9 +46,9 @@ import org.sat4j.tools.GateTranslator;
  */
 public class AIGReader extends Reader {
 
-    private final static int FALSE = 0;
+    private static final int FALSE = 0;
 
-    private final static int TRUE = 1;
+    private static final int TRUE = 1;
 
     private final GateTranslator solver;
 
