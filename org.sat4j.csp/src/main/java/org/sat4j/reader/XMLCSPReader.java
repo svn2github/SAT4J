@@ -18,7 +18,6 @@
 *******************************************************************************/
 package org.sat4j.reader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,7 +57,7 @@ public class XMLCSPReader extends org.sat4j.reader.Reader {
      */
     @Override
     public IProblem parseInstance(String filename)
-            throws FileNotFoundException, ParseFormatException, IOException,
+            throws ParseFormatException, IOException,
             ContradictionException {
         try {
             CspXmlParser.parse(cspreader, filename);
