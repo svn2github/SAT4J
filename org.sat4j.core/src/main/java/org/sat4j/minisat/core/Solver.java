@@ -1437,7 +1437,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             }
         }
         if (isVerbose()) {
-            System.out.println("%s prime implicant computation statistics");
+            System.out.printf("%s prime implicant computation statistics\n",
+                    getLogPrefix());
             System.out
                     .printf("%s implied: %d, decision: %d (removed %d, tested %d, propagated %d), l2 propagation:%d\n",
                             getLogPrefix(), implied.size(), decisions.size(),
