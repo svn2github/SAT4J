@@ -13,14 +13,14 @@ public class TracePainterPlus extends ATracePainter {
     private static final long serialVersionUID = 1L;
 
     /** The implementation for rendering the point as a plus. */
-    private final PointPainterPlus m_pointPainter;
+    private final PointPainterPlus mPointPainter;
 
     /**
      * Creates an instance with a default plus size of 4.
      * <p>
      */
     public TracePainterPlus() {
-        this.m_pointPainter = new PointPainterPlus(6);
+        this.mPointPainter = new PointPainterPlus(6);
     }
 
     /**
@@ -30,7 +30,7 @@ public class TracePainterPlus extends ATracePainter {
      *            the plus size in pixel to use.
      */
     public TracePainterPlus(final int plusSize) {
-        this.m_pointPainter = new PointPainterPlus(plusSize);
+        this.mPointPainter = new PointPainterPlus(plusSize);
     }
 
     /**
@@ -43,11 +43,11 @@ public class TracePainterPlus extends ATracePainter {
             int previousY = this.getPreviousY();
             if (previousX != Integer.MIN_VALUE
                     || previousY != Integer.MIN_VALUE) {
-                this.m_pointPainter.paintPoint(previousX, previousY, 0, 0, g2d,
+                this.mPointPainter.paintPoint(previousX, previousY, 0, 0, g2d,
                         this.getPreviousPoint());
             }
         }
-        this.m_pointPainter.endPaintIteration(g2d);
+        this.mPointPainter.endPaintIteration(g2d);
     }
 
     /**
@@ -65,11 +65,11 @@ public class TracePainterPlus extends ATracePainter {
             return false;
         }
         final TracePainterPlus other = (TracePainterPlus) obj;
-        if (this.m_pointPainter == null) {
-            if (other.m_pointPainter != null) {
+        if (this.mPointPainter == null) {
+            if (other.mPointPainter != null) {
                 return false;
             }
-        } else if (!this.m_pointPainter.equals(other.m_pointPainter)) {
+        } else if (!this.mPointPainter.equals(other.mPointPainter)) {
             return false;
         }
         return true;
@@ -82,7 +82,7 @@ public class TracePainterPlus extends ATracePainter {
      * @return the size of the plus to paint in pixel.
      */
     public int getPlusSize() {
-        return this.m_pointPainter.getPlusSize();
+        return this.mPointPainter.getPlusSize();
     }
 
     /**
@@ -94,7 +94,7 @@ public class TracePainterPlus extends ATracePainter {
         int result = super.hashCode();
         result = prime
                 * result
-                + (this.m_pointPainter == null ? 0 : this.m_pointPainter
+                + (this.mPointPainter == null ? 0 : this.mPointPainter
                         .hashCode());
         return result;
     }
@@ -109,7 +109,7 @@ public class TracePainterPlus extends ATracePainter {
             final int nextX, final int nextY, final Graphics g,
             final ITracePoint2D original) {
         super.paintPoint(absoluteX, absoluteY, nextX, nextY, g, original);
-        this.m_pointPainter.paintPoint(absoluteX, absoluteY, nextX, nextY, g,
+        this.mPointPainter.paintPoint(absoluteX, absoluteY, nextX, nextY, g,
                 original);
     }
 
@@ -121,7 +121,7 @@ public class TracePainterPlus extends ATracePainter {
      *            the diameter of the plus to paint in pixel.
      */
     public void setPlusSize(final int plusSize) {
-        this.m_pointPainter.setPlusSize(plusSize);
+        this.mPointPainter.setPlusSize(plusSize);
     }
 
     /**
@@ -130,6 +130,6 @@ public class TracePainterPlus extends ATracePainter {
     @Override
     public void startPaintIteration(final Graphics g2d) {
         super.startPaintIteration(g2d);
-        this.m_pointPainter.startPaintIteration(g2d);
+        this.mPointPainter.startPaintIteration(g2d);
     }
 }
