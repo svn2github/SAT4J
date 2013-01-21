@@ -58,6 +58,7 @@ import org.sat4j.specs.IVecInt;
  * 
  * @param <S>
  *            the type of solver to feed.
+ * @since 2.3.3
  */
 public class JSONReader<S extends ISolver> extends Reader {
 
