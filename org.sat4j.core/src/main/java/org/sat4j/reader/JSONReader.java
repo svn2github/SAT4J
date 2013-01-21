@@ -23,32 +23,32 @@ public class JSONReader<S extends ISolver> extends Reader {
 
     public static final String CARD = "(\\[" + CLAUSE + ",'[=<>]=?',-?\\d+\\])";
 
-    public final String CONSTRAINT;
+    public final String constraint;
 
-    public final String FORMULA;
+    public final String formula;
 
-    private static final Pattern clause = Pattern.compile(CLAUSE);
+    private static final Pattern clausePattern = Pattern.compile(CLAUSE);
 
-    private static final Pattern card = Pattern.compile(CARD);
+    private static final Pattern cardPattern = Pattern.compile(CARD);
 
-    private final Pattern constraint;
+    private final Pattern constraintPattern;
 
     public JSONReader(S solver) {
         this.solver = solver;
-        CONSTRAINT = constraintPattern();
-        FORMULA = "^\\[(" + CONSTRAINT + "(," + CONSTRAINT + ")*)?\\]$";
-        constraint = Pattern.compile(CONSTRAINT);
+        constraint = constraintRegexp();
+        formula = "^\\[(" + constraint + "(," + constraint + ")*)?\\]$";
+        constraintPattern = Pattern.compile(constraint);
     }
 
-    protected String constraintPattern() {
+    protected String constraintRegexp() {
         return "(" + CLAUSE + "|" + CARD + ")";
     }
 
     private void handleConstraint(String constraint)
             throws ParseFormatException, ContradictionException {
-        if (card.matcher(constraint).matches()) {
+        if (cardPattern.matcher(constraint).matches()) {
             handleCard(constraint);
-        } else if (clause.matcher(constraint).matches()) {
+        } else if (clausePattern.matcher(constraint).matches()) {
             handleClause(constraint);
         } else {
             handleNotHandled(constraint);
@@ -82,7 +82,7 @@ public class JSONReader<S extends ISolver> extends Reader {
             ContradictionException {
         String trimmed = constraint.trim();
         trimmed = trimmed.substring(1, trimmed.length() - 1);
-        Matcher matcher = clause.matcher(trimmed);
+        Matcher matcher = clausePattern.matcher(trimmed);
         if (matcher.find()) {
             IVecInt clause = getLiterals(matcher.group());
             trimmed = matcher.replaceFirst("");
@@ -119,10 +119,10 @@ public class JSONReader<S extends ISolver> extends Reader {
     public ISolver parseString(String json) throws ParseFormatException,
             ContradictionException {
         String trimmed = json.trim();
-        if (!trimmed.matches(FORMULA)) {
+        if (!trimmed.matches(formula)) {
             throw new ParseFormatException("Wrong input " + json);
         }
-        Matcher matcher = constraint.matcher(trimmed);
+        Matcher matcher = constraintPattern.matcher(trimmed);
         while (matcher.find()) {
             handleConstraint(matcher.group());
         }
