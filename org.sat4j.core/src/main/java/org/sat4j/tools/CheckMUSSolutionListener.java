@@ -133,10 +133,11 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
     }
 
     public void onSolutionFound(IVecInt solution) {
-        if (checkThatItIsAMUS(solution))
+        if (checkThatItIsAMUS(solution)) {
             System.out.println(solution + " is a MUS");
-        else
+        } else {
             System.out.println(solution + " is not a MUS \n" + explain);
+        }
     }
 
     public void onUnsatTermination() {
