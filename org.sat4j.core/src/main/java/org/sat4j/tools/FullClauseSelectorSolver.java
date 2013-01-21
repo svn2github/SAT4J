@@ -60,7 +60,6 @@ public class FullClauseSelectorSolver<T extends ISolver> extends
             throws ContradictionException {
         if (this.skipDuplicatedEntries) {
             if (literals.equals(this.lastClause)) {
-                // System.err.println("c Duplicated entry: " + literals);
                 return null;
             }
             this.lastClause.clear();

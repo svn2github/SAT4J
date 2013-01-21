@@ -37,7 +37,6 @@ public class HeuristicsTracing extends SearchListenerAdapter<ISolverService> {
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-    // private final String filename;
     private ISolverService solverService;
     private final IVisualizationTool visuTool;
 

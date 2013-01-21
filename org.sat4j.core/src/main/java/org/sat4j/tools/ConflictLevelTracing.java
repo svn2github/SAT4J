@@ -42,11 +42,9 @@ public class ConflictLevelTracing extends SearchListenerAdapter<ISolverService> 
 	 * 
 	 */
     private int counter;
-    // private int maxDlevel;
 
     private static final long serialVersionUID = 1L;
 
-    // private final String filename;
     private int nVar;
     private int maxDLevel;
 

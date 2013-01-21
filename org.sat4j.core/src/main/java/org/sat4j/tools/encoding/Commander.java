@@ -148,7 +148,6 @@ public class Commander extends EncodingStrategyAdapter {
     public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
             throws ContradictionException {
         return super.addAtMost(solver, literals, degree);
-        // return addAtMost(solver, literals, degree, degree * 2);
     }
 
     @Override

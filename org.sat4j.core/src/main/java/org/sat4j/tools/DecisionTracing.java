@@ -49,10 +49,6 @@ public class DecisionTracing extends SearchListenerAdapter<ISolverService> {
     private final IVisualizationTool restartVisu;
     private final IVisualizationTool cleanVisu;
 
-    // private final String filename;
-    // private PrintStream outPos;
-    // private PrintStream outNeg;
-    // private PrintStream outRestart;
     private int nVar;
 
     public DecisionTracing(IVisualizationTool positiveVisu,

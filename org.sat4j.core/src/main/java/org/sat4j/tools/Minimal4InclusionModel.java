@@ -66,7 +66,7 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
      */
     public Minimal4InclusionModel(ISolver solver, IVecInt p,
             SolutionFoundListener modelListener) {
-        super(solver,p,modelListener);
+        super(solver, p, modelListener);
     }
 
     /**
@@ -94,11 +94,9 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
      */
     @Override
     public int[] model() {
-        // int[] prevfullmodel = null;
         int[] prevmodel = null;
         IVecInt vec = new VecInt();
         IVecInt cube = new VecInt();
-        // backUp();
         try {
             do {
                 prevfullmodel = super.modelWithInternalVariables();

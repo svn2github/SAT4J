@@ -93,12 +93,6 @@ public class Product extends EncodingStrategyAdapter {
         int[][] a = new int[n][k + 1];
         int[] result;
 
-        // This affectation does not work !!
-        // for (int i = 0; i < n; i++) {
-        // result = decompositionBase10VersBaseP(i, p, k + 1);
-        // a[i] = result;
-        // }
-
         result = decompositionBase10VersBaseP(0, p, k + 1);
         a[0] = result;
         ArrayList<Integer> dejaPris = new ArrayList<Integer>();

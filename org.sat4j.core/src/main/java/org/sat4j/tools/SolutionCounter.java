@@ -104,7 +104,6 @@ public class SolutionCounter extends SolverDecorator<ISolver> {
                 clause.push(-q);
             }
             try {
-                // System.out.println("Sol number "+nbsols+" adding " + clause);
                 addClause(clause);
             } catch (ContradictionException e) {
                 trivialfalsity = true;

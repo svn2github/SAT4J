@@ -159,7 +159,6 @@ public class AllMUSes {
             }
 
         } catch (ContradictionException e) {
-            // e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
         }

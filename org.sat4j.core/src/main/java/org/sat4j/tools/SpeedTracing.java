@@ -35,8 +35,6 @@ import org.sat4j.specs.Lbool;
 
 public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
 
-    // private int maxDlevel;
-
     private static final long serialVersionUID = 1L;
 
     private final IVisualizationTool visuTool;
@@ -102,7 +100,6 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
                 / (this.end - this.begin) * 1000);
         this.cleanVisuTool.addPoint(indexClean / 1000.0, this.maxY);
         this.restartVisuTool.addInvisiblePoint(indexClean, 0);
-        // out.println("# ignore");
     }
 
     @Override

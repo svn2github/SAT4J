@@ -43,20 +43,12 @@ public class ConflictDepthTracing extends SearchListenerAdapter<ISolverService> 
 	 */
     private static final long serialVersionUID = 1L;
 
-    // private final String filename;
-    // private PrintStream out;
-
     private int counter;
     private int nVar;
 
     private final IVisualizationTool conflictDepthVisu;
     private final IVisualizationTool conflictDepthRestartVisu;
     private final IVisualizationTool conflictDepthCleanVisu;
-
-    // public ConflictDepthTracing(String filename) {
-    // this.filename = filename;
-    // updateWriter();
-    // }
 
     public ConflictDepthTracing(IVisualizationTool conflictDepthVisu,
             IVisualizationTool conflictDepthRestartVisu,
