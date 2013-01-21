@@ -4,6 +4,9 @@ import java.awt.Color;
 
 public class VisuPreferences {
 
+    private static final String AXIS_X1Y1 = "\" axis x1y1";
+    private static final String TITLE = "\" title \"";
+    private static final String LC_RGB = " lc rgb \"#";
     private Color backgroundColor;
     private Color borderColor;
     /**
@@ -310,7 +313,7 @@ public class VisuPreferences {
             restartString = "\"" + tailString + restartFileName + "\""
                     + " with impulses lc rgb \"#" + rgb
                     + "\" title \"Restart\" axis x1y2";
-            buf.append(restartString + "");
+            buf.append(restartString);
         }
         for (int i = 0; i < dataFilesArray.length; i++) {
             String rgb = Integer.toHexString(dataFilesArray[i].getColor()
@@ -326,8 +329,8 @@ public class VisuPreferences {
             }
             buf.append(comma + "\"" + tailString
                     + dataFilesArray[i].getFilename() + "\"" + style
-                    + " lc rgb \"#" + rgb + "\" title \""
-                    + dataFilesArray[i].getTitle() + "\" axis x1y1");
+                    + LC_RGB + rgb + TITLE
+                    + dataFilesArray[i].getTitle() + AXIS_X1Y1);
         }
 
         for (int i = 0; i < functions.length; i++) {
@@ -338,8 +341,8 @@ public class VisuPreferences {
                 comma = ",";
             }
             buf.append(comma + functions[i].getFunctionExpression()
-                    + " lc rgb \"#" + rgb + "\" title \""
-                    + functions[i].getFunctionLegend() + "\" axis x1y1");
+                    + LC_RGB + rgb + TITLE
+                    + functions[i].getFunctionLegend() + AXIS_X1Y1);
         }
         result += buf.toString() + "}";
         return result;
@@ -390,7 +393,7 @@ public class VisuPreferences {
                 style = " with " + dfArray2[i].getStyle();
             }
             buf.append(comma + "\"" + tailString + dfArray2[i].getFilename()
-                    + "\"" + style + " lc rgb \"#" + rgb + "\" title \""
+                    + "\"" + style + LC_RGB + rgb + TITLE
                     + dfArray2[i].getTitle() + "\" axis x1y2");
         }
 
@@ -406,8 +409,8 @@ public class VisuPreferences {
                 style = " with " + dfArray1[i].getStyle();
             }
             buf.append(comma + "\"" + tailString + dfArray1[i].getFilename()
-                    + "\"" + style + " lc rgb \"#" + rgb + "\" title \""
-                    + dfArray1[i].getTitle() + "\" axis x1y1");
+                    + "\"" + style + LC_RGB + rgb + TITLE
+                    + dfArray1[i].getTitle() + AXIS_X1Y1);
         }
 
         for (int i = 0; i < functions.length; i++) {
@@ -418,8 +421,8 @@ public class VisuPreferences {
                 comma = ",";
             }
             buf.append(comma + functions[i].getFunctionExpression()
-                    + " lc rgb \"#" + rgb + "\" title \""
-                    + functions[i].getFunctionLegend() + "\" axis x1y1");
+                    + LC_RGB + rgb + TITLE
+                    + functions[i].getFunctionLegend() + AXIS_X1Y1);
         }
 
         return buf.toString();
