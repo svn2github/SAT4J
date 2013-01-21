@@ -56,7 +56,7 @@ import org.sat4j.tools.SolverDecorator;
 public class HighLevelXplain<T extends ISolver> extends
         GroupClauseSelectorSolver<T> implements Explainer {
 
-    protected IVecInt assump;
+    private IVecInt assump;
 
     private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 

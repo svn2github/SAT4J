@@ -61,7 +61,7 @@ import org.sat4j.tools.SolverDecorator;
 public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
         implements Explainer {
 
-    protected IVecInt assump;
+    private IVecInt assump;
 
     private MinimizationStrategy xplainStrategy = new DeletionStrategy();
 
