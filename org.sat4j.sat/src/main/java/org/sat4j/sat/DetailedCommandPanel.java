@@ -1728,10 +1728,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public void restarting() {
         this.end = System.currentTimeMillis();
-        if (this.end != this.begin)
+        if (this.end != this.begin) {
             this.cleanPanel.setSpeedLabeltext(this.propagationsCounter
                     / (this.end - this.begin) * 1000 + "");
-
+        }
     }
 
     public void backjump(int backjumpLevel) {

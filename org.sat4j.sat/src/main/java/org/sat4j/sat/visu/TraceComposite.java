@@ -68,16 +68,18 @@ public class TraceComposite implements ITrace2D {
     }
 
     public int compareTo(ITrace2D o) {
-        if (this.equals(o))
+        if (this.equals(o)) {
             return 0;
-        else
+        } else {
             return -1;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof TraceComposite)
+        if (o instanceof TraceComposite) {
             return ((TraceComposite) o).getTraces().equals(this.getTraces());
+        }
         return false;
     }
 
