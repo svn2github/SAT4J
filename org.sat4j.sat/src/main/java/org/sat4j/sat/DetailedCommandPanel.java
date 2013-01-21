@@ -435,7 +435,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         updateWriter();
     }
 
-    public void createInstancePanel() {
+    private void createInstancePanel() {
         this.instancePanel = new JPanel();
 
         this.instancePanel.setName(INSTANCE_PANEL);
@@ -507,7 +507,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         instancePanel.add(tmpPanel12);
     }
 
-    public void createChoixSolverPanel() {
+    private void createChoixSolverPanel() {
         this.choixSolverPanel = new JPanel();
 
         this.choixSolverPanel.setName(CHOIX_SOLVER_PANEL);
