@@ -110,7 +110,7 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
         if (solver instanceof SolverDecorator<?>) {
             solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
         }
-        return this.xplainStrategy.explain(solver, this.constrs, this.assump);
+        return this.xplainStrategy.explain(solver, getConstrs(), this.assump);
     }
 
     /**
@@ -126,7 +126,7 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
     public int[] minimalExplanation() throws TimeoutException {
         IVecInt keys = explanationKeys();
         keys.sort();
-        List<Integer> allKeys = new ArrayList<Integer>(this.constrs.keySet());
+        List<Integer> allKeys = new ArrayList<Integer>(getConstrs().keySet());
         Collections.sort(allKeys);
         int[] model = new int[keys.size()];
         int i = 0;
@@ -150,7 +150,7 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
         IVecInt keys = explanationKeys();
         Collection<IConstr> explanation = new ArrayList<IConstr>(keys.size());
         for (IteratorInt it = keys.iterator(); it.hasNext();) {
-            explanation.add(this.constrs.get(it.next()));
+            explanation.add(getConstrs().get(it.next()));
         }
         return explanation;
     }
@@ -212,18 +212,18 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
 
     @Override
     public boolean removeConstr(IConstr c) {
-        if (this.lastConstr == c) {
-            this.lastClause.clear();
-            this.lastConstr = null;
+        if (getLastConstr() == c) {
+            getLastClause().clear();
+            setLastConstr(null);
         }
         return super.removeConstr(c);
     }
 
     @Override
     public boolean removeSubsumedConstr(IConstr c) {
-        if (this.lastConstr == c) {
-            this.lastClause.clear();
-            this.lastConstr = null;
+        if (getLastConstr() == c) {
+            getLastClause().clear();
+            setLastConstr(null);
         }
         return super.removeSubsumedConstr(c);
     }

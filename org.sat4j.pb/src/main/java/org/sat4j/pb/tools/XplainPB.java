@@ -66,7 +66,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
             // constraint trivially satisfied
             discardLastestVar();
         } else {
-            this.constrs.put(newvar, constr);
+            getConstrs().put(newvar, constr);
         }
         return constr;
     }
@@ -83,7 +83,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
             // constraint trivially satisfied
             discardLastestVar();
         } else {
-            this.constrs.put(newvar, constr);
+            getConstrs().put(newvar, constr);
         }
         return constr;
     }
@@ -109,7 +109,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
         ConstrGroup group = new ConstrGroup();
         group.add(constr1);
         group.add(constr2);
-        this.constrs.put(newvar, group);
+        getConstrs().put(newvar, group);
         return group;
     }
 
@@ -134,7 +134,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
             discardLastestVar();
             // System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
         } else {
-            this.constrs.put(newvar, constr);
+            getConstrs().put(newvar, constr);
         }
         return constr;
     }

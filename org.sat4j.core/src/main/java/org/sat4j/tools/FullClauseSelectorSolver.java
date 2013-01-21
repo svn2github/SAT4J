@@ -46,10 +46,10 @@ public class FullClauseSelectorSolver<T extends ISolver> extends
      * 
      */
     private static final long serialVersionUID = 1L;
-    protected Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
-    protected final IVecInt lastClause = new VecInt();
-    protected IConstr lastConstr;
-    protected final boolean skipDuplicatedEntries;
+    private final Map<Integer, IConstr> constrs = new HashMap<Integer, IConstr>();
+    private final IVecInt lastClause = new VecInt();
+    private IConstr lastConstr;
+    private final boolean skipDuplicatedEntries;
 
     public FullClauseSelectorSolver(T solver, boolean skipDuplicatedEntries) {
         super(solver);
@@ -113,6 +113,26 @@ public class FullClauseSelectorSolver<T extends ISolver> extends
     @Override
     public Collection<Integer> getAddedVars() {
         return this.constrs.keySet();
+    }
+
+    public IConstr getLastConstr() {
+        return lastConstr;
+    }
+
+    public void setLastConstr(IConstr lastConstr) {
+        this.lastConstr = lastConstr;
+    }
+
+    public Map<Integer, IConstr> getConstrs() {
+        return constrs;
+    }
+
+    public IVecInt getLastClause() {
+        return lastClause;
+    }
+
+    public boolean isSkipDuplicatedEntries() {
+        return skipDuplicatedEntries;
     }
 
 }
