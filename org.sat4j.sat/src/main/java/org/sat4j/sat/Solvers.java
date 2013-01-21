@@ -288,10 +288,11 @@ public final class Solvers {
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
                 if (isModeOptimization) {
-                    if (unzipped != null && unzipped.endsWith("cnf"))
+                    if (unzipped != null && unzipped.endsWith("cnf")) {
                         framework = "maxsat";
-                    else
+                    } else {
                         framework = "pb";
+                    }
                 } else if (unzipped != null && unzipped.endsWith("opb")) {
                     framework = "pb";
                 } else {
