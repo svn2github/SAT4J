@@ -78,15 +78,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     /**
      * Set of original constraints.
      */
-    protected final IVec<Constr> constrs = new Vec<Constr>(); // Constr
+    protected final IVec<Constr> constrs = new Vec<Constr>();
 
     /**
      * Set of learned constraints.
      */
-    protected final IVec<Constr> learnts = new Vec<Constr>(); // Clause
+    protected final IVec<Constr> learnts = new Vec<Constr>();
 
     /**
-     * incr?ment pour l'activit? des clauses.
+     * Increment for clause activity.
      */
     private double claInc = 1.0;
 
@@ -96,29 +96,23 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     private double claDecay = 1.0;
 
     /**
-     * Queue de propagation
+     * propagation queue
      */
     // head of the queue in trail ... (taken from MiniSAT 1.14)
     private int qhead = 0;
 
-    // queue
-
     /**
-     * affectation en ordre chronologique
+     * variable assignments (literals) in chronological order.
      */
-    protected final IVecInt trail = new VecInt(); // lit
-
-    // vector
+    protected final IVecInt trail = new VecInt();
 
     /**
-     * indice des s?parateurs des diff?rents niveau de d?cision dans trail
+     * position of the decision levels on the trail.
      */
-    protected final IVecInt trailLim = new VecInt(); // int
-
-    // vector
+    protected final IVecInt trailLim = new VecInt();
 
     /**
-     * S?pare les hypoth?ses incr?mentale et recherche
+     * position of assumptions before starting the search.
      */
     protected int rootLevel;
 
