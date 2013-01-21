@@ -123,7 +123,7 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
         try {
             this.prevConstr = super.addAtMost(this.lits, this.counter - 1);
         } catch (ContradictionException ce) {
-            this.isSolutionOptimal = true;
+            setSolutionOptimal(true);
             throw ce;
         }
     }
@@ -154,7 +154,7 @@ public final class MaxSatDecorator extends AbstractSelectorVariablesDecorator {
     @Override
     void calculateObjectiveValue() {
         this.counter = 0;
-        for (int q : this.prevfullmodel) {
+        for (int q : getPrevfullmodel()) {
             if (q > nVars()) {
                 this.counter++;
             }

@@ -56,18 +56,18 @@ public abstract class AbstractSelectorVariablesDecorator extends
 
     private int nbexpectedclauses;
 
-    protected int[] prevfullmodel;
+    private int[] prevfullmodel;
 
     /**
      * @since 2.1
      */
-    protected int[] prevmodel;
+    private int[] prevmodel;
     /**
      * @since 2.1
      */
-    protected boolean[] prevboolmodel;
+    private boolean[] prevboolmodel;
 
-    protected boolean isSolutionOptimal;
+    private boolean isSolutionOptimal;
 
     public AbstractSelectorVariablesDecorator(ISolver solver) {
         super(solver);
@@ -121,5 +121,45 @@ public abstract class AbstractSelectorVariablesDecorator extends
 
     public boolean isOptimal() {
         return this.isSolutionOptimal;
+    }
+
+    public int getNbexpectedclauses() {
+        return nbexpectedclauses;
+    }
+
+    public void setNbexpectedclauses(int nbexpectedclauses) {
+        this.nbexpectedclauses = nbexpectedclauses;
+    }
+
+    public int[] getPrevfullmodel() {
+        return prevfullmodel;
+    }
+
+    public void setPrevfullmodel(int[] prevfullmodel) {
+        this.prevfullmodel = prevfullmodel;
+    }
+
+    public int[] getPrevmodel() {
+        return prevmodel;
+    }
+
+    public void setPrevmodel(int[] prevmodel) {
+        this.prevmodel = prevmodel;
+    }
+
+    public boolean[] getPrevboolmodel() {
+        return prevboolmodel;
+    }
+
+    public void setPrevboolmodel(boolean[] prevboolmodel) {
+        this.prevboolmodel = prevboolmodel;
+    }
+
+    public boolean isSolutionOptimal() {
+        return isSolutionOptimal;
+    }
+
+    public void setSolutionOptimal(boolean isSolutionOptimal) {
+        this.isSolutionOptimal = isSolutionOptimal;
     }
 }
