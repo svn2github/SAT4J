@@ -39,6 +39,17 @@ import org.sat4j.tools.DotSearchTracing;
 
 public final class Solvers {
 
+    private static final String SEPARATOR = "-------------------";
+    private static final String CLASS = "class";
+    private static final String OPB = "opb";
+    private static final String CNF = "cnf";
+    private static final String MAXSAT = "maxsat";
+    private static final String OPT = "opt";
+    private static final String FILENAME = "filename";
+    private static final String NUMBER = "number";
+    private static final String PROBLEM_WITH_COMPONENT = "Problem with component ";
+    private static final String PB = "pb";
+    private static final String MINISAT = "minisat";
     public final static String ORDERS = "ORDERS";
     public final static String LEARNING = "LEARNING";
     public final static String RESTARTS = "RESTARTS";
@@ -144,8 +155,8 @@ public final class Solvers {
             if (qualification != null) {
                 logger.log("read " + qualification + "." + configline);
                 if (configline.contains("Objective")
-                        && qualification.contains("minisat")) {
-                    qualification = qualification.replaceFirst("minisat", "pb");
+                        && qualification.contains(MINISAT)) {
+                    qualification = qualification.replaceFirst(MINISAT, PB);
                 }
                 configline = qualification + "." + configline;
             }
@@ -161,16 +172,16 @@ public final class Solvers {
                     BeanUtils.getProperty(comp, param[0]);
                     BeanUtils.setProperty(comp, param[0], param[1]);
                 } catch (Exception e) {
-                    logger.log("Problem with component " + config[0] + " " + e);
+                    logger.log(PROBLEM_WITH_COMPONENT + config[0] + " " + e);
                 }
             }
             return comp;
         } catch (InstantiationException e) {
-            logger.log("Problem with component " + component + " " + e);
+            logger.log(PROBLEM_WITH_COMPONENT + component + " " + e);
         } catch (IllegalAccessException e) {
-            logger.log("Problem with component " + component + " " + e);
+            logger.log(PROBLEM_WITH_COMPONENT + component + " " + e);
         } catch (ClassNotFoundException e) {
-            logger.log("Problem with component " + component + " " + e);
+            logger.log(PROBLEM_WITH_COMPONENT + component + " " + e);
         }
         return null;
     }
@@ -194,14 +205,14 @@ public final class Solvers {
                 "conflict based timeout (for deterministic behavior)");
         options.addOption("d", "dot", true,
                 "creates a sat4j.dot file in current directory representing the search");
-        options.addOption("f", "filename", true,
+        options.addOption("f", FILENAME, true,
                 "specifies the file to use (in conjunction with -d for instance)");
         options.addOption("m", "mute", false, "Set launcher in silent mode");
         options.addOption("k", "kleast", true,
                 "limit the search to models having at least k variables set to false");
         options.addOption("tr", "trace", false,
                 "traces the behavior of the solver");
-        options.addOption("opt", "optimize", false,
+        options.addOption(OPT, "optimize", false,
                 "uses solver in optimize mode instead of sat mode (default)");
         options.addOption("rw", "randomWalk", true,
                 "specifies the random walk probability ");
@@ -228,19 +239,19 @@ public final class Solvers {
         op = options.getOption("S");
         op.setArgName("solverStringDefinition");
         op = options.getOption("t");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("T");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("C");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("k");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("d");
-        op.setArgName("filename");
+        op.setArgName(FILENAME);
         op = options.getOption("f");
-        op.setArgName("filename");
+        op.setArgName(FILENAME);
         op = options.getOption("rw");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         return options;
     }
 
@@ -253,7 +264,7 @@ public final class Solvers {
         Options options = createCLIOptions();
         try {
             CommandLine cmd = new PosixParser().parse(options, args);
-            return cmd.hasOption("opt");
+            return cmd.hasOption(OPT);
         } catch (ParseException e) {
             return false;
         }
@@ -273,7 +284,7 @@ public final class Solvers {
             boolean isModeOptimization = false;
             ASolverFactory<ISolver> factory;
 
-            if (cmd.hasOption("opt")) {
+            if (cmd.hasOption(OPT)) {
                 isModeOptimization = true;
             }
 
@@ -288,15 +299,15 @@ public final class Solvers {
             String framework = cmd.getOptionValue("l"); //$NON-NLS-1$
             if (framework == null) {
                 if (isModeOptimization) {
-                    if (unzipped != null && unzipped.endsWith("cnf")) {
-                        framework = "maxsat";
+                    if (unzipped != null && unzipped.endsWith(CNF)) {
+                        framework = MAXSAT;
                     } else {
-                        framework = "pb";
+                        framework = PB;
                     }
-                } else if (unzipped != null && unzipped.endsWith("opb")) {
-                    framework = "pb";
+                } else if (unzipped != null && unzipped.endsWith(OPB)) {
+                    framework = PB;
                 } else {
-                    framework = "minisat";
+                    framework = MINISAT;
                 }
             }
 
@@ -414,22 +425,22 @@ public final class Solvers {
                                             Solvers.PACKAGE_RESTARTS + "."
                                                     + name).newInstance())
                             .keySet();
-                    keySet.remove("class");
+                    keySet.remove(CLASS);
                     if (keySet.size() > 0) {
                         classNames.add(name + keySet);
                     } else {
                         classNames.add(name);
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InstantiationException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 }
             }
         }
@@ -449,22 +460,22 @@ public final class Solvers {
                     keySet = BeanUtils.describe(
                             Class.forName(PACKAGE_PHASE + "." + name)
                                     .newInstance()).keySet();
-                    keySet.remove("class");
+                    keySet.remove(CLASS);
                     if (keySet.size() > 0) {
                         classNames.add(name + keySet);
                     } else {
                         classNames.add(name);
                     }
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InstantiationException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 }
             }
         }
@@ -481,23 +492,24 @@ public final class Solvers {
                 keySet = BeanUtils.describe(
                         Class.forName(PACKAGE_LEARNING + "." + name)
                                 .newInstance()).keySet();
-                keySet.remove("class");
+                keySet.remove(CLASS);
                 if (keySet.size() > 0) {
                     classNames.add(name + keySet);
                 } else {
                     classNames.add(name);
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (InstantiationException e) {
                 classNames.add(name);
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (NoClassDefFoundError cnfex) {
+                logger.log(cnfex.getMessage());
             }
         }
         logger.log("Available learning (" + Solvers.LEARNING + "): "
@@ -513,7 +525,7 @@ public final class Solvers {
                 try {
                     if (name.contains("Objective")) {
                         String namePackage = Solvers.PACKAGE_ORDERS
-                                .replaceFirst("minisat", "pb");
+                                .replaceFirst(MINISAT, PB);
                         keySet = BeanUtils.describe(
                                 Class.forName(namePackage + "." + name)
                                         .newInstance()).keySet();
@@ -523,7 +535,7 @@ public final class Solvers {
                                         Solvers.PACKAGE_ORDERS + "." + name)
                                         .newInstance()).keySet();
                     }
-                    keySet.remove("class");
+                    keySet.remove(CLASS);
 
                     if (keySet.size() > 0) {
                         classNames.add(name + keySet);
@@ -532,14 +544,15 @@ public final class Solvers {
                     }
 
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 } catch (InstantiationException e) {
+                    logger.log(e.getMessage());
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.log(e.getMessage());
                 }
             }
         }
@@ -552,17 +565,17 @@ public final class Solvers {
         try {
             keySet = BeanUtils.describe(
                     Class.forName(PARAMS_NAME).newInstance()).keySet();
-            keySet.remove("class");
+            keySet.remove(CLASS);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.log(e.getMessage());
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            logger.log(e.getMessage());
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            logger.log(e.getMessage());
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.log(e.getMessage());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.log(e.getMessage());
         }
         logger.log("Available search params (" + Solvers.PARAMS
                 + "): [SearchParams" + keySet + "]");
@@ -602,25 +615,25 @@ public final class Solvers {
         ASolverFactory<ISolver> factory;
         factory = org.sat4j.minisat.SolverFactory.instance();
         showAvailableSolvers(factory, "sat", logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         factory = (ASolverFactory) org.sat4j.pb.SolverFactory.instance();
-        showAvailableSolvers(factory, "pb", logger);
-        logger.log("-------------------");
+        showAvailableSolvers(factory, PB, logger);
+        logger.log(SEPARATOR);
         factory = (ASolverFactory) org.sat4j.maxsat.SolverFactory.instance();
-        showAvailableSolvers(factory, "maxsat", logger);
-        logger.log("-------------------");
+        showAvailableSolvers(factory, MAXSAT, logger);
+        logger.log(SEPARATOR);
         showAvailableRestarts(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         showAvailableOrders(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         showAvailableLearning(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         showAvailablePhase(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         showParams(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         showSimplifiers(logger);
-        logger.log("-------------------");
+        logger.log(SEPARATOR);
         stringUsage(logger);
     }
 
