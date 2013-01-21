@@ -46,7 +46,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -218,7 +217,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private final static String SOLVER_LIST_PARAM_LIST_CONFIG = "Start solver as chosen in list with its default configuration";
     private final static String SOLVER_LIST_PARAM_REMOTE_CONFIG = "Start solver as chosen in list with configuration given in the remote";
 
-    private JLabel chooseStartConfigLabel;
     private final static String CHOOSE_START_CONFIG = "Choose start configuration : ";
 
     private JButton startStopButton;
@@ -532,44 +530,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.startStopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (DetailedCommandPanel.this.startStopButton.getText().equals(
-                        START)) {
-                    launchSolverWithConfigs();
-                    DetailedCommandPanel.this.pauseButton.setEnabled(true);
-                    setInstancePanelEnabled(false);
-                    DetailedCommandPanel.this.restartPanel
-                            .setRestartPanelEnabled(true);
-                    DetailedCommandPanel.this.rwPanel.setRWPanelEnabled(true);
-                    DetailedCommandPanel.this.cleanPanel
-                            .setCleanPanelEnabled(true);
-                    DetailedCommandPanel.this.cleanPanel
-                            .setCleanPanelOriginalStrategyEnabled(true);
-                    DetailedCommandPanel.this.phasePanel
-                            .setPhasePanelEnabled(true);
-                    setChoixSolverPanelEnabled(false);
-                    DetailedCommandPanel.this.simplifierPanel
-                            .setSimplifierPanelEnabled(true);
-                    DetailedCommandPanel.this.hotSolverPanel
-                            .setKeepSolverHotPanelEnabled(true);
-                    DetailedCommandPanel.this.startStopButton.setText(STOP);
-                    solverListParamListRadio.setSelected(true);
-                    startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
-                    getThis().paintAll(getThis().getGraphics());
-                    DetailedCommandPanel.this.frame
-                            .setActivateTracingEditableUnderCondition(false);
-                } else {
-
-                    ((ISolver) DetailedCommandPanel.this.problem)
-                            .expireTimeout();
-                    DetailedCommandPanel.this.pauseButton.setEnabled(false);
-                    log("Asked the solver to stop");
-                    setInstancePanelEnabled(true);
-                    setChoixSolverPanelEnabled(true);
-                    DetailedCommandPanel.this.startStopButton.setText(START);
-                    getThis().paintAll(getThis().getGraphics());
-                    DetailedCommandPanel.this.frame
-                            .setActivateTracingEditable(true);
-                }
+                manageStartStopButton();
             }
         });
 
@@ -602,20 +563,20 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 .getName(), TitledBorder.LEFT, TitledBorder.TOP), border5));
 
         atMostKLabel = new JLabel(AT_MOST_K);
-        atMostKCB = new JComboBox(new DefaultComboBoxModel(
-                getVectorOfEncodings(AT_MOST_K)));
+        atMostKCB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
+                AT_MOST_K).toArray()));
 
         atMost1Label = new JLabel(AT_MOST_1);
-        atMost1CB = new JComboBox(new DefaultComboBoxModel(
-                getVectorOfEncodings(AT_MOST_1)));
+        atMost1CB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
+                AT_MOST_1).toArray()));
 
         exactlyKLabel = new JLabel(EXACTLY_K);
-        exactlyKCB = new JComboBox(new DefaultComboBoxModel(
-                getVectorOfEncodings(EXACTLY_K)));
+        exactlyKCB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
+                EXACTLY_K).toArray()));
 
         exactly1Label = new JLabel(EXACTLY_1);
-        exactly1CB = new JComboBox(new DefaultComboBoxModel(
-                getVectorOfEncodings(EXACTLY_1)));
+        exactly1CB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
+                EXACTLY_1).toArray()));
 
         c.fill = GridBagConstraints.NONE;
         c.weightx = 0.2;
@@ -785,6 +746,41 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             this.solverListParamRemoteRadio.setEnabled(false);
         }
 
+    }
+
+    public void manageStartStopButton() {
+        if (DetailedCommandPanel.this.startStopButton.getText().equals(START)) {
+            launchSolverWithConfigs();
+            DetailedCommandPanel.this.pauseButton.setEnabled(true);
+            setInstancePanelEnabled(false);
+            DetailedCommandPanel.this.restartPanel.setRestartPanelEnabled(true);
+            DetailedCommandPanel.this.rwPanel.setRWPanelEnabled(true);
+            DetailedCommandPanel.this.cleanPanel.setCleanPanelEnabled(true);
+            DetailedCommandPanel.this.cleanPanel
+                    .setCleanPanelOriginalStrategyEnabled(true);
+            DetailedCommandPanel.this.phasePanel.setPhasePanelEnabled(true);
+            setChoixSolverPanelEnabled(false);
+            DetailedCommandPanel.this.simplifierPanel
+                    .setSimplifierPanelEnabled(true);
+            DetailedCommandPanel.this.hotSolverPanel
+                    .setKeepSolverHotPanelEnabled(true);
+            DetailedCommandPanel.this.startStopButton.setText(STOP);
+            solverListParamListRadio.setSelected(true);
+            startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
+            getThis().paintAll(getThis().getGraphics());
+            DetailedCommandPanel.this.frame
+                    .setActivateTracingEditableUnderCondition(false);
+        } else {
+
+            ((ISolver) DetailedCommandPanel.this.problem).expireTimeout();
+            DetailedCommandPanel.this.pauseButton.setEnabled(false);
+            log("Asked the solver to stop");
+            setInstancePanelEnabled(true);
+            setChoixSolverPanelEnabled(true);
+            DetailedCommandPanel.this.startStopButton.setText(START);
+            getThis().paintAll(getThis().getGraphics());
+            DetailedCommandPanel.this.frame.setActivateTracingEditable(true);
+        }
     }
 
     public String getStartStopText() {
@@ -1034,11 +1030,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            log(e.getMessage());
         } catch (ParseFormatException e) {
-            e.printStackTrace();
+            log(e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            log(e.getMessage());
         } catch (ContradictionException e) {
             log("Unsatisfiable (trivial)!");
             return;
@@ -1403,10 +1399,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         log("Told the solver to use " + type);
     }
 
-    public Vector<String> getVectorOfSolvers() {
+    public List<String> getListOfSolvers() {
         ASolverFactory factory;
 
-        Vector<String> result = new Vector<String>();
+        List<String> result = new ArrayList<String>();
 
         factory = org.sat4j.minisat.SolverFactory.instance();
         for (String s : factory.solverNames()) {
@@ -1430,12 +1426,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return result;
     }
 
-    public Vector<String> getVectorOfSatSolvers() {
+    public List<String> getListOfSatSolvers() {
         ASolverFactory factory;
 
-        Vector<String> result = new Vector<String>();
+        List<String> result = new ArrayList<String>();
 
-        factory = org.sat4j.pb.SolverFactory.instance();
+        factory = org.sat4j.minisat.SolverFactory.instance();
         for (String s : factory.solverNames()) {
             result.add(MINISAT_PREFIX + "." + s);
         }
@@ -1444,10 +1440,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return result;
     }
 
-    public Vector<String> getVectorOfPBSolvers() {
+    public List<String> getListOfPBSolvers() {
         ASolverFactory factory;
 
-        Vector<String> result = new Vector<String>();
+        List<String> result = new ArrayList<String>();
 
         factory = org.sat4j.pb.SolverFactory.instance();
         for (String s : factory.solverNames()) {
@@ -1458,10 +1454,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return result;
     }
 
-    public Vector<String> getVectorOfMaxsatSolvers() {
+    public List<String> getListOfMaxsatSolvers() {
         ASolverFactory factory;
 
-        Vector<String> result = new Vector<String>();
+        List<String> result = new ArrayList<String>();
 
         factory = org.sat4j.pb.SolverFactory.instance();
         for (String s : factory.solverNames()) {
@@ -1472,8 +1468,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         return result;
     }
 
-    public Vector<EncodingStrategy> getVectorOfEncodings(String typeOfConstraint) {
-        Vector<EncodingStrategy> v = new Vector<EncodingStrategy>();
+    public List<EncodingStrategy> getListOfEncodings(String typeOfConstraint) {
+        List<EncodingStrategy> v = new ArrayList<EncodingStrategy>();
 
         v.add(EncodingStrategy.NATIVE);
 
@@ -1542,11 +1538,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void updateListOfSolvers() {
-        Vector<String> theVector = new Vector<String>();
+        List<String> theList = new ArrayList<String>();
         String defaultSolver = "";
 
         if (instancePath == null || instancePath.length() == 0) {
-            theVector = getVectorOfSolvers();
+            theList = getListOfSolvers();
             defaultSolver = "minisat.Default";
             problemType = ProblemType.CNF_SAT;
             equivalenceCB.setEnabled(false);
@@ -1554,16 +1550,16 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         } else if (instancePath.endsWith(".cnf")) {
             optimisationModeCB.setEnabled(true);
             if (optimizationMode) {
-                theVector.addAll(getVectorOfMaxsatSolvers());
-                theVector.addAll(getVectorOfPBSolvers());
+                theList.addAll(getListOfMaxsatSolvers());
+                theList.addAll(getListOfPBSolvers());
                 defaultSolver = "maxsat.Default";
                 equivalenceCB.setEnabled(true);
                 lowerCB.setEnabled(true);
                 problemType = ProblemType.CNF_MAXSAT;
                 log("cnf file + opt => pb/maxsat solvers");
             } else {
-                theVector.addAll(getVectorOfSatSolvers());
-                theVector.addAll(getVectorOfPBSolvers());
+                theList.addAll(getListOfSatSolvers());
+                theList.addAll(getListOfPBSolvers());
                 defaultSolver = "minisat.Default";
                 log("cnf file + non opt => sat/pb solvers");
                 problemType = ProblemType.CNF_SAT;
@@ -1572,7 +1568,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             }
         } else if (instancePath.endsWith(".opb")) {
             optimisationModeCB.setEnabled(true);
-            theVector.addAll(getVectorOfPBSolvers());
+            theList.addAll(getListOfPBSolvers());
             defaultSolver = "pb.Default";
             if (optimizationMode) {
                 problemType = ProblemType.PB_OPT;
@@ -1587,15 +1583,15 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         } else if (instancePath.endsWith(".wcnf")) {
             equivalenceCB.setEnabled(true);
             lowerCB.setEnabled(true);
-            theVector.addAll(getVectorOfMaxsatSolvers());
-            theVector.addAll(getVectorOfPBSolvers());
+            theList.addAll(getListOfMaxsatSolvers());
+            theList.addAll(getListOfPBSolvers());
             defaultSolver = "maxsat.Default";
             optimisationModeCB.setSelected(true);
             optimisationModeCB.setEnabled(false);
             problemType = ProblemType.WCNF_MAXSAT;
             log("wcnf file => pb/maxsat solvers");
         }
-        this.listeSolvers.setModel(new DefaultComboBoxModel(theVector));
+        this.listeSolvers.setModel(new DefaultComboBoxModel(theList.toArray()));
         this.listeSolvers.setSelectedItem(defaultSolver);
         this.choixSolverPanel.repaint();
     }
