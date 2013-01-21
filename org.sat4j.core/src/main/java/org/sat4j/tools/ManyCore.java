@@ -207,7 +207,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     public void printStat(PrintStream out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
             out.printf(
-                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<\n",
+                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<%n",
                     prefix, i, this.solversStats.get(i).getValue());
             this.solvers.get(i).printStat(out, prefix);
         }
@@ -216,7 +216,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     public void printStat(PrintWriter out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
             out.printf(
-                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<\n",
+                    "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<%n",
                     prefix, i, this.solversStats.get(i).getValue());
             this.solvers.get(i).printStat(out, prefix);
         }
@@ -359,7 +359,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
 
     public void printInfos(PrintWriter out, String prefix) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<%n",
                     prefix, i);
             this.solvers.get(i).printInfos(out, prefix);
         }
@@ -526,7 +526,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
      */
     public void printInfos(PrintWriter out) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<\n",
+            out.printf("%s>>>>>>>>>> Solver number %d <<<<<<<<<<<<<<<<<<%n",
                     getLogPrefix(), i);
             this.solvers.get(i).printInfos(out);
         }
