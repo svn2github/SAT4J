@@ -103,8 +103,6 @@ public class Launcher extends AbstractLauncher implements ILogAble {
 
     private String filename;
 
-    private int k = -1;
-
     private ProblemType typeProbleme = ProblemType.CNF_SAT;
 
     @Override
@@ -195,9 +193,6 @@ public class Launcher extends AbstractLauncher implements ILogAble {
 
             if (cmd.hasOption("k")) {
                 Integer myk = Integer.valueOf(cmd.getOptionValue("k"));
-                if (myk != null) {
-                    this.k = myk.intValue();
-                }
             }
 
             if (cmd.hasOption("r")) {
