@@ -36,6 +36,10 @@ public class TraceComposite implements ITrace2D {
         this.traces = traces;
     }
 
+    public List<ITrace2D> getTraces() {
+        return traces;
+    }
+
     public TraceComposite(ITrace2D... traces) {
         this.traces = new ArrayList<ITrace2D>();
         this.traces.addAll(Arrays.asList(traces));
@@ -68,6 +72,13 @@ public class TraceComposite implements ITrace2D {
             return 0;
         else
             return -1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof TraceComposite)
+            return ((TraceComposite) o).getTraces().equals(this.getTraces());
+        return false;
     }
 
     public void addComputingTrace(ITrace2D arg0) {
