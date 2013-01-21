@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import java.io.Serializable;
+
 /**
  * Create a circular buffer of a given capacity allowing to compute efficiently
  * the mean of the values storied.
@@ -36,8 +38,12 @@ package org.sat4j.minisat.core;
  * @author leberre
  * 
  */
-public class CircularBuffer {
+public class CircularBuffer implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private final int[] values;
     private int index = 0;
     private long sum = 0;
