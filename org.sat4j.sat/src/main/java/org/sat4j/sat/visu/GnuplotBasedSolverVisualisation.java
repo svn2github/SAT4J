@@ -11,6 +11,58 @@ import org.sat4j.specs.ILogAble;
 
 public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
+    private static final String SPEED = "Speed";
+
+    private static final String SET_XRANGE_0_5 = "set xrange [0.5:*]";
+
+    private static final String IMPULSES = "impulses";
+
+    private static final String EVALUATION = "Evaluation";
+
+    private static final String SIZE = "Size";
+
+    private static final String CLEAN = "Clean";
+
+    private static final String RESTART = "Restart";
+
+    private static final String CONFLICT_LEVEL = "Conflict Level";
+
+    private static final String GNUPLOT_GNUPLOT = "-gnuplot.gnuplot";
+
+    private static final String SET_MULTIPLOT = "set multiplot";
+
+    private static final String SET_TERMINAL_X11 = "set terminal x11";
+
+    private static final String SPEED_RESTART_DAT = "-speed-restart.dat";
+
+    private static final String SPEED_DAT = "-speed.dat";
+
+    private static final String GNUPLOT_SHOULD_BE_DEACTIVATED = "Gnuplot should be deactivated...";
+
+    private static final String GNUPLOT_SHOULD_HAVE_STARTED_NOW = "Gnuplot should have started now.";
+
+    private static final String GNUPLOT_WILL_START_IN_A_FEW_SECONDS = "Gnuplot will start in a few seconds.";
+
+    private static final String REREAD = "reread";
+
+    private static final String SET_YTICS_AUTO = "set ytics auto";
+
+    private static final String UNSET_MULTIPLOT = "unset multiplot";
+
+    private static final String UNSET_AUTOSCALE = "unset autoscale";
+
+    private static final String SET_Y2RANGE_0 = "set y2range [0:]";
+
+    private static final String SET_AUTOSCALE_YMAX = "set autoscale ymax";
+
+    private static final String SET_NOLOGSCALE_Y = "set nologscale y";
+
+    private static final String SET_NOLOGSCALE_X = "set nologscale x";
+
+    private static final String SET_AUTOSCALE_Y = "set autoscale y";
+
+    private static final String SET_AUTOSCALE_X = "set autoscale x";
+
     /**
      * 
      */
@@ -54,33 +106,33 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                 double height = 0.33;
 
                 PrintStream out = new PrintStream(new FileOutputStream(
-                        this.dataPath + "-gnuplot.gnuplot"));
-                out.println("set terminal x11");
-                out.println("set multiplot");
-                out.println("set autoscale x");
-                out.println("set autoscale y");
-                out.println("set nologscale x");
-                out.println("set nologscale y");
-                out.println("set ytics auto");
+                        this.dataPath + GNUPLOT_GNUPLOT));
+                out.println(SET_TERMINAL_X11);
+                out.println(SET_MULTIPLOT);
+                out.println(SET_AUTOSCALE_X);
+                out.println(SET_AUTOSCALE_Y);
+                out.println(SET_NOLOGSCALE_X);
+                out.println(SET_NOLOGSCALE_Y);
+                out.println(SET_YTICS_AUTO);
 
                 GnuplotFunction f = new GnuplotFunction("2", Color.black, "");
 
                 // bottom right: Decision Level when conflict
                 if (this.visuPreferences.isDisplayConflictsDecision()) {
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + right + "," + bottom);
-                    out.println("set title \"Decision level at which the conflict occurs\"");
-                    out.println("set autoscale ymax");
-                    out.println("set y2range [0:]");
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(bottom, right));
+                    out.println(setTitle("Decision level at which the conflict occurs"));
+                    out.println(SET_AUTOSCALE_YMAX);
+                    out.println(SET_Y2RANGE_0);
                     GnuplotDataFile conflictLevelDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-level.dat",
-                            Color.magenta, "Conflict Level");
+                            Color.magenta, CONFLICT_LEVEL);
                     GnuplotDataFile conflictLevelRestartDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-level-restart.dat",
-                            Color.gray, "Restart", "impulses");
+                            Color.gray, RESTART, IMPULSES);
                     GnuplotDataFile conflictLevelCleanDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-level-clean.dat",
-                            Color.orange, "Clean", "impulses");
+                            Color.orange, CLEAN, IMPULSES);
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { conflictLevelDF },
@@ -91,22 +143,22 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
                 // top left: size of learned clause
                 if (this.visuPreferences.isDisplayClausesSize()) {
-                    out.println("unset autoscale");
-                    out.println("set autoscale x");
-                    out.println("set autoscale ymax");
-                    out.println("set y2range [0:]");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + left + "," + top);
-                    out.println("set title \"Size of the clause learned (after minimization if any)\"");
+                    out.println(UNSET_AUTOSCALE);
+                    out.println(SET_AUTOSCALE_X);
+                    out.println(SET_AUTOSCALE_YMAX);
+                    out.println(SET_Y2RANGE_0);
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(top, left));
+                    out.println(setTitle("Size of the clause learned (after minimization if any)"));
                     GnuplotDataFile learnedClausesDF = new GnuplotDataFile(
                             this.dataPath + "-learned-clauses-size.dat",
-                            Color.blue, "Size");
+                            Color.blue, SIZE);
                     GnuplotDataFile learnedClausesRestartDF = new GnuplotDataFile(
                             this.dataPath + "-learned-clauses-size-restart.dat",
-                            Color.gray, "Restart", "impulses");
+                            Color.gray, RESTART, IMPULSES);
                     GnuplotDataFile learnedClausesCleanDF = new GnuplotDataFile(
                             this.dataPath + "-learned-clauses-size-clean.dat",
-                            Color.orange, "Clean", "impulses");
+                            Color.orange, CLEAN, IMPULSES);
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { learnedClausesDF },
@@ -117,29 +169,29 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
                 // top middle: clause activity
                 if (this.visuPreferences.isDisplayConflictsDecision()) {
-                    out.println("set autoscale x");
-                    out.println("set autoscale y");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + middle + "," + top);
-                    out.println("set title \"Value of learned clauses evaluation\"");
+                    out.println(SET_AUTOSCALE_X);
+                    out.println(SET_AUTOSCALE_Y);
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(top, middle));
+                    out.println(setTitle("Value of learned clauses evaluation"));
                     GnuplotDataFile learnedDF = new GnuplotDataFile(
                             this.dataPath + "-learned.dat", Color.blue,
-                            "Evaluation");
+                            EVALUATION);
                     out.println(this.visuPreferences.generatePlotLine(
                             learnedDF, f, "", false));
                 }
 
                 // for bottom graphs, y range should be O-maxVar
-                out.println("set autoscale x");
-                out.println("set nologscale x");
-                out.println("set nologscale y");
-                out.println("set autoscale y");
-                out.println("set yrange [1:" + this.nVar + "]");
-                out.println("set ytics add (1," + this.nVar + ")");
+                out.println(SET_AUTOSCALE_X);
+                out.println(SET_NOLOGSCALE_X);
+                out.println(SET_NOLOGSCALE_Y);
+                out.println(SET_AUTOSCALE_Y);
+                out.println(setYRangeFrom1ToNvar());
+                out.println(setYTicsFrom1ToNVar());
 
                 // bottom left: index decision variable
                 if (this.visuPreferences.isDisplayDecisionIndexes()) {
-                    out.println("unset autoscale");
+                    out.println(UNSET_AUTOSCALE);
                     out.println("if(system(\"head "
                             + this.dataPath
                             + "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;}");
@@ -147,18 +199,18 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                             + this.dataPath
                             + "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"
                             + this.nVar + "]};");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + left + "," + bottom);
-                    out.println("set title \"Index of the decision variables\"");
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(bottom, left));
+                    out.println(setTitle("Index of the decision variables"));
                     GnuplotDataFile negativeDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-neg.dat",
                             Color.red, "Negative Decision");
                     GnuplotDataFile decisionRestartDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-restart.dat",
-                            Color.gray, "Restart", "impulses");
+                            Color.gray, RESTART, IMPULSES);
                     GnuplotDataFile decisionCleanDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-clean.dat",
-                            Color.orange, "Clean", "impulses");
+                            Color.orange, CLEAN, IMPULSES);
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { negativeDF },
@@ -167,14 +219,14 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                                     this.visuPreferences.getNbLinesRead() * 4));
 
                     // verybottom left: index decision variable
-                    out.println("unset autoscale");
+                    out.println(UNSET_AUTOSCALE);
                     out.println("if(system(\"head "
                             + this.dataPath
                             + "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"
                             + this.nVar + "]; set y2range [0:]; }");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + left + "," + verybottom);
-                    out.println("set title \"Index of the decision variables\"");
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(verybottom, left));
+                    out.println(setTitle("Index of the decision variables"));
                     GnuplotDataFile positiveDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-pos.dat",
                             Color.green, "Positive Decision");
@@ -188,14 +240,14 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
                 // top right: depth search when conflict
                 if (this.visuPreferences.isDisplayConflictsTrail()) {
-                    out.println("set autoscale x");
-                    out.println("set autoscale y");
-                    out.println("set nologscale x");
-                    out.println("set nologscale y");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + right + "," + top);
-                    out.println("set title \"Trail level when the conflict occurs\"");
-                    out.println("set y2range [0:]");
+                    out.println(SET_AUTOSCALE_X);
+                    out.println(SET_AUTOSCALE_Y);
+                    out.println(SET_NOLOGSCALE_X);
+                    out.println(SET_NOLOGSCALE_Y);
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(top, right));
+                    out.println(setTitle("Trail level when the conflict occurs"));
+                    out.println(SET_Y2RANGE_0);
                     GnuplotDataFile trailLevelDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-depth.dat",
                             Color.magenta, "Trail level");
@@ -203,10 +255,10 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                             / 2, Color.green, "#Var/2");
                     GnuplotDataFile trailLevelRestartDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-depth-restart.dat",
-                            Color.gray, "Restart", "impulses");
+                            Color.gray, RESTART, IMPULSES);
                     GnuplotDataFile trailLevelCleanDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-depth-clean.dat",
-                            Color.orange, "Clean", "impulses");
+                            Color.orange, CLEAN, IMPULSES);
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { trailLevelDF },
@@ -221,15 +273,15 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
                 // bottom middle: variable activity
                 if (this.visuPreferences.isDisplayVariablesEvaluation()) {
-                    out.println("unset autoscale");
-                    out.println("set autoscale y");
-                    out.println("set nologscale x");
-                    out.println("set nologscale y");
-                    out.println("set yrange [1:" + this.nVar + "]");
-                    out.println("set xrange [0.5:*]");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + middle + "," + bottom);
-                    out.println("set title \"Value of variables activity\"");
+                    out.println(UNSET_AUTOSCALE);
+                    out.println(SET_AUTOSCALE_Y);
+                    out.println(SET_NOLOGSCALE_X);
+                    out.println(SET_NOLOGSCALE_Y);
+                    out.println(setYRangeFrom1ToNvar());
+                    out.println(SET_XRANGE_0_5);
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(bottom, middle));
+                    out.println(setTitle("Value of variables activity"));
                     GnuplotDataFile heuristicsDF = new GnuplotDataFile(
                             this.dataPath + "-heuristics.dat", Color.red,
                             "Activity", "lines");
@@ -238,34 +290,34 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                 }
 
                 if (this.visuPreferences.isDisplaySpeed()) {
-                    out.println("set autoscale x");
-                    out.println("set nologscale x");
-                    out.println("set nologscale y");
-                    out.println("set size " + width + "," + height);
-                    out.println("set origin " + middle + "," + verybottom);
-                    out.println("set title \"Number of propagations per second\"");
-                    out.println("set y2range [0:]");
+                    out.println(SET_AUTOSCALE_X);
+                    out.println(SET_NOLOGSCALE_X);
+                    out.println(SET_NOLOGSCALE_Y);
+                    out.println(setSize(width, height));
+                    out.println(setOrigin(verybottom, middle));
+                    out.println(setTitle("Number of propagations per second"));
+                    out.println(SET_Y2RANGE_0);
                     GnuplotDataFile speedDF = new GnuplotDataFile(this.dataPath
-                            + "-speed.dat", Color.cyan, "Speed", "lines");
+                            + SPEED_DAT, Color.cyan, SPEED, "lines");
                     GnuplotDataFile cleanDF = new GnuplotDataFile(this.dataPath
-                            + "-speed-clean.dat", Color.orange, "Clean",
-                            "impulses");
+                            + "-speed-clean.dat", Color.orange, CLEAN,
+                            IMPULSES);
                     GnuplotDataFile restartDF = new GnuplotDataFile(
-                            this.dataPath + "-speed-restart.dat", Color.gray,
-                            "Restart", "impulses");
+                            this.dataPath + SPEED_RESTART_DAT, Color.gray,
+                            RESTART, IMPULSES);
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { speedDF },
                                     new GnuplotDataFile[] { cleanDF, restartDF },
                                     true, 50));
                 }
-                out.println("unset multiplot");
+                out.println(UNSET_MULTIPLOT);
                 int pauseTime = this.visuPreferences.getRefreshTime() / 1000;
                 out.println("pause " + pauseTime);
-                out.println("reread");
+                out.println(REREAD);
                 out.close();
 
-                this.logger.log("Gnuplot will start in a few seconds.");
+                this.logger.log(GNUPLOT_WILL_START_IN_A_FEW_SECONDS);
 
                 Thread errorStreamThread = new Thread() {
                     @Override
@@ -282,15 +334,15 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                             GnuplotBasedSolverVisualisation.this.logger
                                     .log("reads "
                                             + GnuplotBasedSolverVisualisation.this.dataPath
-                                            + "-gnuplot.gnuplot");
+                                            + GNUPLOT_GNUPLOT);
                             GnuplotBasedSolverVisualisation.this.gnuplotProcess = Runtime
                                     .getRuntime()
                                     .exec(GnuplotBasedSolverVisualisation.this.visuPreferences
                                             .createCommandLine(GnuplotBasedSolverVisualisation.this.dataPath
-                                                    + "-gnuplot.gnuplot"));
+                                                    + GNUPLOT_GNUPLOT));
 
                             GnuplotBasedSolverVisualisation.this.logger
-                                    .log("Gnuplot should have started now.");
+                                    .log(GNUPLOT_SHOULD_HAVE_STARTED_NOW);
 
                             BufferedReader gnuInt = new BufferedReader(
                                     new InputStreamReader(
@@ -319,10 +371,31 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
         }
     }
 
+    private String setYTicsFrom1ToNVar() {
+        return "set ytics add (1," + this.nVar + ")";
+    }
+
+    private String setYRangeFrom1ToNvar() {
+        return "set yrange [1:" + this.nVar + "]";
+    }
+
+    private String setOrigin(double bottom, double right) {
+        return "set origin " + right + "," + bottom;
+    }
+
+    private String setSize(double width, double height) {
+        return "set size " + width + "," + height;
+    }
+
+    private String setTitle(String title) {
+        return "set title \"" + title + "\"";
+
+    }
+
     public void stopGnuplot() {
         if (this.gnuplotProcess != null) {
             this.gnuplotProcess.destroy();
-            this.logger.log("Gnuplot should be deactivated...");
+            this.logger.log(GNUPLOT_SHOULD_BE_DEACTIVATED);
         }
         this.gnuplotProcess = null;
     }
