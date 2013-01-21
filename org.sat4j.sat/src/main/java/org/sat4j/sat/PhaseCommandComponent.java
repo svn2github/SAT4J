@@ -35,8 +35,6 @@ public class PhaseCommandComponent extends CommandComponent {
     private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
     private final static String PHASE_PATH_SAT = "org.sat4j.minisat.orders";
 
-    // private RemoteControlStrategy telecomStrategy;
-
     private SolverController solverController;
 
     public PhaseCommandComponent(String name, SolverController commandPanel,
@@ -67,12 +65,6 @@ public class PhaseCommandComponent extends CommandComponent {
 
         this.phaseList = new JComboBox(getListOfPhaseStrategies().toArray());
         this.phaseList.setSelectedItem(this.currentPhaseSelectionStrategy);
-
-        // phaseList.addActionListener(new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        // modifyRestartParamPanel();
-        // }
-        // });
 
         tmpPanel1.add(this.phaseListLabel);
         tmpPanel1.add(this.phaseList);
@@ -122,8 +114,6 @@ public class PhaseCommandComponent extends CommandComponent {
     public List<String> getListOfPhaseStrategies() {
         List<String> resultRTSI = RTSI.find(PHASE_STRATEGY_CLASS);
         List<String> finalResult = new ArrayList<String>();
-
-        // finalResult.add(RESTART_NO_STRATEGY);
 
         for (String s : resultRTSI) {
             if (!s.contains("Remote")) {

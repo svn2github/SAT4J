@@ -54,7 +54,8 @@ import java.util.zip.ZipEntry;
  * That code appeared in Java World 113 in an article written by Daniel Le Berre
  * http://www.javaworld.com/javatips/jw-javatip113.html
  * 
- * The initial code of JWhich, on which is based this code, was published in JavaWorld 105 by Mike Clark
+ * The initial code of JWhich, on which is based this code, was published in
+ * JavaWorld 105 by Mike Clark
  * http://www.javaworld.com/javaworld/javatips/jw-javatip105.html
  * 
  * @author sroussel and dleberre
@@ -67,14 +68,12 @@ public class RTSI {
     private RTSI() {
         // prevent creation of an instance of that class
     }
-    
+
     public static List<String> find(String tosubclassname, boolean fullname) {
         alreadySeenPckges = new ArrayList<String>();
         Set<String> v = new HashSet<String>();
         Set<String> tmp;
         try {
-            // ClassLoader.getSystemClassLoader().setPackageAssertionStatus("org.sat4j",
-            // true);
             Class<?> tosubclass = Class.forName(tosubclassname);
             Package[] pcks = Package.getPackages();
             for (Package pck : pcks) {
@@ -208,11 +207,9 @@ public class RTSI {
                     ZipEntry entry = e.nextElement();
                     String entryname = entry.getName();
                     if (entryname.startsWith(starts)
-                    // &&(entryname.lastIndexOf('/')<=starts.length())
                             && entryname.endsWith(".class")) {
                         String classname = entryname.substring(0,
                                 entryname.length() - 6);
-                        // System.out.println(classname);
                         if (classname.startsWith("/")) {
                             classname = classname.substring(1);
                         }
@@ -232,18 +229,9 @@ public class RTSI {
                                 }
                             }
                         } catch (NoClassDefFoundError cnfex) {
-                            // System.out.println("Warning : no classDefFoundError : "
-                            // + classname);
                         } catch (ClassNotFoundException cnfex) {
                             System.err.print(cnfex);
                         }
-                        // catch (InstantiationException iex) {
-                        // // We try to instanciate an interface
-                        // // or an object that does not have a
-                        // // default constructor
-                        // } catch (IllegalAccessException iaex) {
-                        // // The class is not public
-                        // }
                     }
                 }
             } catch (IOException ioex) {

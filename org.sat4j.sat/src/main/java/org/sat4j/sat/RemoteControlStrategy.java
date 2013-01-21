@@ -168,7 +168,6 @@ public class RemoteControlStrategy implements RestartStrategy,
     }
 
     public void onRestart() {
-        // logger.log("Has restarted");
         this.restart.onRestart();
     }
 
@@ -179,7 +178,7 @@ public class RemoteControlStrategy implements RestartStrategy,
     public SearchParams getSearchParams() {
         return this.solver.getSearchParams();
     }
-    
+
     public SolverStats getSolverStats() {
         return this.solver.getStats();
     }

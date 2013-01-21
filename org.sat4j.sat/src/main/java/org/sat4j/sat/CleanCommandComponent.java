@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -22,8 +21,6 @@ import javax.swing.border.TitledBorder;
 import org.sat4j.minisat.core.LearnedConstraintsEvaluationType;
 
 public class CleanCommandComponent extends CommandComponent {
-
-    // private ICDCLLogger logger;
 
     /**
      * 

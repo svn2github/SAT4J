@@ -70,8 +70,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 	 */
     private static final long serialVersionUID = 1L;
 
-    // private String lookAndFeel;
-
     public static final Dimension dim = Toolkit.getDefaultToolkit()
             .getScreenSize();
 
@@ -84,9 +82,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
     private String ramdisk;
 
-    // private RemoteControlStrategy telecomStrategy;
-    // private RandomWalkDecorator randomWalk;
-    // private ICDCL solver;
     private String[] args;
     private VisuPreferencesFrame visuFrame;
 
@@ -101,23 +96,11 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
         this.filename = filename;
         this.ramdisk = ramdisk;
-        // this.solver=solver;
         this.args = args.clone();
         initLookAndFeel();
 
         createAndShowGUI();
     }
-
-    // public RemoteControlFrame(String filename, String ramdisk, ICDCL solver){
-    // super("Remote Control");
-    //
-    // this.filename=filename;
-    // this.ramdisk=ramdisk;
-    // this.solver=solver;
-    // initLookAndFeel();
-    //
-    // createAndShowGUI();
-    // }
 
     public RemoteControlFrame(String filename, String ramdisk) {
         this(filename, ramdisk, new String[] {});
@@ -126,10 +109,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
     public RemoteControlFrame(String filename) {
         this(filename, "", new String[] {});
     }
-
-    // public RemoteControlFrame(String filename, ICDCL solver){
-    // this(filename, "",solver);
-    // }
 
     public RemoteControlFrame(String filename, String[] args) {
         this(filename, "", args);
@@ -166,7 +145,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
         this.add(scrollPane);
 
-        // this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(new WindowAdapter() {
 
             @Override
@@ -206,15 +184,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         this.menu = new JMenu("File");
         this.barreMenu.add(this.menu);
 
-        // JMenuItem aboutSolver = new JMenuItem("About Solver");
-        // menu.add(aboutSolver);
-        //
-        // aboutSolver.addActionListener(new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        // clickOnAboutSolver();
-        // }
-        // });
-
         this.activateTracing = new JMenuItem(DEACTIVATE);
         this.menu.add(this.activateTracing);
 
@@ -243,7 +212,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
                 RemoteControlFrame.this.commandePanel
                         .activateGnuplotTracing(RemoteControlFrame.this.activateTracing
                                 .getText().equals(DEACTIVATE));
-                // activateTracing(is)
                 log("Use gnuplot tracing");
             }
         });
@@ -262,15 +230,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
             }
         });
 
-        // JMenuItem reinitialiserItem = new JMenuItem("R�initialiser");
-        // menu.add(reinitialiserItem);
-        //
-        // reinitialiserItem.addActionListener(new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        // reinitialiser();
-        // }
-        // });
-
         this.menu.addSeparator();
 
         JMenuItem quit = new JMenuItem("Exit");
@@ -278,14 +237,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // String[] cmdarray = new String[]{"killall","gnuplot"};
-                // try{
-                // Runtime.getRuntime().exec(cmdarray);
-                // }
-                // catch(IOException ex){
-                // ex.printStackTrace();
-                // }
-                // System.exit(NORMAL);
                 RemoteControlFrame.this.commandePanel.stopVisu();
                 System.exit(NORMAL);
             }
@@ -348,14 +299,12 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         if (b) {
             log("Activated tracing");
             this.activateTracing.setText(DEACTIVATE);
-            // commandePanel.startVisu();
             this.commandePanel.setPlotActivated(true);
         } else {
             log("Deactivated tracing.");
             this.activateTracing.setText(ACTIVATE);
             this.commandePanel.stopVisu();
             this.commandePanel.setPlotActivated(false);
-            // commandePanel.activateGnuplotTracing(b);
         }
         if (this.commandePanel.getStartStopText().equals("Stop")
                 && this.activateTracing.getText().equals(ACTIVATE)) {

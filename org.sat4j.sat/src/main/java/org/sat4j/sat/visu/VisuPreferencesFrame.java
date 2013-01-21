@@ -162,9 +162,6 @@ public class VisuPreferencesFrame extends JFrame {
         this.restartButton.setBorderPainted(false);
         this.restartButton.setBackground(this.preferences.getRestartColor());
 
-        // restartColorLabel.setEnabled(displayRestartsCheckBox.isSelected());
-        // restartButton.setEnabled(displayRestartsCheckBox.isSelected());
-
         this.restartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Color color = JColorChooser
@@ -260,7 +257,6 @@ public class VisuPreferencesFrame extends JFrame {
             }
         });
 
-        // graphOptionsPanel.add(new JLabel());
         this.graphPanel = new JPanel();
         this.graphPanel.setLayout(new BoxLayout(this.graphPanel,
                 BoxLayout.Y_AXIS));

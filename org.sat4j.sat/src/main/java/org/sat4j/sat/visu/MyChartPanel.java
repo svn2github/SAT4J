@@ -16,10 +16,7 @@ public class MyChartPanel extends JPanel {
      * 
      */
     private static final long serialVersionUID = 1L;
-    // private Chart2D chart;
     private JLabel titleLabel;
-
-    // private String titleText;
 
     public MyChartPanel(Chart2D chart, String title) {
         this(chart, title, Color.WHITE, Color.BLACK);
@@ -27,8 +24,6 @@ public class MyChartPanel extends JPanel {
 
     public MyChartPanel(Chart2D chart, String title, Color bg, Color fg) {
         super();
-        // this.chart = chart;
-        // this.titleText = title;
         this.titleLabel = new JLabel(title);
 
         Font f = this.titleLabel.getFont();
@@ -42,8 +37,6 @@ public class MyChartPanel extends JPanel {
         this.titleLabel.setBackground(bg);
         this.titleLabel.setForeground(fg);
 
-        // this.setBorder(new CompoundBorder(new TitledBorder(null, "",
-        // TitledBorder.LEFT, TitledBorder.TOP), new EmptyBorder(2, 2, 2, 2)));
         this.setBorder(new EmptyBorder(4, 4, 4, 4));
         this.setLayout(new BorderLayout());
 

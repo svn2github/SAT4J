@@ -295,8 +295,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
 
     @Override
     protected IProblem readProblem(String problemname)
-            throws ParseFormatException, IOException,
-            ContradictionException {
+            throws ParseFormatException, IOException, ContradictionException {
         ISolver theSolver = (ISolver) super.readProblem(problemname);
         if (this.k > 0) {
             IVecInt literals = new VecInt();
@@ -425,9 +424,6 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
                 }
                 System.exit(lanceur.getExitCode().value());
             } else {
-                // RemoteControlFrame frame = new RemoteControlFrame(filename,
-                // "",
-                // cdclSolver);
                 RemoteControlFrame frame = new RemoteControlFrame(
                         this.filename, "", args);
                 frame.activateTracing(this.modeTracing);

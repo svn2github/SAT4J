@@ -15,7 +15,7 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
      * 
      */
     private static final long serialVersionUID = 1L;
-    
+
     private VisuPreferences visuPreferences;
     private int nVar;
     private Process gnuplotProcess;
@@ -81,16 +81,12 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     GnuplotDataFile conflictLevelCleanDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-level-clean.dat",
                             Color.orange, "Clean", "impulses");
-                    // out.println(gnuplotPreferences.generatePlotLine(conflictLevelDF,
-                    // true));
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { conflictLevelDF },
                                     new GnuplotDataFile[] {
                                             conflictLevelRestartDF,
                                             conflictLevelCleanDF }, true));
-                    // out.println(visuPreferences.generatePlotLine(conflictLevelDF,f,
-                    // instancePath+ "-conflict-level-restart.dat", true));
                 }
 
                 // top left: size of learned clause
@@ -99,10 +95,6 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     out.println("set autoscale x");
                     out.println("set autoscale ymax");
                     out.println("set y2range [0:]");
-                    // out.println("set y2range[0:"+nbVariables+"]");
-                    // out.println("set autoscale y2");
-                    // out.println("set nologscale x");
-                    // out.println("set nologscale y");
                     out.println("set size " + width + "," + height);
                     out.println("set origin " + left + "," + top);
                     out.println("set title \"Size of the clause learned (after minimization if any)\"");
@@ -115,8 +107,6 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     GnuplotDataFile learnedClausesCleanDF = new GnuplotDataFile(
                             this.dataPath + "-learned-clauses-size-clean.dat",
                             Color.orange, "Clean", "impulses");
-                    // out.println(gnuplotPreferences.generatePlotLine(learnedClausesDF,
-                    // true));
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { learnedClausesDF },
@@ -157,8 +147,6 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                             + this.dataPath
                             + "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"
                             + this.nVar + "]};");
-                    // out.println("set nologscale x");
-                    // out.println("set nologscale y");
                     out.println("set size " + width + "," + height);
                     out.println("set origin " + left + "," + bottom);
                     out.println("set title \"Index of the decision variables\"");
@@ -171,17 +159,12 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     GnuplotDataFile decisionCleanDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-clean.dat",
                             Color.orange, "Clean", "impulses");
-                    // out.println(gnuplotPreferences.generatePlotLine(negativeDF,
-                    // true));
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { negativeDF },
                                     new GnuplotDataFile[] { decisionRestartDF,
                                             decisionCleanDF }, true,
                                     this.visuPreferences.getNbLinesRead() * 4));
-                    // out.println(visuPreferences.generatePlotLine(negativeDF,f,instancePath+
-                    // "-decision-indexes-restart.dat" , true,
-                    // visuPreferences.getNbLinesRead()*4));
 
                     // verybottom left: index decision variable
                     out.println("unset autoscale");
@@ -189,23 +172,12 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                             + this.dataPath
                             + "-decision-indexes-pos.dat | wc -l\")!=0){set autoscale x;set yrange [1:"
                             + this.nVar + "]; set y2range [0:]; }");
-                    // out.println("set autoscale y");
-
-                    // out.println("if(system(\"head "+ instancePath+
-                    // "-decision-indexes-pos.dat | wc -l\")!=0){set yrange [1:"+nbVariables+"];}");
-                    // out.println("set nologscale x");
-                    // out.println("set nologscale y");
                     out.println("set size " + width + "," + height);
                     out.println("set origin " + left + "," + verybottom);
                     out.println("set title \"Index of the decision variables\"");
                     GnuplotDataFile positiveDF = new GnuplotDataFile(
                             this.dataPath + "-decision-indexes-pos.dat",
                             Color.green, "Positive Decision");
-                    // out.println(gnuplotPreferences.generatePlotLine(positiveDF,
-                    // true));
-                    // out.println(visuPreferences.generatePlotLine(positiveDF,f,instancePath+
-                    // "-decision-indexes-restart.dat", true,
-                    // visuPreferences.getNbLinesRead()*4));
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { positiveDF },
@@ -235,7 +207,6 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     GnuplotDataFile trailLevelCleanDF = new GnuplotDataFile(
                             this.dataPath + "-conflict-depth-clean.dat",
                             Color.orange, "Clean", "impulses");
-                    // out.println(gnuplotPreferences.generatePlotLine(trailLevelDF,true));
                     out.println(this.visuPreferences
                             .generatePlotLineOnDifferenteAxes(
                                     new GnuplotDataFile[] { trailLevelDF },
@@ -265,8 +236,6 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     out.println(this.visuPreferences.generatePlotLine(
                             heuristicsDF, f, "", false));
                 }
-                // out.println("plot \"" + instancePath+
-                // "-heuristics.dat\" with lines title \"Activity\"");
 
                 if (this.visuPreferences.isDisplaySpeed()) {
                     out.println("set autoscale x");

@@ -43,19 +43,9 @@ public class LaunchRemoteControl {
      * @param args
      */
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
-        // TelecommandeStrategy telecom = new TelecommandeStrategy();
-        //
-        // IPBCDCLSolver pbSolver = SolverFactory.newDefault();
 
         String filename = "";
         String ramdisk = "";
-        //
-        // if(args.length>0){
-        // filename = args[0];
-        // }
-        // else
-        // filename="";
 
         switch (args.length) {
         case 1:
@@ -77,59 +67,7 @@ public class LaunchRemoteControl {
             break;
         }
 
-        // pbSolver.setTimeout(3600);
-        // pbSolver.setVerbose(true);
-        //
-        // Reader reader = new OPBReader2010(pbSolver);
-        //
-        // pbSolver.setRestartStrategy(telecom);
-        //
-        // telecom.setSolver(pbSolver);
-        // pbSolver.setLearnedConstraintsDeletionStrategy(telecom);
-        //
-        // //pbSolver.setNeedToReduceDB(true);
-        //
-        //
-        //
-        // pbSolver.setSearchListener(new MultiTracing(
-        // new ConflictLevelTracing(filename
-        // + "-conflict-level"), new DecisionTracing(
-        // filename + "-decision-indexes"),
-        // new LearnedClausesSizeTracing(filename
-        // + "-learned-clauses-size"),
-        // new ConflictDepthTracing(filename
-        // + "-conflict-depth")));
-        //
-        // RandomWalkDecorator rw = new
-        // RandomWalkDecorator((VarOrderHeap)((Solver)pbSolver).getOrder(), 0);
-        // pbSolver.setOrder(rw);
-
-        // IPBCDCLSolver pbSolver = SolverFactory.newDefault();
-
         RemoteControlFrame frame = new RemoteControlFrame(filename, ramdisk);
-
-        // try{
-        // IProblem problem = reader.parseInstance(filename);
-        // if(problem.isSatisfiable()){
-        // System.out.println("Satisfiable !");
-        // reader.decode(problem.model(), new PrintWriter(System.out));
-        // }
-        // else{
-        // System.out.println("Unsatisfiable !");
-        // }
-        //
-        //
-        // } catch (FileNotFoundException e) {
-        // // TODO Auto-generated catch block
-        // } catch (ParseFormatException e) {
-        // // TODO Auto-generated catch block
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // } catch (ContradictionException e) {
-        // System.out.println("Unsatisfiable (trivial)!");
-        // } catch (TimeoutException e) {
-        // System.out.println("Timeout, sorry!");
-        // }
 
     }
 

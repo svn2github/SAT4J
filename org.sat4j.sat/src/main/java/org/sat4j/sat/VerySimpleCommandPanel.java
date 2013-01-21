@@ -88,7 +88,6 @@ public class VerySimpleCommandPanel extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(this.console);
 
-        // scrollPane.setMinimumSize(new Dimension(100,100));
         scrollPane.setPreferredSize(new Dimension(100, 100));
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -111,11 +110,5 @@ public class VerySimpleCommandPanel extends JPanel {
         this.console.repaint();
         this.repaint();
     }
-
-    // public void maj(){
-    // console.append(fauxModele.getLastCommande() + "\n");
-    // console.repaint();
-    // this.repaint();
-    // }
 
 }

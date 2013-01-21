@@ -297,7 +297,6 @@ public class VisuPreferences {
 
         buf.append("plot");
 
-        // String s = "plot ";
         String restartString;
         String tailString = "";
         if (this.slidingWindows && slidingThisWindows) {
@@ -425,11 +424,5 @@ public class VisuPreferences {
 
         return buf.toString();
     }
-
-    // public String generatePlotLineOnDifferenteAxes(GnuplotDataFile df1,
-    // GnuplotDataFile df2, boolean slidingThisWindow){
-    // return generatePlotLineOnDifferenteAxes(new GnuplotDataFile[]{df1}, new
-    // GnuplotDataFile[]{df2}, slidingThisWindow);
-    // }
 
 }

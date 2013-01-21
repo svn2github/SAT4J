@@ -145,7 +145,6 @@ public final class Solvers {
                 logger.log("read " + qualification + "." + configline);
                 if (configline.contains("Objective")
                         && qualification.contains("minisat")) {
-                    // log(qualification);
                     qualification = qualification.replaceFirst("minisat", "pb");
                 }
                 configline = qualification + "." + configline;
@@ -394,8 +393,8 @@ public final class Solvers {
     }
 
     public static String uncompressed(String filename) {
-        if (filename != null && (filename.endsWith(".bz2")
-                || filename.endsWith(".gz"))) {
+        if (filename != null
+                && (filename.endsWith(".bz2") || filename.endsWith(".gz"))) {
             return filename.substring(0, filename.lastIndexOf('.'));
         }
         return filename;
@@ -498,8 +497,6 @@ public final class Solvers {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (NoClassDefFoundError cnfex) {
-                // System.out.println("Warning : no classDefFoundError : " +
-                // classname);
             }
         }
         logger.log("Available learning (" + Solvers.LEARNING + "): "
@@ -583,13 +580,6 @@ public final class Solvers {
 
     public static <T extends ISolver> void showAvailableSolvers(
             ASolverFactory<T> afactory, ILogAble logger) {
-        // if (afactory != null) {
-        //			log("Available solvers: "); //$NON-NLS-1$
-        // String[] names = afactory.solverNames();
-        // for (int i = 0; i < names.length; i++) {
-        // log(names[i]);
-        // }
-        // }
         showAvailableSolvers(afactory, "", logger);
     }
 

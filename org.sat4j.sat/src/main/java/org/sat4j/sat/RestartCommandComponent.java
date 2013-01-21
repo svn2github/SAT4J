@@ -142,12 +142,6 @@ public class RestartCommandComponent extends CommandComponent {
 
         this.restartButtonPanel.add(this.restartButton);
 
-        // this.restartPropertiesPanel.setPreferredSize(new Dimension(100, 50));
-
-        // this.add(tmpPanel1, BorderLayout.NORTH);
-        // this.add(this.restartPropertiesPanel, BorderLayout.CENTER);
-        // this.add(this.restartButtonPanel, BorderLayout.SOUTH);
-
         c1.gridy = 0;
         chooseRestartPanel.add(tmpPanel1, c1);
 
@@ -162,17 +156,10 @@ public class RestartCommandComponent extends CommandComponent {
     }
 
     public void initFactorParam() {
-        // lubyPanel = new JPanel();
-        // // lubyPanel.setLayout(new FlowLayout());
 
         this.factorLabel = new JLabel(FACTOR);
         this.factorField = new JTextField(
                 LubyRestarts.DEFAULT_LUBY_FACTOR + "", 5);
-        // factorField.setMargin(new Insets(0, 0, 0, 0));
-        // factorLabel.setLabelFor(factorField);
-
-        // lubyPanel.add(factorLabel);
-        // lubyPanel.add(factorField);
 
     }
 
@@ -243,7 +230,7 @@ public class RestartCommandComponent extends CommandComponent {
             shouldInit = isNotSameRestart || factorChanged;
 
             if (shouldInit) {
-                this.controller.init(params,stats);
+                this.controller.init(params, stats);
             }
 
         } else {
@@ -252,7 +239,7 @@ public class RestartCommandComponent extends CommandComponent {
                         RESTART_PATH + "." + choix).newInstance();
                 assert restart != null;
                 this.controller.setRestartStrategy(restart);
-                this.controller.init(params,stats);
+                this.controller.init(params, stats);
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -265,9 +252,6 @@ public class RestartCommandComponent extends CommandComponent {
 
         this.currentRestart = choix;
 
-        // if(shouldInit)
-        // telecomStrategy.setRestartStrategy(restart,params);
-
     }
 
     public void hasClickedOnRestart() {
@@ -277,8 +261,6 @@ public class RestartCommandComponent extends CommandComponent {
     public List<String> getListOfRestartStrategies() {
         List<String> resultRTSI = RTSI.find(RESTART_STRATEGY_CLASS);
         List<String> finalResult = new ArrayList<String>();
-
-        // finalResult.add(RESTART_NO_STRATEGY);
 
         for (String s : resultRTSI) {
             if (!s.contains("Remote")) {

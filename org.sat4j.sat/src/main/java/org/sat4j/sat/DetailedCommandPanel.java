@@ -157,9 +157,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private boolean firstStart;
 
-    // private JChartBasedSolverVisualisation visu;
-
-    // private boolean useCustomizedSolver;
     private StartSolverEnum startConfig;
 
     private Thread solveurThread;
@@ -210,10 +207,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private JLabel exactly1Label;
     private JComboBox exactly1CB;
 
-    // private JCheckBox useCustomizedSolverCB;
-    // private final static String USE_CUSTOMIZED_SOLVER =
-    // "Use customized solver";
-
     private JRadioButton solverLineParamLineRadio;
     private JRadioButton solverLineParamRemoteRadio;
     private JRadioButton solverListParamListRadio;
@@ -235,7 +228,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private JButton pauseButton;
     private static final String PAUSE = "Pause";
     private static final String RESUME = "Resume";
-    // private boolean isInterrupted;
 
     private final static String RESTART_PANEL = "Restart strategy";
     private RestartCommandComponent restartPanel;
@@ -334,11 +326,9 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.scrollPane = new JScrollPane(this.console);
 
-        // scrollPane.setMinimumSize(new Dimension(100,100));
         this.scrollPane.setPreferredSize(new Dimension(400, 200));
         this.scrollPane.getVerticalScrollBar().setValue(
                 this.scrollPane.getVerticalScrollBar().getMaximum());
-        // scrollPane.setAutoscrolls(true);
 
         this.tabbedPane = new MyTabbedPane();
 
@@ -359,11 +349,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         cRestart.fill = GridBagConstraints.HORIZONTAL;
         cRestart.weightx = 1;
         cRestart.weighty = 1;
-        // cRestart.gridx = 0;
-        // cRestart.gridy=0;
 
         restartBigPanel.add(this.restartPanel, cRestart);
-        // restartBigPanel.add(hotSolverPanel);
 
         this.tabbedPane.addTab("Restart", null, restartBigPanel,
                 "restart strategy & options");
@@ -380,7 +367,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         JPanel tmpPhasePanel = new JPanel();
         tmpPhasePanel.setLayout(new GridBagLayout());
         GridBagConstraints cPhase = new GridBagConstraints();
-        // cPhase.anchor = GridBagConstraints.PAGE_START;
         cPhase.fill = GridBagConstraints.HORIZONTAL;
         cPhase.weightx = 1;
         cPhase.weighty = .2;
@@ -411,7 +397,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         JPanel tmpClausesPanel = new JPanel();
         tmpClausesPanel.setLayout(new GridBagLayout());
         GridBagConstraints cClauses = new GridBagConstraints();
-        // cPhase.anchor = GridBagConstraints.PAGE_START;
         cClauses.fill = GridBagConstraints.HORIZONTAL;
         cClauses.weightx = 1;
         cClauses.weighty = .2;
@@ -463,8 +448,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.instanceLabel = new JLabel(INSTANCE);
         this.instancePathField = new JTextField(20);
         this.instancePathField.setText(this.instancePath);
-
-        // this.instancePathField.setEditable(false);
 
         this.instanceLabel.setLabelFor(this.instancePathField);
 
@@ -534,8 +517,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.choixSolverPanel.setLayout(new BoxLayout(choixSolverPanel,
                 BoxLayout.Y_AXIS));
-
-        // this.choixSolverPanel.setLayout(new BorderLayout(0, 0));
 
         this.choixSolver = new JLabel(CHOIX_SOLVER);
 
@@ -610,8 +591,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
             }
         });
-
-        // this.chooseStartConfigLabel = new JLabel(CHOOSE_START_CONFIG);
 
         JPanel tmpPanel = new JPanel();
         tmpPanel.setLayout(new GridBagLayout());
@@ -806,7 +785,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             this.solverListParamRemoteRadio.setEnabled(false);
         }
 
-        // this.choixSolverPanel.add(tmpPanel2, BorderLayout.SOUTH);
     }
 
     public String getStartStopText() {
@@ -1066,27 +1044,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             return;
         }
 
-        // switch (problemType) {
-        // case PB_OPT:
-        // this.problem = new PseudoOptDecorator((IPBCDCLSolver) this.solver);
-        // break;
-        // case CNF_MAXSAT:
-        // case WCNF_MAXSAT:
-        // this.solver = new WeightedMaxSatDecorator(
-        // (IPBCDCLSolver) this.solver, true);
-        // if (cmd.hasOption("lo")) {
-        // this.problem = new ConstraintRelaxingPseudoOptDecorator(
-        // (WeightedMaxSatDecorator) asolver);
-        // } else {
-        // this.problem = new PseudoOptDecorator(
-        // (WeightedMaxSatDecorator) asolver, false, !equivalence);
-        // }
-        // break;
-        // default:
-        // setLauncherMode(ILauncherMode.DECISION);
-        // break;
-        // }
-
         log("# Started solver "
                 + this.solver.getSolvingEngine().getClass().getSimpleName());
         log("# on instance " + this.instancePath);
@@ -1096,16 +1053,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                         .getSimpleName());
         log("# Random walk probability = " + this.randomWalk.getProbability());
         log("# variables : " + this.solver.nVars());
-        // log("# Number of conflicts before cleaning = " + nbConflicts);
 
         this.solveurThread = new Thread() {
             @Override
             public void run() {
-                // Thread thisThread = Thread.currentThread();
-                // if(shouldStop){
-                // System.out.println("coucou");
-                // }
-                // while(!shouldStop){
+
                 try {
                     DetailedCommandPanel.this.stringWriter = new StringWriter();
                     if (DetailedCommandPanel.this.problem.isSatisfiable()) {
@@ -1134,8 +1086,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 } catch (TimeoutException e) {
                     log("Timeout, sorry!");
                 }
-                // log("Solver has stopped");
-                // }
             }
         };
         this.solveurThread.start();
@@ -1374,7 +1324,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public SolverStats getSolverStats() {
         return this.telecomStrategy.getSolverStats();
     }
-    
+
     public void init(SearchParams params, SolverStats stats) {
         this.telecomStrategy.init(params, stats);
         log("Init restart with params");
@@ -1402,7 +1352,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public LearnedConstraintsEvaluationType getLearnedConstraintsEvaluationType() {
-        // TODO get the real evaluation !!
         return LearnedConstraintsEvaluationType.ACTIVITY;
     }
 
@@ -1594,7 +1543,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public void updateListOfSolvers() {
         Vector<String> theVector = new Vector<String>();
-        // List<String> theList = new ArrayList<String>();
         String defaultSolver = "";
 
         if (instancePath == null || instancePath.length() == 0) {
@@ -1650,7 +1598,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.listeSolvers.setModel(new DefaultComboBoxModel(theVector));
         this.listeSolvers.setSelectedItem(defaultSolver);
         this.choixSolverPanel.repaint();
-        // this.repaint();
     }
 
     public void setInstancePanelEnabled(boolean enabled) {
@@ -1723,7 +1670,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void init(ISolverService solverService) {
-        // nVar = solverService.nVars();
         this.conflictCounter = 0;
     }
 
@@ -1734,7 +1680,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.end = System.currentTimeMillis();
         if (this.end - this.begin >= 2000) {
             long tmp = this.end - this.begin;
-            // index += tmp;
 
             this.cleanPanel.setSpeedLabeltext(this.propagationsCounter / tmp
                     * 1000 + "");
@@ -1765,7 +1710,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void solutionFound(int[] model) {
-        // if(problem.)
         log("Found a solution !! ");
         logsameline(this.stringWriter.toString());
         this.stringWriter.getBuffer().delete(0,
@@ -1806,7 +1750,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         public void setSelectedIndex(int index) {
             if (this.getTabCount() == 5) {
                 if (index == this.getTabCount() - 1) {
-                    // System.out.println("je suis l�");
                     if (DetailedCommandPanel.this.solver != null
                             && DetailedCommandPanel.this.startStopButton
                                     .getText().equals(STOP)) {
@@ -1843,8 +1786,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                                         .getGraphics());
                         DetailedCommandPanel.this.aboutSolverPanel.repaint();
                     }
-
-                    // System.out.println(textArea.getText());
                 }
             }
 

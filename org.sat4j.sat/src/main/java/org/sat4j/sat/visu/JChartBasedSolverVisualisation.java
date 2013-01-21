@@ -35,7 +35,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
     private Chart2D positiveDecisionVariableChart;
     private Chart2D negativeDecisionVariableChart;
     private Chart2D propagationPerSecondChart;
-    // private Chart2D solutionValueChart;
 
     private MyChartPanel variablesEvaluationPanel;
     private MyChartPanel clausesEvaluationPanel;
@@ -124,7 +123,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
             }
         });
 
-        // visuFrame.setVisible(false);
     }
 
     public void initCharts() {
@@ -136,7 +134,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.positiveDecisionVariableChart = new Chart2D();
         this.negativeDecisionVariableChart = new Chart2D();
         this.propagationPerSecondChart = new Chart2D();
-        // solutionValueChart = new Chart2D();
 
         AxisTitle voidTitle = new AxisTitle("");
         this.variablesEvaluationChart.getAxisX().setAxisTitle(voidTitle);
@@ -155,8 +152,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.negativeDecisionVariableChart.getAxisY().setAxisTitle(voidTitle);
         this.propagationPerSecondChart.getAxisX().setAxisTitle(voidTitle);
         this.propagationPerSecondChart.getAxisY().setAxisTitle(voidTitle);
-        // solutionValueChart.getAxisX().setAxisTitle(voidTitle);
-        // solutionValueChart.getAxisY().setAxisTitle(voidTitle);
     }
 
     public void addChartsToFrame() {
@@ -210,12 +205,10 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         }
         if (this.pref.isDisplaySpeed()) {
             this.visuFrame.add(this.propagationPerSecondPanel);
-            // visuFrame.add(solutionValueChart);
         }
     }
 
     public void initTraces() {
-        // positiveDecisionTrace = new Trace2DLtd(5000, "Positive decision");
         this.positiveDecisionTrace = new Trace2DSimple("Positive decision");
         this.positiveDecisionTrace.setTracePainter(new TracePainterPlus());
         this.positiveDecisionTrace.setColor(new Color(0f, 0.78f, 0.09f));
@@ -250,29 +243,18 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.positiveDecisionVariableChart
                 .addTrace(this.restartPosDecisionTrace);
         this.positiveDecisionVariableChart.addTrace(this.cleanPosDecisionTrace);
-        // positiveDecisionVariableChart.set
         this.positiveDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 
-        // positiveDecisionVariableChart.addTrace(negativeDecisionTrace);
-        // positiveDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
-        // positiveDecisionVariableChart.getAxisY().setRangePolicy(new
-        // RangePolicyFixedViewport(new Range(0,nVar)));
         this.positiveDecisionVariableChart.getAxisX().setRangePolicy(
                 new RangePolicyHighestValues(8000));
-
-        // positiveDecisionVariableChart.addTrace(restartDecisionTrace);
 
         this.negativeDecisionVariableChart
                 .addTrace(this.restartNegDecisionTrace);
         this.negativeDecisionVariableChart.addTrace(this.cleanNegDecisionTrace);
         this.negativeDecisionVariableChart.addTrace(this.negativeDecisionTrace);
         this.negativeDecisionTrace.setZIndex(ITrace2D.ZINDEX_MAX);
-        // negativeDecisionVariableChart.addTrace(restartDecisionTrace);
         this.negativeDecisionVariableChart.getAxisX().setRangePolicy(
                 this.positiveDecisionVariableChart.getAxisX().getRangePolicy());
-        // negativeDecisionVariableChart.getAxisY().setRange(new Range(0,nVar));
-        // negativeDecisionVariableChart.addTrace(negativeDecisionTrace);
-        // negativeDecisionVariableChart.addTrace(restartDecisionTrace);
 
         this.conflictDepthTrace = new Trace2DLtd(15000, "Trail level");
         this.conflictDepthTrace.setTracePainter(new TracePainterPlus());
@@ -559,8 +541,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
     }
 
     public void start() {
-        // init();
-
         this.visuFrame.setVisible(true);
     }
 
