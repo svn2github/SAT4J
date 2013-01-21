@@ -64,7 +64,6 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
 import org.sat4j.ILauncherMode;
-import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.pb.IPBSolver;
@@ -92,6 +91,8 @@ import org.sat4j.tools.MultiTracing;
 @Deprecated
 public class Lanceur extends AbstractLauncher implements ILogAble {
 
+    private static final String NUMBER = "number";
+
     /**
      * 
      */
@@ -117,8 +118,6 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
         lanceur.run(args);
 
     }
-
-    private ASolverFactory<ISolver> factory;
 
     private String filename;
 
@@ -155,11 +154,9 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
                         .forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
                 Class<?>[] params = {};
                 Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
-                this.factory = (ASolverFactory) m.invoke(null, (Object[]) null);
             } catch (Exception e) { // DLB Findbugs warning ok
                 log("Wrong framework: " + framework
                         + ". Using minisat instead.");
-                this.factory = org.sat4j.minisat.SolverFactory.instance();
             }
 
             ICDCL asolver = Solvers.configureSolver(args, this);
@@ -486,13 +483,13 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
         op = options.getOption("S");
         op.setArgName("solverStringDefinition");
         op = options.getOption("t");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("T");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("C");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("k");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         op = options.getOption("d");
         op.setArgName("filename");
         op = options.getOption("f");
@@ -500,7 +497,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
         op = options.getOption("r");
         op.setArgName("searchlistener");
         op = options.getOption("rw");
-        op.setArgName("number");
+        op.setArgName(NUMBER);
         return options;
     }
 
