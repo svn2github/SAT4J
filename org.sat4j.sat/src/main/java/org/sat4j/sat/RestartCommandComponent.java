@@ -42,7 +42,7 @@ public class RestartCommandComponent extends CommandComponent {
     private final static String FACTOR = "Factor: ";
     private JTextField factorField;
 
-    public String currentRestart;
+    private String currentRestart;
 
     private final static String RESTART = "Restart";
     private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";

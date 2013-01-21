@@ -41,7 +41,6 @@ import org.apache.commons.cli.PosixParser;
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ExitCode;
 import org.sat4j.ILauncherMode;
-import org.sat4j.specs.ILogAble;
 import org.sat4j.maxsat.WeightedMaxSatDecorator;
 import org.sat4j.maxsat.reader.MSInstanceReader;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
@@ -53,6 +52,7 @@ import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ConflictDepthTracing;
@@ -93,7 +93,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
 
     private boolean launchRemoteControl;
 
-    static AbstractLauncher launcher;
+    private static AbstractLauncher launcher;
 
     public static void main(final String[] args) {
         launcher = new Launcher();
@@ -166,7 +166,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
 
             if (filename != null) {
                 String unzipped = Solvers.uncompressed(filename);
-                
+
                 if (unzipped.endsWith(".cnf") && isModeOptimization) {
                     typeProbleme = ProblemType.CNF_MAXSAT;
                 } else if (unzipped.endsWith(".wcnf")) {
@@ -295,7 +295,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
                 others++;
             }
 
-            if (asolver!=null) {
+            if (asolver != null) {
                 getLogWriter().println(asolver.toString(COMMENT_PREFIX)); //$NON-NLS-1$
             }
             return asolver;
