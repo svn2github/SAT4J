@@ -138,7 +138,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private static final long serialVersionUID = 1L;
 
-    public static final EmptyBorder border5 = new EmptyBorder(5, 5, 5, 5);
+    public static final EmptyBorder BORDER5 = new EmptyBorder(5, 5, 5, 5);
 
     private String ramdisk;
 
@@ -168,33 +168,33 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private JTextArea textArea;
 
     private JPanel instancePanel;
-    private final static String INSTANCE_PANEL = "Instance";
+    private static final String INSTANCE_PANEL = "Instance";
     private JLabel instanceLabel;
-    private final static String INSTANCE = "Path to instance: ";
+    private static final String INSTANCE = "Path to instance: ";
     private JTextField instancePathField;
     private String instancePath;
     private JButton browseButton;
-    private final static String BROWSE = "Browse";
+    private static final String BROWSE = "Browse";
 
     private String whereToWriteFiles;
 
-    private final static String MINISAT_PREFIX = "minisat";
-    private final static String PB_PREFIX = "pb";
-    private final static String MAXSAT_PREFIX = "maxsat";
+    private static final String MINISAT_PREFIX = "minisat";
+    private static final String PB_PREFIX = "pb";
+    private static final String MAXSAT_PREFIX = "maxsat";
     private JPanel choixSolverPanel;
-    private final static String CHOIX_SOLVER_PANEL = "Solver";
+    private static final String CHOIX_SOLVER_PANEL = "Solver";
     private JLabel choixSolver;
-    private final static String CHOIX_SOLVER = "Choose solver: ";
+    private static final String CHOIX_SOLVER = "Choose solver: ";
     private String selectedSolver;
     private JComboBox listeSolvers;
 
-    private final static String OPTMIZATION_MODE = "Optimization problem";
+    private static final String OPTMIZATION_MODE = "Optimization problem";
     private JCheckBox optimisationModeCB;
 
-    private final static String EQUIVALENCE = "Use equivalence instead of implication";
+    private static final String EQUIVALENCE = "Use equivalence instead of implication";
     private JCheckBox equivalenceCB;
 
-    private final static String LOWER = "Search solution by lower bounding instead of upper bounding";
+    private static final String LOWER = "Search solution by lower bounding instead of upper bounding";
     private JCheckBox lowerCB;
 
     private JLabel atMostKLabel;
@@ -212,12 +212,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private JRadioButton solverListParamRemoteRadio;
     private ButtonGroup solverConfigGroup;
 
-    private final static String SOLVER_LINE_PARAM_LINE_CONFIG = "Start customized solver as given in command line";
-    private final static String SOLVER_LINE_PARAM_REMOTE_CONFIG = "Start customized solver as given in command line with configuration given in the remote";
-    private final static String SOLVER_LIST_PARAM_LIST_CONFIG = "Start solver as chosen in list with its default configuration";
-    private final static String SOLVER_LIST_PARAM_REMOTE_CONFIG = "Start solver as chosen in list with configuration given in the remote";
+    private static final String SOLVER_LINE_PARAM_LINE_CONFIG = "Start customized solver as given in command line";
+    private static final String SOLVER_LINE_PARAM_REMOTE_CONFIG = "Start customized solver as given in command line with configuration given in the remote";
+    private static final String SOLVER_LIST_PARAM_LIST_CONFIG = "Start solver as chosen in list with its default configuration";
+    private static final String SOLVER_LIST_PARAM_REMOTE_CONFIG = "Start solver as chosen in list with configuration given in the remote";
 
-    private final static String CHOOSE_START_CONFIG = "Choose start configuration : ";
+    private static final String CHOOSE_START_CONFIG = "Choose start configuration : ";
 
     private JButton startStopButton;
     private static final String START = "Start";
@@ -227,23 +227,23 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private static final String PAUSE = "Pause";
     private static final String RESUME = "Resume";
 
-    private final static String RESTART_PANEL = "Restart strategy";
+    private static final String RESTART_PANEL = "Restart strategy";
     private RestartCommandComponent restartPanel;
 
-    private final static String RW_PANEL = "Random Walk";
+    private static final String RW_PANEL = "Random Walk";
     private RandomWalkCommandComponent rwPanel;
 
-    private final static String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
+    private static final String CLEAN_PANEL = "Learned Constraint Deletion Strategy";
     private CleanCommandComponent cleanPanel;
 
     private PhaseCommandComponent phasePanel;
-    private final static String PHASE_PANEL = "Phase Strategy";
+    private static final String PHASE_PANEL = "Phase Strategy";
 
     private SimplifierCommandComponent simplifierPanel;
-    private final static String SIMPLIFIER_PANEL = "Simplification strategy";
+    private static final String SIMPLIFIER_PANEL = "Simplification strategy";
 
     private HotSolverCommandComponent hotSolverPanel;
-    private final static String HOT_SOLVER_PANEL = "Hot solver";
+    private static final String HOT_SOLVER_PANEL = "Hot solver";
 
     private JTextArea console;
     private JScrollPane scrollPane;
@@ -439,7 +439,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.instancePanel.setName(INSTANCE_PANEL);
         this.instancePanel.setBorder(new CompoundBorder(new TitledBorder(null,
                 this.instancePanel.getName(), TitledBorder.LEFT,
-                TitledBorder.TOP), border5));
+                TitledBorder.TOP), BORDER5));
 
         this.instancePanel.setLayout(new BorderLayout(0, 0));
 
@@ -511,7 +511,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.choixSolverPanel.setName(CHOIX_SOLVER_PANEL);
         this.choixSolverPanel.setBorder(new CompoundBorder(new TitledBorder(
                 null, this.choixSolverPanel.getName(), TitledBorder.LEFT,
-                TitledBorder.TOP), border5));
+                TitledBorder.TOP), BORDER5));
 
         this.choixSolverPanel.setLayout(new BoxLayout(choixSolverPanel,
                 BoxLayout.Y_AXIS));
@@ -560,7 +560,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         tmpPanel.setName("Cardinality Constraints Encodings");
         tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, tmpPanel
-                .getName(), TitledBorder.LEFT, TitledBorder.TOP), border5));
+                .getName(), TitledBorder.LEFT, TitledBorder.TOP), BORDER5));
 
         atMostKLabel = new JLabel(AT_MOST_K);
         atMostKCB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
@@ -628,7 +628,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         tmpPanel2.setName(CHOOSE_START_CONFIG);
         tmpPanel2.setBorder(new CompoundBorder(new TitledBorder(null, tmpPanel2
-                .getName(), TitledBorder.LEFT, TitledBorder.TOP), border5));
+                .getName(), TitledBorder.LEFT, TitledBorder.TOP), BORDER5));
 
         this.solverLineParamLineRadio = new JRadioButton(
                 SOLVER_LINE_PARAM_LINE_CONFIG);

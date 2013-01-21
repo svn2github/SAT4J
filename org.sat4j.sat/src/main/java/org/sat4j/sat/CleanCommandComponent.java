@@ -93,7 +93,7 @@ public class CleanCommandComponent extends CommandComponent {
 
         this.setBorder(new CompoundBorder(new TitledBorder(null,
                 this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
-                DetailedCommandPanel.border5));
+                DetailedCommandPanel.BORDER5));
 
         this.setLayout(new BorderLayout());
 
@@ -153,7 +153,7 @@ public class CleanCommandComponent extends CommandComponent {
         JPanel tmpPanel = new JPanel();
         tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, "",
                 TitledBorder.LEFT, TitledBorder.TOP),
-                DetailedCommandPanel.border5));
+                DetailedCommandPanel.BORDER5));
 
         tmpPanel.setLayout(new BorderLayout());
 

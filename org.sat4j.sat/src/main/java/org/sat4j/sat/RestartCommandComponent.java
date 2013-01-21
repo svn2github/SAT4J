@@ -85,7 +85,7 @@ public class RestartCommandComponent extends CommandComponent {
 
         chooseRestartPanel.setBorder(new CompoundBorder(new TitledBorder(null,
                 this.getName(), TitledBorder.LEFT, TitledBorder.TOP),
-                DetailedCommandPanel.border5));
+                DetailedCommandPanel.BORDER5));
 
         JPanel tmpPanel1 = new JPanel();
         tmpPanel1.setLayout(new FlowLayout());
@@ -138,7 +138,7 @@ public class RestartCommandComponent extends CommandComponent {
         this.restartButtonPanel.setName(MANUAL_RESTART);
         this.restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(
                 null, this.restartButtonPanel.getName(), TitledBorder.LEFT,
-                TitledBorder.TOP), DetailedCommandPanel.border5));
+                TitledBorder.TOP), DetailedCommandPanel.BORDER5));
 
         this.restartButtonPanel.add(this.restartButton);
 
