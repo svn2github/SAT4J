@@ -75,6 +75,11 @@ public class TraceComposite implements ITrace2D {
         }
     }
 
+    public int hashCode() {
+        assert false : "hashCode not designed";
+        return 42; // any arbitrary constant will do
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof TraceComposite) {
