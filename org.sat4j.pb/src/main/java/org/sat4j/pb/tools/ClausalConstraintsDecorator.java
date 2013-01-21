@@ -67,8 +67,9 @@ public class ClausalConstraintsDecorator extends
         if (isCardinality(coeffs)) {
             if (moreThan) {
                 return super.addAtLeast(lits, d.intValue());
-            } else
+            } else {
                 return super.addAtMost(lits, d.intValue());
+            }
         } else {
             return solver.addPseudoBoolean(lits, coeffs, moreThan, d);
         }
@@ -86,48 +87,54 @@ public class ClausalConstraintsDecorator extends
             throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addAtMost(literals, degree);
-        } else
+        } else {
             return solver.addAtMost(literals, coeffs, degree);
+        }
     }
 
     public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addAtMost(literals, degree.intValue());
-        } else
+        } else {
             return solver.addAtMost(literals, coeffs, degree);
+        }
     }
 
     public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addAtLeast(literals, degree);
-        } else
+        } else {
             return solver.addAtLeast(literals, coeffs, degree);
+        }
     }
 
     public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addAtLeast(literals, degree.intValue());
-        } else
+        } else {
             return solver.addAtLeast(literals, coeffs, degree);
+        }
     }
 
     public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
             throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addExactly(literals, weight);
-        } else
+        } else {
             return solver.addExactly(literals, coeffs, weight);
+        }
     }
 
     public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger weight) throws ContradictionException {
         if (isCardinality(coeffs)) {
             return super.addExactly(literals, weight.intValue());
-        } else
+        } else {
             return solver.addExactly(literals, coeffs, weight);
+        }
     }
 
     public static boolean isCardinality(IVecInt coeffs) {
