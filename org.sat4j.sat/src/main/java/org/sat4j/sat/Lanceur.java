@@ -110,7 +110,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
 
     private boolean launchRemoteControl;
 
-    static AbstractLauncher lanceur;
+    private static AbstractLauncher lanceur;
 
     public static void main(final String[] args) {
         lanceur = new Lanceur();
@@ -118,7 +118,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
 
     }
 
-    protected ASolverFactory<ISolver> factory;
+    private ASolverFactory<ISolver> factory;
 
     private String filename;
 
