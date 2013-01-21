@@ -136,7 +136,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
     }
 
     public void setPrevfullmodel(int[] prevfullmodel) {
-        this.prevfullmodel = prevfullmodel;
+        this.prevfullmodel = prevfullmodel.clone();
     }
 
     public int[] getPrevmodel() {
@@ -144,7 +144,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
     }
 
     public void setPrevmodel(int[] prevmodel) {
-        this.prevmodel = prevmodel;
+        this.prevmodel = prevmodel.clone();
     }
 
     public boolean[] getPrevboolmodel() {
@@ -152,7 +152,7 @@ public abstract class AbstractSelectorVariablesDecorator extends
     }
 
     public void setPrevboolmodel(boolean[] prevboolmodel) {
-        this.prevboolmodel = prevboolmodel;
+        this.prevboolmodel = prevboolmodel.clone();
     }
 
     public boolean isSolutionOptimal() {
