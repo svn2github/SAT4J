@@ -92,7 +92,7 @@ public class HighLevelXplain<T extends ISolver> extends
         if (solver instanceof SolverDecorator<?>) {
             solver = ((SolverDecorator<? extends ISolver>) solver).decorated();
         }
-        return this.xplainStrategy.explain(solver, this.varToHighLevel,
+        return this.xplainStrategy.explain(solver, getVarToHighLevel(),
                 this.assump);
     }
 
@@ -116,7 +116,7 @@ public class HighLevelXplain<T extends ISolver> extends
         IVecInt keys = explanationKeys();
         Collection<Integer> explanation = new HashSet<Integer>(keys.size());
         for (IteratorInt it = keys.iterator(); it.hasNext();) {
-            explanation.add(this.varToHighLevel.get(it.next()));
+            explanation.add(getVarToHighLevel().get(it.next()));
         }
         return explanation;
     }

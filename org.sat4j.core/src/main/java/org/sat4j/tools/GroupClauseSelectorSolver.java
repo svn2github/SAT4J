@@ -44,7 +44,7 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
 
     private static final long serialVersionUID = 1L;
 
-    protected Map<Integer, Integer> varToHighLevel = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> varToHighLevel = new HashMap<Integer, Integer>();
     private final Map<Integer, Integer> highLevelToVar = new HashMap<Integer, Integer>();
 
     public GroupClauseSelectorSolver(T solver) {
@@ -96,6 +96,10 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
             }
         }
         return model;
+    }
+
+    public Map<Integer, Integer> getVarToHighLevel() {
+        return varToHighLevel;
     }
 
 }
