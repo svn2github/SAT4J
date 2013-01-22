@@ -18,6 +18,10 @@ import javax.swing.JFrame;
 
 public class JChartBasedSolverVisualisation implements SolverVisualisation {
 
+    private static final String CLEAN = "Clean";
+
+    private static final String RESTART = "Restart";
+
     /**
      * 
      */
@@ -35,15 +39,6 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
     private Chart2D positiveDecisionVariableChart;
     private Chart2D negativeDecisionVariableChart;
     private Chart2D propagationPerSecondChart;
-
-    private MyChartPanel variablesEvaluationPanel;
-    private MyChartPanel clausesEvaluationPanel;
-    private MyChartPanel learnedClausesSizePanel;
-    private MyChartPanel decisionLevelWhenConflictPanel;
-    private MyChartPanel trailLevelWhenConflictPanel;
-    private MyChartPanel positiveDecisionVariablePanel;
-    private MyChartPanel negativeDecisionVariablePanel;
-    private MyChartPanel propagationPerSecondPanel;
 
     private ITrace2D positiveDecisionTrace;
     private ITrace2D negativeDecisionTrace;
@@ -75,16 +70,8 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
     private VisuPreferences pref;
 
     public JChartBasedSolverVisualisation(VisuPreferences pref) {
-        this(pref, true);
-    }
-
-    public JChartBasedSolverVisualisation(VisuPreferences pref,
-            boolean isVisible) {
-
         this.pref = pref;
-
         init();
-
     }
 
     public void init() {
@@ -155,56 +142,56 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
     }
 
     public void addChartsToFrame() {
-        this.variablesEvaluationPanel = new MyChartPanel(
+        MyChartPanel variablesEvaluationPanel = new MyChartPanel(
                 this.variablesEvaluationChart, "Variables evaluation",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.clausesEvaluationPanel = new MyChartPanel(
+        MyChartPanel clausesEvaluationPanel = new MyChartPanel(
                 this.clausesEvaluationChart, "Clauses evaluation",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.learnedClausesSizePanel = new MyChartPanel(
+        MyChartPanel learnedClausesSizePanel = new MyChartPanel(
                 this.learnedClausesSizeChart, "Size of learned clauses",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.decisionLevelWhenConflictPanel = new MyChartPanel(
+        MyChartPanel decisionLevelWhenConflictPanel = new MyChartPanel(
                 this.decisionLevelWhenConflictChart,
                 "Decision level when conflict", this.pref.getBackgroundColor(),
                 this.pref.getBorderColor());
-        this.trailLevelWhenConflictPanel = new MyChartPanel(
+        MyChartPanel trailLevelWhenConflictPanel = new MyChartPanel(
                 this.trailLevelWhenConflictChart, "Trail level when conflict",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.positiveDecisionVariablePanel = new MyChartPanel(
+        MyChartPanel positiveDecisionVariablePanel = new MyChartPanel(
                 this.positiveDecisionVariableChart, "Positive decision phases",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.negativeDecisionVariablePanel = new MyChartPanel(
+        MyChartPanel negativeDecisionVariablePanel = new MyChartPanel(
                 this.negativeDecisionVariableChart, "Negative decision phases",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
-        this.propagationPerSecondPanel = new MyChartPanel(
+        MyChartPanel propagationPerSecondPanel = new MyChartPanel(
                 this.propagationPerSecondChart,
                 "Number of propagations per second",
                 this.pref.getBackgroundColor(), this.pref.getBorderColor());
 
         if (this.pref.isDisplayClausesSize()) {
-            this.visuFrame.add(this.learnedClausesSizePanel);
+            this.visuFrame.add(learnedClausesSizePanel);
         }
         if (this.pref.isDisplayClausesEvaluation()) {
-            this.visuFrame.add(this.clausesEvaluationPanel);
+            this.visuFrame.add(clausesEvaluationPanel);
         }
         if (this.pref.isDisplayConflictsTrail()) {
-            this.visuFrame.add(this.trailLevelWhenConflictPanel);
+            this.visuFrame.add(trailLevelWhenConflictPanel);
         }
         if (this.pref.isDisplayDecisionIndexes()) {
-            this.visuFrame.add(this.negativeDecisionVariablePanel);
+            this.visuFrame.add(negativeDecisionVariablePanel);
         }
         if (this.pref.isDisplayVariablesEvaluation()) {
-            this.visuFrame.add(this.variablesEvaluationPanel);
+            this.visuFrame.add(variablesEvaluationPanel);
         }
         if (this.pref.isDisplayConflictsDecision()) {
-            this.visuFrame.add(this.decisionLevelWhenConflictPanel);
+            this.visuFrame.add(decisionLevelWhenConflictPanel);
         }
         if (this.pref.isDisplayDecisionIndexes()) {
-            this.visuFrame.add(this.positiveDecisionVariablePanel);
+            this.visuFrame.add(positiveDecisionVariablePanel);
         }
         if (this.pref.isDisplaySpeed()) {
-            this.visuFrame.add(this.propagationPerSecondPanel);
+            this.visuFrame.add(propagationPerSecondPanel);
         }
     }
 
@@ -217,24 +204,24 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.negativeDecisionTrace.setTracePainter(new TracePainterPlus());
         this.negativeDecisionTrace.setColor(Color.RED);
 
-        this.restartPosDecisionTrace = new Trace2DSimple("Restart");
+        this.restartPosDecisionTrace = new Trace2DSimple(RESTART);
         this.restartPosDecisionTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.positiveDecisionVariableChart));
         this.restartPosDecisionTrace.setColor(Color.LIGHT_GRAY);
 
-        this.restartNegDecisionTrace = new Trace2DSimple("Restart");
+        this.restartNegDecisionTrace = new Trace2DSimple(RESTART);
         this.restartNegDecisionTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.negativeDecisionVariableChart));
         this.restartNegDecisionTrace.setColor(Color.LIGHT_GRAY);
 
-        this.cleanPosDecisionTrace = new Trace2DSimple("Clean");
+        this.cleanPosDecisionTrace = new Trace2DSimple(CLEAN);
         this.cleanPosDecisionTrace.setTracePainter(new TracePainterVerticalBar(
                 2, this.positiveDecisionVariableChart));
         this.cleanPosDecisionTrace.setColor(Color.ORANGE);
 
-        this.cleanNegDecisionTrace = new Trace2DSimple("Clean");
+        this.cleanNegDecisionTrace = new Trace2DSimple(CLEAN);
         this.cleanNegDecisionTrace.setTracePainter(new TracePainterVerticalBar(
                 2, this.negativeDecisionVariableChart));
         this.cleanNegDecisionTrace.setColor(Color.ORANGE);
@@ -264,7 +251,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.trailLevelWhenConflictChart.addTrace(this.conflictDepthTrace);
         this.conflictDepthTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 
-        this.conflictDepthRestartTrace = new Trace2DSimple("Restart");
+        this.conflictDepthRestartTrace = new Trace2DSimple(RESTART);
         this.conflictDepthRestartTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.trailLevelWhenConflictChart));
@@ -272,7 +259,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.trailLevelWhenConflictChart
                 .addTrace(this.conflictDepthRestartTrace);
 
-        this.conflictDepthCleanTrace = new Trace2DSimple("Clean");
+        this.conflictDepthCleanTrace = new Trace2DSimple(CLEAN);
         this.conflictDepthCleanTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.trailLevelWhenConflictChart));
@@ -289,7 +276,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.decisionLevelWhenConflictChart.addTrace(this.conflictLevelTrace);
         this.conflictLevelTrace.setZIndex(ITrace2D.ZINDEX_MAX);
 
-        this.conflictLevelRestartTrace = new Trace2DSimple("Restart");
+        this.conflictLevelRestartTrace = new Trace2DSimple(RESTART);
         this.conflictLevelRestartTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.decisionLevelWhenConflictChart));
@@ -297,7 +284,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.decisionLevelWhenConflictChart
                 .addTrace(this.conflictLevelRestartTrace);
 
-        this.conflictLevelCleanTrace = new Trace2DSimple("Clean");
+        this.conflictLevelCleanTrace = new Trace2DSimple(CLEAN);
         this.conflictLevelCleanTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.decisionLevelWhenConflictChart));
@@ -317,7 +304,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.learnedClausesSizeChart.getAxisX().setRangePolicy(
                 new RangePolicyHighestValues(2000));
 
-        this.learnedClausesSizeRestartTrace = new Trace2DSimple("Restart");
+        this.learnedClausesSizeRestartTrace = new Trace2DSimple(RESTART);
         this.learnedClausesSizeRestartTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.learnedClausesSizeChart));
@@ -325,7 +312,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.learnedClausesSizeChart
                 .addTrace(this.learnedClausesSizeRestartTrace);
 
-        this.learnedClausesSizeCleanTrace = new Trace2DSimple("Clean");
+        this.learnedClausesSizeCleanTrace = new Trace2DSimple(CLEAN);
         this.learnedClausesSizeCleanTrace
                 .setTracePainter(new TracePainterVerticalBar(2,
                         this.learnedClausesSizeChart));
@@ -347,11 +334,11 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
 
         this.speedTrace = new Trace2DSimple("Speed");
         this.speedTrace.setColor(new Color(0.02f, .78f, .76f));
-        this.speedCleanTrace = new Trace2DSimple("Clean");
+        this.speedCleanTrace = new Trace2DSimple(CLEAN);
         this.speedCleanTrace.setColor(Color.ORANGE);
         this.speedCleanTrace.setTracePainter(new TracePainterVerticalBar(2,
                 this.propagationPerSecondChart));
-        this.speedRestartTrace = new Trace2DSimple("Restart");
+        this.speedRestartTrace = new Trace2DSimple(RESTART);
         this.speedRestartTrace.setColor(Color.LIGHT_GRAY);
         this.speedRestartTrace.setTracePainter(new TracePainterVerticalBar(2,
                 this.propagationPerSecondChart));
