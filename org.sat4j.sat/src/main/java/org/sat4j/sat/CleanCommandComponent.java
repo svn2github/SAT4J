@@ -29,12 +29,11 @@ public class CleanCommandComponent extends CommandComponent {
 
     private JSlider cleanSlider;
 
-    private final static String EVALUATION_TYPE = "Clauses evaluation type";
-    private final static String ACTIVITY_BASED = "Activity";
-    private final static String LBD_BASED = "LBD";
-    private final static String LBD2_BASED = "LBD 2";
+    private static final String EVALUATION_TYPE = "Clauses evaluation type";
+    private static final String ACTIVITY_BASED = "Activity";
+    private static final String LBD_BASED = "LBD";
+    private static final String LBD2_BASED = "LBD 2";
     private JLabel evaluationLabel;
-    private ButtonGroup evaluationGroup;
     private JRadioButton activityRadio;
     private JRadioButton lbdRadio;
     private JRadioButton lbd2Radio;
@@ -42,44 +41,43 @@ public class CleanCommandComponent extends CommandComponent {
     private JButton cleanAndEvaluationApplyButton;
 
     private JButton cleanButton;
-    private final static String CLEAN = "Clean now";
-    private final static String MANUAL_CLEAN = "Manual clean: ";
+    private static final String CLEAN = "Clean now";
+    private static final String MANUAL_CLEAN = "Manual clean: ";
     private JLabel manualCleanLabel;
 
     private JLabel speedLabel;
     private JLabel speedNameLabel;
-    private final static String SPEED = "Speed :";
+    private static final String SPEED = "Speed :";
     private JLabel speedUnitLabel;
-    private final static String SPEED_UNIT = " propagations per second";
+    private static final String SPEED_UNIT = " propagations per second";
 
     private final JLabel deleteClauseLabel = new JLabel(DELETE_CLAUSES);
-    private final static String DELETE_CLAUSES = "Automated clean: ";
+    private static final String DELETE_CLAUSES = "Automated clean: ";
 
-    private Dictionary<Integer, JLabel> cleanValuesTable;
     private final JLabel clean5000Label = new JLabel(CLEAN_5000);
     private final JLabel clean10000Label = new JLabel(CLEAN_10000);
     private final JLabel clean20000Label = new JLabel(CLEAN_20000);
     private final JLabel clean50000Label = new JLabel(CLEAN_50000);
     private final JLabel clean100000Label = new JLabel(CLEAN_100000);
     private final JLabel clean500000Label = new JLabel(CLEAN_500000);
-    private final static int[] cleanValues = { 5000, 10000, 20000, 50000,
+    private static final int[] cleanValues = { 5000, 10000, 20000, 50000,
             100000, 500000 };
-    private final static int CLEAN_MIN = 0;
-    private final static int CLEAN_MAX = 5;
-    private final static int CLEAN_INIT = 1;
-    private final static int CLEAN_SPACE = 1;
+    private static final int CLEAN_MIN = 0;
+    private static final int CLEAN_MAX = 5;
+    private static final int CLEAN_INIT = 1;
+    private static final int CLEAN_SPACE = 1;
 
-    private final static String CLEAN_5000 = "5000";
-    private final static String CLEAN_10000 = "10000";
-    private final static String CLEAN_20000 = "20000";
-    private final static String CLEAN_50000 = "50000";
-    private final static String CLEAN_100000 = "100000";
-    private final static String CLEAN_500000 = "500000";
+    private static final String CLEAN_5000 = "5000";
+    private static final String CLEAN_10000 = "10000";
+    private static final String CLEAN_20000 = "20000";
+    private static final String CLEAN_50000 = "50000";
+    private static final String CLEAN_100000 = "100000";
+    private static final String CLEAN_500000 = "500000";
 
     private SolverController controller;
 
     private JCheckBox cleanUseOriginalStrategyCB;
-    private final static String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
+    private static final String USE_ORIGINAL_STRATEGY = "Use solver's original deletion strategy";
 
     public CleanCommandComponent(String name, SolverController controller) {
         super();
@@ -104,14 +102,14 @@ public class CleanCommandComponent extends CommandComponent {
         this.cleanSlider.setPaintTicks(true);
 
         // Create the label table
-        this.cleanValuesTable = new Hashtable<Integer, JLabel>();
-        this.cleanValuesTable.put(0, this.clean5000Label);
-        this.cleanValuesTable.put(1, this.clean10000Label);
-        this.cleanValuesTable.put(2, this.clean20000Label);
-        this.cleanValuesTable.put(3, this.clean50000Label);
-        this.cleanValuesTable.put(4, this.clean100000Label);
-        this.cleanValuesTable.put(5, this.clean500000Label);
-        this.cleanSlider.setLabelTable(this.cleanValuesTable);
+        Dictionary<Integer, JLabel> cleanValuesTable = new Hashtable<Integer, JLabel>();
+        cleanValuesTable.put(0, this.clean5000Label);
+        cleanValuesTable.put(1, this.clean10000Label);
+        cleanValuesTable.put(2, this.clean20000Label);
+        cleanValuesTable.put(3, this.clean50000Label);
+        cleanValuesTable.put(4, this.clean100000Label);
+        cleanValuesTable.put(5, this.clean500000Label);
+        this.cleanSlider.setLabelTable(cleanValuesTable);
 
         this.cleanSlider.setPaintLabels(true);
         this.cleanSlider.setSnapToTicks(true);
@@ -125,14 +123,14 @@ public class CleanCommandComponent extends CommandComponent {
         JPanel tmpPanel4 = new JPanel();
 
         this.evaluationLabel = new JLabel(EVALUATION_TYPE);
-        this.evaluationGroup = new ButtonGroup();
+        ButtonGroup evaluationGroup = new ButtonGroup();
         this.activityRadio = new JRadioButton(ACTIVITY_BASED);
         this.lbdRadio = new JRadioButton(LBD_BASED);
         this.lbd2Radio = new JRadioButton(LBD2_BASED);
 
-        this.evaluationGroup.add(this.activityRadio);
-        this.evaluationGroup.add(this.lbdRadio);
-        this.evaluationGroup.add(this.lbd2Radio);
+        evaluationGroup.add(this.activityRadio);
+        evaluationGroup.add(this.lbdRadio);
+        evaluationGroup.add(this.lbd2Radio);
 
         tmpPanel4.add(this.evaluationLabel);
         tmpPanel4.add(this.activityRadio);
