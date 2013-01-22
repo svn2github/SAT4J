@@ -300,7 +300,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         this.restartPanel = new RestartCommandComponent(RESTART_PANEL, this,
                 this.telecomStrategy.getRestartStrategy().getClass()
-                        .getSimpleName());
+                        .getSimpleName(), this);
         this.rwPanel = new RandomWalkCommandComponent(RW_PANEL, this);
         this.cleanPanel = new CleanCommandComponent(CLEAN_PANEL, this);
         this.phasePanel = new PhaseCommandComponent(PHASE_PANEL, this,

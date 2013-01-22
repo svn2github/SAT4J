@@ -23,13 +23,13 @@ import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.restarts.LubyRestarts;
 import org.sat4j.minisat.restarts.NoRestarts;
+import org.sat4j.specs.ILogAble;
 
 public class RestartCommandComponent extends CommandComponent {
 
     private static final long serialVersionUID = 1L;
 
     private JPanel restartPropertiesPanel;
-    private JPanel restartButtonPanel;
 
     private JLabel chooseRestartStrategyLabel;
     private JLabel noParameterLabel;
@@ -39,26 +39,29 @@ public class RestartCommandComponent extends CommandComponent {
     private JButton changeRestartMode;
 
     private JLabel factorLabel;
-    private final static String FACTOR = "Factor: ";
+    private static final String FACTOR = "Factor: ";
     private JTextField factorField;
 
     private String currentRestart;
 
-    private final static String RESTART = "Restart";
-    private final static String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
-    private final static String CHANGE_RESTART_STRATEGY = "Apply";
-    private final static String MANUAL_RESTART = "Manual Restart";
-    private final static String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
-    private final static String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
-    private final static String RESTART_PATH = "org.sat4j.minisat.restarts";
+    private static final String RESTART = "Restart";
+    private static final String CHOOSE_RESTART_STRATEGY = "Choose restart strategy: ";
+    private static final String CHANGE_RESTART_STRATEGY = "Apply";
+    private static final String MANUAL_RESTART = "Manual Restart";
+    private static final String NO_PARAMETER_FOR_THIS_STRATEGY = "No paramaters for this strategy";
+    private static final String RESTART_STRATEGY_CLASS = "org.sat4j.minisat.core.RestartStrategy";
+    private static final String RESTART_PATH = "org.sat4j.minisat.restarts";
 
     private SolverController controller;
 
+    private ILogAble logger;
+
     public RestartCommandComponent(String name, SolverController controller,
-            String initialRestartStrategy) {
+            String initialRestartStrategy, ILogAble logger) {
         this.setName(name);
         this.currentRestart = initialRestartStrategy;
         this.controller = controller;
+        this.logger = logger;
         createPanel();
         initFactorParam();
     }
@@ -134,13 +137,13 @@ public class RestartCommandComponent extends CommandComponent {
             }
         });
 
-        this.restartButtonPanel = new JPanel();
-        this.restartButtonPanel.setName(MANUAL_RESTART);
-        this.restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(
-                null, this.restartButtonPanel.getName(), TitledBorder.LEFT,
+        JPanel restartButtonPanel = new JPanel();
+        restartButtonPanel.setName(MANUAL_RESTART);
+        restartButtonPanel.setBorder(new CompoundBorder(new TitledBorder(null,
+                restartButtonPanel.getName(), TitledBorder.LEFT,
                 TitledBorder.TOP), DetailedCommandPanel.BORDER5));
 
-        this.restartButtonPanel.add(this.restartButton);
+        restartButtonPanel.add(this.restartButton);
 
         c1.gridy = 0;
         chooseRestartPanel.add(tmpPanel1, c1);
@@ -152,7 +155,7 @@ public class RestartCommandComponent extends CommandComponent {
         this.add(chooseRestartPanel, c);
 
         c.gridy = 1;
-        this.add(this.restartButtonPanel, c);
+        this.add(restartButtonPanel, c);
     }
 
     public void initFactorParam() {
@@ -242,11 +245,11 @@ public class RestartCommandComponent extends CommandComponent {
                 this.controller.init(params, stats);
 
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             } catch (InstantiationException e) {
-                e.printStackTrace();
+                logger.log(e.getMessage());
             }
         }
 
