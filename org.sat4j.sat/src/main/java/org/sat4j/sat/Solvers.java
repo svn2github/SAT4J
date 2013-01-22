@@ -50,32 +50,32 @@ public final class Solvers {
     private static final String PROBLEM_WITH_COMPONENT = "Problem with component ";
     private static final String PB = "pb";
     private static final String MINISAT = "minisat";
-    public final static String ORDERS = "ORDERS";
-    public final static String LEARNING = "LEARNING";
-    public final static String RESTARTS = "RESTARTS";
-    public final static String PHASE = "PHASE";
-    public final static String PARAMS = "PARAMS";
-    public final static String SIMP = "SIMP";
+    public static final String ORDERS = "ORDERS";
+    public static final String LEARNING = "LEARNING";
+    public static final String RESTARTS = "RESTARTS";
+    public static final String PHASE = "PHASE";
+    public static final String PARAMS = "PARAMS";
+    public static final String SIMP = "SIMP";
 
-    private final static String PACKAGE_ORDERS = "org.sat4j.minisat.orders";
-    private final static String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
-    private final static String PACKAGE_RESTARTS = "org.sat4j.minisat.restarts";
-    private final static String PACKAGE_PHASE = "org.sat4j.minisat.orders";
-    private final static String PACKAGE_PARAMS = "org.sat4j.minisat.core";
+    private static final String PACKAGE_ORDERS = "org.sat4j.minisat.orders";
+    private static final String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
+    private static final String PACKAGE_RESTARTS = "org.sat4j.minisat.restarts";
+    private static final String PACKAGE_PHASE = "org.sat4j.minisat.orders";
+    private static final String PACKAGE_PARAMS = "org.sat4j.minisat.core";
 
-    private final static String RESTART_STRATEGY_NAME = "org.sat4j.minisat.core.RestartStrategy";
-    private final static String ORDER_NAME = "org.sat4j.minisat.core.IOrder";
-    private final static String LEARNING_NAME = "org.sat4j.minisat.core.LearningStrategy";
-    private final static String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
-    private final static String PARAMS_NAME = "org.sat4j.minisat.core.SearchParams";
+    private static final String RESTART_STRATEGY_NAME = "org.sat4j.minisat.core.RestartStrategy";
+    private static final String ORDER_NAME = "org.sat4j.minisat.core.IOrder";
+    private static final String LEARNING_NAME = "org.sat4j.minisat.core.LearningStrategy";
+    private static final String PHASE_NAME = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+    private static final String PARAMS_NAME = "org.sat4j.minisat.core.SearchParams";
 
-    private final static Map<String, String> qualif = new HashMap<String, String>();
+    private static final Map<String, String> QUALIF = new HashMap<String, String>();
     static {
-        qualif.put(ORDERS, PACKAGE_ORDERS);
-        qualif.put(LEARNING, PACKAGE_LEARNING);
-        qualif.put(RESTARTS, PACKAGE_RESTARTS);
-        qualif.put(PHASE, PACKAGE_PHASE);
-        qualif.put(PARAMS, PACKAGE_PARAMS);
+        QUALIF.put(ORDERS, PACKAGE_ORDERS);
+        QUALIF.put(LEARNING, PACKAGE_LEARNING);
+        QUALIF.put(RESTARTS, PACKAGE_RESTARTS);
+        QUALIF.put(PHASE, PACKAGE_PHASE);
+        QUALIF.put(PARAMS, PACKAGE_PARAMS);
     }
 
     private Solvers() {
@@ -147,7 +147,7 @@ public final class Solvers {
             ILogAble logger) {
         try {
             String configline = pf.getProperty(component);
-            String qualification = qualif.get(component);
+            String qualification = QUALIF.get(component);
 
             if (configline == null) {
                 return null;
