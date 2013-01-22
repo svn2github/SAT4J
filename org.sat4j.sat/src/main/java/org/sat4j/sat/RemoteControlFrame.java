@@ -70,11 +70,9 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 	 */
     private static final long serialVersionUID = 1L;
 
-    public static final Dimension dim = Toolkit.getDefaultToolkit()
+    public static final Dimension DIM = Toolkit.getDefaultToolkit()
             .getScreenSize();
 
-    private JMenuBar barreMenu;
-    private JMenu menu;
     private JMenuItem activateTracing;
 
     private DetailedCommandPanel commandePanel;
@@ -85,11 +83,8 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
     private String[] args;
     private VisuPreferencesFrame visuFrame;
 
-    private final static String ACTIVATE = "Activate Tracing";
-    private final static String DEACTIVATE = "Deactivate Tracing";
-
-    private JRadioButtonMenuItem gnuplotBasedRadio;
-    private JRadioButtonMenuItem jChartBasedRadio;
+    private static final String ACTIVATE = "Activate Tracing";
+    private static final String DEACTIVATE = "Deactivate Tracing";
 
     public RemoteControlFrame(String filename, String ramdisk, String[] args) {
         super("Remote Control");
@@ -97,7 +92,8 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         this.filename = filename;
         this.ramdisk = ramdisk;
         this.args = args.clone();
-        initLookAndFeel();
+
+        JFrame.setDefaultLookAndFeelDecorated(true);
 
         createAndShowGUI();
     }
@@ -122,11 +118,7 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         activateTracing(b);
     }
 
-    public void initLookAndFeel() {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-    }
-
-    public void createAndShowGUI() {
+    private void createAndShowGUI() {
         Container c = this.getContentPane();
         c.setLayout(new BorderLayout());
 
@@ -150,7 +142,8 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
             @Override
             public void windowClosing(WindowEvent e) {
                 RemoteControlFrame.this.commandePanel.stopVisu();
-                System.exit(NORMAL);
+                setVisible(false);
+                dispose();
             }
 
         });
@@ -180,12 +173,12 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
     }
 
     public void createMenuBar() {
-        this.barreMenu = new JMenuBar();
-        this.menu = new JMenu("File");
-        this.barreMenu.add(this.menu);
+        JMenuBar barreMenu = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        barreMenu.add(menu);
 
         this.activateTracing = new JMenuItem(DEACTIVATE);
-        this.menu.add(this.activateTracing);
+        menu.add(this.activateTracing);
 
         this.activateTracing.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -194,18 +187,20 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
             }
         });
 
-        this.menu.addSeparator();
+        menu.addSeparator();
 
-        this.gnuplotBasedRadio = new JRadioButtonMenuItem("Trace with Gnuplot");
-        this.jChartBasedRadio = new JRadioButtonMenuItem("Trace with Java");
+        JRadioButtonMenuItem gnuplotBasedRadio = new JRadioButtonMenuItem(
+                "Trace with Gnuplot");
+        JRadioButtonMenuItem jChartBasedRadio = new JRadioButtonMenuItem(
+                "Trace with Java");
 
         ButtonGroup visuGroup = new ButtonGroup();
-        visuGroup.add(this.gnuplotBasedRadio);
-        visuGroup.add(this.jChartBasedRadio);
+        visuGroup.add(gnuplotBasedRadio);
+        visuGroup.add(jChartBasedRadio);
 
-        this.menu.add(this.gnuplotBasedRadio);
+        menu.add(gnuplotBasedRadio);
 
-        this.gnuplotBasedRadio.addActionListener(new ActionListener() {
+        gnuplotBasedRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RemoteControlFrame.this.commandePanel.setGnuplotBased(true);
                 RemoteControlFrame.this.commandePanel.setChartBased(false);
@@ -215,11 +210,11 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
                 log("Use gnuplot tracing");
             }
         });
-        this.jChartBasedRadio.setSelected(true);
+        jChartBasedRadio.setSelected(true);
 
-        this.menu.add(this.jChartBasedRadio);
+        menu.add(jChartBasedRadio);
 
-        this.jChartBasedRadio.addActionListener(new ActionListener() {
+        jChartBasedRadio.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RemoteControlFrame.this.commandePanel.setGnuplotBased(false);
                 RemoteControlFrame.this.commandePanel.setChartBased(true);
@@ -230,10 +225,10 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
             }
         });
 
-        this.menu.addSeparator();
+        menu.addSeparator();
 
         JMenuItem quit = new JMenuItem("Exit");
-        this.menu.add(quit);
+        menu.add(quit);
 
         quit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -254,15 +249,15 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
         preferences.add(gnuplotPreferencesItem);
 
-        this.barreMenu.add(preferences);
+        barreMenu.add(preferences);
 
-        this.barreMenu.add(Box.createHorizontalGlue());
+        barreMenu.add(Box.createHorizontalGlue());
 
         // ...create the rightmost menu...
         JLabel version = new JLabel(getVersion());
-        this.barreMenu.add(version);
+        barreMenu.add(version);
 
-        this.setJMenuBar(this.barreMenu);
+        this.setJMenuBar(barreMenu);
 
     }
 
