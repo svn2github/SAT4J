@@ -11,6 +11,12 @@ import org.sat4j.specs.ILogAble;
 
 public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
 
+    private static final double TWO_THIRDS = 0.66;
+
+    private static final double ONE_THIRD = 0.33;
+
+    private static final double ZERO = 0.0;
+
     private static final String SPEED = "Speed";
 
     private static final String SET_XRANGE_0_5 = "set xrange [0.5:*]";
@@ -95,15 +101,15 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
         if (this.gnuplotProcess == null) {
             try {
 
-                double verybottom = 0.0;
-                double bottom = 0.33;
-                double top = 0.66;
-                double left = 0.0;
-                double middle = 0.33;
-                double right = 0.66;
+                double verybottom = ZERO;
+                double bottom = ONE_THIRD;
+                double top = TWO_THIRDS;
+                double left = ZERO;
+                double middle = ONE_THIRD;
+                double right = TWO_THIRDS;
 
-                double width = 0.33;
-                double height = 0.33;
+                double width = ONE_THIRD;
+                double height = ONE_THIRD;
 
                 PrintStream out = new PrintStream(new FileOutputStream(
                         this.dataPath + GNUPLOT_GNUPLOT));
@@ -300,8 +306,7 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                     GnuplotDataFile speedDF = new GnuplotDataFile(this.dataPath
                             + SPEED_DAT, Color.cyan, SPEED, "lines");
                     GnuplotDataFile cleanDF = new GnuplotDataFile(this.dataPath
-                            + "-speed-clean.dat", Color.orange, CLEAN,
-                            IMPULSES);
+                            + "-speed-clean.dat", Color.orange, CLEAN, IMPULSES);
                     GnuplotDataFile restartDF = new GnuplotDataFile(
                             this.dataPath + SPEED_RESTART_DAT, Color.gray,
                             RESTART, IMPULSES);
@@ -328,7 +333,8 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                                 Thread.sleep(GnuplotBasedSolverVisualisation.this.visuPreferences
                                         .getTimeBeforeLaunching());
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                GnuplotBasedSolverVisualisation.this.logger
+                                        .log(e.getMessage());
                             }
 
                             GnuplotBasedSolverVisualisation.this.logger
@@ -354,19 +360,21 @@ public class GnuplotBasedSolverVisualisation implements SolverVisualisation {
                                 if (s.trim().length() > 0
                                         && !s.toLowerCase().contains("warning")
                                         && !s.toLowerCase().contains("plot")) {
-                                    System.out.println(s);
+                                    GnuplotBasedSolverVisualisation.this.logger
+                                            .log(s);
                                 }
                             }
                             gnuInt.close();
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            GnuplotBasedSolverVisualisation.this.logger.log(e
+                                    .getMessage());
                         }
                     }
                 };
                 errorStreamThread.start();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                GnuplotBasedSolverVisualisation.this.logger.log(e.getMessage());
             }
         }
     }
