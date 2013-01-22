@@ -158,11 +158,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     private StartSolverEnum startConfig;
 
-    private Thread solveurThread;
-
     private StringWriter stringWriter;
-
-    private MyTabbedPane tabbedPane;
 
     private JPanel aboutSolverPanel;
     private JTextArea textArea;
@@ -185,7 +181,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private static final String CHOIX_SOLVER_PANEL = "Solver";
     private JLabel choixSolver;
     private static final String CHOIX_SOLVER = "Choose solver: ";
-    private String selectedSolver;
     private JComboBox listeSolvers;
 
     private static final String OPTMIZATION_MODE = "Optimization problem";
@@ -197,20 +192,15 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private static final String LOWER = "Search solution by lower bounding instead of upper bounding";
     private JCheckBox lowerCB;
 
-    private JLabel atMostKLabel;
-    private JLabel atMost1Label;
     private JComboBox atMostKCB;
     private JComboBox atMost1CB;
-    private JLabel exactlyKLabel;
     private JComboBox exactlyKCB;
-    private JLabel exactly1Label;
     private JComboBox exactly1CB;
 
     private JRadioButton solverLineParamLineRadio;
     private JRadioButton solverLineParamRemoteRadio;
     private JRadioButton solverListParamListRadio;
     private JRadioButton solverListParamRemoteRadio;
-    private ButtonGroup solverConfigGroup;
 
     private static final String SOLVER_LINE_PARAM_LINE_CONFIG = "Start customized solver as given in command line";
     private static final String SOLVER_LINE_PARAM_REMOTE_CONFIG = "Start customized solver as given in command line with configuration given in the remote";
@@ -246,7 +236,6 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     private static final String HOT_SOLVER_PANEL = "Hot solver";
 
     private JTextArea console;
-    private JScrollPane scrollPane;
 
     private boolean isPlotActivated;
 
@@ -322,13 +311,13 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.hotSolverPanel = new HotSolverCommandComponent(HOT_SOLVER_PANEL,
                 this);
 
-        this.scrollPane = new JScrollPane(this.console);
+        JScrollPane scrollPane = new JScrollPane(this.console);
 
-        this.scrollPane.setPreferredSize(new Dimension(400, 200));
-        this.scrollPane.getVerticalScrollBar().setValue(
-                this.scrollPane.getVerticalScrollBar().getMaximum());
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+        scrollPane.getVerticalScrollBar().setValue(
+                scrollPane.getVerticalScrollBar().getMaximum());
 
-        this.tabbedPane = new MyTabbedPane();
+        MyTabbedPane tabbedPane = new MyTabbedPane();
 
         JPanel solverBigPanel = new JPanel();
         solverBigPanel
@@ -336,7 +325,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         solverBigPanel.add(this.instancePanel);
         solverBigPanel.add(this.choixSolverPanel);
 
-        this.tabbedPane.addTab("Solver", null, solverBigPanel,
+        tabbedPane.addTab("Solver", null, solverBigPanel,
                 "instance & solver options");
 
         JPanel restartBigPanel = new JPanel();
@@ -350,7 +339,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         restartBigPanel.add(this.restartPanel, cRestart);
 
-        this.tabbedPane.addTab("Restart", null, restartBigPanel,
+        tabbedPane.addTab("Restart", null, restartBigPanel,
                 "restart strategy & options");
 
         JPanel rwPhaseBigPanel = new JPanel();
@@ -380,7 +369,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         rwPhaseBigPanel.add(tmpPhasePanel, cP);
 
-        this.tabbedPane.addTab("Heuristics", null, rwPhaseBigPanel,
+        tabbedPane.addTab("Heuristics", null, rwPhaseBigPanel,
                 "random walk and phase strategy");
 
         JPanel clausesBigPanel = new JPanel();
@@ -406,7 +395,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         clausesBigPanel.add(tmpClausesPanel, cC);
 
-        this.tabbedPane.addTab("Learned Constraints", null, clausesBigPanel,
+        tabbedPane.addTab("Learned Constraints", null, clausesBigPanel,
                 "deletion and simplification strategy");
 
         this.aboutSolverPanel = new JPanel();
@@ -414,11 +403,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.textArea.setColumns(50);
         this.aboutSolverPanel.add(this.textArea);
 
-        this.tabbedPane.addTab("About Solver", null, this.aboutSolverPanel,
+        tabbedPane.addTab("About Solver", null, this.aboutSolverPanel,
                 "information about solver");
 
-        this.add(this.tabbedPane);
-        this.add(this.scrollPane);
+        this.add(tabbedPane);
+        this.add(scrollPane);
 
         this.restartPanel.setRestartPanelEnabled(false);
         this.rwPanel.setRWPanelEnabled(false);
@@ -562,19 +551,19 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         tmpPanel.setBorder(new CompoundBorder(new TitledBorder(null, tmpPanel
                 .getName(), TitledBorder.LEFT, TitledBorder.TOP), BORDER5));
 
-        atMostKLabel = new JLabel(AT_MOST_K);
+        JLabel atMostKLabel = new JLabel(AT_MOST_K);
         atMostKCB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
                 AT_MOST_K).toArray()));
 
-        atMost1Label = new JLabel(AT_MOST_1);
+        JLabel atMost1Label = new JLabel(AT_MOST_1);
         atMost1CB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
                 AT_MOST_1).toArray()));
 
-        exactlyKLabel = new JLabel(EXACTLY_K);
+        JLabel exactlyKLabel = new JLabel(EXACTLY_K);
         exactlyKCB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
                 EXACTLY_K).toArray()));
 
-        exactly1Label = new JLabel(EXACTLY_1);
+        JLabel exactly1Label = new JLabel(EXACTLY_1);
         exactly1CB = new JComboBox(new DefaultComboBoxModel(getListOfEncodings(
                 EXACTLY_1).toArray()));
 
@@ -639,11 +628,11 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.solverListParamListRadio = new JRadioButton(
                 SOLVER_LIST_PARAM_LIST_CONFIG);
 
-        this.solverConfigGroup = new ButtonGroup();
-        this.solverConfigGroup.add(this.solverLineParamLineRadio);
-        this.solverConfigGroup.add(this.solverLineParamRemoteRadio);
-        this.solverConfigGroup.add(this.solverListParamListRadio);
-        this.solverConfigGroup.add(this.solverListParamRemoteRadio);
+        ButtonGroup solverConfigGroup = new ButtonGroup();
+        solverConfigGroup.add(this.solverLineParamLineRadio);
+        solverConfigGroup.add(this.solverLineParamRemoteRadio);
+        solverConfigGroup.add(this.solverListParamListRadio);
+        solverConfigGroup.add(this.solverListParamRemoteRadio);
 
         this.solverListParamListRadio.setSelected(true);
         this.startConfig = StartSolverEnum.SOLVER_LIST_PARAM_DEFAULT;
@@ -799,10 +788,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         IOrder order;
         double proba;
 
+        String selectedSolver;
+
         switch (startConfig) {
         case SOLVER_LIST_PARAM_REMOTE:
-            this.selectedSolver = (String) this.listeSolvers.getSelectedItem();
-            partsSelectedSolver = this.selectedSolver.split("\\.");
+            selectedSolver = (String) this.listeSolvers.getSelectedItem();
+            partsSelectedSolver = selectedSolver.split("\\.");
 
             assert partsSelectedSolver.length == 2;
             assert partsSelectedSolver[0].equals(MINISAT_PREFIX)
@@ -899,8 +890,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             break;
 
         default:
-            this.selectedSolver = (String) this.listeSolvers.getSelectedItem();
-            partsSelectedSolver = this.selectedSolver.split("\\.");
+            selectedSolver = (String) this.listeSolvers.getSelectedItem();
+            partsSelectedSolver = selectedSolver.split("\\.");
 
             assert partsSelectedSolver.length == 2;
             assert partsSelectedSolver[0].equals(MINISAT_PREFIX)
@@ -1050,7 +1041,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         log("# Random walk probability = " + this.randomWalk.getProbability());
         log("# variables : " + this.solver.nVars());
 
-        this.solveurThread = new Thread() {
+        Thread solveurThread = new Thread() {
             @Override
             public void run() {
 
@@ -1084,7 +1075,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 }
             }
         };
-        this.solveurThread.start();
+        solveurThread.start();
 
         if (this.isPlotActivated) {
             this.solverVisu.setnVar(this.solver.nVars());
