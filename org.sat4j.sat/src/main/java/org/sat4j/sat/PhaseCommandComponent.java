@@ -27,13 +27,13 @@ public class PhaseCommandComponent extends CommandComponent {
 
     private JComboBox phaseList;
     private JLabel phaseListLabel;
-    private final static String PHASE_STRATEGY = "Choose phase strategy :";
+    private static final String PHASE_STRATEGY = "Choose phase strategy :";
 
     private JButton phaseApplyButton;
-    private final static String PHASE_APPLY = "Apply";
+    private static final String PHASE_APPLY = "Apply";
 
-    private final static String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
-    private final static String PHASE_PATH_SAT = "org.sat4j.minisat.orders";
+    private static final String PHASE_STRATEGY_CLASS = "org.sat4j.minisat.core.IPhaseSelectionStrategy";
+    private static final String PHASE_PATH_SAT = "org.sat4j.minisat.orders";
 
     private SolverController solverController;
 

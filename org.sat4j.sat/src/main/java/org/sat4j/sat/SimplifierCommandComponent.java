@@ -23,10 +23,10 @@ public class SimplifierCommandComponent extends CommandComponent {
 
     private SolverController controller;
 
-    private final static String SIMPLIFICATION_APPLY = "Apply";
-    public final static String SIMPLIFICATION_NO = "No reason simplification";
-    public final static String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
-    public final static String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
+    private static final String SIMPLIFICATION_APPLY = "Apply";
+    public static final String SIMPLIFICATION_NO = "No reason simplification";
+    public static final String SIMPLIFICATION_SIMPLE = "Simple reason simplification";
+    public static final String SIMPLIFICATION_EXPENSIVE = "Expensive reason simplification";
 
     private JButton simplificationApplyButton;
     private ButtonGroup simplificationGroup;

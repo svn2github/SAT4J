@@ -26,8 +26,8 @@ public class RandomWalkCommandComponent extends CommandComponent {
 
     private JButton applyRWButton;
 
-    private final static String RW_LABEL = "Probabilty : ";
-    private final static String RW_APPLY = "Apply";
+    private static final String RW_LABEL = "Probabilty : ";
+    private static final String RW_APPLY = "Apply";
 
     public RandomWalkCommandComponent(String name, SolverController controller) {
         this.controller = controller;
