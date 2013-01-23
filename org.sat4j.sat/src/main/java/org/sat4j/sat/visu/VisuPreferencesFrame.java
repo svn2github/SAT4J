@@ -88,10 +88,10 @@ public class VisuPreferencesFrame extends JFrame {
     public VisuPreferencesFrame(VisuPreferences pref) {
         super("Visualisation preferences");
         this.preferences = pref;
-        createAndShowGUI();
+        createGUI();
     }
 
-    private void createAndShowGUI() {
+    private void createGUI() {
         Container c = this.getContentPane();
         c.setLayout(new BorderLayout());
 
