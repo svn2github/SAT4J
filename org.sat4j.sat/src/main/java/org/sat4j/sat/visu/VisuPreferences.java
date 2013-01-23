@@ -4,6 +4,9 @@ import java.awt.Color;
 
 public class VisuPreferences {
 
+    private static final int DEFAULT_TIME_BEFORE_LAUNCHING = 8000;
+    private static final int DEFAULT_REFRESH_TIME = 500;
+    private static final int DEFAULT_LINES_READ = 11000;
     private static final String AXIS_X1Y1 = "\" axis x1y1";
     private static final String TITLE = "\" title \"";
     private static final String LC_RGB = " lc rgb \"#";
@@ -42,9 +45,9 @@ public class VisuPreferences {
     public VisuPreferences() {
         this.backgroundColor = Color.white;
         this.borderColor = Color.black;
-        this.nbLinesRead = 11000;
-        this.refreshTime = 500;
-        this.timeBeforeLaunching = 8000;
+        this.nbLinesRead = DEFAULT_LINES_READ;
+        this.refreshTime = DEFAULT_REFRESH_TIME;
+        this.timeBeforeLaunching = DEFAULT_TIME_BEFORE_LAUNCHING;
         this.displayRestarts = true;
         this.restartColor = Color.LIGHT_GRAY;
         this.slidingWindows = true;
