@@ -30,6 +30,8 @@ public class TraceComposite implements ITrace2D {
      */
     private static final long serialVersionUID = 1L;
 
+    private static final int DEFAULT_HASHCODE_VALUE = 42;
+
     private List<ITrace2D> traces;
 
     public TraceComposite(List<ITrace2D> traces) {
@@ -77,7 +79,8 @@ public class TraceComposite implements ITrace2D {
 
     public int hashCode() {
         assert false : "hashCode not designed";
-        return 42; // any arbitrary constant will do
+        // any arbitrary constant will do
+        return DEFAULT_HASHCODE_VALUE;
     }
 
     @Override
