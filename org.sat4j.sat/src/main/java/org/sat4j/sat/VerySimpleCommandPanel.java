@@ -53,8 +53,8 @@ public class VerySimpleCommandPanel extends JPanel {
 
     private RemoteControlStrategy telecomStrategy;
 
-    public final static String RESTART = "Restart";
-    public final static String CLEAN = "Clean";
+    public static final String RESTART = "Restart";
+    public static final String CLEAN = "Clean";
 
     private JButton restartButton;
     private JButton cleanButton;
