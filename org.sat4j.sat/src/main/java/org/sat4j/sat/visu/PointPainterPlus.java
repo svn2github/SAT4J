@@ -17,6 +17,8 @@ public class PointPainterPlus extends APointPainter<PointPainterPlus> {
      */
     private int plusSize;
 
+    private static final int DEFAULT_SIZE = 6;
+
     /**
      * Creates an instance with a default plus size of 4.
      * <p>
@@ -32,7 +34,7 @@ public class PointPainterPlus extends APointPainter<PointPainterPlus> {
      *            the plus size in pixel to use.
      */
     public PointPainterPlus() {
-        this.plusSize = 6;
+        this.plusSize = DEFAULT_SIZE;
     }
 
     /**

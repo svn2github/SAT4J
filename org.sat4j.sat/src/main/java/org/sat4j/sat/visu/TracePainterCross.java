@@ -12,6 +12,8 @@ public class TracePainterCross extends ATracePainter {
 	 */
     private static final long serialVersionUID = 1L;
 
+    private static final int DEFAULT_SIZE = 6;
+
     /** The implementation for rendering the point as a cross. */
     private final PointPainterCross mPointPainter;
 
@@ -20,7 +22,7 @@ public class TracePainterCross extends ATracePainter {
      * <p>
      */
     public TracePainterCross() {
-        this.mPointPainter = new PointPainterCross(6);
+        this.mPointPainter = new PointPainterCross(DEFAULT_SIZE);
     }
 
     /**

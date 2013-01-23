@@ -15,12 +15,14 @@ public class TracePainterPlus extends ATracePainter {
     /** The implementation for rendering the point as a plus. */
     private final PointPainterPlus mPointPainter;
 
+    private static final int DEFAULT_SIZE = 6;
+
     /**
      * Creates an instance with a default plus size of 4.
      * <p>
      */
     public TracePainterPlus() {
-        this.mPointPainter = new PointPainterPlus(6);
+        this.mPointPainter = new PointPainterPlus(DEFAULT_SIZE);
     }
 
     /**

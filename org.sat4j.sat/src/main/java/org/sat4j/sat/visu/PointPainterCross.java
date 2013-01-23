@@ -17,6 +17,8 @@ public class PointPainterCross extends APointPainter<PointPainterPlus> {
      */
     private int crossSize;
 
+    private static final int DEFAULT_SIZE = 6;
+
     /**
      * Creates an instance with a default cross size of 4.
      * <p>
@@ -32,7 +34,7 @@ public class PointPainterCross extends APointPainter<PointPainterPlus> {
      *            the cross size in pixel to use.
      */
     public PointPainterCross() {
-        this.crossSize = 6;
+        this.crossSize = DEFAULT_SIZE;
     }
 
     /**
