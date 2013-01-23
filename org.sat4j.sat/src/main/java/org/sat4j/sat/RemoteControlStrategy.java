@@ -49,6 +49,8 @@ import org.sat4j.specs.ILogAble;
 public class RemoteControlStrategy implements RestartStrategy,
         IPhaseSelectionStrategy {
 
+    private static final int SLEEP_TIME = 1000;
+
     private static final long serialVersionUID = 1L;
 
     private RestartStrategy restart;
@@ -198,11 +200,10 @@ public class RemoteControlStrategy implements RestartStrategy,
     public void newConflict() {
         this.restart.newConflict();
         this.conflictNumber++;
-        if (this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy) {
-            if (this.conflictNumber > this.nbClausesAtWhichWeShouldClean) {
-                this.conflictNumber = 0;
-                this.solver.setNeedToReduceDB(true);
-            }
+        if (this.useTelecomStrategyAsLearnedConstraintsDeletionStrategy
+                && this.conflictNumber > this.nbClausesAtWhichWeShouldClean) {
+            this.conflictNumber = 0;
+            this.solver.setNeedToReduceDB(true);
         }
     }
 
@@ -221,7 +222,7 @@ public class RemoteControlStrategy implements RestartStrategy,
     public void assignLiteral(int p) {
         while (this.isInterrupted) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
                 logger.log(e.getMessage());
             }
