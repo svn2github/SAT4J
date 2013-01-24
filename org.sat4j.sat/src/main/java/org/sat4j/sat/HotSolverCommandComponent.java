@@ -20,9 +20,9 @@ public class HotSolverCommandComponent extends CommandComponent {
     private SolverController controller;
 
     private JCheckBox keepSolverHotCB;
-    private final static String KEEP_SOLVER_HOT = "Keep solver hot";
+    private static final String KEEP_SOLVER_HOT = "Keep solver hot";
     private JButton applyHotSolver;
-    private final static String HOT_APPLY = "Apply";
+    private static final String HOT_APPLY = "Apply";
 
     public HotSolverCommandComponent(String name, SolverController controller) {
         this.setName(name);
