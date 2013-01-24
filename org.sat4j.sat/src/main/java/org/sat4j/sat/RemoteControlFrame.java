@@ -31,8 +31,6 @@ package org.sat4j.sat;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -69,9 +67,6 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
-
-    public static final Dimension DIM = Toolkit.getDefaultToolkit()
-            .getScreenSize();
 
     private JMenuItem activateTracing;
 
