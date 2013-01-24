@@ -43,13 +43,13 @@ public class PBSolverCautious extends PBSolverCP {
     public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
             PBDataStructureFactory dsf, IOrder order) {
         super(learner, dsf, order);
-        ConflictMapSwitchToClause.UPPERBOUND = BOUND;
+        ConflictMapSwitchToClause.UpperBound = BOUND;
     }
 
     public PBSolverCautious(LearningStrategy<PBDataStructureFactory> learner,
             PBDataStructureFactory dsf, IOrder order, int bound) {
         super(learner, dsf, order);
-        ConflictMapSwitchToClause.UPPERBOUND = bound;
+        ConflictMapSwitchToClause.UpperBound = bound;
     }
 
     @Override
