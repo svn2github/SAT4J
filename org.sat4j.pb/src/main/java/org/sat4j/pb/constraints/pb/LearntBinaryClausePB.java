@@ -67,14 +67,4 @@ public final class LearntBinaryClausePB extends LearntBinaryClause implements
         return BigInteger.ONE;
     }
 
-    // @Override
-    // public void assertConstraint(UnitPropagationListener s) {
-    // if (getVocabulary().isUnassigned(head)) {
-    // s.enqueue(head, this);
-    // } else {
-    // assert getVocabulary().isUnassigned(tail);
-    // s.enqueue(tail, this);
-    // }
-    // }
-
 }

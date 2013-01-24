@@ -50,6 +50,8 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
 	 */
     private static final long serialVersionUID = 1L;
 
+    private static final int LIMIT_SELECTION_SORT = 15;
+
     /**
      * constraint activity
      */
@@ -106,8 +108,6 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
         this.bigCoefs = new BigInteger[size];
         mpb.buildConstraintFromMapPb(this.lits, this.bigCoefs);
         assert mpb.isLongSufficient();
-        // assert MaxLongWatchPBConstructor.isLongSufficient(bigCoefs,
-        // mpb.getDegree());
         this.coefs = toLong(this.bigCoefs);
         this.sumcoefs = 0;
         for (long c : this.coefs) {
@@ -123,10 +123,12 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
     /** Constructor used for original constraints. */
     WatchPbLongCP(int[] lits, BigInteger[] coefs, BigInteger degree,
             BigInteger sumCoefs) { // NOPMD
-        this.lits = lits;
+        this.lits = new int[lits.length];
+        System.arraycopy(lits, 0, this.lits, 0, lits.length);
         this.coefs = toLong(coefs);
         this.degree = degree.longValue();
-        this.bigCoefs = coefs;
+        this.bigCoefs = new BigInteger[coefs.length];
+        System.arraycopy(coefs, 0, this.bigCoefs, 0, coefs.length);
         this.bigDegree = degree;
         this.sumcoefs = sumCoefs.longValue();
         // arrays are sorted by decreasing coefficients
@@ -199,9 +201,9 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
         }
     }
 
-    abstract protected void computeWatches() throws ContradictionException;
+    protected abstract void computeWatches() throws ContradictionException;
 
-    abstract protected void computePropagation(UnitPropagationListener s)
+    protected abstract void computePropagation(UnitPropagationListener s)
             throws ContradictionException;
 
     /**
@@ -376,31 +378,31 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
     }
 
     void selectionSort(int from, int to) {
-        int i, j, best_i;
+        int i, j, bestIndex;
         long tmp;
         BigInteger bigTmp;
         int tmp2;
 
         for (i = from; i < to - 1; i++) {
-            best_i = i;
+            bestIndex = i;
             for (j = i + 1; j < to; j++) {
-                if (this.coefs[j] > this.coefs[best_i]
-                        || this.coefs[j] == this.coefs[best_i]
-                        && this.lits[j] > this.lits[best_i]) {
-                    best_i = j;
+                if (this.coefs[j] > this.coefs[bestIndex]
+                        || this.coefs[j] == this.coefs[bestIndex]
+                        && this.lits[j] > this.lits[bestIndex]) {
+                    bestIndex = j;
                 }
             }
             tmp = this.coefs[i];
-            this.coefs[i] = this.coefs[best_i];
-            this.coefs[best_i] = tmp;
+            this.coefs[i] = this.coefs[bestIndex];
+            this.coefs[bestIndex] = tmp;
             bigTmp = this.bigCoefs[i];
-            this.bigCoefs[i] = this.bigCoefs[best_i];
-            this.bigCoefs[best_i] = bigTmp;
+            this.bigCoefs[i] = this.bigCoefs[bestIndex];
+            this.bigCoefs[bestIndex] = bigTmp;
             tmp2 = this.lits[i];
-            this.lits[i] = this.lits[best_i];
-            this.lits[best_i] = tmp2;
+            this.lits[i] = this.lits[bestIndex];
+            this.lits[bestIndex] = tmp2;
             assert this.coefs[i] >= 0;
-            assert this.coefs[best_i] >= 0;
+            assert this.coefs[bestIndex] >= 0;
         }
     }
 
@@ -438,16 +440,10 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
     /**
      * sort coefficient and literal arrays
      */
-    final protected void sort() {
+    protected final void sort() {
         assert this.lits != null;
         if (this.coefs.length > 0) {
             this.sort(0, size());
-            // long buffInt = coefs[0];
-            // for (int i = 1; i < coefs.length; i++) {
-            // assert buffInt >= coefs[i];
-            // buffInt = coefs[i];
-            // }
-
         }
     }
 
@@ -459,9 +455,9 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
      * @param to
      *            index for the end of the sort
      */
-    final protected void sort(int from, int to) {
+    protected final void sort(int from, int to) {
         int width = to - from;
-        if (width <= 15) {
+        if (width <= LIMIT_SELECTION_SORT) {
             selectionSort(from, to);
         } else {
             assert this.coefs.length == this.bigCoefs.length;
@@ -513,7 +509,6 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
 
         if (this.lits.length > 0) {
             for (int i = 0; i < this.lits.length; i++) {
-                // if (voc.isUnassigned(lits[i])) {
                 stb.append(" + ");
                 stb.append(this.coefs[i]);
                 stb.append(".");
@@ -524,7 +519,6 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
                 stb.append(this.voc.getLevel(this.lits[i]));
                 stb.append("]");
                 stb.append(" ");
-                // }
             }
             stb.append(">= ");
             stb.append(this.degree);

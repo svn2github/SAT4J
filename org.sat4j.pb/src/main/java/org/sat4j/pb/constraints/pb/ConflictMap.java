@@ -111,7 +111,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * @param level
      * @return
      */
-    private static final int levelToIndex(int level) {
+    private final static int levelToIndex(int level) {
         return level + 1;
     }
 
@@ -121,7 +121,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * @param indLevel
      * @return
      */
-    private static final int indexToLevel(int indLevel) {
+    private final static int indexToLevel(int indLevel) {
         return indLevel - 1;
     }
 
@@ -206,7 +206,8 @@ public class ConflictMap extends MapPb implements IConflict {
             } else {
                 // pb-constraint has to be reduced
                 // to obtain a conflictual result from the cutting plane
-                IWatchPb wpb = (IWatchPb) cpb; // DLB Findbugs warning ok
+                // DLB Findbugs warning ok
+                IWatchPb wpb = (IWatchPb) cpb;
                 coefsCons = wpb.getCoefs();
                 assert positiveCoefs(coefsCons);
                 degreeCons = reduceUntilConflict(litImplied, ind, coefsCons,
@@ -341,7 +342,6 @@ public class ConflictMap extends MapPb implements IConflict {
                 poss = poss.add(tmp);
             }
         }
-        // assert poss.subtract(degree).signum() >= 0;
         return poss.subtract(this.degree);
     }
 
@@ -393,7 +393,6 @@ public class ConflictMap extends MapPb implements IConflict {
         assert dl <= this.currentLevel;
 
         this.currentLevel = dl;
-        // assert currentSlack.equals(computeSlack(dl));
         BigInteger slack = this.currentSlack.subtract(this.degree);
         if (slack.signum() < 0) {
             return false;
@@ -413,7 +412,8 @@ public class ConflictMap extends MapPb implements IConflict {
                     .hasNext();) {
                 lit = iterator.next();
                 if (slack.compareTo(this.weightedLits.get(lit)) < 0) {
-                    this.assertiveLiteral = this.weightedLits.allLits.get(lit);
+                    this.assertiveLiteral = this.weightedLits
+                            .getFromAllLits(lit);
                     return true;
                 }
             }
@@ -427,7 +427,8 @@ public class ConflictMap extends MapPb implements IConflict {
                 lit = iterator.next();
                 tmp = this.weightedLits.get(lit);
                 if (tmp != null && slack.compareTo(tmp) < 0) {
-                    this.assertiveLiteral = this.weightedLits.allLits.get(lit);
+                    this.assertiveLiteral = this.weightedLits
+                            .getFromAllLits(lit);
                     return true;
                 }
             }
@@ -486,7 +487,6 @@ public class ConflictMap extends MapPb implements IConflict {
     public BigInteger reduceInConstraint(IWatchPb wpb,
             final BigInteger[] coefsBis, final int indLitImplied,
             final BigInteger degreeBis) {
-        // logger.entering(this.getClass().getName(),"reduceInConstraint");
         assert degreeBis.compareTo(BigInteger.ONE) > 0;
         // search of an unassigned literal
         int lit = -1;
@@ -514,7 +514,6 @@ public class ConflictMap extends MapPb implements IConflict {
         assert lit != -1;
 
         assert lit != indLitImplied;
-        // logger.finer("Found literal "+Lits.toString(lits[lit]));
         // reduction can be done
         BigInteger degUpdate = degreeBis.subtract(coefsBis[lit]);
         this.possReducedCoefs = this.possReducedCoefs.subtract(coefsBis[lit]);
@@ -533,7 +532,7 @@ public class ConflictMap extends MapPb implements IConflict {
     private BigInteger saturation(BigInteger[] coefs, BigInteger degree,
             IWatchPb wpb) {
         assert degree.signum() > 0;
-        // BigInteger minimum = degree;
+        BigInteger degreeResult = degree;
         boolean isMinimumEqualsToDegree = true;
         int comparison;
         for (int i = 0; i < coefs.length; i++) {
@@ -550,15 +549,14 @@ public class ConflictMap extends MapPb implements IConflict {
             }
 
         }
-        // BigInteger minimum = saturation1(coefs, degree, wpb);
         if (isMinimumEqualsToDegree && !degree.equals(BigInteger.ONE)) {
             // the result is a clause
             // there is no more possible reduction
             this.possReducedCoefs = BigInteger.ZERO;
-            degree = BigInteger.ONE;
+            degreeResult = BigInteger.ONE;
             for (int i = 0; i < coefs.length; i++) {
                 if (coefs[i].signum() > 0) {
-                    coefs[i] = degree;
+                    coefs[i] = BigInteger.ONE;
                     if (!this.voc.isFalsified(wpb.get(i))) {
                         this.possReducedCoefs = this.possReducedCoefs
                                 .add(BigInteger.ONE);
@@ -566,50 +564,7 @@ public class ConflictMap extends MapPb implements IConflict {
                 }
             }
         }
-        return degree;
-        // degree = saturation2(coefs, degree, wpb, minimum);
-        // return degree;
-    }
-
-    private BigInteger saturation2(BigInteger[] coefs, BigInteger degree,
-            IWatchPb wpb, BigInteger minimum) {
-        if (minimum.equals(degree) && !degree.equals(BigInteger.ONE)) {
-            // the result is a clause
-            // there is no more possible reduction
-            this.possReducedCoefs = BigInteger.ZERO;
-            degree = BigInteger.ONE;
-            for (int i = 0; i < coefs.length; i++) {
-                if (coefs[i].signum() > 0) {
-                    coefs[i] = degree;
-                    if (!this.voc.isFalsified(wpb.get(i))) {
-                        this.possReducedCoefs = this.possReducedCoefs
-                                .add(BigInteger.ONE);
-                    }
-                }
-            }
-        }
-        return degree;
-    }
-
-    private BigInteger saturation1(BigInteger[] coefs, BigInteger degree,
-            IWatchPb wpb) {
-        // if (coefs.length == 0)
-        // System.out.print(".");
-        BigInteger minimum = degree;
-        for (int i = 0; i < coefs.length; i++) {
-            if (coefs[i].signum() > 0) {
-                minimum = minimum.min(coefs[i]);
-            }
-            if (coefs[i].compareTo(degree) > 0) {
-                if (!this.voc.isFalsified(wpb.get(i))) {
-                    this.possReducedCoefs = this.possReducedCoefs
-                            .subtract(coefs[i]);
-                    this.possReducedCoefs = this.possReducedCoefs.add(degree);
-                }
-                coefs[i] = degree;
-            }
-        }
-        return minimum;
+        return degreeResult;
     }
 
     private static boolean positiveCoefs(final BigInteger[] coefsCons) {

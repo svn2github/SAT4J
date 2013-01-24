@@ -418,7 +418,6 @@ public class MinWatchPb extends WatchPb {
         }
 
         assert this.learnt || maxCoef.signum() != 0;
-        // DLB assert maxCoef!=0;
         return maxCoef;
     }
 
@@ -444,7 +443,7 @@ public class MinWatchPb extends WatchPb {
 
             // we must obtain upWatchCumul such that
             // upWatchCumul = degree + maxCoef
-            BigInteger degreePlusMaxCoef = this.degree.add(maxCoef); // dvh
+            BigInteger degreePlusMaxCoef = this.degree.add(maxCoef);
             for (int ind = 0; ind < this.lits.length; ind++) {
                 if (upWatchCumul.compareTo(degreePlusMaxCoef) >= 0) {
                     // nothing more to watch
@@ -464,9 +463,7 @@ public class MinWatchPb extends WatchPb {
                     // coefficient
                     if (this.coefs[ind].compareTo(maxCoef) > 0) {
                         maxCoef = this.coefs[ind];
-                        degreePlusMaxCoef = this.degree.add(maxCoef); // update
-                        // that one
-                        // too
+                        degreePlusMaxCoef = this.degree.add(maxCoef);
                     }
                 }
             }

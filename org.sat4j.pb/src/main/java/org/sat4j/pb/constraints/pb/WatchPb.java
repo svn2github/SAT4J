@@ -57,6 +57,7 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
 	 */
     private static final long serialVersionUID = 1L;
 
+    private static final int LIMIT_SELECTION_SORT = 15;
     /**
      * constraint activity
      */
@@ -115,8 +116,10 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     /** Constructor used for original constraints. */
     WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree,
             BigInteger sumCoefs) { // NOPMD
-        this.lits = lits;
-        this.coefs = coefs;
+        this.lits = new int[lits.length];
+        System.arraycopy(lits, 0, this.lits, 0, lits.length);
+        this.coefs = new BigInteger[coefs.length];
+        System.arraycopy(coefs, 0, this.coefs, 0, coefs.length);
         this.degree = degree;
         this.sumcoefs = sumCoefs;
         // arrays are sorted by decreasing coefficients
@@ -179,9 +182,9 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
         }
     }
 
-    abstract protected void computeWatches() throws ContradictionException;
+    protected abstract void computeWatches() throws ContradictionException;
 
-    abstract protected void computePropagation(UnitPropagationListener s)
+    protected abstract void computePropagation(UnitPropagationListener s)
             throws ContradictionException;
 
     /**
@@ -348,25 +351,25 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     }
 
     void selectionSort(int from, int to) {
-        int i, j, best_i;
+        int i, j, bestIndex;
         BigInteger tmp;
         int tmp2;
 
         for (i = from; i < to - 1; i++) {
-            best_i = i;
+            bestIndex = i;
             for (j = i + 1; j < to; j++) {
-                if (this.coefs[j].compareTo(this.coefs[best_i]) > 0
-                        || this.coefs[j].equals(this.coefs[best_i])
-                        && this.lits[j] > this.lits[best_i]) {
-                    best_i = j;
+                if (this.coefs[j].compareTo(this.coefs[bestIndex]) > 0
+                        || this.coefs[j].equals(this.coefs[bestIndex])
+                        && this.lits[j] > this.lits[bestIndex]) {
+                    bestIndex = j;
                 }
             }
             tmp = this.coefs[i];
-            this.coefs[i] = this.coefs[best_i];
-            this.coefs[best_i] = tmp;
+            this.coefs[i] = this.coefs[bestIndex];
+            this.coefs[bestIndex] = tmp;
             tmp2 = this.lits[i];
-            this.lits[i] = this.lits[best_i];
-            this.lits[best_i] = tmp2;
+            this.lits[i] = this.lits[bestIndex];
+            this.lits[bestIndex] = tmp2;
         }
     }
 
@@ -404,7 +407,7 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     /**
      * sort coefficient and literal arrays
      */
-    final protected void sort() {
+    protected final void sort() {
         assert this.lits != null;
         if (this.coefs.length > 0) {
             this.sort(0, size());
@@ -425,9 +428,9 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
      * @param to
      *            index for the end of the sort
      */
-    final protected void sort(int from, int to) {
+    protected final void sort(int from, int to) {
         int width = to - from;
-        if (width <= 15) {
+        if (width <= LIMIT_SELECTION_SORT) {
             selectionSort(from, to);
         } else {
             int indPivot = width / 2 + from;
@@ -474,7 +477,6 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
 
         if (this.lits.length > 0) {
             for (int i = 0; i < this.lits.length; i++) {
-                // if (voc.isUnassigned(lits[i])) {
                 stb.append(" + ");
                 stb.append(this.coefs[i]);
                 stb.append(".");
@@ -485,7 +487,6 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
                 stb.append(this.voc.getLevel(this.lits[i]));
                 stb.append("]");
                 stb.append(" ");
-                // }
             }
             stb.append(">= ");
             stb.append(this.degree);

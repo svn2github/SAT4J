@@ -420,7 +420,6 @@ public class MinWatchPbLongCP extends WatchPbLongCP {
         }
 
         assert this.learnt || maxCoef != 0;
-        // DLB assert maxCoef!=0;
         return maxCoef;
     }
 
@@ -445,7 +444,7 @@ public class MinWatchPbLongCP extends WatchPbLongCP {
 
             // we must obtain upWatchCumul such that
             // upWatchCumul = degree + maxCoef
-            long degreePlusMaxCoef = this.degree + maxCoef; // dvh
+            long degreePlusMaxCoef = this.degree + maxCoef;
             for (int ind = 0; ind < this.lits.length; ind++) {
                 if (upWatchCumul >= degreePlusMaxCoef) {
                     // nothing more to watch
@@ -465,9 +464,7 @@ public class MinWatchPbLongCP extends WatchPbLongCP {
                     // coefficient
                     if (this.coefs[ind] > maxCoef) {
                         maxCoef = this.coefs[ind];
-                        degreePlusMaxCoef = this.degree + maxCoef; // update
-                        // that one
-                        // too
+                        degreePlusMaxCoef = this.degree + maxCoef;
                     }
                 }
             }

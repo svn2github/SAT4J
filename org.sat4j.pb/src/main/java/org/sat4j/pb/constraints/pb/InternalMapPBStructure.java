@@ -42,9 +42,9 @@ import org.sat4j.specs.IVecInt;
  */
 public class InternalMapPBStructure {
 
-    IVecInt lits;
-    IVec<BigInteger> coefs;
-    IVecInt allLits;
+    private final IVecInt lits;
+    private final IVec<BigInteger> coefs;
+    private IVecInt allLits;
 
     // temporarily : just for the case where an InternalMapPBStructure
     // is used to embed in one object literals and coefs
@@ -76,10 +76,13 @@ public class InternalMapPBStructure {
         }
     }
 
-    // coefs.get(lit)
     BigInteger get(int lit) {
         assert this.allLits.get(lit) != -1;
         return this.coefs.get(this.allLits.get(lit));
+    }
+
+    int getFromAllLits(int lit) {
+        return this.allLits.get(lit);
     }
 
     int getLit(int indLit) {
@@ -92,7 +95,6 @@ public class InternalMapPBStructure {
         return this.coefs.get(indLit);
     }
 
-    // coefs.containsKey(nLitImplied)
     boolean containsKey(int lit) {
         return this.allLits.get(lit) != -1;
     }
@@ -101,7 +103,6 @@ public class InternalMapPBStructure {
         return this.lits.size();
     }
 
-    // coefs.put(lit, newValue)
     void put(int lit, BigInteger newValue) {
         int indLit = this.allLits.get(lit);
         if (indLit != -1) {
@@ -118,8 +119,6 @@ public class InternalMapPBStructure {
         this.coefs.set(indLit, newValue);
     }
 
-    // void removeCoef(Integer lit) {
-    // coefs.remove(lit);
     void remove(int lit) {
         int indLit = this.allLits.get(lit);
         if (indLit != -1) {
