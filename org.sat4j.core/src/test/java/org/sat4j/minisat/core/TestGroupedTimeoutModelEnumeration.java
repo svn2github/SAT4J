@@ -53,7 +53,7 @@ public class TestGroupedTimeoutModelEnumeration {
         this.solver.addClause(clause);
     }
 
-    @Test(expected = TimeoutException.class, timeout = 2500)
+    @Test(expected = TimeoutException.class, timeout = 3000)
     public void testTimeoutOnSeconds() throws TimeoutException {
         this.solver.setTimeout(2);
         while (this.solver.isSatisfiable()) {
@@ -61,7 +61,7 @@ public class TestGroupedTimeoutModelEnumeration {
         }
     }
 
-    @Test(expected = TimeoutException.class, timeout = 2500)
+    @Test(expected = TimeoutException.class, timeout = 3000)
     public void testTimeoutOnMilliSeconds() throws TimeoutException {
         this.solver.setTimeoutMs(2000);
         while (this.solver.isSatisfiable()) {
@@ -69,7 +69,7 @@ public class TestGroupedTimeoutModelEnumeration {
         }
     }
 
-    @Test(expected = TimeoutException.class, timeout = 2500)
+    @Test(expected = TimeoutException.class, timeout = 3000)
     public void testTimeoutOnConflicts() throws TimeoutException {
         this.solver.setTimeoutOnConflicts(1000);
         while (this.solver.isSatisfiable()) {
