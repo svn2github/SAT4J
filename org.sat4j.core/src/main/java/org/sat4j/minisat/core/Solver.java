@@ -1374,16 +1374,18 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.qhead = trail.size();
         }
         this.prime = new int[realNumberOfVariables() + 1];
-        int p;
+        int p, d;
         for (int i = 0; i < this.prime.length; i++) {
             this.prime[i] = 0;
         }
         for (IteratorInt it = this.implied.iterator(); it.hasNext();) {
-            p = it.next();
-            this.prime[Math.abs(p)] = p;
-            setAndPropagate(toInternal(p));
+            d = it.next();
+            p = toInternal(d);
+            this.prime[Math.abs(d)] = d;
+            if (voc.isUnassigned(p)) {
+                setAndPropagate(p);
+            }
         }
-        int d;
         boolean canBeRemoved;
         int rightlevel;
         int removed = 0;
