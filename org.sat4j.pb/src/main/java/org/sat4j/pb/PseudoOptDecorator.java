@@ -45,262 +45,267 @@ import org.sat4j.specs.TimeoutException;
  * 
  */
 public class PseudoOptDecorator extends PBSolverDecorator implements
-		IOptimizationProblem {
+        IOptimizationProblem {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private BigInteger objectiveValue;
+    private BigInteger objectiveValue;
 
-	private int[] prevmodel;
-	private int[] prevmodelwithadditionalvars;
+    private int[] prevmodel;
+    private int[] prevmodelwithadditionalvars;
 
-	private boolean[] prevfullmodel;
+    private boolean[] prevfullmodel;
 
-	private IConstr previousPBConstr;
+    private IConstr previousPBConstr;
 
-	private boolean isSolutionOptimal;
+    private boolean isSolutionOptimal;
 
-	private final boolean nonOptimalMeansSatisfiable;
+    private final boolean nonOptimalMeansSatisfiable;
 
-	private final boolean useAnImplicantForEvaluation;
+    private final boolean useAnImplicantForEvaluation;
 
-	private int solverTimeout = Integer.MAX_VALUE;
+    private int solverTimeout = Integer.MAX_VALUE;
 
-	private int optimizationTimeout = -1;
+    private int optimizationTimeout = -1;
 
-	/**
-	 * Create a PB decorator for which a non optimal solution means that the
-	 * problem is satisfiable.
-	 * 
-	 * @param solver
-	 *            a PB solver.
-	 */
-	public PseudoOptDecorator(IPBSolver solver) {
-		this(solver, true);
-	}
+    /**
+     * Create a PB decorator for which a non optimal solution means that the
+     * problem is satisfiable.
+     * 
+     * @param solver
+     *            a PB solver.
+     */
+    public PseudoOptDecorator(IPBSolver solver) {
+        this(solver, true);
+    }
 
-	/**
-	 * Create a PB decorator with a specific semantic of non optimal solution.
-	 * 
-	 * @param solver
-	 *            a PB solver
-	 * @param nonOptimalMeansSatisfiable
-	 *            true if a suboptimal solution means that the problem is
-	 *            satisfiable (e.g. as in the PB competition), else false (e.g.
-	 *            as in the MAXSAT competition).
-	 */
-	public PseudoOptDecorator(IPBSolver solver,
-			boolean nonOptimalMeansSatisfiable) {
-		this(solver, nonOptimalMeansSatisfiable, false);
-	}
+    /**
+     * Create a PB decorator with a specific semantic of non optimal solution.
+     * 
+     * @param solver
+     *            a PB solver
+     * @param nonOptimalMeansSatisfiable
+     *            true if a suboptimal solution means that the problem is
+     *            satisfiable (e.g. as in the PB competition), else false (e.g.
+     *            as in the MAXSAT competition).
+     */
+    public PseudoOptDecorator(IPBSolver solver,
+            boolean nonOptimalMeansSatisfiable) {
+        this(solver, nonOptimalMeansSatisfiable, false);
+    }
 
-	/**
-	 * Create a PB decorator with a specific semantic of non optimal solution.
-	 * 
-	 * @param solver
-	 *            a PB solver
-	 * @param nonOptimalMeansSatisfiable
-	 *            true if a suboptimal solution means that the problem is
-	 *            satisfiable (e.g. as in the PB competition), else false (e.g.
-	 *            as in the MAXSAT competition).
-	 * @param useAnImplicantForEvaluation
-	 *            uses an implicant (a prime implicant computed using
-	 *            {@link #primeImplicant()}) instead of a plain model to
-	 *            evaluate the objective function.
-	 */
-	public PseudoOptDecorator(IPBSolver solver,
-			boolean nonOptimalMeansSatisfiable,
-			boolean useAnImplicantForEvaluation) {
-		super(solver);
-		this.nonOptimalMeansSatisfiable = nonOptimalMeansSatisfiable;
-		this.useAnImplicantForEvaluation = useAnImplicantForEvaluation;
-	}
+    /**
+     * Create a PB decorator with a specific semantic of non optimal solution.
+     * 
+     * @param solver
+     *            a PB solver
+     * @param nonOptimalMeansSatisfiable
+     *            true if a suboptimal solution means that the problem is
+     *            satisfiable (e.g. as in the PB competition), else false (e.g.
+     *            as in the MAXSAT competition).
+     * @param useAnImplicantForEvaluation
+     *            uses an implicant (a prime implicant computed using
+     *            {@link #primeImplicant()}) instead of a plain model to
+     *            evaluate the objective function.
+     */
+    public PseudoOptDecorator(IPBSolver solver,
+            boolean nonOptimalMeansSatisfiable,
+            boolean useAnImplicantForEvaluation) {
+        super(solver);
+        this.nonOptimalMeansSatisfiable = nonOptimalMeansSatisfiable;
+        this.useAnImplicantForEvaluation = useAnImplicantForEvaluation;
+    }
 
-	@Override
-	public boolean isSatisfiable() throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY);
-	}
+    @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY);
+    }
 
-	@Override
-	public boolean isSatisfiable(boolean global) throws TimeoutException {
-		return isSatisfiable(VecInt.EMPTY, global);
-	}
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY, global);
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps, boolean global)
-			throws TimeoutException {
-		boolean result = super.isSatisfiable(assumps, true);
-		if (result) {
-			this.prevmodel = super.model();
-			this.prevmodelwithadditionalvars = super
-					.modelWithInternalVariables();
-			this.prevfullmodel = new boolean[nVars()];
-			for (int i = 0; i < nVars(); i++) {
-				this.prevfullmodel[i] = decorated().model(i + 1);
-			}
-			if (optimizationTimeout > 0) {
-				super.expireTimeout();
-				super.setTimeout(optimizationTimeout);
-			}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps, boolean global)
+            throws TimeoutException {
+        boolean result = super.isSatisfiable(assumps, true);
+        if (result) {
+            this.prevmodel = super.model();
+            this.prevmodelwithadditionalvars = super
+                    .modelWithInternalVariables();
+            this.prevfullmodel = new boolean[nVars()];
+            for (int i = 0; i < nVars(); i++) {
+                this.prevfullmodel[i] = decorated().model(i + 1);
+            }
+            if (optimizationTimeout > 0) {
+                super.expireTimeout();
+                super.setTimeout(optimizationTimeout);
+            }
 
-		} else {
-			if (this.previousPBConstr != null) {
-				decorated().removeConstr(this.previousPBConstr);
-				this.previousPBConstr = null;
-			}
-			super.setTimeout(solverTimeout);
-		}
-		return result;
-	}
+        } else {
+            if (this.previousPBConstr != null) {
+                decorated().removeConstr(this.previousPBConstr);
+                this.previousPBConstr = null;
+            }
+            super.setTimeout(solverTimeout);
+        }
+        return result;
+    }
 
-	@Override
-	public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-		return isSatisfiable(assumps, true);
-	}
+    @Override
+    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
+        return isSatisfiable(assumps, true);
+    }
 
-	@Override
-	public void setObjectiveFunction(ObjectiveFunction objf) {
-		decorated().setObjectiveFunction(objf);
-	}
+    @Override
+    public void setObjectiveFunction(ObjectiveFunction objf) {
+        decorated().setObjectiveFunction(objf);
+    }
 
-	public boolean admitABetterSolution() throws TimeoutException {
-		return admitABetterSolution(VecInt.EMPTY);
-	}
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
 
-	public boolean admitABetterSolution(IVecInt assumps)
-			throws TimeoutException {
-		try {
-			this.isSolutionOptimal = false;
-			boolean result = super.isSatisfiable(assumps, true);
-			if (result) {
-				this.prevmodel = super.model();
-				this.prevmodelwithadditionalvars = super
-						.modelWithInternalVariables();
-				this.prevfullmodel = new boolean[nVars()];
-				for (int i = 0; i < nVars(); i++) {
-					this.prevfullmodel[i] = decorated().model(i + 1);
-				}
-				if (decorated().getObjectiveFunction() != null) {
-					calculateObjective();
-				}
-				if (optimizationTimeout > 0) {
-					super.expireTimeout();
-					super.setTimeout(optimizationTimeout);
-				}
-			} else {
-				this.isSolutionOptimal = true;
-				if (this.previousPBConstr != null) {
-					decorated().removeConstr(this.previousPBConstr);
-					this.previousPBConstr = null;
-				}
-			}
-			return result;
-		} catch (TimeoutException te) {
-			if (this.previousPBConstr != null) {
-				decorated().removeConstr(this.previousPBConstr);
-				this.previousPBConstr = null;
-			}
-			throw te;
-		}
-	}
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        try {
+            this.isSolutionOptimal = false;
+            boolean result = super.isSatisfiable(assumps, true);
+            if (result) {
+                if (this.useAnImplicantForEvaluation) {
+                    this.prevmodel = super.primeImplicant();
 
-	public boolean hasNoObjectiveFunction() {
-		return decorated().getObjectiveFunction() == null;
-	}
+                } else {
+                    this.prevmodel = super.model();
+                }
+                this.prevmodelwithadditionalvars = super
+                        .modelWithInternalVariables();
+                this.prevfullmodel = new boolean[nVars()];
+                for (int i = 0; i < nVars(); i++) {
+                    this.prevfullmodel[i] = decorated().model(i + 1);
+                }
+                if (decorated().getObjectiveFunction() != null) {
+                    calculateObjective();
+                }
+                if (optimizationTimeout > 0) {
+                    super.expireTimeout();
+                    super.setTimeout(optimizationTimeout);
+                }
+            } else {
+                this.isSolutionOptimal = true;
+                if (this.previousPBConstr != null) {
+                    decorated().removeConstr(this.previousPBConstr);
+                    this.previousPBConstr = null;
+                }
+            }
+            return result;
+        } catch (TimeoutException te) {
+            if (this.previousPBConstr != null) {
+                decorated().removeConstr(this.previousPBConstr);
+                this.previousPBConstr = null;
+            }
+            throw te;
+        }
+    }
 
-	public boolean nonOptimalMeansSatisfiable() {
-		return nonOptimalMeansSatisfiable;
-	}
+    public boolean hasNoObjectiveFunction() {
+        return decorated().getObjectiveFunction() == null;
+    }
 
-	public Number calculateObjective() {
-		if (decorated().getObjectiveFunction() == null) {
-			throw new UnsupportedOperationException(
-					"The problem does not contain an objective function");
-		}
-		if (this.useAnImplicantForEvaluation) {
-			this.objectiveValue = decorated().getObjectiveFunction()
-					.calculateDegreeImplicant(decorated());
-		} else {
-			this.objectiveValue = decorated().getObjectiveFunction()
-					.calculateDegree(decorated());
-		}
-		return getObjectiveValue();
-	}
+    public boolean nonOptimalMeansSatisfiable() {
+        return nonOptimalMeansSatisfiable;
+    }
 
-	public void discardCurrentSolution() throws ContradictionException {
-		if (this.previousPBConstr != null) {
-			super.removeSubsumedConstr(this.previousPBConstr);
-		}
-		if (decorated().getObjectiveFunction() != null
-				&& this.objectiveValue != null) {
-			this.previousPBConstr = super.addPseudoBoolean(decorated()
-					.getObjectiveFunction().getVars(), decorated()
-					.getObjectiveFunction().getCoeffs(), false,
-					this.objectiveValue.subtract(BigInteger.ONE));
-		}
-	}
+    public Number calculateObjective() {
+        if (decorated().getObjectiveFunction() == null) {
+            throw new UnsupportedOperationException(
+                    "The problem does not contain an objective function");
+        }
+        if (this.useAnImplicantForEvaluation) {
+            this.objectiveValue = decorated().getObjectiveFunction()
+                    .calculateDegreeImplicant(decorated());
+        } else {
+            this.objectiveValue = decorated().getObjectiveFunction()
+                    .calculateDegree(decorated());
+        }
+        return getObjectiveValue();
+    }
 
-	@Override
-	public void reset() {
-		this.previousPBConstr = null;
-		super.reset();
-	}
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.previousPBConstr != null) {
+            super.removeSubsumedConstr(this.previousPBConstr);
+        }
+        if (decorated().getObjectiveFunction() != null
+                && this.objectiveValue != null) {
+            this.previousPBConstr = super.addPseudoBoolean(decorated()
+                    .getObjectiveFunction().getVars(), decorated()
+                    .getObjectiveFunction().getCoeffs(), false,
+                    this.objectiveValue.subtract(BigInteger.ONE));
+        }
+    }
 
-	@Override
-	public int[] model() {
-		// DLB findbugs ok
-		return this.prevmodel;
-	}
+    @Override
+    public void reset() {
+        this.previousPBConstr = null;
+        super.reset();
+    }
 
-	@Override
-	public boolean model(int var) {
-		return this.prevfullmodel[var - 1];
-	}
+    @Override
+    public int[] model() {
+        // DLB findbugs ok
+        return this.prevmodel;
+    }
 
-	@Override
-	public String toString(String prefix) {
-		return prefix
-				+ "Pseudo Boolean Optimization by upper bound\n"
-				+ prefix
-				+ (useAnImplicantForEvaluation ? "using prime implicants for evaluating the objective function\n"
-						: "") + super.toString(prefix);
-	}
+    @Override
+    public boolean model(int var) {
+        return this.prevfullmodel[var - 1];
+    }
 
-	public Number getObjectiveValue() {
-		return this.objectiveValue.add(decorated().getObjectiveFunction()
-				.getCorrection());
-	}
+    @Override
+    public String toString(String prefix) {
+        return prefix
+                + "Pseudo Boolean Optimization by upper bound\n"
+                + prefix
+                + (useAnImplicantForEvaluation ? "using prime implicants for evaluating the objective function\n"
+                        : "") + super.toString(prefix);
+    }
 
-	public void discard() throws ContradictionException {
-		discardCurrentSolution();
-	}
+    public Number getObjectiveValue() {
+        return this.objectiveValue.add(decorated().getObjectiveFunction()
+                .getCorrection());
+    }
 
-	public void forceObjectiveValueTo(Number forcedValue)
-			throws ContradictionException {
-		super.addPseudoBoolean(decorated().getObjectiveFunction().getVars(),
-				decorated().getObjectiveFunction().getCoeffs(), false,
-				(BigInteger) forcedValue);
-	}
+    public void discard() throws ContradictionException {
+        discardCurrentSolution();
+    }
 
-	public boolean isOptimal() {
-		return this.isSolutionOptimal;
-	}
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        super.addPseudoBoolean(decorated().getObjectiveFunction().getVars(),
+                decorated().getObjectiveFunction().getCoeffs(), false,
+                (BigInteger) forcedValue);
+    }
 
-	@Override
-	public int[] modelWithInternalVariables() {
-		return this.prevmodelwithadditionalvars;
-	}
+    public boolean isOptimal() {
+        return this.isSolutionOptimal;
+    }
 
-	public void setTimeoutForFindingBetterSolution(int seconds) {
-		optimizationTimeout = seconds;
-	}
+    @Override
+    public int[] modelWithInternalVariables() {
+        return this.prevmodelwithadditionalvars;
+    }
 
-	@Override
-	public void setTimeout(int t) {
-		solverTimeout = t;
-		super.setTimeout(t);
-	}
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        optimizationTimeout = seconds;
+    }
+
+    @Override
+    public void setTimeout(int t) {
+        solverTimeout = t;
+        super.setTimeout(t);
+    }
 }
