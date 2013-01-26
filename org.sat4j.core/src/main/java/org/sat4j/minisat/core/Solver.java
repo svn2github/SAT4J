@@ -1303,7 +1303,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 if (!this.voc.isUnassigned(p)) {
                     tempmodel.push(this.voc.isSatisfied(p) ? i : -i);
                     this.userbooleanmodel[i - 1] = this.voc.isSatisfied(p);
-                    if (this.voc.getReason(p) == null) {
+                    if (this.voc.getReason(p) == null && voc.getLevel(p) > 0) {
                         this.decisions.push(tempmodel.last());
                     } else {
                         this.implied.push(tempmodel.last());
@@ -1330,6 +1330,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             }
             this.fullmodel = new int[tempmodel.size()];
             tempmodel.moveTo(this.fullmodel);
+        } else {
+            this.fullmodel = this.model;
         }
     }
 
