@@ -344,7 +344,7 @@ public class ModelIteratorTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 6000)
     public void testGlobalTimeoutCounter() {
         SolutionCounter counter = new SolutionCounter(
                 SolverFactory.newDefault());
@@ -363,7 +363,7 @@ public class ModelIteratorTest {
         }
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 6000)
     public void testGlobalTimeoutIterator() {
         ModelIterator iterator = new ModelIterator(SolverFactory.newDefault());
         IVecInt clause = new VecInt();
@@ -383,7 +383,7 @@ public class ModelIteratorTest {
         }
     }
 
-    @Test(timeout = 11000)
+    @Test(timeout = 12000)
     public void testSpecificValues() throws ContradictionException,
             TimeoutException {
         assertEquals(3L, count(2));
