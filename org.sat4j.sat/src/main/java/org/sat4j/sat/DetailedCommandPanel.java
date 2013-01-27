@@ -66,6 +66,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.sat4j.core.ASolverFactory;
+import org.sat4j.maxsat.WeightedMaxSatDecorator;
+import org.sat4j.maxsat.reader.MSInstanceReader;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
