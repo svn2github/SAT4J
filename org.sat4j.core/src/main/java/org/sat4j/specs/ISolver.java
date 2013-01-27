@@ -34,8 +34,6 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.sat4j.tools.ModelIterator;
-
 /**
  * This interface contains all services provided by a SAT solver.
  * 
@@ -257,7 +255,7 @@ public interface ISolver extends IProblem, Serializable {
      * of the solver should be the same across different architecture.
      * 
      * @param count
-     *            the timeout (in number of counflicts)
+     *            the timeout (in number of conflicts)
      */
     void setTimeoutOnConflicts(int count);
 
@@ -459,7 +457,7 @@ public interface ISolver extends IProblem, Serializable {
      * @return an array of literals, in Dimacs format, corresponding to a model
      *         of the formula over all the variables declared in the solver.
      * @see #model()
-     * @see ModelIterator
+     * @see org.sat4j.tools.ModelIterator
      * @since 2.3.1
      */
     int[] modelWithInternalVariables();
