@@ -33,10 +33,10 @@ import org.sat4j.specs.IConstr;
 
 public class UnitWeightedClause implements IConstr {
 
-    private static final UnitWeightedClause instance = new UnitWeightedClause();
+    private static final UnitWeightedClause INSTANCE = new UnitWeightedClause();
 
     public static UnitWeightedClause instance() {
-        return instance;
+        return INSTANCE;
     }
 
     private UnitWeightedClause() {
