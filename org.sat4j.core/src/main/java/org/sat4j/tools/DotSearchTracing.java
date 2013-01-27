@@ -205,11 +205,11 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
         saveLine("}");
     }
 
-    private final String lineTab(final String line) {
+    private String lineTab(final String line) {
         return "\t" + line;
     }
 
-    private final void saveLine(final String line) {
+    private void saveLine(final String line) {
         try {
             this.out.write(line + '\n');
             if ("}".equals(line)) {

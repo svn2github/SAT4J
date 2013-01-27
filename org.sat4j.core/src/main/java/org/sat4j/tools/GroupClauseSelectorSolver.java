@@ -63,8 +63,7 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
             this.varToHighLevel.put(hlvar, desc);
         }
         literals.push(hlvar);
-        IConstr constr = super.addClause(literals);
-        return constr;
+        return super.addClause(literals);
     }
 
     public IConstr addNonControlableClause(IVecInt literals)

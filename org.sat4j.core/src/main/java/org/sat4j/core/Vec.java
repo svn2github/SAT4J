@@ -345,19 +345,19 @@ public final class Vec<T> implements IVec<T> {
     }
 
     void selectionSort(int from, int to, Comparator<T> cmp) {
-        int i, j, best_i;
+        int i, j, besti;
         T tmp;
 
         for (i = from; i < to - 1; i++) {
-            best_i = i;
+            besti = i;
             for (j = i + 1; j < to; j++) {
-                if (cmp.compare(this.myarray[j], this.myarray[best_i]) < 0) {
-                    best_i = j;
+                if (cmp.compare(this.myarray[j], this.myarray[besti]) < 0) {
+                    besti = j;
                 }
             }
             tmp = this.myarray[i];
-            this.myarray[i] = this.myarray[best_i];
-            this.myarray[best_i] = tmp;
+            this.myarray[i] = this.myarray[besti];
+            this.myarray[besti] = tmp;
         }
     }
 

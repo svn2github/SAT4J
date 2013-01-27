@@ -265,7 +265,7 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
     /**
      * On normalise la contrainte au sens de Barth
      */
-    public final void normalize() {
+    public void normalize() {
         // Gestion du signe
         if (!this.moreThan) {
             // On multiplie le degr? par -1

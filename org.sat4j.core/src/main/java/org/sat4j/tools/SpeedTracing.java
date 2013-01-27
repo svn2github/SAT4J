@@ -45,8 +45,6 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
     private int counter;
     private long index;
 
-    private int nVar;
-
     private double maxY;
 
     public SpeedTracing(IVisualizationTool visuTool,
@@ -124,10 +122,5 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
         this.begin = System.currentTimeMillis();
         this.counter = 0;
         this.index = 0;
-    }
-
-    @Override
-    public void init(ISolverService solverService) {
-        this.nVar = solverService.nVars();
     }
 }

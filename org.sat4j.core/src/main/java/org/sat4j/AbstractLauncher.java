@@ -171,21 +171,20 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      *             if the problem is found trivially unsat
      */
     protected IProblem readProblem(String problemname)
-            throws ParseFormatException, IOException,
-            ContradictionException {
+            throws ParseFormatException, IOException, ContradictionException {
         log("solving " + problemname); //$NON-NLS-1$
         log("reading problem ... "); //$NON-NLS-1$
         this.reader = createReader(this.solver, problemname);
-        IProblem problem = this.reader.parseInstance(problemname);
+        IProblem aProblem = this.reader.parseInstance(problemname);
         log("... done. Wall clock time " //$NON-NLS-1$
                 + (System.currentTimeMillis() - this.beginTime) / 1000.0 + "s."); //$NON-NLS-1$
-        log("declared #vars     " + problem.nVars()); //$NON-NLS-1$
+        log("declared #vars     " + aProblem.nVars()); //$NON-NLS-1$
         if (this.solver.nVars() < this.solver.realNumberOfVariables()) {
             log("internal #vars     " + this.solver.realNumberOfVariables()); //$NON-NLS-1$
         }
-        log("#constraints  " + problem.nConstraints()); //$NON-NLS-1$
-        problem.printInfos(this.out);
-        return problem;
+        log("#constraints  " + aProblem.nConstraints()); //$NON-NLS-1$
+        aProblem.printInfos(this.out);
+        return aProblem;
     }
 
     protected abstract Reader createReader(ISolver theSolver, String problemname);

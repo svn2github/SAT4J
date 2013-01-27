@@ -178,16 +178,12 @@ public interface ILauncherMode extends SolutionFoundListener {
         private int nbSolutionFound;
 
         private PrintWriter out;
-        private ISolver aSolver;
-        private Reader reader;
         private long beginTime;
 
         public void solve(IProblem problem, Reader reader, ILogAble logger,
                 PrintWriter out, long beginTime) {
             this.exitCode = ExitCode.UNKNOWN;
             this.out = out;
-            this.aSolver = (ISolver) problem;
-            this.reader = reader;
             this.nbSolutionFound = 0;
             this.beginTime = beginTime;
             try {

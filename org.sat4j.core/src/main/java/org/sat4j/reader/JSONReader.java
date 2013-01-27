@@ -72,9 +72,9 @@ public class JSONReader<S extends ISolver> extends Reader {
 
     public final String formula;
 
-    private static final Pattern clausePattern = Pattern.compile(CLAUSE);
+    private static final Pattern CLAUSE_PATTERN = Pattern.compile(CLAUSE);
 
-    private static final Pattern cardPattern = Pattern.compile(CARD);
+    private static final Pattern CARD_PATTERN = Pattern.compile(CARD);
 
     private final Pattern constraintPattern;
 
@@ -91,9 +91,9 @@ public class JSONReader<S extends ISolver> extends Reader {
 
     private void handleConstraint(String constraint)
             throws ParseFormatException, ContradictionException {
-        if (cardPattern.matcher(constraint).matches()) {
+        if (CARD_PATTERN.matcher(constraint).matches()) {
             handleCard(constraint);
-        } else if (clausePattern.matcher(constraint).matches()) {
+        } else if (CLAUSE_PATTERN.matcher(constraint).matches()) {
             handleClause(constraint);
         } else {
             handleNotHandled(constraint);
@@ -127,7 +127,7 @@ public class JSONReader<S extends ISolver> extends Reader {
             ContradictionException {
         String trimmed = constraint.trim();
         trimmed = trimmed.substring(1, trimmed.length() - 1);
-        Matcher matcher = clausePattern.matcher(trimmed);
+        Matcher matcher = CLAUSE_PATTERN.matcher(trimmed);
         if (matcher.find()) {
             IVecInt clause = getLiterals(matcher.group());
             trimmed = matcher.replaceFirst("");

@@ -2493,17 +2493,17 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      */
     public void setLearnedConstraintsDeletionStrategy(
             LearnedConstraintsEvaluationType evaluation) {
-        ConflictTimer timer = this.learnedConstraintsDeletionStrategy
+        ConflictTimer aTimer = this.learnedConstraintsDeletionStrategy
                 .getTimer();
         switch (evaluation) {
         case ACTIVITY:
-            this.learnedConstraintsDeletionStrategy = activityBased(timer);
+            this.learnedConstraintsDeletionStrategy = activityBased(aTimer);
             break;
         case LBD:
-            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS(timer);
+            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS(aTimer);
             break;
         case LBD2:
-            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS(timer);
+            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS(aTimer);
             break;
         }
         if (this.conflictCount != null) {

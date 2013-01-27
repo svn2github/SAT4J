@@ -45,6 +45,10 @@ import org.sat4j.specs.TimeoutException;
  */
 public class Backbone {
 
+    private Backbone() {
+
+    }
+
     /**
      * Computes the backbone of a formula following the algorithm described in
      * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of

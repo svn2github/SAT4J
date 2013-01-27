@@ -510,19 +510,19 @@ public final class VecInt implements IVecInt {
     }
 
     void selectionSort(int from, int to) {
-        int i, j, best_i;
+        int i, j, besti;
         int tmp;
 
         for (i = from; i < to - 1; i++) {
-            best_i = i;
+            besti = i;
             for (j = i + 1; j < to; j++) {
-                if (this.myarray[j] < this.myarray[best_i]) {
-                    best_i = j;
+                if (this.myarray[j] < this.myarray[besti]) {
+                    besti = j;
                 }
             }
             tmp = this.myarray[i];
-            this.myarray[i] = this.myarray[best_i];
-            this.myarray[best_i] = tmp;
+            this.myarray[i] = this.myarray[besti];
+            this.myarray[besti] = tmp;
         }
     }
 
