@@ -63,8 +63,6 @@ public class PseudoBitsAdderDecorator extends SolverDecorator<IPBSolver>
 
     private final GateTranslator gator;
     private final IPBSolver solver;
-    private IVecInt bitsLiterals;
-    private IVecInt fixedLiterals;
 
     public PseudoBitsAdderDecorator(IPBSolver solver) {
         super(solver);
@@ -89,28 +87,27 @@ public class PseudoBitsAdderDecorator extends SolverDecorator<IPBSolver>
         System.out.println("c Original number of variables and constraints");
         System.out.println("c #vars: " + this.gator.nVars() + " #constraints: "
                 + this.gator.nConstraints());
-        this.bitsLiterals = new VecInt();
+        IVecInt bitsLiterals = new VecInt();
         System.out.println("c Creating optimization constraints ....");
         try {
             this.gator.optimisationFunction(this.objfct.getVars(),
-                    this.objfct.getCoeffs(), this.bitsLiterals);
+                    this.objfct.getCoeffs(), bitsLiterals);
         } catch (ContradictionException e) {
             return false;
         }
-        System.out.println("c ... done. " + this.bitsLiterals);
+        System.out.println("c ... done. " + bitsLiterals);
         System.out.println("c New number of variables and constraints");
         System.out.println("c #vars: " + this.gator.nVars() + " #constraints: "
                 + this.gator.nConstraints());
-        this.fixedLiterals = new VecInt(this.bitsLiterals.size());
-        IVecInt nAssumpts = new VecInt(assumps.size()
-                + this.bitsLiterals.size());
+        IVecInt fixedLiterals = new VecInt(bitsLiterals.size());
+        IVecInt nAssumpts = new VecInt(assumps.size() + bitsLiterals.size());
         boolean result;
-        for (int litIndex = this.bitsLiterals.size() - 1; litIndex >= 0;) {
+        for (int litIndex = bitsLiterals.size() - 1; litIndex >= 0;) {
             assumps.copyTo(nAssumpts);
-            this.fixedLiterals.copyTo(nAssumpts);
-            nAssumpts.push(-this.bitsLiterals.get(litIndex));
+            fixedLiterals.copyTo(nAssumpts);
+            nAssumpts.push(-bitsLiterals.get(litIndex));
             for (int j = litIndex - 1; j >= 0; j--) {
-                nAssumpts.push(this.bitsLiterals.get(j));
+                nAssumpts.push(bitsLiterals.get(j));
             }
             System.out.println("c assumptions " + nAssumpts);
             result = this.gator.isSatisfiable(nAssumpts, true);
@@ -124,20 +121,20 @@ public class PseudoBitsAdderDecorator extends SolverDecorator<IPBSolver>
                 // }
                 // var = bitsLiterals.get(--litIndex);
                 // }
-                this.fixedLiterals.push(-this.bitsLiterals.get(litIndex--));
+                fixedLiterals.push(-bitsLiterals.get(litIndex--));
                 Number value = this.objfct.calculateDegree(this.gator);
                 System.out.println("o " + value);
                 System.out.println("c current objective value with fixed lits "
-                        + this.fixedLiterals);
+                        + fixedLiterals);
             } else {
-                this.fixedLiterals.push(this.bitsLiterals.get(litIndex--));
-                System.out.println("c unsat. fixed lits " + this.fixedLiterals);
+                fixedLiterals.push(bitsLiterals.get(litIndex--));
+                System.out.println("c unsat. fixed lits " + fixedLiterals);
             }
             nAssumpts.clear();
         }
-        assert this.fixedLiterals.size() == this.bitsLiterals.size();
+        assert fixedLiterals.size() == bitsLiterals.size();
         assumps.copyTo(nAssumpts);
-        this.fixedLiterals.copyTo(nAssumpts);
+        fixedLiterals.copyTo(nAssumpts);
         return this.gator.isSatisfiable(nAssumpts);
     }
 

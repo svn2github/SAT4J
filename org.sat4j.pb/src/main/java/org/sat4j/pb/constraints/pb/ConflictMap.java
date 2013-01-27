@@ -111,7 +111,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * @param level
      * @return
      */
-    private final static int levelToIndex(int level) {
+    private static int levelToIndex(int level) {
         return level + 1;
     }
 
@@ -121,7 +121,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * @param indLevel
      * @return
      */
-    private final static int indexToLevel(int indLevel) {
+    private static int indexToLevel(int indLevel) {
         return indLevel - 1;
     }
 

@@ -52,7 +52,6 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
     private boolean[] bestFullModel;
     private IConstr previousPBConstr;
     private IConstr addedConstr = null;
-    private int maxValue = 0;
     private Number objectiveValue;
     private boolean optimumFound = false;
 
@@ -106,18 +105,18 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
         if (this.optimumFound) {
             return false;
         }
-        this.maxValue = getObjectiveFunction().minValue().intValue();
+        int maxValue = getObjectiveFunction().minValue().intValue();
         while (true) {
             if (this.addedConstr != null) {
                 this.decorated().removeConstr(this.addedConstr);
             }
             try {
-                forceObjectiveValueTo(this.maxValue++);
+                forceObjectiveValueTo(maxValue++);
             } catch (ContradictionException e) {
                 if (isVerbose()) {
                     System.out.println(decorated().getLogPrefix()
                             + "no solution for objective value "
-                            + (this.maxValue - 1));
+                            + (maxValue - 1));
                 }
                 continue;
             }
@@ -137,8 +136,7 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
             }
             if (isVerbose()) {
                 System.out.println(decorated().getLogPrefix()
-                        + "no solution for objective value "
-                        + (this.maxValue - 1));
+                        + "no solution for objective value " + (maxValue - 1));
             }
         }
     }

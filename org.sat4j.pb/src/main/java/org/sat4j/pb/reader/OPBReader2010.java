@@ -168,7 +168,7 @@ public class OPBReader2010 extends OPBReader2007 {
 
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
