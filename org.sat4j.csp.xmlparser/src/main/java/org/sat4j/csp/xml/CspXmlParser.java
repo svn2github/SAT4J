@@ -21,7 +21,6 @@
  */
 package org.sat4j.csp.xml;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
@@ -38,8 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class CspXmlParser {
 
 	public static void parse(ICSPCallback callback, String filename)
-			throws SAXException, ParserConfigurationException,
-			FileNotFoundException, IOException {
+			throws SAXException, ParserConfigurationException, IOException {
 		// le producteur
 		XMLReader prod;
 		// le consommateur

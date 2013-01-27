@@ -8,8 +8,6 @@ class Relation extends Element {
 
 	private StringBuilder allTuples;
 
-	private int arity;
-
 	public Relation(ICSPCallback out,String tagName) {
 		super(out,tagName);
 	}
@@ -21,7 +19,7 @@ class Relation extends Element {
 			nbTuples = Integer.parseInt(tmpTuples);
 		String semantics = att.getValue(SEMANTICS);
 		boolean isSupport = (semantics != null && semantics.equals(SUPPORT));
-		arity = Integer.parseInt(att.getValue(ARITY));
+		int arity = Integer.parseInt(att.getValue(ARITY));
 		getCB().beginRelation(att.getValue(NAME), arity, nbTuples, isSupport);
 		// reinitialization of the string for the tuples
 		allTuples = new StringBuilder();

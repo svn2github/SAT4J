@@ -1,8 +1,10 @@
 package org.sat4j.csp.xml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.NoSuchElementException;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXParseException;
@@ -11,7 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
 class InstanceParser extends DefaultHandler {
 
 	/** stacks of elements visited */
-	private Vector<Element> parents = new Vector<Element>();
+	private List<Element> parents = new ArrayList<Element>();
 
 	/** map which associates tag name to the Element concerns with it */
 	private Map<String, Element> theElts;
@@ -37,9 +39,16 @@ class InstanceParser extends DefaultHandler {
 		theElts.put("cst", new ConstantParameter(cb, "cst"));
 	}
 
+	private static <E> E lastElement(List<E> l) {
+		if (l.isEmpty()) {
+			throw new NoSuchElementException();
+		}
+		return l.get(l.size()-1);
+	}
+	
 	/** Receive notification of character data. $ */
 	public void characters(char[] ch, int start, int length) {
-		parents.lastElement().characters(new String(ch, start, length));
+		lastElement(parents).characters(new String(ch, start, length));
 	}
 
 	/** Receive notification of the end of an element. */
@@ -47,7 +56,7 @@ class InstanceParser extends DefaultHandler {
 		Element current = theElts.get(qName);
 		if (current != null) {
 			current.endElement();
-			assert current.tagName().equals(parents.lastElement().tagName());
+			assert current.tagName().equals(lastElement(parents).tagName());
 			parents.remove(parents.size() - 1);
 		} else
 			throw new CSPFormatException(qName + " : undefined tag");
