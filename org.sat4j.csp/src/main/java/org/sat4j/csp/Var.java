@@ -73,7 +73,7 @@ public class Var implements Evaluable {
             if (model[varnum - 1] == varnum)
                 return domain.get(i);
         }
-        throw new RuntimeException("BIG PROBLEM: no value for a var!");
+        throw new IllegalStateException("BIG PROBLEM: no value for a var!");
     }
 
     /*

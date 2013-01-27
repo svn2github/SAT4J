@@ -37,14 +37,14 @@ public class BinarySupportEncoding implements Encoding {
 
     private final Map<Integer, IVecInt> supportsb = new HashMap<Integer, IVecInt>();
 
-    private static final Encoding instance = new BinarySupportEncoding();
+    private static final Encoding INSTANCE = new BinarySupportEncoding();
 
     private BinarySupportEncoding() {
         // nothing here
     }
 
     public static Encoding instance() {
-        return instance;
+        return INSTANCE;
     }
 
     public void onFinish(ISolver solver, IVec<Var> scope)

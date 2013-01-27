@@ -33,14 +33,14 @@ public class DirectEncoding implements Encoding {
 
     private final IVecInt clause = new VecInt();
 
-    private static final Encoding instance = new DirectEncoding();
+    private static final Encoding INSTANCE = new DirectEncoding();
 
     private DirectEncoding() {
         // nothing here
     }
 
     public static Encoding instance() {
-        return instance;
+        return INSTANCE;
     }
 
     public void onFinish(ISolver solver, IVec<Var> scope) {

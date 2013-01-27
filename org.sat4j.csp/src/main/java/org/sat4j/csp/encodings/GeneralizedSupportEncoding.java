@@ -37,14 +37,14 @@ public class GeneralizedSupportEncoding implements Encoding {
 
     private final Map<Set<Integer>, IVecInt> supports = new HashMap<Set<Integer>, IVecInt>();
 
-    private static final Encoding instance = new GeneralizedSupportEncoding();
+    private static final Encoding INSTANCE = new GeneralizedSupportEncoding();
 
     private GeneralizedSupportEncoding() {
 
     }
 
     public static Encoding instance() {
-        return instance;
+        return INSTANCE;
     }
 
     public void onFinish(ISolver solver, IVec<Var> scope)
