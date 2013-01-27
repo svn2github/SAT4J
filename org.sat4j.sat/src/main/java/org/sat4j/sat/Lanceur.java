@@ -105,7 +105,6 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
     private boolean isModeOptimization = false;
 
     private IProblem problem;
-    private ICDCL cdclSolver;
 
     private boolean modeTracing = false;
 
@@ -393,8 +392,7 @@ public class Lanceur extends AbstractLauncher implements ILogAble {
     public void run(String[] args) {
         try {
             displayHeader();
-            this.cdclSolver = configureSolver(args);
-            this.solver = this.cdclSolver;
+            this.solver = configureSolver(args);
             if (this.solver == null) {
                 usage();
                 return;

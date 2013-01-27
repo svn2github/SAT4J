@@ -60,7 +60,7 @@ public class CleanCommandComponent extends CommandComponent {
     private final JLabel clean50000Label = new JLabel(CLEAN_50000);
     private final JLabel clean100000Label = new JLabel(CLEAN_100000);
     private final JLabel clean500000Label = new JLabel(CLEAN_500000);
-    private static final int[] cleanValues = { 5000, 10000, 20000, 50000,
+    private static final int[] CLEAN_VALUES = { 5000, 10000, 20000, 50000,
             100000, 500000 };
     private static final int CLEAN_MIN = 0;
     private static final int CLEAN_MAX = 5;
@@ -208,7 +208,7 @@ public class CleanCommandComponent extends CommandComponent {
     }
 
     public void hasChangedCleaningValue() {
-        int nbConflicts = cleanValues[this.cleanSlider.getValue()];
+        int nbConflicts = CLEAN_VALUES[this.cleanSlider.getValue()];
         this.controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
         if (this.activityRadio.isSelected()) {
             this.controller
@@ -223,7 +223,7 @@ public class CleanCommandComponent extends CommandComponent {
     }
 
     public void hasClickedOnUseOriginalStrategy() {
-        int nbConflicts = cleanValues[this.cleanSlider.getValue()];
+        int nbConflicts = CLEAN_VALUES[this.cleanSlider.getValue()];
         this.controller.setNbClausesAtWhichWeShouldClean(nbConflicts);
 
         this.controller
@@ -237,7 +237,7 @@ public class CleanCommandComponent extends CommandComponent {
     }
 
     public int getCleanSliderValue() {
-        return cleanValues[this.cleanSlider.getValue()];
+        return CLEAN_VALUES[this.cleanSlider.getValue()];
     }
 
     public void hasClickedOnClean() {

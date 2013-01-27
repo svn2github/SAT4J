@@ -66,8 +66,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
 import org.sat4j.core.ASolverFactory;
-import org.sat4j.maxsat.WeightedMaxSatDecorator;
-import org.sat4j.maxsat.reader.MSInstanceReader;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
@@ -1735,47 +1733,43 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
         @Override
         public void setSelectedIndex(int index) {
-            if (this.getTabCount() == 5) {
-                if (index == this.getTabCount() - 1) {
-                    if (DetailedCommandPanel.this.solver != null
-                            && DetailedCommandPanel.this.startStopButton
-                                    .getText().equals(STOP)) {
-                        String s = DetailedCommandPanel.this.solver.toString();
-                        String res = DetailedCommandPanel.this.solver
-                                .toString();
-                        int j = 0;
-                        for (int i = 0; i < s.length(); i++) {
-                            if (s.charAt(i) != '\n') {
-                                j++;
-                            } else {
-                                j = 0;
-                            }
-                            if (j > 80) {
-                                res = new StringBuffer(res).insert(i, '\n')
-                                        .toString();
-                                j = 0;
-                            }
+            if (this.getTabCount() == 5 && index == 4) {
+                if (DetailedCommandPanel.this.solver != null
+                        && DetailedCommandPanel.this.startStopButton.getText()
+                                .equals(STOP)) {
+                    String s = DetailedCommandPanel.this.solver.toString();
+                    String res = DetailedCommandPanel.this.solver.toString();
+                    int j = 0;
+                    for (int i = 0; i < s.length(); i++) {
+                        if (s.charAt(i) != '\n') {
+                            j++;
+                        } else {
+                            j = 0;
                         }
-                        DetailedCommandPanel.this.textArea.setText(res);
-                        DetailedCommandPanel.this.textArea.setEditable(false);
-                        DetailedCommandPanel.this.textArea.repaint();
-                        DetailedCommandPanel.this.aboutSolverPanel
-                                .paint(DetailedCommandPanel.this.aboutSolverPanel
-                                        .getGraphics());
-                        DetailedCommandPanel.this.aboutSolverPanel.repaint();
-                    } else {
-                        DetailedCommandPanel.this.textArea
-                                .setText("No solver is running at the moment");
-                        DetailedCommandPanel.this.textArea.repaint();
-                        DetailedCommandPanel.this.textArea.setEditable(false);
-                        DetailedCommandPanel.this.aboutSolverPanel
-                                .paint(DetailedCommandPanel.this.aboutSolverPanel
-                                        .getGraphics());
-                        DetailedCommandPanel.this.aboutSolverPanel.repaint();
+                        if (j > 80) {
+                            res = new StringBuffer(res).insert(i, '\n')
+                                    .toString();
+                            j = 0;
+                        }
                     }
+                    DetailedCommandPanel.this.textArea.setText(res);
+                    DetailedCommandPanel.this.textArea.setEditable(false);
+                    DetailedCommandPanel.this.textArea.repaint();
+                    DetailedCommandPanel.this.aboutSolverPanel
+                            .paint(DetailedCommandPanel.this.aboutSolverPanel
+                                    .getGraphics());
+                    DetailedCommandPanel.this.aboutSolverPanel.repaint();
+                } else {
+                    DetailedCommandPanel.this.textArea
+                            .setText("No solver is running at the moment");
+                    DetailedCommandPanel.this.textArea.repaint();
+                    DetailedCommandPanel.this.textArea.setEditable(false);
+                    DetailedCommandPanel.this.aboutSolverPanel
+                            .paint(DetailedCommandPanel.this.aboutSolverPanel
+                                    .getGraphics());
+                    DetailedCommandPanel.this.aboutSolverPanel.repaint();
                 }
             }
-
             super.setSelectedIndex(index);
         };
     }
