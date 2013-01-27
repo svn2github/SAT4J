@@ -34,7 +34,6 @@ import java.math.BigInteger;
 
 import org.sat4j.core.ReadOnlyVec;
 import org.sat4j.core.ReadOnlyVecInt;
-import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -70,7 +69,7 @@ public class ObjectiveFunction implements Serializable {
      * Compute the degree of the objective function using a full model.
      * 
      * @param solver
-     *            a solver that recently answered true to issatisfiable()
+     *            a solver that recently answered true to isSatisfiable()
      * @return the value of the objective function for the last model found be
      *         the solver.
      */
@@ -99,7 +98,7 @@ public class ObjectiveFunction implements Serializable {
      *            a solver which recently answered true to isSatisfiable and on
      *            which the method primeImplicant() has been called.
      * @return
-     * @see IProblem#primeImplicant()
+     * @see org.sat4j.specs.IProblem#primeImplicant()
      */
     public BigInteger calculateDegreeImplicant(ISolver solver) {
         BigInteger tempDegree = BigInteger.ZERO;
