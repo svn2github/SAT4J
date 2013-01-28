@@ -111,9 +111,10 @@ public final class MaxWatchPb extends WatchPb {
         this.activity = 0;
         this.watchCumul = BigInteger.ZERO;
         if (coefs.length > LIMIT_FOR_MAP) {
-            this.litToCoeffs = new HashMap<Integer, BigInteger>(coefs.length);
-            for (int i = 0; i < coefs.length; i++) {
-                this.litToCoeffs.put(lits[i], this.coefs[i]);
+            this.litToCoeffs = new HashMap<Integer, BigInteger>(
+                    this.coefs.length);
+            for (int i = 0; i < this.coefs.length; i++) {
+                this.litToCoeffs.put(this.lits[i], this.coefs[i]);
             }
         } else {
             this.litToCoeffs = null;

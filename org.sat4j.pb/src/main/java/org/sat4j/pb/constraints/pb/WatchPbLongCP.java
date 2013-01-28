@@ -123,12 +123,10 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
     /** Constructor used for original constraints. */
     WatchPbLongCP(int[] lits, BigInteger[] coefs, BigInteger degree,
             BigInteger sumCoefs) { // NOPMD
-        this.lits = new int[lits.length];
-        System.arraycopy(lits, 0, this.lits, 0, lits.length);
+        this.lits = lits;
         this.coefs = toLong(coefs);
         this.degree = degree.longValue();
-        this.bigCoefs = new BigInteger[coefs.length];
-        System.arraycopy(coefs, 0, this.bigCoefs, 0, coefs.length);
+        this.bigCoefs = coefs;
         this.bigDegree = degree;
         this.sumcoefs = sumCoefs.longValue();
         // arrays are sorted by decreasing coefficients

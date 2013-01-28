@@ -107,9 +107,9 @@ public final class MaxWatchPbLongCP extends WatchPbLongCP {
         this.activity = 0;
         this.watchCumul = 0;
         if (coefs.length > MaxWatchPb.LIMIT_FOR_MAP) {
-            this.litToCoeffs = new HashMap<Integer, Long>(coefs.length);
-            for (int i = 0; i < coefs.length; i++) {
-                this.litToCoeffs.put(lits[i], this.coefs[i]);
+            this.litToCoeffs = new HashMap<Integer, Long>(this.coefs.length);
+            for (int i = 0; i < this.coefs.length; i++) {
+                this.litToCoeffs.put(this.lits[i], this.coefs[i]);
             }
         } else {
             this.litToCoeffs = null;

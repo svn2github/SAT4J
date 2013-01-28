@@ -115,11 +115,9 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
 
     /** Constructor used for original constraints. */
     WatchPb(int[] lits, BigInteger[] coefs, BigInteger degree,
-            BigInteger sumCoefs) { // NOPMD
-        this.lits = new int[lits.length];
-        System.arraycopy(lits, 0, this.lits, 0, lits.length);
-        this.coefs = new BigInteger[coefs.length];
-        System.arraycopy(coefs, 0, this.coefs, 0, coefs.length);
+            BigInteger sumCoefs) {
+        this.lits = lits;
+        this.coefs = coefs;
         this.degree = degree;
         this.sumcoefs = sumCoefs;
         // arrays are sorted by decreasing coefficients
