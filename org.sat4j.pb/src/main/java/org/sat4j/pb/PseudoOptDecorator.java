@@ -214,6 +214,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private int[] modelWithAdaptedNonPrimeLiterals() {
         int[] completed = super.model();
+        primeImplicant();
         ObjectiveFunction obj = getObjectiveFunction();
         for (int i = 0; i < obj.getVars().size(); i++) {
             int d = obj.getVars().get(i);
