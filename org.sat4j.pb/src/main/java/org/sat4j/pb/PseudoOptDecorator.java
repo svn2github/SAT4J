@@ -219,11 +219,15 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         for (int i = 0; i < obj.getVars().size(); i++) {
             int d = obj.getVars().get(i);
             BigInteger coeff = obj.getCoeffs().get(i);
-            if (!primeImplicant(d) && coeff.signum() < 0 && primeImplicant(-d)) {
+            if (!primeImplicant(d) && !primeImplicant(-d)) {
                 // the variable does not appear in the model: it can be assigned
                 // either way
                 assert Math.abs(completed[Math.abs(d) - 1]) == d;
-                completed[Math.abs(d) - 1] = Math.abs(d);
+                if (coeff.signum() < 0) {
+                    completed[Math.abs(d) - 1] = Math.abs(d);
+                } else {
+                    completed[Math.abs(d) - 1] = -Math.abs(d);
+                }
             }
         }
         return completed;
