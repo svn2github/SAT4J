@@ -70,6 +70,9 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
     private JMenuItem activateTracing;
 
+    private JRadioButtonMenuItem gnuplotBasedRadio;
+    private JRadioButtonMenuItem jChartBasedRadio;
+
     private DetailedCommandPanel commandePanel;
     private String filename;
 
@@ -167,6 +170,11 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
         this.activateTracing.setEnabled(b);
     }
 
+    public void setActivateRadioTracing(boolean activate) {
+        gnuplotBasedRadio.setEnabled(activate);
+        jChartBasedRadio.setEnabled(activate);
+    }
+
     public void createMenuBar() {
         JMenuBar barreMenu = new JMenuBar();
         JMenu menu = new JMenu("File");
@@ -184,10 +192,8 @@ public class RemoteControlFrame extends JFrame implements ILogAble {
 
         menu.addSeparator();
 
-        JRadioButtonMenuItem gnuplotBasedRadio = new JRadioButtonMenuItem(
-                "Trace with Gnuplot");
-        JRadioButtonMenuItem jChartBasedRadio = new JRadioButtonMenuItem(
-                "Trace with Java");
+        gnuplotBasedRadio = new JRadioButtonMenuItem("Trace with Gnuplot");
+        jChartBasedRadio = new JRadioButtonMenuItem("Trace with Java");
 
         ButtonGroup visuGroup = new ButtonGroup();
         visuGroup.add(gnuplotBasedRadio);

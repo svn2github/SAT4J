@@ -759,6 +759,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             getThis().paintAll(getThis().getGraphics());
             DetailedCommandPanel.this.frame
                     .setActivateTracingEditableUnderCondition(false);
+            frame.setActivateRadioTracing(false);
         } else {
 
             ((ISolver) DetailedCommandPanel.this.problem).expireTimeout();
@@ -769,6 +770,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             DetailedCommandPanel.this.startStopButton.setText(START);
             getThis().paintAll(getThis().getGraphics());
             DetailedCommandPanel.this.frame.setActivateTracingEditable(true);
+            frame.setActivateRadioTracing(true);
         }
     }
 

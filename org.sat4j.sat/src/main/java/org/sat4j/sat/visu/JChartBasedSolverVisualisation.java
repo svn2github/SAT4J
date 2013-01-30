@@ -106,7 +106,7 @@ public class JChartBasedSolverVisualisation implements SolverVisualisation {
         this.visuFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-
+                visuFrame.setVisible(false);
             }
         });
 
