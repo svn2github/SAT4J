@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import static org.sat4j.core.LiteralsUtils.neg;
 import static org.sat4j.core.LiteralsUtils.toDimacs;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 import static org.sat4j.core.LiteralsUtils.var;
@@ -1345,13 +1346,16 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      *         literals.
      */
     private Constr forget(int var) {
+        boolean satisfied = this.voc.isSatisfied(toInternal(var));
         this.voc.forgets(var);
-        Constr confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
-                .toInternal(var));
-        if (confl != null) {
-            return confl;
+        Constr confl;
+        if (satisfied) {
+            confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
+                    .toInternal(-var));
+        } else {
+            confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
+                    .toInternal(var));
         }
-        confl = reduceClausesForFalsifiedLiteral(LiteralsUtils.toInternal(-var));
         return confl;
     }
 
@@ -1363,7 +1367,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * @return true if no conflict is reached, false if a conflict is found.
      */
     private boolean setAndPropagate(int p) {
-        return assume(p) && propagate() == null;
+        if (voc.isUnassigned(p)) {
+            assert !trail.contains(p);
+            assert !trail.contains(neg(p));
+            return assume(p) && propagate() == null;
+        }
+        return voc.isSatisfied(p);
     }
 
     private int[] prime;
@@ -1373,18 +1382,20 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         if (this.learnedLiterals.size() > 0) {
             this.qhead = trail.size();
         }
+        System.out.printf("%s implied: %d, decision: %d %n", getLogPrefix(),
+                implied.size(), decisions.size());
         this.prime = new int[realNumberOfVariables() + 1];
         int p, d;
         for (int i = 0; i < this.prime.length; i++) {
             this.prime[i] = 0;
         }
+        boolean noproblem;
         for (IteratorInt it = this.implied.iterator(); it.hasNext();) {
             d = it.next();
             p = toInternal(d);
             this.prime[Math.abs(d)] = d;
-            if (voc.isUnassigned(p)) {
-                setAndPropagate(p);
-            }
+            noproblem = setAndPropagate(p);
+            assert noproblem;
         }
         boolean canBeRemoved;
         int rightlevel;
@@ -1392,8 +1403,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         int propagated = 0;
         int tested = 0;
         int l2propagation = 0;
+
         for (int i = 0; i < this.decisions.size(); i++) {
             d = this.decisions.get(i);
+            assert !this.voc.isFalsified(toInternal(d));
             if (this.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
                 this.prime[Math.abs(d)] = d;
@@ -1413,17 +1426,22 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 if (canBeRemoved) {
                     // it is not a necessary literal
                     forget(Math.abs(d));
+                    IConstr confl = propagate();
+                    assert confl == null;
                     removed++;
                 } else {
                     this.prime[Math.abs(d)] = d;
                     cancel();
-                    setAndPropagate(toInternal(d));
+                    assert voc.isUnassigned(toInternal(d));
+                    noproblem = setAndPropagate(toInternal(d));
+                    assert noproblem;
                 }
             } else {
                 // conflict, literal is necessary
                 this.prime[Math.abs(d)] = d;
                 cancel();
-                setAndPropagate(toInternal(d));
+                noproblem = setAndPropagate(toInternal(d));
+                assert noproblem;
             }
         }
         cancelUntil(0);
