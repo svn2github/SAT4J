@@ -118,6 +118,12 @@ public interface ILauncherMode extends SolutionFoundListener {
     ExitCode getCurrentExitCode();
 
     /**
+     * Allow to set a specific exit code to the launcher (in case of trivial
+     * unsatisfiability for instance).
+     */
+    void setExitCode(ExitCode exitCode);
+
+    /**
      * The launcher is in decision mode: the answer is either SAT, UNSAT or
      * UNKNOWN
      */
@@ -224,6 +230,10 @@ public interface ILauncherMode extends SolutionFoundListener {
             if (this.exitCode == ExitCode.SATISFIABLE) {
                 this.exitCode = ExitCode.OPTIMUM_FOUND;
             }
+        }
+
+        public void setExitCode(ExitCode exitCode) {
+            this.exitCode = exitCode;
         }
     };
 
@@ -339,6 +349,10 @@ public interface ILauncherMode extends SolutionFoundListener {
 
         public void onUnsatTermination() {
             // do nothing
+        }
+
+        public void setExitCode(ExitCode exitCode) {
+            this.exitCode = exitCode;
         }
     };
 

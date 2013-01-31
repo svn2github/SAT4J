@@ -229,6 +229,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             System.err.println("FATAL " + e.getLocalizedMessage());
         } catch (ContradictionException e) {
             this.exitCode = ExitCode.UNSATISFIABLE;
+            this.launcherMode.setExitCode(ExitCode.UNSATISFIABLE);
             log("(trivial inconsistency)"); //$NON-NLS-1$
         } catch (ParseFormatException e) {
             System.err.println("FATAL " + e.getLocalizedMessage());
