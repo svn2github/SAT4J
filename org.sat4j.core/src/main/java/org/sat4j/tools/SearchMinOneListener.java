@@ -71,7 +71,7 @@ public class SearchMinOneListener extends SearchListenerAdapter<ISolverService> 
                 variables[i] = -model[i];
             }
         }
-        System.out.println("#one " + degree);
+        System.out.println(solverService.getLogPrefix() + " #one " + degree);
         this.solverService.addAtMostOnTheFly(variables, degree - 1);
         sfl.onSolutionFound(model);
     }
