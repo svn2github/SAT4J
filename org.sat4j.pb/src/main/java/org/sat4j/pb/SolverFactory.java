@@ -792,6 +792,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         learning.setVarActivityListener(solver);
         solver.setTimeoutOnConflicts(300);
         solver.setVerbose(false);
+        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
         return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
     }
 
