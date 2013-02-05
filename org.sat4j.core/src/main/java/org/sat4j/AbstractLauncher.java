@@ -47,7 +47,6 @@ import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
-import org.sat4j.tools.ModelIterator;
 import org.sat4j.tools.ModelIteratorToSATAdapter;
 import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SearchMinOneListener;
@@ -205,8 +204,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             }
             if (System.getProperty("all") != null) {
                 if ("external".equals(System.getProperty("all"))) {
-                    this.solver = new ModelIteratorToSATAdapter(
-                            new ModelIterator(this.solver));
+                    this.solver = new ModelIteratorToSATAdapter(this.solver);
                     System.out.println(this.solver.getLogPrefix()
                             + "model enumeration using the external way");
                 } else {
