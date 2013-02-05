@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import java.util.Arrays;
+
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -64,9 +66,6 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
             System.out.printf("c Found solution #%d  (%.2f)s%n",
                     numberOfModelsFoundSoFar(),
                     (System.currentTimeMillis() - beginTime) / 1000.0);
-            // if (isVerbose()) {
-            // System.out.println(getLogPrefix() + Arrays.toString(lastModel));
-            // }
         }
         return isSat;
     }
@@ -78,7 +77,7 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
             isSat = true;
             lastModel = super.model();
             if (isVerbose()) {
-                System.out.println(getLogPrefix() + lastModel);
+                System.out.println(getLogPrefix() + Arrays.toString(lastModel));
             }
         }
         return isSat;
