@@ -34,6 +34,7 @@ import java.math.BigInteger;
 import org.sat4j.ILauncherMode;
 import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
 import org.sat4j.tools.SearchListenerAdapter;
 import org.sat4j.tools.SolutionFoundListener;
@@ -66,9 +67,9 @@ public final class SearchOptimizerListener extends
     }
 
     @Override
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         if (obj != null) {
-            this.currentValue = obj.calculateDegree(model);
+            this.currentValue = obj.calculateDegree(lazyModel);
             System.out.println(ILauncherMode.CURRENT_OPTIMUM_VALUE_PREFIX
                     + this.currentValue);
             this.solverService

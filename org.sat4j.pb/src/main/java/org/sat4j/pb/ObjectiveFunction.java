@@ -37,6 +37,7 @@ import org.sat4j.core.ReadOnlyVecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.RandomAccessModel;
 
 /**
  * Abstraction for an Objective Function for Pseudo Boolean Optimization.
@@ -68,19 +69,19 @@ public class ObjectiveFunction implements Serializable {
     /**
      * Compute the degree of the objective function using a full model.
      * 
-     * @param solver
+     * @param lazyModel
      *            a solver that recently answered true to isSatisfiable()
      * @return the value of the objective function for the last model found be
      *         the solver.
      */
-    public BigInteger calculateDegree(ISolver solver) {
+    public BigInteger calculateDegree(RandomAccessModel lazyModel) {
         BigInteger tempDegree = BigInteger.ZERO;
         for (int i = 0; i < this.vars.size(); i++) {
             BigInteger coeff = this.coeffs.get(i);
-            if (varInModel(this.vars.get(i), solver)) {
+            if (varInModel(this.vars.get(i), lazyModel)) {
                 tempDegree = tempDegree.add(coeff);
             } else if (coeff.signum() < 0
-                    && !varInModel(-this.vars.get(i), solver)) {
+                    && !varInModel(-this.vars.get(i), lazyModel)) {
                 // the variable does not appear in the model: it can be assigned
                 // either way
                 tempDegree = tempDegree.add(coeff);
@@ -116,11 +117,11 @@ public class ObjectiveFunction implements Serializable {
         return tempDegree;
     }
 
-    private boolean varInModel(int var, ISolver solver) {
+    private boolean varInModel(int var, RandomAccessModel lazyModel) {
         if (var > 0) {
-            return solver.model(var);
+            return lazyModel.model(var);
         }
-        return !solver.model(-var);
+        return !lazyModel.model(-var);
     }
 
     public IVec<BigInteger> getCoeffs() {
@@ -167,30 +168,6 @@ public class ObjectiveFunction implements Serializable {
             }
         }
         return tempDegree;
-    }
-
-    public BigInteger calculateDegree(int[] model) {
-        BigInteger tempDegree = BigInteger.ZERO;
-
-        for (int i = 0; i < this.vars.size(); i++) {
-            BigInteger coeff = this.coeffs.get(i);
-            if (varInModel(this.vars.get(i), model)) {
-                tempDegree = tempDegree.add(coeff);
-            } else if (coeff.signum() < 0
-                    && !varInModel(-this.vars.get(i), model)) {
-                tempDegree = tempDegree.add(coeff);
-            }
-        }
-        return tempDegree;
-    }
-
-    private boolean varInModel(int var, int[] model) {
-        for (int element : model) {
-            if (var == element) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
