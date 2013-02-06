@@ -140,7 +140,8 @@ public interface ILauncherMode extends SolutionFoundListener {
                 solver.printStat(out);
                 solver.printInfos(out);
                 out.println(ANSWER_PREFIX + exitCode);
-                if (exitCode != ExitCode.UNKNOWN) {
+                if (exitCode != ExitCode.UNKNOWN
+                        && exitCode != ExitCode.UNSATISFIABLE) {
                     int[] model = solver.model();
                     if (System.getProperty("prime") != null) {
                         int initiallength = model.length;
