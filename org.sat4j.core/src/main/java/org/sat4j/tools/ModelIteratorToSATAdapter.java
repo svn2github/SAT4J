@@ -29,8 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.util.Arrays;
-
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -47,25 +45,25 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
      */
     private static final long serialVersionUID = 1L;
     private int[] lastModel = null;
+    private final SolutionFoundListener sfl;
 
-    public ModelIteratorToSATAdapter(ISolver solver) {
-        this(solver, Long.MAX_VALUE);
+    public ModelIteratorToSATAdapter(ISolver solver, SolutionFoundListener sfl) {
+        this(solver, Long.MAX_VALUE, sfl);
     }
 
-    public ModelIteratorToSATAdapter(ISolver solver, long bound) {
+    public ModelIteratorToSATAdapter(ISolver solver, long bound,
+            SolutionFoundListener sfl) {
         super(solver, bound);
+        this.sfl = sfl;
     }
 
     @Override
     public boolean isSatisfiable() throws TimeoutException {
-        long beginTime = System.currentTimeMillis();
         boolean isSat = false;
         while (super.isSatisfiable()) {
             isSat = true;
             lastModel = super.model();
-            System.out.printf("c Found solution #%d  (%.2f)s%n",
-                    numberOfModelsFoundSoFar(),
-                    (System.currentTimeMillis() - beginTime) / 1000.0);
+            this.sfl.onSolutionFound(lastModel);
         }
         return isSat;
     }
@@ -76,9 +74,7 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
         while (super.isSatisfiable(assumps)) {
             isSat = true;
             lastModel = super.model();
-            if (isVerbose()) {
-                System.out.println(getLogPrefix() + Arrays.toString(lastModel));
-            }
+            this.sfl.onSolutionFound(lastModel);
         }
         return isSat;
     }

@@ -205,7 +205,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             String all = System.getProperty("all");
             if (all != null) {
                 if ("external".equals(all)) {
-                    this.solver = new ModelIteratorToSATAdapter(this.solver);
+                    this.solver = new ModelIteratorToSATAdapter(this.solver,
+                            launcherMode);
                     System.out.println(this.solver.getLogPrefix()
                             + "model enumeration using the external way");
                 } else {
