@@ -36,7 +36,7 @@ import java.io.PrintWriter;
  * 
  * @author leberre
  */
-public interface IProblem {
+public interface IProblem extends RandomAccessModel {
     /**
      * Provide a model (if any) for a satisfiable formula. That method should be
      * called AFTER isSatisfiable() or isSatisfiable(IVecInt) if the formula is
@@ -47,19 +47,6 @@ public interface IProblem {
      * @see #isSatisfiable(IVecInt)
      */
     int[] model();
-
-    /**
-     * Provide the truth value of a specific variable in the model. That method
-     * should be called AFTER isSatisfiable() if the formula is satisfiable.
-     * Else an exception UnsupportedOperationException is launched.
-     * 
-     * @param var
-     *            the variable id in Dimacs format
-     * @return the truth value of that variable in the model
-     * @since 1.6
-     * @see #model()
-     */
-    boolean model(int var);
 
     /**
      * Provide a prime implicant, i.e. a set of literal that is sufficient to

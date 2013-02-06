@@ -27,69 +27,26 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.minisat.core;
-
-import org.sat4j.specs.IConstr;
-import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
-import org.sat4j.specs.Lbool;
-import org.sat4j.specs.SearchListener;
+package org.sat4j.specs;
 
 /**
- * Do-nothing search listener. Used by default by the solver when no
- * SearchListener is provided to the solver.
+ * That interface allows to efficiently retrieve the truth value of a given
+ * variable in the solver.
  * 
- * @author leberre
+ * @author daniel
  * 
  */
-final class VoidTracing implements SearchListener<ISolverService> {
-    private static final long serialVersionUID = 1L;
-
-    public void assuming(int p) {
-    }
-
-    public void propagating(int p, IConstr reason) {
-    }
-
-    public void backtracking(int p) {
-    }
-
-    public void adding(int p) {
-    }
-
-    public void learn(IConstr clause) {
-    }
-
-    public void delete(int[] clause) {
-    }
-
-    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-    }
-
-    public void conflictFound(int p) {
-    }
-
-    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
-    }
-
-    public void beginLoop() {
-    }
-
-    public void start() {
-    }
-
-    public void end(Lbool result) {
-    }
-
-    public void restarting() {
-    }
-
-    public void backjump(int backjumpLevel) {
-    }
-
-    public void init(ISolverService solverService) {
-    }
-
-    public void cleaning() {
-    }
+public interface RandomAccessModel {
+    /**
+     * Provide the truth value of a specific variable in the model. That method
+     * should be called AFTER isSatisfiable() if the formula is satisfiable.
+     * Else an exception UnsupportedOperationException is launched.
+     * 
+     * @param var
+     *            the variable id in Dimacs format
+     * @return the truth value of that variable in the model
+     * @since 1.6
+     * @see #model()
+     */
+    boolean model(int var);
 }

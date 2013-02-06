@@ -30,6 +30,7 @@
 package org.sat4j.tools;
 
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
 
 /**
@@ -60,7 +61,7 @@ public class SearchMinOneListener extends SearchListenerAdapter<ISolverService> 
     }
 
     @Override
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         int degree = 0;
         int[] variables = new int[model.length];
         for (int i = 0; i < model.length; i++) {

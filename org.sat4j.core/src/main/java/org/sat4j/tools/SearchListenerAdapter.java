@@ -31,6 +31,7 @@ package org.sat4j.tools;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -69,7 +70,7 @@ public abstract class SearchListenerAdapter<S extends ISolverService>
     public void conflictFound(int p) {
     }
 
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
     }
 
     public void beginLoop() {

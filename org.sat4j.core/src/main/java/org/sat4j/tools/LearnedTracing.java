@@ -32,6 +32,7 @@ package org.sat4j.tools;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.RandomAccessModel;
 
 public class LearnedTracing extends SearchListenerAdapter<ISolverService> {
 
@@ -48,7 +49,7 @@ public class LearnedTracing extends SearchListenerAdapter<ISolverService> {
     }
 
     @Override
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         trace();
     }
 

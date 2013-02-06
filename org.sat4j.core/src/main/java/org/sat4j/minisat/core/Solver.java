@@ -1184,7 +1184,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     modelFound();
                     this.slistener
                             .solutionFound((this.fullmodel != null) ? this.fullmodel
-                                    : this.model);
+                                    : this.model, this);
                     if (this.sharedConflict == null) {
                         cancelUntil(this.rootLevel);
                         return Lbool.TRUE;

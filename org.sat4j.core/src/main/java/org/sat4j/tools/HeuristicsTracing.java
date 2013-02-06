@@ -30,6 +30,7 @@
 package org.sat4j.tools;
 
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.RandomAccessModel;
 
 public class HeuristicsTracing extends SearchListenerAdapter<ISolverService> {
 
@@ -45,7 +46,7 @@ public class HeuristicsTracing extends SearchListenerAdapter<ISolverService> {
     }
 
     @Override
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         trace();
     }
 

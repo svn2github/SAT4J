@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -117,9 +118,9 @@ public class MultiTracing implements SearchListener {
 
     }
 
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         for (SearchListener sl : this.listeners) {
-            sl.solutionFound(model);
+            sl.solutionFound(model, lazyModel);
         }
 
     }

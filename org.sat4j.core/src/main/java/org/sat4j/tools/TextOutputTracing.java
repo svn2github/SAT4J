@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 
@@ -115,7 +116,7 @@ public class TextOutputTracing<T> implements SearchListener {
         System.out.println("conflict during propagation");
     }
 
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
         System.out.println("solution found ");
     }
 

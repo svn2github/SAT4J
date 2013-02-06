@@ -117,9 +117,10 @@ public interface SearchListener<S extends ISolverService> extends Serializable {
      * 
      * @param model
      *            the model found
+     * @param lazyModel TODO
      * 
      */
-    void solutionFound(int[] model);
+    void solutionFound(int[] model, RandomAccessModel lazyModel);
 
     /**
      * starts a propagation
