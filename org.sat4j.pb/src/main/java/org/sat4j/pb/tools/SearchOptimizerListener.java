@@ -38,7 +38,7 @@ import org.sat4j.specs.Lbool;
 import org.sat4j.tools.SearchListenerAdapter;
 import org.sat4j.tools.SolutionFoundListener;
 
-public class SearchOptimizerListener extends
+public final class SearchOptimizerListener extends
         SearchListenerAdapter<IPBSolverService> {
 
     /**
