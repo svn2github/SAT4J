@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -80,7 +79,6 @@ public class Minimal4CardinalityModel extends AbstractMinimalModel {
     @Override
     public int[] model() {
         int[] prevmodel = null;
-        IVecInt vec = new VecInt();
         IConstr lastOne = null;
         try {
             do {
