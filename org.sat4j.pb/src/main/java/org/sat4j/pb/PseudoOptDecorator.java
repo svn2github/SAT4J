@@ -229,7 +229,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
                 // the variable does not appear in the model: it can be assigned
                 // either way
                 assert Math.abs(completeModel[Math.abs(d) - 1]) == d;
-                if (coeff.signum() < 0) {
+                if (coeff.signum() * d < 0) {
                     completeModel[Math.abs(d) - 1] = Math.abs(d);
                 } else {
                     completeModel[Math.abs(d) - 1] = -Math.abs(d);
