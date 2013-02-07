@@ -128,7 +128,7 @@ import org.sat4j.tools.encoding.Policy;
  * 
  */
 public class DetailedCommandPanel extends JPanel implements SolverController,
-        SearchListener, ILogAble {
+        SearchListener<ISolverService>, ILogAble {
 
     private static final String EXACTLY_1 = "Exactly 1:";
     private static final String EXACTLY_K = "Exactly K:";
@@ -785,8 +785,8 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void launchSolverWithConfigs() {
-        ICDCL cdclSolver;
-        ASolverFactory factory;
+        ICDCL<?> cdclSolver;
+        ASolverFactory<?> factory;
         String[] partsSelectedSolver;
         IOrder order;
         double proba;
@@ -810,10 +810,10 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
             } else {
                 factory = org.sat4j.maxsat.SolverFactory.instance();
             }
-            this.solver = (ICDCL) factory
+            this.solver = (ICDCL<?>) factory
                     .createSolverByName(partsSelectedSolver[1]);
 
-            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+            cdclSolver = (ICDCL<?>) this.solver.getSolvingEngine();
 
             this.telecomStrategy.setSolver(cdclSolver);
 
@@ -831,7 +831,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         case SOLVER_LINE_PARAM_LINE:
             this.solver = Solvers.configureSolver(this.commandLines, this);
 
-            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+            cdclSolver = (ICDCL<?>) this.solver.getSolvingEngine();
 
             this.telecomStrategy.setSolver(cdclSolver);
             this.telecomStrategy.setRestartStrategy(cdclSolver
@@ -879,7 +879,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         case SOLVER_LINE_PARAM_REMOTE:
             this.solver = Solvers.configureSolver(this.commandLines, this);
 
-            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+            cdclSolver = (ICDCL<?>) this.solver.getSolvingEngine();
 
             cdclSolver.setRestartStrategy(this.telecomStrategy);
             cdclSolver.setOrder(this.randomWalk);
@@ -911,7 +911,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
             this.solver = factory.createSolverByName(partsSelectedSolver[1]);
 
-            cdclSolver = (ICDCL) this.solver.getSolvingEngine();
+            cdclSolver = (ICDCL<?>) this.solver.getSolvingEngine();
 
             this.telecomStrategy.setSolver(cdclSolver);
             this.telecomStrategy.setRestartStrategy(cdclSolver
@@ -1087,7 +1087,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void initSearchListeners() {
-        List<SearchListener> listeners = new ArrayList<SearchListener>();
+        List<SearchListener<ISolverService>> listeners = new ArrayList<SearchListener<ISolverService>>();
 
         if (this.isPlotActivated) {
             if (this.gnuplotBased) {
@@ -1277,7 +1277,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         }
         listeners.add(this);
 
-        this.solver.setSearchListener(new MultiTracing(listeners));
+        this.solver.setSearchListener(new MultiTracing<ISolverService>(listeners));
 
     }
 
@@ -1335,7 +1335,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
 
     public void setLearnedDeletionStrategyTypeToSolver(
             LearnedConstraintsEvaluationType type) {
-        ((ICDCL) this.solver.getSolvingEngine())
+        ((ICDCL<?>) this.solver.getSolvingEngine())
                 .setLearnedConstraintsDeletionStrategy(this.telecomStrategy,
                         type);
         log("Changed clauses evaluation type to " + type);
@@ -1389,12 +1389,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public void setSimplifier(SimplificationType type) {
-        ((ICDCL) this.solver.getSolvingEngine()).setSimplifier(type);
+        ((ICDCL<?>) this.solver.getSolvingEngine()).setSimplifier(type);
         log("Told the solver to use " + type);
     }
 
     public List<String> getListOfSolvers() {
-        ASolverFactory factory;
+        ASolverFactory<?> factory;
 
         List<String> result = new ArrayList<String>();
 
@@ -1421,7 +1421,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public List<String> getListOfSatSolvers() {
-        ASolverFactory factory;
+        ASolverFactory<?> factory;
 
         List<String> result = new ArrayList<String>();
 
@@ -1435,7 +1435,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public List<String> getListOfPBSolvers() {
-        ASolverFactory factory;
+        ASolverFactory<?> factory;
 
         List<String> result = new ArrayList<String>();
 
@@ -1449,7 +1449,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     }
 
     public List<String> getListOfMaxsatSolvers() {
-        ASolverFactory factory;
+        ASolverFactory<?> factory;
 
         List<String> result = new ArrayList<String>();
 
