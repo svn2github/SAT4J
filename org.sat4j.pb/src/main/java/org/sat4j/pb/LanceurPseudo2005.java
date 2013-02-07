@@ -43,12 +43,6 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
-import org.sat4j.tools.ConflictDepthTracing;
-import org.sat4j.tools.ConflictLevelTracing;
-import org.sat4j.tools.DecisionTracing;
-import org.sat4j.tools.FileBasedVisualizationTool;
-import org.sat4j.tools.LearnedClausesSizeTracing;
-import org.sat4j.tools.MultiTracing;
 
 /**
  * Launcher especially dedicated to the pseudo boolean 05 evaluation (@link
@@ -108,11 +102,6 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
     protected ISolver configureSolver(String[] args) {
         IPBSolver theSolver;
         String solverName = args[0];
-        boolean trace = false;
-        if (solverName.startsWith("Trace")) {
-            trace = true;
-            solverName = solverName.substring("Trace".length());
-        }
         boolean lower = false;
         if (solverName.startsWith("Lower")) {
             lower = true;
@@ -145,38 +134,6 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
         if (args.length == 3) {
             theSolver.setTimeout(Integer.valueOf(args[1]));
         }
-        if (trace) {
-            String fileName = args[args.length - 1];
-            theSolver.setSearchListener(new MultiTracing(
-                    new ConflictLevelTracing(new FileBasedVisualizationTool(
-                            fileName + "-conflict-level"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-conflict-level-restart"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-conflict-level-clean")),
-                    new DecisionTracing(new FileBasedVisualizationTool(fileName
-                            + "-decision-indexes-pos"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-decision-indexes-neg"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-decision-indexes-restart"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-decision-indexes-clean")),
-                    new LearnedClausesSizeTracing(
-                            new FileBasedVisualizationTool(fileName
-                                    + "-learned-clauses-size"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-learned-clauses-size-restart"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-learned-clauses-size-clean")),
-                    new ConflictDepthTracing(new FileBasedVisualizationTool(
-                            fileName + "-conflict-depth"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-conflict-depth-restart"),
-                            new FileBasedVisualizationTool(fileName
-                                    + "-conflict-depth-clean"))));
-        }
-        // theSolver.setSearchListener(new TextOutputTracing(null));
         this.out.println(theSolver.toString(COMMENT_PREFIX));
         return theSolver;
     }
@@ -198,8 +155,7 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
 
     @Override
     protected IProblem readProblem(String problemname)
-            throws ParseFormatException, IOException,
-            ContradictionException {
+            throws ParseFormatException, IOException, ContradictionException {
         IProblem problem = super.readProblem(problemname);
         ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
         if (obj != null) {
