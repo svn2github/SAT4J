@@ -415,7 +415,6 @@ public final class VecInt implements IVecInt {
 
     public void moveTo2(IVecInt dest) {
         VecInt ndest = (VecInt) dest;
-        int s = ndest.nbelem;
         int tmp[] = ndest.myarray;
         ndest.myarray = this.myarray;
         ndest.nbelem = this.nbelem;
