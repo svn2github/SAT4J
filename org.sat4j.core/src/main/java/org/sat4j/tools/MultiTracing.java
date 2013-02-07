@@ -36,8 +36,8 @@ import java.util.List;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.SearchListener;
 
 /**
@@ -46,126 +46,127 @@ import org.sat4j.specs.SearchListener;
  * @author leberre
  * 
  */
-public class MultiTracing implements SearchListener {
+public class MultiTracing<T extends ISolverService> implements
+        SearchListener<T> {
 
     /**
 	 * 
 	 */
     private static final long serialVersionUID = 1L;
 
-    private final Collection<SearchListener> listeners = new ArrayList<SearchListener>();
+    private final Collection<SearchListener<T>> listeners = new ArrayList<SearchListener<T>>();
 
-    public MultiTracing(SearchListener... listeners) {
+    public MultiTracing(SearchListener<T>... listeners) {
         this.listeners.addAll(Arrays.asList(listeners));
     }
 
-    public MultiTracing(List<SearchListener> listenersList) {
+    public MultiTracing(List<SearchListener<T>> listenersList) {
         this.listeners.addAll(listenersList);
     }
 
     public void assuming(int p) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.assuming(p);
         }
 
     }
 
     public void propagating(int p, IConstr reason) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.propagating(p, reason);
         }
 
     }
 
     public void backtracking(int p) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.backtracking(p);
         }
     }
 
     public void adding(int p) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.adding(p);
         }
 
     }
 
     public void learn(IConstr c) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.learn(c);
         }
 
     }
 
     public void delete(int[] clause) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.delete(clause);
         }
 
     }
 
     public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.conflictFound(confl, dlevel, trailLevel);
         }
 
     }
 
     public void conflictFound(int p) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.conflictFound(p);
         }
 
     }
 
     public void solutionFound(int[] model, RandomAccessModel lazyModel) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.solutionFound(model, lazyModel);
         }
 
     }
 
     public void beginLoop() {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.beginLoop();
         }
     }
 
     public void start() {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.start();
         }
 
     }
 
     public void end(Lbool result) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.end(result);
         }
     }
 
     public void restarting() {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.restarting();
         }
 
     }
 
     public void backjump(int backjumpLevel) {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.backjump(backjumpLevel);
         }
 
     }
 
-    public void init(ISolverService solverService) {
-        for (SearchListener sl : this.listeners) {
+    public void init(T solverService) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.init(solverService);
         }
     }
 
     public void cleaning() {
-        for (SearchListener sl : this.listeners) {
+        for (SearchListener<T> sl : this.listeners) {
             sl.cleaning();
         }
     }
