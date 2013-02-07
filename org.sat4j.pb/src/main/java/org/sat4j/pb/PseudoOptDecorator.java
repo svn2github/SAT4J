@@ -213,7 +213,13 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     }
 
     private int[] modelWithAdaptedNonPrimeLiterals() {
-        int[] completed = super.model();
+        // do not use model() because it might contain holes.
+        int[] completeModel = new int[nVars()];
+        int var;
+        for (int i = 0; i < nVars(); i++) {
+            var = i + 1;
+            completeModel[i] = model(var) ? var : -var;
+        }
         primeImplicant();
         ObjectiveFunction obj = getObjectiveFunction();
         for (int i = 0; i < obj.getVars().size(); i++) {
@@ -222,15 +228,15 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             if (d <= nVars() && !primeImplicant(d) && !primeImplicant(-d)) {
                 // the variable does not appear in the model: it can be assigned
                 // either way
-                assert Math.abs(completed[Math.abs(d) - 1]) == d;
+                assert Math.abs(completeModel[Math.abs(d) - 1]) == d;
                 if (coeff.signum() < 0) {
-                    completed[Math.abs(d) - 1] = Math.abs(d);
+                    completeModel[Math.abs(d) - 1] = Math.abs(d);
                 } else {
-                    completed[Math.abs(d) - 1] = -Math.abs(d);
+                    completeModel[Math.abs(d) - 1] = -Math.abs(d);
                 }
             }
         }
-        return completed;
+        return completeModel;
     }
 
     public boolean hasNoObjectiveFunction() {
