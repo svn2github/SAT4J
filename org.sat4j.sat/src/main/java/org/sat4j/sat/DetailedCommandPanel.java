@@ -103,6 +103,7 @@ import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ClausalCardinalitiesDecorator;
@@ -1698,7 +1699,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public void conflictFound(int p) {
     }
 
-    public void solutionFound(int[] model) {
+    public void solutionFound(int[] model,RandomAccessModel lazyModel) {
         log("Found a solution !! ");
         logsameline(this.stringWriter.toString());
         this.stringWriter.getBuffer().delete(0,
