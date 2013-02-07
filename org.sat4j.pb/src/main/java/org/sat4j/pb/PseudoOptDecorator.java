@@ -218,7 +218,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         int var;
         for (int i = 0; i < nVars(); i++) {
             var = i + 1;
-            completeModel[i] = model(var) ? var : -var;
+            completeModel[i] = super.model(var) ? var : -var;
         }
         primeImplicant();
         ObjectiveFunction obj = getObjectiveFunction();
