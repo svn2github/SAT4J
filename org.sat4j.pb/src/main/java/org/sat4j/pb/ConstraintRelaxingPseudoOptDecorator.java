@@ -48,7 +48,6 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
         implements IOptimizationProblem {
 
     private static final long serialVersionUID = 1L;
-    private boolean[] bestFullModel;
     private IConstr previousPBConstr;
     private IConstr addedConstr = null;
     private Number objectiveValue;
@@ -73,10 +72,6 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
             throws TimeoutException {
         boolean result = super.isSatisfiable(assumps, true);
         if (result) {
-            this.bestFullModel = new boolean[nVars()];
-            for (int i = 0; i < nVars(); i++) {
-                this.bestFullModel[i] = decorated().model(i + 1);
-            }
             calculateObjective();
         } else {
             if (this.previousPBConstr != null) {
@@ -121,10 +116,6 @@ public class ConstraintRelaxingPseudoOptDecorator extends PBSolverDecorator
             isSatisfiable = super.isSatisfiable(assumps, true);
             if (isSatisfiable) {
                 this.optimumFound = true;
-                this.bestFullModel = new boolean[nVars()];
-                for (int i = 0; i < nVars(); i++) {
-                    this.bestFullModel[i] = decorated().model(i + 1);
-                }
                 if (getObjectiveFunction() != null) {
                     calculateObjective();
                 }
