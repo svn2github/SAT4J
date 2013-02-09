@@ -219,7 +219,7 @@ public interface ILauncherMode extends SolutionFoundListener {
         public void onSolutionFound(int[] solution) {
             this.nbSolutionFound++;
             this.exitCode = ExitCode.SATISFIABLE;
-            this.out.printf("\rc Found solution #%d  (%.2f)s", nbSolutionFound,
+            this.out.printf("c Found solution #%d  (%.2f)s%n", nbSolutionFound,
                     (System.currentTimeMillis() - beginTime) / 1000.0);
         }
 
