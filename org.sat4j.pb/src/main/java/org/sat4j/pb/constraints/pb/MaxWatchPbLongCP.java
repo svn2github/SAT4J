@@ -263,7 +263,12 @@ public final class MaxWatchPbLongCP extends WatchPbLongCP {
             // compute the new value for watchCumul
             coefP = this.coefs[indiceP];
         } else {
-            coefP = this.litToCoeffs.get(p ^ 1);
+            Long coefL = this.litToCoeffs.get(p ^ 1);
+            if (coefL != null) {
+                coefP = this.litToCoeffs.get(p ^ 1);
+            } else {
+                coefP = 0L;
+            }
         }
         this.watchCumul = this.watchCumul + coefP;
     }
