@@ -504,7 +504,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
                 this.voc.watch(this.lits[i] ^ 1, this);
             }
         }
-        if (learnt()) {
+        if (this.watchCumul <= this.degree) {
             // chercher tous les litteraux a regarder
             // par ordre de niveau decroissant
             int free = 1;
