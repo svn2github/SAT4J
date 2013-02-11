@@ -31,6 +31,9 @@ package org.sat4j.pb.constraints.pb;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
@@ -41,7 +44,6 @@ import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.IteratorInt;
 
 public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
         Serializable {
@@ -626,20 +628,29 @@ public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
         long sumfalsified = 0;
+        Set<Integer> sortedSet = new TreeSet<Integer>(levelBased);
+        for (int q : this.lits) {
+            sortedSet.add(q);
+        }
         IVecInt vlits = new VecInt(this.lits);
         int index;
-        for (IteratorInt it = trail.iterator(); it.hasNext();) {
-            int q = it.next();
-            if (vlits.contains(q ^ 1)) {
-                assert voc.isFalsified(q ^ 1);
-                outReason.push(q);
-                index = vlits.indexOf(q ^ 1);
+        for (int q : sortedSet) {
+            if (voc.isFalsified(q)) {
+                outReason.push(q ^ 1);
+                index = vlits.indexOf(q);
                 sumfalsified += coefs[index];
                 if (this.sumcoefs - sumfalsified < this.degree) {
                     return;
                 }
             }
         }
-
     }
+
+    private final Comparator<Integer> levelBased = new Comparator<Integer>() {
+
+        public int compare(Integer o1, Integer o2) {
+            return voc.getLevel(o1) - voc.getLevel(o2);
+        }
+
+    };
 }
