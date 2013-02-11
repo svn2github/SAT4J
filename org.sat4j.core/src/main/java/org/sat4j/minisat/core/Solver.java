@@ -38,8 +38,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -1182,8 +1184,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 assert nAssigns() <= this.voc.realnVars();
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
-                    this.slistener
-                            .solutionFound((this.fullmodel != null) ? this.fullmodel
+                    this.slistener.solutionFound(
+                            (this.fullmodel != null) ? this.fullmodel
                                     : this.model, this);
                     if (this.sharedConflict == null) {
                         cancelUntil(this.rootLevel);
@@ -2547,7 +2549,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         addConstr(this.sharedConflict);
         IVecInt reason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        while (!trail.isEmpty() && !reason.contains(trail.last())) {
+        Set<Integer> subset = fromLastDecisionLevel(reason);
+        while (!trail.isEmpty() && !subset.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
@@ -2580,7 +2583,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         // for falsifying that constraint
         IVecInt reason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        while (!trail.isEmpty() && !reason.contains(trail.last())) {
+        Set<Integer> subset = fromLastDecisionLevel(reason);
+        while (!trail.isEmpty() && !subset.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
@@ -2588,4 +2592,21 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
         return this.sharedConflict;
     }
+
+    protected Set<Integer> fromLastDecisionLevel(IVecInt lits) {
+        Set<Integer> subset = new HashSet<Integer>();
+        int max = -1, q, level;
+        for (int i = 0; i < lits.size(); i++) {
+            q = lits.get(i);
+            level = voc.getLevel(q);
+            if (level > max) {
+                subset.clear();
+                subset.add(q);
+            } else if (level == max) {
+                subset.add(q);
+            }
+        }
+        return subset;
+    }
+
 }
