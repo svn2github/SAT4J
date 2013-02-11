@@ -30,6 +30,7 @@
 package org.sat4j.pb.core;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
@@ -181,7 +182,8 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         IVecInt outReason = new VecInt();
         this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail,
                 outReason);
-        while (!trail.isEmpty() && !outReason.contains(trail.last())) {
+        Set<Integer> subset = fromLastDecisionLevel(outReason);
+        while (!trail.isEmpty() && !subset.contains(trail.last())) {
             undoOne();
             if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
