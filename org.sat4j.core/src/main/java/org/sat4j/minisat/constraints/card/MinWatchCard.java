@@ -471,7 +471,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     public void register() {
-        throw new UnsupportedOperationException();
+        computeWatches();
     }
 
     public int size() {
