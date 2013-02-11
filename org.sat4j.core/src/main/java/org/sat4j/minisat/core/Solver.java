@@ -2602,11 +2602,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             if (level > max) {
                 subset.clear();
                 subset.add(q);
+                max = level;
             } else if (level == max) {
                 subset.add(q);
             }
         }
         return subset;
     }
-
 }
