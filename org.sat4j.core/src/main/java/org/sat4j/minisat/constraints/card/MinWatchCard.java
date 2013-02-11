@@ -31,6 +31,7 @@ package org.sat4j.minisat.constraints.card;
 
 import java.io.Serializable;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
@@ -40,6 +41,7 @@ import org.sat4j.minisat.core.Undoable;
 import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 public class MinWatchCard implements Propagatable, Constr, Undoable,
         Serializable {
@@ -624,6 +626,17 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        int c = p == ILits.UNDEFINED ? -1 : 0;
+        IVecInt vlits = new VecInt(this.lits);
+        int maxUnsatisfied = lits.length - degree;
+        for (IteratorInt it = trail.iterator(); it.hasNext();) {
+            int q = it.next();
+            if (vlits.contains(q ^ 1)) {
+                outReason.push(q);
+                if (++c > maxUnsatisfied) {
+                    return;
+                }
+            }
+        }
     }
 }
