@@ -31,6 +31,7 @@ package org.sat4j.tools;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -97,6 +98,7 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
         int[] prevmodel = null;
         IVecInt vec = new VecInt();
         IVecInt cube = new VecInt();
+        IConstr prevConstr = null;
         try {
             do {
                 prevfullmodel = super.modelWithInternalVariables();
@@ -107,11 +109,14 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
                 for (int q : prevfullmodel) {
                     if (pLiterals.contains(q)) {
                         vec.push(-q);
-                    } else {
+                    } else if (pLiterals.contains(-q)) {
                         cube.push(q);
                     }
                 }
-                addBlockingClause(vec);
+                if (prevConstr != null) {
+                    removeSubsumedConstr(prevConstr);
+                }
+                prevConstr = addBlockingClause(vec);
             } while (isSatisfiable(cube));
         } catch (TimeoutException e) {
             throw new IllegalStateException("Solver timed out");

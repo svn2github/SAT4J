@@ -1,8 +1,12 @@
 package org.sat4j.tools;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 public class AbstractMinimalModel extends SolverDecorator<ISolver> {
 
@@ -10,7 +14,7 @@ public class AbstractMinimalModel extends SolverDecorator<ISolver> {
      * 
      */
     private static final long serialVersionUID = 1L;
-    protected final IVecInt pLiterals;
+    protected final SortedSet<Integer> pLiterals;
     protected final SolutionFoundListener modelListener;
 
     public static IVecInt positiveLiterals(ISolver solver) {
@@ -45,8 +49,10 @@ public class AbstractMinimalModel extends SolverDecorator<ISolver> {
     public AbstractMinimalModel(ISolver solver, IVecInt p,
             SolutionFoundListener modelListener) {
         super(solver);
-        this.pLiterals = new VecInt(p.size());
-        p.copyTo(this.pLiterals);
+        this.pLiterals = new TreeSet<Integer>();
+        for (IteratorInt it = p.iterator(); it.hasNext();) {
+            this.pLiterals.add(it.next());
+        }
         this.modelListener = modelListener;
 
     }

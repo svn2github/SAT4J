@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -80,6 +81,10 @@ public class Minimal4CardinalityModel extends AbstractMinimalModel {
     public int[] model() {
         int[] prevmodel = null;
         IConstr lastOne = null;
+        IVecInt literals = new VecInt(pLiterals.size());
+        for (int p : pLiterals) {
+            literals.push(p);
+        }
         try {
             do {
                 prevfullmodel = super.modelWithInternalVariables();
@@ -90,7 +95,7 @@ public class Minimal4CardinalityModel extends AbstractMinimalModel {
                         counter++;
                     }
                 }
-                lastOne = addAtMost(pLiterals, counter - 1);
+                lastOne = addAtMost(literals, counter - 1);
             } while (isSatisfiable());
         } catch (TimeoutException e) {
             throw new IllegalStateException("Solver timed out"); //$NON-NLS-1$
