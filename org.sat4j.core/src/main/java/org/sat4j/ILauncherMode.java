@@ -171,8 +171,8 @@ public interface ILauncherMode extends SolutionFoundListener {
                         }
 
                     }
-                    if (nbSolutionFound > 1) {
-                        logger.log("Found " + nbSolutionFound + " solutions");
+                    if (nbSolutionFound >= 1) {
+                        logger.log("Found " + nbSolutionFound + " solution(s)");
                     }
                     out.print(SOLUTION_PREFIX);
                     reader.decode(model, out);
@@ -246,6 +246,8 @@ public interface ILauncherMode extends SolutionFoundListener {
      */
     ILauncherMode OPTIMIZATION = new ILauncherMode() {
 
+        private int nbSolutions;
+
         private ExitCode exitCode = ExitCode.UNKNOWN;
 
         private boolean isIncomplete = false;
@@ -268,6 +270,9 @@ public interface ILauncherMode extends SolutionFoundListener {
             if (exitCode == ExitCode.SATISFIABLE
                     || exitCode == ExitCode.OPTIMUM_FOUND || isIncomplete
                     && exitCode == ExitCode.UPPER_BOUND) {
+                assert this.nbSolutions > 0;
+                logger.log("Found " + this.nbSolutions + " solution(s)");
+
                 if (displaySolutionLine) {
                     out.print(SOLUTION_PREFIX);
                     reader.decode(problem.model(), out);
@@ -298,11 +303,13 @@ public interface ILauncherMode extends SolutionFoundListener {
         public void solve(IProblem problem, Reader reader, ILogAble logger,
                 PrintWriter out, long beginTime) {
             boolean isSatisfiable = false;
+            this.nbSolutions = 0;
             IOptimizationProblem optproblem = (IOptimizationProblem) problem;
             exitCode = ExitCode.UNKNOWN;
 
             try {
                 while (optproblem.admitABetterSolution()) {
+                    ++this.nbSolutions;
                     if (!isSatisfiable) {
                         if (optproblem.nonOptimalMeansSatisfiable()) {
                             logger.log("SATISFIABLE");
