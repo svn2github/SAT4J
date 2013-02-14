@@ -1,9 +1,7 @@
 <project name="sat4j" default="p2">
          <!-- using Eclipse compiler -->
          <!-- COMMENT THAT LINE IF YOU WANT TO USE DEFAULT JDK COMPILER -->        
-        <!--
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        --> 
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
