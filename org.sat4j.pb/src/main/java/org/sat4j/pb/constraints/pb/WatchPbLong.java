@@ -31,9 +31,10 @@ package org.sat4j.pb.constraints.pb;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
@@ -628,13 +629,14 @@ public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
         long sumfalsified = 0;
-        Set<Integer> sortedSet = new TreeSet<Integer>(levelBased);
+        List<Integer> sortedList = new ArrayList<Integer>();
         for (int q : this.lits) {
-            sortedSet.add(q);
+            sortedList.add(q);
         }
+        Collections.sort(sortedList, levelBased);
         IVecInt vlits = new VecInt(this.lits);
         int index;
-        for (int q : sortedSet) {
+        for (int q : sortedList) {
             if (voc.isFalsified(q)) {
                 outReason.push(q ^ 1);
                 index = vlits.indexOf(q);
