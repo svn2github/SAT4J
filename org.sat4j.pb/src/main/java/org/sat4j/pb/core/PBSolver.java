@@ -165,19 +165,13 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         return group;
     }
 
-    private IConstr previousConstr = null;
-
     public IConstr addAtMostOnTheFly(IVecInt literals, IVec<BigInteger> coefs,
             BigInteger degree) {
         IVecInt vlits = dimacs2internal(literals);
-        if (previousConstr != null) {
-            removeSubsumedConstr(previousConstr);
-        }
         this.sharedConflict = this.dsfactory
                 .createUnregisteredAtMostConstraint(vlits, coefs, degree);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
-        previousConstr = this.sharedConflict;
         // backtrack to the first decision level with a reason
         // for falsifying that constraint
         IVecInt outReason = new VecInt();
