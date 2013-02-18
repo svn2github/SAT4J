@@ -34,8 +34,9 @@ import java.math.BigInteger;
 import org.sat4j.ILauncherMode;
 import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.specs.RandomAccessModel;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.tools.SearchListenerAdapter;
 import org.sat4j.tools.SolutionFoundListener;
 
@@ -55,6 +56,8 @@ public final class SearchOptimizerListener extends
 
     private BigInteger currentValue;
 
+    private IConstr prevConstr = null;
+
     public SearchOptimizerListener(SolutionFoundListener sfl) {
         this.sfl = sfl;
     }
@@ -64,6 +67,7 @@ public final class SearchOptimizerListener extends
         this.obj = solverService.getObjectiveFunction();
         this.solverService = solverService;
         this.currentValue = null;
+        this.prevConstr = null;
     }
 
     @Override
@@ -72,9 +76,12 @@ public final class SearchOptimizerListener extends
             this.currentValue = obj.calculateDegree(lazyModel);
             System.out.println(ILauncherMode.CURRENT_OPTIMUM_VALUE_PREFIX
                     + this.currentValue);
-            this.solverService
-                    .addAtMostOnTheFly(obj.getVars(), obj.getCoeffs(),
-                            this.currentValue.subtract(BigInteger.ONE));
+            if (this.prevConstr != null) {
+                this.solverService.removeSubsumedConstr(prevConstr);
+            }
+            this.prevConstr = this.solverService.addAtMostOnTheFly(
+                    obj.getVars(), obj.getCoeffs(),
+                    this.currentValue.subtract(BigInteger.ONE));
         }
         sfl.onSolutionFound(model);
     }
