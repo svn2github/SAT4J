@@ -1002,7 +1002,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
                 } else {
                     this.problem = new PseudoOptDecorator(
                             (WeightedMaxSatDecorator) this.problem, false,
-                            !equivalenceMode);
+                            false);
                 }
 
                 this.problem = new OptToPBSATAdapter(
