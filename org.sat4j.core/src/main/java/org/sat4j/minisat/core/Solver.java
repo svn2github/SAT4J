@@ -1193,7 +1193,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     } else {
                         // listener called ISolverService.backtrack()
                         confl = this.sharedConflict;
-                        this.sharedConflict = null;
+                        // this.sharedConflict = null;
                     }
                 } else {
                     if (this.restarter.shouldRestart()) {
@@ -1223,7 +1223,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     } else {
                         // listener called ISolverService.backtrack()
                         confl = this.sharedConflict;
-                        this.sharedConflict = null;
+                        // this.sharedConflict = null;
                     }
                 }
             }
@@ -1257,6 +1257,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 cancelUntil(backjumpLevel);
                 if (backjumpLevel == this.rootLevel) {
                     this.restarter.onBackjumpToRootLevel();
+                }
+                if (confl == this.sharedConflict) {
+                    // propagate this.sharedConflict
+                    this.sharedConflict.assertConstraint(this);
+                    this.sharedConflict = null;
                 }
                 assert decisionLevel() >= this.rootLevel
                         && decisionLevel() >= this.analysisResult.backtrackLevel;
