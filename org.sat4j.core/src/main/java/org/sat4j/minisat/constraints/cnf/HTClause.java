@@ -246,6 +246,13 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
         assert ret;
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        if (voc.isFalsified(this.tail)) {
+            boolean ret = s.enqueue(this.head, this);
+            assert ret;
+        }
+    }
+
     public ILits getVocabulary() {
         return this.voc;
     }

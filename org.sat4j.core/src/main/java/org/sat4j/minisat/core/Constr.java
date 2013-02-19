@@ -161,4 +161,15 @@ public interface Constr extends IConstr {
      */
     void assertConstraint(UnitPropagationListener s);
 
+    /**
+     * Method called when the constraint is added to the solver "on the fly". In
+     * that case, the constraint may or may not have to propagate some literals,
+     * unlike the {@link #assertConstraint(UnitPropagationListener)} method.
+     * 
+     * @param s
+     *            a UnitPropagationListener to use for unit propagation.
+     * @since 2.3.4
+     */
+    void assertConstraintIfNeeded(UnitPropagationListener s);
+
 }

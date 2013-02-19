@@ -51,6 +51,10 @@ public class UnitClauses implements Constr {
         }
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        assertConstraint(s);
+    }
+
     public void calcReason(int p, IVecInt outReason) {
         throw new UnsupportedOperationException();
 

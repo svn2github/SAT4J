@@ -200,6 +200,13 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
         assert ret;
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        if (voc.isFalsified(this.lits[1])) {
+            boolean ret = s.enqueue(this.lits[0], this);
+            assert ret;
+        }
+    }
+
     public ILits getVocabulary() {
         return this.voc;
     }

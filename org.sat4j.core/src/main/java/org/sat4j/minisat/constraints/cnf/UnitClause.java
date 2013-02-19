@@ -53,6 +53,10 @@ public class UnitClause implements Constr {
         s.enqueue(this.literal, this);
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        assertConstraint(s);
+    }
+
     public void calcReason(int p, IVecInt outReason) {
         if (p == ILits.UNDEFINED) {
             outReason.push(LiteralsUtils.neg(this.literal));

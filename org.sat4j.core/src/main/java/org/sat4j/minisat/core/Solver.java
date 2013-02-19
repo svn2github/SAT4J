@@ -37,9 +37,13 @@ import static org.sat4j.core.LiteralsUtils.var;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -1164,23 +1168,17 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
         do {
             this.slistener.beginLoop();
-            // propage les clauses unitaires
+            // propagate unit clauses and other constraints
             Constr confl = propagate();
             assert this.trail.size() == this.qhead;
 
             if (confl == null) {
                 // No conflict found
-                // simpliFYDB() prevents a correct use of
-                // constraints removal.
                 if (decisionLevel() == 0 && this.isDBSimplificationAllowed) {
-                    // // Simplify the set of problem clause
-                    // // iff rootLevel==0
                     this.stats.rootSimplifications++;
                     boolean ret = simplifyDB();
                     assert ret;
                 }
-                // was learnts.size() - nAssigns() > nofLearnts
-                // if (nofLearnts.obj >= 0 && learnts.size() > nofLearnts.obj) {
                 assert nAssigns() <= this.voc.realnVars();
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
@@ -1191,21 +1189,16 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                         cancelUntil(this.rootLevel);
                         return Lbool.TRUE;
                     } else {
-                        // listener called ISolverService.backtrack()
                         confl = this.sharedConflict;
-                        // this.sharedConflict = null;
                     }
                 } else {
                     if (this.restarter.shouldRestart()) {
-                        // Reached bound on number of conflicts
-                        // Force a restart
                         cancelUntil(this.rootLevel);
                         return Lbool.UNDEFINED;
                     }
                     if (this.needToReduceDB) {
                         reduceDB();
                         this.needToReduceDB = false;
-                        // Runtime.getRuntime().gc();
                     }
                     if (this.sharedConflict == null) {
                         // New variable decision
@@ -1221,14 +1214,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                             assert ret;
                         }
                     } else {
-                        // listener called ISolverService.backtrack()
                         confl = this.sharedConflict;
-                        // this.sharedConflict = null;
                     }
                 }
             }
             if (confl != null) {
-                // un conflit apparait
+                // conflict found
                 this.stats.conflicts++;
                 this.slistener.conflictFound(confl, decisionLevel(),
                         this.trail.size());
@@ -1259,8 +1250,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     this.restarter.onBackjumpToRootLevel();
                 }
                 if (confl == this.sharedConflict) {
-                    // propagate this.sharedConflict
-                    this.sharedConflict.assertConstraint(this);
+                    this.sharedConflict.assertConstraintIfNeeded(this);
                     this.sharedConflict = null;
                 }
                 assert decisionLevel() >= this.rootLevel
@@ -2544,9 +2534,20 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.keepHot = keepHot;
     }
 
+    private final Comparator<Integer> dimacsLevel = new Comparator<Integer>() {
+        public int compare(Integer i1, Integer i2) {
+            return voc.getLevel(Math.abs(i2)) - voc.getLevel(Math.abs(i1));
+        }
+    };
+
     public IConstr addClauseOnTheFly(int[] literals) {
+        List<Integer> lliterals = new ArrayList<Integer>();
+        for (Integer d : literals) {
+            lliterals.add(d);
+        }
+        Collections.sort(lliterals, dimacsLevel);
         IVecInt clause = new VecInt(literals.length);
-        for (int d : literals) {
+        for (int d : lliterals) {
             clause.push(LiteralsUtils.toInternal(d));
         }
         this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);

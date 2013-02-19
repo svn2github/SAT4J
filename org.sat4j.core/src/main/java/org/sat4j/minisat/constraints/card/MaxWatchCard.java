@@ -415,6 +415,10 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
         throw new UnsupportedOperationException();
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        throw new UnsupportedOperationException();
+    }
+
     /*
      * (non-Javadoc)
      * 

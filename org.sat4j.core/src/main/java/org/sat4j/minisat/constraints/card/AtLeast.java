@@ -278,6 +278,10 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         throw new UnsupportedOperationException();
     }
 
+    public void assertConstraintIfNeeded(UnitPropagationListener s) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Textual representation of the constraint
      * 
