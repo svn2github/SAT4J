@@ -483,7 +483,11 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     public void assertConstraint(UnitPropagationListener s) {
-        throw new UnsupportedOperationException();
+        if (this.watchCumul == this.degree) {
+            for (int i = 0; i < this.watchCumul; i++) {
+                s.enqueue(this.lits[i]);
+            }
+        }
     }
 
     protected void computeWatches() {
