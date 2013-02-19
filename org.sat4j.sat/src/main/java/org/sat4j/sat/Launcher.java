@@ -264,7 +264,7 @@ public class Launcher extends AbstractLauncher implements ILogAble {
                 } else {
                     this.problem = new PseudoOptDecorator(
                             (WeightedMaxSatDecorator) asolver, false,
-                            !equivalence);
+                            false);
                 }
                 break;
             default:
