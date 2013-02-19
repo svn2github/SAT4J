@@ -177,7 +177,7 @@ public abstract class BinaryClause implements Propagatable, Constr,
     }
 
     public void assertConstraint(UnitPropagationListener s) {
-        assert this.voc.isUnassigned(this.head);
+        // assert this.voc.isUnassigned(this.head);
         boolean ret = s.enqueue(this.head, this);
         assert ret;
     }
