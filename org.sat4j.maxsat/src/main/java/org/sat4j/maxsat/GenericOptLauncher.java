@@ -41,7 +41,10 @@ import org.sat4j.ILauncherMode;
 import org.sat4j.maxsat.reader.WDimacsReader;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.pb.ConstraintRelaxingPseudoOptDecorator;
+import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
+import org.sat4j.pb.tools.ManyCorePB;
 import org.sat4j.pb.tools.SearchOptimizerListener;
 import org.sat4j.reader.LecteurDimacs;
 import org.sat4j.reader.ParseFormatException;
@@ -97,6 +100,7 @@ public class GenericOptLauncher extends AbstractLauncher {
         options.addOption("l", "lower bounding", false,
                 "search solution by lower bounding instead of by upper bounding");
         options.addOption("m", "mystery", false, "mystery option");
+        options.addOption("B", "External&Internal", false, "External&Internal optimization");
         return options;
     }
 
@@ -177,6 +181,15 @@ public class GenericOptLauncher extends AbstractLauncher {
                                 this.wmsd);
                     } else if (cmd.hasOption("I")){
                         this.wmsd.setSearchListener(new SearchOptimizerListener(ILauncherMode.DECISION));
+                        setLauncherMode(ILauncherMode.DECISION);
+                        asolver = this.wmsd;
+                    }else if(cmd.hasOption("B")){
+                        IPBSolver internal = org.sat4j.pb.SolverFactory.newDefault();
+                        internal.setSearchListener(new SearchOptimizerListener(ILauncherMode.DECISION));
+                        IPBSolver external = org.sat4j.pb.SolverFactory.newDefault();
+                        external = new OptToPBSATAdapter(new PseudoOptDecorator(external),ILauncherMode.DECISION);
+                        ManyCorePB mc = new ManyCorePB(external, internal);
+                        this.wmsd = new WeightedMaxSatDecorator(mc, equivalence);
                         setLauncherMode(ILauncherMode.DECISION);
                         asolver = this.wmsd;
                     }else{
