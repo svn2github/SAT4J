@@ -111,6 +111,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
                             / 1000.0 + "s)");
                 }
             }
+            sfl.onUnsatTermination();
         } catch (ContradictionException ce) {
             sfl.onUnsatTermination();
         }
