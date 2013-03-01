@@ -36,6 +36,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.SolutionFoundListener;
 
 /**
  * Utility class to use optimization solvers instead of simple SAT solvers in
@@ -58,20 +59,22 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
     private long begin;
 
+    private final SolutionFoundListener sfl;
+
     public OptToPBSATAdapter(IOptimizationProblem problem) {
+        this(problem, SolutionFoundListener.VOID);
+    }
+
+    public OptToPBSATAdapter(IOptimizationProblem problem,
+            SolutionFoundListener sfl) {
         super((IPBSolver) problem);
         this.problem = problem;
+        this.sfl = sfl;
     }
 
     @Override
     public boolean isSatisfiable() throws TimeoutException {
-        this.modelComputed = false;
-        this.assumps.clear();
-        this.begin = System.currentTimeMillis();
-        if (this.problem.hasNoObjectiveFunction()) {
-            return this.modelComputed = this.problem.isSatisfiable();
-        }
-        return this.problem.admitABetterSolution();
+        return isSatisfiable(VecInt.EMPTY);
     }
 
     @Override
@@ -94,7 +97,24 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
         if (this.problem.hasNoObjectiveFunction()) {
             return this.modelComputed = this.problem.isSatisfiable(myAssumps);
         }
-        return this.problem.admitABetterSolution(myAssumps);
+        boolean satisfiable = false;
+        try {
+            while (this.problem.admitABetterSolution(myAssumps)) {
+                satisfiable = true;
+                sfl.onSolutionFound(this.problem.model());
+                this.problem.discardCurrentSolution();
+                if (isVerbose()) {
+                    System.out.println(getLogPrefix()
+                            + "Current objective function value: "
+                            + this.problem.getObjectiveValue() + "("
+                            + (System.currentTimeMillis() - this.begin)
+                            / 1000.0 + "s)");
+                }
+            }
+        } catch (ContradictionException ce) {
+            sfl.onUnsatTermination();
+        }
+        return satisfiable;
     }
 
     @Override
@@ -111,47 +131,11 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
      * @since 2.3.2
      */
     public int[] model(PrintWriter out) {
-        if (this.modelComputed) {
-            return this.problem.model();
-        }
-        try {
-            assert this.problem.admitABetterSolution(this.assumps);
-            assert !this.problem.hasNoObjectiveFunction();
-            do {
-                this.problem.discardCurrentSolution();
-                if (isVerbose()) {
-                    out.println(getLogPrefix()
-                            + "Current objective function value: "
-                            + this.problem.getObjectiveValue() + "("
-                            + (System.currentTimeMillis() - this.begin)
-                            / 1000.0 + "s)");
-                }
-            } while (this.problem.admitABetterSolution(this.assumps));
-            if (isVerbose()) {
-                out.println(getLogPrefix()
-                        + "Optimal objective function value: "
-                        + this.problem.getObjectiveValue() + "("
-                        + (System.currentTimeMillis() - this.begin) / 1000.0
-                        + "s)");
-            }
-        } catch (TimeoutException e) {
-            if (isVerbose()) {
-                out.println(getLogPrefix() + "Solver timed out after "
-                        + (System.currentTimeMillis() - this.begin) / 1000.0
-                        + "s)");
-            }
-        } catch (ContradictionException e) {
-            // OK, optimal model found
-        }
-        this.modelComputed = true;
         return this.problem.model();
     }
 
     @Override
     public boolean model(int var) {
-        if (!this.modelComputed) {
-            model();
-        }
         return this.problem.model(var);
     }
 
