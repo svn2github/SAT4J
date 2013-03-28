@@ -449,7 +449,7 @@ public class LFConverter {
     }
 
     private boolean isCNF(Node n) {
-        if (isLiteral(n))
+        if (isLiteral(n) || isClause(n) || isCube(n))
             return true;
         if (n.nodeType != NodeType.CONJ)
             return false;
@@ -480,7 +480,7 @@ public class LFConverter {
     }
 
     private boolean isDNF(Node n) {
-        if (isLiteral(n))
+        if (isLiteral(n) || isClause(n) || isCube(n))
             return true;
         if (n.nodeType != NodeType.DISJ)
             return false;
@@ -502,7 +502,7 @@ public class LFConverter {
         return true;
     }
 
-    private Node toCNF(Node n) {
+    public Node toCNF(Node n) {
         if (isCNF(n))
             return n;
         if (isDNF(n))
@@ -532,7 +532,7 @@ public class LFConverter {
         throw new IllegalArgumentException();
     }
 
-    private Node toDNF(Node n) {
+    public Node toDNF(Node n) {
         if (isDNF(n))
             return n;
         if (isCNF(n))
@@ -563,7 +563,61 @@ public class LFConverter {
     }
 
     private Node switchByDeMorganLaws(Node n) {
-        // TODO: implement this method !
-        throw new UnsupportedOperationException("Not implemented yet!");
+        Set<Set<Node>> ancS, newS;
+        ancS = null;
+        for (Node son : n.getSons()) {
+            if (son.nodeType == NodeType.CONJ || son.nodeType == NodeType.DISJ) {
+                if (ancS == null) {
+                    ancS = new HashSet<Set<LFConverter.Node>>();
+                    for (Node lSon : son.getSons()) {
+                        Set<Node> newSubSet = new HashSet<LFConverter.Node>();
+                        newSubSet.add(lSon);
+                        ancS.add(newSubSet);
+                    }
+                } else {
+                    newS = new HashSet<Set<LFConverter.Node>>();
+                    for (Set<Node> anc : ancS) {
+                        for (Node lSon : son.getSons()) {
+                            Set<Node> newSubSet = new HashSet<LFConverter.Node>(
+                                    anc);
+                            newSubSet.add(lSon);
+                            newS.add(newSubSet);
+                        }
+                    }
+                    ancS = newS;
+                }
+            } else {
+                if (ancS == null) {
+                    ancS = new HashSet<Set<Node>>();
+                    Set<Node> newSubSet = new HashSet<LFConverter.Node>();
+                    newSubSet.add(son);
+                    ancS.add(newSubSet);
+                } else {
+                    for (Set<Node> anc : ancS) {
+                        anc.add(son);
+                    }
+                }
+            }
+        }
+        Node res;
+        if (n.nodeType == NodeType.CONJ) {
+            res = new Node(NodeType.DISJ);
+            for (Set<Node> lSons : ancS) {
+                Node son = new Node(NodeType.CONJ);
+                son.addAllSons(lSons);
+                res.addSon(son);
+            }
+            return res;
+        }
+        if (n.nodeType == NodeType.DISJ) {
+            res = new Node(NodeType.CONJ);
+            for (Set<Node> lSons : ancS) {
+                Node son = new Node(NodeType.DISJ);
+                son.addAllSons(lSons);
+                res.addSon(son);
+            }
+            return res;
+        }
+        throw new IllegalArgumentException();
     }
 }
