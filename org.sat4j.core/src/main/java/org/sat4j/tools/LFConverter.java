@@ -1,6 +1,8 @@
 package org.sat4j.tools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -61,8 +63,7 @@ public class LFConverter {
             } else if (this.nodeType == NodeType.TRUE) {
                 sb.append('1');
             } else {
-                List<Node> sonsList = new ArrayList<LFConverter.Node>(
-                        this.sons);
+                List<Node> sonsList = new ArrayList<LFConverter.Node>(this.sons);
                 sb.append('<');
                 sb.append(sonsList.get(0).toString());
                 for (int i = 1; i < this.sons.size(); ++i) {
@@ -131,10 +132,16 @@ public class LFConverter {
         public int compareTo(Node other) {
             if (this.nodeType.ordinal() < other.nodeType.ordinal())
                 return this.nodeType.ordinal() - other.nodeType.ordinal();
-            if (this.sons.size() < other.sons.size())
+            if (this.sons.size() != other.sons.size())
                 return this.sons.size() - other.sons.size();
-            if (!this.sons.equals(other.sons))
-                return this.sons.hashCode() - other.hashCode();
+            Iterator<Node> it1 = this.getSons().iterator();
+            Iterator<Node> it2 = other.getSons().iterator();
+            while (it1.hasNext()) {
+                int cmp = it1.next().compareTo(it2.next());
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
             if (this.nodeType == NodeType.TERM)
                 return this.getLabel().compareTo(other.getLabel());
             return 0;
@@ -195,20 +202,34 @@ public class LFConverter {
     }
 
     private Node readNegated(String s) {
-        Node negated = readExpression(s.substring(1));
-        if (negated.nodeType == NodeType.NEG) {
-            Node node = negated.getSons().iterator().next();
-            negated.removeAllSons();
-            return node;
-        } else if (negated.nodeType == NodeType.FALSE) {
+        return negate(readExpression(s.substring(1)));
+    }
+
+    private Node negate(Node n) {
+        Node res;
+        switch (n.nodeType) {
+        case FALSE:
             return new Node(NodeType.TRUE);
-        } else if (negated.nodeType == NodeType.TRUE) {
+        case CONJ:
+            res = new Node(NodeType.DISJ);
+            for (Node son : n.getSons())
+                res.addSon(negate(son));
+            return res;
+        case DISJ:
+            res = new Node(NodeType.CONJ);
+            for (Node son : n.getSons())
+                res.addSon(negate(son));
+            return res;
+        case NEG:
+            return n.getSons().iterator().next();
+        case TERM:
+            res = new Node(NodeType.NEG);
+            res.addSon(n);
+            return res;
+        case TRUE:
             return new Node(NodeType.FALSE);
-        } else {
-            Node negNode = new Node(NodeType.NEG);
-            negNode.addSon(negated);
-            return negNode;
         }
+        throw new IllegalArgumentException();
     }
 
     private Node readConjunction(String s) {
@@ -249,6 +270,7 @@ public class LFConverter {
         if ((res.getSons().size() == 0) && containsTrueNode) {
             return new Node(NodeType.TRUE);
         }
+        lookForSubsumedSons(res);
         if (res.getSons().size() == 1) {
             return res.getSons().iterator().next();
         }
@@ -318,6 +340,7 @@ public class LFConverter {
         if ((res.getSons().size() == 0) && containsFalseNode) {
             return new Node(NodeType.FALSE);
         }
+        lookForSubsumedSons(res);
         if (res.getSons().size() == 1) {
             return res.getSons().iterator().next();
         }
@@ -391,5 +414,156 @@ public class LFConverter {
                 return readExpression(s.substring(1, index));
         }
         throw new IllegalArgumentException();
+    }
+
+    private void lookForSubsumedSons(Node father) {
+        int nbSons = father.getSons().size();
+        List<Node> sonList = new ArrayList<LFConverter.Node>(father.getSons());
+        Set<Node> toRemove = new HashSet<LFConverter.Node>();
+        for (int i = 0; i < nbSons - 1; ++i) {
+            for (int j = i + 1; j < nbSons; ++j) {
+                NodeType currentType = sonList.get(i).nodeType;
+                if (((currentType == NodeType.CONJ) || currentType == NodeType.DISJ)
+                        && (currentType == sonList.get(j).nodeType)) {
+                    boolean allInI = false;
+                    boolean allInJ = false;
+                    if (sonList.get(i).getSons()
+                            .containsAll(sonList.get(j).getSons())) {
+                        allInI = true;
+                    }
+                    if (sonList.get(j).getSons()
+                            .containsAll(sonList.get(i).getSons())) {
+                        allInJ = true;
+                    }
+                    if (allInI && allInJ) {
+                        toRemove.add(sonList.get(j));
+                    } else if (allInI) {
+                        toRemove.add(sonList.get(i));
+                    } else if (allInJ) {
+                        toRemove.add(sonList.get(j));
+                    }
+                }
+            }
+        }
+        father.getSons().removeAll(toRemove);
+    }
+
+    private boolean isCNF(Node n) {
+        if (isLiteral(n))
+            return true;
+        if (n.nodeType != NodeType.CONJ)
+            return false;
+        for (Node son : n.getSons()) {
+            if (!isClause(son))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean isClause(Node n) {
+        if (isLiteral(n))
+            return true;
+        if (n.nodeType != NodeType.DISJ)
+            return false;
+        for (Node son : n.getSons())
+            if (!isLiteral(son))
+                return false;
+        return true;
+    }
+
+    private boolean isLiteral(Node n) {
+        if (n.nodeType == NodeType.TERM)
+            return true;
+        if (n.nodeType != NodeType.NEG)
+            return false;
+        return n.getSons().iterator().next().nodeType == NodeType.TERM;
+    }
+
+    private boolean isDNF(Node n) {
+        if (isLiteral(n))
+            return true;
+        if (n.nodeType != NodeType.DISJ)
+            return false;
+        for (Node son : n.getSons()) {
+            if (!isCube(son))
+                return false;
+        }
+        return true;
+    }
+
+    private boolean isCube(Node n) {
+        if (isLiteral(n))
+            return true;
+        if (n.nodeType != NodeType.CONJ)
+            return false;
+        for (Node son : n.getSons())
+            if (!isLiteral(son))
+                return false;
+        return true;
+    }
+
+    private Node toCNF(Node n) {
+        if (isCNF(n))
+            return n;
+        if (isDNF(n))
+            return switchByDeMorganLaws(n);
+        if (n.nodeType == NodeType.CONJ) {
+            Set<Node> sons = new HashSet<LFConverter.Node>();
+            for (Node son : n.getSons()) {
+                sons.add(toCNF(son));
+            }
+            Node res = new Node(NodeType.CONJ);
+            for (Node son : sons) {
+                res.addAllSons(son.getSons());
+            }
+            return res;
+        }
+        if (n.nodeType == NodeType.DISJ) {
+            Set<Node> sons = new HashSet<LFConverter.Node>();
+            for (Node son : n.getSons()) {
+                sons.add(toDNF(son));
+            }
+            Node res = new Node(NodeType.DISJ);
+            for (Node son : sons) {
+                res.addAllSons(son.getSons());
+            }
+            return switchByDeMorganLaws(res);
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private Node toDNF(Node n) {
+        if (isDNF(n))
+            return n;
+        if (isCNF(n))
+            return switchByDeMorganLaws(n);
+        if (n.nodeType == NodeType.CONJ) {
+            Set<Node> sons = new HashSet<LFConverter.Node>();
+            for (Node son : n.getSons()) {
+                sons.add(toCNF(son));
+            }
+            Node res = new Node(NodeType.CONJ);
+            for (Node son : sons) {
+                res.addAllSons(son.getSons());
+            }
+            return switchByDeMorganLaws(res);
+        }
+        if (n.nodeType == NodeType.DISJ) {
+            Set<Node> sons = new HashSet<LFConverter.Node>();
+            for (Node son : n.getSons()) {
+                sons.add(toDNF(son));
+            }
+            Node res = new Node(NodeType.DISJ);
+            for (Node son : sons) {
+                res.addAllSons(son.getSons());
+            }
+            return res;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private Node switchByDeMorganLaws(Node n) {
+        // TODO: implement this method !
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 }

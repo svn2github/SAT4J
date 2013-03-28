@@ -75,7 +75,6 @@ public class LFConverterTest {
         assertEquals("a", display("a|a"));
         assertEquals("0", display("a&-a"));
         assertEquals("1", display("a|-a"));
-        // assertEquals("", display(""));
     }
 
     @Test
@@ -90,13 +89,22 @@ public class LFConverterTest {
         assertEquals("&<a,b>", display("(a&b&c)|(a&b)"));
         assertEquals("|<a,b>", display("(a|b)&(a|b|c)"));
         assertEquals("|<a,b>", display("(a|b|c)&(a|b)"));
+        assertEquals("&<a,b>", display("(a&b)|(a&b)"));
+        assertEquals("|<a,b>", display("(a|b)&(a|b)"));
     }
 
     @Test
     public void testImbrications() {
-        assertEquals("-<&<-<d>,|<-<c>,b>,a>>", display("-(a&(b|-c)&-d)"));
-        assertEquals("-<&<h,-<d>>>", display("-((-d)&h)"));
-        assertEquals("-<&<-<d>,c,e,f,g,h,|<-<b>,a>>>",
+        assertEquals("|<-<a>,&<-<b>,c>,d>", display("-(a&(b|-c)&-d)"));
+        assertEquals("|<d,-<h>>", display("-((-d)&h)"));
+        assertEquals("|<&<-<a>,b>,-<c>,-<e>,-<f>,-<g>,-<h>,d>",
                 display("(-(((((((a|-b)&c)&-d)&e)&f)&g)&h))"));
+    }
+
+    @Test
+    public void testResultIsNNF() {
+        assertEquals("|<-<a>,-<b>>", display("-(a&b)"));
+        assertEquals("&<-<a>,-<b>>", display("-(a|b)"));
+        // assertEquals("", display(""));
     }
 }
