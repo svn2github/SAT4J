@@ -6,8 +6,8 @@
     <artifactId>ow2</artifactId>
     <version>1.5</version>
   </parent>
-  <groupId>org.sat4j</groupId>
-  <artifactId>org.sat4j.pom</artifactId>
+  <groupId>org.ow2.sat4j</groupId>
+  <artifactId>org.ow2.sat4j.pom</artifactId>
   <packaging>pom</packaging>
   <version>2.3.4-SNAPSHOT</version>
   <name>SAT4J</name>
