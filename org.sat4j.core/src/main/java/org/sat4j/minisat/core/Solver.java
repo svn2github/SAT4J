@@ -1379,8 +1379,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         if (this.learnedLiterals.size() > 0) {
             this.qhead = trail.size();
         }
-        System.out.printf("%s implied: %d, decision: %d %n", getLogPrefix(),
-                implied.size(), decisions.size());
+        if (isVerbose()) {
+            System.out.printf("%s implied: %d, decision: %d %n",
+                    getLogPrefix(), implied.size(), decisions.size());
+        }
         this.prime = new int[realNumberOfVariables() + 1];
         int p, d;
         for (int i = 0; i < this.prime.length; i++) {
