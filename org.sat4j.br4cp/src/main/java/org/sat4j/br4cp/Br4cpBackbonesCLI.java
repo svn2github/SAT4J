@@ -3,6 +3,9 @@ package org.sat4j.br4cp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
@@ -16,8 +19,9 @@ public class Br4cpBackbonesCLI {
 
     /**
      * @param args
+     * @throws TimeoutException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TimeoutException {
         ISolver solver = SolverFactory.newDefault();
         ConfigVarIdMap varMap = new ConfigVarIdMap(solver);
         Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, varMap);
@@ -37,56 +41,37 @@ public class Br4cpBackbonesCLI {
         System.out.println("#backbones : compute the backbones");
         System.out.println("optionName : assumps this option");
         System.out.println();
+        Br4cpBackboneComputer backbonesFinder = new Br4cpBackboneComputer(solver, varMap, false);
         for (;;) {
             try {
                 System.out.print("$ ");
                 String line = inReader.readLine();
                 if ("#assumps".startsWith(line)) {
-                	System.out.print("assumps:");
-                    IteratorInt iterator = assumps.iterator();
-                    while (iterator.hasNext())
-                        System.out.print(" "
-                                + varMap.getName(iterator.next()));
-                    System.out.println();
+                	Iterator<String> it = backbonesFinder.getAssumptions().iterator();
+                	System.out.print("assumptions:");
+                	while(it.hasNext()){
+                		System.out.print(' ');
+                		System.out.print(it.next());
+                	}
+                	System.out.println();
                 }else if ("#clear".startsWith(line)) {
-                    assumps = new VecInt();
+                    backbonesFinder.clearAssumptions();
                 } else if ("#quit".startsWith(line)) {
                     break;
                 } else if ("#backbones".startsWith(line)) {
-                    try {
-                        IVecInt backbones = Backbone.compute(solver, assumps);
-                        System.out.print("backbones:");
-                        IteratorInt iterator = backbones.iterator();
-                        while (iterator.hasNext()) {
-                            int next = iterator.next();
-                            String toWrite;
-                            if (next < 0) {
-                            	if(varMap.getName(-next) != null){
-                            		toWrite = " -"+varMap.getName(-next);                            		
-                            	}else{
-                            		toWrite = "";
-                            	}
-                            } else {
-                            	if(varMap.getName(next) != null){
-                            		toWrite = " "+varMap.getName(next);                            		
-                            	}else{
-                            		toWrite = "";
-                            	}
-                            }
-                            System.out.print(toWrite);
-                        }
-                        System.out.println();
-                    } catch (TimeoutException e) {
-                        System.err.println("Timeout occured. Sorry :-/");
+                	backbonesFinder.computeBackbones();
+                    System.out.println("backbones:");
+                    for(Iterator<String> it = backbonesFinder.getBackbones().iterator(); it.hasNext(); ){
+                    	System.out.print(' ');
+                    	System.out.print(it.next());
                     }
+                    System.out.println();
                 } else {
-                    Integer id = varMap.getVar(line);
-                    if (id == null) {
-                        System.out.println("unknown option : " + line);
-                        continue;
-                    }
-                    System.out.println("assumps "+id.toString());
-                    assumps.push(id);
+                	try {
+                		backbonesFinder.addAssumption(line, false);
+                	}catch(IllegalArgumentException e){
+                		System.err.println(e.getMessage());
+                	}
                 }
             } catch (IOException e) {
                 e.printStackTrace();
