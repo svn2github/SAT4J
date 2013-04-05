@@ -1,11 +1,10 @@
 package org.sat4j.br4cp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
@@ -21,32 +20,39 @@ public class Br4cpBackboneComputer {
 	private ConfigVarIdMap idMap;
 	
 	private IVecInt assumptions = new VecInt();
-
-	private IVecInt backbones;
-
-	public Br4cpBackboneComputer(ISolver solver, ConfigVarIdMap idMap) throws TimeoutException{
-		this(solver, idMap, true);
-	}
 	
-	public Br4cpBackboneComputer(ISolver solver, ConfigVarIdMap idMap, boolean computeBackbones) throws TimeoutException{
+	private Stack<IVecInt> backbonesStack = new Stack<IVecInt>();
+	
+	public Br4cpBackboneComputer(ISolver solver, ConfigVarIdMap idMap) throws TimeoutException {
 		this.solver = solver;
 		this.idMap = idMap;
-		computeBackbones();
+		this.backbonesStack.push(computeBackbone(solver));
+	}
+
+	private IVecInt computeBackbone(ISolver solver) throws TimeoutException {
+		IVecInt assumps = new VecInt();
+		IteratorInt it;
+		for(it = assumptions.iterator(); it.hasNext(); ){
+			assumps.push(it.next());
+		}
+		if(!this.backbonesStack.isEmpty()){
+			for(it = this.backbonesStack.peek().iterator(); it.hasNext(); ){
+				int next = it.next();
+				if(!assumptions.contains(next)){
+					assumps.push(next);
+				}
+			}
+		}
+		return Backbone.compute(solver, assumps);
 	}
 	
 	public void addAssumption(String var) throws TimeoutException {
-		addAssumption(var, true);
-	}
-	
-	public void addAssumption(String var, boolean computeBackbones) throws TimeoutException {
 		Integer id = this.idMap.getVar(var);
 		if(id == null){
 			throw new IllegalArgumentException(var+" is not a valid variable name");
 		}
 		this.assumptions.push(id);
-		if(computeBackbones){
-			computeBackbones();
-		}
+		this.backbonesStack.push(Backbone.compute(solver, assumptions));
 	}
 	
 	public List<String> getAssumptions(){
@@ -59,19 +65,21 @@ public class Br4cpBackboneComputer {
 	
 	public void removeLastAssumption() {
 		this.assumptions.pop();
+		if(this.backbonesStack.size() > 1){
+			this.backbonesStack.pop();
+		}
 	}
 	
 	public void clearAssumptions(){
 		this.assumptions.clear();
+		while(this.backbonesStack.size() > 1){
+			this.backbonesStack.pop();
+		}
 	}
 	
-	public void computeBackbones() throws TimeoutException{
-		this.backbones = Backbone.compute(solver, assumptions);
-	}
-	
-	public List<String> getBackbones(){
-		List<String> backbones = new ArrayList<String>();
-		for(IteratorInt it = this.backbones.iterator(); it.hasNext(); ) {
+	public Set<String> getBackbones(){
+		Set<String> backbones = new HashSet<String>();
+		for(IteratorInt it = this.backbonesStack.peek().iterator(); it.hasNext(); ) {
 			String name;
 			int next = it.next();
 			if(next > 0){

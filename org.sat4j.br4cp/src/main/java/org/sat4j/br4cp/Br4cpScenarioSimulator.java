@@ -42,9 +42,9 @@ public class Br4cpScenarioSimulator {
 	
 	private void processScenario(ISolver solver, ConfigVarIdMap varMap, String line, long initTime) throws TimeoutException{
     	Br4cpBackboneComputer backboneComputer = new Br4cpBackboneComputer(solver, varMap);
-    	long timeOffset = System.currentTimeMillis() - initTime;
-    	System.out.print("["+Double.valueOf(timeOffset/1000.)+"s] initial backbones:");
-    	printBackbones(backboneComputer);
+//    	long timeOffset = System.currentTimeMillis() - initTime;
+//    	System.out.print("["+Double.valueOf(timeOffset/1000.)+"s] initial backbones:");
+//    	printBackbones(backboneComputer);
     	line = line.replaceAll("\\s+", " ");
     	String[] words = line.split(" ");
     	// nbInstances=words[0], words[1].equals("decisions")
@@ -56,7 +56,7 @@ public class Br4cpScenarioSimulator {
     		}catch(IllegalArgumentException e){
     			backboneComputer.addAssumption(words[i].substring(0, words[i].indexOf("=")));
     		}
-    		timeOffset = System.currentTimeMillis() - initTime;
+//    		timeOffset = System.currentTimeMillis() - initTime;
 //    		System.out.print("["+Double.valueOf(timeOffset/1000.)+"s] step "+Integer.toString(i-2)+", backbones:");
 //        	printBackbones(backboneComputer);
     	}
