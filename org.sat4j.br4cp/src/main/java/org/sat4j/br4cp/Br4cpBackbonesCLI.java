@@ -19,14 +19,14 @@ public class Br4cpBackbonesCLI {
      */
     public static void main(String[] args) {
         ISolver solver = SolverFactory.newDefault();
-        // solver.setVerbose(true);
-        Br4cpLPReader reader = new Br4cpLPReader(solver);
+        ConfigVarIdMap varMap = new ConfigVarIdMap(solver);
+        Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, varMap);
         try {
-            reader.parseInstance(args[0]);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+			reader.parseInstance(args[0]);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         BufferedReader inReader = new BufferedReader(new InputStreamReader(
                 System.in));
         IVecInt assumps = new VecInt();
@@ -41,42 +41,51 @@ public class Br4cpBackbonesCLI {
             try {
                 System.out.print("$ ");
                 String line = inReader.readLine();
-                if ("#clear".equals(line)) {
-                    assumps = new VecInt();
-                } else if ("#quit".equals(line)) {
-                    break;
-                } else if ("#assumps".equals(line)) {
-                    System.out.print("assumps:");
+                if ("#assumps".startsWith(line)) {
+                	System.out.print("assumps:");
                     IteratorInt iterator = assumps.iterator();
                     while (iterator.hasNext())
                         System.out.print(" "
-                                + reader.getVarName(iterator.next()));
+                                + varMap.getName(iterator.next()));
                     System.out.println();
-                } else if ("#backbones".equals(line)) {
+                }else if ("#clear".startsWith(line)) {
+                    assumps = new VecInt();
+                } else if ("#quit".startsWith(line)) {
+                    break;
+                } else if ("#backbones".startsWith(line)) {
                     try {
                         IVecInt backbones = Backbone.compute(solver, assumps);
-                        System.out.print("assumps:");
+                        System.out.print("backbones:");
                         IteratorInt iterator = backbones.iterator();
                         while (iterator.hasNext()) {
-                            System.out.print(" ");
                             int next = iterator.next();
+                            String toWrite;
                             if (next < 0) {
-                                System.out
-                                        .print("-" + reader.getVarName(-next));
+                            	if(varMap.getName(-next) != null){
+                            		toWrite = " -"+varMap.getName(-next);                            		
+                            	}else{
+                            		toWrite = "";
+                            	}
                             } else {
-                                System.out.print(" " + reader.getVarName(next));
+                            	if(varMap.getName(next) != null){
+                            		toWrite = " "+varMap.getName(next);                            		
+                            	}else{
+                            		toWrite = "";
+                            	}
                             }
+                            System.out.print(toWrite);
                         }
                         System.out.println();
                     } catch (TimeoutException e) {
                         System.err.println("Timeout occured. Sorry :-/");
                     }
                 } else {
-                    Integer id = reader.getVarId(line);
+                    Integer id = varMap.getVar(line);
                     if (id == null) {
                         System.out.println("unknown option : " + line);
                         continue;
                     }
+                    System.out.println("assumps "+id.toString());
                     assumps.push(id);
                 }
             } catch (IOException e) {
