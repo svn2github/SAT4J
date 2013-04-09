@@ -51,7 +51,7 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 	 */
     private static final long serialVersionUID = 1L;
 
-    private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
+    protected final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
     private BigInteger bigCurrentValue;
 
     public LexicoDecoratorPB(IPBSolver solver) {
