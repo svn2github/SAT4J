@@ -64,6 +64,8 @@ public class SteppedTimeoutLexicoDecoratorPB extends LexicoDecoratorPB {
                     this.prevboolmodel[i] = decorated().model(i + 1);
                 }
                 this.prevfullmodel = decorated().model();
+                this.prevmodelwithinternalvars = decorated()
+                        .modelWithInternalVariables();
                 calculateObjective();
                 return true;
             }
