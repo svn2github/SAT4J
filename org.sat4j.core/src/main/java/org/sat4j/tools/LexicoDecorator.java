@@ -53,6 +53,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     private Number currentValue = -1;
 
     protected int[] prevfullmodel;
+    protected int[] prevmodelwithinternalvars;
     protected boolean[] prevboolmodel;
 
     protected boolean isSolutionOptimal;
@@ -85,6 +86,8 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
                 this.prevboolmodel[i] = decorated().model(i + 1);
             }
             this.prevfullmodel = decorated().model();
+            this.prevmodelwithinternalvars = decorated()
+                    .modelWithInternalVariables();
             calculateObjective();
             return true;
         }
@@ -146,6 +149,11 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     @Override
     public boolean model(int var) {
         return this.prevboolmodel[var - 1];
+    }
+
+    @Override
+    public int[] modelWithInternalVariables() {
+        return this.prevmodelwithinternalvars;
     }
 
     public boolean hasNoObjectiveFunction() {
