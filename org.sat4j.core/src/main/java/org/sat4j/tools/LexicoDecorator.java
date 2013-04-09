@@ -48,14 +48,14 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
 
     protected int currentCriterion = 0;
 
-    private IConstr prevConstr;
+    protected IConstr prevConstr;
 
     private Number currentValue = -1;
 
     protected int[] prevfullmodel;
     protected boolean[] prevboolmodel;
 
-    private boolean isSolutionOptimal;
+    protected boolean isSolutionOptimal;
 
     /**
 	 * 
@@ -91,7 +91,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
         return manageUnsatCase();
     }
 
-    private boolean manageUnsatCase() {
+    protected boolean manageUnsatCase() {
         if (this.prevfullmodel == null) {
             // the problem is UNSAT
             return false;
