@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ISolver;
@@ -11,40 +12,54 @@ import org.sat4j.specs.TimeoutException;
 
 public class Br4cpScenarioSimulator {
 
-	/**
-	 * @param args
-	 * @throws IOException 
-	 * @throws TimeoutException 
-	 */
+	private boolean isVerbose = false;
+	private ISolver solver;
+	private int currentScenarioIndex;
+	private long startTime;
+
 	public static void main(String[] args) throws IOException, TimeoutException {
-		new Br4cpScenarioSimulator(args[0], args[1]);
+		new Br4cpScenarioSimulator(args[0], args[1], args.length>2);
 	}
 	
-	private Br4cpScenarioSimulator(String instance, String scenario) throws IOException, TimeoutException{
-        ISolver solver = SolverFactory.newDefault();
+	private Br4cpScenarioSimulator(String instance, String scenario, boolean isVerbose) throws IOException, TimeoutException{
+		this.isVerbose = isVerbose; 
+        solver = SolverFactory.newDefault();
         ConfigVarIdMap varMap = new ConfigVarIdMap(solver);
+        if(this.isVerbose){
+        	System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] parsing instance "+instance+"\n", 0., this.currentScenarioIndex);
+        }
+        this.startTime = System.currentTimeMillis();
         readInstance(instance, solver, varMap);
+    	Br4cpBackboneComputer backboneComputer = new Br4cpBackboneComputer(solver, varMap);
+    	if(this.isVerbose){
+			System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] scenario parsed and level 0 backbone computed\n", (System.currentTimeMillis()-startTime)/1000., this.currentScenarioIndex);
+		}
+    	printNewlyAsserted(backboneComputer, 'A', 'R');
         BufferedReader reader = new BufferedReader(new FileReader(scenario));
         String line;
-        int scenarioCpt = 0;
+        currentScenarioIndex = 0;
         while((line = reader.readLine()) != null) {
         	if("".equals(line.trim())){
         		continue;
         	}
-        	++scenarioCpt;
-        	long initTime = System.currentTimeMillis();
-        	processScenario(solver, varMap, line, initTime);
-        	long timeOffset = System.currentTimeMillis() - initTime;
-    		System.out.println("scenario "+scenarioCpt+" completed in "+Double.valueOf(timeOffset/1000.)+"s");
+        	++currentScenarioIndex;
+        	long scenarioProcessingTime = System.currentTimeMillis();
+        	processScenario(backboneComputer, line);
+        	scenarioProcessingTime = System.currentTimeMillis()-scenarioProcessingTime;
+        	System.out.printf("d %.3fs", scenarioProcessingTime/1000.);
+        	if(this.isVerbose){
+    			System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] scenario %d processed\n", (System.currentTimeMillis()-startTime)/1000., this.currentScenarioIndex);
+    		}
         }
+        System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] solving done.\n", (System.currentTimeMillis()-startTime)/1000.);
         reader.close();
 	}
 	
-	private void processScenario(ISolver solver, ConfigVarIdMap varMap, String line, long initTime) throws TimeoutException{
-    	Br4cpBackboneComputer backboneComputer = new Br4cpBackboneComputer(solver, varMap);
-//    	long timeOffset = System.currentTimeMillis() - initTime;
-//    	System.out.print("["+Double.valueOf(timeOffset/1000.)+"s] initial backbones:");
-//    	printBackbones(backboneComputer);
+	private void processScenario(Br4cpBackboneComputer backboneComputer, String line) throws TimeoutException{
+		if(this.isVerbose){
+			System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] processing scenario %d\n", (System.currentTimeMillis()-startTime)/1000., this.currentScenarioIndex);
+		}
+		System.out.println("s "+this.currentScenarioIndex);
     	line = line.replaceAll("\\s+", " ");
     	String[] words = line.split(" ");
     	// nbInstances=words[0], words[1].equals("decisions")
@@ -54,13 +69,39 @@ public class Br4cpScenarioSimulator {
     		try {
     			backboneComputer.addAssumption(assump);
     		}catch(IllegalArgumentException e){
-    			backboneComputer.addAssumption(words[i].substring(0, words[i].indexOf("=")));
+    			assump = words[i].substring(0, words[i].indexOf("="));
+    			backboneComputer.addAssumption(assump);
     		}
-//    		timeOffset = System.currentTimeMillis() - initTime;
-//    		System.out.print("["+Double.valueOf(timeOffset/1000.)+"s] step "+Integer.toString(i-2)+", backbones:");
-//        	printBackbones(backboneComputer);
+    		System.out.println("p "+assump);
+    		if(isVerbose) {
+    			System.out.printf(this.solver.getLogPrefix()+"[%7.3fs] assumed "+assump+"\n", (System.currentTimeMillis()-startTime)/1000.);
+    		}
+    		printNewlyAsserted(backboneComputer);
     	}
     	backboneComputer.clearAssumptions();
+	}
+
+	private void printNewlyAsserted(Br4cpBackboneComputer backboneComputer) {
+		printNewlyAsserted(backboneComputer, 'a', 'r');
+	}
+	
+	private void printNewlyAsserted(Br4cpBackboneComputer backboneComputer, char asserted, char removed) {
+		Set<String> newlyAsserted = backboneComputer.newlyAsserted();
+		if(!newlyAsserted.isEmpty()){
+			System.out.print(asserted);
+			for(String s : newlyAsserted){
+				System.out.print(" "+s);
+			}
+			System.out.println();
+		}
+		Set<String> newlyAssertedFalse = backboneComputer.newlyAssertedFalse();
+		if(!newlyAssertedFalse.isEmpty()){
+			System.out.print(removed);
+			for(String s : newlyAssertedFalse){
+				System.out.print(" "+s);
+			}
+			System.out.println();
+		}
 	}
 
 	private void printBackbones(Br4cpBackboneComputer backboneComputer) {

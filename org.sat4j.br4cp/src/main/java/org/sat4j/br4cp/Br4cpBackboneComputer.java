@@ -52,7 +52,11 @@ public class Br4cpBackboneComputer {
 			throw new IllegalArgumentException(var+" is not a valid variable name");
 		}
 		this.assumptions.push(id);
-		this.backbonesStack.push(Backbone.compute(solver, assumptions));
+		if(this.backbonesStack.peek().contains(id)){
+			this.backbonesStack.push(this.backbonesStack.peek());
+		}else{
+			this.backbonesStack.push(computeBackbone(this.solver));
+		}
 	}
 	
 	public List<String> getAssumptions(){
@@ -96,5 +100,69 @@ public class Br4cpBackboneComputer {
 		}
 		return backbones;
 	}
-
+	
+	public Set<String> asserted(){
+		Set<String> implied = new HashSet<String>();
+		for(IteratorInt it = this.backbonesStack.peek().iterator(); it.hasNext(); ) {
+			String name;
+			int next = it.next();
+			if(next > 0){
+				name = this.idMap.getName(next);
+				if(name != null){
+					implied.add(name);
+				}
+			}
+		}
+		return implied;
+	}
+	
+	public Set<String> assertedFalse(){
+		Set<String> reductions = new HashSet<String>();
+		for(IteratorInt it = this.backbonesStack.peek().iterator(); it.hasNext(); ) {
+			String name;
+			int next = it.next();
+			if(next < 0){
+				name = this.idMap.getName(-next);
+				if(name != null){
+					reductions.add("-"+name);
+				}
+			}
+		}
+		return reductions;
+	}
+	
+	public Set<String> newlyAsserted(){
+		if(this.backbonesStack.isEmpty())
+			return null;
+		if(this.backbonesStack.size() == 1)
+			return asserted();
+		Set<String> currentlyAsserted = asserted();
+		IVecInt stackTop = this.backbonesStack.pop();
+		Set<String> lastStepAsserted = asserted();
+		this.backbonesStack.push(stackTop);
+		Set<String> newlyAsserted = new HashSet<String>();
+		String lastAssumpName = this.idMap.getName(this.assumptions.last());
+		for(String s : currentlyAsserted){
+			if(!lastStepAsserted.contains(s) && !lastAssumpName.equals(s))
+				newlyAsserted.add(s);
+		}
+		return newlyAsserted;
+	}
+	
+	public Set<String> newlyAssertedFalse(){
+		if(this.backbonesStack.isEmpty())
+			return null;
+		if(this.backbonesStack.size() == 1)
+			return assertedFalse();
+		Set<String> currentlyAssertedFalse = assertedFalse();
+		IVecInt stackTop = this.backbonesStack.pop();
+		Set<String> lastStepAssertedFalse = assertedFalse();
+		this.backbonesStack.push(stackTop);
+		Set<String> newlyAssertedFalse = new HashSet<String>();
+		for(String s : currentlyAssertedFalse){
+			if(!lastStepAssertedFalse.contains(s))
+				newlyAssertedFalse.add(s);
+		}
+		return newlyAssertedFalse;
+	}
 }
