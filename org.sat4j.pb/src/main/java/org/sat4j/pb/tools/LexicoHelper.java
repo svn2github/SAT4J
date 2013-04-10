@@ -29,61 +29,22 @@
  *******************************************************************************/
 package org.sat4j.pb.tools;
 
-import java.math.BigInteger;
-import java.util.Collection;
-
-import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.OptToPBSATAdapter;
-import org.sat4j.pb.PBSolverDecorator;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 
-public class LexicoHelper<T, C> extends DependencyHelper<T, C> {
-
-    private final LexicoDecoratorPB lexico;
+public class LexicoHelper<T, C> extends AbstractLexicoHelper<T, C> {
 
     public LexicoHelper(IPBSolver solver) {
-        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)));
-        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-                .decorated();
+        super(new LexicoDecoratorPB(solver));
     }
 
     public LexicoHelper(IPBSolver solver, boolean explanationEnabled,
             boolean canonicalOptFunctionEnabled) {
-        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
-                explanationEnabled, canonicalOptFunctionEnabled);
-        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-                .decorated();
+        super(new LexicoDecoratorPB(solver), explanationEnabled,
+                canonicalOptFunctionEnabled);
     }
 
     public LexicoHelper(IPBSolver solver, boolean explanationEnabled) {
-        super(new OptToPBSATAdapter(new LexicoDecoratorPB(solver)),
-                explanationEnabled);
-        this.lexico = (LexicoDecoratorPB) ((PBSolverDecorator) getSolver())
-                .decorated();
+        super(new LexicoDecoratorPB(solver), explanationEnabled);
     }
 
-    public void addCriterion(Collection<T> things) {
-        IVecInt literals = new VecInt(things.size());
-        for (T thing : things) {
-            literals.push(getIntValue(thing));
-        }
-        this.lexico.addCriterion(literals);
-    }
-
-    public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
-        IVecInt literals = new VecInt(things.size());
-        IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
-        for (WeightedObject<T> wo : things) {
-            literals.push(getIntValue(wo.thing));
-            coefs.push(wo.getWeight());
-        }
-        this.lexico.addCriterion(literals, coefs);
-    }
-
-    public boolean isOptimal() {
-        return ((OptToPBSATAdapter) getSolver()).isOptimal();
-    }
 }
