@@ -59,7 +59,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
     private long begin;
 
-    private final SolutionFoundListener sfl;
+    private SolutionFoundListener sfl;
 
     public OptToPBSATAdapter(IOptimizationProblem problem) {
         this(problem, SolutionFoundListener.VOID);
@@ -171,5 +171,9 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
      */
     public void setTimeoutForFindingBetterSolution(int seconds) {
         this.problem.setTimeoutForFindingBetterSolution(seconds);
+    }
+
+    public void setSolutionFoundListener(SolutionFoundListener sfl) {
+        this.sfl = sfl;
     }
 }

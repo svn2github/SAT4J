@@ -34,32 +34,28 @@ import java.util.Collection;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.OptToPBSATAdapter;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.Lbool;
-import org.sat4j.specs.RandomAccessModel;
-import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.SolutionFoundListener;
 
 public abstract class AbstractLexicoHelper<T, C> extends DependencyHelper<T, C>
-        implements SearchListener<IPBSolverService> {
+        implements SolutionFoundListener {
 
     private final LexicoDecoratorPB lexico;
 
     public AbstractLexicoHelper(LexicoDecoratorPB lexico) {
         super(new OptToPBSATAdapter(lexico));
         this.lexico = lexico;
-        this.lexico.setSearchListener(this);
+        ((OptToPBSATAdapter) getSolver()).setSolutionFoundListener(this);
     }
 
     public AbstractLexicoHelper(LexicoDecoratorPB lexico,
             boolean explanationEnabled) {
         super(new OptToPBSATAdapter(lexico), explanationEnabled);
         this.lexico = lexico;
-        this.lexico.setSearchListener(this);
+        ((OptToPBSATAdapter) getSolver()).setSolutionFoundListener(this);
     }
 
     public AbstractLexicoHelper(LexicoDecoratorPB lexico,
@@ -67,74 +63,10 @@ public abstract class AbstractLexicoHelper<T, C> extends DependencyHelper<T, C>
         super(new OptToPBSATAdapter(lexico), explanationEnabled,
                 canonicalOptFunctionEnabled);
         this.lexico = lexico;
-        this.lexico.setSearchListener(this);
+        ((OptToPBSATAdapter) getSolver()).setSolutionFoundListener(this);
     }
 
     private boolean hasASolution;
-
-    public void init(IPBSolverService solverService) {
-        // nothing to do here
-    }
-
-    public void assuming(int p) {
-        // nothing to do here
-    }
-
-    public void propagating(int p, IConstr reason) {
-        // nothing to do here
-    }
-
-    public void backtracking(int p) {
-        // nothing to do here
-    }
-
-    public void adding(int p) {
-        // nothing to do here
-    }
-
-    public void learn(IConstr c) {
-        // nothing to do here
-    }
-
-    public void delete(int[] clause) {
-        // nothing to do here
-    }
-
-    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-        // nothing to do here
-    }
-
-    public void conflictFound(int p) {
-        // nothing to do here
-    }
-
-    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
-        this.hasASolution = true;
-    }
-
-    public void beginLoop() {
-        // nothing to do here
-    }
-
-    public void start() {
-        // nothing to do here
-    }
-
-    public void end(Lbool result) {
-        // nothing to do here
-    }
-
-    public void restarting() {
-        // nothing to do here
-    }
-
-    public void backjump(int backjumpLevel) {
-        // nothing to do here
-    }
-
-    public void cleaning() {
-        // nothing to do here
-    }
 
     public void addCriterion(Collection<T> things) {
         IVecInt literals = new VecInt(things.size());
@@ -213,6 +145,19 @@ public abstract class AbstractLexicoHelper<T, C> extends DependencyHelper<T, C>
 
     public boolean isOptimal() {
         return ((OptToPBSATAdapter) getSolver()).isOptimal();
+    }
+
+    public void onSolutionFound(int[] solution) {
+        this.hasASolution = true;
+    }
+
+    public void onSolutionFound(IVecInt solution) {
+        this.hasASolution = true;
+
+    }
+
+    public void onUnsatTermination() {
+        // nothing to do here
     }
 
 }
