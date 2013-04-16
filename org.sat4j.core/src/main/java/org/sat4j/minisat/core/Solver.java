@@ -1096,6 +1096,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.slistener.adding(toDimacs(constr.get(0)));
         if (constr.size() == 1) {
             this.stats.learnedliterals++;
+            this.slistener.learn(constr);
         } else {
             this.learner.learns(constr);
         }
