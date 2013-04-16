@@ -46,8 +46,10 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ModelIteratorToSATAdapter;
+import org.sat4j.tools.RupSearchListener;
 import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SearchMinOneListener;
 
@@ -185,6 +187,11 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         }
         log("#constraints  " + aProblem.nConstraints()); //$NON-NLS-1$
         aProblem.printInfos(this.out);
+        if (System.getProperty("UNSATPROOF") != null) {
+            this.solver
+                    .setSearchListener(new RupSearchListener<ISolverService>(
+                            problemname + ".rupproof"));
+        }
         return aProblem;
     }
 
