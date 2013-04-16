@@ -56,6 +56,7 @@ public final class Solvers {
     public static final String PHASE = "PHASE";
     public static final String PARAMS = "PARAMS";
     public static final String SIMP = "SIMP";
+    public static final String CLEANING = "CLEANING";
 
     private static final String PACKAGE_ORDERS = "org.sat4j.minisat.orders";
     private static final String PACKAGE_LEARNING = "org.sat4j.minisat.learning";
@@ -128,10 +129,10 @@ public final class Solvers {
         if (params != null) {
             theSolver.setSearchParams(params);
         }
-        String memory = pf.getProperty("CLEANING");
+        String memory = pf.getProperty(CLEANING);
         if (memory != null) {
             try {
-                logger.log("configuring CLEANING");
+                logger.log("configuring "+CLEANING);
                 LearnedConstraintsEvaluationType memoryType = LearnedConstraintsEvaluationType
                         .valueOf(memory);
                 theSolver.setLearnedConstraintsDeletionStrategy(memoryType);
@@ -444,7 +445,6 @@ public final class Solvers {
                 }
             }
         }
-        classNames.add("Glucose21Restarts");
         logger.log("Available restart strategies (" + Solvers.RESTARTS + "): "
                 + classNames);
     }
@@ -582,12 +582,12 @@ public final class Solvers {
     }
 
     public static void showSimplifiers(ILogAble logger) {
-        logger.log("Available simplifiers : [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
+        logger.log("Available simplifiers ("+Solvers.SIMP+"): [NO_SIMPLIFICATION, SIMPLE_SIMPLIFICATION, EXPENSIVE_SIMPLIFICATION]");
     }
 
     public static void showAvailableConstraintsCleaningStrategies(
             ILogAble logger) {
-        logger.log("Available learned constraints cleaning strategies"
+        logger.log("Available learned constraints cleaning strategies ("+Solvers.CLEANING+"): "
                 + Arrays.asList(LearnedConstraintsEvaluationType.values()));
     }
 
@@ -633,6 +633,8 @@ public final class Solvers {
         showParams(logger);
         logger.log(SEPARATOR);
         showSimplifiers(logger);
+        logger.log(SEPARATOR);
+        showAvailableConstraintsCleaningStrategies(logger);
         logger.log(SEPARATOR);
         stringUsage(logger);
     }
