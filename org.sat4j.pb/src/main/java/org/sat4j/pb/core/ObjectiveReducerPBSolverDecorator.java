@@ -52,6 +52,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
@@ -414,6 +415,10 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
     public ISolver getSolvingEngine() {
         return decorated.getSolvingEngine();
+    }
+
+    public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        decorated.setUnitClauseProvider(ucp);
     }
 
 }
