@@ -484,6 +484,7 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
 			currentclausifiable.toClause(solver, scope, variables);
 		} catch (ContradictionException e) {
 			System.err.println("c INSTANCE TRIVIALLY UNSAT");
+			throw new IllegalStateException(e);
 		}
 	}
 
