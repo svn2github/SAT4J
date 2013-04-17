@@ -550,7 +550,6 @@ public class ManyCore<S extends ISolver> extends
     }
 
     public synchronized void provideUnitClauses(UnitPropagationListener upl) {
-        System.out.println(sharedUnitClauses);
         for (int i = 0; i < sharedUnitClauses.size(); i++) {
             upl.enqueue(sharedUnitClauses.get(i));
         }
