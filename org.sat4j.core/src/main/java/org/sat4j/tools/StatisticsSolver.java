@@ -46,6 +46,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 public class StatisticsSolver implements ISolver {
 
@@ -421,4 +422,7 @@ public class StatisticsSolver implements ISolver {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 
+    public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+    }
 }

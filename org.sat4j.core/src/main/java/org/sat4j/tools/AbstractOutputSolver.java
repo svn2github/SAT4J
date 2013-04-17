@@ -41,6 +41,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 public abstract class AbstractOutputSolver implements ISolver {
 
@@ -250,6 +251,10 @@ public abstract class AbstractOutputSolver implements ISolver {
     }
 
     public ISolver getSolvingEngine() {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setUnitClauseProvider(UnitClauseProvider upl) {
         throw new UnsupportedOperationException();
     }
 }

@@ -55,6 +55,7 @@ import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.opt.MinOneDecorator;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;
+import org.sat4j.tools.ManyCore;
 import org.sat4j.tools.OptToSatAdapter;
 import org.sat4j.tools.StatisticsSolver;
 
@@ -388,4 +389,37 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         return new StatisticsSolver();
     }
 
+    /**
+     * Two solvers are running in //: one for solving SAT instances, the other
+     * one for solving unsat instances.
+     * 
+     * @return a parallel solver for both SAT and UNSAT problems.
+     */
+    public static ISolver newSATUNSAT() {
+        return new ManyCore(newSAT(), newUNSAT());
+    }
+
+    /**
+     * That solver is expected to perform better on satisfiable benchmarks.
+     * 
+     * @return a solver for satisfiable benchmarks.
+     */
+    public static Solver newSAT() {
+        Solver solver = (Solver) newGlucose21();
+        solver.setRestartStrategy(new LubyRestarts(100));
+        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        return solver;
+    }
+
+    /**
+     * That solver is expected to perform better on unsatisfiable benchmarks.
+     * 
+     * @return a solver for unsatisfiable benchmarks.
+     */
+    public static Solver newUNSAT() {
+        Solver solver = (Solver) newGlucose21();
+        solver.setRestartStrategy(new NoRestarts());
+        solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+        return solver;
+    }
 }

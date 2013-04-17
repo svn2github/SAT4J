@@ -64,6 +64,7 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 /**
  * The backbone of the library providing the modular implementation of a MiniSAT
@@ -163,6 +164,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private String prefix = "c ";
     private int declaredMaxVarId = 0;
+
+    private UnitClauseProvider unitClauseProvider = UnitClauseProvider.VOID;
 
     protected IVecInt dimacs2internal(IVecInt in) {
         this.__dimacs_out.clear();
@@ -2009,6 +2012,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         // Solve
         while (status == Lbool.UNDEFINED && this.undertimeout
                 && this.lastConflictMeansUnsat) {
+            unitClauseProvider.provideUnitClauses(this);
             status = search(assumps);
             if (status == Lbool.UNDEFINED) {
                 this.restarter.onRestart();
@@ -2618,5 +2622,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             }
         }
         return subset;
+    }
+
+    public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        this.unitClauseProvider = ucp;
     }
 }

@@ -384,6 +384,15 @@ public interface ISolver extends IProblem, Serializable {
     <S extends ISolverService> void setSearchListener(SearchListener<S> sl);
 
     /**
+     * Allow the solver to ask for unit clauses before each restarts.
+     * 
+     * @param ucp
+     *            an object able to provide unit clauses.
+     * @since 2.3.4
+     */
+    void setUnitClauseProvider(UnitClauseProvider ucp);
+
+    /**
      * Get the current SearchListener.
      * 
      * @return a Search Listener.

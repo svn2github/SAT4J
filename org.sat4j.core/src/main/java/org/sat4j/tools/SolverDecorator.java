@@ -41,6 +41,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 /**
  * The aim of that class is to allow adding dynamic responsibilities to SAT
@@ -508,6 +509,13 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
      */
     public ISolver getSolvingEngine() {
         return this.solver.getSolvingEngine();
+    }
+
+    /**
+     * @since 2.3.4
+     */
+    public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        this.solver.setUnitClauseProvider(ucp);
     }
 
 }

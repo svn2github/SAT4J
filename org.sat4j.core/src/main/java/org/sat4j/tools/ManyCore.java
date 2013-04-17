@@ -41,6 +41,7 @@ import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Counter;
+import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -49,6 +50,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.UnitClauseProvider;
 
 /**
  * A class allowing to run several solvers in parallel.
@@ -62,7 +64,9 @@ import org.sat4j.specs.TimeoutException;
  * @param <S>
  *            the type of the solver (ISolver of IPBSolver)
  */
-public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
+public class ManyCore<S extends ISolver> extends
+        SearchListenerAdapter<ISolverService> implements ISolver,
+        OutcomeListener, UnitClauseProvider {
 
     private static final int NORMAL_SLEEP = 500;
 
@@ -82,6 +86,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
     private AtomicInteger remainingSolvers;
     private volatile int sleepTime;
     private volatile boolean solved;
+    private final IVecInt sharedUnitClauses = new VecInt();
 
     private final IVec<Counter> solversStats = new Vec<Counter>();
 
@@ -89,9 +94,12 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         this.availableSolvers = solverNames;
         this.numberOfSolvers = solverNames.length;
         this.solvers = new ArrayList<S>(this.numberOfSolvers);
+        S solver;
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            this.solvers.add(factory
-                    .createSolverByName(this.availableSolvers[i]));
+            solver = factory.createSolverByName(this.availableSolvers[i]);
+            solver.setSearchListener(this);
+            solver.setUnitClauseProvider(this);
+            this.solvers.add(solver);
             this.solversStats.push(new Counter(0));
         }
     }
@@ -120,7 +128,9 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         this.solvers = new ArrayList<S>(this.numberOfSolvers);
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.add(solverObjects[i]);
-            this.solversStats.push(new Counter());
+            solverObjects[i].setSearchListener(this);
+            solverObjects[i].setUnitClauseProvider(this);
+            this.solversStats.push(new Counter(0));
         }
     }
 
@@ -244,6 +254,7 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.get(i).reset();
         }
+        sharedUnitClauses.clear();
     }
 
     public void setExpectedNumberOfClauses(int nb) {
@@ -530,6 +541,24 @@ public class ManyCore<S extends ISolver> implements ISolver, OutcomeListener {
                     getLogPrefix(), i);
             this.solvers.get(i).printInfos(out);
         }
+
+    }
+
+    @Override
+    public synchronized void learnUnit(int p) {
+        sharedUnitClauses.push(p);
+    }
+
+    public synchronized void provideUnitClauses(UnitPropagationListener upl) {
+        System.out.println(sharedUnitClauses);
+        for (int i = 0; i < sharedUnitClauses.size(); i++) {
+            upl.enqueue(sharedUnitClauses.get(i));
+        }
+    }
+
+    public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        throw new UnsupportedOperationException(
+                "Does not make sense in the parallel context");
 
     }
 }
