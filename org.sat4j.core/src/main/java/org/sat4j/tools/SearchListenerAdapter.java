@@ -31,8 +31,8 @@ package org.sat4j.tools;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.SearchListener;
 
 public abstract class SearchListenerAdapter<S extends ISolverService>
@@ -59,6 +59,9 @@ public abstract class SearchListenerAdapter<S extends ISolverService>
     }
 
     public void learn(IConstr c) {
+    }
+
+    public void learnUnit(int p) {
     }
 
     public void delete(int[] clause) {

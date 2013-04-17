@@ -98,6 +98,14 @@ public class TextOutputTracing<T> implements SearchListener<ISolverService> {
 
     }
 
+    /**
+     * @since 2.3.4
+     */
+    public void learnUnit(int p) {
+        System.out.println("learning unit " + p);
+
+    }
+
     public void delete(int[] clause) {
 
     }

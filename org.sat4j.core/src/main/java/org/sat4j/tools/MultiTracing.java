@@ -98,6 +98,12 @@ public class MultiTracing<T extends ISolverService> implements
 
     }
 
+    public void learnUnit(int p) {
+        for (SearchListener<T> sl : this.listeners) {
+            sl.learnUnit(p);
+        }
+    }
+
     public void delete(int[] clause) {
         for (SearchListener<T> sl : this.listeners) {
             sl.delete(clause);

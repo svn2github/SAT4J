@@ -92,4 +92,10 @@ public class RupSearchListener<S extends ISolverService> extends
         out.println("0");
     }
 
+    @Override
+    public void learnUnit(int p) {
+        out.print(p);
+        out.println(" 0");
+    }
+
 }

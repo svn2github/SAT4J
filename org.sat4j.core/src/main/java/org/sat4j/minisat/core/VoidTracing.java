@@ -31,8 +31,8 @@ package org.sat4j.minisat.core;
 
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.SearchListener;
 
 /**
@@ -58,6 +58,9 @@ final class VoidTracing implements SearchListener<ISolverService> {
     }
 
     public void learn(IConstr clause) {
+    }
+
+    public void learnUnit(int p) {
     }
 
     public void delete(int[] clause) {

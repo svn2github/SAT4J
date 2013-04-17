@@ -1093,10 +1093,11 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     void record(Constr constr) {
         constr.assertConstraint(this);
-        this.slistener.adding(toDimacs(constr.get(0)));
+        int p = toDimacs(constr.get(0));
+        this.slistener.adding(p);
         if (constr.size() == 1) {
             this.stats.learnedliterals++;
-            this.slistener.learn(constr);
+            this.slistener.learnUnit(p);
         } else {
             this.learner.learns(constr);
         }

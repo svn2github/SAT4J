@@ -87,6 +87,15 @@ public interface SearchListener<S extends ISolverService> extends Serializable {
     void learn(IConstr c);
 
     /**
+     * learn a new unit clause (a literal)
+     * 
+     * @param p
+     *            a literal in Dimacs format.
+     * @since 2.3.4
+     */
+    void learnUnit(int p);
+
+    /**
      * delete a clause
      */
     void delete(int[] clause);
@@ -117,7 +126,8 @@ public interface SearchListener<S extends ISolverService> extends Serializable {
      * 
      * @param model
      *            the model found
-     * @param lazyModel TODO
+     * @param lazyModel
+     *            TODO
      * 
      */
     void solutionFound(int[] model, RandomAccessModel lazyModel);
