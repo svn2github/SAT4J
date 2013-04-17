@@ -1689,6 +1689,9 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public void learn(IConstr c) {
     }
 
+    public void learnUnit(int p) {        
+    }
+    
     public void delete(int[] clause) {
     }
 
