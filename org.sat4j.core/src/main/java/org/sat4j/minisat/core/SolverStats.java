@@ -76,6 +76,8 @@ public class SolverStats implements Serializable {
 
     public long updateLBD;
 
+    public int importedUnits;
+
     public void reset() {
         this.starts = 0;
         this.decisions = 0;
@@ -93,6 +95,7 @@ public class SolverStats implements Serializable {
         this.changedreason = 0;
         this.reduceddb = 0;
         this.updateLBD = 0;
+        this.importedUnits = 0;
     }
 
     public void printStat(PrintWriter out, String prefix) {
@@ -118,6 +121,8 @@ public class SolverStats implements Serializable {
         out.println(prefix + "Calls to reduceDB\t: " + this.reduceddb);
         out.println(prefix + "Number of update (reduction) of LBD\t: "
                 + this.updateLBD);
+        out.println(prefix + "Imported unit clauses\t: "
+                + this.importedUnits);
     }
 
     public Map<String, Number> toMap() {

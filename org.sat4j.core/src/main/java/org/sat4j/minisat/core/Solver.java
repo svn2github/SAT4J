@@ -2012,7 +2012,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         // Solve
         while (status == Lbool.UNDEFINED && this.undertimeout
                 && this.lastConflictMeansUnsat) {
+            int before = this.trail.size();
             unitClauseProvider.provideUnitClauses(this);
+            this.stats.importedUnits = this.trail.size() - before;
             status = search(assumps);
             if (status == Lbool.UNDEFINED) {
                 this.restarter.onRestart();
