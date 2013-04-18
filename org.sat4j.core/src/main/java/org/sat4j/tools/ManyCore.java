@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.core.ConstrGroup;
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Counter;
@@ -546,7 +547,7 @@ public class ManyCore<S extends ISolver> extends
 
     @Override
     public synchronized void learnUnit(int p) {
-        sharedUnitClauses.push(p);
+        sharedUnitClauses.push(LiteralsUtils.toInternal(p));
     }
 
     public synchronized void provideUnitClauses(UnitPropagationListener upl) {
