@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
@@ -44,18 +45,22 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 
     IOptimizationProblem problem;
 
-    boolean modelComputed = false;
     boolean optimalValueForced = false;
+    private final IVecInt assumps = new VecInt();
+
+    private long begin;
+
+    private final SolutionFoundListener sfl;
 
     public OptToSatAdapter(IOptimizationProblem problem) {
-        super((ISolver) problem);
-        this.problem = problem;
+        this(problem, SolutionFoundListener.VOID);
     }
 
-    @Override
-    public boolean isSatisfiable() throws TimeoutException {
-        this.modelComputed = false;
-        return this.problem.admitABetterSolution();
+    public OptToSatAdapter(IOptimizationProblem problem,
+            SolutionFoundListener sfl) {
+        super((ISolver) problem);
+        this.problem = problem;
+        this.sfl = sfl;
     }
 
     @Override
@@ -65,66 +70,79 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
     }
 
     @Override
+    public boolean isSatisfiable() throws TimeoutException {
+        return isSatisfiable(VecInt.EMPTY);
+    }
+
+    @Override
     public boolean isSatisfiable(boolean global) throws TimeoutException {
-        this.modelComputed = false;
-        return this.problem.admitABetterSolution();
+        return isSatisfiable();
     }
 
     @Override
-    public boolean isSatisfiable(IVecInt assumps, boolean global)
+    public boolean isSatisfiable(IVecInt myAssumps, boolean global)
             throws TimeoutException {
-        throw new UnsupportedOperationException();
+        return isSatisfiable(myAssumps);
     }
 
     @Override
-    public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-        throw new UnsupportedOperationException();
+    public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
+        this.assumps.clear();
+        myAssumps.copyTo(this.assumps);
+        this.begin = System.currentTimeMillis();
+        if (this.problem.hasNoObjectiveFunction()) {
+            return this.problem.isSatisfiable(myAssumps);
+        }
+        boolean satisfiable = false;
+        try {
+            while (this.problem.admitABetterSolution(myAssumps)) {
+                satisfiable = true;
+                sfl.onSolutionFound(this.problem.model());
+                this.problem.discardCurrentSolution();
+                if (isVerbose()) {
+                    System.out.println(getLogPrefix()
+                            + "Current objective function value: "
+                            + this.problem.getObjectiveValue() + "("
+                            + (System.currentTimeMillis() - this.begin)
+                            / 1000.0 + "s)");
+                }
+            }
+            sfl.onUnsatTermination();
+        } catch (ContradictionException ce) {
+            sfl.onUnsatTermination();
+        }
+        return satisfiable;
     }
 
     @Override
     public int[] model() {
-        if (this.modelComputed) {
-            return this.problem.model();
-        }
-
-        try {
-            assert this.problem.admitABetterSolution();
-            do {
-                this.problem.discardCurrentSolution();
-            } while (this.problem.admitABetterSolution());
-            if (!this.optimalValueForced) {
-                try {
-                    this.problem.forceObjectiveValueTo(this.problem
-                            .getObjectiveValue());
-                } catch (ContradictionException e1) {
-                    throw new IllegalStateException();
-                }
-                this.optimalValueForced = true;
-            }
-        } catch (TimeoutException e) {
-            // solver timeout
-        } catch (ContradictionException e) {
-            // OK, optimal model found
-            if (!this.optimalValueForced) {
-                try {
-                    this.problem.forceObjectiveValueTo(this.problem
-                            .getObjectiveValue());
-                } catch (ContradictionException e1) {
-                    throw new IllegalStateException();
-                }
-                this.optimalValueForced = true;
-            }
-        }
-        this.modelComputed = true;
         return this.problem.model();
     }
 
     @Override
     public boolean model(int var) {
-        if (!this.modelComputed) {
-            model();
-        }
         return this.problem.model(var);
+    }
+
+    @Override
+    public int[] modelWithInternalVariables() {
+        return decorated().modelWithInternalVariables();
+    }
+
+    @Override
+    public int[] findModel() throws TimeoutException {
+        if (isSatisfiable()) {
+            return model();
+        }
+        return null;
+    }
+
+    @Override
+    public int[] findModel(IVecInt assumps) throws TimeoutException {
+        if (isSatisfiable(assumps)) {
+            return model();
+        }
+        return null;
     }
 
     @Override

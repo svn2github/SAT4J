@@ -54,6 +54,7 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
     private static final long serialVersionUID = 1L;
 
     private int[] prevmodel;
+    private int[] prevmodelWithInternalVariables;
 
     private boolean isSolutionOptimal;
 
@@ -74,6 +75,8 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
         boolean result = isSatisfiable(assumps, true);
         if (result) {
             this.prevmodel = super.model();
+            this.prevmodelWithInternalVariables = super
+                    .modelWithInternalVariables();
             calculateObjectiveValue();
         } else {
             this.isSolutionOptimal = true;
@@ -128,6 +131,11 @@ public final class MinOneDecorator extends SolverDecorator<ISolver> implements
     public int[] model() {
         // DLB findbugs ok
         return this.prevmodel;
+    }
+
+    @Override
+    public int[] modelWithInternalVariables() {
+        return this.prevmodelWithInternalVariables;
     }
 
     @Override
