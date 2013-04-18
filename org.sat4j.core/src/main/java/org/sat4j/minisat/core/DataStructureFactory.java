@@ -32,6 +32,7 @@ package org.sat4j.minisat.core;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * The aim of the factory is to provide a concrete implementation of clauses,

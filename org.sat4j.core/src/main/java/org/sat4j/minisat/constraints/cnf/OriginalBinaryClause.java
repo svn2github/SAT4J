@@ -30,8 +30,8 @@
 package org.sat4j.minisat.constraints.cnf;
 
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * @since 2.1

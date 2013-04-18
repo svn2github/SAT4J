@@ -31,6 +31,7 @@ package org.sat4j.minisat.core;
 
 import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * Abstraction for Conflict Driven Clause Learning Solver.

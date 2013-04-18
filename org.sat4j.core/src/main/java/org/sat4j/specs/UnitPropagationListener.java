@@ -27,10 +27,16 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.specs;
+
+import org.sat4j.minisat.core.Constr;
 
 /**
  * Interface providing the unit propagation capability.
+ * 
+ * Note that this interface was in the package org.sat4j.minisat.core prior to
+ * release 2.3.4. It was moved here because of the dependency from
+ * {@link UnitClauseProvider}.
  * 
  * @author leberre
  */

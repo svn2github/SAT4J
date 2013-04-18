@@ -36,8 +36,8 @@ import java.io.Serializable;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Propagatable;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * Data structure for binary clause.

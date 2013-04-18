@@ -29,10 +29,8 @@
  *******************************************************************************/
 package org.sat4j.specs;
 
-import org.sat4j.minisat.core.UnitPropagationListener;
-
 /**
- * Interface for engines able to derive unit clauses for the current formula.
+ * Interface for engines able to derive unit clauses for the current problem.
  * 
  * @author daniel
  * @since 2.3.4

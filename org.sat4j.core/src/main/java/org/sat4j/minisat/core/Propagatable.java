@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.UnitPropagationListener;
+
 /**
  * This interface is to be implemented by the classes wanted to be notified of
  * the falsification of a literal.

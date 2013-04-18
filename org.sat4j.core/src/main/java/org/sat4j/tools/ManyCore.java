@@ -42,7 +42,6 @@ import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Counter;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -52,6 +51,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.specs.UnitClauseProvider;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * A class allowing to run several solvers in parallel.
