@@ -53,8 +53,6 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
     IOptimizationProblem problem;
 
-    boolean modelComputed = false;
-
     private final IVecInt assumps = new VecInt();
 
     private long begin;
@@ -90,12 +88,11 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
 
     @Override
     public boolean isSatisfiable(IVecInt myAssumps) throws TimeoutException {
-        this.modelComputed = false;
         this.assumps.clear();
         myAssumps.copyTo(this.assumps);
         this.begin = System.currentTimeMillis();
         if (this.problem.hasNoObjectiveFunction()) {
-            return this.modelComputed = this.problem.isSatisfiable(myAssumps);
+            return this.problem.isSatisfiable(myAssumps);
         }
         boolean satisfiable = false;
         try {
