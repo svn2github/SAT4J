@@ -90,6 +90,12 @@ public abstract class Reader {
             throw e;
         } catch (ContradictionException e) {
             throw e;
+        } catch (IllegalStateException e) {
+            if (e.getCause() instanceof ContradictionException) {
+                throw ((ContradictionException) e.getCause());
+            } else {
+                throw e;
+            }
         } finally {
             if (in != null) {
                 in.close();
