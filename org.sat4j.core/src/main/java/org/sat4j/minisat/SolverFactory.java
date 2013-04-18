@@ -389,6 +389,14 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         return new StatisticsSolver();
     }
 
+    public static ISolver newParallel() {
+        return new ManyCore(newSAT(), newUNSAT(),
+                newMiniLearningHeapRsatExpSimpLuby(),
+                newMiniLearningHeapRsatExpSimp(),
+                newDefaultAutoErasePhaseSaving(), newMiniLearningHeap(),
+                newMiniSATHeapExpSimp(), newMiniSATHeapEZSimp());
+    }
+
     /**
      * Two solvers are running in //: one for solving SAT instances, the other
      * one for solving unsat instances.
