@@ -188,9 +188,14 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         log("#constraints  " + aProblem.nConstraints()); //$NON-NLS-1$
         aProblem.printInfos(this.out);
         if (System.getProperty("UNSATPROOF") != null) {
+            String proofFile = problemname + ".rupproof";
             this.solver
                     .setSearchListener(new RupSearchListener<ISolverService>(
-                            problemname + ".rupproof"));
+                            proofFile));
+            if (!this.silent) {
+                System.out.println(this.solver.getLogPrefix()
+                        + "Generating unsat proof in file " + proofFile);
+            }
         }
         return aProblem;
     }
