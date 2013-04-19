@@ -332,11 +332,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 				<version>2.2</version>
-                                <!--
-                                <configuration>
-                                   <stylesheet>${basedir}/../stylesheet.css</stylesheet>
-                                </configuration>
-                                -->
 			</plugin>
 
 			<plugin>
@@ -367,7 +362,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<artifactId>maven-javadoc-plugin</artifactId>
                                 <version>2.8</version>
                                   <configuration>
-                                <stylesheetfile>${basedir}/../stylesheet.css</stylesheetfile>
                                 <groups>
                                   <group>
                                      <title>User level: stable public API</title>
