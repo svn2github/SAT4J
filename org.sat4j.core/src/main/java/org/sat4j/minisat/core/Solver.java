@@ -2014,7 +2014,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 && this.lastConflictMeansUnsat) {
             int before = this.trail.size();
             unitClauseProvider.provideUnitClauses(this);
-            this.stats.importedUnits = this.trail.size() - before;
+            this.stats.importedUnits += this.trail.size() - before;
             status = search(assumps);
             if (status == Lbool.UNDEFINED) {
                 this.restarter.onRestart();
