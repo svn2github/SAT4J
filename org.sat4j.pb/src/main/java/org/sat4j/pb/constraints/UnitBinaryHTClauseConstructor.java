@@ -36,8 +36,8 @@ import org.sat4j.minisat.constraints.cnf.OriginalHTClause;
 import org.sat4j.minisat.constraints.cnf.UnitClause;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 public class UnitBinaryHTClauseConstructor implements IClauseConstructor {
 
