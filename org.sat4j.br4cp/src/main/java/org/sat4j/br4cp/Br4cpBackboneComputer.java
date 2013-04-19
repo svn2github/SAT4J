@@ -13,7 +13,7 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Backbone;
 
-public class Br4cpBackboneComputer {
+public class Br4cpBackboneComputer implements IBr4cpBackboneComputer {
 	
 	private ISolver solver;
 	
