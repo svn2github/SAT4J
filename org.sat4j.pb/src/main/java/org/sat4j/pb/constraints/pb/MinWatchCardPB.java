@@ -33,9 +33,9 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.card.MinWatchCard;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 public final class MinWatchCardPB extends MinWatchCard implements PBConstr {
 

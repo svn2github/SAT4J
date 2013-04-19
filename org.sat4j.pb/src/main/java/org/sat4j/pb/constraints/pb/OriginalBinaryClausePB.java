@@ -33,8 +33,8 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.UnitPropagationListener;
 
 public final class OriginalBinaryClausePB extends OriginalBinaryClause
         implements PBConstr {

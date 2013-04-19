@@ -34,8 +34,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.UnitPropagationListener;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * Data structure for pseudo-boolean constraint with watched literals.
