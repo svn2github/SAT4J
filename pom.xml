@@ -9,7 +9,7 @@
   <groupId>org.ow2.sat4j</groupId>
   <artifactId>org.ow2.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.3.4</version>
+  <version>2.3.5-SNAPSHOT</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org/</url>
   <description>
@@ -18,6 +18,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
   <scm>
     <connection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</connection>
     <url>http://fisheye.ow2.org/browse/Sat4J/maven/trunk</url>
+    <developerConnection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</developerConnection>
   </scm>
   <licenses>
   <license>
