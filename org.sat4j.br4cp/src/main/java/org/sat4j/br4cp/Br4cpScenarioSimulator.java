@@ -104,14 +104,6 @@ public class Br4cpScenarioSimulator {
 		}
 	}
 
-	private void printBackbones(Br4cpBackboneComputer backboneComputer) {
-		for(Iterator<String> it = backboneComputer.getBackbones().iterator(); it.hasNext(); ){
-        	System.out.print(' ');
-        	System.out.print(it.next());
-        }
-        System.out.println();
-	}
-
 	private void readInstance(String instance, ISolver solver,
 			ConfigVarIdMap varMap) {
 		Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, varMap);
