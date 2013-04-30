@@ -138,7 +138,6 @@ public interface ILauncherMode extends SolutionFoundListener {
                 out.flush();
                 double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
                 solver.printStat(out);
-                solver.printInfos(out);
                 out.println(ANSWER_PREFIX + exitCode);
                 if (exitCode != ExitCode.UNKNOWN
                         && exitCode != ExitCode.UNSATISFIABLE) {
@@ -265,7 +264,6 @@ public interface ILauncherMode extends SolutionFoundListener {
             System.out.flush();
             out.flush();
             solver.printStat(out);
-            solver.printInfos(out);
             out.println(ANSWER_PREFIX + exitCode);
             if (exitCode == ExitCode.SATISFIABLE
                     || exitCode == ExitCode.OPTIMUM_FOUND || isIncomplete
