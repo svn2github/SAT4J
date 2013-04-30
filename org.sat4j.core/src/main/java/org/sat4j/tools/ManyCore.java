@@ -402,7 +402,7 @@ public class ManyCore<S extends ISolver> extends
 
     public void setDBSimplificationAllowed(boolean status) {
         for (int i = 0; i < this.numberOfSolvers; i++) {
-            this.solvers.get(0).setDBSimplificationAllowed(status);
+            this.solvers.get(i).setDBSimplificationAllowed(status);
         }
     }
 
