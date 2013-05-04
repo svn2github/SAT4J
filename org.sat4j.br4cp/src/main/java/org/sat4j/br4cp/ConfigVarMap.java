@@ -183,11 +183,17 @@ public class ConfigVarMap {
 
 	private String extractVarName(String var) {
 		int lastDotIndex = Math.max(var.lastIndexOf('.'), var.lastIndexOf('='));
+		if(lastDotIndex == -1){
+			throw new IllegalArgumentException(var + " is not defined");
+		}
 		return var.substring(0, lastDotIndex);
 	}
 
 	private Integer extractVarVersion(String var) {
 		int lastDotIndex = Math.max(var.lastIndexOf('.'), var.lastIndexOf('='));
+		if(lastDotIndex == -1){
+			throw new IllegalArgumentException(var + " is not defined");
+		}
 		return Integer.valueOf(var.substring(lastDotIndex + 1));
 	}
 
