@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
+import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
@@ -26,14 +27,10 @@ public class Br4cpScenarioSimulator {
 	private ConfigVarMap varMap;
 
 	private List<Integer> nbRemovedValues;
-	
+
 	private PrintStream outStream = System.out;
 
-	public static void main(String[] args) throws IOException, TimeoutException {
-		new Br4cpScenarioSimulator(args[0], args[1]);
-	}
-
-	private Br4cpScenarioSimulator(String instance, String scenario)
+	public Br4cpScenarioSimulator(String instance, String scenario)
 			throws IOException, TimeoutException {
 		solver = SolverFactory.newDefault();
 		varMap = new ConfigVarMap(solver);
@@ -41,9 +38,11 @@ public class Br4cpScenarioSimulator {
 		readInstance(instance, solver, varMap);
 		IBr4cpBackboneComputer backboneComputer = new AssumptionsBasedBr4cpBackboneComputer(
 				solver, varMap);
-		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()+"rootPropagated:",
-				this.solver.getLogPrefix()+"rootReduced:");
-		this.outStream.printf(this.solver.getLogPrefix()+"problem backbone computed in %.3fs.\n",
+		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
+				+ "rootPropagated:", this.solver.getLogPrefix()
+				+ "rootReduced:");
+		this.outStream.printf(this.solver.getLogPrefix()
+				+ "problem backbone computed in %.3fs.\n",
 				(System.currentTimeMillis() - startTime) / 1000.);
 		BufferedReader reader = new BufferedReader(new FileReader(scenario));
 		String line;
@@ -62,7 +61,8 @@ public class Br4cpScenarioSimulator {
 			scenarioProcessingTime = System.currentTimeMillis()
 					- scenarioProcessingTime;
 			this.outStream
-					.println(this.solver.getLogPrefix()+"nbRemovedValues="
+					.println(this.solver.getLogPrefix()
+							+ "nbRemovedValues="
 							+ this.nbRemovedValues
 									.toString()
 									.substring(
@@ -70,7 +70,8 @@ public class Br4cpScenarioSimulator {
 											this.nbRemovedValues.toString()
 													.length() - 1)
 									.replaceAll(",", ""));
-			this.outStream.printf(this.solver.getLogPrefix()+"scenario processed in %.3fs\n",
+			this.outStream.printf(this.solver.getLogPrefix()
+					+ "scenario processed in %.3fs\n",
 					scenarioProcessingTime / 1000.);
 		}
 		this.outStream.printf(this.solver.getLogPrefix()
@@ -81,7 +82,8 @@ public class Br4cpScenarioSimulator {
 
 	private void processScenario(IBr4cpBackboneComputer backboneComputer,
 			String line) throws TimeoutException {
-		this.outStream.println(this.solver.getLogPrefix()+"scenario #" + this.currentScenarioIndex);
+		this.outStream.println(this.solver.getLogPrefix() + "scenario #"
+				+ this.currentScenarioIndex);
 		line = line.replaceAll("\\s+", " ");
 		String[] words = line.split(" ");
 		// nbInstances=words[0], words[1].equals("decisions")
@@ -100,14 +102,21 @@ public class Br4cpScenarioSimulator {
 		} else if (!this.varMap.isConfigVar(assump)) {
 			backboneComputer.addAdditionalVarAssumption(assump);
 		} else {
-			backboneComputer.addAssumption(assump);
+			try {
+				backboneComputer.addAssumption(assump);
+			} catch (ContradictionException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
-		this.outStream.println(this.solver.getLogPrefix()+"selected : " + word);
+		this.outStream.println(this.solver.getLogPrefix() + "selected : "
+				+ word);
 		printNewlyAsserted(backboneComputer);
 	}
 
 	private void printNewlyAsserted(IBr4cpBackboneComputer backboneComputer) {
-		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()+"propagated :", this.solver.getLogPrefix()+"reduced :");
+		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
+				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
 		this.nbRemovedValues.add(Integer.valueOf(backboneComputer
 				.newCspDomainReductions().size()));
 	}
