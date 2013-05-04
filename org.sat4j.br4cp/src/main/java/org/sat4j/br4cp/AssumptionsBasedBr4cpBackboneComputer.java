@@ -57,7 +57,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return Backbone.compute(solver, assumps);
 	}
 
-	@Override
 	public void addAssumption(String var) throws TimeoutException, ContradictionException {
 		if (this.idMap.configVarExists(var)) {
 			Integer id = this.idMap.getSolverVar(var);
@@ -86,7 +85,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		}
 	}
 
-	@Override
 	public void addAdditionalVarAssumption(String assump)
 			throws TimeoutException {
 		int lastDotIndex = assump.lastIndexOf('.');
@@ -99,7 +97,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		}
 	}
 
-	@Override
 	public void setOptionalConfigVarAsNotInstalled(String var)
 			throws TimeoutException {
 		Set<String> domain = this.idMap.getConfigVarDomain(var);
@@ -111,7 +108,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		this.backbonesStack.push(computeBackbone(this.solver));
 	}
 
-	@Override
 	public void clearAssumptions() {
 		while (this.backbonesStack.size() > 1) {
 			this.backbonesStack.pop();
@@ -119,7 +115,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		this.assumptions = new ArrayList<Set<Integer>>();
 	}
 
-	@Override
 	public Set<String> propagatedConfigVars() {
 		Set<String> propagated = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
@@ -136,7 +131,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return propagated;
 	}
 
-	@Override
 	public Set<String> domainReductions() {
 		Set<String> reductions = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
@@ -153,7 +147,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return reductions;
 	}
 
-	@Override
 	public Set<String> propagatedAdditionalVars() {
 		Set<String> assertions = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
@@ -168,7 +161,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return assertions;
 	}
 
-	@Override
 	public Set<String> newPropagatedConfigVars() {
 		if (this.backbonesStack.isEmpty())
 			return null;
@@ -190,7 +182,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return newlyAsserted;
 	}
 
-	@Override
 	public Set<String> newDomainReductions() {
 		if (this.backbonesStack.isEmpty())
 			return null;
@@ -208,7 +199,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return newlyAssertedFalse;
 	}
 
-	@Override
 	public Set<String> newPropagatedAdditionalVars() {
 		if (this.backbonesStack.isEmpty())
 			return null;
@@ -226,7 +216,6 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return newBooleanAssertion;
 	}
 
-	@Override
 	public Set<String> newCspDomainReductions() {
 		Set<String> res = new HashSet<String>();
 		int lastDotIndex;
