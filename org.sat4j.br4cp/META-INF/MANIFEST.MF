@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Built-By: Daniel Le Berre
-Main-Class: org.sat4j.br4cp.Br4cpBackbonesCLI
+Main-Class: org.sat4j.br4cp.Launcher
 Specification-Title: SAT4J
 Specification-Version: NA
 Specification-Vendor: Daniel Le Berre
