@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
@@ -57,10 +58,14 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 	}
 
 	@Override
-	public void addAssumption(String var) throws TimeoutException {
+	public void addAssumption(String var) throws TimeoutException, ContradictionException {
 		if (this.idMap.configVarExists(var)) {
 			Integer id = this.idMap.getSolverVar(var);
+			try {
 			addAssumption(id);
+			}catch (IllegalArgumentException e){
+				throw new IllegalArgumentException("\""+var+"\" implies a contradiction");
+			}
 		} else {
 			throw new IllegalArgumentException(var + " is not defined");
 		}
@@ -74,6 +79,9 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			this.backbonesStack.push(this.backbonesStack.peek());
 		} else {
 			IVecInt backbone = computeBackbone(this.solver);
+			if(backbone.isEmpty()){
+				throw new IllegalArgumentException(Integer.toString(id)+" implies a contradiction");
+			}
 			this.backbonesStack.push(backbone);
 		}
 	}

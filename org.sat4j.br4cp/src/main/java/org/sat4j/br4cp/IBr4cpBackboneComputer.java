@@ -2,29 +2,34 @@ package org.sat4j.br4cp;
 
 import java.util.Set;
 
+import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.TimeoutException;
 
 /**
  * This class is used to get implied variables from assumptions.
  * 
  * @author lonca
- *
+ * 
  */
 public interface IBr4cpBackboneComputer {
 
 	/**
-	 * Adds a configuration variable as an assumption and compute the implied variables.
+	 * Adds a configuration variable as an assumption and compute the implied
+	 * variables.
 	 * 
 	 * @param configVar
 	 *            the variable to assume
 	 * @throws TimeoutException
 	 *             if the computation time exceed the solver given time
+	 * @throws ContradictionException
+	 *             if the new configuration variable causes a contradiction
 	 */
-	public void addAssumption(String configVar) throws TimeoutException;
+	public void addAssumption(String configVar) throws TimeoutException,
+			ContradictionException;
 
 	/**
-	 * Makes necessary assumptions for the optional configuration variables which
-	 * have the same name as the parameter to be all set to not installed.
+	 * Makes necessary assumptions for the optional configuration variables
+	 * which have the same name as the parameter to be all set to not installed.
 	 * 
 	 * @param optConfigVar
 	 *            the optional configuration variable
@@ -33,13 +38,18 @@ public interface IBr4cpBackboneComputer {
 	 */
 	public void setOptionalConfigVarAsNotInstalled(String optConfigVar)
 			throws TimeoutException;
-	
+
 	/**
-	 * Adds an additional variable as an assumption and compute the implied variables.
-	 * @param addVar the additional variable.
-	 * @throws TimeoutException if the computation time exceed the solver given time.
+	 * Adds an additional variable as an assumption and compute the implied
+	 * variables.
+	 * 
+	 * @param addVar
+	 *            the additional variable.
+	 * @throws TimeoutException
+	 *             if the computation time exceed the solver given time.
 	 */
-	public void addAdditionalVarAssumption(String addVar) throws TimeoutException;
+	public void addAdditionalVarAssumption(String addVar)
+			throws TimeoutException;
 
 	/**
 	 * Removes all the assumptions.
