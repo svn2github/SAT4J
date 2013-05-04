@@ -29,9 +29,13 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 
 /**
@@ -95,9 +99,13 @@ public class Backbone {
 
     public static IVecInt compute(ISolver solver, int[] implicant,
             IVecInt assumptions) throws TimeoutException {
+        Set<Integer> assumptionsSet = new HashSet<Integer>();
+        for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
+            assumptionsSet.add(it.next());
+        }
         IVecInt litsToTest = new VecInt();
         for (int p : implicant) {
-            if (!assumptions.contains(p)) {
+            if (!assumptionsSet.contains(p)) {
                 litsToTest.push(-p);
             }
         }
