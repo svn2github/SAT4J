@@ -17,6 +17,8 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Backbone;
 
+import com.sun.org.apache.bcel.internal.generic.LLOAD;
+
 /**
  * A class used to compile propagation in configuration problem due to
  * assumptions. This class uses assumptions to keep informations. Although it is
@@ -34,20 +36,27 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 
 	private List<Set<Integer>> solverAssumptions = new ArrayList<Set<Integer>>();
 
-	private Set<String> assumptions = new HashSet<String>();
+	private Set<String> assumedVars = new HashSet<String>();
+	private Set<String> propagatedVars = new HashSet<String>();
 
 	private Stack<IVecInt> backbonesStack = new Stack<IVecInt>();
+
+	private Set<String> newPropagatedConfigVars = null;
+	private Set<String> newDomainReductions = null;
+	private Set<String> newPropagatedAdditionalVars = null;
 
 	public AssumptionsBasedBr4cpBackboneComputer(ISolver solver,
 			ConfigVarMap idMap) throws TimeoutException {
 		this.solver = solver;
 		this.idMap = idMap;
 		this.backbonesStack.push(computeBackbone(solver));
+		computePropagations();
 	}
 
 	private IVecInt computeBackbone(ISolver solver) throws TimeoutException {
 		IVecInt assumps = new VecInt();
-		for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it.hasNext();) {
+		for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it
+				.hasNext();) {
 			for (Iterator<Integer> it2 = it.next().iterator(); it2.hasNext();)
 				assumps.push(it2.next());
 		}
@@ -68,7 +77,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			try {
 				addAssumption(id);
 				int lastDotIndex = var.lastIndexOf('.');
-				this.assumptions.add(var.substring(0, lastDotIndex));
+				this.assumedVars.add(var.substring(0, lastDotIndex));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("\"" + var
 						+ "\" implies a contradiction");
@@ -76,6 +85,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		} else {
 			throw new IllegalArgumentException(var + " is not defined");
 		}
+		computePropagations();
 	}
 
 	private void addAssumption(Integer id) throws TimeoutException {
@@ -104,7 +114,8 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		} else {
 			addAssumption(-this.idMap.getSolverVar(name));
 		}
-		this.assumptions.add(name);
+		this.assumedVars.add(name);
+		computePropagations();
 	}
 
 	public void setOptionalConfigVarAsNotInstalled(String var)
@@ -116,6 +127,9 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		}
 		this.solverAssumptions.add(newAssumps);
 		this.backbonesStack.push(computeBackbone(this.solver));
+		int lastDotIndex = var.lastIndexOf('.');
+		this.assumedVars.add(var.substring(0, lastDotIndex));
+		computePropagations();
 	}
 
 	public void clearAssumptions() {
@@ -123,10 +137,15 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			this.backbonesStack.pop();
 		}
 		this.solverAssumptions = new ArrayList<Set<Integer>>();
-		this.assumptions = new HashSet<String>();
+		this.assumedVars = new HashSet<String>();
+		this.propagatedVars = new HashSet<String>();
+		computePropagations();
 	}
 
 	public Set<String> propagatedConfigVars() {
+		if (this.backbonesStack.isEmpty()) {
+			return new HashSet<String>();
+		}
 		Set<String> propagated = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
 				.hasNext();) {
@@ -143,6 +162,9 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 	}
 
 	public Set<String> propagatedAdditionalVars() {
+		if (this.backbonesStack.isEmpty()) {
+			return new HashSet<String>();
+		}
 		Set<String> assertions = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
 				.hasNext();) {
@@ -156,55 +178,70 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return assertions;
 	}
 
-	public Set<String> newPropagatedConfigVars() {
+	private void computePropagations() {
+		computeNewPropagatedConfigVars();
+		computeNewDomainReductions();
+		computeNewPropagatedAdditionalVars();
+	}
+
+	private void computeNewPropagatedConfigVars() {
 		if (this.backbonesStack.isEmpty())
-			return null;
-		if (this.backbonesStack.size() == 1)
-			return propagatedConfigVars();
+			return;
+		if (this.backbonesStack.size() == 1) {
+			this.newPropagatedConfigVars = propagatedConfigVars();
+			return;
+		}
 		Set<String> currentlyAsserted = propagatedConfigVars();
 		IVecInt stackTop = this.backbonesStack.pop();
 		Set<String> lastStepAsserted = propagatedConfigVars();
 		this.backbonesStack.push(stackTop);
-		Set<String> newlyAsserted = new TreeSet<String>(VAR_COMP);
+		this.newPropagatedConfigVars = new TreeSet<String>(VAR_COMP);
 		Set<String> lastAssumpsNames = new HashSet<String>();
-		for (Integer i : this.solverAssumptions.get(this.solverAssumptions.size() - 1)) {
+		for (Integer i : this.solverAssumptions.get(this.solverAssumptions
+				.size() - 1)) {
 			lastAssumpsNames.add(this.idMap.getConfigVar(i));
 		}
 		for (String s : currentlyAsserted) {
 			if (!lastStepAsserted.contains(s) && !lastAssumpsNames.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptions.contains(name)) {
-					newlyAsserted.add(s);
+				if (!this.assumedVars.contains(name)
+						&& !this.propagatedVars.contains(name)) {
+					this.propagatedVars.add(name);
+					this.newPropagatedConfigVars.add(s);
 				}
 			}
 		}
-		return newlyAsserted;
 	}
 
-	public Set<String> newDomainReductions() {
+	private void computeNewDomainReductions() {
 		if (this.backbonesStack.isEmpty())
-			return null;
-		if (this.backbonesStack.size() == 1)
-			return domainReductions();
+			return;
+		if (this.backbonesStack.size() == 1) {
+			this.newDomainReductions = domainReductions();
+			return;
+		}
 		Set<String> currentlyAssertedFalse = domainReductions();
 		IVecInt stackTop = this.backbonesStack.pop();
 		Set<String> lastStepAssertedFalse = domainReductions();
 		this.backbonesStack.push(stackTop);
-		Set<String> newlyAssertedFalse = new TreeSet<String>(VAR_COMP);
+		this.newDomainReductions = new TreeSet<String>(VAR_COMP);
 		for (String s : currentlyAssertedFalse) {
 			if (!lastStepAssertedFalse.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptions.contains(name)) {
-					newlyAssertedFalse.add(s);
+				if (!this.assumedVars.contains(name)
+						&& !this.propagatedVars.contains(name)) {
+					this.newDomainReductions.add(s);
 				}
 			}
 		}
-		return newlyAssertedFalse;
 	}
 
 	public Set<String> domainReductions() {
+		if (this.backbonesStack.isEmpty()) {
+			return new HashSet<String>();
+		}
 		Set<String> reductions = new HashSet<String>();
 		for (IteratorInt it = this.backbonesStack.peek().iterator(); it
 				.hasNext();) {
@@ -220,72 +257,68 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		return reductions;
 	}
 
-	public Set<String> newPropagatedAdditionalVars() {
+	private void computeNewPropagatedAdditionalVars() {
 		if (this.backbonesStack.isEmpty())
-			return null;
-		if (this.backbonesStack.size() == 1)
-			return propagatedAdditionalVars();
+			return;
+		if (this.backbonesStack.size() == 1) {
+			this.newPropagatedAdditionalVars = propagatedAdditionalVars();
+			return;
+		}
 		Set<String> currentBooleanAssertion = propagatedAdditionalVars();
 		IVecInt stackTop = this.backbonesStack.pop();
 		Set<String> lastStepBooleanAssertion = propagatedAdditionalVars();
 		this.backbonesStack.push(stackTop);
-		Set<String> newBooleanAssertion = new TreeSet<String>(VAR_COMP);
+		this.newPropagatedAdditionalVars = new TreeSet<String>(VAR_COMP);
 		for (String s : currentBooleanAssertion) {
 			if (!lastStepBooleanAssertion.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptions.contains(name)) {
-					newBooleanAssertion.add(s);
+				if (!this.assumedVars.contains(name)) {
+					this.newPropagatedAdditionalVars.add(s);
 				}
 			}
 		}
-		return newBooleanAssertion;
 	}
 
 	public Set<String> newCspDomainReductions() {
+		if(this.backbonesStack.isEmpty())
+			return null;
+		Set<String> lastAssumpNames = new HashSet<String>();
+		Set<Integer> newAssumptions = new HashSet<Integer>();
+		for(IteratorInt it = this.backbonesStack.peek().iterator(); it.hasNext(); )
+			newAssumptions.add(it.next());
+		if(this.backbonesStack.size() > 1) {
+			IVecInt stackTop = this.backbonesStack.pop();
+			for(IteratorInt it = this.backbonesStack.peek().iterator(); it.hasNext(); ) {
+				newAssumptions.remove(it.next());
+			}
+			this.backbonesStack.push(stackTop);
+			for (Integer i : this.solverAssumptions.get(this.solverAssumptions.size()-1)){
+				String var = this.idMap.getConfigVar(i>0?i:-i);
+				if(this.idMap.isAdditionalVar(i)) {
+					lastAssumpNames.add(var);
+				}else{
+					lastAssumpNames.add(var.substring(0, Math.max(var.lastIndexOf('.'),var.lastIndexOf('='))));
+				}
+			}
+		}
 		Set<String> res = new HashSet<String>();
-		int lastDotIndex;
-		Set<String> lastAssumpsNames = new HashSet<String>();
-		if (!this.solverAssumptions.isEmpty()) {
-			for (Integer i : this.solverAssumptions.get(this.solverAssumptions.size() - 1)) {
-				String name;
-				if (i > 0) {
-					name = this.idMap.getConfigVar(i);
-				} else {
-					name = "-" + this.idMap.getConfigVar(-i);
-				}
-				if (this.idMap.isConfigVar(i)) {
-					name = name.substring(0, name.lastIndexOf('.'));
-				}
-				lastAssumpsNames.add(name);
-			}
-		}
-		for (String s : newPropagatedAdditionalVars()) {
-			int lastEqualIndex = s.lastIndexOf('=');
-			String name = s.substring(0, lastEqualIndex);
-			if (!lastAssumpsNames.contains(name)
-					&& !lastAssumpsNames.contains("-" + name)) {
-				if (s.endsWith("=1")) {
-					res.add(s.replaceFirst("=1", "=99"));
-				} else {
-					res.add(s.replaceFirst("=99", "=1"));
+		for(Integer i : newAssumptions) {
+			String var = null;
+			if((i > 0) && this.idMap.isConfigVar(i)){
+				var = this.idMap.getConfigVar(i);
+				if(this.idMap.isOptionalDomainVar(var)) {
+					res.add(var.substring(0, var.lastIndexOf('.'))+"=99");
 				}
 			}
-		}
-		for (String s : newDomainReductions()) {
-			lastDotIndex = s.lastIndexOf('=');
-			String domainName = s.substring(0, lastDotIndex);
-			if (!lastAssumpsNames.contains(domainName)
-					&& !lastAssumpsNames.contains("-" + domainName)) {
-				res.add(s);
-			}
-		}
-		for (String s : newPropagatedConfigVars()) {
-			lastDotIndex = s.lastIndexOf('=');
-			String domainName = s.substring(0, lastDotIndex);
-			if (!lastAssumpsNames.contains(domainName)
-					&& this.idMap.isOptionalDomainVar(s)) {
-				res.add(domainName + "=99");
+			if((i < 0) && this.idMap.isConfigVar(i)) {
+				var = this.idMap.getConfigVar(-i);
+				if(!lastAssumpNames.contains(var.substring(0, var.lastIndexOf('.'))))
+					res.add(var);
+			} else if(this.idMap.isAdditionalVar(i)) {
+				var = (i>0)?this.idMap.getConfigVar(i):this.idMap.getConfigVar(-i);
+				if(!lastAssumpNames.contains(var))
+					res.add(i>0?var+"=99":var+"=1");
 			}
 		}
 		return res;
@@ -299,24 +332,24 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			String[] t2 = arg1.split("[.=]");
 			for (int i = 0; i < Math.min(t1.length, t2.length); ++i) {
 				boolean firstIsInteger = false, secondIsInteger = false;
-				Integer n1=null, n2=null;
+				Integer n1 = null, n2 = null;
 				try {
 					n1 = Integer.valueOf(t1[i]);
 					firstIsInteger = true;
-				}catch(NumberFormatException e){
+				} catch (NumberFormatException e) {
 				}
 				try {
 					n2 = Integer.valueOf(t2[i]);
 					secondIsInteger = true;
-				}catch(NumberFormatException e){
+				} catch (NumberFormatException e) {
 				}
-				if(firstIsInteger != secondIsInteger) {
-					return (firstIsInteger)?(-1):(1);
+				if (firstIsInteger != secondIsInteger) {
+					return (firstIsInteger) ? (-1) : (1);
 				}
-				if(firstIsInteger && secondIsInteger) {
-					if(n1.equals(n2)){
+				if (firstIsInteger && secondIsInteger) {
+					if (n1.equals(n2)) {
 						continue;
-					}else{
+					} else {
 						return n1.compareTo(n2);
 					}
 				}
@@ -325,20 +358,20 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 				try {
 					n1 = Integer.valueOf(t1[i].replaceAll("[a-zA-Z]", ""));
 					firstIsInteger = true;
-				}catch(NumberFormatException e) {
+				} catch (NumberFormatException e) {
 				}
 				try {
 					n2 = Integer.valueOf(t2[i].replaceAll("[a-zA-Z]", ""));
 					secondIsInteger = true;
-				}catch(NumberFormatException e) {
+				} catch (NumberFormatException e) {
 				}
-				if(firstIsInteger != secondIsInteger) {
-					return (firstIsInteger)?(-1):(1);
+				if (firstIsInteger != secondIsInteger) {
+					return (firstIsInteger) ? (-1) : (1);
 				}
-				if(firstIsInteger && secondIsInteger) {
-					if(n1.equals(n2)){
+				if (firstIsInteger && secondIsInteger) {
+					if (n1.equals(n2)) {
 						continue;
-					}else{
+					} else {
 						return n1.compareTo(n2);
 					}
 				}
@@ -348,5 +381,20 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		}
 
 	};
+
+	@Override
+	public Set<String> newPropagatedConfigVars() {
+		return this.newPropagatedConfigVars;
+	}
+
+	@Override
+	public Set<String> newDomainReductions() {
+		return this.newDomainReductions;
+	}
+
+	@Override
+	public Set<String> newPropagatedAdditionalVars() {
+		return this.newPropagatedAdditionalVars;
+	}
 
 }
