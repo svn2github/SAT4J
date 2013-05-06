@@ -32,9 +32,9 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 
 	private ConfigVarMap idMap;
 
-	private List<Set<Integer>> assumptions = new ArrayList<Set<Integer>>();
+	private List<Set<Integer>> solverAssumptions = new ArrayList<Set<Integer>>();
 
-	private Set<String> assumptionsNames = new HashSet<String>();
+	private Set<String> assumptions = new HashSet<String>();
 
 	private Stack<IVecInt> backbonesStack = new Stack<IVecInt>();
 
@@ -47,7 +47,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 
 	private IVecInt computeBackbone(ISolver solver) throws TimeoutException {
 		IVecInt assumps = new VecInt();
-		for (Iterator<Set<Integer>> it = assumptions.iterator(); it.hasNext();) {
+		for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it.hasNext();) {
 			for (Iterator<Integer> it2 = it.next().iterator(); it2.hasNext();)
 				assumps.push(it2.next());
 		}
@@ -68,7 +68,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			try {
 				addAssumption(id);
 				int lastDotIndex = var.lastIndexOf('.');
-				this.assumptionsNames.add(var.substring(0, lastDotIndex));
+				this.assumptions.add(var.substring(0, lastDotIndex));
 			} catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException("\"" + var
 						+ "\" implies a contradiction");
@@ -81,7 +81,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 	private void addAssumption(Integer id) throws TimeoutException {
 		Set<Integer> newSet = new HashSet<Integer>();
 		newSet.add(id);
-		this.assumptions.add(newSet);
+		this.solverAssumptions.add(newSet);
 		if (this.backbonesStack.peek().contains(id)) {
 			this.backbonesStack.push(this.backbonesStack.peek());
 		} else {
@@ -104,7 +104,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		} else {
 			addAssumption(-this.idMap.getSolverVar(name));
 		}
-		this.assumptionsNames.add(name);
+		this.assumptions.add(name);
 	}
 
 	public void setOptionalConfigVarAsNotInstalled(String var)
@@ -114,7 +114,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		for (String s : domain) {
 			newAssumps.add(-this.idMap.getSolverVar(s));
 		}
-		this.assumptions.add(newAssumps);
+		this.solverAssumptions.add(newAssumps);
 		this.backbonesStack.push(computeBackbone(this.solver));
 	}
 
@@ -122,8 +122,8 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		while (this.backbonesStack.size() > 1) {
 			this.backbonesStack.pop();
 		}
-		this.assumptions = new ArrayList<Set<Integer>>();
-		this.assumptionsNames = new HashSet<String>();
+		this.solverAssumptions = new ArrayList<Set<Integer>>();
+		this.assumptions = new HashSet<String>();
 	}
 
 	public Set<String> propagatedConfigVars() {
@@ -167,14 +167,14 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		this.backbonesStack.push(stackTop);
 		Set<String> newlyAsserted = new TreeSet<String>(VAR_COMP);
 		Set<String> lastAssumpsNames = new HashSet<String>();
-		for (Integer i : this.assumptions.get(this.assumptions.size() - 1)) {
+		for (Integer i : this.solverAssumptions.get(this.solverAssumptions.size() - 1)) {
 			lastAssumpsNames.add(this.idMap.getConfigVar(i));
 		}
 		for (String s : currentlyAsserted) {
 			if (!lastStepAsserted.contains(s) && !lastAssumpsNames.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptionsNames.contains(name)) {
+				if (!this.assumptions.contains(name)) {
 					newlyAsserted.add(s);
 				}
 			}
@@ -196,7 +196,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			if (!lastStepAssertedFalse.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptionsNames.contains(name)) {
+				if (!this.assumptions.contains(name)) {
 					newlyAssertedFalse.add(s);
 				}
 			}
@@ -234,7 +234,7 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			if (!lastStepBooleanAssertion.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
-				if (!this.assumptionsNames.contains(name)) {
+				if (!this.assumptions.contains(name)) {
 					newBooleanAssertion.add(s);
 				}
 			}
@@ -246,8 +246,8 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		Set<String> res = new HashSet<String>();
 		int lastDotIndex;
 		Set<String> lastAssumpsNames = new HashSet<String>();
-		if (!this.assumptions.isEmpty()) {
-			for (Integer i : this.assumptions.get(this.assumptions.size() - 1)) {
+		if (!this.solverAssumptions.isEmpty()) {
+			for (Integer i : this.solverAssumptions.get(this.solverAssumptions.size() - 1)) {
 				String name;
 				if (i > 0) {
 					name = this.idMap.getConfigVar(i);
@@ -298,37 +298,51 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			String[] t1 = arg0.split("[.=]");
 			String[] t2 = arg1.split("[.=]");
 			for (int i = 0; i < Math.min(t1.length, t2.length); ++i) {
-				boolean firstIsInteger = true;
-				Integer n1 = null, n2 = null;
+				boolean firstIsInteger = false, secondIsInteger = false;
+				Integer n1=null, n2=null;
 				try {
 					n1 = Integer.valueOf(t1[i]);
-				} catch (NumberFormatException e) {
-					firstIsInteger = false;
-					try {
-						n1 = Integer.valueOf(t1[i].replaceAll("[a-zA-Z]", ""));
-					} catch (NumberFormatException nfe) {
-						n1 = -1;
-					}
+					firstIsInteger = true;
+				}catch(NumberFormatException e){
 				}
 				try {
 					n2 = Integer.valueOf(t2[i]);
-					if (!firstIsInteger) {
-						return -1;
-					}
-				} catch (NumberFormatException e) {
-					if (firstIsInteger) {
-						return 1;
-					}
-					try {
-						n2 = Integer.valueOf(t2[i].replaceAll("[a-zA-Z]", ""));
-					} catch (NumberFormatException nfe) {
-						n2 = -1;
+					secondIsInteger = true;
+				}catch(NumberFormatException e){
+				}
+				if(firstIsInteger != secondIsInteger) {
+					return (firstIsInteger)?(-1):(1);
+				}
+				if(firstIsInteger && secondIsInteger) {
+					if(n1.equals(n2)){
+						continue;
+					}else{
+						return n1.compareTo(n2);
 					}
 				}
-				int v = n1.compareTo(n2);
-				if (v != 0) {
-					return v;
+				firstIsInteger = false;
+				secondIsInteger = false;
+				try {
+					n1 = Integer.valueOf(t1[i].replaceAll("[a-zA-Z]", ""));
+					firstIsInteger = true;
+				}catch(NumberFormatException e) {
 				}
+				try {
+					n2 = Integer.valueOf(t2[i].replaceAll("[a-zA-Z]", ""));
+					secondIsInteger = true;
+				}catch(NumberFormatException e) {
+				}
+				if(firstIsInteger != secondIsInteger) {
+					return (firstIsInteger)?(-1):(1);
+				}
+				if(firstIsInteger && secondIsInteger) {
+					if(n1.equals(n2)){
+						continue;
+					}else{
+						return n1.compareTo(n2);
+					}
+				}
+				return t1[i].compareTo(t2[i]);
 			}
 			return t1.length - t2.length;
 		}
