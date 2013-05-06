@@ -68,9 +68,13 @@ public class Br4cpCLI {
 			this.outStream.println();
 		}
 		Set<String> newlyAssertedFalse = backboneComputer.newDomainReductions();
+		newBooleanAssertions = backboneComputer.newReducedAdditionalVars();
 		if (!newlyAssertedFalse.isEmpty() || !newBooleanAssertions.isEmpty()) {
 			this.outStream.print(removed);
 			for (String s : newlyAssertedFalse) {
+				this.outStream.print(" " + s);
+			}
+			for (String s : newBooleanAssertions) {
 				this.outStream.print(" " + s);
 			}
 			this.outStream.println();

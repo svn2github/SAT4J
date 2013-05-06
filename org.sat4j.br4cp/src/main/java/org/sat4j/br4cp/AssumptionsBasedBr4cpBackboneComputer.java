@@ -17,7 +17,6 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.Backbone;
 
-import com.sun.org.apache.bcel.internal.generic.LLOAD;
 
 /**
  * A class used to compile propagation in configuration problem due to
@@ -44,6 +43,8 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 	private Set<String> newPropagatedConfigVars = null;
 	private Set<String> newDomainReductions = null;
 	private Set<String> newPropagatedAdditionalVars = null;
+	private Set<String> newReducedAdditionalVars = null;
+	
 
 	public AssumptionsBasedBr4cpBackboneComputer(ISolver solver,
 			ConfigVarMap idMap) throws TimeoutException {
@@ -256,25 +257,29 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 		}
 		return reductions;
 	}
-
+	
 	private void computeNewPropagatedAdditionalVars() {
 		if (this.backbonesStack.isEmpty())
 			return;
-		if (this.backbonesStack.size() == 1) {
-			this.newPropagatedAdditionalVars = propagatedAdditionalVars();
-			return;
-		}
 		Set<String> currentBooleanAssertion = propagatedAdditionalVars();
-		IVecInt stackTop = this.backbonesStack.pop();
-		Set<String> lastStepBooleanAssertion = propagatedAdditionalVars();
-		this.backbonesStack.push(stackTop);
+		Set<String> lastStepBooleanAssertion = new HashSet<String>();
+		if (this.backbonesStack.size() > 1) {
+			IVecInt stackTop = this.backbonesStack.pop();
+			lastStepBooleanAssertion = propagatedAdditionalVars();
+			this.backbonesStack.push(stackTop);
+		}
 		this.newPropagatedAdditionalVars = new TreeSet<String>(VAR_COMP);
+		this.newReducedAdditionalVars = new TreeSet<String>(VAR_COMP);
 		for (String s : currentBooleanAssertion) {
 			if (!lastStepBooleanAssertion.contains(s)) {
 				int lastDotIndex = s.lastIndexOf('=');
 				String name = s.substring(0, lastDotIndex);
+				int version = Integer.valueOf(s.substring(lastDotIndex+1));
 				if (!this.assumedVars.contains(name)) {
-					this.newPropagatedAdditionalVars.add(s);
+					if(version == 1)
+						this.newPropagatedAdditionalVars.add(s);
+					else
+						this.newReducedAdditionalVars.add(name+"=1");
 				}
 			}
 		}
@@ -395,6 +400,11 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 	@Override
 	public Set<String> newPropagatedAdditionalVars() {
 		return this.newPropagatedAdditionalVars;
+	}
+
+	@Override
+	public Set<String> newReducedAdditionalVars() {
+		return this.newReducedAdditionalVars;
 	}
 
 }

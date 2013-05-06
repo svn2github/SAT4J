@@ -96,13 +96,22 @@ public interface IBr4cpBackboneComputer {
 	public Set<String> propagatedAdditionalVars();
 
 	/**
-	 * Returns the propagated additional variables appeared after the last
+	 * Returns the positively propagated additional variables appeared after the last
 	 * assumption.
 	 * 
 	 * @return the propagated additional variables appeared after the last
 	 *         assumption.
 	 */
 	public Set<String> newPropagatedAdditionalVars();
+	
+	/**
+	 * Returns the negatively propagated additional variables appeared after the last
+	 * assumption.
+	 * 
+	 * @return the propagated additional variables appeared after the last
+	 *         assumption.
+	 */
+	public Set<String> newReducedAdditionalVars();
 
 	/**
 	 * Returns the new domain reductions as a CSP solver would do, that is
