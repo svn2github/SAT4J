@@ -96,6 +96,18 @@ public class ConfigVarMap {
 		String name = this.solverVarToConfigVar.get(solverVar);
 		return (name != null) && this.additionalVars.contains(name);
 	}
+	
+	/**
+	 * Checks if a solver variable or its negation is mapped with an additional
+	 * variable
+	 * 
+	 * @param solverVar
+	 *            the solver variable
+	 * @return true iff a solver variable is mapped with an additional variable
+	 */
+	public boolean isAdditionalVar(String var) {
+		return this.additionalVars.contains(var);
+	}
 
 	/**
 	 * Checks if a solver variable or its negation is mapped with a

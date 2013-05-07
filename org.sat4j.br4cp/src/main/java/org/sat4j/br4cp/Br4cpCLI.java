@@ -98,6 +98,8 @@ public class Br4cpCLI {
 			this.outStream.print("$> ");
 			this.outStream.flush();
 			String line = inReader.readLine();
+			if(line == null)
+				break;
 			if(line.length() == 0){
 				continue;
 			}
@@ -109,6 +111,7 @@ public class Br4cpCLI {
 				assume(line);
 			}
 		}
+		this.outStream.println("Exiting. Bye!");
 	}
 	
 	@SuppressWarnings("unused")
@@ -138,10 +141,13 @@ public class Br4cpCLI {
 		try {
 			if (this.varMap.isOutOfDomainConfigVar(assump)) {
 				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
-			} else if (!this.varMap.isConfigVar(assump)) {
+			} else if (this.varMap.isAdditionalVar(assump)) {
 				backboneComputer.addAdditionalVarAssumption(assump);
-			} else {
+			} else if (this.varMap.isConfigVar(assump)){
 				addAssumption(assump);
+			} else {
+				this.outStream.println(assump+" is not defined");
+				return;
 			}
 			if(!this.assumptions.contains(assump)) {
 				this.assumptions.add(assump);
