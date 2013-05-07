@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -118,9 +119,10 @@ public class Backbone {
             litsToTest.pop();
             if (solver.isSatisfiable(candidates)) {
                 candidates.pop();
-                implicant = solver.primeImplicant();
+                implicant = solver.model();
                 removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
                         solver.nVars());
+                solver.printStat(new PrintWriter(System.out, true));
             } else {
                 candidates.pop().push(-p);
             }
