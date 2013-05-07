@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,9 +58,6 @@ public class Backbone {
      * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of
      * Propositional Theories. ECAI 2010: 15-20
      * 
-     * We use Sat4j's ability to compute prime implicants instead of models to
-     * simplify the model at each step.
-     * 
      * @param solver
      * @return
      * @throws TimeoutException
@@ -75,8 +71,6 @@ public class Backbone {
      * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of
      * Propositional Theories. ECAI 2010: 15-20
      * 
-     * We use Sat4j's ability to compute prime implicants instead of models to
-     * simplify the model at each step.
      * 
      * @param solver
      * @param assumptions
@@ -122,7 +116,6 @@ public class Backbone {
                 implicant = solver.model();
                 removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
                         solver.nVars());
-                solver.printStat(new PrintWriter(System.out, true));
             } else {
                 candidates.pop().push(-p);
             }
