@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
@@ -19,6 +22,8 @@ public class Br4cpCLI {
 	private PrintStream outStream = System.out;
 	private boolean quit = false;
 	IBr4cpBackboneComputer backboneComputer;
+	
+	private List<String> assumptions = new ArrayList<String>();
 
 	public Br4cpCLI(String instance) throws Exception {
 		solver = SolverFactory.newDefault();
@@ -83,8 +88,9 @@ public class Br4cpCLI {
 
 	private void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
-		this.outStream.println("  #restart");
-		this.outStream.println("  #quit");
+		this.outStream.println("  #assumps : write the list of assumptions");
+		this.outStream.println("  #restart : clean all assumptions");
+		this.outStream.println("  #quit    : exit this program");
 		this.outStream.println();
 		BufferedReader inReader = new BufferedReader(new InputStreamReader(
 				System.in));
@@ -104,10 +110,20 @@ public class Br4cpCLI {
 			}
 		}
 	}
+	
+	@SuppressWarnings("unused")
+	private void assumps() {
+		this.outStream.print("assumptions :");
+		for(Iterator<String> it = this.assumptions.iterator(); it.hasNext(); ){
+			this.outStream.print(" "+it.next());
+		}
+		this.outStream.println();
+	}
 
 	@SuppressWarnings("unused")
 	private void restart() {
 		this.backboneComputer.clearAssumptions();
+		this.assumptions.clear();
 		this.outStream.println("assumptions cleaned\n");
 	}
 
@@ -126,6 +142,9 @@ public class Br4cpCLI {
 				backboneComputer.addAdditionalVarAssumption(assump);
 			} else {
 				addAssumption(assump);
+			}
+			if(!this.assumptions.contains(assump)) {
+				this.assumptions.add(assump);
 			}
 			printNewlyAsserted(backboneComputer);
 		} catch (IllegalArgumentException e) {
