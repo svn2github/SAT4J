@@ -106,7 +106,7 @@ public class ConfigVarMap {
 	 * @return true iff a solver variable is mapped with an additional variable
 	 */
 	public boolean isAdditionalVar(String var) {
-		return this.additionalVars.contains(var);
+		return this.additionalVars.contains(var) || this.additionalVars.contains(var.substring(0, Math.max(var.lastIndexOf('.'), var.lastIndexOf('='))));
 	}
 
 	/**
@@ -206,7 +206,11 @@ public class ConfigVarMap {
 		if(lastDotIndex == -1){
 			throw new IllegalArgumentException(var + " is not defined");
 		}
-		return Integer.valueOf(var.substring(lastDotIndex + 1));
+		try {
+			return Integer.valueOf(var.substring(lastDotIndex + 1));
+		} catch (NumberFormatException e) {
+			throw new NumberFormatException(var+" has no version or state");
+		}
 	}
 
 	private boolean isBooleanVar(String s) {

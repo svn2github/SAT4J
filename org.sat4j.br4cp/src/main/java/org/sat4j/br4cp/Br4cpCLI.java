@@ -139,7 +139,9 @@ public class Br4cpCLI {
 		String assump = line.replaceAll("_", ".");
 		assump = assump.replaceAll("=", ".");
 		try {
-			if (this.varMap.isOutOfDomainConfigVar(assump)) {
+			if (this.varMap.isAdditionalVar(assump)) {
+				backboneComputer.addAdditionalVarAssumption(assump);
+			} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
 				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
 			} else if (this.varMap.isAdditionalVar(assump)) {
 				backboneComputer.addAdditionalVarAssumption(assump);

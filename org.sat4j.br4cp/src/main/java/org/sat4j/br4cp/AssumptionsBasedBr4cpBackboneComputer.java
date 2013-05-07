@@ -109,7 +109,12 @@ public class AssumptionsBasedBr4cpBackboneComputer implements
 			throws TimeoutException {
 		int lastDotIndex = assump.lastIndexOf('.');
 		String name = assump.substring(0, lastDotIndex);
-		int state = Integer.valueOf(assump.substring(lastDotIndex + 1));
+		int state;
+		try {
+			state = Integer.valueOf(assump.substring(lastDotIndex + 1));
+		} catch (NumberFormatException e) {
+			throw new NumberFormatException(assump+" has no version or state");
+		}
 		if (state == 1) {
 			addAssumption(this.idMap.getSolverVar(name));
 		} else {
