@@ -329,7 +329,6 @@ public class DefaultBr4cpBackboneComputer implements
 
 	Comparator<String> VAR_COMP = new Comparator<String>() {
 
-		@Override
 		public int compare(String arg0, String arg1) {
 			String[] t1 = arg0.split("[.=]");
 			String[] t2 = arg1.split("[.=]");
@@ -385,22 +384,18 @@ public class DefaultBr4cpBackboneComputer implements
 
 	};
 
-	@Override
 	public Set<String> newPropagatedConfigVars() {
 		return this.newPropagatedConfigVars;
 	}
 
-	@Override
 	public Set<String> newDomainReductions() {
 		return this.newDomainReductions;
 	}
 
-	@Override
 	public Set<String> newPropagatedAdditionalVars() {
 		return this.newPropagatedAdditionalVars;
 	}
 
-	@Override
 	public Set<String> newReducedAdditionalVars() {
 		return this.newReducedAdditionalVars;
 	}

@@ -19,7 +19,7 @@ public class Br4cpCLI {
 
 	private ISolver solver;
 	private ConfigVarMap varMap;
-	private PrintStream outStream = System.out;
+	private PrintStream outStream;
 	private boolean quit = false;
 	IBr4cpBackboneComputer backboneComputer;
 	
@@ -28,11 +28,11 @@ public class Br4cpCLI {
 	public Br4cpCLI(String instance) throws Exception {
 		solver = SolverFactory.newDefault();
 		varMap = new ConfigVarMap(solver);
+		this.outStream = Options.getInstance().getOutStream();
 		readInstance(instance, solver, varMap);
 		long startTime = System.currentTimeMillis();
 		this.outStream.println("computing problem backbone...");
-		backboneComputer = new AssumptionsBasedBr4cpBackboneComputer(solver,
-				varMap);
+		backboneComputer = Options.getInstance().getBackboneComputer(solver, varMap);
 		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
 				+ "rootPropagated:", this.solver.getLogPrefix()
 				+ "rootReduced:");

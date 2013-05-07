@@ -34,10 +34,10 @@ public class Br4cpScenarioSimulator {
 			throws IOException, TimeoutException {
 		solver = SolverFactory.newDefault();
 		varMap = new ConfigVarMap(solver);
+		this.outStream = Options.getInstance().getOutStream();
 		this.startTime = System.currentTimeMillis();
 		readInstance(instance, solver, varMap);
-		IBr4cpBackboneComputer backboneComputer = new AssumptionsBasedBr4cpBackboneComputer(
-				solver, varMap);
+		IBr4cpBackboneComputer backboneComputer = Options.getInstance().getBackboneComputer(solver, varMap);
 		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
 				+ "rootPropagated:", this.solver.getLogPrefix()
 				+ "rootReduced:");
