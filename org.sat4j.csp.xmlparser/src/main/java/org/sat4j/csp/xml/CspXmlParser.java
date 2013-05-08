@@ -48,6 +48,10 @@ public class CspXmlParser {
 		// associer un schema pour la validation
 		URL url = CspXmlParser.class.getResource("/instance_2_0.xsd");
 		// System.out.println(url);
+		if (url == null) {
+			throw new IllegalStateException(
+					"Cannot locate schema file instance_2_0.xsd");
+		}
 		saxpf.setSchema(SchemaFactory.newInstance(
 				javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(url));
 		prod = saxpf.newSAXParser().getXMLReader();
