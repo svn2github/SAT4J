@@ -75,7 +75,7 @@ public final class SearchOptimizerListener extends
         if (obj != null) {
             this.currentValue = obj.calculateDegree(lazyModel);
             System.out.println(ILauncherMode.CURRENT_OPTIMUM_VALUE_PREFIX
-                    + this.currentValue);
+                    + this.currentValue.add(obj.getCorrection()));
             if (this.prevConstr != null) {
                 this.solverService.removeSubsumedConstr(prevConstr);
             }
