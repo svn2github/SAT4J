@@ -489,4 +489,23 @@ public class TestAllMUSes {
         assertEquals(17, muses.size());
     }
 
+    public void testHardClauses() throws ContradictionException {
+        FullClauseSelectorSolver<?> hardSolver = allMUSes.getSolverInstance();
+        IVecInt hard = new VecInt();
+        hard.push(1).push(2);
+        hardSolver.addNonControlableClause(hard);
+        IVecInt soft = new VecInt();
+        soft.push(-1).push(3);
+        hardSolver.addClause(soft);
+        soft.clear();
+        soft.push(-1).push(-3);
+        hardSolver.addClause(soft);
+        soft.clear();
+        soft.push(-2);
+        hardSolver.addClause(soft);
+        soft.clear();
+        List<IVecInt> muses = allMUSes.computeAllMUSes();
+        assertEquals(1, muses.size());
+        assertEquals(3, muses.get(0).size());
+    }
 }
