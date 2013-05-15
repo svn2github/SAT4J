@@ -10,23 +10,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.AllMUSes;
 
 public class Br4cpCLI {
 
-	private ISolver solver;
+	private IGroupSolver solver;
 	private ConfigVarMap varMap;
 	private PrintStream outStream;
 	private boolean quit = false;
 	IBr4cpBackboneComputer backboneComputer;
 	
 	private List<String> assumptions = new ArrayList<String>();
-
+	private final AllMUSes muses = new AllMUSes(true,SolverFactory.instance());
+	private Br4cpAraliaReader reader;
+	
 	public Br4cpCLI(String instance) throws Exception {
-		solver = SolverFactory.newDefault();
+		solver = muses.getSolverInstance();
 		varMap = new ConfigVarMap(solver);
 		this.outStream = Options.getInstance().getOutStream();
 		readInstance(instance, solver, varMap);
@@ -41,9 +47,9 @@ public class Br4cpCLI {
 		runCLI();
 	}
 
-	private void readInstance(String instance, ISolver solver,
+	private void readInstance(String instance, IGroupSolver solver,
 			ConfigVarMap varMap) {
-		Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, varMap);
+		reader = new Br4cpAraliaReader(solver, varMap);
 		try {
 			reader.parseInstance(instance);
 		} catch (IOException e) {
@@ -88,9 +94,10 @@ public class Br4cpCLI {
 
 	private void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
-		this.outStream.println("  #assumps : write the list of assumptions");
-		this.outStream.println("  #restart : clean all assumptions");
-		this.outStream.println("  #quit    : exit this program");
+		this.outStream.println("  #assumps      : write the list of assumptions");
+		this.outStream.println("  #restart      : clean all assumptions");
+		this.outStream.println("  #explain vX=Y : explain the reduction of value Y in variable X");
+		this.outStream.println("  #quit         : exit this program");
 		this.outStream.println();
 		BufferedReader inReader = new BufferedReader(new InputStreamReader(
 				System.in));
@@ -104,9 +111,9 @@ public class Br4cpCLI {
 				continue;
 			}
 			try {
-				Method toCall = getClass().getDeclaredMethod(line.substring(1),
-						new Class<?>[0]);
-				toCall.invoke(this, (Object[]) null);
+				Method toCall = getClass().getDeclaredMethod(line.substring(1).split(" ")[0],
+						new Class<?>[] {String.class});
+				toCall.invoke(this, new Object[]{line});
 			} catch (NoSuchMethodException e) {
 				assume(line);
 			}
@@ -115,7 +122,7 @@ public class Br4cpCLI {
 	}
 	
 	@SuppressWarnings("unused")
-	private void assumps() {
+	private void assumps(String line) {
 		this.outStream.print("assumptions :");
 		for(Iterator<String> it = this.assumptions.iterator(); it.hasNext(); ){
 			this.outStream.print(" "+it.next());
@@ -124,17 +131,36 @@ public class Br4cpCLI {
 	}
 
 	@SuppressWarnings("unused")
-	private void restart() {
+	private void restart(String line) {
 		this.backboneComputer.clearAssumptions();
 		this.assumptions.clear();
 		this.outStream.println("assumptions cleaned\n");
 	}
 
 	@SuppressWarnings("unused")
-	private void quit() {
+	private void quit(String line) {
 		this.quit = true;
 	}
-
+	
+	@SuppressWarnings("unused")
+	private void explain(String line) {
+		muses.reset();
+		IVecInt assumptions = new VecInt();
+		String[] words = line.split(" ");
+		for (int i=1;i<words.length;i++) {
+			String assump = words[i].replaceAll("_", ".");
+			assump = assump.replaceAll("=", ".");
+			assumptions.push(this.varMap.getSolverVar(assump));
+		}
+		try {
+			this.outStream.println("satisfiable? " +solver.isSatisfiable(assumptions));
+			this.outStream.println(reader.decode(solver.unsatExplanation()));
+		} catch (TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	private void assume(String line) throws Exception {
 		String assump = line.replaceAll("_", ".");
 		assump = assump.replaceAll("=", ".");

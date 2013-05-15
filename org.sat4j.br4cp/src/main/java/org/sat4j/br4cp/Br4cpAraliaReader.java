@@ -3,11 +3,16 @@ package org.sat4j.br4cp;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 
 /**
  * A class that translates an Aralia formatted problem into a solver.
@@ -18,13 +23,14 @@ public class Br4cpAraliaReader {
 
 	private static final String COMMENT_BEGINNING_SYM = "/*";
 	private static final String DECLARATION_SYM = "#";
-	private final ISolver solver;
+	private final IGroupSolver solver;
 	private BufferedReader reader = null;
 	private FormulaToSolver treeToSolver;
-
+	private Map<Integer,String> dimacsToAralia = new HashMap<Integer,String>();
 	private ConfigVarMap varMap;
-
-	public Br4cpAraliaReader(ISolver solver, ConfigVarMap varMap) {
+	private int constrGroup = 0;
+	
+	public Br4cpAraliaReader(IGroupSolver solver, ConfigVarMap varMap) {
 		this.solver = solver;
 		this.varMap = varMap;
 		this.treeToSolver = new FormulaToSolver(solver, varMap);
@@ -111,7 +117,9 @@ public class Br4cpAraliaReader {
 		AraliaParser parser = new AraliaParser();
 		org.sat4j.br4cp.AraliaParser.LogicFormulaNode formula = parser
 				.getFormula(line);
-		this.treeToSolver.encode(formula);
+		this.constrGroup++;
+		dimacsToAralia.put(this.constrGroup,line);
+		this.treeToSolver.encode(formula,this.constrGroup);
 	}
 
 	private String normalizeLine(String line) {
@@ -176,5 +184,13 @@ public class Br4cpAraliaReader {
 					+ line.substring(commentEnd + "*/".length());
 		}
 		return line;
+	}
+
+	public List<String> decode(IVecInt unsatExplanation) {
+		List<String> lines = new ArrayList<String>();
+		for (IteratorInt it = unsatExplanation.iterator();it.hasNext();) {
+			lines.add(dimacsToAralia.get(-it.next()));
+		}
+		return lines;
 	}
 }

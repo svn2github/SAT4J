@@ -10,8 +10,10 @@ import java.util.Set;
 
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.AllMUSes;
 
 /**
  * This class is a launcher for BR4CP scenario problems.
@@ -21,7 +23,7 @@ import org.sat4j.specs.TimeoutException;
  */
 public class Br4cpScenarioSimulator {
 
-	private ISolver solver;
+	private IGroupSolver solver;
 	private int currentScenarioIndex;
 	private long startTime;
 	private ConfigVarMap varMap;
@@ -29,10 +31,11 @@ public class Br4cpScenarioSimulator {
 	private List<Integer> nbRemovedValues;
 
 	private PrintStream outStream = System.out;
-
+	private final AllMUSes muses = new AllMUSes(true,SolverFactory.instance());
+	
 	public Br4cpScenarioSimulator(String instance, String scenario)
 			throws IOException, TimeoutException {
-		solver = SolverFactory.newDefault();
+		solver = muses.getSolverInstance();
 		varMap = new ConfigVarMap(solver);
 		this.outStream = Options.getInstance().getOutStream();
 		this.startTime = System.currentTimeMillis();
@@ -150,7 +153,7 @@ public class Br4cpScenarioSimulator {
 		}
 	}
 
-	private void readInstance(String instance, ISolver solver,
+	private void readInstance(String instance, IGroupSolver solver,
 			ConfigVarMap varMap) {
 		Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, varMap);
 		try {
