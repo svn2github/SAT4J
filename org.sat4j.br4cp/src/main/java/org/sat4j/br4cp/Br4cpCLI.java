@@ -154,7 +154,8 @@ public class Br4cpCLI {
 		}
 		try {
 			this.outStream.println("satisfiable? " +solver.isSatisfiable(assumptions));
-			this.outStream.println(reader.decode(solver.unsatExplanation()));
+			for (String constraint : reader.decode(solver.unsatExplanation()))
+			this.outStream.println(constraint);
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
