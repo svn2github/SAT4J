@@ -135,7 +135,7 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
         return prevfullmodel;
     }
 
-    private IVecInt assumps;
+    private IVecInt assumps = VecInt.EMPTY;
 
     @Override
     public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
