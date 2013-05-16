@@ -399,5 +399,9 @@ public class DefaultBr4cpBackboneComputer implements
 	public Set<String> newReducedAdditionalVars() {
 		return this.newReducedAdditionalVars;
 	}
+	
+	public List<Set<Integer>> getSolverAssumptions() {
+		return solverAssumptions;
+	}
 
 }

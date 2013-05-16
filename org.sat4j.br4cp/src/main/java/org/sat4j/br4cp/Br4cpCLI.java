@@ -93,10 +93,11 @@ public class Br4cpCLI {
 
 	private void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
-		this.outStream.println("  #assumps      : write the list of assumptions");
-		this.outStream.println("  #restart      : clean all assumptions");
-		this.outStream.println("  #explain vX=Y : explain the reduction of value Y in variable X");
-		this.outStream.println("  #quit         : exit this program");
+		this.outStream.println("  #assumps       : write the list of assumptions");
+		this.outStream.println("  #restart       : clean all assumptions");
+		this.outStream.println("  #explain vX=Y  : explain the assignement of value Y to variable X");
+		this.outStream.println("  #explain -vX=Y : explain the reduction of value Y in variable X");
+		this.outStream.println("  #quit          : exit this program");
 		this.outStream.println();
 		BufferedReader inReader = new BufferedReader(new InputStreamReader(
 				System.in));
@@ -149,12 +150,20 @@ public class Br4cpCLI {
 		for (int i=1;i<words.length;i++) {
 			String assump = words[i].replaceAll("_", ".");
 			assump = assump.replaceAll("=", ".");
-			assumptions.push(this.varMap.getSolverVar(assump));
+			assumptions.push((assump.charAt(0)=='-')?(this.varMap.getSolverVar(assump.substring(1))):(-this.varMap.getSolverVar(assump)));
+		}
+		for(Set<Integer> assumpsSet : this.backboneComputer.getSolverAssumptions()) {
+			for(Integer n : assumpsSet){
+				assumptions.push(n);
+			}
 		}
 		try {
-			this.outStream.println("satisfiable? " +solver.isSatisfiable(assumptions));
-			for (String constraint : reader.decode(solver.unsatExplanation()))
-			this.outStream.println(constraint);
+			if(solver.isSatisfiable(assumptions)){
+				this.outStream.println("ERROR: satisfiable, nothing to explain");
+			}else{
+				for (String constraint : reader.decode(solver.unsatExplanation()))
+					this.outStream.println(constraint);
+			}
 		} catch (TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

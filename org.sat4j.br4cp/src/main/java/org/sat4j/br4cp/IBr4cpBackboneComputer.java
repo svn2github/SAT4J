@@ -1,5 +1,6 @@
 package org.sat4j.br4cp;
 
+import java.util.List;
 import java.util.Set;
 
 import org.sat4j.specs.ContradictionException;
@@ -120,5 +121,7 @@ public interface IBr4cpBackboneComputer {
 	 * @return the new domain reductions as a CSP solver would do.
 	 */
 	public Set<String> newCspDomainReductions();
+	
+	public List<Set<Integer>> getSolverAssumptions();
 
 }
