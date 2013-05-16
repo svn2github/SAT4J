@@ -14,6 +14,8 @@ public class Options {
 	
 	private String backboneComputer = "Default";
 	
+	private boolean replacementForbidden = false;
+	
 	private PrintStream outStream = System.out;
 
 	public static Options getInstance(){
@@ -66,7 +68,7 @@ public class Options {
 	private void processOption(String arg) throws IllegalArgumentException, SecurityException, IllegalAccessException, NoSuchFieldException {
 		int eqIndex = arg.indexOf('=');
 		if(eqIndex == -1) {
-			Options.class.getDeclaredField(arg).setBoolean(this, true);
+			Options.class.getDeclaredField(arg).setBoolean(this, !Options.class.getDeclaredField(arg).getBoolean(this));
 		}else{
 			Options.class.getDeclaredField(arg.substring(0, eqIndex)).set(this, arg.substring(eqIndex+1));
 		}
@@ -94,6 +96,10 @@ public class Options {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public boolean areReplacementAllowed() {
+		return !this.replacementForbidden;
 	}
 
 }

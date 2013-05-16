@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
@@ -25,11 +24,12 @@ public class Br4cpCLI {
 	private PrintStream outStream;
 	private boolean quit = false;
 	IBr4cpBackboneComputer backboneComputer;
-	
-	private List<String> assumptions = new ArrayList<String>();
-	private final AllMUSes muses = new AllMUSes(true,SolverFactory.instance());
+
+	private Set<String> assumptions = new TreeSet<String>(
+			new ConfigVarComparator());
+	private final AllMUSes muses = new AllMUSes(true, SolverFactory.instance());
 	private Br4cpAraliaReader reader;
-	
+
 	public Br4cpCLI(String instance) throws Exception {
 		solver = muses.getSolverInstance();
 		varMap = new ConfigVarMap(solver);
@@ -37,13 +37,42 @@ public class Br4cpCLI {
 		readInstance(instance, solver, varMap);
 		long startTime = System.currentTimeMillis();
 		this.outStream.println("computing problem backbone...");
-		backboneComputer = Options.getInstance().getBackboneComputer(solver, varMap);
-		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
-				+ "rootPropagated:", this.solver.getLogPrefix()
-				+ "rootReduced:");
+		backboneComputer = Options.getInstance().getBackboneComputer(solver,
+				varMap);
+		printAsserted(backboneComputer, "rootPropagated:", "rootReduced:");
 		this.outStream.printf("done in %.3fs.\n\n",
 				(System.currentTimeMillis() - startTime) / 1000.);
 		runCLI();
+	}
+
+	private void printAsserted(IBr4cpBackboneComputer backboneComputer,
+			String assertedPrefix, String removedPrefix) {
+		Set<String> asserted = backboneComputer.propagatedConfigVars();
+		Set<String> propagatedAdditionalVars = backboneComputer
+				.propagatedAdditionalVars();
+		if (!asserted.isEmpty() || !propagatedAdditionalVars.isEmpty()) {
+			this.outStream.print(assertedPrefix);
+			for (String s : asserted) {
+				this.outStream.print(" " + s);
+			}
+			for (String s : propagatedAdditionalVars) {
+				this.outStream.print(" " + s);
+			}
+			this.outStream.println();
+		}
+		Set<String> assertedFalse = backboneComputer.domainReductions();
+		Set<String> unavailableAdditionalVars = backboneComputer
+				.unavailableAdditionalVars();
+		if (!assertedFalse.isEmpty() || !unavailableAdditionalVars.isEmpty()) {
+			this.outStream.print(removedPrefix);
+			for (String s : assertedFalse) {
+				this.outStream.print(" " + s);
+			}
+			for (String s : unavailableAdditionalVars) {
+				this.outStream.print(" " + s.replaceAll("=99", "=1"));
+			}
+			this.outStream.println();
+		}
 	}
 
 	private void readInstance(String instance, IGroupSolver solver,
@@ -57,46 +86,13 @@ public class Br4cpCLI {
 		}
 	}
 
-	private void printNewlyAsserted(IBr4cpBackboneComputer backboneComputer) {
-		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
-				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
-	}
-
-	private void printNewlyAsserted(IBr4cpBackboneComputer backboneComputer,
-			String asserted, String removed) {
-		Set<String> newlyAsserted = backboneComputer.newPropagatedConfigVars();
-		Set<String> newBooleanAssertions = backboneComputer
-				.newPropagatedAdditionalVars();
-		if (!newlyAsserted.isEmpty() || !newBooleanAssertions.isEmpty()) {
-			this.outStream.print(asserted);
-			for (String s : newlyAsserted) {
-				this.outStream.print(" " + s);
-			}
-			for (String s : newBooleanAssertions) {
-				this.outStream.print(" " + s);
-			}
-			this.outStream.println();
-		}
-		Set<String> newlyAssertedFalse = backboneComputer.newDomainReductions();
-		newBooleanAssertions = backboneComputer.newReducedAdditionalVars();
-		if (!newlyAssertedFalse.isEmpty() || !newBooleanAssertions.isEmpty()) {
-			this.outStream.print(removed);
-			for (String s : newlyAssertedFalse) {
-				this.outStream.print(" " + s);
-			}
-			for (String s : newBooleanAssertions) {
-				this.outStream.print(" " + s);
-			}
-			this.outStream.println();
-		}
-	}
-
 	private void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
-		this.outStream.println("  #assumps       : write the list of assumptions");
 		this.outStream.println("  #restart       : clean all assumptions");
-		this.outStream.println("  #explain vX=Y  : explain the assignement of value Y to variable X");
-		this.outStream.println("  #explain -vX=Y : explain the reduction of value Y in variable X");
+		this.outStream
+				.println("  #explain vX=Y  : explain the assignement of value Y to variable X");
+		this.outStream
+				.println("  #explain -vX=Y : explain the reduction of value Y in variable X");
 		this.outStream.println("  #quit          : exit this program");
 		this.outStream.println();
 		BufferedReader inReader = new BufferedReader(new InputStreamReader(
@@ -105,29 +101,21 @@ public class Br4cpCLI {
 			this.outStream.print("$> ");
 			this.outStream.flush();
 			String line = inReader.readLine();
-			if(line == null)
+			if (line == null)
 				break;
-			if(line.length() == 0){
+			if (line.length() == 0) {
 				continue;
 			}
 			try {
-				Method toCall = getClass().getDeclaredMethod(line.substring(1).split(" ")[0],
-						new Class<?>[] {String.class});
-				toCall.invoke(this, new Object[]{line});
+				Method toCall = getClass().getDeclaredMethod(
+						line.substring(1).split(" ")[0],
+						new Class<?>[] { String.class });
+				toCall.invoke(this, new Object[] { line });
 			} catch (NoSuchMethodException e) {
 				assume(line);
 			}
 		}
 		this.outStream.println("Exiting. Bye!");
-	}
-	
-	@SuppressWarnings("unused")
-	private void assumps(String line) {
-		this.outStream.print("assumptions :");
-		for(Iterator<String> it = this.assumptions.iterator(); it.hasNext(); ){
-			this.outStream.print(" "+it.next());
-		}
-		this.outStream.println();
 	}
 
 	@SuppressWarnings("unused")
@@ -141,35 +129,40 @@ public class Br4cpCLI {
 	private void quit(String line) {
 		this.quit = true;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private void explain(String line) {
 		muses.reset();
 		IVecInt assumptions = new VecInt();
 		String[] words = line.split(" ");
-		for (int i=1;i<words.length;i++) {
+		for (int i = 1; i < words.length; i++) {
 			String assump = words[i].replaceAll("_", ".");
 			assump = assump.replaceAll("=", ".");
-			assumptions.push((assump.charAt(0)=='-')?(this.varMap.getSolverVar(assump.substring(1))):(-this.varMap.getSolverVar(assump)));
+			assumptions.push((assump.charAt(0) == '-') ? (this.varMap
+					.getSolverVar(assump.substring(1))) : (-this.varMap
+					.getSolverVar(assump)));
 		}
-		for(Set<Integer> assumpsSet : this.backboneComputer.getSolverAssumptions()) {
-			for(Integer n : assumpsSet){
+		for (Set<Integer> assumpsSet : this.backboneComputer
+				.getSolverAssumptions()) {
+			for (Integer n : assumpsSet) {
 				assumptions.push(n);
 			}
 		}
 		try {
-			if(solver.isSatisfiable(assumptions)){
-				this.outStream.println("ERROR: satisfiable, nothing to explain");
-			}else{
-				for (String constraint : reader.decode(solver.unsatExplanation()))
+			if (solver.isSatisfiable(assumptions)) {
+				this.outStream
+						.println("ERROR: satisfiable, nothing to explain");
+			} else {
+				for (String constraint : reader.decode(solver
+						.unsatExplanation()))
 					this.outStream.println(constraint);
 			}
 		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
+
 	private void assume(String line) throws Exception {
 		String assump = line.replaceAll("_", ".");
 		assump = assump.replaceAll("=", ".");
@@ -180,19 +173,41 @@ public class Br4cpCLI {
 				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
 			} else if (this.varMap.isAdditionalVar(assump)) {
 				backboneComputer.addAdditionalVarAssumption(assump);
-			} else if (this.varMap.isConfigVar(assump)){
+			} else if (this.varMap.isConfigVar(assump)) {
 				addAssumption(assump);
 			} else {
-				this.outStream.println(assump+" is not defined");
+				this.outStream.println(assump + " is not defined");
 				return;
 			}
-			if(!this.assumptions.contains(assump)) {
-				this.assumptions.add(assump);
+			for (Iterator<String> it = this.assumptions.iterator(); it
+					.hasNext();) {
+				String next = it.next();
+				if (next.substring(0, next.lastIndexOf("=")).equals(
+						line.substring(0, line.lastIndexOf('=')))) {
+					it.remove();
+					break;
+				}
 			}
-			printNewlyAsserted(backboneComputer);
+			this.assumptions.add(line);
+			printAssumptions();
+			printAsserted(backboneComputer);
+
 		} catch (IllegalArgumentException e) {
 			this.outStream.println("ERROR: " + e.getMessage());
 		}
+	}
+
+	private void printAssumptions() {
+		this.outStream.print("d");
+		for (Iterator<String> it = this.assumptions.iterator(); it.hasNext();) {
+			this.outStream.print(' ');
+			this.outStream.print(it.next());
+		}
+		this.outStream.println();
+	}
+
+	private void printAsserted(IBr4cpBackboneComputer backboneComputer) {
+		printAsserted(backboneComputer, "a", "r");
 	}
 
 	private void addAssumption(String assump) throws TimeoutException {

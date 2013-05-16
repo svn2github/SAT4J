@@ -67,61 +67,35 @@ public interface IBr4cpBackboneComputer {
 	public Set<String> propagatedConfigVars();
 
 	/**
-	 * Returns the propagated configuration variables appeared after the last
-	 * assumption.
-	 * 
-	 * @return the propagated configuration variables appeared after the last
-	 *         assumption.
-	 */
-	public Set<String> newPropagatedConfigVars();
-
-	/**
 	 * Returns the variables which became unavailable due to the assumptions.
+	 * Configuration variables vx=y are not returned if vx=z is propagated.
 	 * 
 	 * @return the variables which became unavailable due to the assumptions.
 	 */
 	public Set<String> domainReductions();
 
 	/**
-	 * Returns the variables which became unavailable after the last assumption.
-	 * 
-	 * @return the variables which became unavailable after the last assumption.
-	 */
-	public Set<String> newDomainReductions();
-
-	/**
-	 * Returns the propagated additional variables due to the assumptions.
+	 * Returns the propagated additional variables due to the assumptions, ended with "=1".
+	 * Additional variables propagated to false are not returned, see
+	 * {@link IBr4cpBackboneComputer#unavailableAdditionalVars()}
 	 * 
 	 * @return the propagated additional variables due to the assumptions.
 	 */
 	public Set<String> propagatedAdditionalVars();
-
-	/**
-	 * Returns the positively propagated additional variables appeared after the last
-	 * assumption.
-	 * 
-	 * @return the propagated additional variables appeared after the last
-	 *         assumption.
-	 */
-	public Set<String> newPropagatedAdditionalVars();
 	
 	/**
-	 * Returns the negatively propagated additional variables appeared after the last
-	 * assumption.
+	 * Returns the additional variables propagated to false, ended with "=1".
 	 * 
-	 * @return the propagated additional variables appeared after the last
-	 *         assumption.
+	 * @return the additional variables propagated to false, ended with "=1".
 	 */
-	public Set<String> newReducedAdditionalVars();
+	public Set<String> unavailableAdditionalVars();
 
 	/**
-	 * Returns the new domain reductions as a CSP solver would do, that is
-	 * adding a X=99 value if optional variable X is not installed.
+	 * Allow to get the assumptions made by the computer. The solver variables
+	 * are returned.
 	 * 
-	 * @return the new domain reductions as a CSP solver would do.
+	 * @return the solver variables in the assumption stack
 	 */
-	public Set<String> newCspDomainReductions();
-	
 	public List<Set<Integer>> getSolverAssumptions();
 
 }
