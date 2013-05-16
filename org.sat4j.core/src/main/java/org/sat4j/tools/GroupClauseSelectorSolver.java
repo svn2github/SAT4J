@@ -123,4 +123,5 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
         }
         return external;
     }
+
 }
