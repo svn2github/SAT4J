@@ -114,7 +114,8 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
             if (p > 0) {
                 group = varToHighLevel.get(p);
             } else {
-                group = -varToHighLevel.get(-p);
+                Integer negGroup = varToHighLevel.get(-p);
+                group = (negGroup == null) ? (null) : (-negGroup);
             }
             if (group != null) {
                 external.push(group);
@@ -122,5 +123,4 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
         }
         return external;
     }
-
 }
