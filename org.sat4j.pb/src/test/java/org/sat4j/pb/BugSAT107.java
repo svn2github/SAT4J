@@ -13,16 +13,15 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
-import org.sat4j.tools.SolutionFoundListener;
 
-public class BugSAT107 implements SolutionFoundListener {
+public class BugSAT107 {
 
     private OptToPBSATAdapter solver;
 
     @Before
     public void setUp() throws ContradictionException {
         solver = new OptToPBSATAdapter(new PseudoOptDecorator(
-                SolverFactory.newDefault()), this);
+                SolverFactory.newDefault()));
         solver.newVar(100);
         IVecInt clause = new VecInt();
         for (int i = 2; i < 100; i += 2) {
@@ -91,20 +90,5 @@ public class BugSAT107 implements SolutionFoundListener {
         solver.addClause(clause);
         clause.clear();
         assertFalse(solver.isSatisfiable());
-    }
-
-    public void onSolutionFound(int[] solution) {
-        System.err.println("found " + new VecInt(solution));
-
-    }
-
-    public void onSolutionFound(IVecInt solution) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void onUnsatTermination() {
-        System.err.println("optimal found ");
-
     }
 }
