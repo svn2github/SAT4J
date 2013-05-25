@@ -621,7 +621,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     }
 
     /**
-     * Derive a subset of the assumptions causing the inconistency.
+     * Derive a subset of the assumptions causing the inconsistency.
      * 
      * @param confl
      *            the last conflict of the search, occuring at root level.
