@@ -326,6 +326,7 @@
 		destdir="${build}"
 		source="1.5"
 		target="${target}"
+		debug="true"
 	        includeantruntime="false">
 			<classpath refid="somePath"/>
 		</javac>
