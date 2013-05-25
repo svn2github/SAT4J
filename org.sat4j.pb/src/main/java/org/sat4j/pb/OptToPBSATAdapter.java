@@ -109,6 +109,22 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
                 }
             }
             sfl.onUnsatTermination();
+            if (isVerbose()) {
+                System.out.println(getLogPrefix()
+                        + "Optimal objective function value: "
+                        + this.problem.getObjectiveValue() + "("
+                        + (System.currentTimeMillis() - this.begin) / 1000.0
+                        + "s)");
+            }
+        } catch (TimeoutException e) {
+            if (isVerbose()) {
+                System.out.println(getLogPrefix() + "Solver timed out after "
+                        + (System.currentTimeMillis() - this.begin) / 1000.0
+                        + "s)");
+            }
+            if (!satisfiable) {
+                throw e;
+            }
         } catch (ContradictionException ce) {
             sfl.onUnsatTermination();
         }
