@@ -108,6 +108,15 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
                 }
             }
             sfl.onUnsatTermination();
+        } catch (TimeoutException e) {
+            if (isVerbose()) {
+                System.out.println(getLogPrefix() + "Solver timed out after "
+                        + (System.currentTimeMillis() - this.begin) / 1000.0
+                        + "s)");
+            }
+            if (!satisfiable) {
+                throw e;
+            }
         } catch (ContradictionException ce) {
             sfl.onUnsatTermination();
         }
