@@ -100,6 +100,10 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         this.launcherMode = launcherMode;
     }
 
+    protected ILauncherMode getLauncherMode() {
+        return this.launcherMode;
+    }
+
     protected void setIncomplete(boolean isIncomplete) {
         this.launcherMode.setIncomplete(isIncomplete);
     }
