@@ -335,4 +335,11 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         solverTimeout = t;
         super.setTimeout(t);
     }
+
+    public void removeSubsumedOptConstr() {
+        if (this.previousPBConstr == null)
+            return;
+        super.removeSubsumedConstr(previousPBConstr);
+        this.previousPBConstr = null;
+    }
 }
