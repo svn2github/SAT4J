@@ -10,15 +10,27 @@ import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PBSolverDecorator;
+import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
+import org.sat4j.specs.IOptimizationProblem;
+import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
+import org.sat4j.specs.SearchListener;
+import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.SolutionFoundListener;
 
 public abstract class SortedMultiObjectiveValuesSolver extends
-        PBSolverDecorator implements IMultiObjectivePBSolver {
+        PBSolverDecorator implements IMultiObjectivePBSolver,
+        IOptimizationProblem, SearchListener<ISolverService> {
 
     private static final long serialVersionUID = 1L;
+
+    protected IOptimizationProblem optSolver;
 
     private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
 
@@ -26,16 +38,15 @@ public abstract class SortedMultiObjectiveValuesSolver extends
 
     private final List<List<Integer>> sortingValuesVariables = new ArrayList<List<Integer>>();
 
-    private BigInteger maxObjValue = BigInteger.valueOf(Long.MIN_VALUE);
+    private BigInteger maxObjValues = BigInteger.valueOf(Long.MIN_VALUE);
 
-    private int nbRealVars = -1;
+    private SolutionFoundListener sfl;
 
-    public int getNbRealVars() {
-        return this.nbRealVars;
-    }
+    private boolean decoratedObjFuncIsSet = false;
 
     public SortedMultiObjectiveValuesSolver(IPBSolver solver) {
         super(solver);
+        optSolver = new PseudoOptDecorator(decorated());
     }
 
     public void addObjectiveFunction(ObjectiveFunction obj) {
@@ -46,16 +57,15 @@ public abstract class SortedMultiObjectiveValuesSolver extends
         return this.objs;
     }
 
-    protected void addSortingConstraints() {
-        this.nbRealVars = decorated().nextFreeVarId(false) - 1;
+    private void addSortingConstraints() {
         for (ObjectiveFunction obj : this.objs) {
             BigInteger weightsSum = BigInteger.ZERO;
             for (Iterator<BigInteger> it = obj.getCoeffs().iterator(); it
                     .hasNext();) {
                 weightsSum = weightsSum.add(it.next().abs());
             }
-            if (this.maxObjValue.compareTo(weightsSum) < 0) {
-                this.maxObjValue = weightsSum;
+            if (this.maxObjValues.compareTo(weightsSum) < 0) {
+                this.maxObjValues = weightsSum;
             }
         }
         for (int i = 0; i < this.objs.size(); ++i) {
@@ -72,14 +82,14 @@ public abstract class SortedMultiObjectiveValuesSolver extends
         List<Integer> currentRankSortingValuesVariables = new ArrayList<Integer>();
         int nbVarsNeeded = Math.max(
                 1,
-                (int) Math.ceil(Math.log10(this.maxObjValue.longValue() + 1)
+                (int) Math.ceil(Math.log10(this.maxObjValues.longValue() + 1)
                         / Math.log10(2)));
         for (int i = 0; i < nbVarsNeeded; ++i) {
             currentRankSortingValuesVariables.add(decorated().nextFreeVarId(
                     true));
         }
         this.sortingValuesVariables.add(currentRankSortingValuesVariables);
-        BigInteger bigValue = this.maxObjValue.add(BigInteger.ONE);
+        BigInteger bigValue = this.maxObjValues.add(BigInteger.ONE);
         for (ObjectiveFunction obj : this.objs) {
             // obj_i(x) - y_i + M.t <= M
             int selectorVar = decorated().nextFreeVarId(true);
@@ -136,12 +146,159 @@ public abstract class SortedMultiObjectiveValuesSolver extends
         decorated().addAtLeast(newCstrVars, newCstrCoeffs, degree);
     }
 
+    public boolean admitABetterSolution() throws TimeoutException {
+        return admitABetterSolution(VecInt.EMPTY);
+    }
+
+    public boolean admitABetterSolution(IVecInt assumps)
+            throws TimeoutException {
+        if (!this.decoratedObjFuncIsSet) {
+            addSortingConstraints();
+            setDecoratedObjFunction();
+            this.decoratedObjFuncIsSet = true;
+        }
+        return this.optSolver.admitABetterSolution(assumps);
+    }
+
     protected List<List<Integer>> getSortingValuesVariables() {
         return this.sortingValuesVariables;
     }
 
     protected BigInteger getMaxObjValue() {
-        return this.maxObjValue;
+        return this.maxObjValues;
+    }
+
+    public void setSolutionFoundListener(SolutionFoundListener listener) {
+        this.sfl = listener;
+    }
+
+    public boolean hasNoObjectiveFunction() {
+        return false;
+    }
+
+    public boolean nonOptimalMeansSatisfiable() {
+        return true;
+    }
+
+    protected abstract void setDecoratedObjFunction();
+
+    @Deprecated
+    public Number calculateObjective() {
+        return optSolver.calculateObjective();
+    }
+
+    public Number getObjectiveValue() {
+        return optSolver.getObjectiveValue();
+    }
+
+    public void forceObjectiveValueTo(Number forcedValue)
+            throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isOptimal() {
+        return optSolver.isOptimal();
+    }
+
+    public void setTimeoutForFindingBetterSolution(int seconds) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int[] model() {
+        return optSolver.model();
+    }
+
+    @Override
+    public boolean model(int var) {
+        return optSolver.model(var);
+    }
+
+    @Deprecated
+    public void discard() throws ContradictionException {
+        this.optSolver.discard();
+    }
+
+    public void discardCurrentSolution() throws ContradictionException {
+        this.optSolver.discardCurrentSolution();
+    }
+
+    public List<Integer> getObjectiveValues() {
+        List<Integer> res = new ArrayList<Integer>();
+        for (ObjectiveFunction obj : getObjectiveFunctions()) {
+            res.add(obj.calculateDegree(decorated()).intValue());
+        }
+        return res;
+    }
+
+    public void init(ISolverService solverService) {
+        // nothing to do here
+    }
+
+    public void assuming(int p) {
+        // nothing to do here
+    }
+
+    public void propagating(int p, IConstr reason) {
+        // nothing to do here
+    }
+
+    public void backtracking(int p) {
+        // nothing to do here
+    }
+
+    public void adding(int p) {
+        // nothing to do here
+    }
+
+    public void learn(IConstr c) {
+        // nothing to do here
+    }
+
+    public void learnUnit(int p) {
+        // nothing to do here
+    }
+
+    public void delete(int[] clause) {
+        // nothing to do here
+    }
+
+    public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
+        // nothing to do here
+    }
+
+    public void conflictFound(int p) {
+        // nothing to do here
+    }
+
+    public void solutionFound(int[] model, RandomAccessModel lazyModel) {
+        this.sfl.onSolutionFound(model);
+        IVecInt sol = new VecInt(model);
+        this.sfl.onSolutionFound(sol);
+    }
+
+    public void beginLoop() {
+        // nothing to do here
+    }
+
+    public void start() {
+        // nothing to do here
+    }
+
+    public void end(Lbool result) {
+        // nothing to do here
+    }
+
+    public void restarting() {
+        // nothing to do here
+    }
+
+    public void backjump(int backjumpLevel) {
+        // nothing to do here
+    }
+
+    public void cleaning() {
+        // nothing to do here
     }
 
 }
