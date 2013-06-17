@@ -27,11 +27,15 @@ public class LeximinSumDecomposableOwsOptimizer extends
     private int sumObjSelector;
     private IConstr sumObjCstr1 = null;
     private IConstr sumObjCstr2 = null;
+    private int lastSumValue = Integer.MAX_VALUE;
 
     private ObjectiveFunction leximinObj;
     private int leximinObjSelector;
     private IConstr leximinObjCstr1 = null;
     private IConstr leximinObjCstr2 = null;
+    private int lastLeximinValue = Integer.MAX_VALUE;
+
+    private BigInteger bigValue;
 
     public LeximinSumDecomposableOwsOptimizer(IPBSolver solver, int[] weights,
             int sumCoeff) {
@@ -45,25 +49,31 @@ public class LeximinSumDecomposableOwsOptimizer extends
         IVecInt globalObjVars = new VecInt();
         IVec<BigInteger> globalObjCoeffs = new Vec<BigInteger>();
         IVec<BigInteger> sumObjCoeffs = new Vec<BigInteger>();
-        IVec<BigInteger> leximinCoeffs = new Vec<BigInteger>();
+        IVec<BigInteger> leximinObjCoeffs = new Vec<BigInteger>();
         List<List<Integer>> sortingValuesVariables = super
                 .getSortingValuesVariables();
-        BigInteger factor;
+        BigInteger leximinFactor = BigInteger.ONE;
+        BigInteger factor = null;
         for (int i = sortingValuesVariables.size() - 1; i >= 0; --i) {
-            factor = BigInteger.valueOf(this.weights[sortingValuesVariables
-                    .size() - i - 1]);
+            factor = BigInteger.valueOf(
+                    this.weights[sortingValuesVariables.size() - i - 1]).add(
+                    BigInteger.valueOf(this.sumCoeff));
+            BigInteger sumFactor = BigInteger.ONE;
             for (Integer var : sortingValuesVariables.get(i)) {
                 globalObjVars.push(var);
-                globalObjCoeffs.push(factor.add(BigInteger.valueOf(sumCoeff)));
-                sumObjCoeffs.push(BigInteger.ONE);
-                leximinCoeffs.push(factor);
+                globalObjCoeffs.push(factor);
+                sumObjCoeffs.push(sumFactor);
+                leximinObjCoeffs.push(leximinFactor);
                 factor = factor.shiftLeft(1);
+                sumFactor = sumFactor.shiftLeft(1);
+                leximinFactor = leximinFactor.shiftLeft(1);
             }
         }
+        this.bigValue = factor;
         decorated().setObjectiveFunction(
                 new ObjectiveFunction(globalObjVars, globalObjCoeffs));
         this.sumObj = new ObjectiveFunction(globalObjVars, sumObjCoeffs);
-        this.leximinObj = new ObjectiveFunction(globalObjVars, leximinCoeffs);
+        this.leximinObj = new ObjectiveFunction(globalObjVars, leximinObjCoeffs);
         this.leximinObjSelector = decorated().nextFreeVarId(true);
         this.sumObjSelector = decorated().nextFreeVarId(true);
         try {
@@ -92,45 +102,61 @@ public class LeximinSumDecomposableOwsOptimizer extends
                 // nothing to do here
             }
         } else {
-            removedAddedCstrs();
+            removedSubsumedAddedCstrs();
         }
         return res;
     }
 
     private void updateCstrs() throws ContradictionException {
+        BigInteger sumValue = this.sumObj.calculateDegree(decorated());
+        IVecInt sumLits = new VecInt();
+        IVec<BigInteger> sumCoeffs = new Vec<BigInteger>();
+        this.sumObj.getVars().copyTo(sumLits);
+        this.sumObj.getCoeffs().copyTo(sumCoeffs);
+        sumLits.push(sumObjSelector);
+        sumCoeffs.push(bigValue);
+        BigInteger leximinValue = this.leximinObj.calculateDegree(decorated());
+        IVecInt leximinLits = new VecInt();
+        IVec<BigInteger> leximinCoeffs = new Vec<BigInteger>();
+        this.leximinObj.getVars().copyTo(leximinLits);
+        this.leximinObj.getCoeffs().copyTo(leximinCoeffs);
+        leximinLits.push(leximinObjSelector);
+        leximinCoeffs.push(bigValue);
         ((PseudoOptDecorator) optSolver).removeSubsumedOptConstr();
-        removedAddedCstrs();
-        BigInteger value = this.sumObj.calculateDegree(decorated());
-        IVecInt lits = new VecInt();
-        IVec<BigInteger> coeffs = new Vec<BigInteger>();
-        this.sumObj.getVars().copyTo(lits);
-        this.sumObj.getCoeffs().copyTo(coeffs);
-        lits.push(sumObjSelector);
-        coeffs.push(getMaxObjValue());
-        this.sumObjCstr1 = decorated().addAtMost(lits, coeffs,
-                getMaxObjValue().add(value));
-        this.sumObjCstr2 = decorated().addAtLeast(lits, coeffs,
-                value.add(BigInteger.ONE));
-        value = this.leximinObj.calculateDegree(decorated());
-        lits = new VecInt();
-        coeffs = new Vec<BigInteger>();
-        this.leximinObj.getVars().copyTo(lits);
-        this.leximinObj.getCoeffs().copyTo(coeffs);
-        lits.push(leximinObjSelector);
-        coeffs.push(getMaxObjValue());
-        this.leximinObjCstr1 = decorated().addAtMost(lits, coeffs,
-                getMaxObjValue().add(value));
-        this.leximinObjCstr2 = decorated().addAtLeast(lits, coeffs,
-                value.add(BigInteger.ONE));
+        if ((sumValue.intValue() <= this.lastSumValue)
+                && (leximinValue.intValue() <= this.lastLeximinValue)) {
+            removedSubsumedAddedCstrs();
+        } else {
+            removedAddedCstrs();
+        }
+        this.lastSumValue = sumValue.intValue();
+        this.lastLeximinValue = leximinValue.intValue();
+        this.sumObjCstr1 = decorated().addAtMost(sumLits, sumCoeffs,
+                bigValue.add(sumValue));
+        this.sumObjCstr2 = decorated().addAtLeast(sumLits, sumCoeffs,
+                sumValue.add(BigInteger.ONE));
+        this.leximinObjCstr1 = decorated().addAtMost(leximinLits,
+                leximinCoeffs, bigValue.add(leximinValue));
+        this.leximinObjCstr2 = decorated().addAtLeast(leximinLits,
+                leximinCoeffs, leximinValue.add(BigInteger.ONE));
         optSolver.discardCurrentSolution();
     }
 
-    private void removedAddedCstrs() {
+    private void removedSubsumedAddedCstrs() {
         if (this.sumObjCstr1 != null) {
             decorated().removeSubsumedConstr(leximinObjCstr2);
             decorated().removeSubsumedConstr(leximinObjCstr1);
             decorated().removeSubsumedConstr(sumObjCstr2);
             decorated().removeSubsumedConstr(sumObjCstr1);
+        }
+    }
+
+    private void removedAddedCstrs() {
+        if (this.sumObjCstr1 != null) {
+            decorated().removeConstr(leximinObjCstr2);
+            decorated().removeConstr(leximinObjCstr1);
+            decorated().removeConstr(sumObjCstr2);
+            decorated().removeConstr(sumObjCstr1);
         }
     }
 }
