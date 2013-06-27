@@ -1498,10 +1498,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
         this.learnts.clear();
         this.learnedLiterals.clear();
-        assert trailLim.size() == 0;
-        while (trail.size() > 0) {
-            undoOne();
-        }
     }
 
     protected final void reduceDB() {
