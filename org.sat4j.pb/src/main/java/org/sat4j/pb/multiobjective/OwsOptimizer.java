@@ -20,6 +20,16 @@ public class OwsOptimizer extends SortedMultiObjectiveValuesSolver {
         this.weights = weights;
     }
 
+    public OwsOptimizer(IPBSolver solver, String weights) {
+        super(solver);
+        String[] strWeights = weights.split(",");
+        int nbWeights = strWeights.length;
+        this.weights = new int[nbWeights];
+        for (int i = 0; i < nbWeights; ++i) {
+            this.weights[i] = Integer.valueOf(strWeights[i]);
+        }
+    }
+
     @Override
     protected void setDecoratedObjFunction() {
         IVecInt globalObjVars = new VecInt();

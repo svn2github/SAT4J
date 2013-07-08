@@ -44,6 +44,18 @@ public class LeximinSumDecomposableOwsOptimizer extends
         this.sumCoeff = sumCoeff;
     }
 
+    public LeximinSumDecomposableOwsOptimizer(IPBSolver solver, String weights,
+            String sumCoeff) {
+        super(solver);
+        String[] strWeights = weights.split(",");
+        int nbWeights = strWeights.length;
+        this.weights = new int[nbWeights];
+        for (int i = 0; i < nbWeights; ++i) {
+            this.weights[i] = Integer.valueOf(strWeights[i]);
+        }
+        this.sumCoeff = Integer.valueOf(sumCoeff);
+    }
+
     @Override
     protected void setDecoratedObjFunction() {
         IVecInt globalObjVars = new VecInt();
