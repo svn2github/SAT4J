@@ -85,6 +85,16 @@ public class RupSearchListener<S extends ISolverService> extends
 
     @Override
     public void learn(IConstr c) {
+        printConstr(c);
+    }
+
+    @Override
+    public void delete(IConstr c) {
+        out.print("d ");
+        printConstr(c);
+    }
+
+    private void printConstr(IConstr c) {
         for (int i = 0; i < c.size(); i++) {
             out.print(LiteralsUtils.toDimacs(c.get(i)));
             out.print(" ");

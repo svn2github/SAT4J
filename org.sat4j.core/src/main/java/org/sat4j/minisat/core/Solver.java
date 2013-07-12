@@ -1643,6 +1643,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                                 .set(j++, Solver.this.learnts.get(i));
                     } else {
                         c.remove(Solver.this);
+                        Solver.this.slistener.delete(c);
                     }
                 }
                 for (; i < Solver.this.learnts.size(); i++) {
@@ -1729,6 +1730,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     learnedConstrs.set(j++, Solver.this.learnts.get(i));
                 } else {
                     c.remove(Solver.this);
+                    Solver.this.slistener.delete(c);
                 }
             }
             if (Solver.this.verbose) {

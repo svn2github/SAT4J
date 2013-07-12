@@ -106,7 +106,7 @@ public class TextOutputTracing<T> implements SearchListener<ISolverService> {
 
     }
 
-    public void delete(int[] clause) {
+    public void delete(IConstr c) {
 
     }
 

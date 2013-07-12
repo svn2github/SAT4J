@@ -104,9 +104,9 @@ public class MultiTracing<T extends ISolverService> implements
         }
     }
 
-    public void delete(int[] clause) {
+    public void delete(IConstr c) {
         for (SearchListener<T> sl : this.listeners) {
-            sl.delete(clause);
+            sl.delete(c);
         }
 
     }

@@ -98,7 +98,7 @@ public interface SearchListener<S extends ISolverService> extends Serializable {
     /**
      * delete a clause
      */
-    void delete(int[] clause);
+    void delete(IConstr c);
 
     /**
      * a conflict has been found.
