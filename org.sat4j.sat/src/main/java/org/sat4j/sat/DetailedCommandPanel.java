@@ -1689,12 +1689,12 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public void learn(IConstr c) {
     }
 
+    public void delete(IConstr c) {
+    }
+
     public void learnUnit(int p) {        
     }
     
-    public void delete(int[] clause) {
-    }
-
     public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
         this.conflictCounter++;
     }
