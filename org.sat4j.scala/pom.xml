@@ -5,7 +5,7 @@
   <artifactId>org.ow2.sat4j.scala</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
-  <description>My wonderfull scala app</description>
+  <description>SAT4j Scala API</description>
   <inceptionYear>2010</inceptionYear>
   <licenses>
     <license>
@@ -19,7 +19,7 @@
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <encoding>UTF-8</encoding>
-    <scala.version>2.9.2</scala.version>
+    <scala.version>2.10.2</scala.version>
   </properties>
 
   <repositories>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>org.ow2.sat4j</groupId>
       <artifactId>org.ow2.sat4j.core</artifactId>
-      <version>2.3.3-SNAPSHOT</version>
+      <version>2.3.5-SNAPSHOT</version>
     </dependency>
 
     <!-- Test -->
@@ -64,12 +64,19 @@
       <scope>test</scope>
     </dependency>
     -->
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.9.0</artifactId>
-      <version>1.8</version>
-      <scope>test</scope>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.scalatest</groupId>-->
+      <!--<artifactId>scalatest_${scala.version}</artifactId>-->
+      <!--<version>1.8</version>-->
+      <!--<scope>test</scope>-->
+    <!--</dependency>-->
+
+      <dependency>
+         <groupId>org.specs2</groupId>
+         <artifactId>specs2_2.10</artifactId>
+         <version>2.1</version>
+         <scope>test</scope>
+       </dependency>
   </dependencies>
 
   <build>
