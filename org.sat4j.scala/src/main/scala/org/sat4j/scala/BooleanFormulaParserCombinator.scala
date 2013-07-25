@@ -1,10 +1,9 @@
-package org.sat4j.scala
+package parser
 
-import scala.collection.immutable.List.apply
 import scala.util.parsing.combinator.PackratParsers
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
-
-import Logic._
+import org.sat4j.scala.Logic._
+import scala.annotation.migration
 
 object BooleanFormulaParserCombinator extends StandardTokenParsers with PackratParsers {
 
@@ -32,25 +31,25 @@ object BooleanFormulaParserCombinator extends StandardTokenParsers with PackratP
     } 
 
   val formula: PackratParser[BoolExp] =  term ~ ("&" ~> formula) ^^ {
-    case f1 ~ f2 => And(f1, f2)
+    case f1 ~ f2 => f1 & f2
   } | term ~ ("|" ~> formula) ^^ {
-    case f1 ~ f2 => Or(f1, f2)
+    case f1 ~ f2 => f1 | f2
   } | term ~ ("->" ~> formula) ^^ {
-    case f1 ~ f2 => Implies(f1, f2)
+    case f1 ~ f2 => f1 implies f2
   } | term ~ ("<->" ~> formula) ^^ {
-    case f1 ~ f2 => Iff(f1, f2)
+    case f1 ~ f2 => f1 iff f2
   } | term
   
   val term =  "~" ~> "(" ~> formula <~ ")" ^^ {
-    case f  => Not(f)
+    case f  => f.unary_~
   } | "(" ~> formula <~ ")" | lit
 
   val lit: PackratParser[BoolExp] =  "~" ~> ident ^^ {
-    case s => Not(Ident(s.toString()))
+    case s => (s.toString()).unary_~
   } | ident ^^ {
-    case s => Ident(s.toString())
+    case s => (s.toString():BoolExp)
   } 
-  
+    
   /**
    * Parses a string into a couple (s,l) where s is a string representing the BoolExp with a PrettyPrint 
    * and l the list of Cnf composing the BoolExp
@@ -66,7 +65,7 @@ object BooleanFormulaParserCombinator extends StandardTokenParsers with PackratP
   def javaParseListBool(dsl: String) = println(parseListBoolExp(dsl))
 
   def main(args: Array[String]) = {
-    println(parseListBoolExp("(x & y) <-> z; a | b; ~a & b | c; ~(a & b)"))
+    println(parseListBoolExp("(x & y) <-> z; a | b; ~a & b | c; ~(a & b);"))
     javaParseListBool("~(a & b);")
   }
 }
