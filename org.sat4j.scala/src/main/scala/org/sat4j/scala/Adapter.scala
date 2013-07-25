@@ -38,7 +38,7 @@ class Problem {
     problem addExactly(literals, k)
   }
   
-  def solve: Status = {
+  def solve = {
     try {
       if (problem.isSatisfiable) 
          Satisfiable
@@ -49,7 +49,7 @@ class Problem {
     }
   }
 
-  def enumerate: (Status,List[Array[Int]]) = {
+  def enumerate = {
     try {
       var sat = false
       var done = false
