@@ -52,7 +52,6 @@ class Problem {
   def enumerate = {
     try {
       var sat = false
-      var done = false
       var sols = List[Array[Int]]()
       val modelListener = new SolutionFoundListener() {
           def onSolutionFound(model:Array[Int]) = {
@@ -63,11 +62,11 @@ class Problem {
             // do nothing
         }
         def onUnsatTermination() = {
-            done = true
+          // do nothing
         }
       }
       problem setSearchListener new SearchEnumeratorListener(modelListener)
-      problem.isSatisfiable
+      val done = !problem.isSatisfiable
       if (sat) 
         if (done) 
          (Satisfiable,sols)
