@@ -16,69 +16,64 @@ class Problem {
 
   val problem = SolverFactory.newDefault
 
-  /** Adds a clause in the problem. */	  
+  /** Adds a clause in the problem. */
   def +=(clause: IVecInt) = {
     problem addClause clause
-    clause.clear 
+    clause.clear
     this
   }
-  
+
   /** Adds a cardinality constraint in the problem. */
   def addAtMost(literals: IVecInt, k: Int) = {
-    problem addAtMost(literals, k)
+    problem addAtMost (literals, k)
   }
-  
+
   /** Adds a cardinality constraint in the problem. */
   def addAtLeast(literals: IVecInt, k: Int) = {
-    problem addAtLeast(literals, k)
+    problem addAtLeast (literals, k)
   }
 
   /** Adds a cardinality constraint in the problem. */
   def addEq(literals: IVecInt, k: Int) = {
-    problem addExactly(literals, k)
+    problem addExactly (literals, k)
   }
-  
+
   def solve = {
     try {
-      if (problem.isSatisfiable) 
-         Satisfiable
-       else 
-         Unsatisfiable
+      if (problem.isSatisfiable)
+        Satisfiable
+      else
+        Unsatisfiable
     } catch {
-      case _:Throwable =>  Unknown
+      case _: Throwable => Unknown
     }
   }
 
   def enumerate = {
     try {
-      var sat = false
       var sols = List[Array[Int]]()
       val modelListener = new SolutionFoundListener() {
-          def onSolutionFound(model:Array[Int]) = {
-            sat = true
-            sols = model::sols
+        def onSolutionFound(model: Array[Int]) = {
+          sols = model :: sols
         }
-        def onSolutionFound(solution:IVecInt ) = {
-            // do nothing
+        def onSolutionFound(solution: IVecInt) = {
+          // do nothing
         }
         def onUnsatTermination() = {
           // do nothing
         }
       }
       problem setSearchListener new SearchEnumeratorListener(modelListener)
-      val done = !problem.isSatisfiable
-      if (sat) 
-        if (done) 
-         (Satisfiable,sols)
-         else 
-           (Unknown,sols)
-       else 
-         (Unsatisfiable,List())
+      val sat = problem.isSatisfiable
+      if (sat)
+        (Satisfiable, sols)
+      else
+        (Unsatisfiable, List())
     } catch {
-      case _:Throwable =>  (Unknown,List())
+      case _: Throwable => (Unknown, List())
     }
   }
-  
+
   def model = {
     problem.model
   }
@@ -90,7 +85,7 @@ object Clause {
     args foreach { arg => clause.push(arg) }
     clause
   }
-  
+
   def apply(l: List[Int]) = {
     val clause = new VecInt()
     l foreach { arg => clause.push(arg) }
