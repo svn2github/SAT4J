@@ -43,7 +43,7 @@ object Logic {
 
   /** Abstract base class of all DSL expressions. */
   abstract class Exp
-  
+
   /** Abstract base class of all boolean valued expressions. */
   abstract class BoolExp extends Exp {
     def &(b: BoolExp) = And(this, b)
@@ -80,64 +80,64 @@ object Logic {
   case object False extends BoolValue
 
   /** Logical conjunction operator. */
-  case class And(b1: BoolExp, b2: BoolExp) extends BoolExp
+  private[Logic] case class And(b1: BoolExp, b2: BoolExp) extends BoolExp
 
   /** Logical disjunction operator. */
-  case class Or(b1: BoolExp, b2: BoolExp) extends BoolExp
-  
+  private[Logic] case class Or(b1: BoolExp, b2: BoolExp) extends BoolExp
+
   /** Logical implication operator. */
-  case class Implies(b1: BoolExp, b2: BoolExp) extends BoolExp
-  
+  private[Logic] case class Implies(b1: BoolExp, b2: BoolExp) extends BoolExp
+
   /** Logical equivalence operator. */
-  case class Iff(b1: BoolExp, b2: BoolExp) extends BoolExp
-  
+  private[Logic] case class Iff(b1: BoolExp, b2: BoolExp) extends BoolExp
+
   /** Base class for cardinality operators. */
   abstract class CardExp extends BoolExp
-  
-  /** Cardinality equals k operator. */  
-  case class CardEQ(bs: List[BoolExp], k: Int) extends CardExp
-  
+
+  /** Cardinality equals k operator. */
+  private[Logic] case class CardEQ(bs: List[BoolExp], k: Int) extends CardExp
+
   /** Cardinality less than or equals k operator. */
-  case class CardLE(bs: List[BoolExp], k: Int) extends CardExp
-  
+  private[Logic] case class CardLE(bs: List[BoolExp], k: Int) extends CardExp
+
   /** Cardinality less than k operator. */
-  case class CardLT(bs: List[BoolExp], k: Int) extends CardExp
-  
-  /** Cardinality greater than or equals k operator. */  
-  case class CardGE(bs: List[BoolExp], k: Int) extends CardExp
+  private[Logic] case class CardLT(bs: List[BoolExp], k: Int) extends CardExp
 
-  /** Cardinality greater than k operator. */  
-  case class CardGT(bs: List[BoolExp], k: Int) extends CardExp
+  /** Cardinality greater than or equals k operator. */
+  private[Logic] case class CardGE(bs: List[BoolExp], k: Int) extends CardExp
 
-  /** Abstract base class of all integer valued expressions. */  
-  abstract class IntExp extends Exp
-  
+  /** Cardinality greater than k operator. */
+  private[Logic] case class CardGT(bs: List[BoolExp], k: Int) extends CardExp
+
+  /** Abstract base class of all integer valued expressions. */
+  protected abstract class IntExp extends Exp
+
   /** Cardinality operator. */
-  case class Card(bs: List[BoolExp]) extends IntExp {
-    def +  (b: BoolExp) = Card(b :: bs)
+  private[Logic] case class Card(bs: List[BoolExp]) extends IntExp {
+    def +(b: BoolExp) = Card(b :: bs)
     def ===(k: Int) = CardEQ(bs.reverse, k)
-    def <= (k: Int) = CardLE(bs.reverse, k)
-    def <  (k: Int) = CardLT(bs.reverse, k)
-    def >= (k: Int) = CardGE(bs.reverse, k)
-    def >  (k: Int) = CardGT(bs.reverse, k)
+    def <=(k: Int) = CardLE(bs.reverse, k)
+    def <(k: Int) = CardLT(bs.reverse, k)
+    def >=(k: Int) = CardGE(bs.reverse, k)
+    def >(k: Int) = CardGT(bs.reverse, k)
   }
 
   /** Logical negation operator. */
-  case class Not(b: BoolExp) extends BoolExp
+  private[Logic] case class Not(b: BoolExp) extends BoolExp
 
   abstract class Identifier extends BoolExp
   /** Logical proposition identifier. */
-  case class Ident[U](name: U) extends Identifier {
-	  def apply(indices: Int*) = IndexedIdent(name, indices.toList)
+  protected case class Ident[U](name: U) extends Identifier {
+    def apply(indices: Int*) = IndexedIdent(name, indices.toList)
   }
 
   /** Logical proposition identifier. */
-  case class IndexedIdent[U](name: U, indices: List[Int]=Nil) extends Identifier {
-    
+  private[Logic] case class IndexedIdent[U](name: U, indices: List[Int] = Nil) extends Identifier {
+
   }
-  
+
   /** Anonymous logical proposition. */
-  case class AnonymousVariable extends BoolExp {
+  private[Logic] case class AnonymousVariable extends BoolExp {
     private val id = nextVarId
     override def toString = "_nv#" + id
     override def equals(o: Any) = o match {
@@ -152,17 +152,17 @@ object Logic {
   private var _createdVars = List[AnonymousVariable]()
 
   /** create new propositional variables for translation into CNF */
-  private def newVar = if(_cachedVar != null) {val tmp = _cachedVar; _cachedVar = null; tmp} else uncachedNewVar 
-   
-  def uncachedNewVar = {
+  private def newVar = if (_cachedVar != null) { val tmp = _cachedVar; _cachedVar = null; tmp } else uncachedNewVar
+
+  private def uncachedNewVar = {
     val v = new AnonymousVariable
     _createdVars = v :: _createdVars
     v
   }
-  
-  private def nextAnonymousVar = if(_cachedVar == null) {_cachedVar = uncachedNewVar; _cachedVar} else _cachedVar;
-  
-  var _cachedVar = uncachedNewVar
+
+  private def nextAnonymousVar = if (_cachedVar == null) { _cachedVar = uncachedNewVar; _cachedVar } else _cachedVar;
+
+  private var _cachedVar = uncachedNewVar
 
   /** n-ary conjunction. */
   def and(l: BoolExp*): BoolExp = and(l.toList)
@@ -183,7 +183,7 @@ object Logic {
     case b :: Nil => b
     case b :: t => l.reduceLeft { (b1, b2) => Or(b1, b2) }
   }
-
+  
   /** Implicit conversion from string to logical identifier */
   implicit def identFromString(s: String): Ident[String] = Ident(s)
 
@@ -192,9 +192,9 @@ object Logic {
 
   /** Convert any Scala object into a propositional variable */
   def toProp[U](u: U): Ident[U] = Ident(u)
-  
+
   /** Returns true iff the given expression is already in conjunctive normal form. */
-  def isAlreadyInCnf(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+  private def isAlreadyInCnf(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case And(b1, b2) => {
       val (r1, l1) = isAlreadyInCnf(b1)
       if (r1) {
@@ -207,7 +207,7 @@ object Logic {
     case _ => isLiteral(f)
   }
 
-  def isDisjunction(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+  private def isDisjunction(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case Or(b1, b2) => {
       val (r1, l1) = isDisjunction(b1)
       if (r1) {
@@ -218,8 +218,8 @@ object Logic {
     }
     case _ => isLiteral(f)
   }
-  
-  def isLiteral(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
+
+  private def isLiteral(f: BoolExp): (Boolean, Option[List[List[BoolExp]]]) = f match {
     case True => (true, Some(List(List(True))))
     case False => (true, Some(List(List(False))))
     case Ident(_) => (true, Some(List(List(f))))
@@ -227,7 +227,7 @@ object Logic {
     case _ => (false, None)
   }
 
-  def tseitinListSimple(b: BoolExp, l: List[List[BoolExp]]): (BoolExp, List[List[BoolExp]]) = {
+  private def tseitinListSimple(b: BoolExp, l: List[List[BoolExp]]): (BoolExp, List[List[BoolExp]]) = {
     b match {
 
       case True => (True, List())
@@ -237,8 +237,8 @@ object Logic {
       case Not(True) => (False, List())
 
       case Ident(s) => (Ident(s), List())
-      
-      case IndexedIdent(s,l) => (IndexedIdent(s,l), List())
+
+      case IndexedIdent(s, l) => (IndexedIdent(s, l), List())
 
       case Not(b1) => {
         val v = newVar
@@ -253,21 +253,21 @@ object Logic {
         (v, List(~t1._1, ~t2._1, v) :: List(t1._1, ~v) :: List(t2._1, ~v) :: t1._2 ++ t2._2)
 
       }
-      
+
       case Or(b1, b2) => {
         val v = newVar
         val t1 = tseitinListSimple(b1, List())
         val t2 = tseitinListSimple(b2, List())
         (v, List(t1._1, t2._1, ~v) :: List(~t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2)
       }
-      
+
       case Implies(b1, b2) => {
         val v = newVar
         val t1 = tseitinListSimple(b1, List())
         val t2 = tseitinListSimple(b2, List())
         (v, List(~t1._1, t2._1, ~v) :: List(t1._1, v) :: List(~t2._1, v) :: t1._2 ++ t2._2)
       }
-      
+
       case Iff(b1, b2) => {
         val v = newVar
         val t1 = tseitinListSimple(b1, List())
@@ -277,7 +277,7 @@ object Logic {
     }
   }
 
-  def simplifyClause(c: List[BoolExp]): List[BoolExp] = c match {
+  private def simplifyClause(c: List[BoolExp]): List[BoolExp] = c match {
     case Nil => List()
     case True :: t => List(True)
     case Not(False) :: t => List(True)
@@ -286,7 +286,7 @@ object Logic {
     case h :: t => h :: simplifyClause(t)
   }
 
-  def simplifyCnf(l: List[List[BoolExp]]): List[List[BoolExp]] = l match {
+  private def simplifyCnf(l: List[List[BoolExp]]): List[List[BoolExp]] = l match {
     case Nil => List()
     case h :: t => {
       val s = simplifyClause(h)
@@ -308,7 +308,7 @@ object Logic {
     encodeCnf0(cnf, Map[BoolExp, Int]())
   }
 
-  def encodeCnf0(cnf: List[List[BoolExp]], m: Map[BoolExp, Int]): (List[List[Int]], Map[BoolExp, Int]) = cnf match {
+  private def encodeCnf0(cnf: List[List[BoolExp]], m: Map[BoolExp, Int]): (List[List[Int]], Map[BoolExp, Int]) = cnf match {
     case Nil => (List(), m)
     case h :: t => {
       val p = encodeClause0(h, m)
@@ -322,9 +322,9 @@ object Logic {
     }
   }
 
-  def inv(x: Int): Int = -x
+  private def inv(x: Int): Int = -x
 
-  def encodeClause0(c: List[BoolExp], m: Map[BoolExp, Int]): (List[Int], Map[BoolExp, Int]) = c match {
+  private def encodeClause0(c: List[BoolExp], m: Map[BoolExp, Int]): (List[Int], Map[BoolExp, Int]) = c match {
     case Nil => (List(), m)
     case (s: AnonymousVariable) :: q => encodeClause1(s, q, m, x => x)
     case (s: Ident[_]) :: q => encodeClause1(s, q, m, x => x)
@@ -348,7 +348,7 @@ object Logic {
     }
   }
 
-  def isSat[U](f: BoolExp): (Boolean, Option[Map[U,Boolean]]) = {
+  def isSat[U](f: BoolExp): (Boolean, Option[Map[U, Boolean]]) = {
 
     val (cnf, m) = encode(f)
     val mapRev = m map {
@@ -360,17 +360,17 @@ object Logic {
       val res = problem.solve
       res match {
         case Satisfiable => {
-          val listeBoolExp = problem.model.toList map { x => if (x > 0) (mapRev(x)->true)  else (mapRev(-x)->false)}
+          val listeBoolExp = problem.model.toList map { x => if (x > 0) (mapRev(x) -> true) else (mapRev(-x) -> false) }
           val mapIdentBool = listeBoolExp filter (x => x match {
-            case (s:AnonymousVariable,_) => false 
-            case (Ident(s),_) => true 
+            case (s: AnonymousVariable, _) => false
+            case (Ident(s), _) => true
             case _ => false
           })
-         val mapUBool = mapIdentBool  map (z => z match {
-            case (Ident(s:U),b) => (s,b)
+          val mapUBool = mapIdentBool map (z => z match {
+            case (Ident(s: U), b) => (s, b)
             case _ => throw new IllegalStateException
           })
-          (true,Some(mapUBool.toMap))
+          (true, Some(mapUBool.toMap))
         }
         case Unsatisfiable => (false, None)
         case _ => throw new IllegalStateException("Got a time out")
@@ -380,7 +380,7 @@ object Logic {
     }
   }
 
-  def isValid[U](f: BoolExp): (Boolean, Option[Map[U,Boolean]]) = {
+  def isValid[U](f: BoolExp): (Boolean, Option[Map[U, Boolean]]) = {
     val (b, m) = isSat[U](~f)
     (!b, m)
   }
