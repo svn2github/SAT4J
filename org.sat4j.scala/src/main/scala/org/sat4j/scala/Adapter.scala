@@ -5,6 +5,7 @@ import org.sat4j.minisat.SolverFactory
 import org.sat4j.core.VecInt
 import org.sat4j.specs.IVecInt
 import org.sat4j.specs.IProblem
+import org.sat4j.tools._;
 
 abstract class Status {}
 case object Satisfiable extends Status {}
@@ -48,6 +49,37 @@ class Problem {
     }
   }
 
+  def enumerate: (Status,List[Array[Int]]) = {
+    try {
+      var sat = false
+      var done = false
+      var sols = List[Array[Int]]()
+      val modelListener = new SolutionFoundListener() {
+          def onSolutionFound(model:Array[Int]) = {
+            sat = true
+            sols = model::sols
+        }
+        def onSolutionFound(solution:IVecInt ) = {
+            // do nothing
+        }
+        def onUnsatTermination() = {
+            done = true
+        }
+      }
+      problem setSearchListener new SearchEnumeratorListener(modelListener)
+      problem.isSatisfiable
+      if (sat) 
+        if (done) 
+         (Satisfiable,sols)
+         else 
+           (Unknown,sols)
+       else 
+         (Unsatisfiable,List())
+    } catch {
+      case _ =>  (Unknown,List())
+    }
+  }
+  
   def model = {
     problem.model
   }
