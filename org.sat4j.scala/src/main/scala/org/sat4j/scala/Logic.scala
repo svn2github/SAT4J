@@ -113,7 +113,7 @@ object Logic {
   protected abstract class IntExp extends Exp
 
   /** Cardinality operator. */
-  private[Logic] case class Card(bs: List[BoolExp]) extends IntExp {
+  case class Card(bs: List[BoolExp]) extends IntExp {
     def +(b: BoolExp) = Card(b :: bs)
     def ===(k: Int) = CardEQ(bs.reverse, k)
     def <=(k: Int) = CardLE(bs.reverse, k)
@@ -286,7 +286,7 @@ object Logic {
     case h :: t => h :: simplifyClause(t)
   }
 
-  private def simplifyCnf(l: List[List[BoolExp]]): List[List[BoolExp]] = l match {
+  def simplifyCnf(l: List[List[BoolExp]]): List[List[BoolExp]] = l match {
     case Nil => List()
     case h :: t => {
       val s = simplifyClause(h)
