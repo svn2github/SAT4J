@@ -127,17 +127,17 @@ object Logic {
 
   abstract class Identifier extends BoolExp
   /** Logical proposition identifier. */
-  protected case class Ident[U](name: U) extends Identifier {
+  case class Ident[U](name: U) extends Identifier {
     def apply(indices: Int*) = IndexedIdent(name, indices.toList)
   }
 
   /** Logical proposition identifier. */
-  private[Logic] case class IndexedIdent[U](name: U, indices: List[Int] = Nil) extends Identifier {
+  case class IndexedIdent[U](name: U, indices: List[Int] = Nil) extends Identifier {
 
   }
 
   /** Anonymous logical proposition. */
-  private[Logic] case class AnonymousVariable extends BoolExp {
+  case class AnonymousVariable extends BoolExp {
     private val id = nextVarId
     override def toString = "_nv#" + id
     override def equals(o: Any) = o match {
