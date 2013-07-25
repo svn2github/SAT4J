@@ -123,7 +123,7 @@ object Logic {
   }
 
   /** Logical negation operator. */
-  private[Logic] case class Not(b: BoolExp) extends BoolExp
+  case class Not(b: BoolExp) extends BoolExp
 
   abstract class Identifier extends BoolExp
   /** Logical proposition identifier. */
