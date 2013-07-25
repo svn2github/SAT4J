@@ -183,7 +183,7 @@ object Logic {
     case b :: Nil => b
     case b :: t => l.reduceLeft { (b1, b2) => Or(b1, b2) }
   }
-  
+
   /** Implicit conversion from string to logical identifier */
   implicit def identFromString(s: String): Ident[String] = Ident(s)
 
@@ -360,17 +360,7 @@ object Logic {
       val res = problem.solve
       res match {
         case Satisfiable => {
-          val listeBoolExp = problem.model.toList map { x => if (x > 0) (mapRev(x) -> true) else (mapRev(-x) -> false) }
-          val mapIdentBool = listeBoolExp filter (x => x match {
-            case (s: AnonymousVariable, _) => false
-            case (Ident(s), _) => true
-            case _ => false
-          })
-          val mapUBool = mapIdentBool map (z => z match {
-            case (Ident(s: U), b) => (s, b)
-            case _ => throw new IllegalStateException
-          })
-          (true, Some(mapUBool.toMap))
+          (true, Some(modelToMap(problem.model, mapRev)))
         }
         case Unsatisfiable => (false, None)
         case _ => throw new IllegalStateException("Got a time out")
@@ -380,9 +370,48 @@ object Logic {
     }
   }
 
+  def modelToMap[U](model: Array[Int], mapRev: Map[Int, BoolExp]): Map[U, Boolean] = {
+    val listeBoolExp = model.toList map { x => if (x > 0) (mapRev(x) -> true) else (mapRev(-x) -> false) }
+    val mapIdentBool = listeBoolExp filter (x => x match {
+      case (s: AnonymousVariable, _) => false
+      case (Ident(s), _) => true
+      case _ => false
+    })
+    val mapUBool = mapIdentBool map (z => z match {
+      case (Ident(s: U), b) => (s, b)
+      case _ => throw new IllegalStateException
+    })
+    mapUBool.toMap
+  }
+
   def isValid[U](f: BoolExp): (Boolean, Option[Map[U, Boolean]]) = {
     val (b, m) = isSat[U](~f)
     (!b, m)
+  }
+  
+  def allSat[U](f : BoolExp) : (Boolean, Option[List[Map[U,Boolean]]]) = {
+    val (cnf, m) = encode(f)
+    val mapRev = m map {
+      case (x, y) => (y, x)
+    }
+    val problem = new Problem
+    try {
+      cnf.foldLeft(problem) { (p, c) => p += Clause(c) }
+      val res = problem.enumerate
+      res match {
+        case (Satisfiable,list) => {        
+          val resList : List[Map[U,Boolean]] = list map { a => modelToMap[U](a, mapRev)}
+          (true, Some(resList))
+        }
+        case (Unsatisfiable,list) => (false, None)
+        case (Unknown,list) => { 
+          val resList : List[Map[U,Boolean]] = list map { a => modelToMap[U](a, mapRev)}
+          (false, Some(resList))
+        }
+      }
+    } catch {
+      case e: ContradictionException => (false, None)
+    }
   }
 
 }
