@@ -45,7 +45,7 @@ class Problem {
        else 
          Unsatisfiable
     } catch {
-      case _ =>  Unknown
+      case _:Throwable =>  Unknown
     }
   }
 
@@ -76,7 +76,7 @@ class Problem {
        else 
          (Unsatisfiable,List())
     } catch {
-      case _ =>  (Unknown,List())
+      case _:Throwable =>  (Unknown,List())
     }
   }
   
