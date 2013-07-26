@@ -68,6 +68,14 @@ object Logic {
         }
       }
     }
+    /* If the BoolExp is a literal, then the following function returns the name of the literal and its sign*/
+    def isALiteral: Option[(String,Boolean)] = this match {
+      case Ident(s) => Some(s.toString,true)
+      case Not(Ident(s)) => Some(s.toString,false)
+      case AnonymousVariable() => Some(this.toString,true)
+      case Not(AnonymousVariable()) => Some(this.toString,false)
+      case _ => None
+    }
   }
 
   /** Base class for boolean constants True and False. */
@@ -123,21 +131,21 @@ object Logic {
   }
 
   /** Logical negation operator. */
-  case class Not(b: BoolExp) extends BoolExp
+  private[Logic] case class Not(b: BoolExp) extends BoolExp
 
   abstract class Identifier extends BoolExp
   /** Logical proposition identifier. */
-  case class Ident[U](name: U) extends Identifier {
+  private[Logic] case class Ident[U](name: U) extends Identifier {
     def apply(indices: Int*) = IndexedIdent(name, indices.toList)
   }
 
   /** Logical proposition identifier. */
-  case class IndexedIdent[U](name: U, indices: List[Int] = Nil) extends Identifier {
+  private[Logic] case class IndexedIdent[U](name: U, indices: List[Int] = Nil) extends Identifier {
 
   }
 
   /** Anonymous logical proposition. */
-  case class AnonymousVariable extends BoolExp {
+  private[Logic] case class AnonymousVariable extends BoolExp {
     private val id = nextVarId
     override def toString = "_nv#" + id
     override def equals(o: Any) = o match {
