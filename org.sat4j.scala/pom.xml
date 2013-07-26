@@ -6,14 +6,19 @@
   <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <description>SAT4j Scala API</description>
-  <inceptionYear>2010</inceptionYear>
+  <inceptionYear>2012</inceptionYear>
   <licenses>
-    <license>
-      <name>My License</name>
-      <url>http://....</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  <license>
+    <name>Eclipse Public License 1.0</name>
+    <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
+    <distribution>Manual</distribution>
+  </license>
+  <license>
+    <name>GNU Lesser GPL 2.1</name>
+    <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+    <distribution>manual</distribution>
+  </license>
+</licenses>
 
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
@@ -94,6 +99,9 @@
               <goal>testCompile</goal>
             </goals>
             <configuration>
+              <excludes>
+                 <exclude>**/Flattener.scala</exclude>
+              </excludes>
               <args>
                 <arg>-make:transitive</arg>
                 <arg>-dependencyfile</arg>
