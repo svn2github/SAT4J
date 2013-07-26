@@ -50,8 +50,8 @@ class Problem {
   }
 
   def enumerate = {
-    try {
-      var sols = List[Array[Int]]()
+    var sols = List[Array[Int]]()
+    try {  
       val modelListener = new SolutionFoundListener() {
         def onSolutionFound(model: Array[Int]) = {
           sols = model :: sols
@@ -68,9 +68,9 @@ class Problem {
       if (sat)
         (Satisfiable, sols)
       else
-        (Unsatisfiable, List())
+        (Unsatisfiable, sols)
     } catch {
-      case _: Throwable => (Unknown, List())
+      case _: Throwable => (Unknown, sols)
     }
   }
 
