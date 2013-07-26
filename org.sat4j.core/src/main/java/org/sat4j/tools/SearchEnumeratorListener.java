@@ -30,8 +30,8 @@
 package org.sat4j.tools;
 
 import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 
 /**
  * That class allows to iterate over the models from the inside: conflicts are
@@ -77,6 +77,9 @@ public class SearchEnumeratorListener extends
     @Override
     public void end(Lbool result) {
         assert result != Lbool.TRUE;
+        if (result == Lbool.FALSE) {
+            sfl.onUnsatTermination();
+        }
     }
 
     public int getNumberOfSolutionFound() {
