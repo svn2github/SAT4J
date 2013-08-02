@@ -32,6 +32,7 @@ package org.sat4j.pb.constraints.pb;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -474,4 +475,8 @@ public class MinWatchPbLong extends WatchPbLong {
         return maxCoef;
     }
 
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+
+    }
 }

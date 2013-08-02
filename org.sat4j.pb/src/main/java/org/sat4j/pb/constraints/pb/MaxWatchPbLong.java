@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -331,4 +332,47 @@ public final class MaxWatchPbLong extends WatchPbLong {
         return new MaxWatchPbLong(voc, mpb);
     }
 
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        this.voc.watch(p, this);
+
+        // compute the new value for watchCumul
+        long coefP;
+        if (this.litToCoeffs == null) {
+            // finding the index for p in the array of literals
+            int indiceP = 0;
+            while ((this.lits[indiceP] ^ 1) != p) {
+                indiceP++;
+            }
+
+            // compute the new value for watchCumul
+            coefP = this.coefs[indiceP];
+        } else {
+            coefP = this.litToCoeffs.get(p ^ 1);
+        }
+
+        long newcumul = this.watchCumul - coefP;
+
+        // if no conflict, not(p) can be propagated
+        // allow a later un-assignation
+        this.voc.undos(p).push(this);
+        // really update watchCumul
+        this.watchCumul = newcumul;
+
+        // propagation
+        int ind = 0;
+        // limit is the margin between the sum of the coefficients of the
+        // satisfied+unassigned literals
+        // and the degree of the constraint
+        long limit = this.watchCumul - this.degree;
+        // for each coefficient greater than limit
+        while (ind < this.coefs.length && limit < this.coefs[ind]) {
+            // its corresponding literal is implied
+            if (!this.voc.isFalsified(this.lits[ind])) {
+                l.isMandatory(this.lits[ind]);
+            }
+            ind++;
+        }
+        return true;
+
+    }
 }
