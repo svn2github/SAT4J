@@ -1396,6 +1396,18 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     private int[] prime;
 
     public int[] primeImplicant() {
+        String primeApproach = System.getProperty("prime");
+        if ("BRESIL".equals(primeApproach)) {
+            return primeImplicantBresil();
+        }
+        if ("ALGO2".equals(primeApproach)) {
+            return primeImplicantAlgo2();
+        }
+        return primeImplicantOld();
+
+    }
+
+    public int[] primeImplicantOld() {
         assert this.qhead == this.trail.size() + this.learnedLiterals.size();
         long begin = System.currentTimeMillis();
         if (this.learnedLiterals.size() > 0) {
