@@ -53,6 +53,17 @@ public interface Propagatable {
     boolean propagate(UnitPropagationListener s, int p);
 
     /**
+     * Specific procedure for computing the prime implicants of a formula.
+     * 
+     * @param l
+     *            an object to gather mandatory literals.
+     * @param p
+     *            the falsified literal
+     * @return
+     */
+    boolean propagatePI(MandatoryLiteralListener l, int p);
+
+    /**
      * Allow to access a constraint view of the propagatable to avoid casting.
      * In most cases, the constraint will implement directly propagatable thus
      * will return itself. It will also also the implementation of more

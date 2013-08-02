@@ -35,6 +35,7 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.specs.ContradictionException;
@@ -331,7 +332,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
      * @return false if an inconistency is detected, else true
      */
     public boolean propagate(UnitPropagationListener s, int p) {
-
+        this.savedindex = this.degree + 1;
         // Si la contrainte est responsable de propagation unitaire
         if (this.watchCumul == this.degree) {
             this.voc.watch(p, this);
@@ -639,5 +640,48 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
             assert voc.isFalsified(q);
             outReason.push(q ^ 1);
         }
+    }
+    
+    private int savedindex = this.degree + 1;
+
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        // Recherche du litt?ral falsifi?
+        int indFalsified = 0;
+        while ((this.lits[indFalsified] ^ 1) != p) {
+            indFalsified++;
+        }
+        assert this.watchCumul > this.degree;
+
+        // Recherche du litt?ral swap
+        int indSwap = this.savedindex;
+        while (indSwap < this.lits.length
+                && this.voc.isFalsified(this.lits[indSwap])) {
+            indSwap++;
+        }
+
+        // Mise ? jour de la contrainte
+        if (indSwap == this.lits.length) {
+            // Si aucun litt?ral n'a ?t? trouv?
+            this.voc.watch(p, this);
+
+            // On met en queue les litt?raux impliqu?s
+            for (int i = 0; i <= this.degree; i++) {
+                if (p != (this.lits[i] ^ 1)) {
+                    l.isMandatory(this.lits[i]);
+                }
+            }
+            return true;
+        }
+        this.savedindex = indSwap + 1;
+        // Si un litt?ral a ?t? trouv? on les ?change
+        int tmpInt = this.lits[indSwap];
+        this.lits[indSwap] = this.lits[indFalsified];
+        this.lits[indFalsified] = tmpInt;
+
+        // On observe le nouveau litt?ral
+        this.voc.watch(tmpInt ^ 1, this);
+
+        return true;
+
     }
 }

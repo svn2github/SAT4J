@@ -32,6 +32,7 @@ package org.sat4j.minisat.constraints.cnf;
 import static org.sat4j.core.LiteralsUtils.neg;
 
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -99,5 +100,9 @@ public class OriginalHTClause extends HTClause {
 
     public void setActivity(double claInc) {
         // do nothing
+    }
+
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 }

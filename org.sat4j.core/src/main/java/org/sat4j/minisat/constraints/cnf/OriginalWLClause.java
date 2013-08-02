@@ -30,6 +30,7 @@
 package org.sat4j.minisat.constraints.cnf;
 
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -94,6 +95,40 @@ public final class OriginalWLClause extends WLClause {
      */
     public void incActivity(double claInc) {
 
+    }
+
+    private int savedindex = 2;
+
+    public boolean propagatePI(MandatoryLiteralListener s, int p) {
+        final int[] mylits = this.lits;
+        // Lits[1] must contain a falsified literal
+        if (mylits[0] == (p ^ 1)) {
+            mylits[0] = mylits[1];
+            mylits[1] = p ^ 1;
+        }
+        // assert mylits[1] == (p ^ 1);
+        int previous = p ^ 1;
+        // look for a new satisfied literal to watch
+        for (int i = savedindex; i < mylits.length; i++) {
+            if (this.voc.isSatisfied(mylits[i])) {
+                mylits[1] = mylits[i];
+                mylits[i] = previous;
+                this.voc.watch(mylits[1] ^ 1, this);
+                savedindex = i + 1;
+                return true;
+            }
+        }
+        // the clause is now either unit
+        this.voc.watch(p, this);
+        // first literal is mandatory
+        s.isMandatory(mylits[0]);
+        return true;
+    }
+
+    @Override
+    public boolean propagate(UnitPropagationListener s, int p) {
+        this.savedindex = 2;
+        return super.propagate(s, p);
     }
 
 }

@@ -53,6 +53,8 @@ import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.constraints.cnf.BinaryClause;
+import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ILogAble;
@@ -73,7 +75,7 @@ import org.sat4j.specs.UnitClauseProvider;
  * @author leberre
  */
 public class Solver<D extends DataStructureFactory> implements ISolverService,
-        ICDCL<D> {
+        ICDCL<D>, MandatoryLiteralListener {
 
     private static final long serialVersionUID = 1L;
 
@@ -1052,7 +1054,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             int p = ltrail.get(this.qhead++);
             lslistener.propagating(toDimacs(p), null);
             lorder.assignLiteral(p);
-            Constr confl = reduceClausesForFalsifiedLiteral(p);
+            Constr confl = reduceClausesContainingTheNegationOf(p);
             if (confl != null) {
                 return confl;
             }
@@ -1060,7 +1062,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return null;
     }
 
-    private Constr reduceClausesForFalsifiedLiteral(int p) {
+    private Constr reduceClausesContainingTheNegationOf(int p) {
         // p is the literal to propagate
         // Moved original MiniSAT code to dsfactory to avoid
         // watches manipulation in counter Based clauses for instance.
@@ -1090,6 +1092,19 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 this.qhead = this.trail.size(); // propQ.clear();
                 return lwatched.get(i).toConstraint();
             }
+        }
+        return null;
+    }
+
+    private Constr reduceClausesContainingTheNegationOfPI(int p) {
+        assert p > 1;
+        IVec<Propagatable> lwatched = this.watched;
+        lwatched.clear();
+        this.voc.watches(p).moveTo(lwatched);
+        final int size = lwatched.size();
+        for (int i = 0; i < size; i++) {
+            this.stats.inspects++;
+            lwatched.get(i).propagatePI(this, p);
         }
         return null;
     }
@@ -1306,7 +1321,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 if (!this.voc.isUnassigned(p)) {
                     tempmodel.push(this.voc.isSatisfied(p) ? i : -i);
                     this.userbooleanmodel[i - 1] = this.voc.isSatisfied(p);
-                    if (this.voc.getReason(p) == null && voc.getLevel(p) > 0) {
+                    if (this.voc.getReason(p) == null
+                            && this.voc.getLevel(p) > 0) {
                         this.decisions.push(tempmodel.last());
                     } else {
                         this.implied.push(tempmodel.last());
@@ -1352,10 +1368,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.voc.forgets(var);
         Constr confl;
         if (satisfied) {
-            confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
+            confl = reduceClausesContainingTheNegationOf(LiteralsUtils
                     .toInternal(-var));
         } else {
-            confl = reduceClausesForFalsifiedLiteral(LiteralsUtils
+            confl = reduceClausesContainingTheNegationOf(LiteralsUtils
                     .toInternal(var));
         }
         return confl;
@@ -1381,6 +1397,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public int[] primeImplicant() {
         assert this.qhead == this.trail.size() + this.learnedLiterals.size();
+        long begin = System.currentTimeMillis();
         if (this.learnedLiterals.size() > 0) {
             this.qhead = trail.size();
         }
@@ -1456,13 +1473,154 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 implicant[index++] = i;
             }
         }
+        long end = System.currentTimeMillis();
         if (isVerbose()) {
-            System.out.printf("%s prime implicant computation statistics%n",
+            System.out.printf(
+                    "%s prime implicant computation statistics ORIG%n",
                     getLogPrefix());
             System.out
-                    .printf("%s implied: %d, decision: %d (removed %d, tested %d, propagated %d), l2 propagation:%d%n",
+                    .printf("%s implied: %d, decision: %d (removed %d, tested %d, propagated %d), l2 propagation:%d, time(ms):%d %n",
                             getLogPrefix(), implied.size(), decisions.size(),
-                            removed, tested, propagated, l2propagation);
+                            removed, tested, propagated, l2propagation, end
+                                    - begin);
+        }
+        return implicant;
+    }
+
+    public void isMandatory(int p) {
+        prime[var(p)] = toDimacs(p);
+    }
+
+    public int[] primeImplicantBresil() {
+        assert this.qhead == this.trail.size() + this.learnedLiterals.size();
+        long begin = System.currentTimeMillis();
+        if (this.learnedLiterals.size() > 0) {
+            this.qhead = trail.size();
+        }
+        this.prime = new int[voc.nVars() + 1];
+        int p;
+        for (int i = 0; i < this.prime.length; i++) {
+            this.prime[i] = 0;
+        }
+        // unit clauses need to be handled specifically
+        for (int i = 0; i < trail.size(); i++) {
+            isMandatory(trail.get(i));
+        }
+        for (int d : fullmodel) {
+            assume(toInternal(d));
+        }
+        for (int d : fullmodel) {
+            reduceClausesContainingTheNegationOfPI(toInternal(d));
+        }
+
+        int removed = 0;
+        int propagated = 0;
+        for (int d : fullmodel) {
+            if (this.prime[Math.abs(d)] != 0) {
+                // d has been propagated
+                propagated++;
+            } else {
+                // it is not a mandatory literal
+                forget(Math.abs(d));
+                reduceClausesContainingTheNegationOfPI(toInternal(-d));
+                removed++;
+            }
+        }
+        cancelUntil(0);
+        int[] implicant = new int[this.prime.length - removed - 1];
+        int index = 0;
+        for (int i : this.prime) {
+            if (i != 0) {
+                implicant[index++] = i;
+            }
+        }
+        long end = System.currentTimeMillis();
+        if (isVerbose()) {
+            System.out.printf(
+                    "%s prime implicant computation statistics BRESIL%n",
+                    getLogPrefix());
+            System.out
+                    .printf("%s implied: %d, decision: %d (removed %d, propagated %d), time(ms):%d %n",
+                            getLogPrefix(), implied.size(), decisions.size(),
+                            removed, propagated, end - begin);
+        }
+        return implicant;
+    }
+
+    public int[] primeImplicantAlgo2() {
+        long begin = System.currentTimeMillis();
+        IVecInt[] watched = new IVecInt[voc.nVars() * 2 + 2];
+        for (int d : fullmodel) {
+            watched[toInternal(d)] = new VecInt();
+        }
+        int[] count = new int[constrs.size()];
+        Constr constr;
+        IVecInt watch;
+        for (int i = 0; i < constrs.size(); i++) {
+            constr = constrs.get(i);
+            if (!(constr instanceof WLClause || constr instanceof BinaryClause)) {
+                throw new IllegalStateException(
+                        "Algo2 does not work with constraints other than clauses "
+                                + constr.getClass());
+            }
+            count[i] = 0;
+            for (int j = 0; j < constr.size(); j++) {
+                watch = watched[constr.get(j)];
+                if (watch != null) {
+                    // satisfied literal
+                    watch.push(i);
+                }
+            }
+        }
+        for (int d : fullmodel) {
+            for (IteratorInt it = watched[toInternal(d)].iterator(); it
+                    .hasNext();) {
+                count[it.next()]++;
+            }
+        }
+        this.prime = new int[voc.nVars() + 1];
+        int d;
+        for (int i = 0; i < this.prime.length; i++) {
+            this.prime[i] = 0;
+        }
+        for (IteratorInt it = this.implied.iterator(); it.hasNext();) {
+            d = it.next();
+            this.prime[Math.abs(d)] = d;
+        }
+        int removed = 0;
+        int propagated = 0;
+        top: for (int i = 0; i < this.decisions.size(); i++) {
+            d = this.decisions.get(i);
+            for (IteratorInt it = watched[toInternal(d)].iterator(); it
+                    .hasNext();) {
+                if (count[it.next()] == 1) {
+                    this.prime[Math.abs(d)] = d;
+                    propagated++;
+                    continue top;
+                }
+            }
+            removed++;
+            for (IteratorInt it = watched[toInternal(d)].iterator(); it
+                    .hasNext();) {
+                count[it.next()]--;
+            }
+        }
+        int[] implicant = new int[this.prime.length - removed - 1];
+        int index = 0;
+        for (int i : this.prime) {
+            if (i != 0) {
+                implicant[index++] = i;
+            }
+        }
+        long end = System.currentTimeMillis();
+        if (isVerbose()) {
+            System.out.printf(
+                    "%s prime implicant computation statistics ALGO2%n",
+                    getLogPrefix());
+            System.out
+                    .printf("%s implied: %d, decision: %d (removed %d, propagated %d), time(ms):%d %n",
+                            getLogPrefix(), implied.size(), decisions.size(),
+                            removed, propagated, end - begin);
         }
         return implicant;
     }

@@ -35,6 +35,7 @@ import java.io.Serializable;
 
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
@@ -117,6 +118,17 @@ public abstract class BinaryClause implements Propagatable, Constr,
         }
         assert this.tail == neg(p);
         return s.enqueue(this.head, this);
+    }
+
+    public boolean propagatePI(MandatoryLiteralListener m, int p) {
+        this.voc.watch(p, this);
+        if (this.head == neg(p)) {
+            m.isMandatory(this.tail);
+            return true;
+        }
+        assert this.tail == neg(p);
+        m.isMandatory(this.head);
+        return true;
     }
 
     /*

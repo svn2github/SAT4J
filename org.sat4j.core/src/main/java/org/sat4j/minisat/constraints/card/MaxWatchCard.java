@@ -36,6 +36,7 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
 import org.sat4j.specs.ContradictionException;
@@ -459,5 +460,10 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
         throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+
     }
 }

@@ -30,6 +30,7 @@
 package org.sat4j.minisat.constraints.cnf;
 
 import org.sat4j.minisat.core.Constr;
+import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -124,5 +125,10 @@ public class UnitClauses implements Constr {
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
         calcReason(p, outReason);
+    }
+
+    public void propagatePi(MandatoryLiteralListener m) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+
     }
 }
