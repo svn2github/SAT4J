@@ -4,7 +4,7 @@
   <groupId>org.ow2.sat4j</groupId>
   <artifactId>org.ow2.sat4j.scala</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>${project.artifactId}</name>
+  <name>SAT4J scala api</name>
   <description>SAT4j Scala API</description>
   <inceptionYear>2012</inceptionYear>
   <licenses>
