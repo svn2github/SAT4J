@@ -9,7 +9,7 @@
   <groupId>org.ow2.sat4j</groupId>
   <artifactId>org.ow2.sat4j.pom</artifactId>
   <packaging>pom</packaging>
-  <version>2.3.5-SNAPSHOT</version>
+  <version>2.3.6-SNAPSHOT</version>
   <name>SAT4J</name>
   <url>http://www.sat4j.org/</url>
   <description>
