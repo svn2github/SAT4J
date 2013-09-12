@@ -30,6 +30,7 @@
 package org.sat4j.pb.multiobjective;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.sat4j.core.Vec;
@@ -44,128 +45,134 @@ import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolutionFoundListener;
 
 public class SortedMultiObjectiveValuesHelper<T, C> extends
-        DependencyHelper<T, C> implements SolutionFoundListener {
+		DependencyHelper<T, C> implements SolutionFoundListener {
 
-    private final SortedMultiObjectiveValuesSolver multiObjSolver;
+	private final SortedMultiObjectiveValuesSolver multiObjSolver;
 
-    public SortedMultiObjectiveValuesHelper(
-            SortedMultiObjectiveValuesSolver solver) {
-        super(new OptToPBSATAdapter(solver));
-        this.multiObjSolver = solver;
-        solver.setSolutionFoundListener(this);
-    }
+	public SortedMultiObjectiveValuesHelper(
+			SortedMultiObjectiveValuesSolver solver) {
+		super(new OptToPBSATAdapter(solver));
+		this.multiObjSolver = solver;
+		solver.setSolutionFoundListener(this);
+	}
 
-    public SortedMultiObjectiveValuesHelper(
-            SortedMultiObjectiveValuesSolver solver, boolean explanationEnabled) {
-        super(new OptToPBSATAdapter(solver), explanationEnabled);
-        this.multiObjSolver = solver;
-        solver.setSolutionFoundListener(this);
-    }
+	public SortedMultiObjectiveValuesHelper(
+			SortedMultiObjectiveValuesSolver solver, boolean explanationEnabled) {
+		super(new OptToPBSATAdapter(solver), explanationEnabled);
+		this.multiObjSolver = solver;
+		solver.setSolutionFoundListener(this);
+	}
 
-    public SortedMultiObjectiveValuesHelper(
-            SortedMultiObjectiveValuesSolver solver,
-            boolean explanationEnabled, boolean canonicalOptFunctionEnabled) {
-        super(new OptToPBSATAdapter(solver), explanationEnabled,
-                canonicalOptFunctionEnabled);
-        this.multiObjSolver = solver;
-        solver.setSolutionFoundListener(this);
-    }
+	public SortedMultiObjectiveValuesHelper(
+			SortedMultiObjectiveValuesSolver solver,
+			boolean explanationEnabled, boolean canonicalOptFunctionEnabled) {
+		super(new OptToPBSATAdapter(solver), explanationEnabled,
+				canonicalOptFunctionEnabled);
+		this.multiObjSolver = solver;
+		solver.setSolutionFoundListener(this);
+	}
 
-    private boolean hasASolution;
+	private boolean hasASolution;
 
-    public void addCriterion(Collection<T> things) {
-        IVecInt literals = new VecInt(things.size());
-        for (T thing : things) {
-            literals.push(getIntValue(thing));
-        }
-        this.multiObjSolver
-                .addObjectiveFunction(new ObjectiveFunction(literals,
-                        new Vec<BigInteger>(literals.size(), BigInteger.ONE)));
-    }
+	public void addCriterion(Collection<T> things) {
+		IVecInt literals = new VecInt(things.size());
+		for (T thing : things) {
+			literals.push(getIntValue(thing));
+		}
+		this.multiObjSolver
+				.addObjectiveFunction(new ObjectiveFunction(literals,
+						new Vec<BigInteger>(literals.size(), BigInteger.ONE)));
+	}
 
-    public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
-        IVecInt literals = new VecInt(things.size());
-        IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
-        for (WeightedObject<T> wo : things) {
-            literals.push(getIntValue(wo.thing));
-            coefs.push(wo.getWeight());
-        }
-        this.multiObjSolver.addObjectiveFunction(new ObjectiveFunction(
-                literals, coefs));
-    }
+	public void addWeightedCriterion(Collection<WeightedObject<T>> things) {
+		IVecInt literals = new VecInt(things.size());
+		IVec<BigInteger> coefs = new Vec<BigInteger>(things.size());
+		for (WeightedObject<T> wo : things) {
+			literals.push(getIntValue(wo.thing));
+			coefs.push(wo.getWeight());
+		}
+		this.multiObjSolver.addObjectiveFunction(new ObjectiveFunction(
+				literals, coefs));
 
-    /**
-     * 
-     * @return true if the set of constraints entered inside the solver can be
-     *         satisfied.
-     * @throws TimeoutException
-     */
-    @Override
-    public boolean hasASolution() throws TimeoutException {
-        try {
-            return super.hasASolution();
-        } catch (TimeoutException e) {
-            if (this.hasASolution) {
-                return true;
-            } else {
-                throw e;
-            }
-        }
-    }
+	}
 
-    /**
-     * 
-     * @return true if the set of constraints entered inside the solver can be
-     *         satisfied.
-     * @throws TimeoutException
-     */
-    @Override
-    public boolean hasASolution(IVec<T> assumps) throws TimeoutException {
-        try {
-            return super.hasASolution(assumps);
-        } catch (TimeoutException e) {
-            if (this.hasASolution) {
-                return true;
-            } else {
-                throw e;
-            }
-        }
-    }
+	/**
+	 * 
+	 * @return true if the set of constraints entered inside the solver can be
+	 *         satisfied.
+	 * @throws TimeoutException
+	 */
+	@Override
+	public boolean hasASolution() throws TimeoutException {
+		try {
+			return super.hasASolution();
+		} catch (TimeoutException e) {
+			if (this.hasASolution) {
+				return true;
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    /**
-     * 
-     * @return true if the set of constraints entered inside the solver can be
-     *         satisfied.
-     * @throws TimeoutException
-     */
-    @Override
-    public boolean hasASolution(Collection<T> assumps) throws TimeoutException {
-        try {
-            return super.hasASolution(assumps);
-        } catch (TimeoutException e) {
-            if (this.hasASolution) {
-                return true;
-            } else {
-                throw e;
-            }
-        }
-    }
+	/**
+	 * 
+	 * @return true if the set of constraints entered inside the solver can be
+	 *         satisfied.
+	 * @throws TimeoutException
+	 */
+	@Override
+	public boolean hasASolution(IVec<T> assumps) throws TimeoutException {
+		try {
+			return super.hasASolution(assumps);
+		} catch (TimeoutException e) {
+			if (this.hasASolution) {
+				return true;
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    public boolean isOptimal() {
-        return this.multiObjSolver.isOptimal();
-    }
+	/**
+	 * 
+	 * @return true if the set of constraints entered inside the solver can be
+	 *         satisfied.
+	 * @throws TimeoutException
+	 */
+	@Override
+	public boolean hasASolution(Collection<T> assumps) throws TimeoutException {
+		try {
+			return super.hasASolution(assumps);
+		} catch (TimeoutException e) {
+			if (this.hasASolution) {
+				return true;
+			} else {
+				throw e;
+			}
+		}
+	}
 
-    public void onSolutionFound(int[] solution) {
-        this.hasASolution = true;
-    }
+	@Override
+	public void setObjectiveFunction(WeightedObject<T>... wobj) {
+		addWeightedCriterion(Arrays.asList(wobj));
+	}
 
-    public void onSolutionFound(IVecInt solution) {
-        this.hasASolution = true;
+	public boolean isOptimal() {
+		return this.multiObjSolver.isOptimal();
+	}
 
-    }
+	public void onSolutionFound(int[] solution) {
+		this.hasASolution = true;
+	}
 
-    public void onUnsatTermination() {
-        // nothing to do here
-    }
+	public void onSolutionFound(IVecInt solution) {
+		this.hasASolution = true;
+
+	}
+
+	public void onUnsatTermination() {
+		// nothing to do here
+	}
 
 }

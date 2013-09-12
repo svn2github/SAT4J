@@ -248,8 +248,9 @@ public class DependencyHelper<T, C> {
 		IVec<T> toInstall = new Vec<T>();
 		if (model != null) {
 			for (int i : model) {
-				if (i > 0) {
-					toInstall.push(this.mapToDomain.get(i));
+				T obj = this.mapToDomain.get(i);
+				if (obj != null) {
+					toInstall.push(obj);
 				}
 			}
 		}
