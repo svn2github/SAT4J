@@ -445,7 +445,8 @@
 
 			<batchtest fork="yes" todir="${testreport.dir}">
 				<fileset dir="${build}">
-				        <include name="**/*Test*.class" />
+					<include name="**/*Test*.class" />
+					<include name="**/*Bug*.class" />
 					<exclude name="**/AllTests.class" />
 					<exclude name="**/Abstract*Test*.class" />
 					<exclude name="**/XplainTests*"/>
