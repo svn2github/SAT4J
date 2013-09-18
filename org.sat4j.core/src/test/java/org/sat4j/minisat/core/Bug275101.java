@@ -78,6 +78,22 @@ public class Bug275101 {
         assertEquals(3, solver.model().length);
         System.out.println("" + solver.model(1) + solver.model(2)
                 + solver.model(3));
+        assertTrue(solver.isSatisfiable());
+        assertEquals(3, solver.model().length);
+        System.out.println("" + solver.model(1) + solver.model(2)
+                + solver.model(3));
+        assertTrue(solver.isSatisfiable());
+        assertEquals(3, solver.model().length);
+        System.out.println("" + solver.model(1) + solver.model(2)
+                + solver.model(3));
+        assertTrue(solver.isSatisfiable());
+        assertEquals(3, solver.model().length);
+        System.out.println("" + solver.model(1) + solver.model(2)
+                + solver.model(3));
+        assertTrue(solver.isSatisfiable());
+        assertEquals(3, solver.model().length);
+        System.out.println("" + solver.model(1) + solver.model(2)
+                + solver.model(3));
         assertFalse(solver.isSatisfiable());
     }
 
