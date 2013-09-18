@@ -197,7 +197,7 @@ public class VarOrderHeap implements IOrder, Serializable {
     }
 
     /**
-     * that method has the responsability to initialize all arrays in the
+     * that method has the responsibility to initialize all arrays in the
      * heuristics. PLEASE CALL super.init() IF YOU OVERRIDE THAT METHOD.
      */
     public void init() {
