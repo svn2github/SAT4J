@@ -56,7 +56,7 @@ public class BugSAT21 {
         int[] constr = { -1, 2 };
 
         pbSolver.addAtLeast(new VecInt(constr), 1);
-        String expected = "* #variable= 2 #constraint= 1 \n\n-1 x1 +1 x2 >= 0 ;\n";
+        String expected = "* #variable= 2 #constraint= 1\n-1 x1 +1 x2 >= 0 ;\n";
         assertEquals(expected, pbSolver.toString());
 
     }
@@ -98,7 +98,7 @@ public class BugSAT21 {
         int[] constr = { -1, 2 };
 
         pbSolver.addAtMost(new VecInt(constr), 1);
-        String expected = "* #variable= 2 #constraint= 1 \n\n+1 x1 -1 x2 >= 0 ;\n";
+        String expected = "* #variable= 2 #constraint= 1\n+1 x1 -1 x2 >= 0 ;\n";
         assertEquals(expected, pbSolver.toString());
 
     }
