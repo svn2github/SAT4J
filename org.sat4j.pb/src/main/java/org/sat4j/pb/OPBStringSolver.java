@@ -189,7 +189,7 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
                 negationweight++;
             }
         }
-        out.append(">=" + (1 - negationweight) + ";\n");
+        out.append(">= " + (1 - negationweight) + " ;\n");
         return FAKE_CONSTR;
     }
 
