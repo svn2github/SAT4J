@@ -2068,6 +2068,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.userbooleanmodel = null;
         this.prime = null;
         this.unsatExplanationInTermsOfAssumptions = null;
+        // To make sure that new literals in the assumptions appear in the
+        // solver data structures
+        IVecInt localAssumps = new VecInt(assumps.size());
+        for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
+            int assump = iterator.next();
+            localAssumps.push(this.voc.getFromPool(assump));
+        }
         if (!alreadylaunched || !this.keepHot) {
             this.order.init();
         }
@@ -2105,16 +2112,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
 
         // push incremental assumptions
-        for (IteratorInt iterator = assumps.iterator(); iterator.hasNext();) {
-            int assump = iterator.next();
-            int p = this.voc.getFromPool(assump);
+        for (IteratorInt iterator = localAssumps.iterator(); iterator.hasNext();) {
+            int p = iterator.next();
             if (!this.voc.isSatisfied(p) && !assume(p)
                     || (confl = propagate()) != null) {
                 if (confl == null) {
                     this.slistener.conflictFound(p);
                     this.unsatExplanationInTermsOfAssumptions = analyzeFinalConflictInTermsOfAssumptions(
                             null, assumps, p);
-                    this.unsatExplanationInTermsOfAssumptions.push(assump);
+                    this.unsatExplanationInTermsOfAssumptions.push(toDimacs(p));
                 } else {
                     this.slistener.conflictFound(confl, decisionLevel(),
                             this.trail.size());
@@ -2131,9 +2137,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.rootLevel = decisionLevel();
         // moved initialization here if new literals are added in the
         // assumptions.
-        if (!alreadylaunched || !this.keepHot) {
-            this.order.init(); // duplicated on purpose
-        }
         this.learner.init();
 
         if (!alreadylaunched) {
