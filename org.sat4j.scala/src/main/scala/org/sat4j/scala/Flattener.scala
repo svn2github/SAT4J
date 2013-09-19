@@ -92,118 +92,118 @@ class Flattener {
 	  case False => {
 		  NegativeLiteral(0)
 	  }
-	  case ident@Ident(s) => {
-		  val x = newLiteral
-		  identifierMap += (ident -> x)
-		  x
-	  }
-	  case ident@IndexedIdent(s, l) => {
-		  val x = newLiteral
-		  identifierMap += (ident -> x)
-		  x
-	  }
-	  case Not(Not(l)) => {
-		  apply(l)
-	  }
-	  case Not(l) => {
-		  !apply(l)
-	  }
-	  
-	  case And(False, _) => apply(False)
-	  case And(_, False) => apply(False)
-	  case And(True, r) => apply(r)
-	  case And(l, True) => apply(l)
-	  
-	  case And(l, r) => {
-		  val x = newLiteral
-		  val tl = apply(l)
-		  val tr = apply(r)
-		  constraints += new FlatClause(x, !tl, !tr)
-		  constraints += new FlatClause(!x, tl)
-		  constraints += new FlatClause(!x, tr)
-		  x
-	  }
-
-	  case Or(False, r) => apply(r)
-	  case Or(l, False) => apply(l)
-	  case Or(True, _) => apply(True)
-	  case Or(_, True) => apply(True)
-	  
-	  case Or(l, r) => {
-		  val x = newLiteral
-		  val tl = apply(l)
-		  val tr = apply(r)
-		  constraints += new FlatClause(!x, tl, tr)
-		  constraints += new FlatClause(x, !tl)
-		  constraints += new FlatClause(x, !tr)
-		  x
-	  }
-
-	  case Implies(False, _) => apply(True)
-	  case Implies(True, r) => apply(r)
-	  case Implies(l, False) => apply(Not(l))
-	  
-	  case Implies(l, r) => {
-		  val x = newLiteral
-		  val tl = apply(l)
-		  val tr = apply(r)
-		  constraints += new FlatClause(!x, !tl, tr)
-		  constraints += new FlatClause(x, tl)
-		  constraints += new FlatClause(x, !tr)
-		  x
-	  }
-	  
-	  case Iff(True, r) => apply(r)
-	  case Iff(False, r) => apply(Not(r))
-	  case Iff(l, True) => apply(l)
-	  case Iff(l, False) => apply(Not(l))
-	  case Iff(l, r) => {
-		  val x = newLiteral
-		  val tl = apply(l)
-		  val tr = apply(r)
-		  constraints += new FlatClause(!x, !tl, tr)
-		  constraints += new FlatClause(!x, tl, !tr)
-		  constraints += new FlatClause(x, tl, tr)
-		  constraints += new FlatClause(x, !tl, !tr)
-		  x
-	  }
-	  
-	  case CardEQ(es, k) => apply(And(CardLE(es,k), CardGE(es,k)))
-
-	  /*
-	   *  x1 + ... + xn <= k equivalent to literal x with
-	   * (x + ...(k+1 times)... + x)  + x1 + ... + xn >= k+1
-	   * (x + ...(n times)... + x)  + x1 + ... + xn <= n + k
-	   */
-	  case CardLE(es, k) => {
-		  val x = newLiteral
-		  val n = es.size
-		  val kp1x = (1 to k+1).toList map { _ => x }
-		  val nx = (1 to n).toList map { _ => x }
-		  val tes = es map { apply }
-		  constraints += new FlatAtLeast(tes.reverse_:::(kp1x), k + 1)
-		  constraints += new FlatAtMost(tes.reverse_:::(nx), n + k )
-		  x
-	  }
-
-	  case CardLT(es, k) => apply(CardLE(es, k-1))
-	  
-	  /*
-	   *  x1 + ... + xn >= k equivalent to literal x with
-	   * (!x + ...(k times)... + !x)  + x1 + ... + xn >= k
-	   * (!x + ...(n times)... + !x)  + x1 + ... + xn <= n + k - 1
-	   */
-	  case CardGE(es, k) => {
-		  val x = newLiteral
-		  val n = es.size
-		  val kx = (1 to k).toList map { _ => !x }
-		  val nx = (1 to n).toList map { _ => !x }
-		  val tes = es map { apply }
-		  constraints += new FlatAtLeast(tes.reverse_:::(kx), k)
-		  constraints += new FlatAtMost(tes.reverse_:::(nx), n + k - 1)
-		  x
-	  }
-	  
-	  case CardGT(es, k) => apply(CardGE(es, k+1))
+//	  case ident@Ident(s) => {
+//		  val x = newLiteral
+//		  identifierMap += (ident -> x)
+//		  x
+//	  }
+//	  case ident@IndexedIdent(s, l) => {
+//		  val x = newLiteral
+//		  identifierMap += (ident -> x)
+//		  x
+//	  }
+//	  case Not(Not(l)) => {
+//		  apply(l)
+//	  }
+//	  case Not(l) => {
+//		  !apply(l)
+//	  }
+//	  
+//	  case And(False, _) => apply(False)
+//	  case And(_, False) => apply(False)
+//	  case And(True, r) => apply(r)
+//	  case And(l, True) => apply(l)
+//	  
+//	  case And(l, r) => {
+//		  val x = newLiteral
+//		  val tl = apply(l)
+//		  val tr = apply(r)
+//		  constraints += new FlatClause(x, !tl, !tr)
+//		  constraints += new FlatClause(!x, tl)
+//		  constraints += new FlatClause(!x, tr)
+//		  x
+//	  }
+//
+//	  case Or(False, r) => apply(r)
+//	  case Or(l, False) => apply(l)
+//	  case Or(True, _) => apply(True)
+//	  case Or(_, True) => apply(True)
+//	  
+//	  case Or(l, r) => {
+//		  val x = newLiteral
+//		  val tl = apply(l)
+//		  val tr = apply(r)
+//		  constraints += new FlatClause(!x, tl, tr)
+//		  constraints += new FlatClause(x, !tl)
+//		  constraints += new FlatClause(x, !tr)
+//		  x
+//	  }
+//
+//	  case Implies(False, _) => apply(True)
+//	  case Implies(True, r) => apply(r)
+//	  case Implies(l, False) => apply(Not(l))
+//	  
+//	  case Implies(l, r) => {
+//		  val x = newLiteral
+//		  val tl = apply(l)
+//		  val tr = apply(r)
+//		  constraints += new FlatClause(!x, !tl, tr)
+//		  constraints += new FlatClause(x, tl)
+//		  constraints += new FlatClause(x, !tr)
+//		  x
+//	  }
+//	  
+//	  case Iff(True, r) => apply(r)
+//	  case Iff(False, r) => apply(Not(r))
+//	  case Iff(l, True) => apply(l)
+//	  case Iff(l, False) => apply(Not(l))
+//	  case Iff(l, r) => {
+//		  val x = newLiteral
+//		  val tl = apply(l)
+//		  val tr = apply(r)
+//		  constraints += new FlatClause(!x, !tl, tr)
+//		  constraints += new FlatClause(!x, tl, !tr)
+//		  constraints += new FlatClause(x, tl, tr)
+//		  constraints += new FlatClause(x, !tl, !tr)
+//		  x
+//	  }
+//	  
+//	  case CardEQ(es, k) => apply(And(CardLE(es,k), CardGE(es,k)))
+//
+//	  /*
+//	   *  x1 + ... + xn <= k equivalent to literal x with
+//	   * (x + ...(k+1 times)... + x)  + x1 + ... + xn >= k+1
+//	   * (x + ...(n times)... + x)  + x1 + ... + xn <= n + k
+//	   */
+//	  case CardLE(es, k) => {
+//		  val x = newLiteral
+//		  val n = es.size
+//		  val kp1x = (1 to k+1).toList map { _ => x }
+//		  val nx = (1 to n).toList map { _ => x }
+//		  val tes = es map { apply }
+//		  constraints += new FlatAtLeast(tes.reverse_:::(kp1x), k + 1)
+//		  constraints += new FlatAtMost(tes.reverse_:::(nx), n + k )
+//		  x
+//	  }
+//
+//	  case CardLT(es, k) => apply(CardLE(es, k-1))
+//	  
+//	  /*
+//	   *  x1 + ... + xn >= k equivalent to literal x with
+//	   * (!x + ...(k times)... + !x)  + x1 + ... + xn >= k
+//	   * (!x + ...(n times)... + !x)  + x1 + ... + xn <= n + k - 1
+//	   */
+//	  case CardGE(es, k) => {
+//		  val x = newLiteral
+//		  val n = es.size
+//		  val kx = (1 to k).toList map { _ => !x }
+//		  val nx = (1 to n).toList map { _ => !x }
+//		  val tes = es map { apply }
+//		  constraints += new FlatAtLeast(tes.reverse_:::(kx), k)
+//		  constraints += new FlatAtMost(tes.reverse_:::(nx), n + k - 1)
+//		  x
+//	  }
+//	  
+//	  case CardGT(es, k) => apply(CardGE(es, k+1))
 	} 
 }
