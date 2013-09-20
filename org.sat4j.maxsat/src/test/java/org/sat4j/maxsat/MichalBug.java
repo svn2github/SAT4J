@@ -54,17 +54,17 @@ public class MichalBug {
         maxSATSolver.newVar(2);
         maxSATSolver.setExpectedNumberOfClauses(4);
 
-        int[] clause_1 = { 1, 1, 2 };
-        maxSATSolver.addClause(new VecInt(clause_1));
+        int[] clause_1 = { 1, 2 };
+        maxSATSolver.addSoftClause(1,new VecInt(clause_1));
 
-        int[] clause_2 = { 100, -1, -2 };
-        maxSATSolver.addClause(new VecInt(clause_2));
+        int[] clause_2 = { -1, -2 };
+        maxSATSolver.addSoftClause(100,new VecInt(clause_2));
 
-        int[] clause_3 = { 1000, 1, -2 };
-        maxSATSolver.addClause(new VecInt(clause_3));
+        int[] clause_3 = { 1, -2 };
+        maxSATSolver.addSoftClause(1000,new VecInt(clause_3));
 
-        int[] clause_4 = { 100000, -1, 2 };
-        maxSATSolver.addClause(new VecInt(clause_4));
+        int[] clause_4 = { -1, 2 };
+        maxSATSolver.addSoftClause(100000, new VecInt(clause_4));
 
         IOptimizationProblem problem = new PseudoOptDecorator(maxSATSolver);
 
@@ -101,17 +101,17 @@ public class MichalBug {
         maxSATSolver.newVar(2);
         maxSATSolver.setExpectedNumberOfClauses(4);
 
-        int[] clause_1 = { 1, 1, 2 };
-        maxSATSolver.addClause(new VecInt(clause_1));
+        int[] clause_1 = { 1, 2 };
+        maxSATSolver.addSoftClause(1,new VecInt(clause_1));
 
-        int[] clause_2 = { 100, -1, -2 };
-        maxSATSolver.addClause(new VecInt(clause_2));
+        int[] clause_2 = { -1, -2 };
+        maxSATSolver.addSoftClause(100,new VecInt(clause_2));
 
-        int[] clause_3 = { 1000, 1, -2 };
-        maxSATSolver.addClause(new VecInt(clause_3));
+        int[] clause_3 = { 1, -2 };
+        maxSATSolver.addSoftClause(100,new VecInt(clause_3));
 
-        int[] clause_4 = { 100000, -1, 2 };
-        maxSATSolver.addClause(new VecInt(clause_4));
+        int[] clause_4 = { -1, 2 };
+        maxSATSolver.addSoftClause(100000, new VecInt(clause_4));
 
         IProblem problem = new OptToSatAdapter(new PseudoOptDecorator(
                 maxSATSolver));
