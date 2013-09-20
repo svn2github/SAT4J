@@ -100,7 +100,8 @@ public abstract class Pseudos {
             ILits voc) throws ContradictionException {
         // Ajouter les simplifications quand la structure sera d?finitive
         if (ps.size() == 0) {
-            if (bigDeg.signum() > 0) {
+            if (moreThan && bigDeg.signum() > 0 || !moreThan
+                    && bigDeg.signum() < 0) {
                 throw new ContradictionException("Creating Empty clause ?");
             }
             // ignoring tautological constraint
@@ -120,7 +121,8 @@ public abstract class Pseudos {
             throws ContradictionException {
         // Ajouter les simplifications quand la structure sera d?finitive
         if (ps.length == 0) {
-            if (bigDeg.signum() > 0) {
+            if (moreThan && bigDeg.signum() > 0 || !moreThan
+                    && bigDeg.signum() < 0) {
                 throw new ContradictionException("Creating Empty clause ?");
             }
             // ignoring tautological constraint
