@@ -127,8 +127,7 @@ public class WeightedMaxSatDecorator extends PBSolverDecorator {
      * literals.
      * 
      * @param literals
-     *            a weighted clause, the weight being the first element of the
-     *            vector.
+     *            a clause, whose weight will be one
      * @see #setTopWeight(int)
      */
     @Override
