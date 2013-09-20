@@ -54,12 +54,14 @@ object BooleanFormulaParserCombinator extends StandardTokenParsers with PackratP
    * Parses a string into a couple (s,l) where s is a string representing the BoolExp with a PrettyPrint 
    * and l the list of Cnf composing the BoolExp
    */
-  def parseListBoolExp(dsl : String) = 
+  def parseListBoolExp(dsl : String) = {
+    val context = new Context
     listFormula(new PackratReader(new lexical.Scanner(dsl))) match {
-    case Success(ord, _) => ord map(f => (PrettyPrint(f), f toCnfList))
+    case Success(ord, _) => ord map(f => (PrettyPrint(f), f toCnfList context))
     case Failure(msg, _) => msg :: List()
     case Error(msg, _) => msg :: List()
     case p => p.toString() :: List() 
+  }
   }
   
   def javaParseListBool(dsl: String) = println(parseListBoolExp(dsl))
