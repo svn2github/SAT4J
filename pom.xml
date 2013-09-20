@@ -159,6 +159,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
           <argLine>-enableassertions -Xmx1024m</argLine>
           <includes>
             <include>**/Bug*</include>
+            <include>**/*Test*</include>
           </includes>
           <excludes>
             <exclude>**/XplainTests*</exclude>
@@ -275,7 +276,6 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-	<version>2.1</version>
         <configuration>
           <tagBase>svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/tags</tagBase>
         </configuration>
