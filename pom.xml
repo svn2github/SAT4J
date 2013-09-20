@@ -172,6 +172,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 	    <exclude>**/PBCPMixedConstraintsCautiousTest*</exclude>
              <!-- bug SAT08 not fixed yet -->
             <exclude>**/TestLonca*</exclude>
+            <exclude>**/MultiObjectiveDependencyHelperTest*</exclude>
           </excludes>
           <systemProperties>
             <property>
