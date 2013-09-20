@@ -178,6 +178,7 @@ object Logic {
     def init = {
       _varId=0
       _createdVars=List()
+      _cachedVar = uncachedNewVar
     } 
   }
 
@@ -365,7 +366,7 @@ object Logic {
   }
 
   def isSat[U](f: BoolExp): (Boolean, Option[Map[U, Boolean]]) = {
-    val (cnf, m) = encode(f, new Context())
+    val (cnf, m) = encode(f, new Context)
     val mapRev = m map {
       case (x, y) => (y, x)
     }
