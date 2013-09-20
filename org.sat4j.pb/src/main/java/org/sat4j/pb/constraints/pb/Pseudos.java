@@ -114,6 +114,7 @@ public abstract class Pseudos {
         return niceCheckedParameters(ps, bigCoefs, moreThan, bigDeg, voc);
     }
 
+    // BEWARE: here the contract is to return bigDeg if no simplification occurs
     public static BigInteger niceParametersForCompetition(int[] ps,
             BigInteger[] bigCoefs, boolean moreThan, BigInteger bigDeg)
             throws ContradictionException {
@@ -123,7 +124,7 @@ public abstract class Pseudos {
                 throw new ContradictionException("Creating Empty clause ?");
             }
             // ignoring tautological constraint
-            return null;
+            return bigDeg;
         }
         if (ps.length != bigCoefs.length) {
             throw new IllegalArgumentException(
