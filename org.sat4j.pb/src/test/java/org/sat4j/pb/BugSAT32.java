@@ -31,6 +31,7 @@ package org.sat4j.pb;
 
 import java.math.BigInteger;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
@@ -43,21 +44,34 @@ import org.sat4j.specs.IVecInt;
 
 public class BugSAT32 {
 
+    private IVecInt literals;
+    private IVec<BigInteger> coefs;
+    private ILits voc;
+
+    @Before
+    public void setUp() {
+        literals = VecInt.EMPTY;
+        coefs = new Vec<BigInteger>();
+        voc = new Lits();
+    }
+
     @Test
-    public void testClassicalCase() throws ContradictionException {
-        IVecInt literals = VecInt.EMPTY;
-        IVec<BigInteger> coefs = new Vec<BigInteger>();
-        ILits voc = new Lits();
+    public void testClassicalTautologies() throws ContradictionException {
         Pseudos.niceParameters(literals, coefs, true, BigInteger.ZERO, voc);
         Pseudos.niceParameters(literals, coefs, false, BigInteger.ZERO, voc);
         Pseudos.niceParameters(literals, coefs, true, BigInteger.ONE.negate(),
                 voc);
+        Pseudos.niceParameters(literals, coefs, false, BigInteger.ONE, voc);
+    }
+
+    @Test(expected = ContradictionException.class)
+    public void testClassicalContradiction() throws ContradictionException {
         Pseudos.niceParameters(literals, coefs, false, BigInteger.ONE.negate(),
                 voc);
     }
 
     @Test
-    public void testCompetitionCase() throws ContradictionException {
+    public void testCompetitionTautologies() throws ContradictionException {
         int[] literals = {};
         BigInteger[] coefs = {};
         Pseudos.niceParametersForCompetition(literals, coefs, true,
@@ -67,7 +81,14 @@ public class BugSAT32 {
         Pseudos.niceParametersForCompetition(literals, coefs, true,
                 BigInteger.ONE.negate());
         Pseudos.niceParametersForCompetition(literals, coefs, false,
-                BigInteger.ONE.negate());
+                BigInteger.ONE);
+
+    }
+
+    @Test(expected = ContradictionException.class)
+    public void testCompetitionContradiction() throws ContradictionException {
+        Pseudos.niceParametersForCompetition(new int[] {}, new BigInteger[] {},
+                false, BigInteger.ONE.negate());
     }
 
 }
