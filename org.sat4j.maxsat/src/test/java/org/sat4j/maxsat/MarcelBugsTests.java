@@ -87,9 +87,8 @@ public class MarcelBugsTests {
 
     private void testProblemWithExpectedAnswer(String filename,
             int[] expectation, int expectedValue) {
-        URL url = MarcelBugsTests.class.getResource(filename);
         try {
-            IProblem problem = this.reader.parseInstance(url.getFile());
+            IProblem problem = this.reader.parseInstance(System.getProperty("test.prefix")+filename);
             assertNotNull(problem);
             IOptimizationProblem optproblem = new PseudoOptDecorator(
                     this.maxsat);
