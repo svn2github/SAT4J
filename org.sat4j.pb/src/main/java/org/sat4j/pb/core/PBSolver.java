@@ -208,7 +208,7 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         private boolean[] inObjectiveFunction;
 
         private final ConflictTimer clauseManagement = new ConflictTimerAdapter(
-                1000) {
+                PBSolver.this, 1000) {
             private static final long serialVersionUID = 1L;
             private int nbconflict = 0;
             private static final int MAX_CLAUSE = 5000;
