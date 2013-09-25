@@ -56,12 +56,14 @@ object testLogic {
                                                   //| ('y & 'x(1,2,3)) + (('y & 'x(1,2,3)) | 'y) === 4))
 	
 	 
-	isSat(f4)                                 //> res0: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some(Map('x -> true, '
-                                                  //| y -> true, 'z -> false, 'd -> false)))
+	isSat(f4)                                 //> (>>>>>>>>>>>>,Ident('z),Ident('d))(_nv#3,(Ident('z),List()),(Ident('d),List(
+                                                  //| )),List(_nv#3, _nv#2, _nv#1))res0: (Boolean, Option[Map[Nothing,Boolean]]) =
+                                                  //|  (true,Some(Map('x -> false, 'y -> false, 'z -> false, 'd -> false)))
 	
 	
 	
-	val cnf = (True & 'x) toCnfList           //> cnf  : List[List[org.sat4j.scala.Logic.BoolExp]] = List(List(True), List(Ide
+	val cnf = (True & 'x) toCnfList new Context
+                                                  //> cnf  : List[List[org.sat4j.scala.Logic.BoolExp]] = List(List(True), List(Ide
                                                   //| nt('x)))
 	
 	
@@ -81,32 +83,33 @@ object testLogic {
 	
 	
 	
-	encode(f5)                                //> res4: (List[List[Int]], Map[org.sat4j.scala.Logic.BoolExp,Int]) = (List(List
+	encode(f5,new Context)                    //> res4: (List[List[Int]], Map[org.sat4j.scala.Logic.BoolExp,Int]) = (List(List
                                                   //| (1), List(2, 3, -1), List(-2, 1), List(-3, 1), List(-4, 2), List(4, -2), Lis
                                                   //| t(5, 3, -4), List(-5, 4), List(-3, 4), List(-3, -6, 5), List(3, -5), List(6,
                                                   //|  -5)),Map(Ident('y) -> 3, _nv#1 -> 1, _nv#2 -> 2, _nv#3 -> 4, IndexedIdent('
                                                   //| x,List(1, 2, 3)) -> 6, _nv#4 -> 5))
         
   
-  encode (f4)                                     //> res5: (List[List[Int]], Map[org.sat4j.scala.Logic.BoolExp,Int]) = (List(List
-                                                  //| (1), List(2, 3, -1), List(-2, 1), List(-3, 1), List(-4, -5, 2), List(4, -2),
-                                                  //|  List(5, -2), List(-6, 7, -3), List(6, 3), List(-7, 3)),Map(Ident('x) -> 4, 
-                                                  //| Ident('y) -> 5, _nv#1 -> 1, Ident('d) -> 7, _nv#2 -> 2, _nv#3 -> 3, Ident('z
-                                                  //| ) -> 6))
+  encode (f4,new Context)                         //> (>>>>>>>>>>>>,Ident('z),Ident('d))(_nv#3,(Ident('z),List()),(Ident('d),List(
+                                                  //| )),List(_nv#3, _nv#2, _nv#1))res5: (List[List[Int]], Map[org.sat4j.scala.Log
+                                                  //| ic.BoolExp,Int]) = (List(List(1), List(2, 3, -1), List(-2, 1), List(-3, 1), 
+                                                  //| List(-4, -5, 2), List(4, -2), List(5, -2), List(-6, 7, -3), List(6, 3), List
+                                                  //| (-7, 3)),Map(Ident('x) -> 4, Ident('y) -> 5, _nv#1 -> 1, Ident('d) -> 7, _nv
+                                                  //| #2 -> 2, _nv#3 -> 3, Ident('z) -> 6))
   
-  encode ('a | 'b)                                //> res6: (List[List[Int]], Map[org.sat4j.scala.Logic.BoolExp,Int]) = (List(List
+  encode ('a | 'b,new Context)                    //> res6: (List[List[Int]], Map[org.sat4j.scala.Logic.BoolExp,Int]) = (List(List
                                                   //| (1, 2)),Map(Ident('a) -> 1, Ident('b) -> 2))
   
   
   isSat ('x & ~'x)                                //> res7: (Boolean, Option[Map[Nothing,Boolean]]) = (false,None)
   
-  isSat ('a | 'b)                                 //> res8: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some(Map('a -> false, 
-                                                  //| 'b -> true)))
+  isSat ('a | 'b)                                 //> res8: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some(Map('a -> false,
+                                                  //|  'b -> true)))
   
   
 
-	isValid ('a | 'b)                         //> res9: (Boolean, Option[Map[Nothing,Boolean]]) = (false,Some(Map('a -> false,
-                                                  //|  'b -> false)))
+	isValid ('a | 'b)                         //> res9: (Boolean, Option[Map[Nothing,Boolean]]) = (false,Some(Map('a -> false
+                                                  //| , 'b -> false)))
 	
 	isValid( 'a | ~'a)                        //> res10: (Boolean, Option[Map[Nothing,Boolean]]) = (true,None)
 
@@ -119,27 +122,31 @@ object testLogic {
 	isValid (l)                               //> res13: (Boolean, Option[Map[Nothing,Boolean]]) = (false,Some(Map('a -> fals
                                                   //| e, 'b -> false)))
 	
-	isSat ('a implies 'a)                     //> res14: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some(Map('a -> false
+	isSat(~'a | 'a)                           //> res14: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some(Map('a -> false
                                                   //| )))
+	
+	isSat ('a implies 'a)                     //> (>>>>>>>>>>>>,Ident('a),Ident('a))(_nv#1,(Ident('a),List()),(Ident('a),List
+                                                  //| ()),List(_nv#1))res15: (Boolean, Option[Map[Nothing,Boolean]]) = (true,Some
+                                                  //| (Map('a -> false)))
 	
 	val liste = List('a -> 'b, 'c iff 'd)     //> liste  : List[Product with Serializable] = List(('a,'b), Iff(Ident('c),Iden
                                                   //| t('d)))
-  ('a & 'b iff 'a | 'b) toCnfList                 //> res15: List[List[org.sat4j.scala.Logic.BoolExp]] = List(List(_nv#2), List(N
-                                                  //| ot(_nv#3), _nv#4, Not(_nv#2)), List(_nv#3, Not(_nv#4), Not(_nv#2)), List(_n
-                                                  //| v#3, _nv#4, _nv#2), List(Not(_nv#3), Not(_nv#4), _nv#2), List(Not(Ident('a)
-                                                  //| ), Not(Ident('b)), _nv#3), List(Ident('a), Not(_nv#3)), List(Ident('b), Not
-                                                  //| (_nv#3)), List(Ident('a), Ident('b), Not(_nv#4)), List(Not(Ident('a)), _nv#
-                                                  //| 4), List(Not(Ident('b)), _nv#4))
+  ('a & 'b iff 'a | 'b) toCnfList new Context     //> res16: List[List[org.sat4j.scala.Logic.BoolExp]] = List(List(_nv#1), List(N
+                                                  //| ot(_nv#2), _nv#3, Not(_nv#1)), List(_nv#2, Not(_nv#3), Not(_nv#1)), List(_n
+                                                  //| v#2, _nv#3, _nv#1), List(Not(_nv#2), Not(_nv#3), _nv#1), List(Not(Ident('a)
+                                                  //| ), Not(Ident('b)), _nv#2), List(Ident('a), Not(_nv#2)), List(Ident('b), Not
+                                                  //| (_nv#2)), List(Ident('a), Ident('b), Not(_nv#3)), List(Not(Ident('a)), _nv#
+                                                  //| 3), List(Not(Ident('b)), _nv#3))
   
   
    
-  PrettyPrint (~('a & 'b) toCnfList)              //> res16: String = "
-                                                  //| _nv#5
-                                                  //| ~_nv#6 ~_nv#5
-                                                  //| _nv#6 _nv#5
-                                                  //| ~'a ~'b _nv#6
-                                                  //| 'a ~_nv#6
-                                                  //| 'b ~_nv#6"
+  PrettyPrint (~('a & 'b) toCnfList new Context)  //> res17: String = "
+                                                  //| _nv#1
+                                                  //| ~_nv#2 ~_nv#1
+                                                  //| _nv#2 _nv#1
+                                                  //| ~'a ~'b _nv#2
+                                                  //| 'a ~_nv#2
+                                                  //| 'b ~_nv#2"
                                   
  
 }
