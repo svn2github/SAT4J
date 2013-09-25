@@ -117,14 +117,16 @@ public class Minimal4InclusionModel extends AbstractMinimalModel {
                 if (prevConstr != null) {
                     removeSubsumedConstr(prevConstr);
                 }
-                prevConstr = addBlockingClause(vec);
+                try {
+                    prevConstr = addBlockingClause(vec);
+                } catch (ContradictionException e) {
+                    // added trivial unsat clauses
+                    break;
+                }
             } while (isSatisfiable(cube));
         } catch (TimeoutException e) {
             throw new IllegalStateException("Solver timed out");
-        } catch (ContradictionException e) {
-            // added trivial unsat clauses
         }
-
         return prevmodel;
 
     }
