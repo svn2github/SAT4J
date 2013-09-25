@@ -37,10 +37,10 @@ import java.io.Serializable;
  * @author daniel
  * 
  */
-public final class Pair implements Serializable {
+final class Pair implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public int backtrackLevel;
-    public Constr reason;
+    int backtrackLevel;
+    Constr reason;
 }
