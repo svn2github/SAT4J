@@ -30,7 +30,6 @@
 package org.sat4j.reader;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -64,8 +63,7 @@ public abstract class Reader {
      *             if the problem is found trivially inconsistent.
      */
     public IProblem parseInstance(final String filename)
-            throws ParseFormatException, IOException,
-            ContradictionException {
+            throws ParseFormatException, IOException, ContradictionException {
         InputStream in = null;
         try {
             if (filename.startsWith("http://")) {
@@ -82,14 +80,6 @@ public abstract class Reader {
             IProblem problem;
             problem = parseInstance(in);
             return problem;
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (ParseFormatException e) {
-            throw e;
-        } catch (IOException e) {
-            throw e;
-        } catch (ContradictionException e) {
-            throw e;
         } catch (IllegalStateException e) {
             if (e.getCause() instanceof ContradictionException) {
                 throw ((ContradictionException) e.getCause());
