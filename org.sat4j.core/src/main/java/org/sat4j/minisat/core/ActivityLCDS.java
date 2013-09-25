@@ -29,54 +29,68 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import java.io.Serializable;
+import org.sat4j.specs.IVec;
 
-/**
- * Perform a task when a given number of conflicts is reached.
- * 
- * @author daniel
- * 
- */
-public abstract class ConflictTimerAdapter implements Serializable,
-        ConflictTimer {
-
-    /**
-	 * 
-	 */
+final class ActivityLCDS implements LearnedConstraintsDeletionStrategy {
     private static final long serialVersionUID = 1L;
-
-    private int counter;
-
-    private final int bound;
-
+    private final ConflictTimer freeMem;
     private final Solver<? extends DataStructureFactory> solver;
 
-    public ConflictTimerAdapter(
-            final Solver<? extends DataStructureFactory> solver, final int bound) {
-        this.bound = bound;
-        this.counter = 0;
+    ActivityLCDS(Solver<? extends DataStructureFactory> solver,
+            ConflictTimer timer) {
+        this.freeMem = timer;
         this.solver = solver;
     }
 
-    public void reset() {
-        this.counter = 0;
+    public void reduce(IVec<Constr> learnedConstrs) {
+        solver.sortOnActivity();
+        int i, j;
+        for (i = j = 0; i < solver.learnts.size() / 2; i++) {
+            Constr c = solver.learnts.get(i);
+            if (c.locked() || c.size() == 2) {
+                solver.learnts.set(j++, solver.learnts.get(i));
+            } else {
+                c.remove(solver);
+                solver.slistener.delete(c);
+            }
+        }
+        for (; i < solver.learnts.size(); i++) {
+            solver.learnts.set(j++, solver.learnts.get(i));
+        }
+        if (solver.isVerbose()) {
+            solver.out.log(solver.getLogPrefix()
+                    + "cleaning " + (solver.learnts.size() - j) //$NON-NLS-1$
+                    + " clauses out of " + solver.learnts.size()); //$NON-NLS-1$ 
+            // out.flush();
+        }
+        solver.learnts.shrinkTo(j);
     }
 
-    public void newConflict() {
-        this.counter++;
-        if (this.counter == this.bound) {
-            run();
-            this.counter = 0;
+    public ConflictTimer getTimer() {
+        return this.freeMem;
+    }
+
+    @Override
+    public String toString() {
+        return "Memory based learned constraints deletion strategy";
+    }
+
+    public void init() {
+        // do nothing
+    }
+
+    public void onClauseLearning(Constr constr) {
+        // do nothing
+
+    }
+
+    public void onConflictAnalysis(Constr reason) {
+        if (reason.learnt()) {
+            solver.claBumpActivity(reason);
         }
     }
 
-    public abstract void run();
-
-    public Solver<? extends DataStructureFactory> getSolver() {
-        return this.solver;
-    }
-
-    public int bound() {
-        return this.bound;
+    public void onPropagation(Constr from) {
+        // do nothing
     }
 }

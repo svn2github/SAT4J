@@ -29,54 +29,22 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import java.io.Serializable;
-
-/**
- * Perform a task when a given number of conflicts is reached.
- * 
- * @author daniel
- * 
- */
-public abstract class ConflictTimerAdapter implements Serializable,
-        ConflictTimer {
-
-    /**
-	 * 
-	 */
+final class MemoryBasedConflictTimer extends ConflictTimerAdapter {
     private static final long serialVersionUID = 1L;
+    final long memorybound = Runtime.getRuntime().freeMemory() / 10;
 
-    private int counter;
-
-    private final int bound;
-
-    private final Solver<? extends DataStructureFactory> solver;
-
-    public ConflictTimerAdapter(
-            final Solver<? extends DataStructureFactory> solver, final int bound) {
-        this.bound = bound;
-        this.counter = 0;
-        this.solver = solver;
+    MemoryBasedConflictTimer(Solver<? extends DataStructureFactory> solver,
+            int bound) {
+        super(solver, bound);
     }
 
-    public void reset() {
-        this.counter = 0;
-    }
-
-    public void newConflict() {
-        this.counter++;
-        if (this.counter == this.bound) {
-            run();
-            this.counter = 0;
+    @Override
+    public void run() {
+        long freemem = Runtime.getRuntime().freeMemory();
+        // System.out.println("c Free memory "+freemem);
+        if (freemem < this.memorybound) {
+            // Reduce the set of learnt clauses
+            getSolver().setNeedToReduceDB(true);
         }
-    }
-
-    public abstract void run();
-
-    public Solver<? extends DataStructureFactory> getSolver() {
-        return this.solver;
-    }
-
-    public int bound() {
-        return this.bound;
     }
 }

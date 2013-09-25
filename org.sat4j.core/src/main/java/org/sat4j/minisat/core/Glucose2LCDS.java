@@ -29,54 +29,36 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import java.io.Serializable;
-
-/**
- * Perform a task when a given number of conflicts is reached.
- * 
- * @author daniel
- * 
- */
-public abstract class ConflictTimerAdapter implements Serializable,
-        ConflictTimer {
+class Glucose2LCDS<D extends DataStructureFactory> extends GlucoseLCDS<D> {
 
     /**
-	 * 
-	 */
+     * 
+     */
+    private final Solver<D> solver;
+    /**
+    	 * 
+    	 */
     private static final long serialVersionUID = 1L;
 
-    private int counter;
-
-    private final int bound;
-
-    private final Solver<? extends DataStructureFactory> solver;
-
-    public ConflictTimerAdapter(
-            final Solver<? extends DataStructureFactory> solver, final int bound) {
-        this.bound = bound;
-        this.counter = 0;
+    Glucose2LCDS(Solver<D> solver, ConflictTimer timer) {
+        super(solver, timer);
         this.solver = solver;
     }
 
-    public void reset() {
-        this.counter = 0;
+    @Override
+    public String toString() {
+        return "Glucose 2 learned constraints deletion strategy";
     }
 
-    public void newConflict() {
-        this.counter++;
-        if (this.counter == this.bound) {
-            run();
-            this.counter = 0;
+    @Override
+    public void onPropagation(Constr from) {
+        if (from.getActivity() > 2.0) {
+            int nblevel = computeLBD(from);
+            if (nblevel < from.getActivity()) {
+                solver.stats.updateLBD++;
+                from.setActivity(nblevel);
+            }
         }
     }
 
-    public abstract void run();
-
-    public Solver<? extends DataStructureFactory> getSolver() {
-        return this.solver;
-    }
-
-    public int bound() {
-        return this.bound;
-    }
 }

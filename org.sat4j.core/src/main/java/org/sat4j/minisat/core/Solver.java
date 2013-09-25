@@ -134,7 +134,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private final ActivityComparator comparator = new ActivityComparator();
 
-    private SolverStats stats = new SolverStats();
+    SolverStats stats = new SolverStats();
 
     private LearningStrategy<D> learner;
 
@@ -160,7 +160,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private final IVecInt learnedLiterals = new VecInt();
 
-    private boolean verbose = false;
+    boolean verbose = false;
 
     private boolean keepHot = false;
 
@@ -1730,13 +1730,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
             private static final long serialVersionUID = 1L;
             private final ConflictTimer aTimer = new ConflictTimerAdapter(
-                    maxsize) {
+                    Solver.this, maxsize) {
 
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public void run() {
-                    Solver.this.needToReduceDB = true;
+                    getSolver().setNeedToReduceDB(true);
                 }
             };
 
@@ -1797,205 +1797,28 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private LearnedConstraintsDeletionStrategy activityBased(
             final ConflictTimer timer) {
-        return new LearnedConstraintsDeletionStrategy() {
-
-            private static final long serialVersionUID = 1L;
-
-            private final ConflictTimer freeMem = timer;
-
-            public void reduce(IVec<Constr> learnedConstrs) {
-                sortOnActivity();
-                int i, j;
-                for (i = j = 0; i < Solver.this.learnts.size() / 2; i++) {
-                    Constr c = Solver.this.learnts.get(i);
-                    if (c.locked() || c.size() == 2) {
-                        Solver.this.learnts
-                                .set(j++, Solver.this.learnts.get(i));
-                    } else {
-                        c.remove(Solver.this);
-                        Solver.this.slistener.delete(c);
-                    }
-                }
-                for (; i < Solver.this.learnts.size(); i++) {
-                    Solver.this.learnts.set(j++, Solver.this.learnts.get(i));
-                }
-                if (Solver.this.verbose) {
-                    Solver.this.out.log(getLogPrefix()
-                            + "cleaning " + (Solver.this.learnts.size() - j) //$NON-NLS-1$
-                            + " clauses out of " + Solver.this.learnts.size()); //$NON-NLS-1$ 
-                    // out.flush();
-                }
-                Solver.this.learnts.shrinkTo(j);
-            }
-
-            public ConflictTimer getTimer() {
-                return this.freeMem;
-            }
-
-            @Override
-            public String toString() {
-                return "Memory based learned constraints deletion strategy";
-            }
-
-            public void init() {
-                // do nothing
-            }
-
-            public void onClauseLearning(Constr constr) {
-                // do nothing
-
-            }
-
-            public void onConflictAnalysis(Constr reason) {
-                if (reason.learnt()) {
-                    claBumpActivity(reason);
-                }
-            }
-
-            public void onPropagation(Constr from) {
-                // do nothing
-            }
-        };
+        return new ActivityLCDS(this, timer);
     }
 
-    private final ConflictTimer memoryTimer = new ConflictTimerAdapter(500) {
-        private static final long serialVersionUID = 1L;
-        final long memorybound = Runtime.getRuntime().freeMemory() / 10;
-
-        @Override
-        public void run() {
-            long freemem = Runtime.getRuntime().freeMemory();
-            // System.out.println("c Free memory "+freemem);
-            if (freemem < this.memorybound) {
-                // Reduce the set of learnt clauses
-                Solver.this.needToReduceDB = true;
-            }
-        }
-    };
+    private final ConflictTimer memoryTimer = new MemoryBasedConflictTimer(
+            this, 500);
 
     /**
      * @since 2.1
      */
     public final LearnedConstraintsDeletionStrategy memory_based = activityBased(this.memoryTimer);
 
-    private class GlucoseLCDS implements LearnedConstraintsDeletionStrategy {
-
-        private static final long serialVersionUID = 1L;
-        private int[] flags = new int[0];
-        private int flag = 0;
-        // private int wall = 0;
-
-        private final ConflictTimer clauseManagement;
-
-        GlucoseLCDS(ConflictTimer timer) {
-            this.clauseManagement = timer;
-        }
-
-        public void reduce(IVec<Constr> learnedConstrs) {
-            sortOnActivity();
-            int i, j;
-            for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
-                Constr c = learnedConstrs.get(i);
-                if (c.locked() || c.getActivity() <= 2.0) {
-                    learnedConstrs.set(j++, Solver.this.learnts.get(i));
-                } else {
-                    c.remove(Solver.this);
-                    Solver.this.slistener.delete(c);
-                }
-            }
-            if (Solver.this.verbose) {
-                Solver.this.out
-                        .log(getLogPrefix()
-                                + "cleaning " + (learnedConstrs.size() - j) //$NON-NLS-1$
-                                + " clauses out of " + learnedConstrs.size() + " with flag " + this.flag + "/" + Solver.this.stats.conflicts); //$NON-NLS-1$ //$NON-NLS-2$
-                // out.flush();
-            }
-            Solver.this.learnts.shrinkTo(j);
-
-        }
-
-        public ConflictTimer getTimer() {
-            return this.clauseManagement;
-        }
-
-        @Override
-        public String toString() {
-            return "Glucose learned constraints deletion strategy";
-        }
-
-        public void init() {
-            final int howmany = Solver.this.voc.nVars();
-            // wall = constrs.size() > 10000 ? constrs.size() : 10000;
-            if (this.flags.length <= howmany) {
-                this.flags = new int[howmany + 1];
-            }
-            this.flag = 0;
-            this.clauseManagement.reset();
-        }
-
-        public void onClauseLearning(Constr constr) {
-            int nblevel = computeLBD(constr);
-            constr.incActivity(nblevel);
-        }
-
-        protected int computeLBD(Constr constr) {
-            int nblevel = 1;
-            this.flag++;
-            int currentLevel;
-            for (int i = 1; i < constr.size(); i++) {
-                currentLevel = Solver.this.voc.getLevel(constr.get(i));
-                if (this.flags[currentLevel] != this.flag) {
-                    this.flags[currentLevel] = this.flag;
-                    nblevel++;
-                }
-            }
-            return nblevel;
-        }
-
-        public void onConflictAnalysis(Constr reason) {
-
-        }
-
-        public void onPropagation(Constr from) {
-
-        }
-    }
-
-    private class Glucose2LCDS extends GlucoseLCDS {
-
-        /**
-		 * 
-		 */
-        private static final long serialVersionUID = 1L;
-
-        Glucose2LCDS(ConflictTimer timer) {
-            super(timer);
-        }
-
-        @Override
-        public String toString() {
-            return "Glucose 2 learned constraints deletion strategy";
-        }
-
-        @Override
-        public void onPropagation(Constr from) {
-            if (from.getActivity() > 2.0) {
-                int nblevel = computeLBD(from);
-                if (nblevel < from.getActivity()) {
-                    Solver.this.stats.updateLBD++;
-                    from.setActivity(nblevel);
-                }
-            }
-        }
-
-    }
-
-    private final ConflictTimer lbdTimer = new ConflictTimerAdapter(1000) {
+    static final class LBDConflictTimer extends ConflictTimerAdapter {
         private static final long serialVersionUID = 1L;
         private int nbconflict = 0;
         private static final int MAX_CLAUSE = 5000;
         private static final int INC_CLAUSE = 1000;
         private int nextbound = MAX_CLAUSE;
+
+        LBDConflictTimer(Solver<? extends DataStructureFactory> solver,
+                int bound) {
+            super(solver, bound);
+        }
 
         @Override
         public void run() {
@@ -2006,7 +1829,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 // nextbound = wall;
                 // }
                 this.nbconflict = 0;
-                Solver.this.needToReduceDB = true;
+                getSolver().setNeedToReduceDB(true);
             }
         }
 
@@ -2016,16 +1839,18 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.nextbound = MAX_CLAUSE;
             if (this.nbconflict >= this.nextbound) {
                 this.nbconflict = 0;
-                Solver.this.needToReduceDB = true;
+                getSolver().setNeedToReduceDB(true);
             }
         }
-    };
+    }
+
+    private final ConflictTimer lbdTimer = new LBDConflictTimer(this, 1000);
 
     /**
      * @since 2.1
      */
-    public final LearnedConstraintsDeletionStrategy glucose = new Glucose2LCDS(
-            this.lbdTimer);
+    public final LearnedConstraintsDeletionStrategy glucose = new Glucose2LCDS<D>(
+            this, this.lbdTimer);
 
     protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = this.glucose;
 
@@ -2164,13 +1989,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             if (!global || !alreadylaunched) {
                 firstTimeGlobal = true;
                 this.undertimeout = true;
-                ConflictTimer conflictTimeout = new ConflictTimerAdapter(
+                ConflictTimer conflictTimeout = new ConflictTimerAdapter(this,
                         (int) this.timeout) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
                     public void run() {
-                        Solver.this.undertimeout = false;
+                        getSolver().expireTimeout();
                     }
                 };
                 this.conflictCount.add(conflictTimeout);
@@ -2677,10 +2502,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.learnedConstraintsDeletionStrategy = activityBased(timer);
             break;
         case LBD:
-            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS(timer);
+            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS<D>(this,
+                    timer);
             break;
         case LBD2:
-            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS(timer);
+            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS<D>(this,
+                    timer);
             break;
         }
         if (this.conflictCount != null) {
@@ -2700,10 +2527,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.learnedConstraintsDeletionStrategy = activityBased(aTimer);
             break;
         case LBD:
-            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS(aTimer);
+            this.learnedConstraintsDeletionStrategy = new GlucoseLCDS<D>(this,
+                    aTimer);
             break;
         case LBD2:
-            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS(aTimer);
+            this.learnedConstraintsDeletionStrategy = new Glucose2LCDS<D>(this,
+                    aTimer);
             break;
         }
         if (this.conflictCount != null) {
