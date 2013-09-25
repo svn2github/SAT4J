@@ -43,9 +43,9 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
      */
     private static final long serialVersionUID = 1L;
 
-    IOptimizationProblem problem;
+    private final IOptimizationProblem problem;
 
-    boolean optimalValueForced = false;
+    private boolean optimalValueForced = false;
     private final IVecInt assumps = new VecInt();
 
     private long begin;
@@ -93,10 +93,11 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
         if (this.problem.hasNoObjectiveFunction()) {
             return this.problem.isSatisfiable(myAssumps);
         }
-        boolean satisfiable = false;
+        if (!this.problem.admitABetterSolution(myAssumps)) {
+            return false;
+        }
         try {
-            while (this.problem.admitABetterSolution(myAssumps)) {
-                satisfiable = true;
+            do {
                 sfl.onSolutionFound(this.problem.model());
                 this.problem.discardCurrentSolution();
                 if (isVerbose()) {
@@ -106,7 +107,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
                             + (System.currentTimeMillis() - this.begin)
                             / 1000.0 + "s)");
                 }
-            }
+            } while (this.problem.admitABetterSolution(myAssumps));
             sfl.onUnsatTermination();
         } catch (TimeoutException e) {
             if (isVerbose()) {
@@ -114,13 +115,10 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
                         + (System.currentTimeMillis() - this.begin) / 1000.0
                         + "s)");
             }
-            if (!satisfiable) {
-                throw e;
-            }
         } catch (ContradictionException ce) {
             sfl.onUnsatTermination();
         }
-        return satisfiable;
+        return true;
     }
 
     @Override

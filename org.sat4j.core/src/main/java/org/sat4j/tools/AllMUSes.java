@@ -175,11 +175,12 @@ public class AllMUSes {
                 }
                 musList.add(mus);
                 listener.onSolutionFound(mus);
-
-                minSolver.addBlockingClause(blockingClause);
+                try {
+                    minSolver.addBlockingClause(blockingClause);
+                } catch (ContradictionException e) {
+                    break;
+                }
             }
-
-        } catch (ContradictionException e) {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
@@ -270,14 +271,15 @@ public class AllMUSes {
                 listener.onSolutionFound(mss);
 
                 secondPhaseClauses.add(secondPhaseClause);
-                css.addBlockingClause(blockingClause);
-
+                try {
+                    css.addBlockingClause(blockingClause);
+                } catch (ContradictionException e) {
+                    break;
+                }
             }
 
         } catch (TimeoutException e) {
             e.printStackTrace();
-        } catch (ContradictionException e) {
-
         }
         if (css.isVerbose()) {
             System.out.println(css.getLogPrefix() + "... done.");
