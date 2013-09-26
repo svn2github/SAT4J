@@ -39,5 +39,20 @@ package org.sat4j.minisat.core;
  */
 public interface PrimeImplicantStrategy {
 
+    /**
+     * returns a prime implicant from a solver object known to contain a model.
+     * 
+     * @param solver
+     * @return an sequence of Dimacs literals corresponding to the implicant.
+     */
     int[] compute(Solver<? extends DataStructureFactory> solver);
+
+    /**
+     * returns the prime implicant as an array with hole. This is convenient to
+     * check if a particular variable belong to the prime implicant computed by
+     * {@link #compute(Solver)}. Must be called after {@link #compute(Solver)}.
+     * 
+     * @return
+     */
+    int[] getPrimeImplicantAsArrayWithHoles();
 }

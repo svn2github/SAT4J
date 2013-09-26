@@ -132,4 +132,11 @@ public class CounterBasedPrimeImplicantStrategy implements
         return implicant;
     }
 
+    public int[] getPrimeImplicantAsArrayWithHoles() {
+        if (prime == null) {
+            throw new UnsupportedOperationException(
+                    "Call the compute method first!");
+        }
+        return prime;
+    }
 }

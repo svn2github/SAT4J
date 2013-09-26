@@ -1111,7 +1111,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      */
     public boolean assume(int p) {
         // Precondition: assume propagation queue is empty
-        assert this.trail.size() == this.qhead;
+        // assert this.trail.size() == this.qhead; no longer true with computing
+        // PI
         assert !this.trailLim.contains(this.trail.size());
         this.trailLim.push(this.trail.size());
         return enqueue(p);
@@ -1382,14 +1383,17 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     public int[] primeImplicant() {
         String primeApproach = System.getProperty("prime");
+        PrimeImplicantStrategy strategy;
         if ("BRESIL".equals(primeApproach)) {
-            prime = new WatcherBasedPrimeImplicantStrategy().compute(this);
+            strategy = new WatcherBasedPrimeImplicantStrategy();
         } else if ("ALGO2".equals(primeApproach)) {
-            prime = new CounterBasedPrimeImplicantStrategy().compute(this);
+            strategy = new CounterBasedPrimeImplicantStrategy();
         } else {
-            prime = new QuadraticPrimeImplicantStrategy().compute(this);
+            strategy = new QuadraticPrimeImplicantStrategy();
         }
-        return prime;
+        int[] implicant = strategy.compute(this);
+        prime = strategy.getPrimeImplicantAsArrayWithHoles();
+        return implicant;
 
     }
 

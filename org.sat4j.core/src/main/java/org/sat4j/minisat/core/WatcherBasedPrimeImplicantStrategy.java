@@ -127,4 +127,11 @@ public class WatcherBasedPrimeImplicantStrategy implements
         return null;
     }
 
+    public int[] getPrimeImplicantAsArrayWithHoles() {
+        if (prime == null) {
+            throw new UnsupportedOperationException(
+                    "Call the compute method first!");
+        }
+        return prime;
+    }
 }

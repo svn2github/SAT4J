@@ -59,16 +59,16 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                     solver.getLogPrefix(), solver.implied.size(),
                     solver.decisions.size());
         }
-        this.prime = new int[solver.realNumberOfVariables() + 1];
+        prime = new int[solver.realNumberOfVariables() + 1];
         int p, d;
-        for (int i = 0; i < this.prime.length; i++) {
-            this.prime[i] = 0;
+        for (int i = 0; i < prime.length; i++) {
+            prime[i] = 0;
         }
         boolean noproblem;
         for (IteratorInt it = solver.implied.iterator(); it.hasNext();) {
             d = it.next();
             p = toInternal(d);
-            this.prime[Math.abs(d)] = d;
+            prime[Math.abs(d)] = d;
             noproblem = solver.setAndPropagate(p);
             assert noproblem;
         }
@@ -84,7 +84,7 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
             assert !solver.voc.isFalsified(toInternal(d));
             if (solver.voc.isSatisfied(toInternal(d))) {
                 // d has been propagated
-                this.prime[Math.abs(d)] = d;
+                prime[Math.abs(d)] = d;
                 propagated++;
             } else if (solver.setAndPropagate(toInternal(-d))) {
                 canBeRemoved = true;
@@ -106,7 +106,7 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                     assert confl == null;
                     removed++;
                 } else {
-                    this.prime[Math.abs(d)] = d;
+                    prime[Math.abs(d)] = d;
                     solver.cancel();
                     assert solver.voc.isUnassigned(toInternal(d));
                     noproblem = solver.setAndPropagate(toInternal(d));
@@ -114,16 +114,16 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                 }
             } else {
                 // conflict, literal is necessary
-                this.prime[Math.abs(d)] = d;
+                prime[Math.abs(d)] = d;
                 solver.cancel();
                 noproblem = solver.setAndPropagate(toInternal(d));
                 assert noproblem;
             }
         }
         solver.cancelUntil(0);
-        int[] implicant = new int[this.prime.length - removed - 1];
+        int[] implicant = new int[prime.length - removed - 1];
         int index = 0;
-        for (int i : this.prime) {
+        for (int i : prime) {
             if (i != 0) {
                 implicant[index++] = i;
             }
@@ -141,6 +141,14 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
         }
         return implicant;
 
+    }
+
+    public int[] getPrimeImplicantAsArrayWithHoles() {
+        if (prime == null) {
+            throw new UnsupportedOperationException(
+                    "Call the compute method first!");
+        }
+        return prime;
     }
 
 }
