@@ -34,7 +34,6 @@ import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.opt.MaxSatDecorator;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ModelIterator;
 import org.sat4j.tools.OptToSatAdapter;
@@ -43,7 +42,6 @@ public class BugFatih {
 
     @Test
     public void testBugReport() throws ContradictionException, TimeoutException {
-        ISolver theSolver = SolverFactory.newDefault();
         ModelIterator solver = new ModelIterator(new OptToSatAdapter(
                 new MaxSatDecorator(SolverFactory.newDefault())));
         System.out.println("Taille de voc : " + solver.nVars());
