@@ -72,13 +72,17 @@ public class WatcherBasedPrimeImplicantStrategy implements
             isMandatory(solver.trail.get(i));
         }
         for (int d : solver.fullmodel) {
-            solver.assume(toInternal(d));
+            p = toInternal(d);
+            if (solver.voc.isUnassigned(p)) {
+                solver.assume(p);
+            }
         }
         for (int d : solver.fullmodel) {
             reduceClausesContainingTheNegationOfPI(solver, toInternal(d));
         }
 
         int removed = 0;
+        int posremoved = 0;
         int propagated = 0;
         for (int d : solver.fullmodel) {
             if (this.prime[Math.abs(d)] != 0) {
@@ -89,6 +93,9 @@ public class WatcherBasedPrimeImplicantStrategy implements
                 solver.forget(Math.abs(d));
                 reduceClausesContainingTheNegationOfPI(solver, toInternal(-d));
                 removed++;
+                if (d > 0 && d > solver.nVars()) {
+                    posremoved++;
+                }
             }
         }
         solver.cancelUntil(0);
@@ -105,10 +112,10 @@ public class WatcherBasedPrimeImplicantStrategy implements
                     "%s prime implicant computation statistics BRESIL%n",
                     solver.getLogPrefix());
             System.out
-                    .printf("%s implied: %d, decision: %d (removed %d, propagated %d), time(ms):%d %n",
+                    .printf("%s implied: %d, decision: %d, removed %d (+%d), propagated %d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
-                            solver.decisions.size(), removed, propagated, end
-                                    - begin);
+                            solver.decisions.size(), removed, posremoved,
+                            propagated, end - begin);
         }
         return implicant;
     }

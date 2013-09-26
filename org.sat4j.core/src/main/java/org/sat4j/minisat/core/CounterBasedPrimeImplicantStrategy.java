@@ -94,6 +94,7 @@ public class CounterBasedPrimeImplicantStrategy implements
             this.prime[Math.abs(d)] = d;
         }
         int removed = 0;
+        int posremoved = 0;
         int propagated = 0;
         top: for (int i = 0; i < solver.decisions.size(); i++) {
             d = solver.decisions.get(i);
@@ -106,6 +107,9 @@ public class CounterBasedPrimeImplicantStrategy implements
                 }
             }
             removed++;
+            if (d > 0 && d > solver.nVars()) {
+                posremoved++;
+            }
             for (IteratorInt it = watched[toInternal(d)].iterator(); it
                     .hasNext();) {
                 count[it.next()]--;
@@ -124,10 +128,10 @@ public class CounterBasedPrimeImplicantStrategy implements
                     "%s prime implicant computation statistics ALGO2%n",
                     solver.getLogPrefix());
             System.out
-                    .printf("%s implied: %d, decision: %d (removed %d, propagated %d), time(ms):%d %n",
+                    .printf("%s implied: %d, decision: %d, removed %d (+%d), propagated %d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
-                            solver.decisions.size(), removed, propagated, end
-                                    - begin);
+                            solver.decisions.size(), removed, posremoved,
+                            propagated, end - begin);
         }
         return implicant;
     }

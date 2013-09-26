@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import static org.sat4j.core.LiteralsUtils.neg;
 import static org.sat4j.core.LiteralsUtils.toDimacs;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 import static org.sat4j.core.LiteralsUtils.var;
@@ -1361,22 +1360,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     .toInternal(var));
         }
         return confl;
-    }
-
-    /**
-     * Assume literal p and perform unit propagation
-     * 
-     * @param p
-     *            a literal
-     * @return true if no conflict is reached, false if a conflict is found.
-     */
-    boolean setAndPropagate(int p) {
-        if (voc.isUnassigned(p)) {
-            assert !trail.contains(p);
-            assert !trail.contains(neg(p));
-            return assume(p) && propagate() == null;
-        }
-        return voc.isSatisfied(p);
     }
 
     private int[] prime;

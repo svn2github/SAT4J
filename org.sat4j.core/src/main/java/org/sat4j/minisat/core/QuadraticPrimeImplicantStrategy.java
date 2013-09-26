@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import static org.sat4j.core.LiteralsUtils.neg;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 
 import org.sat4j.specs.IConstr;
@@ -46,6 +47,22 @@ import org.sat4j.specs.IteratorInt;
 public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
 
     private int[] prime;
+
+    /**
+     * Assume literal p and perform unit propagation
+     * 
+     * @param p
+     *            a literal
+     * @return true if no conflict is reached, false if a conflict is found.
+     */
+    boolean setAndPropagate(Solver<? extends DataStructureFactory> solver, int p) {
+        if (solver.voc.isUnassigned(p)) {
+            assert !solver.trail.contains(p);
+            assert !solver.trail.contains(neg(p));
+            return solver.assume(p) && solver.propagate() == null;
+        }
+        return solver.voc.isSatisfied(p);
+    }
 
     public int[] compute(Solver<? extends DataStructureFactory> solver) {
         assert solver.qhead == solver.trail.size()
@@ -69,12 +86,13 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
             d = it.next();
             p = toInternal(d);
             prime[Math.abs(d)] = d;
-            noproblem = solver.setAndPropagate(p);
+            noproblem = setAndPropagate(solver, p);
             assert noproblem;
         }
         boolean canBeRemoved;
         int rightlevel;
         int removed = 0;
+        int posremoved = 0;
         int propagated = 0;
         int tested = 0;
         int l2propagation = 0;
@@ -86,14 +104,14 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                 // d has been propagated
                 prime[Math.abs(d)] = d;
                 propagated++;
-            } else if (solver.setAndPropagate(toInternal(-d))) {
+            } else if (setAndPropagate(solver, toInternal(-d))) {
                 canBeRemoved = true;
                 tested++;
                 rightlevel = solver.currentDecisionLevel();
                 for (int j = i + 1; j < solver.decisions.size(); j++) {
                     l2propagation++;
-                    if (!solver.setAndPropagate(toInternal(solver.decisions
-                            .get(j)))) {
+                    if (!setAndPropagate(solver,
+                            toInternal(solver.decisions.get(j)))) {
                         canBeRemoved = false;
                         break;
                     }
@@ -105,18 +123,21 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                     IConstr confl = solver.propagate();
                     assert confl == null;
                     removed++;
+                    if (d > 0 && d > solver.nVars()) {
+                        posremoved++;
+                    }
                 } else {
                     prime[Math.abs(d)] = d;
                     solver.cancel();
                     assert solver.voc.isUnassigned(toInternal(d));
-                    noproblem = solver.setAndPropagate(toInternal(d));
+                    noproblem = setAndPropagate(solver, toInternal(d));
                     assert noproblem;
                 }
             } else {
                 // conflict, literal is necessary
                 prime[Math.abs(d)] = d;
                 solver.cancel();
-                noproblem = solver.setAndPropagate(toInternal(d));
+                noproblem = setAndPropagate(solver, toInternal(d));
                 assert noproblem;
             }
         }
@@ -134,10 +155,10 @@ public class QuadraticPrimeImplicantStrategy implements PrimeImplicantStrategy {
                     "%s prime implicant computation statistics ORIG%n",
                     solver.getLogPrefix());
             System.out
-                    .printf("%s implied: %d, decision: %d (removed %d, tested %d, propagated %d), l2 propagation:%d, time(ms):%d %n",
+                    .printf("%s implied: %d, decision: %d, removed %d (+%d), tested %d, propagated %d), l2 propagation:%d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
-                            solver.decisions.size(), removed, tested,
-                            propagated, l2propagation, end - begin);
+                            solver.decisions.size(), removed, posremoved,
+                            tested, propagated, l2propagation, end - begin);
         }
         return implicant;
 
