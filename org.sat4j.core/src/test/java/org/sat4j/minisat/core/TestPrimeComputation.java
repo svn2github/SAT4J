@@ -32,8 +32,14 @@ package org.sat4j.minisat.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.minisat.orders.PositiveLiteralSelectionStrategy;
@@ -41,9 +47,23 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
+@RunWith(value = Parameterized.class)
 public class TestPrimeComputation {
 
     private Solver<DataStructureFactory> solver;
+    private final PrimeImplicantStrategy prime;
+
+    public TestPrimeComputation(PrimeImplicantStrategy prime) {
+        this.prime = prime;
+    }
+
+    @Parameters
+    public static Collection<Object[]> strategies() {
+        return Arrays.asList(new Object[][] {
+                { new QuadraticPrimeImplicantStrategy() },
+                { new CounterBasedPrimeImplicantStrategy() },
+                { new WatcherBasedPrimeImplicantStrategy() } });
+    }
 
     @Before
     public void setUp() {
@@ -68,7 +88,7 @@ public class TestPrimeComputation {
         assertTrue(this.solver.isSatisfiable());
         int[] model = this.solver.model();
         assertEquals(3, model.length);
-        int[] implicant = this.solver.primeImplicant();
+        int[] implicant = prime.compute(solver);
         assertEquals(2, implicant.length);
     }
 
@@ -81,7 +101,7 @@ public class TestPrimeComputation {
         assertTrue(this.solver.isSatisfiable());
         int[] model = this.solver.model();
         assertEquals(4, model.length);
-        int[] implicant = this.solver.primeImplicant();
+        int[] implicant = prime.compute(solver);
         assertEquals(1, implicant.length);
     }
 
@@ -101,7 +121,7 @@ public class TestPrimeComputation {
         assertTrue(this.solver.isSatisfiable());
         int[] model = this.solver.model();
         assertEquals(3, model.length);
-        int[] implicant = this.solver.primeImplicant();
+        int[] implicant = prime.compute(solver);
         assertEquals(2, implicant.length);
         clause.push(1).push(-2).push(-3);
         this.solver.addBlockingClause(clause);
@@ -109,7 +129,7 @@ public class TestPrimeComputation {
         clause.clear();
         model = this.solver.model();
         assertEquals(3, model.length);
-        implicant = this.solver.primeImplicant();
+        implicant = prime.compute(solver);
         assertEquals(1, implicant.length);
     }
 
@@ -129,7 +149,7 @@ public class TestPrimeComputation {
         assertTrue(this.solver.isSatisfiable());
         int[] model = this.solver.model();
         assertEquals(3, model.length);
-        int[] implicant = this.solver.primeImplicant();
+        int[] implicant = prime.compute(solver);
         assertEquals(2, implicant.length);
     }
 }
