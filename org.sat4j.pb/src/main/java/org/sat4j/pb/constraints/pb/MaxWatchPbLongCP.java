@@ -242,6 +242,15 @@ public final class MaxWatchPbLongCP extends WatchPbLongCP {
                 this.voc.watches(this.lits[i] ^ 1).remove(this);
             }
         }
+        // Unset root propagated literals, see SAT-110
+        int ind = 0;
+        while (ind < this.coefs.length
+                && this.watchCumul - this.coefs[ind] < this.degree) {
+            if (!this.voc.isUnassigned(this.lits[ind])) {
+                upl.unset(this.lits[ind]);
+            }
+            ind++;
+        }
 
     }
 

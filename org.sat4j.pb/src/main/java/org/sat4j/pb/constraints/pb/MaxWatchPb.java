@@ -250,6 +250,16 @@ public final class MaxWatchPb extends WatchPb {
                 this.voc.watches(this.lits[i] ^ 1).remove(this);
             }
         }
+        // Unset root propagated literals, see SAT-110
+        int ind = 0;
+        while (ind < this.coefs.length
+                && this.watchCumul.subtract(this.coefs[ind]).compareTo(
+                        this.degree) < 0) {
+            if (!this.voc.isUnassigned(this.lits[ind])) {
+                upl.unset(this.lits[ind]);
+            }
+            ind++;
+        }
     }
 
     /**
@@ -330,46 +340,46 @@ public final class MaxWatchPb extends WatchPb {
         return new MaxWatchPb(voc, mpb);
     }
 
-	public boolean propagatePI(MandatoryLiteralListener l, int p) {
-		this.voc.watch(p, this);
+    public boolean propagatePI(MandatoryLiteralListener l, int p) {
+        this.voc.watch(p, this);
 
-		// compute the new value for watchCumul
-		BigInteger coefP;
-		if (this.litToCoeffs == null) {
-			// finding the index for p in the array of literals
-			int indiceP = 0;
-			while ((this.lits[indiceP] ^ 1) != p) {
-				indiceP++;
-			}
+        // compute the new value for watchCumul
+        BigInteger coefP;
+        if (this.litToCoeffs == null) {
+            // finding the index for p in the array of literals
+            int indiceP = 0;
+            while ((this.lits[indiceP] ^ 1) != p) {
+                indiceP++;
+            }
 
-			// compute the new value for watchCumul
-			coefP = this.coefs[indiceP];
-		} else {
-			coefP = this.litToCoeffs.get(p ^ 1);
-		}
+            // compute the new value for watchCumul
+            coefP = this.coefs[indiceP];
+        } else {
+            coefP = this.litToCoeffs.get(p ^ 1);
+        }
 
-		BigInteger newcumul = this.watchCumul.subtract(coefP);
+        BigInteger newcumul = this.watchCumul.subtract(coefP);
 
-		// if no conflict, not(p) can be propagated
-		// allow a later un-assignation
-		this.voc.undos(p).push(this);
-		// really update watchCumul
-		this.watchCumul = newcumul;
+        // if no conflict, not(p) can be propagated
+        // allow a later un-assignation
+        this.voc.undos(p).push(this);
+        // really update watchCumul
+        this.watchCumul = newcumul;
 
-		// propagation
-		int ind = 0;
-		// limit is the margin between the sum of the coefficients of the
-		// satisfied+unassigned literals
-		// and the degree of the constraint
-		BigInteger limit = this.watchCumul.subtract(this.degree);
-		// for each coefficient greater than limit
-		while (ind < this.coefs.length && limit.compareTo(this.coefs[ind]) < 0) {
-			// its corresponding literal is implied
-			if (this.voc.isSatisfied(this.lits[ind])) {
-				l.isMandatory(this.lits[ind]);
-			}
-			ind++;
-		}
-		return true;
-	}
+        // propagation
+        int ind = 0;
+        // limit is the margin between the sum of the coefficients of the
+        // satisfied+unassigned literals
+        // and the degree of the constraint
+        BigInteger limit = this.watchCumul.subtract(this.degree);
+        // for each coefficient greater than limit
+        while (ind < this.coefs.length && limit.compareTo(this.coefs[ind]) < 0) {
+            // its corresponding literal is implied
+            if (this.voc.isSatisfied(this.lits[ind])) {
+                l.isMandatory(this.lits[ind]);
+            }
+            ind++;
+        }
+        return true;
+    }
 }
