@@ -342,4 +342,12 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         throw new UnsupportedOperationException("Not implemented yet!");
 
     }
+
+    public boolean canBeSatisfiedByCountingLiterals() {
+        return true;
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        return this.lits.length - maxUnsatisfied;
+    }
 }

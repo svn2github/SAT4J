@@ -317,4 +317,12 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
         calcReason(p, outReason);
     }
+
+    public boolean canBeSatisfiedByCountingLiterals() {
+        return true;
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        return 1;
+    }
 }

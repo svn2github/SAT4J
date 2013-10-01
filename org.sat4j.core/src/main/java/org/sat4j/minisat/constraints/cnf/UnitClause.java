@@ -140,4 +140,12 @@ public class UnitClause implements Constr {
         throw new UnsupportedOperationException("Not implemented yet!");
 
     }
+
+    public boolean canBeSatisfiedByCountingLiterals() {
+        return true;
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        return 1;
+    }
 }

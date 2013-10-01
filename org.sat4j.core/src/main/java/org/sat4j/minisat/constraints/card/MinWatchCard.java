@@ -641,7 +641,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
             outReason.push(q ^ 1);
         }
     }
-    
+
     private int savedindex = this.degree + 1;
 
     public boolean propagatePI(MandatoryLiteralListener l, int p) {
@@ -683,5 +683,13 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
         return true;
 
+    }
+
+    public boolean canBeSatisfiedByCountingLiterals() {
+        return true;
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        return degree;
     }
 }

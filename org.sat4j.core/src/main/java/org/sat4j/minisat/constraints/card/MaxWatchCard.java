@@ -466,4 +466,12 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
         throw new UnsupportedOperationException("Not implemented yet!");
 
     }
+
+    public boolean canBeSatisfiedByCountingLiterals() {
+        return true;
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        return degree;
+    }
 }

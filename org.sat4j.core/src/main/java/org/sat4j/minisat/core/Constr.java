@@ -173,4 +173,26 @@ public interface Constr extends IConstr {
      */
     void assertConstraintIfNeeded(UnitPropagationListener s);
 
+    /**
+     * Check that a specific constraint can be checked for satisfiability by
+     * simply counting its number of satisfied literals. This is the case for
+     * clauses and cardinality constraints. It is not the case for pseudo
+     * boolean constraints.
+     * 
+     * @return true iff the constraints can be satisfied by satisfying a given
+     *         number of literals;
+     * @since 2.3.6
+     */
+    boolean canBeSatisfiedByCountingLiterals();
+
+    /**
+     * Returns the number of literals necessary to satisfy that constraint. That
+     * method only make sense if the {@link #canBeSatisfiedByCountingLiterals()}
+     * returns true. For clauses, the value returned will be 1. For cardinality
+     * constraints, the value returned will be its degree.
+     * 
+     * @return the number of literals
+     * @since 2.3.6
+     */
+    int requiredNumberOfSatisfiedLiterals();
 }

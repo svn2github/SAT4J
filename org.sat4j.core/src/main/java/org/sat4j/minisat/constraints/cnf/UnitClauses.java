@@ -129,6 +129,13 @@ public class UnitClauses implements Constr {
 
     public void propagatePi(MandatoryLiteralListener m) {
         throw new UnsupportedOperationException("Not implemented yet!");
+    }
 
+    public boolean canBeSatisfiedByCountingLiterals() {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    public int requiredNumberOfSatisfiedLiterals() {
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 }

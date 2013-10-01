@@ -32,9 +32,6 @@ package org.sat4j.minisat.core;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.cnf.BinaryClause;
-import org.sat4j.minisat.constraints.cnf.UnitClause;
-import org.sat4j.minisat.constraints.cnf.WLClause;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -64,9 +61,9 @@ public class CounterBasedPrimeImplicantStrategy implements
         IVecInt watch;
         for (int i = 0; i < solver.constrs.size(); i++) {
             constr = solver.constrs.get(i);
-            if (!(constr instanceof WLClause || constr instanceof BinaryClause || constr instanceof UnitClause)) {
+            if (!constr.canBeSatisfiedByCountingLiterals()) {
                 throw new IllegalStateException(
-                        "Algo2 does not work with constraints other than clauses "
+                        "Algo2 does not work with constraints other than clauses and cardinalities"
                                 + constr.getClass());
             }
             count[i] = 0;
@@ -96,11 +93,14 @@ public class CounterBasedPrimeImplicantStrategy implements
         int removed = 0;
         int posremoved = 0;
         int propagated = 0;
+        int constrNumber;
         top: for (int i = 0; i < solver.decisions.size(); i++) {
             d = solver.decisions.get(i);
             for (IteratorInt it = watched[toInternal(d)].iterator(); it
                     .hasNext();) {
-                if (count[it.next()] == 1) {
+                constrNumber = it.next();
+                if (count[constrNumber] == solver.constrs.get(constrNumber)
+                        .requiredNumberOfSatisfiedLiterals()) {
                     this.prime[Math.abs(d)] = d;
                     propagated++;
                     continue top;
