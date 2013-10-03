@@ -33,6 +33,7 @@ package org.sat4j.specs;
  * Callback method called when a mandatory literal is found in a constraint.
  * 
  * @author leberre
+ * @since 2.3.6
  * 
  */
 public interface MandatoryLiteralListener {

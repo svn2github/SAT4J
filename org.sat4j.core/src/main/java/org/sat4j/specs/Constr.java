@@ -29,15 +29,17 @@
  *******************************************************************************/
 package org.sat4j.specs;
 
-
 /*
  * Created on 16 oct. 2003
  */
 
 /**
- * Basic constraint abstraction used in Solver.
+ * Basic constraint abstraction used in this solvers.
  * 
  * Any new constraint type should implement that interface.
+ * 
+ * That interface was moved in this package from org.sat4j.minisat.core package
+ * in release 2.3.6 to avoid cyclic dependencies with org.sat4j.specs.
  * 
  * @author leberre
  */
