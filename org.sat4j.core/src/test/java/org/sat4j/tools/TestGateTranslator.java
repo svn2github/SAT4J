@@ -30,6 +30,8 @@
 package org.sat4j.tools;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigInteger;
 
@@ -42,6 +44,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.TimeoutException;
 
 public class TestGateTranslator {
 
@@ -66,4 +69,59 @@ public class TestGateTranslator {
 
     }
 
+    @Test
+    public void testSATIfThen1() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertTrue(gator.isSatisfiable(new VecInt(new int[] { 1, 2, 3 })));
+
+    }
+
+    @Test
+    public void testSATIfThen2() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertFalse(gator.isSatisfiable(new VecInt(new int[] { 1, 2, -3 })));
+    }
+
+    @Test
+    public void testSATIfThen3() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertTrue(gator.isSatisfiable(new VecInt(new int[] { 1, -2, 3 })));
+    }
+
+    @Test
+    public void testSATIfThen() throws ContradictionException, TimeoutException {
+        gator.it(1, 2, 3);
+        assertTrue(gator.isSatisfiable(new VecInt(new int[] { 1, -2, -3 })));
+    }
+
+    @Test
+    public void testSATIfThen5() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertFalse(gator.isSatisfiable(new VecInt(new int[] { -1, 2, 3 })));
+    }
+
+    @Test
+    public void testSATIfThen6() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertTrue(gator.isSatisfiable(new VecInt(new int[] { -1, 2, -3 })));
+    }
+
+    @Test
+    public void testSATIfThen7() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertFalse(gator.isSatisfiable(new VecInt(new int[] { -1, -2, 3 })));
+    }
+
+    @Test
+    public void testSATIfThen8() throws ContradictionException,
+            TimeoutException {
+        gator.it(1, 2, 3);
+        assertFalse(gator.isSatisfiable(new VecInt(new int[] { -1, -2, -3 })));
+    }
 }

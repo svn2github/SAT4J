@@ -133,6 +133,38 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
+     * translate y <=> (x1 => x2)
+     * 
+     * @param y
+     * @param x1
+     *            the selector variable
+     * @param x2
+     * @return
+     * @throws ContradictionException
+     * @since 2.3.6
+     */
+    public IConstr[] it(int y, int x1, int x2) throws ContradictionException {
+        IConstr[] constrs = new IConstr[3];
+        IVecInt clause = new VecInt(5);
+        // y <=> (x1 -> x2)
+        // y -> (x1 -> x2)
+        clause.push(-y).push(-x1).push(x2);
+        constrs[0] = processClause(clause);
+        clause.clear();
+        // y <- (x1 -> x2)
+        // not(x1 -> x2) or y
+        // x1 and not x2 or y
+        // (x1 or y) and (not x2 or y)
+        clause.push(x1).push(y);
+        constrs[1] = processClause(clause);
+        clause.clear();
+        clause.push(-x2).push(y);
+        constrs[2] = processClause(clause);
+
+        return constrs;
+    }
+
+    /**
      * Translate y <=> x1 /\ x2 /\ ... /\ xn into clauses.
      * 
      * @param y
