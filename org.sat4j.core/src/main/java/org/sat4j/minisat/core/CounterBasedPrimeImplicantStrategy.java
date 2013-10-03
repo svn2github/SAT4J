@@ -32,6 +32,7 @@ package org.sat4j.minisat.core;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 

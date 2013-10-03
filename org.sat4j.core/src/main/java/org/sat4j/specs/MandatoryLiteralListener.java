@@ -27,34 +27,20 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.pb.core;
+package org.sat4j.specs;
 
-import java.math.BigInteger;
+/**
+ * Callback method called when a mandatory literal is found in a constraint.
+ * 
+ * @author leberre
+ * 
+ */
+public interface MandatoryLiteralListener {
 
-import org.sat4j.minisat.core.DataStructureFactory;
-import org.sat4j.pb.constraints.pb.IDataStructurePB;
-import org.sat4j.specs.Constr;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
-
-public interface PBDataStructureFactory extends DataStructureFactory {
-
-    Constr createPseudoBooleanConstraint(IVecInt literals,
-            IVec<BigInteger> coefs, boolean moreThan, BigInteger degree)
-            throws ContradictionException;
-
-    Constr createAtMostPBConstraint(IVecInt literals, IVec<BigInteger> coefs,
-            BigInteger degree) throws ContradictionException;
-
-    Constr createAtLeastPBConstraint(IVecInt literals, IVec<BigInteger> coefs,
-            BigInteger degree) throws ContradictionException;
-
-    Constr createUnregisteredPseudoBooleanConstraint(IDataStructurePB dspb);
-
-    Constr createUnregisteredAtMostConstraint(IVecInt literals,
-            IVec<BigInteger> coefs, BigInteger degree);
-
-    Constr createUnregisteredAtLeastConstraint(IVecInt literals,
-            IVec<BigInteger> coefs, BigInteger degree);
+    /**
+     * 
+     * @param p
+     *            a literal in internal representation.
+     */
+    void isMandatory(int p);
 }

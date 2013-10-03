@@ -34,13 +34,13 @@ import java.math.BigInteger;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**
@@ -163,7 +163,7 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
      * @param outReason
      *            list of falsified literals for which the negation is the
      *            reason of the assignment
-     * @see org.sat4j.minisat.core.Constr#calcReason(int, IVecInt)
+     * @see org.sat4j.specs.Constr#calcReason(int, IVecInt)
      */
     public void calcReason(int p, IVecInt outReason) {
         BigInteger sumfalsified = BigInteger.ZERO;
@@ -211,7 +211,7 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
      * to obtain the activity value of the constraint
      * 
      * @return activity value of the constraint
-     * @see org.sat4j.minisat.core.Constr#getActivity()
+     * @see org.sat4j.specs.Constr#getActivity()
      */
     public double getActivity() {
         return this.activity;
@@ -220,7 +220,7 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     /**
      * increase activity value of the constraint
      * 
-     * @see org.sat4j.minisat.core.Constr#incActivity(double)
+     * @see org.sat4j.specs.Constr#incActivity(double)
      */
     public void incActivity(double claInc) {
         if (this.learnt) {

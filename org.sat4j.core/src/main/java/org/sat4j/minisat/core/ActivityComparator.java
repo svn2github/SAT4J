@@ -32,6 +32,8 @@ package org.sat4j.minisat.core;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.sat4j.specs.Constr;
+
 /**
  * Utility class to sort the constraints according to their activity.
  * 

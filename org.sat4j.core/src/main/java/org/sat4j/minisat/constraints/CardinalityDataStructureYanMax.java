@@ -32,7 +32,7 @@ package org.sat4j.minisat.constraints;
 import org.sat4j.minisat.constraints.card.MaxWatchCard;
 import org.sat4j.minisat.constraints.card.MinWatchCard;
 import org.sat4j.minisat.constraints.cnf.LearntWLClause;
-import org.sat4j.minisat.core.Constr;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 

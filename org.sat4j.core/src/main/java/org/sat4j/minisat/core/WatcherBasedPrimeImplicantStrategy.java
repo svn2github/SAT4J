@@ -33,7 +33,10 @@ import static org.sat4j.core.LiteralsUtils.toDimacs;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 import static org.sat4j.core.LiteralsUtils.var;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.MandatoryLiteralListener;
+import org.sat4j.specs.Propagatable;
 
 /**
  * Watcher based implementation of the model minimization strategy to compute a

@@ -31,6 +31,8 @@ package org.sat4j.minisat.core;
 
 import java.io.Serializable;
 
+import org.sat4j.specs.Constr;
+
 /**
  * Utility class to be used to return the two results of a conflict analysis.
  * 

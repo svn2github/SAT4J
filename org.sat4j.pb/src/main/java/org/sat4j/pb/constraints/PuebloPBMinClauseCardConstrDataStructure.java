@@ -30,7 +30,7 @@
 package org.sat4j.pb.constraints;
 
 import org.sat4j.minisat.constraints.cnf.Clauses;
-import org.sat4j.minisat.core.Constr;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 

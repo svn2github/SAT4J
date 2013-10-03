@@ -27,11 +27,8 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.specs;
 
-import org.sat4j.specs.IConstr;
-import org.sat4j.specs.IVecInt;
-import org.sat4j.specs.UnitPropagationListener;
 
 /*
  * Created on 16 oct. 2003

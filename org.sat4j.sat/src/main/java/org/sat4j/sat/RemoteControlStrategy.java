@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.sat;
 
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ICDCL;
 import org.sat4j.minisat.core.IPhaseSelectionStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
@@ -37,6 +36,7 @@ import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SolverStats;
 import org.sat4j.minisat.orders.RSATPhaseSelectionStrategy;
 import org.sat4j.minisat.restarts.NoRestarts;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ILogAble;
 
 /**

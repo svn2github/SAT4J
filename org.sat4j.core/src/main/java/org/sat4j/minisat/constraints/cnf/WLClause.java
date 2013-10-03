@@ -31,10 +31,10 @@ package org.sat4j.minisat.constraints.cnf;
 
 import java.io.Serializable;
 
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.Propagatable;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**

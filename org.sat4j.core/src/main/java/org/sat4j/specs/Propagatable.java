@@ -27,9 +27,8 @@
  * Contributors:
  *   CRIL - initial API and implementation
  *******************************************************************************/
-package org.sat4j.minisat.core;
+package org.sat4j.specs;
 
-import org.sat4j.specs.UnitPropagationListener;
 
 /**
  * This interface is to be implemented by the classes wanted to be notified of

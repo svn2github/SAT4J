@@ -29,9 +29,9 @@
  *******************************************************************************/
 package org.sat4j.minisat.constraints.cnf;
 
-import org.sat4j.minisat.core.Constr;
-import org.sat4j.minisat.core.MandatoryLiteralListener;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**

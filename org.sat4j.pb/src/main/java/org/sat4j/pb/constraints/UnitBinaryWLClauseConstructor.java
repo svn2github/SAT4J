@@ -34,8 +34,8 @@ import org.sat4j.minisat.constraints.cnf.LearntWLClause;
 import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClause;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 

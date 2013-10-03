@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
 
 class GlucoseLCDS<D extends DataStructureFactory> implements

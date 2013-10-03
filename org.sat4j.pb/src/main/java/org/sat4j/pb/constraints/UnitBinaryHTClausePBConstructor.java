@@ -29,13 +29,13 @@
  *******************************************************************************/
 package org.sat4j.pb.constraints;
 
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.LearntBinaryClausePB;
 import org.sat4j.pb.constraints.pb.LearntHTClausePB;
 import org.sat4j.pb.constraints.pb.OriginalBinaryClausePB;
 import org.sat4j.pb.constraints.pb.OriginalHTClausePB;
 import org.sat4j.pb.constraints.pb.UnitClausePB;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 

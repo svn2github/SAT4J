@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.Constr;
+
 /**
  * Provide the learning service.
  * 

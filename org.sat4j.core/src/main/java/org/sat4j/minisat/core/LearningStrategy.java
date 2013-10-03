@@ -31,6 +31,8 @@ package org.sat4j.minisat.core;
 
 import java.io.Serializable;
 
+import org.sat4j.specs.Constr;
+
 /**
  * Implementation of the strategy design pattern for allowing various learning
  * schemes.

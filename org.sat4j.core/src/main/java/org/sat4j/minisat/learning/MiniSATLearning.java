@@ -29,9 +29,9 @@
  *******************************************************************************/
 package org.sat4j.minisat.learning;
 
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.specs.Constr;
 
 /**
  * MiniSAT learning scheme.

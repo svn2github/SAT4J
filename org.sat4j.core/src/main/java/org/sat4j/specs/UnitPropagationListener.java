@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.specs;
 
-import org.sat4j.minisat.core.Constr;
 
 /**
  * Interface providing the unit propagation capability.

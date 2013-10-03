@@ -33,11 +33,11 @@ import java.io.Serializable;
 
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.Propagatable;
 
 /**
  * @author laihem

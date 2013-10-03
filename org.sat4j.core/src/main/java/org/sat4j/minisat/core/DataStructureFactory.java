@@ -29,9 +29,11 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**

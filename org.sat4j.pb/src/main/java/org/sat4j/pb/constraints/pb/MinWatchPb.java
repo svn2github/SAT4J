@@ -32,8 +32,8 @@ package org.sat4j.pb.constraints.pb;
 import java.math.BigInteger;
 
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**

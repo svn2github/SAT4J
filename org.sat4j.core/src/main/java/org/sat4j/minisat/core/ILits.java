@@ -29,7 +29,9 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.Propagatable;
 
 /**
  * That interface manages the solver's internal vocabulary. Everything related

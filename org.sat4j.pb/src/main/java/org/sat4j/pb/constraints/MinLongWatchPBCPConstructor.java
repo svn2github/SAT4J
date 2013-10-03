@@ -31,11 +31,11 @@ package org.sat4j.pb.constraints;
 
 import java.math.BigInteger;
 
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.pb.constraints.pb.IDataStructurePB;
 import org.sat4j.pb.constraints.pb.MinWatchPb;
 import org.sat4j.pb.constraints.pb.MinWatchPbLongCP;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.UnitPropagationListener;
 

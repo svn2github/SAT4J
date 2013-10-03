@@ -32,8 +32,8 @@ package org.sat4j.minisat.constraints.cnf;
 import static org.sat4j.core.LiteralsUtils.neg;
 
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.MandatoryLiteralListener;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.MandatoryLiteralListener;
 
 /**
  * @author daniel

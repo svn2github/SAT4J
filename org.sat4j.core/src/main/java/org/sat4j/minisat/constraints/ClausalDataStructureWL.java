@@ -35,8 +35,8 @@ import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClause;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 

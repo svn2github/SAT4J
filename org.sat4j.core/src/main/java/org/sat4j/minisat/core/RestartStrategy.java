@@ -31,6 +31,8 @@ package org.sat4j.minisat.core;
 
 import java.io.Serializable;
 
+import org.sat4j.specs.Constr;
+
 /**
  * Abstraction allowing to choose various restarts strategies.
  * 

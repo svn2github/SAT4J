@@ -34,14 +34,14 @@ import java.io.Serializable;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.ILits;
-import org.sat4j.minisat.core.MandatoryLiteralListener;
-import org.sat4j.minisat.core.Propagatable;
 import org.sat4j.minisat.core.Undoable;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.MandatoryLiteralListener;
+import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**

@@ -30,10 +30,10 @@
 package org.sat4j.minisat.restarts;
 
 import org.sat4j.minisat.core.CircularBuffer;
-import org.sat4j.minisat.core.Constr;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.SolverStats;
+import org.sat4j.specs.Constr;
 
 /**
  * Dynamic restart strategy of Glucose 2.1 as presented in Refining restarts
