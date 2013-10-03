@@ -1,437 +1,425 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.ow2</groupId>
-    <artifactId>ow2</artifactId>
-    <version>1.5</version>
-  </parent>
-  <groupId>org.ow2.sat4j</groupId>
-  <artifactId>org.ow2.sat4j.pom</artifactId>
-  <packaging>pom</packaging>
-  <version>2.3.6-SNAPSHOT</version>
-  <name>SAT4J</name>
-  <url>http://www.sat4j.org/</url>
-  <description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ow2</groupId>
+		<artifactId>ow2</artifactId>
+		<version>1.5</version>
+	</parent>
+	<groupId>org.ow2.sat4j</groupId>
+	<artifactId>org.ow2.sat4j.pom</artifactId>
+	<packaging>pom</packaging>
+	<version>2.3.6-SNAPSHOT</version>
+	<name>SAT4J</name>
+	<url>http://www.sat4j.org/</url>
+	<description>
 The aim of the SAT4J library is to provide an efficient library of SAT solvers in Java. Compared to the OpenSAT project, the SAT4J library targets first users of SAT "black boxes", willing to embed  SAT technologies into their application without worrying about the details. Since we use the library for our own research, it is also possible for SAT researchers to use it as a basis for their work.
   </description>
-  <scm>
-    <connection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</connection>
-    <url>http://fisheye.ow2.org/browse/Sat4J/maven/trunk</url>
-    <developerConnection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</developerConnection>
-  </scm>
-  <licenses>
-  <license>
-    <name>Eclipse Public License 1.0</name>
-    <url>http://www.eclipse.org/org/documents/epl-v10.php</url>
-    <distribution>Manual</distribution>
-  </license>
-  <license>
-    <name>GNU Lesser GPL 2.1</name>
-    <url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
-    <distribution>manual</distribution>
-  </license>
-</licenses>
-  <organization>
-    <name>Centre de Recherche en Informatique de Lens (CRIL)</name>
-    <url>http://www.cril.univ-artois.fr/</url>
-  </organization>
-  <issueManagement>
-    <system>OW2 Jira</system>
-    <url>http://jira.ow2.org/browse/SAT</url>
-  </issueManagement>
-  <mailingLists>
-    <mailingList>
-      <name>Developer List</name>
-      <subscribe>sat4j-dev-subscribe@objectweb.org</subscribe>
-      <unsubscribe>sat4j-dev-unsubscribe@objectweb.org</unsubscribe>
-      <post>sat4j-dev@objectweb.org</post>
-      <archive>http://mail-archive.objectweb.org/sat4j-dev/index.html</archive>
-    </mailingList>
-    <mailingList>
-      <name>Commits List</name>
-      <subscribe>sat4j-commits-subscribe@objectweb.org</subscribe>
-      <unsubscribe>sat4j-commits-unsubscribe@objectweb.org</unsubscribe>
-      <post>sat4j-commits@objectweb.org</post>
-      <archive>http://mail-archive.objectweb.org/sat4j-commits/index.html</archive>
-    </mailingList>
-  </mailingLists>
-  <developers>
-    <developer>
-      <id>leberre</id>
-      <name>Daniel Le Berre</name>
-      <email>daniel.leberre@sat4j.org</email>
-      <url>http://www.sat4j.org/</url>
-      <organization>CRIL CNRS 8188</organization>
-      <organizationUrl>http://www.cril.fr</organizationUrl>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </developer>
-  </developers>
-  <properties>
-    <!-- compiler params -->
-    <javaSource>1.5</javaSource>
-    <javaTarget>1.5</javaTarget>
-    <testSource>1.5</testSource>
-    <testTarget>1.5</testTarget>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-    <!-- common distribution locations -->
-    <siteRepositoryId />
-    <siteRepositoryUrl />
-    <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
-    <sat4j.custom.version>${project.version}.v${maven.build.timestamp}</sat4j.custom.version>
-    <next.eclipse.release.date>June, 2010</next.eclipse.release.date>
-    <bundle-manifest>${project.build.directory}/META-INF/MANIFEST.MF</bundle-manifest>
-  </properties>
-   <pluginRepositories>
-    <pluginRepository>
-      <id>apache.snapshots</id>
-      <url>http://repository.apache.org/snapshots/</url>
-    </pluginRepository>
-  </pluginRepositories>
-  <modules>
-    <module>org.sat4j.core</module>
-    <module>org.sat4j.pb</module>
-    <module>org.sat4j.maxsat</module>
-    <module>org.sat4j.sat</module>
-    <module>org.sat4j.csp</module>
-    <module>org.sat4j.csp.xmlparser</module>
-    <module>org.sat4j.scala</module>
-  </modules>
+	<scm>
+		<connection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</connection>
+		<url>http://fisheye.ow2.org/browse/Sat4J/maven/trunk</url>
+		<developerConnection>scm:svn:svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/trunk/</developerConnection>
+	</scm>
+	<licenses>
+		<license>
+			<name>Eclipse Public License 1.0</name>
+			<url>http://www.eclipse.org/org/documents/epl-v10.php</url>
+			<distribution>Manual</distribution>
+		</license>
+		<license>
+			<name>GNU Lesser GPL 2.1</name>
+			<url>http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+			<distribution>manual</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>Centre de Recherche en Informatique de Lens (CRIL)</name>
+		<url>http://www.cril.univ-artois.fr/</url>
+	</organization>
+	<issueManagement>
+		<system>OW2 Jira</system>
+		<url>http://jira.ow2.org/browse/SAT</url>
+	</issueManagement>
+	<mailingLists>
+		<mailingList>
+			<name>Developer List</name>
+			<subscribe>sat4j-dev-subscribe@objectweb.org</subscribe>
+			<unsubscribe>sat4j-dev-unsubscribe@objectweb.org</unsubscribe>
+			<post>sat4j-dev@objectweb.org</post>
+			<archive>http://mail-archive.objectweb.org/sat4j-dev/index.html</archive>
+		</mailingList>
+		<mailingList>
+			<name>Commits List</name>
+			<subscribe>sat4j-commits-subscribe@objectweb.org</subscribe>
+			<unsubscribe>sat4j-commits-unsubscribe@objectweb.org</unsubscribe>
+			<post>sat4j-commits@objectweb.org</post>
+			<archive>http://mail-archive.objectweb.org/sat4j-commits/index.html</archive>
+		</mailingList>
+	</mailingLists>
+	<developers>
+		<developer>
+			<id>leberre</id>
+			<name>Daniel Le Berre</name>
+			<email>daniel.leberre@sat4j.org</email>
+			<url>http://www.sat4j.org/</url>
+			<organization>CRIL CNRS 8188</organization>
+			<organizationUrl>http://www.cril.fr</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+	<properties>
+		<!-- compiler params -->
+		<javaSource>1.5</javaSource>
+		<javaTarget>1.5</javaTarget>
+		<testSource>1.5</testSource>
+		<testTarget>1.5</testTarget>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- common distribution locations -->
+		<siteRepositoryId />
+		<siteRepositoryUrl />
+		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+		<sat4j.custom.version>${project.version}.v${maven.build.timestamp}</sat4j.custom.version>
+		<next.eclipse.release.date>June, 2010</next.eclipse.release.date>
+		<bundle-manifest>${project.build.directory}/META-INF/MANIFEST.MF</bundle-manifest>
+	</properties>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>apache.snapshots</id>
+			<url>http://repository.apache.org/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<modules>
+		<module>org.sat4j.core</module>
+		<module>org.sat4j.pb</module>
+		<module>org.sat4j.maxsat</module>
+		<module>org.sat4j.sat</module>
+		<module>org.sat4j.csp</module>
+		<module>org.sat4j.csp.xmlparser</module>
+		<module>org.sat4j.scala</module>
+	</modules>
 
- <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
-      <scope>test</scope>
-    </dependency>
- </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-  <build>
-    <defaultGoal>install</defaultGoal>
-    <resources>
-      <resource>
-         <directory>src/main/resources</directory>
-         <filtering>true</filtering>
-      </resource>
-    </resources>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-webdav</artifactId>
-      </extension>
-    </extensions>
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+			</extension>
+		</extensions>
 
-    <plugins>
-       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
-        <executions>
-	    <execution>
-	      <goals>
-                <goal>test-jar</goal>
-              </goals>
-            </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <manifestFile>${bundle-manifest}</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <forkMode>pertest</forkMode>
-          <argLine>-enableassertions -Xmx1024m</argLine>
-          <includes>
-            <include>**/Bug*</include>
-            <include>**/*Test*</include>
-          </includes>
-          <excludes>
-            <exclude>**/XplainTests*</exclude>
-            <exclude>**/GoodOPBReaderTest*</exclude>
-            <exclude>**/Abstract*Test*</exclude>
-            <!-- those tests timeout -->
-            <exclude>**/CompetPBResMinHTMixedConstraintsObjectiveLearningTest*</exclude>
-            <exclude>**/CompetPBResHTMixedConstraintsObjectiveLearningTest*</exclude>
-	    <exclude>**/MiniOPBLongClauseCardMinLearningTest*</exclude>
-	    <exclude>**/PBCPMixedConstraintsCautiousTest*</exclude>
-             <!-- bug SAT08 not fixed yet -->
-            <exclude>**/TestLonca*</exclude>
-            <exclude>**/MultiObjectiveDependencyHelperTest*</exclude>
-          </excludes>
-          <systemProperties>
-            <property>
-              <name>test.prefix</name>
-              <value>${basedir}/src/test/testfiles/</value>
-            </property>
-            <property>
-              <name>test.pbprefix</name>
-              <value>${basedir}/src/test/testfiles/</value>
-            </property>
-          </systemProperties>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <source>${javaSource}</source>
-          <target>${javaTarget}</target>
-          <testSource>${testSource}</testSource>
-          <testTarget>${testTarget}</testTarget>
-          <compilerId>jdt</compilerId>
-        </configuration>
-         <dependencies>
-          <dependency>
-              <groupId>org.sonatype.tycho</groupId>
-              <artifactId>tycho-compiler-jdt</artifactId>
-              <version>0.7.0</version>
-           </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-      	<groupId>org.codehaus.mojo</groupId>
-      	<artifactId>cobertura-maven-plugin</artifactId>
-      	<version>2.4</version>
-      	<executions>
-      		<execution>
-      			<id>clean</id>
-      			<goals>
-      				<goal>clean</goal>
-      			</goals>
-      		</execution>
-      	</executions>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-javadoc-plugin</artifactId>
-      	<version>2.7</version>
-        <configuration>
-				<source>1.5</source>
-				<doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-				<docletArtifact>
-					<groupId>org.umlgraph</groupId>
-					<artifactId>doclet</artifactId>
-					<version>5.1</version>
-				</docletArtifact>
-				<additionalparam>
-					<!-- -operations -visibility -->
-				</additionalparam>
-      			<useStandardDocletOptions>true</useStandardDocletOptions>
-        </configuration>
-        <executions>
-      		<execution>
-      			<id>attach-javadocs</id>
-      			<goals>
-      				<goal>jar</goal>
-      			</goals>
-      		</execution>
-      	</executions>
-      </plugin>
-      <plugin>
-      	<groupId>org.apache.maven.plugins</groupId>
-      	<artifactId>maven-source-plugin</artifactId>
-      	<version>2.1.2</version>
-      	<executions>
-      		<execution>
-      			<id>attach-sources</id>
-      			<goals>
-      				<goal>jar</goal>
-      			</goals>
-      		</execution>
-      	</executions>
-      </plugin>
-      <!--
-      <plugin>
-        <artifactId>maven-pdf-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <id>site-pdf</id>
-            <phase>site</phase>
-            <goals>
-              <goal>pdf</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.reporting.outputDirectory}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/tags</tagBase>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>translate-qualifier</id>
-            <phase>generate-resources</phase>
-            <configuration>
-          <tasks>
-          <echo>Changing ${bundle-manifest}</echo>
-        <copy file="META-INF/MANIFEST.MF" tofile="${bundle-manifest}" overwrite="true" />
-        <replace file="${bundle-manifest}" token="9.9.9.token" value="${sat4j.custom.version}">
-            </replace>
-          </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>3.0</version>
-        <configuration>
-          <reportPlugins>
+		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-                                <version>2.4</version>
-                                <reportSets>
-                                  <reportSet>
-                                     <reports>
-                                       <report>index</report>
-                                       <report>scm</report>
-                                       <report>license</report>
-                                       <report>issue-tracking</report>
-                                       <report>mailing-list</report>
-                                       <report>project-team</report>
-                                       <report>dependencies</report>
-                                     </reports>
-                               </reportSet>
-                  </reportSets>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.7</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jxr-plugin</artifactId>
-				<version>2.2</version>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>2.5</version>
- 				<configuration>
-					<targetJdk>1.5</targetJdk>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<archive>
+						<manifestFile>${bundle-manifest}</manifestFile>
+					</archive>
 				</configuration>
 			</plugin>
-
-                        <plugin>
-                               <groupId>org.apache.maven.plugins</groupId>
-                               <artifactId>maven-checkstyle-plugin</artifactId>
-                               <version>2.6</version>
-                        </plugin>
-    <plugin>
-       <groupId>org.codehaus.mojo</groupId>
-       <artifactId>findbugs-maven-plugin</artifactId>
-       <version>2.3.1</version>
-       <configuration>
-          <threshold>Low</threshold>
-          <onlyAnalyze>org.sat4j.-</onlyAnalyze>
-       </configuration>
-    </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<forkMode>pertest</forkMode>
+					<argLine>-enableassertions -Xmx1024m</argLine>
+					<includes>
+						<include>**/Bug*</include>
+						<include>**/*Test*</include>
+					</includes>
+					<excludes>
+						<exclude>**/XplainTests*</exclude>
+						<exclude>**/GoodOPBReaderTest*</exclude>
+						<exclude>**/Abstract*Test*</exclude>
+						<!-- those tests timeout -->
+						<exclude>**/CompetPBResMinHTMixedConstraintsObjectiveLearningTest*</exclude>
+						<exclude>**/CompetPBResHTMixedConstraintsObjectiveLearningTest*</exclude>
+						<exclude>**/MiniOPBLongClauseCardMinLearningTest*</exclude>
+						<exclude>**/PBCPMixedConstraintsCautiousTest*</exclude>
+						<exclude>**/MultiObjectiveDependencyHelperTest*</exclude>
+					</excludes>
+					<systemProperties>
+						<property>
+							<name>test.prefix</name>
+							<value>${basedir}/src/test/testfiles/</value>
+						</property>
+						<property>
+							<name>test.pbprefix</name>
+							<value>${basedir}/src/test/testfiles/</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>${javaSource}</source>
+					<target>${javaTarget}</target>
+					<testSource>${testSource}</testSource>
+					<testTarget>${testTarget}</testTarget>
+					<compilerId>jdt</compilerId>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.sonatype.tycho</groupId>
+						<artifactId>tycho-compiler-jdt</artifactId>
+						<version>0.7.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>clean</id>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-                                <version>2.8</version>
-                                  <configuration>
-                                <groups>
-                                  <group>
-                                     <title>User level: stable public API</title>
-                                     <packages>org.sat4j:org.sat4j.*</packages>
-                                  </group>
-				  <group>
-                                     <title>Developer level: internal API, subject to change</title>
-                                     <packages>org.sat4j.minisat.*:org.sat4j.reader.csp:org.sat4j.pb.*</packages>
-                                  </group>
-                                </groups>
-                                
-                                </configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>taglist-maven-plugin</artifactId>
-				<version>2.4</version>
+				<version>2.7</version>
 				<configuration>
-					<tags>
-						<tag>TODO</tag>
-						<tag>@todo</tag>
-						<tag>FIXME</tag>
-						<tag>DLB</tag>
-					</tags>
+					<source>1.5</source>
+					<doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+					<docletArtifact>
+						<groupId>org.umlgraph</groupId>
+						<artifactId>doclet</artifactId>
+						<version>5.1</version>
+					</docletArtifact>
+					<additionalparam>
+						<!-- -operations -visibility -->
+					</additionalparam>
+					<useStandardDocletOptions>true</useStandardDocletOptions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- <plugin> <artifactId>maven-pdf-plugin</artifactId> <version>1.0</version> 
+				<executions> <execution> <id>site-pdf</id> <phase>site</phase> <goals> <goal>pdf</goal> 
+				</goals> <configuration> <outputDirectory>${project.reporting.outputDirectory}</outputDirectory> 
+				</configuration> </execution> </executions> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<tagBase>svn+ssh://leberre@svn.forge.objectweb.org/svnroot/sat4j/maven/tags</tagBase>
 				</configuration>
 			</plugin>
-          </reportPlugins>
-        </configuration>
-      </plugin> 
-    </plugins>
-    <pluginManagement>
-    	<plugins>
-    		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									maven-antrun-plugin
-    								</artifactId>
-    								<versionRange>[1.3,)</versionRange>
-    								<goals>
-    									<goal>run</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
-    </pluginManagement>
-  </build>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>translate-qualifier</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<tasks>
+								<echo>Changing ${bundle-manifest}</echo>
+								<copy file="META-INF/MANIFEST.MF" tofile="${bundle-manifest}"
+									overwrite="true" />
+								<replace file="${bundle-manifest}" token="9.9.9.token"
+									value="${sat4j.custom.version}">
+								</replace>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-project-info-reports-plugin</artifactId>
+							<version>2.4</version>
+							<reportSets>
+								<reportSet>
+									<reports>
+										<report>index</report>
+										<report>scm</report>
+										<report>license</report>
+										<report>issue-tracking</report>
+										<report>mailing-list</report>
+										<report>project-team</report>
+										<report>dependencies</report>
+									</reports>
+								</reportSet>
+							</reportSets>
+						</plugin>
+
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-report-plugin</artifactId>
+							<version>2.7</version>
+						</plugin>
+
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jxr-plugin</artifactId>
+							<version>2.2</version>
+						</plugin>
+
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-pmd-plugin</artifactId>
+							<version>2.5</version>
+							<configuration>
+								<targetJdk>1.5</targetJdk>
+							</configuration>
+						</plugin>
+
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-checkstyle-plugin</artifactId>
+							<version>2.6</version>
+						</plugin>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>findbugs-maven-plugin</artifactId>
+							<version>2.3.1</version>
+							<configuration>
+								<threshold>Low</threshold>
+								<onlyAnalyze>org.sat4j.-</onlyAnalyze>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>2.8</version>
+							<configuration>
+								<groups>
+									<group>
+										<title>User level: stable public API</title>
+										<packages>org.sat4j:org.sat4j.*</packages>
+									</group>
+									<group>
+										<title>Developer level: internal API, subject to change</title>
+										<packages>org.sat4j.minisat.*:org.sat4j.reader.csp:org.sat4j.pb.*</packages>
+									</group>
+								</groups>
+
+							</configuration>
+						</plugin>
+
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>taglist-maven-plugin</artifactId>
+							<version>2.4</version>
+							<configuration>
+								<tags>
+									<tag>TODO</tag>
+									<tag>@todo</tag>
+									<tag>FIXME</tag>
+									<tag>DLB</tag>
+								</tags>
+							</configuration>
+						</plugin>
+					</reportPlugins>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-antrun-plugin
+										</artifactId>
+										<versionRange>[1.3,)</versionRange>
+										<goals>
+											<goal>run</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 	<reporting>
 		<plugins>
 
