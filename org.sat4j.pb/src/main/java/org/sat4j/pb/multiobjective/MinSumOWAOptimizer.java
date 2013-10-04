@@ -85,7 +85,7 @@ public class MinSumOWAOptimizer extends AbstractLinMultiObjOptimizer {
     @Override
     protected void setInitConstraints() {
         try {
-            objBoundVar = new IntegerVariable(decorated(), globalObjBound());
+            objBoundVar = this.integerSolver.newIntegerVar(globalObjBound());
             for (List<Integer> permutation : new PermutationComputer(
                     super.objs.size())) {
                 addConstraint(objBoundVar, permutation);
@@ -110,7 +110,7 @@ public class MinSumOWAOptimizer extends AbstractLinMultiObjOptimizer {
             }
         }
         BigInteger fact = BigInteger.ONE;
-        for (IteratorInt litsIt = boundVar.getLits().iterator(); litsIt
+        for (IteratorInt litsIt = boundVar.getVars().iterator(); litsIt
                 .hasNext();) {
             int nextLit = litsIt.next() * -1;
             vars.push(nextLit);
@@ -139,7 +139,7 @@ public class MinSumOWAOptimizer extends AbstractLinMultiObjOptimizer {
     protected void setGlobalObj() {
         decorated().setObjectiveFunction(
                 new ObjectiveFunction(new VecInt(), new Vec<BigInteger>()));
-        ((IIntegerPBSolver) decorated()).addIntegerVariableToObjectiveFunction(
+        this.integerSolver.addIntegerVariableToObjectiveFunction(
                 this.objBoundVar, BigInteger.ONE);
     }
 

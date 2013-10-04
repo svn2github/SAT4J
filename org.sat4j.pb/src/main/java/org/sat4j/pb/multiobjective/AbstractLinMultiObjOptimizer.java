@@ -53,8 +53,8 @@ import org.sat4j.specs.TimeoutException;
  * 
  * @author lonca
  */
-public abstract class AbstractLinMultiObjOptimizer extends
-        PseudoOptDecorator implements IMultiObjectivePBSolver {
+public abstract class AbstractLinMultiObjOptimizer extends PseudoOptDecorator
+        implements IMultiObjectivePBSolver {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,8 +62,11 @@ public abstract class AbstractLinMultiObjOptimizer extends
 
     private boolean initConstraintsSet = false;
 
+    protected final IIntegerPBSolver integerSolver;
+
     public AbstractLinMultiObjOptimizer(IIntegerPBSolver solver) {
         super(solver);
+        this.integerSolver = solver;
     }
 
     public void addObjectiveFunction(ObjectiveFunction obj) {

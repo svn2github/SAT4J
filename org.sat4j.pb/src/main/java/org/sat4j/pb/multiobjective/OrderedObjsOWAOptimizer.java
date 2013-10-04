@@ -38,7 +38,6 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IIntegerPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.pb.core.IntegerPBSolverDecorator;
 import org.sat4j.pb.core.IntegerVariable;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
@@ -77,8 +76,8 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
     protected void setInitConstraints() {
         BigInteger minObjValuesBound = minObjValuesBound();
         for (int i = 0; i < super.objs.size(); ++i) {
-            IntegerVariable boundVar = new IntegerVariable(decorated(),
-                    minObjValuesBound);
+            IntegerVariable boundVar = this.integerSolver
+                    .newIntegerVar(minObjValuesBound);
             this.objBoundVariables.add(boundVar);
             this.atLeastFlags.add(new VecInt());
             for (int j = 0; j < super.objs.size(); ++j) {
@@ -99,8 +98,8 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
         literals.push(flagLit);
         coeffs.push(minObjValuesBound().negate());
         try {
-            ((IntegerPBSolverDecorator) decorated()).addAtMost(literals,
-                    coeffs, new Vec<IntegerVariable>().push(boundVar),
+            this.integerSolver.addAtMost(literals, coeffs,
+                    new Vec<IntegerVariable>().push(boundVar),
                     new Vec<BigInteger>().push(BigInteger.ONE.negate()),
                     BigInteger.ZERO);
         } catch (ContradictionException e) {
@@ -156,10 +155,9 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
             decorated().setObjectiveFunction(
                     new ObjectiveFunction(new VecInt(), new Vec<BigInteger>()));
             for (int i = 0; i < objBoundVariables.size(); ++i) {
-                ((IIntegerPBSolver) decorated())
-                        .addIntegerVariableToObjectiveFunction(
-                                objBoundVariables.get(i),
-                                weights[weights.length - i - 1]);
+                this.integerSolver.addIntegerVariableToObjectiveFunction(
+                        objBoundVariables.get(i), weights[weights.length - i
+                                - 1]);
             }
         } catch (Exception e) {
             e.printStackTrace();
