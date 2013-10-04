@@ -171,7 +171,9 @@ public final class ReadOnlyVecInt implements IVecInt {
      * @since 2.1
      */
     public int[] toArray() {
-        throw new UnsupportedOperationException();
+        int[] copy = new int[this.vec.size()];
+        this.vec.copyTo(copy);
+        return copy;
     }
 
     /**
