@@ -1,5 +1,5 @@
 /*******************************************************************************
- * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2012 Artois University and CNRS
+ * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2013 Artois University and CNRS
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -82,7 +82,7 @@ public class ManyCore<S extends ISolver> extends
 
     protected final List<S> solvers;
     protected final int numberOfSolvers;
-    private int winnerId;
+    protected int winnerId;
     private boolean resultFound;
     private AtomicInteger remainingSolvers;
     private volatile int sleepTime;
