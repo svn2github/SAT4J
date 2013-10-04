@@ -1,5 +1,5 @@
 /*******************************************************************************
- * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2012 Artois University and CNRS
+ * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2013 Artois University and CNRS
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -41,18 +41,16 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.tools.ManyCore;
 
-public class ManyCorePB extends ManyCore<IPBSolver> implements IPBSolver {
+public class ManyCorePB<S extends IPBSolver> extends ManyCore<S> implements
+        IPBSolver {
 
-    /**
-	 * 
-	 */
     private static final long serialVersionUID = 1L;
 
-    public ManyCorePB(ASolverFactory<IPBSolver> factory, String... solverNames) {
+    public ManyCorePB(ASolverFactory<S> factory, String... solverNames) {
         super(factory, solverNames);
     }
 
-    public ManyCorePB(IPBSolver... iSolver) {
+    public ManyCorePB(S... iSolver) {
         super(iSolver);
     }
 
