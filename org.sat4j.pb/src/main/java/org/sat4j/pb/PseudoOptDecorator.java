@@ -52,7 +52,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
      */
     private static final long serialVersionUID = 1L;
 
-    private BigInteger objectiveValue;
+    protected BigInteger objectiveValue;
 
     private int[] prevmodel;
     private int[] prevmodelwithadditionalvars;
