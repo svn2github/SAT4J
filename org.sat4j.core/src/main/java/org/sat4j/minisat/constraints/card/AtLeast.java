@@ -202,7 +202,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         for (int q : this.lits) {
             if (this.voc.isFalsified(q)) {
                 outReason.push(q ^ 1);
-                if (++c > this.maxUnsatisfied) {
+                if (++c >= this.maxUnsatisfied) {
                     return;
                 }
             }
