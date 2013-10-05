@@ -33,6 +33,8 @@ import java.io.Serializable;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
+import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
+import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.Undoable;
@@ -71,6 +73,10 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
      *            the minimal number of satisfied literals
      */
     public AtLeast(ILits voc, IVecInt ps, int degree) {
+        if (degree == 1) {
+            throw new IllegalArgumentException(
+                    "cards with degree 1 are clauses!!!!");
+        }
         this.maxUnsatisfied = ps.size() - degree;
         this.voc = voc;
         this.counter = 0;
@@ -132,6 +138,12 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         int degree = niceParameters(s, voc, ps, n);
         if (degree == 0) {
             return new UnitClauses(ps);
+        }
+        if (degree == 1) {
+            if (ps.size() == 2) {
+                return OriginalBinaryClause.brandNewClause(s, voc, ps);
+            }
+            return OriginalWLClause.brandNewClause(s, voc, ps);
         }
         Constr constr = new AtLeast(voc, ps, degree);
         constr.register();
@@ -331,7 +343,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
             int q = it.next();
             if (vlits.contains(q ^ 1)) {
                 outReason.push(q);
-                if (++c > this.maxUnsatisfied) {
+                if (++c >= this.maxUnsatisfied) {
                     return;
                 }
             }
