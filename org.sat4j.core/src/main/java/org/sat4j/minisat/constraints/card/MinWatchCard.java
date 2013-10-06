@@ -625,7 +625,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     public boolean canBePropagatedMultipleTimes() {
-        return true;
+        return false;
     }
 
     public Constr toConstraint() {

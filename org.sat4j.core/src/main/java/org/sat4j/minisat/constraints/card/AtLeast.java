@@ -329,7 +329,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
     }
 
     public boolean canBePropagatedMultipleTimes() {
-        return true;
+        return false;
     }
 
     public Constr toConstraint() {
