@@ -57,6 +57,12 @@ public final class AtLeastPB extends AtLeast implements PBConstr {
         if (degree == 0) {
             return new UnitClausesPB(ps);
         }
+        if (degree == 1) {
+            if (ps.size() == 2) {
+                return OriginalBinaryClausePB.brandNewClause(s, voc, ps);
+            }
+            return OriginalHTClausePB.brandNewClause(s, voc, ps);
+        }
         return atLeastNew(voc, ps, degree);
     }
 
