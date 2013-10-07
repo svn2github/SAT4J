@@ -268,12 +268,11 @@ public final class MaxWatchPbLong extends WatchPbLong {
         if (this.litToCoeffs == null) {
             // finding the index for p in the array of literals
             int indiceP = 0;
-            while ((this.lits[indiceP] ^ 1) != p) {
+            while (indiceP < this.lits.length && (this.lits[indiceP] ^ 1) != p) {
                 indiceP++;
             }
-
             // compute the new value for watchCumul
-            coefP = this.coefs[indiceP];
+            coefP = indiceP == this.lits.length ? 0L : this.coefs[indiceP];
         } else {
             Long coefL = this.litToCoeffs.get(p ^ 1);
             if (coefL != null) {
