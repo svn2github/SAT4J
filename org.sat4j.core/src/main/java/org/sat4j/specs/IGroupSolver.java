@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.specs;
 
+import java.util.Collection;
+
 /**
  * Represents a CNF in which clauses are grouped into levels. It was first used
  * to build a high level MUS solver for SAT 2011 competition.
@@ -50,4 +52,10 @@ public interface IGroupSolver extends ISolver {
      */
     IConstr addClause(IVecInt literals, int desc) throws ContradictionException;
 
+    /**
+     * 
+     * @return the list of Dimacs variables created for the group solver.
+     * @since 2.3.6
+     */
+    public Collection<Integer> getAddedVars();
 }
