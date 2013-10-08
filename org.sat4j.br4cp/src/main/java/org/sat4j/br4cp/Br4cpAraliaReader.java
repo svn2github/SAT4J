@@ -3,14 +3,19 @@ package org.sat4j.br4cp;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IGroupSolver;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -24,14 +29,16 @@ public class Br4cpAraliaReader {
 	private static final String COMMENT_BEGINNING_SYM = "/*";
 	private static final String DECLARATION_SYM = "#";
 	private final IGroupSolver solver;
+	private final IPBSolver pbSolver;
 	private BufferedReader reader = null;
 	private FormulaToSolver treeToSolver;
 	private Map<Integer,String> dimacsToAralia = new HashMap<Integer,String>();
 	private ConfigVarMap varMap;
 	private int constrGroup = 0;
 	
-	public Br4cpAraliaReader(IGroupSolver solver, ConfigVarMap varMap) {
+	public Br4cpAraliaReader(IGroupSolver solver, IPBSolver pbSolver,ConfigVarMap varMap) {
 		this.solver = solver;
+		this.pbSolver = pbSolver;
 		this.varMap = varMap;
 		this.treeToSolver = new FormulaToSolver(solver, varMap);
 	}
@@ -52,6 +59,26 @@ public class Br4cpAraliaReader {
 		}
 	}
 
+	public void parsePrices(String file) throws IOException {
+		BufferedReader priceReader = new BufferedReader(new FileReader(file));
+		String line;
+		String[] data;
+		int objectivevars = this.constrGroup;
+		IVecInt lits = new VecInt();
+		IVec<BigInteger> coeffs = new Vec<BigInteger>();
+		
+		while ((line = priceReader.readLine())!=null) {
+			data = line.split(";");
+			data[0] = normalizeLine(data[0]);
+			data[1] = data[1].replace(",", "");
+			int newVar = newClausalConstraint(data[0],objectivevars,false);
+			lits.push(newVar);
+			coeffs.push(new BigInteger(data[1].trim()));
+			objectivevars++;
+		}
+		pbSolver.setObjectiveFunction(new ObjectiveFunction(lits, coeffs));
+		priceReader.close();
+	}
 	private void parseInstance() throws IOException {
 		String line;
 		while ((line = this.reader.readLine()) != null) {
@@ -113,15 +140,19 @@ public class Br4cpAraliaReader {
 		}
 	}
 
-	private void newClausalConstraint(String line) {
+	private Integer newClausalConstraint(String line) {
+		this.constrGroup++;
+		dimacsToAralia.put(this.constrGroup,line);
+		return newClausalConstraint(line, this.constrGroup,true);
+	}
+
+	private Integer newClausalConstraint(String line,int newvar,boolean shouldBePropagated) {
 		AraliaParser parser = new AraliaParser();
 		org.sat4j.br4cp.AraliaParser.LogicFormulaNode formula = parser
 				.getFormula(line);
-		this.constrGroup++;
-		dimacsToAralia.put(this.constrGroup,line);
-		this.treeToSolver.encode(formula,this.constrGroup);
+		return this.treeToSolver.encode(formula,shouldBePropagated,newvar);
 	}
-
+	
 	private String normalizeLine(String line) {
 		int lastIndex = line.length() - 1;
 		if (line.length() > 0 && line.charAt(lastIndex) == ';')

@@ -29,42 +29,49 @@ public class FormulaToSolver {
 	 * 
 	 * @param formula
 	 *            the formula
-	 * @param groupId the identifier of the group 
+	 * @param groupId
+	 *            the identifier of the group
 	 */
-	public void encode(LogicFormulaNode formula, int groupId) {
-		try {
-			processNode(this.solver, formula, true,groupId);
-		} catch (ContradictionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public Integer encode(LogicFormulaNode formula, int groupId) {	
+		return encode(formula, true, groupId);
 	}
 
-	private Integer processNode(IGroupSolver solver, LogicFormulaNode formula, int groupId)
-			throws ContradictionException {
+	public Integer encode(LogicFormulaNode formula, boolean isFormulaRoot,int groupId) {
+		try {
+			return processNode(this.solver, formula, isFormulaRoot, groupId);
+		} catch (ContradictionException e) {
+			return null;
+		}
+	}
+	
+	private Integer processNode(IGroupSolver solver, LogicFormulaNode formula,
+			int groupId) throws ContradictionException {
 		IVecInt sonsId = new VecInt(formula.getSons().size());
 		if (!isFlatFormula(formula)) {
 			for (LogicFormulaNode son : formula.getSons()) {
-				sonsId.push(processNode(solver, son,groupId));
+				sonsId.push(processNode(solver, son, groupId));
 			}
 		} else {
 			for (LogicFormulaNode son : formula.getSons()) {
 				sonsId.push(getTermId(solver, son));
 			}
 		}
-		return processFlatFormula(solver, formula, sonsId,groupId);
+		return processFlatFormula(solver, formula, sonsId, groupId);
 	}
 
-	private void processNode(IGroupSolver solver, LogicFormulaNode formula,
-			boolean isFormulaRoot,int groupId) throws ContradictionException {
-		Integer toPropagate = processNode(solver, formula,groupId);
-		IVecInt unitCl = new VecInt(1);
-		unitCl.push(toPropagate.intValue());
-		this.solver.addClause(unitCl,groupId);
+	private Integer processNode(IGroupSolver solver, LogicFormulaNode formula,
+			boolean isFormulaRoot, int groupId) throws ContradictionException {
+		Integer toPropagate = processNode(solver, formula, groupId);
+		if (isFormulaRoot) {
+			IVecInt unitCl = new VecInt(1);
+			unitCl.push(toPropagate.intValue());
+			this.solver.addClause(unitCl, groupId);
+		}
+		return toPropagate;
 	}
 
 	private Integer processFlatFormula(IGroupSolver solver,
-			LogicFormulaNode formula, IVecInt sonsId,int groupId)
+			LogicFormulaNode formula, IVecInt sonsId, int groupId)
 			throws ContradictionException {
 		if (isTerm(formula)) {
 			return getTermId(solver, formula);
@@ -79,7 +86,7 @@ public class FormulaToSolver {
 				IVecInt cl = new VecInt(2);
 				cl.push(sonId);
 				cl.push(-tseitinVar);
-				solver.addClause(cl,groupId);
+				solver.addClause(cl, groupId);
 			}
 			solver.addClause(all);
 			return tseitinVar;
@@ -93,9 +100,9 @@ public class FormulaToSolver {
 				IVecInt cl = new VecInt(2);
 				cl.push(-sonId);
 				cl.push(tseitinVar);
-				solver.addClause(cl,groupId);
+				solver.addClause(cl, groupId);
 			}
-			solver.addClause(all,groupId);
+			solver.addClause(all, groupId);
 			return tseitinVar;
 		}
 		throw new IllegalArgumentException();

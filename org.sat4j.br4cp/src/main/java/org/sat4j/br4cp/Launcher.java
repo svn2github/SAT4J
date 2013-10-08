@@ -12,7 +12,7 @@ public class Launcher {
 		}
 		String instanceFile = options.getInstanceFile();
 		if(instanceFile != null) {
-			new Br4cpCLI(instanceFile);
+			new Br4cpCLI(instanceFile,options.getPriceFile());
 		}else{
 			throw new IllegalArgumentException("An instance file is required");
 		}
