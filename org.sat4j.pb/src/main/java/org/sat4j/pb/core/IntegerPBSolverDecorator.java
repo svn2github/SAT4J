@@ -1,6 +1,7 @@
 package org.sat4j.pb.core;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.sat4j.core.Vec;
@@ -49,6 +50,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, BigInteger degree)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = copyBigIntVec(coeffs);
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addAtLeast(literals, coeffs, degree);
     }
@@ -57,6 +61,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, int degree)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = new VecInt(coeffs.toArray());
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addAtLeast(literals, coeffs, degree);
     }
@@ -65,6 +72,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, BigInteger degree)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = copyBigIntVec(coeffs);
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addAtMost(literals, coeffs, degree);
     }
@@ -73,6 +83,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, int degree)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = new VecInt(coeffs.toArray());
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addAtMost(literals, coeffs, degree);
     }
@@ -81,6 +94,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, BigInteger weight)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = copyBigIntVec(coeffs);
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addExactly(literals, coeffs, weight);
     }
@@ -89,6 +105,9 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, int weight)
             throws ContradictionException {
+        literals = new VecInt(
+                Arrays.copyOf(literals.toArray(), literals.size()));
+        coeffs = new VecInt(coeffs.toArray());
         pushIntegerVariables(literals, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addExactly(literals, coeffs, weight);
     }
@@ -97,6 +116,8 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             IVec<IntegerVariable> integerVars,
             IVec<BigInteger> integerVarsCoeffs, boolean moreThan, BigInteger d)
             throws ContradictionException {
+        lits = new VecInt(Arrays.copyOf(lits.toArray(), lits.size()));
+        coeffs = copyBigIntVec(coeffs);
         pushIntegerVariables(lits, coeffs, integerVars, integerVarsCoeffs);
         return decorated.addPseudoBoolean(lits, coeffs, moreThan, d);
     }
@@ -190,6 +211,14 @@ public class IntegerPBSolverDecorator extends PBSolverDecorator implements
             factor <<= 1;
         }
         return coeffs;
+    }
+
+    private IVec<BigInteger> copyBigIntVec(IVec<BigInteger> src) {
+        IVec<BigInteger> res = new Vec<BigInteger>();
+        for (int i = 0; i < src.size(); ++i) {
+            res.push(src.get(i));
+        }
+        return res;
     }
 
     public BigInteger getIntegerVarValue(IntegerVariable var) {
