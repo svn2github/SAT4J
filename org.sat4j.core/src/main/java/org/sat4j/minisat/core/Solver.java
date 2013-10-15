@@ -1373,6 +1373,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             strategy = new WatcherBasedPrimeImplicantStrategy();
         } else if ("ALGO2".equals(primeApproach)) {
             strategy = new CounterBasedPrimeImplicantStrategy();
+        } else if ("REVERSE".equals(primeApproach)) {
+            strategy = new WatcherBasedPrimeImplicantStrategy(true);
         } else {
             strategy = new QuadraticPrimeImplicantStrategy();
         }

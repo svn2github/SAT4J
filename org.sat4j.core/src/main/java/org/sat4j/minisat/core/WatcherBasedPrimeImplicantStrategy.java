@@ -54,6 +54,16 @@ public class WatcherBasedPrimeImplicantStrategy implements
 
     private int[] prime;
 
+    private final boolean reverse;
+
+    public WatcherBasedPrimeImplicantStrategy(boolean reverse) {
+        this.reverse = reverse;
+    }
+
+    public WatcherBasedPrimeImplicantStrategy() {
+        this(false);
+    }
+
     public void isMandatory(int p) {
         prime[var(p)] = toDimacs(p);
     }
@@ -87,7 +97,7 @@ public class WatcherBasedPrimeImplicantStrategy implements
         int removed = 0;
         int posremoved = 0;
         int propagated = 0;
-        for (int d : solver.fullmodel) {
+        for (int d : fullModel(solver)) {
             if (this.prime[Math.abs(d)] != 0) {
                 // d has been propagated
                 propagated++;
@@ -111,9 +121,9 @@ public class WatcherBasedPrimeImplicantStrategy implements
         }
         long end = System.currentTimeMillis();
         if (solver.isVerbose()) {
-            System.out.printf(
-                    "%s prime implicant computation statistics BRESIL%n",
-                    solver.getLogPrefix());
+            System.out
+                    .printf("%s prime implicant computation statistics BRESIL (reverse = %b)%n",
+                            solver.getLogPrefix(), this.reverse);
             System.out
                     .printf("%s implied: %d, decision: %d, removed %d (+%d), propagated %d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
@@ -143,5 +153,17 @@ public class WatcherBasedPrimeImplicantStrategy implements
                     "Call the compute method first!");
         }
         return prime;
+    }
+
+    private int[] fullModel(Solver<? extends DataStructureFactory> solver) {
+        if (this.reverse) {
+            int n = solver.fullmodel.length;
+            int[] reversed = new int[n];
+            for (int i = 0; i < n; i++) {
+                reversed[i] = solver.fullmodel[n - i - 1];
+            }
+            return reversed;
+        }
+        return solver.fullmodel;
     }
 }
