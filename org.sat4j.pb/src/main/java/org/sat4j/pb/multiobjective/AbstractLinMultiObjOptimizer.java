@@ -60,7 +60,7 @@ public abstract class AbstractLinMultiObjOptimizer extends PseudoOptDecorator
 
     protected final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
 
-    private boolean initConstraintsSet = false;
+    protected boolean initConstraintsSet = false;
 
     protected final IIntegerPBSolver integerSolver;
 

@@ -53,11 +53,11 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<IntegerVariable> objBoundVariables = new ArrayList<IntegerVariable>();
+    protected final List<IntegerVariable> objBoundVariables = new ArrayList<IntegerVariable>();
 
     private final List<IVecInt> atLeastFlags = new ArrayList<IVecInt>();
 
-    private final BigInteger[] weights;
+    protected final BigInteger[] weights;
 
     public OrderedObjsOWAOptimizer(IIntegerPBSolver solver, int[] weights) {
         super(solver);
@@ -115,7 +115,7 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
         }
     }
 
-    private BigInteger minObjValuesBound() {
+    protected BigInteger minObjValuesBound() {
         BigInteger maxValue = BigInteger.ZERO;
         for (Iterator<ObjectiveFunction> objsIt = this.objs.iterator(); objsIt
                 .hasNext();) {
@@ -146,7 +146,7 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
             super.objectiveValue = super.objectiveValue.add(objValues[i]
                     .multiply(this.weights[i]));
         }
-        return getObjectiveValue();
+        return super.objectiveValue;
     }
 
     @Override
