@@ -1,5 +1,5 @@
 /*******************************************************************************
- * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2012 Artois University and CNRS
+ * SAT4J: a SATisfiability library for Java Copyright (C) 2004, 2013 Artois University and CNRS
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,7 +51,7 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 	 */
     private static final long serialVersionUID = 1L;
 
-    protected final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
+    protected List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
     private BigInteger bigCurrentValue;
 
     public LexicoDecoratorPB(IPBSolver solver) {
