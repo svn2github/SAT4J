@@ -184,8 +184,10 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
 
     @Override
     public void discardCurrentSolution() throws ContradictionException {
-        if (this.lexCstr != null) {
+        if (this.sumCstr != null) {
             this.decorated().removeSubsumedConstr(this.sumCstr);
+        }
+        if (this.lexCstr != null) {
             this.decorated().removeSubsumedConstr(this.lexCstr);
         }
         super.discardCurrentSolution();
