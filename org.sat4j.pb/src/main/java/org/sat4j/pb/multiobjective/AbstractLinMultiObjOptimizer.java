@@ -54,7 +54,7 @@ import org.sat4j.specs.TimeoutException;
  * @author lonca
  */
 public abstract class AbstractLinMultiObjOptimizer extends PseudoOptDecorator
-        implements IMultiObjectivePBSolver {
+        implements IMultiObjOptimizationProblem {
 
     private static final long serialVersionUID = 1L;
 

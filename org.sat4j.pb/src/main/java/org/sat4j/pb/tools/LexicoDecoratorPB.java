@@ -89,6 +89,10 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
         this.objs.add(new ObjectiveFunction(literals, coefs));
     }
 
+    public void addCriterion(ObjectiveFunction objf) {
+        this.objs.add(new ObjectiveFunction(objf.getVars(), objf.getCoeffs()));
+    }
+
     @Override
     protected Number evaluate() {
         this.bigCurrentValue = this.objs.get(this.currentCriterion)

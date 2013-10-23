@@ -31,6 +31,7 @@ package org.sat4j.pb.multiobjective;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,7 +46,8 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
-public class LeximinDecorator extends LexicoDecoratorPB {
+public class LeximinDecorator extends LexicoDecoratorPB implements
+        IMultiObjOptimizationProblem {
 
     private static final long serialVersionUID = 1L;
 
@@ -167,6 +169,19 @@ public class LeximinDecorator extends LexicoDecoratorPB {
     @Override
     public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
         this.initObjs.add(new ObjectiveFunction(literals, coefs));
+    }
+
+    public BigInteger[] getObjectiveValues() {
+        BigInteger[] objValues = new BigInteger[this.objs.size()];
+        for (int i = 0; i < this.objs.size(); ++i) {
+            objValues[i] = this.objs.get(i).calculateDegree(this);
+        }
+        Arrays.sort(objValues);
+        return objValues;
+    }
+
+    public void addObjectiveFunction(ObjectiveFunction obj) {
+        addCriterion(obj);
     }
 
 }

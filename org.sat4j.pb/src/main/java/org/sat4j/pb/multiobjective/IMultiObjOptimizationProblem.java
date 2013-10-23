@@ -31,8 +31,8 @@ package org.sat4j.pb.multiobjective;
 
 import java.math.BigInteger;
 
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.IOptimizationProblem;
 
 /**
  * A solver which implements this interface must be able to handle multiple
@@ -41,7 +41,7 @@ import org.sat4j.pb.ObjectiveFunction;
  * 
  * @author lonca
  */
-public interface IMultiObjectivePBSolver extends IPBSolver {
+public interface IMultiObjOptimizationProblem extends IOptimizationProblem {
 
     void addObjectiveFunction(ObjectiveFunction obj);
 
