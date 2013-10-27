@@ -33,6 +33,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -518,4 +519,10 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
         this.solver.setUnitClauseProvider(ucp);
     }
 
+    /**
+     * @since 2.3.6
+     */
+    public IConstr addConstr(Constr constr) {
+        return this.solver.addConstr(constr);
+    }
 }

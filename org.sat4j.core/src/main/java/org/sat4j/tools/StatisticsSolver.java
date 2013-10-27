@@ -37,6 +37,7 @@ import java.util.Map;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Counter;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -423,6 +424,10 @@ public class StatisticsSolver implements ISolver {
     }
 
     public void setUnitClauseProvider(UnitClauseProvider ucp) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+    }
+
+    public IConstr addConstr(Constr constr) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 }

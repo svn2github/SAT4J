@@ -33,6 +33,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -255,6 +256,10 @@ public abstract class AbstractOutputSolver implements ISolver {
     }
 
     public void setUnitClauseProvider(UnitClauseProvider upl) {
+        throw new UnsupportedOperationException();
+    }
+
+    public IConstr addConstr(Constr constr) {
         throw new UnsupportedOperationException();
     }
 }

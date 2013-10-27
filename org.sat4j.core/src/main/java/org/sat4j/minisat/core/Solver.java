@@ -1897,7 +1897,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      *            a constraint implementing the Constr interface.
      * @return a reference to the constraint for external use.
      */
-    protected IConstr addConstr(Constr constr) {
+    public IConstr addConstr(Constr constr) {
         if (constr == null) {
             Counter count = this.constrTypes
                     .get("ignored satisfied constraints");

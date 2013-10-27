@@ -42,6 +42,7 @@ import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Counter;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -567,6 +568,11 @@ public class ManyCore<S extends ISolver> extends
         throw new UnsupportedOperationException(
                 "Does not make sense in the parallel context");
 
+    }
+
+    public IConstr addConstr(Constr constr) {
+        throw new UnsupportedOperationException(
+                "Not implemented yet in ManyCore: cannot add a specific constraint to each solver");
     }
 }
 

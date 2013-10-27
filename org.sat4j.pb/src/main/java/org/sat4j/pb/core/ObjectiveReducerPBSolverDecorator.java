@@ -43,6 +43,7 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
@@ -419,6 +420,10 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
     public void setUnitClauseProvider(UnitClauseProvider ucp) {
         decorated.setUnitClauseProvider(ucp);
+    }
+
+    public IConstr addConstr(Constr constr) {
+        return decorated.addConstr(constr);
     }
 
 }

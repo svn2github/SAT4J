@@ -239,6 +239,16 @@ public interface ISolver extends IProblem, Serializable {
     IConstr addExactly(IVecInt literals, int n) throws ContradictionException;
 
     /**
+     * Add a user defined constraint to the solver.
+     * 
+     * @param constr
+     *            a constraint implementing the Constr interface.
+     * @return a reference to the constraint for external use.
+     * @since 2.3.6
+     */
+    IConstr addConstr(Constr constr);
+
+    /**
      * To set the internal timeout of the solver. When the timeout is reached, a
      * timeout exception is launched by the solver.
      * 
