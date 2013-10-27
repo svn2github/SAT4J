@@ -574,7 +574,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         do {
             preason.clear();
             assert confl != null;
-            if (prevConfl != confl) {
+            if (prevConfl != confl || confl.canBePropagatedMultipleTimes()) {
                 confl.calcReason(p, preason);
                 this.learnedConstraintsDeletionStrategy
                         .onConflictAnalysis(confl);
