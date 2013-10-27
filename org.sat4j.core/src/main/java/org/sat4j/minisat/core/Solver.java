@@ -168,7 +168,20 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
 
     private UnitClauseProvider unitClauseProvider = UnitClauseProvider.VOID;
 
-    protected IVecInt dimacs2internal(IVecInt in) {
+    /**
+     * Translates an IvecInt containing Dimacs formatted variables into and
+     * IVecInt containing internal formatted variables.
+     * 
+     * Note that for sake of efficiency, the IVecInt returned by this method is
+     * always the same. DO NOT STORE IT N A CONSTRAINT.
+     * 
+     * @param in
+     *            a vector of Dimacs formatted variables (e.g. 1,-2)
+     * @return a vector of variables using internal representation (e.g 2,5)
+     * @see LiteralsUtils
+     * @since 2.3.6
+     */
+    public IVecInt dimacs2internal(IVecInt in) {
         this.__dimacs_out.clear();
         this.__dimacs_out.ensure(in.size());
         int p;
