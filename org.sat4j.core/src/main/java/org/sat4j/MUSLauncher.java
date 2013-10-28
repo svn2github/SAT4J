@@ -37,6 +37,7 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.AllMUSes;
+import org.sat4j.tools.GroupClauseSelectorSolver;
 import org.sat4j.tools.SolutionFoundListener;
 import org.sat4j.tools.xplain.Explainer;
 import org.sat4j.tools.xplain.HighLevelXplain;
@@ -60,13 +61,14 @@ public class MUSLauncher extends AbstractLauncher {
 
     @Override
     public void usage() {
-        log("java -jar sat4j-mus.jar [Insertion|Deletion|QuickXplain] <cnffile>|<gcnffile>");
+        log("java -jar sat4j-mus.jar [Insertion|Deletion|QuickXplain|all] <cnffile>|<gcnffile>");
     }
 
     @Override
     protected Reader createReader(ISolver theSolver, String problemname) {
         if (this.highLevel) {
-            return new GroupedCNFReader((HighLevelXplain<ISolver>) theSolver);
+            return new GroupedCNFReader(
+                    (GroupClauseSelectorSolver<ISolver>) theSolver);
         }
         return new LecteurDimacs(theSolver);
     }
