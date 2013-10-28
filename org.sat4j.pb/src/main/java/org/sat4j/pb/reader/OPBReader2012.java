@@ -72,7 +72,9 @@ public class OPBReader2012 extends OPBReader2010 {
             assert "lexico".equals(s);
             lexico = new LexicoDecoratorPB(solver);
         } else {
-            this.in.readLine();
+            if (savedChar != '\n') {
+                this.in.readLine();
+            }
             get(); // remove trailing \n
         }
     }
