@@ -103,6 +103,48 @@ public class OriginalHTClause extends HTClause {
     }
 
     public boolean propagatePI(MandatoryLiteralListener l, int p) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        if (this.head == neg(p)) {
+            final int[] mylits = this.middleLits;
+            // moving head on the right
+            while (savedindexhead < mylits.length
+                    && this.voc.isFalsified(mylits[savedindexhead])) {
+                savedindexhead++;
+            }
+            assert savedindexhead <= mylits.length;
+            if (savedindexhead == mylits.length) {
+                l.isMandatory(this.tail);
+                return true;
+            }
+            this.head = mylits[savedindexhead];
+            mylits[savedindexhead] = neg(p);
+            this.voc.watch(neg(this.head), this);
+            return true;
+        }
+        assert this.tail == neg(p);
+        final int[] mylits = this.middleLits;
+        // moving tail on the left
+        while (savedindextail >= 0
+                && this.voc.isFalsified(mylits[savedindextail])) {
+            savedindextail--;
+        }
+        assert -1 <= savedindextail;
+        if (-1 == savedindextail) {
+            l.isMandatory(this.head);
+            return true;
+        }
+        this.tail = mylits[savedindextail];
+        mylits[savedindextail] = neg(p);
+        this.voc.watch(neg(this.tail), this);
+        return true;
+    }
+
+    private int savedindexhead;
+    private int savedindextail;
+
+    @Override
+    public boolean propagate(UnitPropagationListener s, int p) {
+        this.savedindexhead = 0;
+        this.savedindextail = middleLits.length - 1;
+        return super.propagate(s, p);
     }
 }
