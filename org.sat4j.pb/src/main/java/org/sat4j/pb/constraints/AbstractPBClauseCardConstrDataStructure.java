@@ -75,6 +75,18 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         return constructLearntClause(literals);
     }
 
+    @Override
+    public Constr createCardinalityConstraint(IVecInt literals, int degree)
+            throws ContradictionException {
+        return constructCard(literals, degree);
+    }
+
+    @Override
+    public Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree) {
+        throw new UnsupportedOperationException();
+    }
+
     /*
      * (non-Javadoc)
      * 
