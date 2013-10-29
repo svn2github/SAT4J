@@ -33,8 +33,12 @@ import static org.sat4j.core.LiteralsUtils.toDimacs;
 import static org.sat4j.core.LiteralsUtils.toInternal;
 import static org.sat4j.core.LiteralsUtils.var;
 
+import java.util.Comparator;
+
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.Propagatable;
 
@@ -54,14 +58,14 @@ public class WatcherBasedPrimeImplicantStrategy implements
 
     private int[] prime;
 
-    private final boolean reverse;
+    private final Comparator<Integer> comparator;
 
-    public WatcherBasedPrimeImplicantStrategy(boolean reverse) {
-        this.reverse = reverse;
+    public WatcherBasedPrimeImplicantStrategy(Comparator<Integer> comparator) {
+        this.comparator = comparator;
     }
 
     public WatcherBasedPrimeImplicantStrategy() {
-        this(false);
+        this(null);
     }
 
     public void isMandatory(int p) {
@@ -123,7 +127,7 @@ public class WatcherBasedPrimeImplicantStrategy implements
         if (solver.isVerbose()) {
             System.out
                     .printf("%s prime implicant computation statistics BRESIL (reverse = %b)%n",
-                            solver.getLogPrefix(), this.reverse);
+                            solver.getLogPrefix(), this.comparator);
             System.out
                     .printf("%s implied: %d, decision: %d, removed %d (+%d), propagated %d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
@@ -156,14 +160,15 @@ public class WatcherBasedPrimeImplicantStrategy implements
     }
 
     private int[] fullModel(Solver<? extends DataStructureFactory> solver) {
-        if (this.reverse) {
-            int n = solver.fullmodel.length;
-            int[] reversed = new int[n];
-            for (int i = 0; i < n; i++) {
-                reversed[i] = solver.fullmodel[n - i - 1];
-            }
-            return reversed;
+        if (this.comparator == null) {
+            return solver.fullmodel;
         }
-        return solver.fullmodel;
+        int n = solver.fullmodel.length;
+        IVecInt reversed = new VecInt(n);
+        for (int i : solver.fullmodel) {
+            reversed.push(i);
+        }
+        reversed.sort(comparator);
+        return reversed.toArray();
     }
 }
