@@ -30,6 +30,7 @@
 package org.sat4j.core;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -583,4 +584,61 @@ public final class VecInt implements IVecInt {
         }
         return result;
     }
+
+    void selectionSort(int from, int to, Comparator<Integer> cmp) {
+        int i, j, besti;
+        int tmp;
+
+        for (i = from; i < to - 1; i++) {
+            besti = i;
+            for (j = i + 1; j < to; j++) {
+                if (cmp.compare(this.myarray[j], this.myarray[besti]) < 0) {
+                    besti = j;
+                }
+            }
+            tmp = this.myarray[i];
+            this.myarray[i] = this.myarray[besti];
+            this.myarray[besti] = tmp;
+        }
+    }
+
+    void sort(int from, int to, Comparator<Integer> cmp) {
+        int width = to - from;
+        if (width <= 15) {
+            selectionSort(from, to, cmp);
+        } else {
+            int pivot = this.myarray[width / 2 + from];
+            int tmp;
+            int i = from - 1;
+            int j = to;
+
+            for (;;) {
+                do {
+                    i++;
+                } while (cmp.compare(this.myarray[i], pivot) < 0);
+                do {
+                    j--;
+                } while (cmp.compare(pivot, this.myarray[j]) < 0);
+
+                if (i >= j) {
+                    break;
+                }
+
+                tmp = this.myarray[i];
+                this.myarray[i] = this.myarray[j];
+                this.myarray[j] = tmp;
+            }
+
+            sort(from, i, cmp);
+            sort(i, to, cmp);
+        }
+    }
+
+    /**
+     * @param comparator
+     */
+    public void sort(Comparator<Integer> comparator) {
+        sort(0, this.nbelem, comparator);
+    }
+
 }

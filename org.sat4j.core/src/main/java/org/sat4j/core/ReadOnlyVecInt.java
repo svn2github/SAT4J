@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.core;
 
+import java.util.Comparator;
+
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -211,4 +213,7 @@ public final class ReadOnlyVecInt implements IVecInt {
         return this.vec.equals(obj);
     }
 
+    public void sort(Comparator<Integer> comparator) {
+        throw new UnsupportedOperationException();
+    }
 }

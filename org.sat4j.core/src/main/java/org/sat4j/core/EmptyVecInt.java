@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.core;
 
+import java.util.Comparator;
+
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -183,5 +185,8 @@ final class EmptyVecInt implements IVecInt {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    public void sort(Comparator<Integer> comparator) {
     }
 }
