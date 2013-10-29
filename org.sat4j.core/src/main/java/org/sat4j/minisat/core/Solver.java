@@ -1382,19 +1382,16 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public int[] primeImplicant() {
         String primeApproach = System.getProperty("prime");
         PrimeImplicantStrategy strategy;
-        if ("BRESIL".equals(primeApproach)) {
-            strategy = new WatcherBasedPrimeImplicantStrategy();
+        if ("OLD".equals(primeApproach)) {
+            strategy = new QuadraticPrimeImplicantStrategy();
         } else if ("ALGO2".equals(primeApproach)) {
             strategy = new CounterBasedPrimeImplicantStrategy();
-        } else if ("REVERSE".equals(primeApproach)) {
-            strategy = new WatcherBasedPrimeImplicantStrategy(true);
         } else {
-            strategy = new QuadraticPrimeImplicantStrategy();
+            strategy = new WatcherBasedPrimeImplicantStrategy();
         }
         int[] implicant = strategy.compute(this);
         prime = strategy.getPrimeImplicantAsArrayWithHoles();
         return implicant;
-
     }
 
     public boolean primeImplicant(int p) {
