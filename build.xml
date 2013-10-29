@@ -26,7 +26,8 @@
                 <echo>Create All-In-One auto-executable package</echo>
                 <jar destfile="${dist}/${release}/sat4j-br4cp.jar" basedir="${build}" manifest="${build}/META-INF/MANIFEST.MF">		 
 			<zipgroupfileset dir="${dist}/${release}">
-                           <include name="org.sat4j.core.jar"/>
+				<include name="org.sat4j.core.jar"/>
+				<include name="org.sat4j.pb.jar"/>
 		        </zipgroupfileset>
                </jar>
                 <antcall target="zip-bundle">
