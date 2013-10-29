@@ -30,6 +30,7 @@
 package org.sat4j.specs;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * An abstraction for the vector of int used on the library.
@@ -174,6 +175,8 @@ public interface IVecInt extends Serializable {
     int delete(int i);
 
     void sort();
+
+    void sort(Comparator<Integer> comparator);
 
     void sortUnique();
 
