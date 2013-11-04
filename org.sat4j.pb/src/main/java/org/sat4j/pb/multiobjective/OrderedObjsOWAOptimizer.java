@@ -31,6 +31,7 @@ package org.sat4j.pb.multiobjective;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,6 +85,17 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
 
     @Override
     protected void setInitConstraints() {
+        String owaWeightsProperty = System.getProperty("_owaWeights");
+        if (owaWeightsProperty != null) {
+            String[] weights = owaWeightsProperty.split(",");
+            for (int i = 0; i < this.weights.length; ++i) {
+                this.weights[i] = BigInteger.valueOf(Long.valueOf(weights[i]));
+            }
+        }
+        if (decorated().isVerbose()) {
+            System.out.println(getLogPrefix() + "OWA weights : "
+                    + Arrays.toString(weights));
+        }
         BigInteger minObjValuesBound = minObjValuesBound();
         for (int i = 0; i < super.objs.size(); ++i) {
             IntegerVariable boundVar = this.integerSolver
