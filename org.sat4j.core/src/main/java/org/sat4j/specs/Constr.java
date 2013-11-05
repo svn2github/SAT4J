@@ -194,4 +194,14 @@ public interface Constr extends IConstr {
      * @since 2.3.6
      */
     int requiredNumberOfSatisfiedLiterals();
+
+    /**
+     * Checks that a constraint is satisfied. That method may be time consuming
+     * since it may require to go through all the literals of the constraints.
+     * 
+     * @return true iff the constraint is satisfied under the current
+     *         assignment.
+     * @since 2.3.6
+     */
+    boolean isSatisfied();
 }

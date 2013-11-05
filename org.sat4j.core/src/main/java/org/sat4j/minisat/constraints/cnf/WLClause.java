@@ -279,4 +279,12 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
         return 1;
     }
 
+    public boolean isSatisfied() {
+        for (int p : this.lits) {
+            if (voc.isSatisfied(p))
+                return true;
+        }
+        return false;
+    }
+
 }

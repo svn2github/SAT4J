@@ -148,4 +148,8 @@ public class UnitClause implements Constr {
     public int requiredNumberOfSatisfiedLiterals() {
         return 1;
     }
+
+    public boolean isSatisfied() {
+        return true;
+    }
 }

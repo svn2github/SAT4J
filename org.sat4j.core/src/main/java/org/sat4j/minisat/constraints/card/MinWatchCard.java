@@ -692,4 +692,8 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     public int requiredNumberOfSatisfiedLiterals() {
         return degree;
     }
+
+    public boolean isSatisfied() {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
 }

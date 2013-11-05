@@ -31,6 +31,8 @@ package org.sat4j.pb;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.core.ReadOnlyVec;
 import org.sat4j.core.ReadOnlyVecInt;
@@ -185,5 +187,13 @@ public class ObjectiveFunction implements Serializable {
                     && of.vars.equals(this.vars);
         }
         return false;
+    }
+
+    public Map<Integer, BigInteger> toMap() {
+        Map<Integer, BigInteger> map = new HashMap<Integer, BigInteger>();
+        for (int i = 0; i < this.vars.size(); i++) {
+            map.put(this.vars.get(i), this.coeffs.get(i));
+        }
+        return map;
     }
 }

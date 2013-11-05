@@ -138,4 +138,8 @@ public class UnitClauses implements Constr {
     public int requiredNumberOfSatisfiedLiterals() {
         throw new UnsupportedOperationException("Not implemented yet!");
     }
+
+    public boolean isSatisfied() {
+        return true;
+    }
 }

@@ -43,11 +43,14 @@ import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
+import org.sat4j.minisat.core.PrimeImplicantStrategy;
 import org.sat4j.minisat.core.RestartStrategy;
 import org.sat4j.minisat.core.SearchParams;
 import org.sat4j.minisat.core.Solver;
+import org.sat4j.minisat.core.WatcherBasedPrimeImplicantStrategy;
 import org.sat4j.pb.IPBSolverService;
 import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.pb.ObjectiveFunctionComparator;
 import org.sat4j.pb.orders.IOrderObjective;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
@@ -197,6 +200,21 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         }
         return addAtMostOnTheFly(literals, coeffsCpy,
                 BigInteger.valueOf(degree));
+    }
+
+    @Override
+    public int[] primeImplicant() {
+        String primeApproach = System.getProperty("prime");
+        PrimeImplicantStrategy strategy;
+        if ("OBJECTIVE".equals(primeApproach)) {
+            strategy = new WatcherBasedPrimeImplicantStrategy(
+                    new ObjectiveFunctionComparator(this.objf));
+        } else {
+            strategy = new WatcherBasedPrimeImplicantStrategy();
+        }
+        int[] implicant = strategy.compute(this);
+        prime = strategy.getPrimeImplicantAsArrayWithHoles();
+        return implicant;
     }
 
     /**

@@ -712,4 +712,9 @@ public abstract class WatchPbLongCP implements IWatchPb, Propagatable,
         throw new UnsupportedOperationException(
                 "Not applicable for PB constraints");
     }
+
+    public boolean isSatisfied() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
 }

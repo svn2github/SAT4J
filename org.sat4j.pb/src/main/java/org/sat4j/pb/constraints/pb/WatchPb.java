@@ -667,4 +667,9 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
         throw new UnsupportedOperationException(
                 "Not applicable for PB constraints");
     }
+
+    public boolean isSatisfied() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
 }

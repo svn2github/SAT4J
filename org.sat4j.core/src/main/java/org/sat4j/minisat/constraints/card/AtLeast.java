@@ -351,8 +351,21 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
     }
 
     public boolean propagatePI(MandatoryLiteralListener l, int p) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        // remet la clause dans la liste des clauses regardees
+        this.voc.watch(p, this);
 
+        this.counter++;
+        this.voc.undos(p).push(this);
+
+        // If no more can be false, the remaining literals are mandatory
+        if (this.counter == this.maxUnsatisfied) {
+            for (int q : this.lits) {
+                if (!this.voc.isFalsified(q)) {
+                    l.isMandatory(q);
+                }
+            }
+        }
+        return true;
     }
 
     public boolean canBeSatisfiedByCountingLiterals() {
@@ -361,5 +374,19 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
 
     public int requiredNumberOfSatisfiedLiterals() {
         return this.lits.length - maxUnsatisfied;
+    }
+
+    public boolean isSatisfied() {
+        int nbSatisfied = 0;
+        int degree = size() - this.maxUnsatisfied;
+        for (int p : this.lits) {
+            if (voc.isSatisfied(p)) {
+                nbSatisfied++;
+                if (nbSatisfied >= degree) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

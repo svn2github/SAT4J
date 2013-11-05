@@ -1225,8 +1225,25 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                         this.stats.decisions++;
                         int p = this.order.select();
                         if (p == ILits.UNDEFINED) {
-                            confl = preventTheSameDecisionsToBeMade();
-                            this.lastConflictMeansUnsat = false;
+                            // check (expensive) if all the constraints are not
+                            // satisfied
+                            boolean allsat = true;
+                            for (int i = 0; i < this.constrs.size(); i++) {
+                                if (!this.constrs.get(i).isSatisfied()) {
+                                    allsat = false;
+                                    break;
+                                }
+                            }
+                            if (allsat) {
+                                modelFound();
+                                this.slistener
+                                        .solutionFound(
+                                                (this.fullmodel != null) ? this.fullmodel
+                                                        : this.model, this);
+                            } else {
+                                confl = preventTheSameDecisionsToBeMade();
+                                this.lastConflictMeansUnsat = false;
+                            }
                         } else {
                             assert p > 1;
                             this.slistener.assuming(toDimacs(p));
@@ -1377,7 +1394,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return confl;
     }
 
-    private int[] prime;
+    protected int[] prime;
 
     public int[] primeImplicant() {
         String primeApproach = System.getProperty("prime");

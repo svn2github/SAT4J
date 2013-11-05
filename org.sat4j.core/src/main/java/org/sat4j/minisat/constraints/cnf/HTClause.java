@@ -325,4 +325,16 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
     public int requiredNumberOfSatisfiedLiterals() {
         return 1;
     }
+
+    public boolean isSatisfied() {
+        if (voc.isSatisfied(this.head))
+            return true;
+        if (voc.isSatisfied(this.tail))
+            return true;
+        for (int p : this.middleLits) {
+            if (voc.isSatisfied(p))
+                return true;
+        }
+        return false;
+    }
 }
