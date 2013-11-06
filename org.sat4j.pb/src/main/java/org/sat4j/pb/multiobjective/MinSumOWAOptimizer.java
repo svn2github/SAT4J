@@ -31,6 +31,7 @@ package org.sat4j.pb.multiobjective;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,7 @@ import org.sat4j.pb.IIntegerPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.core.IntegerVariable;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
@@ -94,6 +96,7 @@ public class MinSumOWAOptimizer extends AbstractLinMultiObjOptimizer {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+        setInitConstraintsAux();
     }
 
     private void addConstraint(IntegerVariable boundVar,
@@ -235,6 +238,147 @@ public class MinSumOWAOptimizer extends AbstractLinMultiObjOptimizer {
             throw new UnsupportedOperationException();
         }
 
+    }
+
+    // modif begin
+
+    private ObjectiveFunction sumObj;
+    private ObjectiveFunction lexObj;
+    private IConstr lexCstr;
+    private IConstr sumCstr;
+    protected final List<IntegerVariable> objBoundVariables = new ArrayList<IntegerVariable>();
+    private final List<IVecInt> atLeastFlags = new ArrayList<IVecInt>();
+
+    @Override
+    public void discardCurrentSolution() throws ContradictionException {
+        if (this.sumCstr != null) {
+            this.decorated().removeSubsumedConstr(this.sumCstr);
+        }
+        if (this.lexCstr != null) {
+            this.decorated().removeSubsumedConstr(this.lexCstr);
+        }
+        super.discardCurrentSolution();
+        this.lexCstr = decorated().addAtMost(this.lexObj.getVars(),
+                this.lexObj.getCoeffs(), maxLexBound());
+        this.sumCstr = decorated().addAtMost(this.sumObj.getVars(),
+                this.sumObj.getCoeffs(), maxSumBound());
+    }
+
+    private BigInteger maxSumBound() {
+        BigInteger weigthsSum = BigInteger.ZERO;
+        for (BigInteger weight : weights)
+            weigthsSum = weigthsSum.add(weight);
+        BigInteger res = super.objectiveValue.divide(weigthsSum);
+        res = res.add(BigInteger.ONE);
+        res = res.multiply(BigInteger.valueOf(super.objs.size()));
+        return res;
+    }
+
+    private BigInteger maxLexBound() {
+        BigInteger maxObjValue = super.objectiveValue.divide(
+                BigInteger.valueOf(super.objs.size())).add(BigInteger.ONE);
+        return maxObjValue.multiply(BigInteger.valueOf(
+                1 << objBoundVariables.get(0).getVars().size()).multiply(
+                BigInteger.valueOf(super.objs.size() - 1)));
+    }
+
+    private void setInitConstraintsAux() {
+        String owaWeightsProperty = System.getProperty("_owaWeights");
+        if (owaWeightsProperty != null) {
+            String[] weights = owaWeightsProperty.split(",");
+            for (int i = 0; i < this.weights.length; ++i) {
+                this.weights[i] = BigInteger.valueOf(Long.valueOf(weights[i]));
+            }
+        }
+        if (decorated().isVerbose()) {
+            System.out.println(getLogPrefix() + "OWA weights : "
+                    + Arrays.toString(weights));
+        }
+        BigInteger minObjValuesBound = minObjValuesBound();
+        for (int i = 0; i < super.objs.size(); ++i) {
+            IntegerVariable boundVar = this.integerSolver
+                    .newIntegerVar(minObjValuesBound);
+            this.objBoundVariables.add(boundVar);
+            this.atLeastFlags.add(new VecInt());
+            for (int j = 0; j < super.objs.size(); ++j) {
+                addBoundConstraint(i, boundVar, j);
+            }
+            addFlagsCardinalityConstraint(i);
+        }
+        createSumAndLexObjs();
+    }
+
+    private void addBoundConstraint(int boundVarIndex,
+            IntegerVariable boundVar, int objIndex) {
+        IVecInt literals = new VecInt();
+        IVec<BigInteger> coeffs = new Vec<BigInteger>();
+        super.objs.get(objIndex).getVars().copyTo(literals);
+        super.objs.get(objIndex).getCoeffs().copyTo(coeffs);
+        int flagLit = decorated().nextFreeVarId(true);
+        this.atLeastFlags.get(boundVarIndex).push(flagLit);
+        literals.push(flagLit);
+        coeffs.push(minObjValuesBound().negate());
+        try {
+            this.integerSolver.addAtMost(literals, coeffs,
+                    new Vec<IntegerVariable>().push(boundVar),
+                    new Vec<BigInteger>().push(BigInteger.ONE.negate()),
+                    BigInteger.ZERO);
+        } catch (ContradictionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void createSumAndLexObjs() {
+        IVecInt auxObjsVars = new VecInt();
+        IVec<BigInteger> sumObjCoeffs = new Vec<BigInteger>();
+        IVec<BigInteger> lexObjCoeffs = new Vec<BigInteger>();
+        BigInteger lexFactor = BigInteger.ONE;
+        for (Iterator<IntegerVariable> intVarIt = objBoundVariables.iterator(); intVarIt
+                .hasNext();) {
+            BigInteger sumFactor = BigInteger.ONE;
+            IntegerVariable nextBoundVar = intVarIt.next();
+            for (IteratorInt nextBoundVarLitsIt = nextBoundVar.getVars()
+                    .iterator(); nextBoundVarLitsIt.hasNext();) {
+                auxObjsVars.push(nextBoundVarLitsIt.next());
+                sumObjCoeffs.push(sumFactor);
+                sumFactor = sumFactor.shiftLeft(1);
+                lexObjCoeffs.push(lexFactor);
+                lexFactor = lexFactor.shiftLeft(1);
+            }
+        }
+        this.sumObj = new ObjectiveFunction(auxObjsVars, sumObjCoeffs);
+        this.lexObj = new ObjectiveFunction(auxObjsVars, lexObjCoeffs);
+    }
+
+    private void addFlagsCardinalityConstraint(int card) {
+        try {
+            decorated().addAtMost(this.atLeastFlags.get(card), card);
+        } catch (ContradictionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected BigInteger minObjValuesBound() {
+        BigInteger maxValue = BigInteger.ZERO;
+        for (Iterator<ObjectiveFunction> objsIt = this.objs.iterator(); objsIt
+                .hasNext();) {
+            ObjectiveFunction nextObj = objsIt.next();
+            BigInteger maxObjValue = maxObjValue(nextObj);
+            if (maxValue.compareTo(maxObjValue) < 0) {
+                maxValue = maxObjValue;
+            }
+        }
+        return maxValue.add(BigInteger.ONE);
+    }
+
+    private BigInteger maxObjValue(ObjectiveFunction obj) {
+        IVec<BigInteger> objCoeffs = obj.getCoeffs();
+        BigInteger coeffsSum = BigInteger.ZERO;
+        for (Iterator<BigInteger> objCoeffsIt = objCoeffs.iterator(); objCoeffsIt
+                .hasNext();) {
+            coeffsSum = coeffsSum.add(objCoeffsIt.next());
+        }
+        return coeffsSum;
     }
 
 }
