@@ -42,11 +42,12 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SolutionFoundListener;
 
-public class LinMultiObjHelper<T, C> extends DependencyHelper<T, C>
-        implements SolutionFoundListener {
+public class LinMultiObjHelper<T, C> extends DependencyHelper<T, C> implements
+        SolutionFoundListener {
 
     private AbstractLinMultiObjOptimizer solver;
     private boolean hasASolution;
+    private boolean isOptimal = false;
 
     public LinMultiObjHelper(AbstractLinMultiObjOptimizer solver) {
         this(solver, false);
@@ -142,7 +143,7 @@ public class LinMultiObjHelper<T, C> extends DependencyHelper<T, C>
     }
 
     public boolean isOptimal() {
-        return solver.isOptimal();
+        return this.isOptimal || solver.isOptimal();
     }
 
     public void onSolutionFound(int[] solution) {
@@ -155,7 +156,8 @@ public class LinMultiObjHelper<T, C> extends DependencyHelper<T, C>
     }
 
     public void onUnsatTermination() {
-        // nothing to do here
+        if (this.hasASolution)
+            this.isOptimal = true;
     }
 
 }
