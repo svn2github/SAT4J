@@ -203,8 +203,10 @@ public class OrderedObjsOWAOptimizer extends AbstractLinMultiObjOptimizer {
             this.decorated().removeSubsumedConstr(this.lexCstr);
         }
         super.discardCurrentSolution();
-        this.lexCstr = decorated().addAtMost(this.lexObj.getVars(),
-                this.lexObj.getCoeffs(), maxLexBound());
+        this.lexCstr = integerSolver.addAtMost(objBoundVariables.get(0),
+                objectiveValue.divide(weights[weights.length - 1]).intValue());
+        // this.lexCstr = decorated().addAtMost(this.lexObj.getVars(),
+        // this.lexObj.getCoeffs(), maxLexBound());
         this.sumCstr = decorated().addAtMost(this.sumObj.getVars(),
                 this.sumObj.getCoeffs(), maxSumBound());
     }
