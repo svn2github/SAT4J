@@ -29,8 +29,6 @@
  *******************************************************************************/
 package org.sat4j.minisat.orders;
 
-import static org.sat4j.core.LiteralsUtils.var;
-
 import org.sat4j.minisat.core.Heap;
 
 public class SubsetVarOrder extends VarOrderHeap {
@@ -72,7 +70,7 @@ public class SubsetVarOrder extends VarOrderHeap {
 
     @Override
     public void undo(int x) {
-        if (this.inSubset[var(x)] && !this.heap.inHeap(x)) {
+        if (this.inSubset[x] && !this.heap.inHeap(x)) {
             this.heap.insert(x);
         }
     }
