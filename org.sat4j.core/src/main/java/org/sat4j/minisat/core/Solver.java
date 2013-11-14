@@ -1240,6 +1240,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                                         .solutionFound(
                                                 (this.fullmodel != null) ? this.fullmodel
                                                         : this.model, this);
+                                return Lbool.TRUE;
                             } else {
                                 confl = preventTheSameDecisionsToBeMade();
                                 this.lastConflictMeansUnsat = false;

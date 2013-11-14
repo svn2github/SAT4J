@@ -29,11 +29,14 @@
  *******************************************************************************/
 package org.sat4j.minisat.orders;
 
+import static org.sat4j.core.LiteralsUtils.var;
+
 import org.sat4j.minisat.core.Heap;
 
 public class SubsetVarOrder extends VarOrderHeap {
 
     private final int[] varsToTest;
+    private boolean[] inSubset;
 
     public SubsetVarOrder(int[] varsToTest) {
         this.varsToTest = new int[varsToTest.length];
@@ -51,6 +54,7 @@ public class SubsetVarOrder extends VarOrderHeap {
         if (this.activity == null || this.activity.length < nlength) {
             this.activity = new double[nlength];
         }
+        this.inSubset = new boolean[nlength];
         this.phaseStrategy.init(nlength);
         this.activity[0] = -1;
         this.heap = new Heap(this.activity);
@@ -58,10 +62,19 @@ public class SubsetVarOrder extends VarOrderHeap {
         for (int var : this.varsToTest) {
             assert var > 0;
             assert var <= this.lits.nVars() : "" + this.lits.nVars() + "/" + var; //$NON-NLS-1$ //$NON-NLS-2$
+            this.inSubset[var] = true;
             this.activity[var] = 0.0;
             if (this.lits.belongsToPool(var)) {
                 this.heap.insert(var);
             }
         }
     }
+
+    @Override
+    public void undo(int x) {
+        if (this.inSubset[var(x)] && !this.heap.inHeap(x)) {
+            this.heap.insert(x);
+        }
+    }
+
 }

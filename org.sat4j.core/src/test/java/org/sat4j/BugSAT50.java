@@ -41,6 +41,7 @@ import org.sat4j.minisat.orders.SubsetVarOrder;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.TextOutputTracing;
 
 public class BugSAT50 {
 
@@ -83,6 +84,7 @@ public class BugSAT50 {
     @Test(expected = TimeoutException.class)
     public void test3() throws ContradictionException, TimeoutException {
         Solver<DataStructureFactory> solver = SolverFactory.newGlucose();
+        solver.setSearchListener(new TextOutputTracing<Object>(null));
         int[] backdoor = { 1, 2, 3 };
         IOrder order = new SubsetVarOrder(backdoor);
         solver.setOrder(order);
@@ -90,11 +92,50 @@ public class BugSAT50 {
         clause.push(-1).push(4).push(7);
         solver.addClause(clause);
         clause = new VecInt();
-        clause.push(-2).push(5);
+        clause.push(-2).push(5).push(7);
         solver.addClause(clause);
         clause = new VecInt();
-        clause.push(-3).push(6);
+        clause.push(-3).push(6).push(5);
+        solver.addClause(clause);
+        clause = new VecInt();
+        clause.push(1).push(2).push(3).push(7).push(8);
         solver.addClause(clause);
         solver.isSatisfiable();
+    }
+
+    @Test
+    public void testJeanGuy1() throws ContradictionException, TimeoutException {
+        Solver<DataStructureFactory> solver = SolverFactory.newGlucose();
+        int[] backdoor = { 1, 2, 3, 4 };
+        IOrder order = new SubsetVarOrder(backdoor);
+        solver.setOrder(order);
+        IVecInt clause = new VecInt();
+        clause.push(-1).push(5);
+        solver.addClause(clause);
+        clause = new VecInt();
+        clause.push(-2).push(3).push(5);
+        solver.addClause(clause);
+        clause = new VecInt();
+        clause.push(-4).push(5);
+        solver.addClause(clause);
+        assertTrue(solver.isSatisfiable());
+    }
+
+    @Test
+    public void testJeanGuy2() throws ContradictionException, TimeoutException {
+        Solver<DataStructureFactory> solver = SolverFactory.newGlucose();
+        int[] backdoor = { 5 };
+        IOrder order = new SubsetVarOrder(backdoor);
+        solver.setOrder(order);
+        IVecInt clause = new VecInt();
+        clause.push(-1).push(5);
+        solver.addClause(clause);
+        clause = new VecInt();
+        clause.push(-2).push(3).push(5);
+        solver.addClause(clause);
+        clause = new VecInt();
+        clause.push(-4).push(5);
+        solver.addClause(clause);
+        assertTrue(solver.isSatisfiable());
     }
 }
