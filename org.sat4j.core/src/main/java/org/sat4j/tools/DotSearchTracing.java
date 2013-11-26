@@ -39,8 +39,8 @@ import java.util.Map;
 import org.sat4j.core.Vec;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
-import org.sat4j.specs.RandomAccessModel;
 import org.sat4j.specs.Lbool;
+import org.sat4j.specs.RandomAccessModel;
 
 /**
  * Class allowing to express the search as a tree in the dot language. The
@@ -123,7 +123,7 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      */
     @Override
     public final void propagating(final int p, IConstr reason) {
-        String newName = this.currentNodeName + "." + p;
+        String newName = this.currentNodeName + "." + p + "." + this.estOrange;
 
         if (this.currentNodeName == null) {
             saveLine(lineTab("\"null\" [label=\"\", shape=point]"));
@@ -159,6 +159,11 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      */
     @Override
     public final void learn(final IConstr clause) {
+        String learned = this.currentNodeName + "_learned";
+        saveLine(lineTab("\"" + learned + "\" [label=\"" + clause
+                + "\", shape=box, color=\"orange\", style=dotted]"));
+        saveLine("\"" + learned + "\"" + "--" + "\"" + this.currentNodeName
+                + "\"" + "[label=\"\", color=orange, style=dotted]");
     }
 
     @Override
@@ -170,8 +175,8 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      */
     @Override
     public final void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-        saveLine(lineTab("\"" + this.currentNodeName
-                + "\" [label=\"\", shape=box, color=\"red\", style=filled]"));
+        saveLine(lineTab("\"" + this.currentNodeName + "\" [label=\"" + confl
+                + "\", shape=box, color=\"red\", style=filled]"));
     }
 
     /**

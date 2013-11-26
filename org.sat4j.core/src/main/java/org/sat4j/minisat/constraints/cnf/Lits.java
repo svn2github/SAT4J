@@ -209,6 +209,10 @@ public final class Lits implements Serializable, ILits {
         return ((lit & 1) == 0 ? "" : "-") + (lit >> 1); //$NON-NLS-1$//$NON-NLS-2$
     }
 
+    public static String toStringX(int lit) {
+        return ((lit & 1) == 0 ? "+" : "-") + "x" + (lit >> 1); //$NON-NLS-1$//$NON-NLS-2$
+    }
+
     public void reset(int lit) {
         this.watches[lit].clear();
         this.watches[lit ^ 1].clear();

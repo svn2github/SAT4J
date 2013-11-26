@@ -427,25 +427,25 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     @Override
     public String toString() {
         StringBuffer stb = new StringBuffer();
-        stb.append("Card (" + this.lits.length + ") : ");
+        // stb.append("Card (" + this.lits.length + ") : ");
         if (this.lits.length > 0) {
             // if (voc.isUnassigned(lits[0])) {
-            stb.append(Lits.toString(this.lits[0]));
+            stb.append(Lits.toStringX(this.lits[0]));
             stb.append("[");
             stb.append(this.voc.valueToString(this.lits[0]));
-            stb.append("@");
-            stb.append(this.voc.getLevel(this.lits[0]));
+            // stb.append("@");
+            // stb.append(this.voc.getLevel(this.lits[0]));
             stb.append("]");
             stb.append(" "); //$NON-NLS-1$
             // }
             for (int i = 1; i < this.lits.length; i++) {
                 // if (voc.isUnassigned(lits[i])) {
-                stb.append(" + "); //$NON-NLS-1$
-                stb.append(Lits.toString(this.lits[i]));
+                // stb.append(" + "); //$NON-NLS-1$
+                stb.append(Lits.toStringX(this.lits[i]));
                 stb.append("[");
                 stb.append(this.voc.valueToString(this.lits[i]));
-                stb.append("@");
-                stb.append(this.voc.getLevel(this.lits[i]));
+                // stb.append("@");
+                // stb.append(this.voc.getLevel(this.lits[i]));
                 stb.append("]");
                 stb.append(" "); //$NON-NLS-1$
                 // }
