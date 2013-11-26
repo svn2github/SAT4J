@@ -1666,7 +1666,7 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
     public void assuming(int p) {
     }
 
-    public void propagating(int p, IConstr reason) {
+    public void propagating(int p) {
         this.end = System.currentTimeMillis();
         if (this.end - this.begin >= 2000) {
             long tmp = this.end - this.begin;
@@ -1680,6 +1680,9 @@ public class DetailedCommandPanel extends JPanel implements SolverController,
         this.propagationsCounter++;
     }
 
+    public void enqueueing(int p, IConstr reason) {        
+    }
+    
     public void backtracking(int p) {
     }
 
