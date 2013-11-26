@@ -136,9 +136,7 @@ public class PBSolverCP extends PBSolver {
         // assertive PB-constraint is build and referenced
         PBConstr resConstr = (PBConstr) this.dsfactory
                 .createUnregisteredPseudoBooleanConstraint(confl);
-        this.slistener.learn(resConstr);
         results.reason = resConstr;
-        getSearchListener().learn(resConstr);
 
         // the conflict give the highest decision level for the backtrack
         // (which is less than current level)
