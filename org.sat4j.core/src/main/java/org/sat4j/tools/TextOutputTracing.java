@@ -78,8 +78,12 @@ public class TextOutputTracing<T> implements SearchListener<ISolverService> {
     /**
      * @since 2.1
      */
-    public void propagating(int p, IConstr reason) {
+    public void propagating(int p) {
         System.out.println("propagating " + node(p));
+    }
+
+    public void enqueueing(int p, IConstr reason) {
+        System.out.println("enqueueing " + node(p));
     }
 
     public void backtracking(int p) {

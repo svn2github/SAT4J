@@ -71,11 +71,16 @@ public class MultiTracing<T extends ISolverService> implements
 
     }
 
-    public void propagating(int p, IConstr reason) {
+    public void propagating(int p) {
         for (SearchListener<T> sl : this.listeners) {
-            sl.propagating(p, reason);
+            sl.propagating(p);
         }
+    }
 
+    public void enqueueing(int p, IConstr reason) {
+        for (SearchListener<T> sl : this.listeners) {
+            sl.enqueueing(p, reason);
+        }
     }
 
     public void backtracking(int p) {

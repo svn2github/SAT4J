@@ -29,7 +29,6 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 
@@ -64,7 +63,7 @@ public class SpeedTracing extends SearchListenerAdapter<ISolverService> {
     }
 
     @Override
-    public void propagating(int p, IConstr reason) {
+    public void propagating(int p) {
         this.end = System.currentTimeMillis();
         double y;
         if (this.end - this.begin >= 2000) {

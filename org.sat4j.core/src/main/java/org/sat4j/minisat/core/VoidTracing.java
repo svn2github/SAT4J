@@ -48,7 +48,10 @@ final class VoidTracing implements SearchListener<ISolverService> {
     public void assuming(int p) {
     }
 
-    public void propagating(int p, IConstr reason) {
+    public void propagating(int p) {
+    }
+
+    public void enqueueing(int p, IConstr reason) {
     }
 
     public void backtracking(int p) {

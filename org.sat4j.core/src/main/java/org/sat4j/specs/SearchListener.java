@@ -62,10 +62,19 @@ public interface SearchListener<S extends ISolverService> extends Serializable {
      * Unit propagation
      * 
      * @param p
+     */
+    void propagating(int p);
+
+    /**
+     * Fixes the truth value of a variable before propagating it. For all calls
+     * to enqueueing(p,_) there should be a call to propagating(p) unless a
+     * conflict is found.
+     * 
+     * @param p
      * @param reason
      *            TODO
      */
-    void propagating(int p, IConstr reason);
+    void enqueueing(int p, IConstr reason);
 
     /**
      * backtrack on a decision variable

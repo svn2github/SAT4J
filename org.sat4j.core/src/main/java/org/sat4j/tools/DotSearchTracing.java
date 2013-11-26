@@ -122,7 +122,7 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      * @since 2.1
      */
     @Override
-    public final void propagating(final int p, IConstr reason) {
+    public final void propagating(final int p) {
         String newName = this.currentNodeName + "." + p + "." + this.estOrange;
 
         if (this.currentNodeName == null) {
@@ -138,6 +138,27 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
                 + ", style = bold]"));
         this.currentNodeName = newName;
         this.estOrange = false;
+    }
+
+    @Override
+    public final void enqueueing(final int p, IConstr reason) {
+        if (reason != null) {
+            String newName = this.currentNodeName + "." + p + "."
+                    + this.estOrange;
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+                    + "\",shape=point, color=black]"));
+            saveLine(lineTab("\"" + this.currentNodeName + "\"" + " -- " + "\""
+                    + newName + "\"" + "[label=" + "\" " + node(p)
+                    + "\", fontcolor = gray, color = gray, style = bold]"));
+            if (reason != null) {
+                String reasonName = newName + ".reason";
+                saveLine(lineTab("\"" + reasonName + "\" [label=\"" + reason
+                        + "\", shape=box, color=\"gray\", style=dotted]"));
+                saveLine("\"" + reasonName + "\"" + "--" + "\"" + newName
+                        + "\"" + "[label=\"\", color=gray, style=dotted]");
+            }
+            this.currentNodeName = newName;
+        }
     }
 
     @Override

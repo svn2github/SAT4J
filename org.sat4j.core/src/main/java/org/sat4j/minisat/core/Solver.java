@@ -542,6 +542,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             // conflicting enqueued assignment
             return false;
         }
+        this.slistener.enqueueing(toDimacs(p), from);
         // new fact, store it
         this.voc.satisfies(p);
         this.voc.setLevel(p, decisionLevel());
@@ -1064,7 +1065,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         while (this.qhead < ltrail.size()) {
             lstats.propagations++;
             int p = ltrail.get(this.qhead++);
-            lslistener.propagating(toDimacs(p), null);
+            lslistener.propagating(toDimacs(p));
             lorder.assignLiteral(p);
             Constr confl = reduceClausesContainingTheNegationOf(p);
             if (confl != null) {
