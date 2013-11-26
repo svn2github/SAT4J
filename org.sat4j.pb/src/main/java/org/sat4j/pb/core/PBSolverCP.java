@@ -29,6 +29,7 @@
  *******************************************************************************/
 package org.sat4j.pb.core;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
@@ -108,6 +109,7 @@ public class PBSolverCP extends PBSolver {
             litImplied = this.trail.last();
             if (this.voc.getLevel(litImplied) != currentLevel) {
                 this.trailLim.pop();
+                slistener.backtracking(LiteralsUtils.toDimacs(litImplied));
                 confl.updateSlack(this.voc.getLevel(litImplied));
             }
             assert this.voc.getLevel(litImplied) <= currentLevel;
