@@ -53,6 +53,8 @@ public class MapPb implements IDataStructurePB {
 
     protected int assertiveLiteral = -1;
 
+    private int cpCardsReduction = 0;
+
     MapPb(PBConstr cpb) {
         this.weightedLits = new InternalMapPBStructure(cpb);
         this.degree = cpb.getDegree();
@@ -71,12 +73,28 @@ public class MapPb implements IDataStructurePB {
     }
 
     public boolean isCardinality() {
+        boolean newcase = false;
         for (int i = 0; i < size(); i++) {
             if (!this.weightedLits.getCoef(i).equals(BigInteger.ONE)) {
-                return false;
+                newcase = true;
+                break;
             }
         }
+        if (newcase) {
+            BigInteger value = this.weightedLits.getCoef(0);
+            for (int i = 1; i < size(); i++) {
+                if (!this.weightedLits.getCoef(i).equals(value)) {
+                    return false;
+                }
+            }
+            this.cpCardsReduction++;
+            degree = degree.divide(value).add(BigInteger.ONE);
+        }
         return true;
+    }
+
+    public int getNumberOfCuttingPlanesCardinalities() {
+        return cpCardsReduction;
     }
 
     public boolean isLongSufficient() {
