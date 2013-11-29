@@ -270,7 +270,6 @@ public class ConflictMap extends MapPb implements IConflict {
         BigInteger tmp;
         BigInteger coefLitImplied = this.weightedLits.get(litImplied ^ 1);
         this.possReducedCoefs = possConstraint(wpb, reducedCoefs);
-
         do {
             if (slackResolve.signum() >= 0) {
                 assert slackThis.signum() > 0;
@@ -524,6 +523,42 @@ public class ConflictMap extends MapPb implements IConflict {
         degUpdate = saturation(coefsBis, degUpdate, wpb);
 
         assert coefsBis[indLitImplied].signum() > 0;
+        assert degreeBis.compareTo(degUpdate) > 0;
+        assert this.possReducedCoefs.equals(possConstraint(wpb, coefsBis));
+        return degUpdate;
+    }
+
+    private BigInteger removeSatisfiedLiteralsFromHigherDecisionLevels(
+            IWatchPb wpb, final BigInteger[] coefsBis, final int currentLevel,
+            final BigInteger degreeBis) {
+        assert degreeBis.compareTo(BigInteger.ONE) > 0;
+        // search for all satisfied literals above the current decision level
+        int lit = -1;
+        int size = wpb.size();
+        BigInteger degUpdate = degreeBis;
+        int p;
+        for (int ind = 0; ind < size; ind++) {
+            p = wpb.get(ind);
+            if (coefsBis[ind].signum() != 0 && this.voc.isSatisfied(p)
+                    && this.voc.getLevel(p) < currentLevel) {
+                lit = ind;
+
+                // a literal has been found
+                assert lit != -1;
+
+                // reduction can be done
+                degUpdate = degUpdate.subtract(coefsBis[lit]);
+                this.possReducedCoefs = this.possReducedCoefs
+                        .subtract(coefsBis[lit]);
+                coefsBis[lit] = BigInteger.ZERO;
+                assert this.possReducedCoefs.equals(possConstraint(wpb,
+                        coefsBis));
+            }
+        }
+
+        // saturation of the constraint
+        degUpdate = saturation(coefsBis, degUpdate, wpb);
+
         assert degreeBis.compareTo(degUpdate) > 0;
         assert this.possReducedCoefs.equals(possConstraint(wpb, coefsBis));
         return degUpdate;
