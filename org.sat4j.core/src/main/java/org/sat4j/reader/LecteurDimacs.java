@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -80,7 +82,7 @@ public class LecteurDimacs extends Reader implements Serializable {
     @Override
     public final IProblem parseInstance(final InputStream input)
             throws ParseFormatException, ContradictionException, IOException {
-
+        mapping = null;
         this.in = new BufferedInputStream(input, LecteurDimacs.TAILLE_BUF);
         this.s.reset();
         passerCommentaire();
@@ -113,7 +115,7 @@ public class LecteurDimacs extends Reader implements Serializable {
             if (car != 'c' && car != 'p') {
                 break; /* fin des commentaires */
             }
-            car = nextLine(); /* on passe la ligne de commentaire */
+            car = manageCommentLine(); /* on passe la ligne de commentaire */
             if (car == EOF) {
                 break;
             }
@@ -161,7 +163,11 @@ public class LecteurDimacs extends Reader implements Serializable {
         boolean neg = false;
         for (;;) {
             /* on lit le signe du literal */
-            if (car == '-') {
+            if (car == 'c') {
+                nextLine();
+                car = (char) this.in.read();
+                continue;
+            } else if (car == '-') {
                 neg = true;
                 car = (char) this.in.read();
             } else if (car == '+') {
@@ -220,6 +226,26 @@ public class LecteurDimacs extends Reader implements Serializable {
         return car;
     }
 
+    private Map<Integer, String> mapping;
+
+    private char manageCommentLine() throws IOException {
+        char car;
+        StringBuffer stb = new StringBuffer();
+        do {
+            car = (char) this.in.read();
+            stb.append(car);
+        } while (car != '\n' && car != EOF);
+        String str = stb.toString().trim();
+        String[] values = str.split("=");
+        if (values.length == 2) {
+            if (mapping == null) {
+                mapping = new HashMap<Integer, String>();
+            }
+            mapping.put(Integer.valueOf(values[0]), values[1]);
+        }
+        return car;
+    }
+
     /** passe tout les caract?re jusqu'? rencontrer un chiffre */
     private char nextChiffre() throws IOException {
         char car;
@@ -247,5 +273,15 @@ public class LecteurDimacs extends Reader implements Serializable {
             out.print(" ");
         }
         out.print("0");
+    }
+
+    @Override
+    public boolean hasAMapping() {
+        return mapping == null;
+    }
+
+    @Override
+    public Map<Integer, String> getMapping() {
+        return mapping;
     }
 }
