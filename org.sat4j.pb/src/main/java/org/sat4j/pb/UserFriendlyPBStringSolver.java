@@ -37,6 +37,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
+import org.sat4j.specs.VarMapper;
 import org.sat4j.tools.DimacsStringSolver;
 
 /**
@@ -83,6 +84,10 @@ public class UserFriendlyPBStringSolver<T> extends DimacsStringSolver implements
 
         public boolean canBePropagatedMultipleTimes() {
             throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
+
+        public String toString(VarMapper mapper) {
+            return FAKE_I_CONSTR_MSG;
         }
     };
 

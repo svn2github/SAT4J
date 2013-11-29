@@ -37,6 +37,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.specs.VarMapper;
 import org.sat4j.tools.DimacsStringSolver;
 
 /**
@@ -84,6 +85,10 @@ public class OPBStringSolver extends DimacsStringSolver implements IPBSolver {
 
         public boolean canBePropagatedMultipleTimes() {
             throw new UnsupportedOperationException(FAKE_I_CONSTR_MSG);
+        }
+
+        public String toString(VarMapper mapper) {
+            return FAKE_I_CONSTR_MSG;
         }
     };
 

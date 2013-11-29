@@ -32,6 +32,7 @@ package org.sat4j.pb.constraints.pb;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.core.ILits;
@@ -42,6 +43,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Abstract data structure for pseudo-boolean constraint with watched literals.
@@ -670,6 +672,26 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
 
     public boolean isSatisfied() {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    public String toString(VarMapper mapper) {
+        StringBuffer stb = new StringBuffer();
+
+        if (this.lits.length > 0) {
+            for (int i = 0; i < this.lits.length; i++) {
+                stb.append(" + ");
+                stb.append(this.coefs[i]);
+                stb.append(".");
+                stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[i])));
+                stb.append("[");
+                stb.append(this.voc.valueToString(this.lits[i]));
+                stb.append("]");
+                stb.append(" ");
+            }
+            stb.append(">= ");
+            stb.append(this.degree);
+        }
+        return stb.toString();
     }
 
 }

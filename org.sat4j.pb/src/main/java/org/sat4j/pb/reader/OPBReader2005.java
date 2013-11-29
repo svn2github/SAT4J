@@ -60,6 +60,8 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
@@ -527,12 +529,45 @@ public class OPBReader2005 extends Reader implements Serializable {
         }
     }
 
+    private Map<Integer, String> mapping;
+
     /**
      * @throws IOException
      * @throws ParseFormatException
      */
     protected void readVariablesExplanation() throws IOException,
             ParseFormatException {
+        char c = get();
+        String s;
+        while (c == '*') {
+            s = readWord();
+            if ("beginMapping".equals(s)) {
+                startsMapping();
+                get();
+                c = get();
+                continue;
+            }
+            if ("endMapping".equals(s)) {
+                // this.in.readLine();
+                get();
+                System.out.println(mapping);
+                return;
+            }
+            String[] values = s.split("=");
+            if (values.length == 2) {
+                mapping.put(Integer.valueOf(values[0]), values[1]);
+            } else {
+                System.err.println("Something went wrong: " + s);
+            }
+            // this.in.readLine();
+            get();// remove trailing \n
+            c = get();
+        }
+        putback(c);
+    }
+
+    protected void startsMapping() {
+        mapping = new HashMap<Integer, String>();
     }
 
     /**
@@ -665,13 +700,15 @@ public class OPBReader2005 extends Reader implements Serializable {
      */
     public void parse() throws IOException, ParseFormatException,
             ContradictionException {
+        mapping = null;
+
         readMetaData();
+
+        readVariablesExplanation();
 
         skipComments();
 
         readObjective();
-
-        readVariablesExplanation();
 
         // read constraints
         this.nbConstraintsRead = 0;
@@ -779,5 +816,15 @@ public class OPBReader2005 extends Reader implements Serializable {
     public IProblem parseInstance(final InputStream in)
             throws ParseFormatException, ContradictionException, IOException {
         return parseInstance(new InputStreamReader(in));
+    }
+
+    @Override
+    public boolean hasAMapping() {
+        return mapping != null;
+    }
+
+    @Override
+    public Map<Integer, String> getMapping() {
+        return mapping;
     }
 }

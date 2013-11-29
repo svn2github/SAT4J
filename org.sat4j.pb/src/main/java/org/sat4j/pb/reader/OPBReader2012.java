@@ -71,6 +71,10 @@ public class OPBReader2012 extends OPBReader2010 {
             s = readWord();
             assert "lexico".equals(s);
             lexico = new LexicoDecoratorPB(solver);
+        }
+        if ("beginMapping".equals(s)) {
+            startsMapping();
+            get();
         } else {
             if (savedChar != '\n') {
                 this.in.readLine();
