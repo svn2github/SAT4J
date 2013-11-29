@@ -29,57 +29,16 @@
  *******************************************************************************/
 package org.sat4j.specs;
 
-/**
- * The most general abstraction for handling a constraint.
- * 
- * @author leberre
- * 
- */
-public interface IConstr {
+public interface VarMapper {
 
     /**
-     * @return true iff the clause was learnt during the search
-     */
-    boolean learnt();
-
-    /**
-     * @return the number of literals in the constraint.
-     */
-    int size();
-
-    /**
-     * returns the ith literal in the constraint
+     * Map a Dimacs boolean variable to a specific textual representation. If
+     * none is found, the value of var will be returned as text.
      * 
-     * @param i
-     *            the index of the literal
-     * @return a literal
-     */
-    int get(int i);
-
-    /**
-     * To obtain the activity of the constraint.
-     * 
-     * @return the activity of the clause.
-     * @since 2.1
-     */
-    double getActivity();
-
-    /**
-     * Partition constraints into the ones that only propagate once (e.g.
-     * clauses and cardinality constraints) and the ones that can be propagated
-     * several times (e.g. pseudo-boolean constraints).
-     * 
-     * @return true if the constraint can propagate literals at different
-     *         decision levels.
-     * @since 2.3.1
-     */
-    boolean canBePropagatedMultipleTimes();
-
-    /**
-     * Produces a human readable representation of the constraint, using a
-     * specific mapping.
-     * 
+     * @param var
+     *            a Dimacs variable
+     * @return a textual representation of that var
      * @since 2.3.6
      */
-    String toString(VarMapper mapper);
+    String map(int var);
 }

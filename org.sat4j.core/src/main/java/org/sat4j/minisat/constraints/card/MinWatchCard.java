@@ -31,6 +31,7 @@ package org.sat4j.minisat.constraints.card;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.ILits;
@@ -41,6 +42,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 public class MinWatchCard implements Propagatable, Constr, Undoable,
         Serializable {
@@ -695,5 +697,39 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
     public boolean isSatisfied() {
         throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    public String toString(VarMapper mapper) {
+        if (mapper == null) {
+            return toString();
+        }
+        StringBuffer stb = new StringBuffer();
+        // stb.append("Card (" + this.lits.length + ") : ");
+        if (this.lits.length > 0) {
+            // if (voc.isUnassigned(lits[0])) {
+            stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[0])));
+            stb.append("[");
+            stb.append(this.voc.valueToString(this.lits[0]));
+            // stb.append("@");
+            // stb.append(this.voc.getLevel(this.lits[0]));
+            stb.append("]");
+            stb.append(" "); //$NON-NLS-1$
+            // }
+            for (int i = 1; i < this.lits.length; i++) {
+                // if (voc.isUnassigned(lits[i])) {
+                // stb.append(" + "); //$NON-NLS-1$
+                stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[i])));
+                stb.append("[");
+                stb.append(this.voc.valueToString(this.lits[i]));
+                // stb.append("@");
+                // stb.append(this.voc.getLevel(this.lits[i]));
+                stb.append("]");
+                stb.append(" "); //$NON-NLS-1$
+                // }
+            }
+            stb.append(">= "); //$NON-NLS-1$
+            stb.append(this.degree);
+        }
+        return stb.toString();
     }
 }

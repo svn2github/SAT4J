@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.sat4j.specs.ContradictionException;
@@ -165,4 +166,12 @@ public abstract class Reader {
     }
 
     private boolean verbose = false;
+
+    public boolean hasAMapping() {
+        return false;
+    }
+
+    public Map<Integer, String> getMapping() {
+        return null;
+    }
 }

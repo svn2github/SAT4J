@@ -33,11 +33,13 @@ import static org.sat4j.core.LiteralsUtils.neg;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Lazy data structure for clause using the Head Tail data structure from SATO,
@@ -337,4 +339,26 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
         }
         return false;
     }
+
+    public String toString(VarMapper mapper) {
+        StringBuffer stb = new StringBuffer();
+        stb.append(mapper.map(LiteralsUtils.toDimacs(this.head)));
+        stb.append("["); //$NON-NLS-1$
+        stb.append(this.voc.valueToString(this.head));
+        stb.append("]"); //$NON-NLS-1$
+        stb.append(" "); //$NON-NLS-1$
+        for (int middleLit : this.middleLits) {
+            stb.append(mapper.map(LiteralsUtils.toDimacs(middleLit)));
+            stb.append("["); //$NON-NLS-1$
+            stb.append(this.voc.valueToString(middleLit));
+            stb.append("]"); //$NON-NLS-1$
+            stb.append(" "); //$NON-NLS-1$
+        }
+        stb.append(mapper.map(LiteralsUtils.toDimacs(this.tail)));
+        stb.append("["); //$NON-NLS-1$
+        stb.append(this.voc.valueToString(this.tail));
+        stb.append("]"); //$NON-NLS-1$
+        return stb.toString();
+    }
+
 }

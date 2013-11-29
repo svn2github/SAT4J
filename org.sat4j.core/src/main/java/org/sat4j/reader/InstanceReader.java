@@ -32,6 +32,7 @@ package org.sat4j.reader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
+import java.util.Map;
 
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
@@ -93,9 +94,8 @@ public class InstanceReader extends Reader {
     }
 
     @Override
-    public IProblem parseInstance(String filename)
-            throws ParseFormatException, IOException,
-            ContradictionException {
+    public IProblem parseInstance(String filename) throws ParseFormatException,
+            IOException, ContradictionException {
         String fname;
         String prefix = "";
 
@@ -151,4 +151,13 @@ public class InstanceReader extends Reader {
                 "Use a domain specific Reader (LecteurDimacs, AIGReader, etc.) for stream input ");
     }
 
+    @Override
+    public boolean hasAMapping() {
+        return this.reader.hasAMapping();
+    }
+
+    @Override
+    public Map<Integer, String> getMapping() {
+        return this.reader.getMapping();
+    }
 }

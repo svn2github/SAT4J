@@ -35,6 +35,7 @@ import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * 
@@ -151,5 +152,12 @@ public class UnitClause implements Constr {
 
     public boolean isSatisfied() {
         return true;
+    }
+
+    public String toString(VarMapper mapper) {
+        if (mapper == null) {
+            return toString();
+        }
+        return mapper.map(LiteralsUtils.toDimacs(this.literal));
     }
 }

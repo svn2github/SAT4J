@@ -41,6 +41,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.RandomAccessModel;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Class allowing to express the search as a tree in the dot language. The
@@ -55,7 +56,8 @@ import org.sat4j.specs.RandomAccessModel;
  * @author daniel
  * @since 2.2
  */
-public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
+public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService>
+        implements VarMapper {
 
     /**
      * 
@@ -70,7 +72,7 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
 
     private boolean estOrange = false;
 
-    private final Map<Integer, T> mapping;
+    private Map<Integer, T> mapping;
 
     /**
      * @since 2.1
@@ -85,7 +87,11 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
         }
     }
 
-    private String node(int dimacs) {
+    public void setMapping(Map<Integer, T> mapping) {
+        this.mapping = mapping;
+    }
+
+    public String map(int dimacs) {
         if (this.mapping != null) {
             int var = Math.abs(dimacs);
             T t = this.mapping.get(var);
@@ -107,12 +113,12 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
         if (this.currentNodeName == null) {
             newName = "" + absP;
             this.pile.push(newName);
-            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + map(p)
                     + "\", shape=circle, color=blue, style=filled]"));
         } else {
             newName = this.currentNodeName;
             this.pile.push(newName);
-            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + map(p)
                     + "\", shape=circle, color=blue, style=filled]"));
         }
         this.currentNodeName = newName;
@@ -130,10 +136,10 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
         }
         final String couleur = this.estOrange ? "orange" : "green";
 
-        saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+        saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + map(p)
                 + "\",shape=point, color=black]"));
         saveLine(lineTab("\"" + this.currentNodeName + "\"" + " -- " + "\""
-                + newName + "\"" + "[label=" + "\" " + node(p)
+                + newName + "\"" + "[label=" + "\" " + map(p)
                 + "\", fontcolor =" + couleur + ", color = " + couleur
                 + ", style = bold]"));
         this.currentNodeName = newName;
@@ -145,14 +151,15 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
         if (reason != null) {
             String newName = this.currentNodeName + "." + p + "."
                     + this.estOrange;
-            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + node(p)
+            saveLine(lineTab("\"" + newName + "\"" + "[label=\"" + map(p)
                     + "\",shape=point, color=black]"));
             saveLine(lineTab("\"" + this.currentNodeName + "\"" + " -- " + "\""
-                    + newName + "\"" + "[label=" + "\" " + node(p)
+                    + newName + "\"" + "[label=" + "\" " + map(p)
                     + "\", fontcolor = gray, color = gray, style = bold]"));
             if (reason != null) {
                 String reasonName = newName + ".reason";
-                saveLine(lineTab("\"" + reasonName + "\" [label=\"" + reason
+                saveLine(lineTab("\"" + reasonName + "\" [label=\""
+                        + reason.toString(this)
                         + "\", shape=box, color=\"gray\", style=dotted]"));
                 saveLine("\"" + reasonName + "\"" + "--" + "\""
                         + this.currentNodeName + "\""
@@ -180,9 +187,10 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      * @since 2.1
      */
     @Override
-    public final void learn(final IConstr clause) {
+    public final void learn(final IConstr constr) {
         String learned = this.currentNodeName + "_learned";
-        saveLine(lineTab("\"" + learned + "\" [label=\"" + clause
+        saveLine(lineTab("\"" + learned + "\" [label=\""
+                + constr.toString(this)
                 + "\", shape=box, color=\"orange\", style=dotted]"));
         saveLine("\"" + learned + "\"" + "--" + "\"" + this.currentNodeName
                 + "\"" + "[label=\"\", color=orange, style=dotted]");
@@ -197,7 +205,8 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService> {
      */
     @Override
     public final void conflictFound(IConstr confl, int dlevel, int trailLevel) {
-        saveLine(lineTab("\"" + this.currentNodeName + "\" [label=\"" + confl
+        saveLine(lineTab("\"" + this.currentNodeName + "\" [label=\""
+                + confl.toString(this)
                 + "\", shape=box, color=\"red\", style=filled]"));
     }
 

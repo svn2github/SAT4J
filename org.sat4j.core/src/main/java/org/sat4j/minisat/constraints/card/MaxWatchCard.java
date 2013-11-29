@@ -32,6 +32,7 @@ package org.sat4j.minisat.constraints.card;
 import java.io.Serializable;
 import java.math.BigInteger;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.ILits;
@@ -42,6 +43,7 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 public final class MaxWatchCard implements Propagatable, Constr, Undoable,
         Serializable {
@@ -478,4 +480,26 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
     public boolean isSatisfied() {
         throw new UnsupportedOperationException("Not implemented yet!");
     }
+
+    public String toString(VarMapper mapper) {
+        StringBuffer stb = new StringBuffer();
+
+        if (this.lits.length > 0) {
+            if (this.voc.isUnassigned(this.lits[0])) {
+                stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[0])));
+                stb.append(" "); //$NON-NLS-1$
+            }
+            for (int i = 1; i < this.lits.length; i++) {
+                if (this.voc.isUnassigned(this.lits[i])) {
+                    stb.append(" + "); //$NON-NLS-1$
+                    stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[i])));
+                    stb.append(" "); //$NON-NLS-1$
+                }
+            }
+            stb.append(">= "); //$NON-NLS-1$
+            stb.append(this.degree);
+        }
+        return stb.toString();
+    }
+
 }

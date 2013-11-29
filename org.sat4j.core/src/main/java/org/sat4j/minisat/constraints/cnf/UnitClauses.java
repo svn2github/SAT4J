@@ -33,6 +33,7 @@ import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * @since 2.1
@@ -141,5 +142,9 @@ public class UnitClauses implements Constr {
 
     public boolean isSatisfied() {
         return true;
+    }
+
+    public String toString(VarMapper mapper) {
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 }

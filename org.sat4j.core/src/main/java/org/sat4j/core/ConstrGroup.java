@@ -34,6 +34,7 @@ import java.util.Iterator;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.VarMapper;
 
 /**
  * A utility class used to manage easily group of clauses to be deleted at some
@@ -114,5 +115,9 @@ public class ConstrGroup implements IConstr {
     @Override
     public String toString() {
         return this.constrs.toString();
+    }
+
+    public String toString(VarMapper mapper) {
+        throw new UnsupportedOperationException();
     }
 }

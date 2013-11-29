@@ -31,11 +31,13 @@ package org.sat4j.minisat.constraints.cnf;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Lazy data structure for clause using Watched Literals.
@@ -168,6 +170,21 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
         StringBuffer stb = new StringBuffer();
         for (int lit : this.lits) {
             stb.append(Lits.toString(lit));
+            stb.append("["); //$NON-NLS-1$
+            stb.append(this.voc.valueToString(lit));
+            stb.append("]"); //$NON-NLS-1$
+            stb.append(" "); //$NON-NLS-1$
+        }
+        return stb.toString();
+    }
+
+    public String toString(VarMapper mapper) {
+        if (mapper == null) {
+            return toString();
+        }
+        StringBuffer stb = new StringBuffer();
+        for (int lit : this.lits) {
+            stb.append(mapper.map(LiteralsUtils.toDimacs(lit)));
             stb.append("["); //$NON-NLS-1$
             stb.append(this.voc.valueToString(lit));
             stb.append("]"); //$NON-NLS-1$

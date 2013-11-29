@@ -47,7 +47,9 @@ import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
+import org.sat4j.tools.DotSearchTracing;
 import org.sat4j.tools.ModelIteratorToSATAdapter;
 import org.sat4j.tools.RupSearchListener;
 import org.sat4j.tools.SearchEnumeratorListener;
@@ -183,6 +185,13 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         log("reading problem ... "); //$NON-NLS-1$
         this.reader = createReader(this.solver, problemname);
         IProblem aProblem = this.reader.parseInstance(problemname);
+        if (this.reader.hasAMapping()) {
+            SearchListener<?> listener = this.solver.getSearchListener();
+            if (listener instanceof DotSearchTracing) {
+                ((DotSearchTracing) listener).setMapping(this.reader
+                        .getMapping());
+            }
+        }
         log("... done. Wall clock time " //$NON-NLS-1$
                 + (System.currentTimeMillis() - this.beginTime) / 1000.0 + "s."); //$NON-NLS-1$
         log("declared #vars     " + aProblem.nVars()); //$NON-NLS-1$

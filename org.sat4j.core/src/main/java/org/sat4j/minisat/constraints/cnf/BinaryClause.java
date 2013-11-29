@@ -33,12 +33,14 @@ import static org.sat4j.core.LiteralsUtils.neg;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Data structure for binary clause.
@@ -265,5 +267,22 @@ public abstract class BinaryClause implements Propagatable, Constr,
         if (voc.isSatisfied(this.tail))
             return true;
         return false;
+    }
+
+    public String toString(VarMapper mapper) {
+        if (mapper == null) {
+            return toString();
+        }
+        StringBuffer stb = new StringBuffer();
+        stb.append(mapper.map(LiteralsUtils.toDimacs(this.head)));
+        stb.append("["); //$NON-NLS-1$
+        stb.append(this.voc.valueToString(this.head));
+        stb.append("]"); //$NON-NLS-1$
+        stb.append(" "); //$NON-NLS-1$
+        stb.append(mapper.map(LiteralsUtils.toDimacs(this.tail)));
+        stb.append("["); //$NON-NLS-1$
+        stb.append(this.voc.valueToString(this.tail));
+        stb.append("]"); //$NON-NLS-1$
+        return stb.toString();
     }
 }

@@ -31,6 +31,7 @@ package org.sat4j.minisat.constraints.card;
 
 import java.io.Serializable;
 
+import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
 import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
@@ -45,6 +46,7 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * @author leberre Contrainte de cardinalit?
@@ -388,5 +390,20 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
             }
         }
         return false;
+    }
+
+    public String toString(VarMapper mapper) {
+        StringBuffer stb = new StringBuffer();
+        for (int lit : this.lits) {
+            stb.append(" + "); //$NON-NLS-1$
+            stb.append(mapper.map(LiteralsUtils.toDimacs(lit)));
+            stb.append("[");
+            stb.append(this.voc.valueToString(lit));
+            stb.append("]  ");
+        }
+        stb.append(">= "); //$NON-NLS-1$
+        stb.append(size() - this.maxUnsatisfied);
+
+        return stb.toString();
     }
 }
