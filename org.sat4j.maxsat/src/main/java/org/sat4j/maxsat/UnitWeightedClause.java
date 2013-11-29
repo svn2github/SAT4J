@@ -30,6 +30,7 @@
 package org.sat4j.maxsat;
 
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.VarMapper;
 
 public class UnitWeightedClause implements IConstr {
 
@@ -60,6 +61,10 @@ public class UnitWeightedClause implements IConstr {
     }
 
     public boolean canBePropagatedMultipleTimes() {
+        throw new UnsupportedOperationException();
+    }
+
+    public String toString(VarMapper mapper) {
         throw new UnsupportedOperationException();
     }
 
