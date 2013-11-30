@@ -164,7 +164,7 @@ public class LecteurDimacs extends Reader implements Serializable {
         for (;;) {
             /* on lit le signe du literal */
             if (car == 'c') {
-                nextLine();
+                manageCommentLine();
                 car = (char) this.in.read();
                 continue;
             } else if (car == '-') {
@@ -268,16 +268,36 @@ public class LecteurDimacs extends Reader implements Serializable {
 
     @Override
     public void decode(int[] model, PrintWriter out) {
+        if (hasAMapping()) {
+            decodeWithMapping(model, out);
+        } else {
+            for (int element : model) {
+                out.print(element);
+                out.print(" ");
+            }
+            out.print("0");
+        }
+    }
+
+    private void decodeWithMapping(int[] model, PrintWriter out) {
+        String mapped;
         for (int element : model) {
-            out.print(element);
-            out.print(" ");
+            if (element > 0) {
+                mapped = mapping.get(element);
+                if (mapped == null) {
+                    out.print(element);
+                } else {
+                    out.print(mapped);
+                }
+                out.print(" ");
+            }
         }
         out.print("0");
     }
 
     @Override
     public boolean hasAMapping() {
-        return mapping == null;
+        return mapping != null;
     }
 
     @Override
