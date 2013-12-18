@@ -55,7 +55,7 @@ public class MinCardPBConstructor implements ICardConstructor {
         IVecInt resLits = new VecInt();
         IVec<BigInteger> resCoefs = new Vec<BigInteger>();
         dspb.buildConstraintFromConflict(resLits, resCoefs);
-        return new MinWatchCardPB(voc, resLits, true, dspb.getDegree()
+        return new MinWatchCardPB(voc, resLits, true, dspb.getCardDegree()
                 .intValue());
     }
 

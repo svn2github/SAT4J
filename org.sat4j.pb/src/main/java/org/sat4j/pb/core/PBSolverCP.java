@@ -123,7 +123,7 @@ public class PBSolverCP extends PBSolver {
 
         assert currentLevel == decisionLevel();
         undoOne();
-
+        this.qhead = this.trail.size();
         updateNumberOfReducedLearnedConstraints(confl);
         // necessary informations to build a PB-constraint
         // are kept from the conflict

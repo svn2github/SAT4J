@@ -55,9 +55,11 @@ public class MapPb implements IDataStructurePB {
 
     private int cpCardsReduction = 0;
 
-    MapPb(PBConstr cpb) {
-        this.weightedLits = new InternalMapPBStructure(cpb);
-        this.degree = cpb.getDegree();
+    private BigInteger cardDegree;
+
+    MapPb(PBConstr cpb, int level) {
+        this.weightedLits = new InternalMapPBStructure(cpb, level);
+        this.degree = this.weightedLits.getComputedDegree();
     }
 
     MapPb(int size) {
@@ -88,8 +90,9 @@ public class MapPb implements IDataStructurePB {
                 }
             }
             this.cpCardsReduction++;
-            degree = degree.divide(value).add(BigInteger.ONE);
-        }
+            this.cardDegree = degree.divide(value).add(BigInteger.ONE);
+        } else
+            this.cardDegree = degree;
         return true;
     }
 
@@ -114,12 +117,13 @@ public class MapPb implements IDataStructurePB {
         assert this.degree.signum() > 0;
         BigInteger minimum = this.degree;
         for (int ind = 0; ind < size(); ind++) {
-            assert this.weightedLits.getCoef(ind).signum() > 0;
+            assert this.weightedLits.getCoef(ind).signum() >= 0;
             if (this.degree.compareTo(this.weightedLits.getCoef(ind)) < 0) {
                 changeCoef(ind, this.degree);
             }
-            assert this.weightedLits.getCoef(ind).signum() > 0;
-            minimum = minimum.min(this.weightedLits.getCoef(ind));
+            assert this.weightedLits.getCoef(ind).signum() >= 0;
+            if (this.weightedLits.getCoef(ind).signum() > 0)
+                minimum = minimum.min(this.weightedLits.getCoef(ind));
         }
         // a clause has been learned
         if (minimum.equals(this.degree)
@@ -283,6 +287,10 @@ public class MapPb implements IDataStructurePB {
 
     void removeCoef(int lit) {
         this.weightedLits.remove(lit);
+    }
+
+    public BigInteger getCardDegree() {
+        return this.cardDegree;
     }
 
 }

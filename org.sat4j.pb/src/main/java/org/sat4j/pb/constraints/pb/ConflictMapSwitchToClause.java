@@ -55,9 +55,9 @@ public final class ConflictMapSwitchToClause extends ConflictMap {
      */
     @Override
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
-            BigInteger[] reducedCoefs, IWatchPb wpb) {
+            BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         BigInteger degreeCons = super.reduceUntilConflict(litImplied, ind,
-                reducedCoefs, wpb);
+                reducedCoefs, degreeReduced, wpb);
         // updating of the degree of the conflict
         int i = 0;
         for (; i < reducedCoefs.length

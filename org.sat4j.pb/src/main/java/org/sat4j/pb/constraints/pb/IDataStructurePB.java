@@ -36,33 +36,35 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
 public interface IDataStructurePB {
-	BigInteger saturation();
+    BigInteger saturation();
 
-	BigInteger cuttingPlane(PBConstr cpb, BigInteger deg,
-			BigInteger[] reducedCoefs, VarActivityListener val);
+    BigInteger cuttingPlane(PBConstr cpb, BigInteger deg,
+            BigInteger[] reducedCoefs, VarActivityListener val);
 
-	BigInteger cuttingPlane(PBConstr cpb, BigInteger degreeCons,
-			BigInteger[] reducedCoefs, BigInteger coefMult,
-			VarActivityListener val);
+    BigInteger cuttingPlane(PBConstr cpb, BigInteger degreeCons,
+            BigInteger[] reducedCoefs, BigInteger coefMult,
+            VarActivityListener val);
 
-	BigInteger cuttingPlane(int[] lits, BigInteger[] reducedCoefs,
-			BigInteger deg);
+    BigInteger cuttingPlane(int[] lits, BigInteger[] reducedCoefs,
+            BigInteger deg);
 
-	BigInteger cuttingPlane(int lits[], BigInteger[] reducedCoefs,
-			BigInteger degreeCons, BigInteger coefMult);
+    BigInteger cuttingPlane(int lits[], BigInteger[] reducedCoefs,
+            BigInteger degreeCons, BigInteger coefMult);
 
-	void buildConstraintFromConflict(IVecInt resLits, IVec<BigInteger> resCoefs);
+    void buildConstraintFromConflict(IVecInt resLits, IVec<BigInteger> resCoefs);
 
-	void buildConstraintFromMapPb(int[] resLits, BigInteger[] resCoefs);
+    void buildConstraintFromMapPb(int[] resLits, BigInteger[] resCoefs);
 
-	BigInteger getDegree();
+    BigInteger getDegree();
 
-	int size();
+    BigInteger getCardDegree();
 
-	boolean isCardinality();
+    int size();
 
-	int getAssertiveLiteral();
+    boolean isCardinality();
 
-	boolean isLongSufficient();
+    int getAssertiveLiteral();
+
+    boolean isLongSufficient();
 
 }

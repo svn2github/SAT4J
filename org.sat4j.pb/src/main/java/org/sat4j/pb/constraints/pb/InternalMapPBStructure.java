@@ -33,6 +33,7 @@ import java.math.BigInteger;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 
@@ -45,9 +46,10 @@ public class InternalMapPBStructure {
     private final IVecInt lits;
     private final IVec<BigInteger> coefs;
     private IVecInt allLits;
+    protected BigInteger degree;
 
     // temporarily : just for the case where an InternalMapPBStructure
-    // is used to embed in one object literals and coefs
+    // is used to embed in one object literals and coefficients
     InternalMapPBStructure(IVecInt lits, IVec<BigInteger> coefs) {
         this.lits = lits;
         this.coefs = coefs;
@@ -60,20 +62,36 @@ public class InternalMapPBStructure {
         this.lits = new VecInt();
     }
 
-    InternalMapPBStructure(PBConstr cpb) {
+    InternalMapPBStructure(PBConstr cpb, int level) {
+        ILits voc = cpb.getVocabulary();
         this.allLits = new VecInt(cpb.getVocabulary().nVars() * 2 + 2, -1);
         this.coefs = new Vec<BigInteger>(cpb.size());
         this.lits = new VecInt(cpb.size());
         int lit;
+        int ind = 0;
+        BigInteger degree = cpb.getDegree();
+        BigInteger coef;
+        boolean clause = degree.equals(BigInteger.ONE);
         for (int i = 0; i < cpb.size(); i++) {
             assert cpb.get(i) != 0;
             assert cpb.getCoef(i).signum() > 0;
             lit = cpb.get(i);
-            this.lits.push(lit);
-            assert i + 1 == this.lits.size();
-            this.allLits.set(lit, i);
-            this.coefs.push(cpb.getCoef(i));
+            if (clause || !(voc.isSatisfied(lit) && voc.getLevel(lit) < level)) {
+                this.lits.push(lit);
+                assert ind + 1 == this.lits.size();
+                this.allLits.set(lit, ind);
+                this.coefs.push(cpb.getCoef(i));
+                ind = ind + 1;
+            } else {
+                coef = cpb.getCoef(i);
+                degree = degree.subtract(coef);
+            }
         }
+        this.degree = degree;
+    }
+
+    public BigInteger getComputedDegree() {
+        return this.degree;
     }
 
     BigInteger get(int lit) {

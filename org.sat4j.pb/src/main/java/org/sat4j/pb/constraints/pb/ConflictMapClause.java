@@ -53,7 +53,7 @@ public final class ConflictMapClause extends ConflictMap {
      */
     @Override
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
-            BigInteger[] reducedCoefs, IWatchPb wpb) {
+            BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         for (int i = 0; i < reducedCoefs.length; i++) {
             if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i))) {
                 reducedCoefs[i] = BigInteger.ONE;

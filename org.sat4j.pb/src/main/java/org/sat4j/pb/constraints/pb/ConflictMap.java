@@ -76,7 +76,7 @@ public class ConflictMap extends MapPb implements IConflict {
     }
 
     ConflictMap(PBConstr cpb, int level) {
-        super(cpb);
+        super(cpb, level);
         this.voc = cpb.getVocabulary();
         this.currentLevel = level;
         initStructures();
@@ -196,22 +196,32 @@ public class ConflictMap extends MapPb implements IConflict {
             // updating of the degree of the conflict
             degreeCons = degreeCons.multiply(this.coefMultCons);
         } else {
+            IWatchPb wpb = (IWatchPb) cpb;
+            coefsCons = wpb.getCoefs();
+            degreeCons = removeSatisfiedLiteralsFromHigherDecisionLevels(wpb,
+                    coefsCons, currentLevel, degreeCons);
             if (this.weightedLits.get(nLitImplied).equals(BigInteger.ONE)) {
                 // then we know that the resolvant will still be a conflict (cf.
                 // Dixon's property)
-                this.coefMult = cpb.getCoef(ind);
+                this.coefMult = coefsCons[ind];
                 this.coefMultCons = BigInteger.ONE;
                 // updating of the degree of the conflict
                 this.degree = this.degree.multiply(this.coefMult);
+            } else if (coefsCons[ind].equals(BigInteger.ONE)) {
+                // it is now again possible -
+                // then we know that the resolvant will still be a conflict (cf.
+                // Dixon's property)
+                this.coefMultCons = this.weightedLits.get(nLitImplied);
+                this.coefMult = BigInteger.ONE;
+                // updating of the degree of the conflict
+                degreeCons = degreeCons.multiply(this.coefMultCons);
             } else {
                 // pb-constraint has to be reduced
                 // to obtain a conflictual result from the cutting plane
                 // DLB Findbugs warning ok
-                IWatchPb wpb = (IWatchPb) cpb;
-                coefsCons = wpb.getCoefs();
                 assert positiveCoefs(coefsCons);
                 degreeCons = reduceUntilConflict(litImplied, ind, coefsCons,
-                        wpb);
+                        degreeCons, wpb);
                 // updating of the degree of the conflict
                 degreeCons = degreeCons.multiply(this.coefMultCons);
                 this.degree = this.degree.multiply(this.coefMult);
@@ -225,6 +235,7 @@ public class ConflictMap extends MapPb implements IConflict {
                                     .multiply(this.coefMult));
                 }
             }
+
         }
 
         assert slackConflict().signum() <= 0;
@@ -232,7 +243,6 @@ public class ConflictMap extends MapPb implements IConflict {
         // cutting plane
         this.degree = cuttingPlane(cpb, degreeCons, coefsCons,
                 this.coefMultCons, val);
-
         // neither litImplied nor nLitImplied is present in coefs structure
         assert !this.weightedLits.containsKey(litImplied);
         assert !this.weightedLits.containsKey(nLitImplied);
@@ -259,13 +269,13 @@ public class ConflictMap extends MapPb implements IConflict {
     private BigInteger possReducedCoefs = BigInteger.ZERO;
 
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
-            BigInteger[] reducedCoefs, IWatchPb wpb) {
+            BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         BigInteger slackResolve = BigInteger.ONE.negate();
         BigInteger slackThis = BigInteger.ZERO;
         BigInteger slackIndex;
         BigInteger slackConflict = slackConflict();
         BigInteger ppcm;
-        BigInteger reducedDegree = wpb.getDegree();
+        BigInteger reducedDegree = degreeReduced;
         BigInteger previousCoefLitImplied = BigInteger.ZERO;
         BigInteger tmp;
         BigInteger coefLitImplied = this.weightedLits.get(litImplied ^ 1);
@@ -533,24 +543,20 @@ public class ConflictMap extends MapPb implements IConflict {
             final BigInteger degreeBis) {
         assert degreeBis.compareTo(BigInteger.ONE) > 0;
         // search for all satisfied literals above the current decision level
-        int lit = -1;
         int size = wpb.size();
         BigInteger degUpdate = degreeBis;
         int p;
+        this.possReducedCoefs = possConstraint(wpb, coefsBis);
         for (int ind = 0; ind < size; ind++) {
             p = wpb.get(ind);
             if (coefsBis[ind].signum() != 0 && this.voc.isSatisfied(p)
                     && this.voc.getLevel(p) < currentLevel) {
-                lit = ind;
-
-                // a literal has been found
-                assert lit != -1;
 
                 // reduction can be done
-                degUpdate = degUpdate.subtract(coefsBis[lit]);
+                degUpdate = degUpdate.subtract(coefsBis[ind]);
                 this.possReducedCoefs = this.possReducedCoefs
-                        .subtract(coefsBis[lit]);
-                coefsBis[lit] = BigInteger.ZERO;
+                        .subtract(coefsBis[ind]);
+                coefsBis[ind] = BigInteger.ZERO;
                 assert this.possReducedCoefs.equals(possConstraint(wpb,
                         coefsBis));
             }
@@ -559,7 +565,7 @@ public class ConflictMap extends MapPb implements IConflict {
         // saturation of the constraint
         degUpdate = saturation(coefsBis, degUpdate, wpb);
 
-        assert degreeBis.compareTo(degUpdate) > 0;
+        assert degreeBis.compareTo(degUpdate) >= 0;
         assert this.possReducedCoefs.equals(possConstraint(wpb, coefsBis));
         return degUpdate;
     }
@@ -604,7 +610,7 @@ public class ConflictMap extends MapPb implements IConflict {
 
     private static boolean positiveCoefs(final BigInteger[] coefsCons) {
         for (BigInteger coefsCon : coefsCons) {
-            if (coefsCon.signum() <= 0) {
+            if (coefsCon.signum() < 0) {
                 return false;
             }
         }
@@ -658,6 +664,7 @@ public class ConflictMap extends MapPb implements IConflict {
     public int oldGetBacktrackLevel(int maxLevel) {
         int litLevel;
         int borneMax = maxLevel;
+        assert isAssertive(borneMax);
         assert oldIsAssertive(borneMax);
         int borneMin = -1;
         // borneMax is the highest level in the search tree where the constraint

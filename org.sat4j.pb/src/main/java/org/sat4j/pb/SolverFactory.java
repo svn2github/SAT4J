@@ -170,8 +170,11 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
     }
 
     public static PBSolverCP newCompetPBCPMixedConstraintsLongMaxObjective() {
-        return newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
+        PBSolverCP s = newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective());
+        // s.setSearchListener(new DotSearchTracing<Integer>(
+        // "/home/anne/recherche/pseudo/sat14/TracePigeon.dot", null));
+        return s;
     }
 
     public static PBSolverCP newCompetPBCPMixedConstraintsLongMinObjective() {

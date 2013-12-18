@@ -108,7 +108,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * propagation queue
      */
     // head of the queue in trail ... (taken from MiniSAT 1.14)
-    int qhead = 0;
+    protected int qhead = 0;
 
     /**
      * variable assignments (literals) in chronological order.
@@ -1191,6 +1191,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.slistener.beginLoop();
             // propagate unit clauses and other constraints
             Constr confl = propagate();
+            if (this.trail.size() != this.qhead)
+                System.out.println("stop");
             assert this.trail.size() == this.qhead;
 
             if (confl == null) {
