@@ -113,7 +113,7 @@ public class Backbone {
             litsToTest.pop();
             if (solver.isSatisfiable(candidates)) {
                 candidates.pop();
-                implicant = solver.model();
+                implicant = solver.primeImplicant();
                 removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
                         solver.nVars());
             } else {
