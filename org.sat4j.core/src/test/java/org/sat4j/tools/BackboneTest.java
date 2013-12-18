@@ -59,7 +59,7 @@ public class BackboneTest {
         clause.push(1);
         solver.addClause(clause);
         clause.clear();
-        IVecInt backbone = Backbone.compute(solver);
+        IVecInt backbone = Backbone.instance().compute(solver);
         assertTrue(backbone.contains(1));
         assertTrue(backbone.contains(-2));
         assertTrue(backbone.contains(-3));
@@ -79,7 +79,7 @@ public class BackboneTest {
         clause.push(-1).push(-3);
         solver.addClause(clause);
         clause.clear();
-        IVecInt backbone = Backbone.compute(solver);
+        IVecInt backbone = Backbone.instance().compute(solver);
         assertEquals(0, backbone.size());
     }
 
@@ -100,7 +100,7 @@ public class BackboneTest {
         clause.push(-1).push(-2);
         solver.addClause(clause);
         clause.clear();
-        IVecInt backbone = Backbone.compute(solver);
+        IVecInt backbone = Backbone.instance().compute(solver);
         assertEquals(0, backbone.size());
     }
 
@@ -142,17 +142,17 @@ public class BackboneTest {
             solver3.addClause(new VecInt(is));
         }
 
-        IVecInt vecInt1 = Backbone.compute(solver1);
+        IVecInt vecInt1 = Backbone.instance().compute(solver1);
         assertEquals(vecInt1.size(), 2);
         assertTrue(vecInt1.contains(1));
         assertTrue(vecInt1.contains(2));
 
-        IVecInt vecInt2 = Backbone.compute(solver2);
+        IVecInt vecInt2 = Backbone.instance().compute(solver2);
         assertEquals(vecInt2.size(), 2);
         assertTrue(vecInt2.contains(1));
         assertTrue(vecInt2.contains(2));
 
-        IVecInt vecInt3 = Backbone.compute(solver3);
+        IVecInt vecInt3 = Backbone.instance().compute(solver3);
         assertEquals(vecInt3.size(), 2);
         assertTrue(vecInt3.contains(1));
         assertTrue(vecInt3.contains(3));

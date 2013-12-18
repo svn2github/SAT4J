@@ -79,6 +79,12 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     private final ILits voc;
 
     /**
+     * Maximum number of falsified literal in the constraint.
+     * 
+     */
+    private final int maxUnsatisfied;
+
+    /**
      * Constructs and normalizes a cardinality constraint. used by
      * minWatchCardNew in the non-normalized case.
      * 
@@ -131,7 +137,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
         // On normalise la contrainte au sens de Barth
         normalize();
-
+        this.maxUnsatisfied = lits.length - this.degree;
     }
 
     /**
@@ -157,7 +163,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
         // On copie les litt?raux de la contrainte
         this.lits = new int[ps.size()];
         ps.moveTo(this.lits);
-
+        this.maxUnsatisfied = lits.length - this.degree;
     }
 
     /**
@@ -170,9 +176,13 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
      * @see Constr#calcReason(int p, IVecInt outReason)
      */
     public void calcReason(int p, IVecInt outReason) {
-        for (int lit : this.lits) {
-            if (this.voc.isFalsified(lit)) {
-                outReason.push(lit ^ 1);
+        int c = p == ILits.UNDEFINED ? -1 : 0;
+        for (int q : this.lits) {
+            if (this.voc.isFalsified(q)) {
+                outReason.push(q ^ 1);
+                if (++c >= this.maxUnsatisfied) {
+                    return;
+                }
             }
         }
     }
@@ -241,8 +251,6 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
             }
         }
 
-        // DLB: inutile?
-        // ps.shrinkTo(nbElement);
         assert modif <= 0;
 
         return modif;

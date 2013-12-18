@@ -79,7 +79,8 @@ final class DecisionMode implements ILauncherMode {
                     long beginpi = System.currentTimeMillis();
                     model = solver.primeImplicant();
                     try {
-                        IVecInt backbone = Backbone.compute(solver, model);
+                        IVecInt backbone = Backbone.instance().compute(solver,
+                                model);
                         long endpi = System.currentTimeMillis();
                         out.print(solver.getLogPrefix());
                         reader.decode(backbone.toArray(), out);
