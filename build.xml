@@ -11,7 +11,7 @@
         <property name="tag" value="HEAD"/>
         <property name="lib" value="lib"/>
         <property name="next.eclipse.release.date" value="June, 2010"/>
-	<target name="br4cp" depends="core" description="Build a jar file for the BR4CP French ANR from the source tree">
+	<target name="br4cp" depends="core,pseudo" description="Build a jar file for the BR4CP French ANR from the source tree">
 		<echo>Building BR4CP tool</echo>
 		<antcall target="build">
 		   <param name="package" value="br4cp"/>
@@ -370,6 +370,7 @@
 				<include name="jlf*.jar"/>
 				<include name="csp*.jar"/>
 				<include name="js.jar"/>
+                                <include name="jchart2d*.jar"/>
 		    </fileset>
 	       </copy>
 	</target>
