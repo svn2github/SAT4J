@@ -46,7 +46,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			for (Iterator<Integer> it2 = it.next().iterator(); it2.hasNext();)
 				assumps.push(it2.next());
 		}
-		IVecInt backbone = Backbone.compute(solver, assumps);
+		IVecInt backbone = Backbone.instance().compute(solver, assumps);
 		if (backbone.isEmpty()) {
 			if (this.solverAssumptions.isEmpty()) {
 				throw new IllegalStateException("The formula is unsat!");
