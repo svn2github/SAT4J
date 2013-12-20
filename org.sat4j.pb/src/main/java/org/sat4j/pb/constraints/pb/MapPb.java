@@ -57,8 +57,8 @@ public class MapPb implements IDataStructurePB {
 
     private BigInteger cardDegree;
 
-    MapPb(PBConstr cpb, int level) {
-        this.weightedLits = new InternalMapPBStructure(cpb, level);
+    MapPb(PBConstr cpb, int level, boolean noRemove) {
+        this.weightedLits = new InternalMapPBStructure(cpb, level, noRemove);
         this.degree = this.weightedLits.getComputedDegree();
     }
 

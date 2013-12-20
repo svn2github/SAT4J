@@ -75,11 +75,24 @@ public class ConflictMap extends MapPb implements IConflict {
         return new ConflictMap(cpb, level);
     }
 
+    public static IConflict createConflict(PBConstr cpb, int level,
+            boolean noRemove) {
+        return new ConflictMap(cpb, level, noRemove);
+    }
+
     ConflictMap(PBConstr cpb, int level) {
-        super(cpb, level);
+        this(cpb, level, false);
+    }
+
+    ConflictMap(PBConstr cpb, int level, boolean noRemove) {
+        super(cpb, level, noRemove);
         this.voc = cpb.getVocabulary();
         this.currentLevel = level;
         initStructures();
+        if (noRemove)
+            this.rmSatLit = new NoRemoveSatisfied();
+        else
+            this.rmSatLit = new RemoveSatisfied();
     }
 
     private void initStructures() {
@@ -125,8 +138,62 @@ public class ConflictMap extends MapPb implements IConflict {
         return indLevel - 1;
     }
 
+    /**
+     * private interface to simplify or not conflicts by removing satisfied
+     * literals at a higher level.
+     */
+    private final IRemoveSatisfiedLiterals rmSatLit;
+
+    private class NoRemoveSatisfied implements IRemoveSatisfiedLiterals {
+
+        public BigInteger removeSatisfiedLiteralsFromHigherDecisionLevels(
+                IWatchPb wpb, final BigInteger[] coefsBis,
+                final int currentLevel, final BigInteger degreeBis) {
+            return degreeBis;
+        }
+    }
+
+    private class RemoveSatisfied implements IRemoveSatisfiedLiterals {
+
+        public BigInteger removeSatisfiedLiteralsFromHigherDecisionLevels(
+                IWatchPb wpb, final BigInteger[] coefsBis,
+                final int currentLevel, final BigInteger degreeBis) {
+            assert degreeBis.compareTo(BigInteger.ONE) > 0;
+            // search for all satisfied literals above the current decision
+            // level
+            int size = wpb.size();
+            BigInteger degUpdate = degreeBis;
+            int p;
+            ConflictMap.this.possReducedCoefs = possConstraint(wpb, coefsBis);
+            for (int ind = 0; ind < size; ind++) {
+                p = wpb.get(ind);
+                if (coefsBis[ind].signum() != 0
+                        && ConflictMap.this.voc.isSatisfied(p)
+                        && ConflictMap.this.voc.getLevel(p) < currentLevel) {
+
+                    // reduction can be done
+                    degUpdate = degUpdate.subtract(coefsBis[ind]);
+                    ConflictMap.this.possReducedCoefs = ConflictMap.this.possReducedCoefs
+                            .subtract(coefsBis[ind]);
+                    coefsBis[ind] = BigInteger.ZERO;
+                    assert ConflictMap.this.possReducedCoefs
+                            .equals(possConstraint(wpb, coefsBis));
+                }
+            }
+
+            // saturation of the constraint
+            degUpdate = saturation(coefsBis, degUpdate, wpb);
+
+            assert degreeBis.compareTo(degUpdate) >= 0;
+            assert ConflictMap.this.possReducedCoefs.equals(possConstraint(wpb,
+                    coefsBis));
+            return degUpdate;
+        }
+
+    };
+
     /*
-     * coefficient to be computed.
+     * coefficients to be computed.
      */
     protected BigInteger coefMult = BigInteger.ZERO;
 
@@ -198,8 +265,9 @@ public class ConflictMap extends MapPb implements IConflict {
         } else {
             IWatchPb wpb = (IWatchPb) cpb;
             coefsCons = wpb.getCoefs();
-            degreeCons = removeSatisfiedLiteralsFromHigherDecisionLevels(wpb,
-                    coefsCons, currentLevel, degreeCons);
+            degreeCons = rmSatLit
+                    .removeSatisfiedLiteralsFromHigherDecisionLevels(wpb,
+                            coefsCons, currentLevel, degreeCons);
             if (this.weightedLits.get(nLitImplied).equals(BigInteger.ONE)) {
                 // then we know that the resolvant will still be a conflict (cf.
                 // Dixon's property)
@@ -534,38 +602,6 @@ public class ConflictMap extends MapPb implements IConflict {
 
         assert coefsBis[indLitImplied].signum() > 0;
         assert degreeBis.compareTo(degUpdate) > 0;
-        assert this.possReducedCoefs.equals(possConstraint(wpb, coefsBis));
-        return degUpdate;
-    }
-
-    private BigInteger removeSatisfiedLiteralsFromHigherDecisionLevels(
-            IWatchPb wpb, final BigInteger[] coefsBis, final int currentLevel,
-            final BigInteger degreeBis) {
-        assert degreeBis.compareTo(BigInteger.ONE) > 0;
-        // search for all satisfied literals above the current decision level
-        int size = wpb.size();
-        BigInteger degUpdate = degreeBis;
-        int p;
-        this.possReducedCoefs = possConstraint(wpb, coefsBis);
-        for (int ind = 0; ind < size; ind++) {
-            p = wpb.get(ind);
-            if (coefsBis[ind].signum() != 0 && this.voc.isSatisfied(p)
-                    && this.voc.getLevel(p) < currentLevel) {
-
-                // reduction can be done
-                degUpdate = degUpdate.subtract(coefsBis[ind]);
-                this.possReducedCoefs = this.possReducedCoefs
-                        .subtract(coefsBis[ind]);
-                coefsBis[ind] = BigInteger.ZERO;
-                assert this.possReducedCoefs.equals(possConstraint(wpb,
-                        coefsBis));
-            }
-        }
-
-        // saturation of the constraint
-        degUpdate = saturation(coefsBis, degUpdate, wpb);
-
-        assert degreeBis.compareTo(degUpdate) >= 0;
         assert this.possReducedCoefs.equals(possConstraint(wpb, coefsBis));
         return degUpdate;
     }

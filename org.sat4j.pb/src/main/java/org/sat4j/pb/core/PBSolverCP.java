@@ -53,6 +53,12 @@ public class PBSolverCP extends PBSolver {
     private static final long serialVersionUID = 1L;
 
     /**
+     * removing or not satisfied literals at a higher level before cutting
+     * planes.
+     */
+    private boolean noRemove = true;
+
+    /**
      * @param acg
      * @param learner
      * @param dsf
@@ -72,6 +78,26 @@ public class PBSolverCP extends PBSolver {
     public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
             PBDataStructureFactory dsf, SearchParams params, IOrder order) {
         super(learner, dsf, params, order, new MiniSATRestarts());
+    }
+
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, IOrder order, boolean noRemove) {
+        this(learner, dsf, order);
+        this.noRemove = noRemove;
+    }
+
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order,
+            RestartStrategy restarter, boolean noRemove) {
+        this(learner, dsf, params, order, restarter);
+        this.noRemove = noRemove;
+    }
+
+    public PBSolverCP(LearningStrategy<PBDataStructureFactory> learner,
+            PBDataStructureFactory dsf, SearchParams params, IOrder order,
+            boolean noRemove) {
+        this(learner, dsf, params, order);
+        this.noRemove = noRemove;
     }
 
     @Override
@@ -151,13 +177,18 @@ public class PBSolverCP extends PBSolver {
     }
 
     IConflict chooseConflict(PBConstr myconfl, int level) {
-        return ConflictMap.createConflict(myconfl, level);
+        return ConflictMap.createConflict(myconfl, level, noRemove);
     }
 
     @Override
     public String toString(String prefix) {
-        return prefix + "Cutting planes based inference ("
-                + this.getClass().getName() + ")\n" + super.toString(prefix);
+        return prefix
+                + "Cutting planes based inference ("
+                + this.getClass().getName()
+                + ")"
+                + (this.noRemove ? ""
+                        : " - removing satisfied literals at a higher level before CP -")
+                + "\n" + super.toString(prefix);
     }
 
     private final IVec<String> conflictVariables = new Vec<String>();

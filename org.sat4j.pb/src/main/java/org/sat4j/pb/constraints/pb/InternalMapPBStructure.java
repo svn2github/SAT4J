@@ -62,7 +62,7 @@ public class InternalMapPBStructure {
         this.lits = new VecInt();
     }
 
-    InternalMapPBStructure(PBConstr cpb, int level) {
+    InternalMapPBStructure(PBConstr cpb, int level, boolean noRemove) {
         ILits voc = cpb.getVocabulary();
         this.allLits = new VecInt(cpb.getVocabulary().nVars() * 2 + 2, -1);
         this.coefs = new Vec<BigInteger>(cpb.size());
@@ -76,13 +76,16 @@ public class InternalMapPBStructure {
             assert cpb.get(i) != 0;
             assert cpb.getCoef(i).signum() > 0;
             lit = cpb.get(i);
-            if (clause || !(voc.isSatisfied(lit) && voc.getLevel(lit) < level)) {
+            if (noRemove || clause
+                    || !(voc.isSatisfied(lit) && voc.getLevel(lit) < level)) {
+                // the literal is kept
                 this.lits.push(lit);
                 assert ind + 1 == this.lits.size();
                 this.allLits.set(lit, ind);
                 this.coefs.push(cpb.getCoef(i));
                 ind = ind + 1;
             } else {
+                // the literal is forgotten
                 coef = cpb.getCoef(i);
                 degree = degree.subtract(coef);
             }

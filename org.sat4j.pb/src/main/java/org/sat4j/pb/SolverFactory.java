@@ -172,8 +172,12 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
     public static PBSolverCP newCompetPBCPMixedConstraintsLongMaxObjective() {
         PBSolverCP s = newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective());
-        // s.setSearchListener(new DotSearchTracing<Integer>(
-        // "/home/anne/recherche/pseudo/sat14/TracePigeon.dot", null));
+        return s;
+    }
+
+    public static PBSolverCP newCompetPBCPRemoveSatisfiedMixedConstraintsLongMaxObjective() {
+        PBSolverCP s = newPBCP(new PBLongMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), false);
         return s;
     }
 
@@ -525,9 +529,10 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return newPBCP(new PuebloPBMinClauseAtLeastConstrDataStructure());
     }
 
-    private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
+    private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order,
+            boolean noRemove) {
         MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
-        PBSolverCP solver = new PBSolverCP(learning, dsf, order);
+        PBSolverCP solver = new PBSolverCP(learning, dsf, order, noRemove);
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
         solver.setRestartStrategy(new ArminRestarts());
@@ -535,8 +540,17 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return solver;
     }
 
+    private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
+        return newPBCP(dsf, order, true);
+    }
+
     private static PBSolverCP newPBCP(PBDataStructureFactory dsf) {
         return newPBCP(dsf, new VarOrderHeap());
+    }
+
+    private static PBSolverCP newPBCP(PBDataStructureFactory dsf,
+            boolean noRemove) {
+        return newPBCP(dsf, new VarOrderHeap(), noRemove);
     }
 
     /**
