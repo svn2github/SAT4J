@@ -105,6 +105,10 @@ public class OPBReader2007 extends OPBReader2006 {
         if (s.charAt(0) == '~') {
             cpt = 2;
         }
+        if (s.charAt(cpt - 1) != 'x') {
+            throw new ParseFormatException(
+                    "Only identifiers of the form 'x'YYY are allowed!");
+        }
         int varID = Integer.parseInt(s.substring(cpt));
         if (varID > this.nbVars) {
             throw new ParseFormatException(
