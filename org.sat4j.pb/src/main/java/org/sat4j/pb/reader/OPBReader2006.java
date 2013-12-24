@@ -57,7 +57,7 @@ public class OPBReader2006 extends OPBReader2005 {
      * @param coeff
      *            the coefficient of the variable
      * @param var
-     *            the indentifier we read
+     *            the identifier we read
      * @throws IOException
      * @throws ParseException
      */
