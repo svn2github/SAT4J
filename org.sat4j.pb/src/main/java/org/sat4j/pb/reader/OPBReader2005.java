@@ -556,10 +556,10 @@ public class OPBReader2005 extends Reader implements Serializable {
             String[] values = s.split("=");
             if (values.length == 2) {
                 mapping.put(Integer.valueOf(values[0]), values[1]);
-            } else {
-                System.err.println("Something went wrong: " + s);
             }
-            // this.in.readLine();
+            if (this.savedChar != '\n') {
+                this.in.readLine();
+            }
             get();// remove trailing \n
             c = get();
         }
