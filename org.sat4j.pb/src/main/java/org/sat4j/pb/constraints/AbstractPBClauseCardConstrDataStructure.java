@@ -108,9 +108,15 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
             }
             return constructClause(v);
         }
-        if (coefficientsEqualToOne(coefs)) {
+        if (coefficientsEqualTo(BigInteger.ONE, coefs)) {
             assert degree.compareTo(MAX_INT_VALUE) < 0;
             return constructCard(new VecInt(literals), degree.intValue());
+        }
+        if (coefficientsEqualTo(coefs[0], coefs)) {
+            assert degree.compareTo(MAX_INT_VALUE) < 0;
+            System.err.println("Using TCS division!!!");
+            return constructCard(new VecInt(literals), degree.divide(coefs[0])
+                    .intValue() + 1);
         }
         return constructPB(literals, coefs, degree);
     }
@@ -154,15 +160,23 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         literals.copyTo(lits);
         BigInteger[] bc = new BigInteger[coefs.size()];
         coefs.copyTo(bc);
+        System.out.println("Checking 1");
         degree = Pseudos.niceCheckedParametersForCompetition(lits, bc,
                 moreThan, degree);
 
         if (degree.equals(BigInteger.ONE)) {
             return constructLearntClause(new VecInt(lits));
         }
-        if (coefficientsEqualToOne(bc)) {
+        if (coefficientsEqualTo(BigInteger.ONE, bc)) {
             return constructLearntCard(new VecInt(lits),
                     new Vec<BigInteger>(bc), degree);
+        }
+        System.out.println("Checking 2");
+        if (coefficientsEqualTo(bc[0], bc)) {
+            System.out.println("Learned new card ! ");
+            return constructLearntCard(new VecInt(lits),
+                    new Vec<BigInteger>(bc),
+                    degree.divide(bc[0]).add(BigInteger.ONE));
         }
         return constructLearntPB(new VecInt(lits), new Vec<BigInteger>(bc),
                 degree);
@@ -180,9 +194,9 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         return learntConstraintFactory(literals, coefs, degree, false);
     }
 
-    static boolean coefficientsEqualToOne(BigInteger[] coefs) {
+    static boolean coefficientsEqualTo(BigInteger value, BigInteger[] coefs) {
         for (int i = 0; i < coefs.length; i++) {
-            if (!coefs[i].equals(BigInteger.ONE)) {
+            if (!coefs[i].equals(value)) {
                 return false;
             }
         }

@@ -53,8 +53,8 @@ public class AtLeastCardConstructor implements ICardConstructor {
         IVecInt resLits = new VecInt();
         IVec<BigInteger> resCoefs = new Vec<BigInteger>();
         dspb.buildConstraintFromConflict(resLits, resCoefs);
-        // return AtLeast.atLeastNew(voc, resLits, dspb.getDegree().intValue());
-        return null;
+        return new AtLeast(voc, resLits, dspb.getDegree().intValue());
+        // return null;
     }
 
 }
