@@ -296,8 +296,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     public String toString(String prefix) {
         return prefix
                 + "Pseudo Boolean Optimization by upper bound\n"
-                + prefix
-                + (useAnImplicantForEvaluation ? "using prime implicants for evaluating the objective function\n"
+                + (useAnImplicantForEvaluation ? prefix
+                        + "using prime implicants for evaluating the objective function\n"
                         : "") + super.toString(prefix);
     }
 
