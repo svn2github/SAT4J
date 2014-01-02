@@ -108,6 +108,8 @@ public class Br4cpScenarioSimulator {
 
 	private void processWord(IBr4cpBackboneComputer backboneComputer,
 			String word) throws TimeoutException {
+		this.outStream.println(this.solver.getLogPrefix() + "selected : "
+				+ word);
 		String assump = word.replaceAll("_", ".");
 		assump = assump.replaceAll("=", ".");
 		try {
@@ -127,8 +129,7 @@ public class Br4cpScenarioSimulator {
 				this.outStream.println(assump + " is not defined");
 				return;
 			}
-			this.outStream.println(this.solver.getLogPrefix() + "selected : "
-				+ word);
+			
 		printNewlyAsserted(backboneComputer);
 		} catch (IllegalArgumentException e) {
 			this.outStream.println("ERROR: " + e.getMessage());
