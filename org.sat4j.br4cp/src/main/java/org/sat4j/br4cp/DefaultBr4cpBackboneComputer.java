@@ -123,7 +123,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		for(Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); !found && it.hasNext(); ) {
 			Set<Integer> nextSet = it.next();
 			for(Iterator<Integer> it2 = nextSet.iterator(); it2.hasNext(); ) {
-				String nextVar = this.varMap.getConfigVar(it2.next());
+				String nextVar = this.varMap.getConfigVar(Math.abs(it2.next()));
 				String nextVarName = nextVar.substring(0, nextVar.lastIndexOf('.'));
 				if(configVarName.equals(nextVarName)) {
 					it.remove();
