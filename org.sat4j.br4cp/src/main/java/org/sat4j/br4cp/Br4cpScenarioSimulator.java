@@ -5,14 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.pb.OptToPBSATAdapter;
-import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IGroupSolver;
@@ -23,6 +19,7 @@ import org.sat4j.tools.AllMUSes;
  * This class is a launcher for BR4CP scenario problems.
  * 
  * @author lonca
+ * @author leberre
  * 
  */
 public class Br4cpScenarioSimulator {
@@ -32,19 +29,17 @@ public class Br4cpScenarioSimulator {
 	private long startTime;
 	private ConfigVarMap varMap;
 	private IPBSolver pbSolver;
-	private OptToPBSATAdapter optimizer;
-	private ObjectiveFunction obj;
 	private final AllMUSes muses = new AllMUSes(true, SolverFactory.instance());
 
 	private List<Integer> nbRemovedValues;
 
 	private PrintStream outStream = System.out;
+	private int totalNumberofSATCalls;
 
 	public Br4cpScenarioSimulator(String instance, String scenario)
 			throws IOException, TimeoutException {
 		solver = muses.getSolverInstance();
 		pbSolver = (IPBSolver) solver.getSolvingEngine();
-		optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(pbSolver));
 		varMap = new ConfigVarMap(solver);
 		varMap = new ConfigVarMap(solver);
 		this.startTime = System.currentTimeMillis();
@@ -70,6 +65,7 @@ public class Br4cpScenarioSimulator {
 			this.nbRemovedValues.add(Integer.valueOf(backboneComputer
 					.domainReductions().size()));
 			long scenarioProcessingTime = System.currentTimeMillis();
+			this.totalNumberofSATCalls = 0;
 			processScenario(backboneComputer, line);
 			scenarioProcessingTime = System.currentTimeMillis()
 					- scenarioProcessingTime;
@@ -86,6 +82,8 @@ public class Br4cpScenarioSimulator {
 			this.outStream.printf(this.solver.getLogPrefix()
 					+ "scenario processed in %.3fs\n",
 					scenarioProcessingTime / 1000.);
+			this.outStream.printf("Total number of SAT calls: %d%n",
+					totalNumberofSATCalls);
 		}
 		this.outStream.printf(this.solver.getLogPrefix()
 				+ "solving done in %.3fs.\n",
@@ -117,8 +115,6 @@ public class Br4cpScenarioSimulator {
 				backboneComputer.addAdditionalVarAssumption(assump);
 			} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
 				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
-			} else if (this.varMap.isAdditionalVar(assump)) {
-				backboneComputer.addAdditionalVarAssumption(assump);
 			} else if (this.varMap.isConfigVar(assump)) {
 				try {
 					backboneComputer.addAssumption(assump);
@@ -129,15 +125,20 @@ public class Br4cpScenarioSimulator {
 				this.outStream.println(assump + " is not defined");
 				return;
 			}
-			
-		printNewlyAsserted(backboneComputer);
+
+			printNewlyAsserted(backboneComputer);
 		} catch (IllegalArgumentException e) {
 			this.outStream.println("ERROR: " + e.getMessage());
 		}
 	}
 
-		
 	private void printNewlyAsserted(IBr4cpBackboneComputer backboneComputer) {
+		this.outStream.print(this.solver.getLogPrefix());
+		this.outStream.print("number of SAT calls: ");
+		this.outStream.println(backboneComputer
+				.getNumberOfSATCalls());
+		totalNumberofSATCalls += backboneComputer
+				.getNumberOfSATCalls();
 		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
 				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
 		this.nbRemovedValues.add(Integer.valueOf(backboneComputer
@@ -176,7 +177,8 @@ public class Br4cpScenarioSimulator {
 
 	private void readInstance(String instance, IGroupSolver solver,
 			ConfigVarMap varMap) {
-		Br4cpAraliaReader reader = new Br4cpAraliaReader(solver,pbSolver, varMap);
+		Br4cpAraliaReader reader = new Br4cpAraliaReader(solver, pbSolver,
+				varMap);
 		try {
 			reader.parseInstance(instance);
 		} catch (IOException e) {
