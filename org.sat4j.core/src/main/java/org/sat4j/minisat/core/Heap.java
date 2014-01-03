@@ -71,10 +71,12 @@ public final class Heap implements Serializable {
 
     void percolateUp(int i) {
         int x = this.heap.get(i);
-        while (parent(i) != 0 && comp(x, this.heap.get(parent(i)))) {
-            this.heap.set(i, this.heap.get(parent(i)));
-            this.indices.set(this.heap.get(i), i);
-            i = parent(i);
+        int p = parent(i);
+        while (i != 1 && comp(x, this.heap.get(p))) {
+            this.heap.set(i, this.heap.get(p));
+            this.indices.set(this.heap.get(p), i);
+            i = p;
+            p = parent(p);
         }
         this.heap.set(i, x);
         this.indices.set(x, i);
