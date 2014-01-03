@@ -54,9 +54,13 @@ public final class Backbone {
     interface Backboner {
         IVecInt compute(ISolver solver, int[] implicant, IVecInt assumptions)
                 throws TimeoutException;
+
+        int nbSatTests();
     }
 
     private static final Backboner BB = new Backboner() {
+        private int nbSatTests;
+
         /**
          * Computes the backbone of a formula following the iterative algorithm
          * described in João Marques-Silva, Mikolás Janota, Inês Lynce: On
@@ -69,9 +73,7 @@ public final class Backbone {
          */
         public IVecInt compute(ISolver solver, int[] implicant,
                 IVecInt assumptions) throws TimeoutException {
-            int nbSatTests = 0;
-            long timePI = 0L;
-            long begin;
+            nbSatTests = 0;
             Set<Integer> assumptionsSet = new HashSet<Integer>();
             for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
                 assumptionsSet.add(it.next());
@@ -82,34 +84,28 @@ public final class Backbone {
                     litsToTest.push(-p);
                 }
             }
-            int worstCase = litsToTest.size();
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             int p;
-            IConstr constr;
             while (!litsToTest.isEmpty()) {
                 p = litsToTest.last();
                 candidates.push(p);
                 litsToTest.pop();
                 if (solver.isSatisfiable(candidates)) {
                     candidates.pop();
-                    begin = System.currentTimeMillis();
                     implicant = solver.primeImplicant();
-                    timePI += (System.currentTimeMillis() - begin);
-                    int oldsize = litsToTest.size();
                     removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
                             solver.nVars());
-                    // System.err.println(litsToTest.size() - oldsize);
                 } else {
                     candidates.pop().push(-p);
                 }
                 nbSatTests++;
             }
-            System.err.printf(
-                    "vars %d  constrs %d tests : %d/%d  temps PI %d %n",
-                    solver.nVars(), solver.nConstraints(), nbSatTests,
-                    worstCase, timePI);
             return candidates;
+        }
+
+        public int nbSatTests() {
+            return this.nbSatTests;
         }
     };
 
@@ -125,11 +121,11 @@ public final class Backbone {
      */
     private static final Backboner IBB = new Backboner() {
 
+        private int nbSatTests;
+
         public IVecInt compute(ISolver solver, int[] implicant,
                 IVecInt assumptions) throws TimeoutException {
-            int nbSatTests = 0;
-            long timePI = 0L;
-            long begin;
+            nbSatTests = 0;
             Set<Integer> assumptionsSet = new HashSet<Integer>();
             for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
                 assumptionsSet.add(it.next());
@@ -140,22 +136,16 @@ public final class Backbone {
                     litsToTest.push(-p);
                 }
             }
-            int worstCase = litsToTest.size();
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
-            int p;
             IConstr constr;
             while (!litsToTest.isEmpty()) {
                 try {
                     constr = solver.addClause(litsToTest);
                     if (solver.isSatisfiable(candidates)) {
-                        begin = System.currentTimeMillis();
                         implicant = solver.primeImplicant();
-                        timePI += (System.currentTimeMillis() - begin);
-                        // int oldsize = litsToTest.size();
                         removeVarNotPresentAndSatisfiedLits(implicant,
                                 litsToTest, solver.nVars());
-                        // System.err.println(litsToTest.size() - oldsize);
                         solver.removeSubsumedConstr(constr);
                     } else {
                         for (IteratorInt it = litsToTest.iterator(); it
@@ -173,11 +163,11 @@ public final class Backbone {
                 }
                 nbSatTests++;
             }
-            System.err.printf(
-                    "vars %d  constrs %d tests : %d/%d  temps PI %d %n",
-                    solver.nVars(), solver.nConstraints(), nbSatTests,
-                    worstCase, timePI);
             return candidates;
+        }
+
+        public int nbSatTests() {
+            return this.nbSatTests;
         }
     };
 
@@ -234,6 +224,10 @@ public final class Backbone {
     public IVecInt compute(ISolver solver, int[] implicant, IVecInt assumptions)
             throws TimeoutException {
         return bb.compute(solver, implicant, assumptions);
+    }
+
+    public int getNumberOfSatCalls() {
+        return bb.nbSatTests();
     }
 
     private static void removeVarNotPresentAndSatisfiedLits(int[] implicant,
