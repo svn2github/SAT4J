@@ -11,13 +11,11 @@ import java.util.TreeSet;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.OptToPBSATAdapter;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IGroupSolver;
-import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.AllMUSes;
@@ -28,10 +26,9 @@ public class Br4cpCLI {
 	private ConfigVarMap varMap;
 	private PrintStream outStream;
 	private boolean quit = false;
-	IBr4cpBackboneComputer backboneComputer;
+	private IBr4cpBackboneComputer backboneComputer;
 	private IPBSolver pbSolver;
 	private OptToPBSATAdapter optimizer;
-	private ObjectiveFunction obj;
 	private Set<String> assumptions = new TreeSet<String>(
 			new ConfigVarComparator());
 	private final AllMUSes muses = new AllMUSes(true, SolverFactory.instance());
@@ -101,7 +98,8 @@ public class Br4cpCLI {
 	private void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
 		this.outStream.println("  #restart       : clean all assumptions");
-		this.outStream.println("  #minimize      : find the minimal prize configuration");
+		this.outStream
+				.println("  #minimize      : find the minimal prize configuration");
 		this.outStream
 				.println("  #explain vX=Y  : explain the assignement of value Y to variable X");
 		this.outStream
@@ -209,6 +207,7 @@ public class Br4cpCLI {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void minimize(String line) throws Exception {
 		muses.reset();
 		IVecInt assumptions = new VecInt();
@@ -229,8 +228,11 @@ public class Br4cpCLI {
 				for (int p : model) {
 					if (p > 0) {
 						varName = varMap.getConfigVar(p);
-						if (varName!=null) {
-							if (varName.contains(".")&&!varName.contains("Serie")&&!varName.contains("Pack")&&!varName.contains("Option")) {
+						if (varName != null) {
+							if (varName.contains(".")
+									&& !varName.contains("Serie")
+									&& !varName.contains("Pack")
+									&& !varName.contains("Option")) {
 								varName = varName.replace(".", "=");
 							}
 							this.outStream.print(varName + " ");
