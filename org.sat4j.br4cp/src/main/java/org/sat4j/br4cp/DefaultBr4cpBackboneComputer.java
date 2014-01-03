@@ -198,4 +198,9 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		return this.solverAssumptions;
 	}
 
+	@Override
+	public int getNumberOfSATCalls() {
+		return Backbone.instance().getNumberOfSatCalls();
+	}
+
 }

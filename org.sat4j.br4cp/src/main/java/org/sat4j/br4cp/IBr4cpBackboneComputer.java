@@ -97,5 +97,12 @@ public interface IBr4cpBackboneComputer {
 	 * @return the solver variables in the assumption stack
 	 */
 	public List<Set<Integer>> getSolverAssumptions();
+	
+	/**
+	 * Returns the number of SAT calls needed to compute the backbone.
+	 * 
+	 * @return the numbers of calls to the underlying SAT solver.
+	 */
+	public int getNumberOfSATCalls();
 
 }
