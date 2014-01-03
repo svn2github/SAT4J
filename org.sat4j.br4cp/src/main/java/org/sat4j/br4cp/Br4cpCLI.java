@@ -209,6 +209,11 @@ public class Br4cpCLI {
 
 	@SuppressWarnings("unused")
 	private void minimize(String line) throws Exception {
+		if (optimizer.getObjectiveFunction()==null) {
+			this.outStream
+			.println("nothing to minimize. requires a price file.");
+			return;
+		}
 		muses.reset();
 		IVecInt assumptions = new VecInt();
 		for (Set<Integer> assumpsSet : this.backboneComputer
