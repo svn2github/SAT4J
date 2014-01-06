@@ -30,6 +30,8 @@
 package org.sat4j.minisat.constraints.card;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.VecInt;
@@ -393,7 +395,19 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
     }
 
     public int getAssertionLevel(IVecInt trail, int decisionLevel) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        int nUnsat = 0;
+        Set<Integer> litsSet = new HashSet<Integer>();
+        for (Integer i : this.lits)
+            litsSet.add(i);
+        for (int i = 0; i < trail.size(); ++i) {
+            int lit = trail.get(i);
+            if (litsSet.contains(lit) && voc.isFalsified(lit)) {
+                ++nUnsat;
+                if (nUnsat == maxUnsatisfied)
+                    return i;
+            }
+        }
+        return -1;
     }
 
     public String toString(VarMapper mapper) {
