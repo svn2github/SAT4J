@@ -400,11 +400,10 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         for (Integer i : this.lits)
             litsSet.add(i);
         for (int i = 0; i < trail.size(); ++i) {
-            int lit = trail.get(i);
-            if (litsSet.contains(lit) && voc.isFalsified(lit)) {
+            if (litsSet.contains(trail.get(i) ^ 1)) {
                 ++nUnsat;
-                if (nUnsat == maxUnsatisfied)
-                    return i;
+                if (nUnsat == this.maxUnsatisfied)
+                    return i + 1;
             }
         }
         return -1;

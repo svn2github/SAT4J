@@ -711,16 +711,14 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
     public int getAssertionLevel(IVecInt trail, int decisionLevel) {
         int nUnsat = 0;
-        int maxUnsat = lits.length - degree;
         Set<Integer> litsSet = new HashSet<Integer>();
         for (Integer i : this.lits)
             litsSet.add(i);
         for (int i = 0; i < trail.size(); ++i) {
-            int lit = trail.get(i);
-            if (litsSet.contains(lit) && voc.isFalsified(lit)) {
+            if (litsSet.contains(trail.get(i) ^ 1)) {
                 ++nUnsat;
-                if (nUnsat == maxUnsat)
-                    return i;
+                if (nUnsat == this.maxUnsatisfied)
+                    return i + 1;
             }
         }
         return -1;
