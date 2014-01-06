@@ -35,6 +35,7 @@ import java.util.Map;
 
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -382,5 +383,10 @@ public final class MaxWatchPbLong extends WatchPbLong {
         }
         return true;
 
+    }
+
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("To be done");
     }
 }

@@ -33,6 +33,7 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.UnitPropagationListener;
 
 /**
@@ -483,4 +484,8 @@ public class MinWatchPbLongCP extends WatchPbLongCP {
         return maxCoef;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("To be done");
+    }
 }

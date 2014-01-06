@@ -707,6 +707,10 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
         throw new UnsupportedOperationException("Not implemented yet!");
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
     public String toString(VarMapper mapper) {
         if (mapper == null) {
             return toString();

@@ -1172,6 +1172,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
     }
 
+    protected void cancelUntilTrailLevel(int level) {
+        while (!trail.isEmpty() && trail.size() > level) {
+            undoOne();
+            if (trailLim.last() == trail.size()) {
+                trailLim.pop();
+            }
+        }
+    }
+
     private final Pair analysisResult = new Pair();
 
     private boolean[] userbooleanmodel;
@@ -1191,8 +1200,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             this.slistener.beginLoop();
             // propagate unit clauses and other constraints
             Constr confl = propagate();
-            if (this.trail.size() != this.qhead)
-                System.out.println("stop");
             assert this.trail.size() == this.qhead;
 
             if (confl == null) {
@@ -1205,6 +1212,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 assert nAssigns() <= this.voc.realnVars();
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
+                    System.out.println(new VecInt(model));
                     this.slistener.solutionFound(
                             (this.fullmodel != null) ? this.fullmodel
                                     : this.model, this);
@@ -1212,7 +1220,24 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                         cancelUntil(this.rootLevel);
                         return Lbool.TRUE;
                     } else {
-                        confl = this.sharedConflict;
+                        // this.sharedConflict;
+                        if (decisionLevel() == rootLevel) {
+                            confl = this.sharedConflict;
+                            this.sharedConflict = null;
+                        } else {
+                            int begin = trail.size();
+                            int level = this.sharedConflict.getAssertionLevel(
+                                    trail, decisionLevel());
+                            cancelUntilTrailLevel(level);
+                            this.qhead = this.trail.size();
+                            System.out
+                                    .printf("Asserting after backjumping %d assignments \n",
+                                            begin - trail.size());
+                            this.sharedConflict.assertConstraint(this);
+                            this.sharedConflict = null;
+
+                            continue;
+                        }
                     }
                 } else {
                     if (this.restarter.shouldRestart()) {
@@ -1289,10 +1314,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 cancelUntil(backjumpLevel);
                 if (backjumpLevel == this.rootLevel) {
                     this.restarter.onBackjumpToRootLevel();
-                }
-                if (confl == this.sharedConflict) {
-                    this.sharedConflict.assertConstraintIfNeeded(this);
-                    this.sharedConflict = null;
                 }
                 assert decisionLevel() >= this.rootLevel
                         && decisionLevel() >= this.analysisResult.backtrackLevel;
@@ -2332,12 +2353,36 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
     };
 
+    private final Comparator<Integer> trailComparator() {
+        return new Comparator<Integer>() {
+
+            private final Map<Integer, Integer> trailLevel = new HashMap<Integer, Integer>();
+            {
+                for (int i = 0; i < trail.size(); i++) {
+                    trailLevel.put(var(trail.get(i)), i);
+                }
+            }
+
+            public int compare(Integer i1, Integer i2) {
+                Integer trail1 = trailLevel.get(Math.abs(i1));
+                Integer trail2 = trailLevel.get(Math.abs(i2));
+                if (trail1 == null) {
+                    return -1;
+                }
+                if (trail2 == null) {
+                    return -1;
+                }
+                return trail2 - trail1;
+            }
+        };
+    }
+
     public IConstr addClauseOnTheFly(int[] literals) {
         List<Integer> lliterals = new ArrayList<Integer>();
         for (Integer d : literals) {
             lliterals.add(d);
         }
-        Collections.sort(lliterals, dimacsLevel);
+        Collections.sort(lliterals, trailComparator());
         IVecInt clause = new VecInt(literals.length);
         for (int d : lliterals) {
             clause.push(LiteralsUtils.toInternal(d));
@@ -2345,15 +2390,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.sharedConflict = this.dsfactory.createUnregisteredClause(clause);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
-        IVecInt reason = new VecInt();
-        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        Set<Integer> subset = fromLastDecisionLevel(reason);
-        while (!trail.isEmpty() && !subset.contains(trail.last())) {
-            undoOne();
-            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
-                trailLim.pop();
-            }
-        }
         return this.sharedConflict;
     }
 
@@ -2377,17 +2413,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                         - degree);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
-        // backtrack to the first decision level with a reason
-        // for falsifying that constraint
-        IVecInt reason = new VecInt();
-        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail, reason);
-        Set<Integer> subset = fromLastDecisionLevel(reason);
-        while (!trail.isEmpty() && !subset.contains(trail.last())) {
-            undoOne();
-            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
-                trailLim.pop();
-            }
-        }
         return this.sharedConflict;
     }
 

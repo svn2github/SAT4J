@@ -30,16 +30,12 @@
 package org.sat4j.pb.core;
 
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.ConflictTimer;
 import org.sat4j.minisat.core.ConflictTimerAdapter;
-import org.sat4j.minisat.core.ILits;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearnedConstraintsDeletionStrategy;
 import org.sat4j.minisat.core.LearningStrategy;
@@ -175,21 +171,21 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
                 .createUnregisteredAtMostConstraint(vlits, coefs, degree);
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
-        // backtrack to the first decision level with a reason
-        // for falsifying that constraint
-        IVecInt outReason = new VecInt();
-        this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail,
-                outReason);
-        Set<Integer> subset = new HashSet<Integer>();
-        for (IteratorInt it = outReason.iterator(); it.hasNext();) {
-            subset.add(it.next());
-        }
-        while (!trail.isEmpty() && !subset.contains(trail.last())) {
-            undoOne();
-            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
-                trailLim.pop();
-            }
-        }
+        // // backtrack to the first decision level with a reason
+        // // for falsifying that constraint
+        // IVecInt outReason = new VecInt();
+        // this.sharedConflict.calcReasonOnTheFly(ILits.UNDEFINED, trail,
+        // outReason);
+        // Set<Integer> subset = new HashSet<Integer>();
+        // for (IteratorInt it = outReason.iterator(); it.hasNext();) {
+        // subset.add(it.next());
+        // }
+        // while (!trail.isEmpty() && !subset.contains(trail.last())) {
+        // undoOne();
+        // if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
+        // trailLim.pop();
+        // }
+        // }
         return this.sharedConflict;
     }
 

@@ -144,6 +144,10 @@ public class UnitClauses implements Constr {
         return true;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
     public String toString(VarMapper mapper) {
         throw new UnsupportedOperationException("Not implemented yet!");
     }

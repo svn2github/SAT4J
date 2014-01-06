@@ -481,6 +481,10 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
         throw new UnsupportedOperationException("Not implemented yet!");
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
     public String toString(VarMapper mapper) {
         StringBuffer stb = new StringBuffer();
 
@@ -501,5 +505,4 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
         }
         return stb.toString();
     }
-
 }

@@ -204,4 +204,23 @@ public interface Constr extends IConstr {
      * @since 2.3.6
      */
     boolean isSatisfied();
+
+    /**
+     * Returns the level at which a constraint becomes assertive. Note that if a
+     * constraint can propagate multiple times, such method should return the
+     * first decision level at which the clause is assertive. Note that the
+     * implementation of isAssertive must be in sync with
+     * {@link #assertConstraint(UnitPropagationListener)} since the usual step
+     * after detecting that a constraint is assertive will be to assert it.
+     * 
+     * @param trail
+     *            the internal solver trail
+     * @param decisionLevel
+     *            the current decision level
+     * @return the decision level under which the constraint becomes assertive,
+     *         else -1.
+     * @since 2.3.6
+     * @see #canBePropagatedMultipleTimes()
+     */
+    int getAssertionLevel(IVecInt trail, int decisionLevel);
 }

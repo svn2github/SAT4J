@@ -392,6 +392,10 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         return false;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
     public String toString(VarMapper mapper) {
         StringBuffer stb = new StringBuffer();
         for (int lit : this.lits) {

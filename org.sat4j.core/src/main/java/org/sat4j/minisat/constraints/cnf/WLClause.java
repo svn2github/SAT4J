@@ -29,6 +29,8 @@
  *******************************************************************************/
 package org.sat4j.minisat.constraints.cnf;
 
+import static org.sat4j.core.LiteralsUtils.var;
+
 import java.io.Serializable;
 
 import org.sat4j.core.LiteralsUtils;
@@ -304,4 +306,12 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
         return false;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        for (int i = trail.size() - 1; i >= 0; i--) {
+            if (var(trail.get(i)) == var(this.lits[0])) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

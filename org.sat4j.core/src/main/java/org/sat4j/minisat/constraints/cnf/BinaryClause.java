@@ -269,6 +269,15 @@ public abstract class BinaryClause implements Propagatable, Constr,
         return false;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        int hlevel = voc.getLevel(this.head);
+        int tlevel = voc.getLevel(this.tail);
+        if (hlevel > tlevel) {
+            return tlevel;
+        }
+        return hlevel;
+    }
+
     public String toString(VarMapper mapper) {
         if (mapper == null) {
             return toString();

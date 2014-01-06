@@ -673,7 +673,6 @@ public abstract class WatchPb implements IWatchPb, Propagatable, Undoable,
     public boolean isSatisfied() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
-
     public String toString(VarMapper mapper) {
         StringBuffer stb = new StringBuffer();
 

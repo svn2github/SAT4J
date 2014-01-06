@@ -64,8 +64,7 @@ public final class LearntWLClause extends WLClause {
         int l = this.lits[1];
         this.lits[1] = this.lits[maxi];
         this.lits[maxi] = l;
-
-        // ajoute la clause a la liste des clauses control???es.
+        // add really the clause inside the solver
         this.voc.watch(this.lits[0] ^ 1, this);
         this.voc.watch(this.lits[1] ^ 1, this);
 

@@ -154,6 +154,10 @@ public class UnitClause implements Constr {
         return true;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        return 0;
+    }
+
     public String toString(VarMapper mapper) {
         if (mapper == null) {
             return toString();

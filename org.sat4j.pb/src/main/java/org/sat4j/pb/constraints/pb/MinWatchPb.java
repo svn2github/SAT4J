@@ -33,6 +33,7 @@ import java.math.BigInteger;
 
 import org.sat4j.minisat.core.ILits;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
 
@@ -487,5 +488,10 @@ public class MinWatchPb extends WatchPb {
     public boolean propagatePI(MandatoryLiteralListener l, int p) {
         throw new UnsupportedOperationException("Not implemented yet!");
 
+    }
+
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("To be done");
     }
 }

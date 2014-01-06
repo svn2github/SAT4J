@@ -340,6 +340,15 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
         return false;
     }
 
+    public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+        int hlevel = voc.getLevel(this.head);
+        int tlevel = voc.getLevel(this.tail);
+        if (hlevel > tlevel) {
+            return tlevel;
+        }
+        return hlevel;
+    }
+
     public String toString(VarMapper mapper) {
         StringBuffer stb = new StringBuffer();
         stb.append(mapper.map(LiteralsUtils.toDimacs(this.head)));
