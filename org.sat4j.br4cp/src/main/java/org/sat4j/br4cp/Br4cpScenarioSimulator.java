@@ -35,7 +35,8 @@ public class Br4cpScenarioSimulator {
 
 	private PrintStream outStream = System.out;
 	private int totalNumberofSATCalls;
-
+	private int overalTotalNumberOfSATCalls;
+	
 	public Br4cpScenarioSimulator(String instance, String scenario)
 			throws IOException, TimeoutException {
 		solver = muses.getSolverInstance();
@@ -55,6 +56,7 @@ public class Br4cpScenarioSimulator {
 		BufferedReader reader = new BufferedReader(new FileReader(scenario));
 		String line;
 		currentScenarioIndex = 0;
+		overalTotalNumberOfSATCalls = 0;
 		while ((line = reader.readLine()) != null) {
 			if ("".equals(line.trim())) {
 				continue;
@@ -84,10 +86,13 @@ public class Br4cpScenarioSimulator {
 					scenarioProcessingTime / 1000.);
 			this.outStream.printf("Total number of SAT calls: %d%n",
 					totalNumberofSATCalls);
+			overalTotalNumberOfSATCalls += totalNumberofSATCalls;
 		}
 		this.outStream.printf(this.solver.getLogPrefix()
 				+ "solving done in %.3fs.\n",
 				(System.currentTimeMillis() - startTime) / 1000.);
+		this.outStream.printf("Total number of SAT calls for the scenario: %d%n",
+				overalTotalNumberOfSATCalls);
 		reader.close();
 	}
 
