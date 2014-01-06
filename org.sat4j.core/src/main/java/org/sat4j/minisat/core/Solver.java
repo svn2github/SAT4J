@@ -1212,7 +1212,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 assert nAssigns() <= this.voc.realnVars();
                 if (nAssigns() == this.voc.realnVars()) {
                     modelFound();
-                    System.out.println(new VecInt(model));
                     this.slistener.solutionFound(
                             (this.fullmodel != null) ? this.fullmodel
                                     : this.model, this);
