@@ -496,7 +496,13 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
     }
 
     public void assertConstraint(UnitPropagationListener s) {
-        throw new UnsupportedOperationException();
+        boolean ret = true;
+        for (Integer lit : this.lits) {
+            if (this.voc.isUnassigned(lit)) {
+                ret &= s.enqueue(lit, this);
+            }
+        }
+        assert ret == true;
     }
 
     public void assertConstraintIfNeeded(UnitPropagationListener s) {
