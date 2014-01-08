@@ -30,6 +30,7 @@
 package org.sat4j.minisat.constraints.cnf;
 
 import static org.sat4j.core.LiteralsUtils.neg;
+import static org.sat4j.core.LiteralsUtils.var;
 
 import java.io.Serializable;
 
@@ -341,12 +342,12 @@ public abstract class HTClause implements Propagatable, Constr, Serializable {
     }
 
     public int getAssertionLevel(IVecInt trail, int decisionLevel) {
-        int hlevel = voc.getLevel(this.head);
-        int tlevel = voc.getLevel(this.tail);
-        if (hlevel > tlevel) {
-            return tlevel;
+        for (int i = trail.size() - 1; i >= 0; i--) {
+            if (var(trail.get(i)) == var(this.head)) {
+                return i;
+            }
         }
-        return hlevel;
+        return -1;
     }
 
     public String toString(VarMapper mapper) {

@@ -409,7 +409,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
             if (litsSet.contains(trail.get(i) ^ 1)) {
                 ++nUnsat;
                 if (nUnsat == this.maxUnsatisfied)
-                    return voc.getLevel(trail.get(i));
+                    return i;
             }
         }
         return -1;
