@@ -700,8 +700,8 @@ public class ConflictMap extends MapPb implements IConflict {
     public int oldGetBacktrackLevel(int maxLevel) {
         int litLevel;
         int borneMax = maxLevel;
-        assert isAssertive(borneMax);
-        assert oldIsAssertive(borneMax);
+        // assert isAssertive(borneMax);
+        // assert oldIsAssertive(borneMax);
         int borneMin = -1;
         // borneMax is the highest level in the search tree where the constraint
         // is assertive

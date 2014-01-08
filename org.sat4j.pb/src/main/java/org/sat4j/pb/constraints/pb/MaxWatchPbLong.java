@@ -31,13 +31,17 @@ package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.sat4j.minisat.core.ILits;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.MandatoryLiteralListener;
 import org.sat4j.specs.UnitPropagationListener;
+import org.sat4j.specs.VarMapper;
 
 /**
  * Data structure for pseudo-boolean constraint with watched literals.
@@ -386,7 +390,201 @@ public final class MaxWatchPbLong extends WatchPbLong {
     }
 
     public int getAssertionLevel(IVecInt trail, int decisionLevel) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("To be done");
+        WatchPbLongPbConstrDecorator decorator = new WatchPbLongPbConstrDecorator(
+                this);
+        IConflict cm = ConflictMap.createConflict(decorator, decisionLevel,
+                false);
+        int backtrackDL = cm.getBacktrackLevel(decisionLevel);
+        System.out.println("btdl=" + backtrackDL);
+        Set<Integer> litsSet = new HashSet<Integer>();
+        for (Integer i : this.lits)
+            litsSet.add(i);
+        for (int i = 0; i < trail.size(); ++i) {
+            if (litsSet.contains(trail.get(i) ^ 1)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private class WatchPbLongPbConstrDecorator implements PBConstr {
+
+        private final WatchPbLong cstr;
+
+        public WatchPbLongPbConstrDecorator(WatchPbLong cstr) {
+            this.cstr = cstr;
+        }
+
+        public boolean propagatePI(MandatoryLiteralListener l, int p) {
+            return cstr.propagatePI(l, p);
+        }
+
+        public boolean isAssertive(int dl) {
+            return cstr.isAssertive(dl);
+        }
+
+        public void calcReason(int p, IVecInt outReason) {
+            cstr.calcReason(p, outReason);
+        }
+
+        public int get(int i) {
+            return cstr.get(i);
+        }
+
+        public double getActivity() {
+            return cstr.getActivity();
+        }
+
+        public int getAssertionLevel(IVecInt trail, int decisionLevel) {
+            return cstr.getAssertionLevel(trail, decisionLevel);
+        }
+
+        public void incActivity(double claInc) {
+            cstr.incActivity(claInc);
+        }
+
+        public void setActivity(double d) {
+            cstr.setActivity(d);
+        }
+
+        public long slackConstraint() {
+            return cstr.slackConstraint();
+        }
+
+        public long slackConstraint(long[] theCoefs, long theDegree) {
+            return cstr.slackConstraint(theCoefs, theDegree);
+        }
+
+        public long computeLeftSide(long[] theCoefs) {
+            return cstr.computeLeftSide(theCoefs);
+        }
+
+        public long computeLeftSide() {
+            return cstr.computeLeftSide();
+        }
+
+        public boolean learnt() {
+            return cstr.learnt();
+        }
+
+        public boolean locked() {
+            return cstr.locked();
+        }
+
+        public void rescaleBy(double d) {
+            cstr.rescaleBy(d);
+        }
+
+        public void setLearnt() {
+            cstr.setLearnt();
+        }
+
+        public boolean simplify() {
+            return cstr.simplify();
+        }
+
+        public final int size() {
+            return cstr.size();
+        }
+
+        @Override
+        public String toString() {
+            return cstr.toString();
+        }
+
+        public void assertConstraint(UnitPropagationListener s) {
+            cstr.assertConstraint(s);
+        }
+
+        public void assertConstraintIfNeeded(UnitPropagationListener s) {
+            cstr.assertConstraintIfNeeded(s);
+        }
+
+        public void register() {
+            cstr.register();
+        }
+
+        public int[] getLits() {
+            return cstr.getLits();
+        }
+
+        public ILits getVocabulary() {
+            return cstr.getVocabulary();
+        }
+
+        public IVecInt computeAnImpliedClause() {
+            return cstr.computeAnImpliedClause();
+        }
+
+        public boolean coefficientsEqualToOne() {
+            return cstr.coefficientsEqualToOne();
+        }
+
+        @Override
+        public boolean equals(Object pb) {
+            return cstr.equals(pb);
+        }
+
+        @Override
+        public int hashCode() {
+            return cstr.hashCode();
+        }
+
+        public void forwardActivity(double claInc) {
+            cstr.forwardActivity(claInc);
+        }
+
+        public void remove(UnitPropagationListener upl) {
+            cstr.remove(upl);
+        }
+
+        public boolean propagate(UnitPropagationListener s, int p) {
+            return cstr.propagate(s, p);
+        }
+
+        public void undo(int p) {
+            cstr.undo(p);
+        }
+
+        public boolean canBePropagatedMultipleTimes() {
+            return cstr.canBePropagatedMultipleTimes();
+        }
+
+        public Constr toConstraint() {
+            return cstr.toConstraint();
+        }
+
+        public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+            cstr.calcReasonOnTheFly(p, trail, outReason);
+        }
+
+        public boolean canBeSatisfiedByCountingLiterals() {
+            return cstr.canBeSatisfiedByCountingLiterals();
+        }
+
+        public int requiredNumberOfSatisfiedLiterals() {
+            return cstr.requiredNumberOfSatisfiedLiterals();
+        }
+
+        public boolean isSatisfied() {
+            return cstr.isSatisfied();
+        }
+
+        public String toString(VarMapper mapper) {
+            return cstr.toString(mapper);
+        }
+
+        public BigInteger getCoef(int literal) {
+            return cstr.getCoef(literal);
+        }
+
+        public BigInteger getDegree() {
+            return cstr.getDegree();
+        }
+
+        public BigInteger[] getCoefs() {
+            return cstr.getCoefs();
+        }
+
     }
 }

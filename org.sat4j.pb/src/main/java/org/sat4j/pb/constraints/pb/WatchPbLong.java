@@ -694,4 +694,20 @@ public abstract class WatchPbLong implements Propagatable, Constr, Undoable,
         }
         return stb.toString();
     }
+
+    public BigInteger getCoef(int literal) {
+        return BigInteger.valueOf(this.coefs[literal]);
+    }
+
+    public BigInteger getDegree() {
+        return BigInteger.valueOf(this.degree);
+    }
+
+    public BigInteger[] getCoefs() {
+        BigInteger res[] = new BigInteger[this.coefs.length];
+        for (int i = 0; i < this.coefs.length; ++i) {
+            res[i] = BigInteger.valueOf(this.coefs[i]);
+        }
+        return res;
+    }
 }
