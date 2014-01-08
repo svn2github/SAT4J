@@ -1172,15 +1172,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
     }
 
-    protected void cancelUntilTrailLevel(int level) {
-        while (!trail.isEmpty() && trail.size() > level) {
-            undoOne();
-            if (trailLim.last() == trail.size()) {
-                trailLim.pop();
-            }
-        }
-    }
-
     private final Pair analysisResult = new Pair();
 
     private boolean[] userbooleanmodel;
@@ -1224,18 +1215,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                             confl = this.sharedConflict;
                             this.sharedConflict = null;
                         } else {
-                            int begin = trail.size();
                             int level = this.sharedConflict.getAssertionLevel(
                                     trail, decisionLevel());
-                            cancelUntilTrailLevel(level);
+                            cancelUntil(level);
                             this.qhead = this.trail.size();
-                            System.out
-                                    .printf("Asserting after backjumping %d assignments \n",
-                                            begin - trail.size());
-                            this.sharedConflict.assertConstraint(this);
+                            confl = this.sharedConflict;
                             this.sharedConflict = null;
-
-                            continue;
                         }
                     }
                 } else {
