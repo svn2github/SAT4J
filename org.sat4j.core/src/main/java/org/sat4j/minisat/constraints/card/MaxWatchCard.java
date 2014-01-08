@@ -498,7 +498,7 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
             if (litsSet.contains(trail.get(i) ^ 1)) {
                 ++nUnsat;
                 if (nUnsat == this.lits.length - this.degree)
-                    return i + 1;
+                    return voc.getLevel(trail.get(i));
             }
         }
         return -1;

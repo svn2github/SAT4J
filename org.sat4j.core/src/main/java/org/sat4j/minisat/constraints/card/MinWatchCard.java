@@ -724,7 +724,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
             if (litsSet.contains(trail.get(i) ^ 1)) {
                 ++nUnsat;
                 if (nUnsat == this.maxUnsatisfied)
-                    return i + 1;
+                    return voc.getLevel(trail.get(i));
             }
         }
         return -1;

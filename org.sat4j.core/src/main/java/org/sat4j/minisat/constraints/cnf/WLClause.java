@@ -309,7 +309,7 @@ public abstract class WLClause implements Propagatable, Constr, Serializable {
     public int getAssertionLevel(IVecInt trail, int decisionLevel) {
         for (int i = trail.size() - 1; i >= 0; i--) {
             if (var(trail.get(i)) == var(this.lits[0])) {
-                return i;
+                return voc.getLevel(trail.get(i));
             }
         }
         return -1;
