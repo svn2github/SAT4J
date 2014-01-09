@@ -22,51 +22,68 @@ import org.sat4j.tools.Backbone;
  * @author lonca
  */
 public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
-	
+
 	private ISolver solver;
 	private ConfigVarMap varMap;
 	private List<Set<Integer>> solverAssumptions = new ArrayList<Set<Integer>>();
 	private Set<String> fixedVars = new HashSet<String>();
-	
+
 	private Set<String> propagatedConfigVars;
 	private Set<String> domainReductions;
 	private Set<String> propagatedAdditionalVars;
 	private Set<String> unavailableAdditionalVars;
 
-	public DefaultBr4cpBackboneComputer(ISolver solver, ConfigVarMap varMap) throws TimeoutException{
+	private IVecInt filter;
+	public DefaultBr4cpBackboneComputer(ISolver solver, ConfigVarMap varMap)
+			throws TimeoutException {
 		this.solver = solver;
 		this.varMap = varMap;
+		filter = new VecInt(solver.nVars());
+		for (int i = 1; i <= solver.nVars(); i++) {
+			if (varMap.isConfigVar(i)) {
+				filter.push(i);
+			}
+		}
 		computeBackbone(solver);
 	}
-	
+
 	protected void computeBackbone(ISolver solver) throws TimeoutException {
 		IVecInt assumps = new VecInt();
-		for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it
-				.hasNext();) {
-			for (Iterator<Integer> it2 = it.next().iterator(); it2.hasNext();)
-				assumps.push(it2.next());
-		}
-		IVecInt backbone = Backbone.instance().compute(solver, assumps);
-		if (backbone.isEmpty()) {
-			if (this.solverAssumptions.isEmpty()) {
-				throw new IllegalStateException("The formula is unsat!");
-			} 
-			Set<Integer> removed = this.solverAssumptions.remove(this.solverAssumptions.size()-1);
-			for(Iterator<Integer> it = removed.iterator(); it.hasNext(); ) {
-				String nextVar = this.varMap.getConfigVar(Math.abs(it.next()));
-				this.fixedVars.remove(nextVar.substring(0, nextVar.lastIndexOf('.')));
+			for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it
+					.hasNext();) {
+				for (Iterator<Integer> it2 = it.next().iterator(); it2
+						.hasNext();)
+					assumps.push(it2.next());
 			}
-			throw new IllegalArgumentException("last assumption implies a contradiction");
+		try {
+			IVecInt backbone = Backbone.instance().compute(solver, assumps,
+					filter);
+			computePropagationsAndReductions(backbone);
+		} catch (IllegalArgumentException ise) {
+			if (this.solverAssumptions.isEmpty()) {
+				throw ise;
+			}
+			Set<Integer> removed = this.solverAssumptions
+					.remove(this.solverAssumptions.size() - 1);
+			for (Iterator<Integer> it = removed.iterator(); it.hasNext();) {
+				String nextVar = this.varMap.getConfigVar(Math.abs(it.next()));
+				this.fixedVars.remove(nextVar.substring(0,
+						nextVar.lastIndexOf('.')));
+			}
+			throw new IllegalArgumentException(
+					"last assumption implies a contradiction");
 		}
-		computePropagationsAndReductions(backbone);
 	}
 
 	private void computePropagationsAndReductions(IVecInt backbone) {
-		this.propagatedConfigVars = new TreeSet<String>(new ConfigVarComparator());
+		this.propagatedConfigVars = new TreeSet<String>(
+				new ConfigVarComparator());
 		this.domainReductions = new TreeSet<String>(new ConfigVarComparator());
-		this.propagatedAdditionalVars = new TreeSet<String>(new ConfigVarComparator());
-		this.unavailableAdditionalVars = new TreeSet<String>(new ConfigVarComparator());
-		for(IteratorInt it = backbone.iterator(); it.hasNext(); ) {
+		this.propagatedAdditionalVars = new TreeSet<String>(
+				new ConfigVarComparator());
+		this.unavailableAdditionalVars = new TreeSet<String>(
+				new ConfigVarComparator());
+		for (IteratorInt it = backbone.iterator(); it.hasNext();) {
 			int next = it.next();
 			if ((next > 0) && this.varMap.isConfigVar(next)) {
 				String name = this.varMap.getConfigVar(next);
@@ -75,24 +92,26 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 						+ name.substring(lastDotIndex + 1);
 				this.fixedVars.add(name.substring(0, lastDotIndex));
 				this.propagatedConfigVars.add(name);
-			}else if ((next < 0) && this.varMap.isConfigVar(next)) {
+			} else if ((next < 0) && this.varMap.isConfigVar(next)) {
 				String name = this.varMap.getConfigVar(-next);
 				int lastDotIndex = name.lastIndexOf('.');
 				name = name.substring(0, lastDotIndex) + "="
 						+ name.substring(lastDotIndex + 1);
 				this.domainReductions.add(name);
-			}else if(this.varMap.isAdditionalVar(next)) {
-				String name = this.varMap.getConfigVar(Math.abs(next))+"=1";
-				if(next < 0) {
+			} else if (this.varMap.isAdditionalVar(next)) {
+				String name = this.varMap.getConfigVar(Math.abs(next)) + "=1";
+				if (next < 0) {
 					this.unavailableAdditionalVars.add(name);
-				}else{
+				} else {
 					this.propagatedAdditionalVars.add(name);
 				}
 			}
 		}
-		for(Iterator<String> it = this.domainReductions.iterator(); it.hasNext(); ) {
+		for (Iterator<String> it = this.domainReductions.iterator(); it
+				.hasNext();) {
 			String next = it.next();
-			if(this.fixedVars.contains(next.substring(0, next.lastIndexOf('=')))){
+			if (this.fixedVars
+					.contains(next.substring(0, next.lastIndexOf('=')))) {
 				it.remove();
 			}
 		}
@@ -114,21 +133,23 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			computeBackbone(solver);
 		} else {
 			throw new IllegalArgumentException(configVar + " is not defined");
-		}		
+		}
 	}
 
 	private void removeAssumedConfigVar(String configVarName) {
 		this.fixedVars = new HashSet<String>();
 		boolean found = false;
-		for(Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); !found && it.hasNext(); ) {
+		for (Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); !found
+				&& it.hasNext();) {
 			Set<Integer> nextSet = it.next();
-			for(Iterator<Integer> it2 = nextSet.iterator(); it2.hasNext(); ) {
+			for (Iterator<Integer> it2 = nextSet.iterator(); it2.hasNext();) {
 				String nextVar = this.varMap.getConfigVar(Math.abs(it2.next()));
-				String nextVarName = nextVar.substring(0, nextVar.lastIndexOf('.'));
-				if(configVarName.equals(nextVarName)) {
+				String nextVarName = nextVar.substring(0,
+						nextVar.lastIndexOf('.'));
+				if (configVarName.equals(nextVarName)) {
 					it.remove();
 					break;
-				}else{
+				} else {
 					this.fixedVars.add(nextVarName);
 				}
 			}
@@ -143,7 +164,8 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			newAssumps.add(-this.varMap.getSolverVar(s));
 		}
 		this.solverAssumptions.add(newAssumps);
-		this.fixedVars.add(optConfigVar.substring(0, optConfigVar.lastIndexOf('.')));
+		this.fixedVars.add(optConfigVar.substring(0,
+				optConfigVar.lastIndexOf('.')));
 		computeBackbone(solver);
 	}
 
@@ -189,7 +211,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	public Set<String> propagatedAdditionalVars() {
 		return this.propagatedAdditionalVars;
 	}
-	
+
 	public Set<String> unavailableAdditionalVars() {
 		return this.unavailableAdditionalVars;
 	}

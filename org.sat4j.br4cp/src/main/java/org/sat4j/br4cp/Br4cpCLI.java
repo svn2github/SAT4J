@@ -46,8 +46,8 @@ public class Br4cpCLI {
 		backboneComputer = Options.getInstance().getBackboneComputer(solver,
 				varMap);
 		printAsserted(backboneComputer, "rootPropagated:", "rootReduced:");
-		this.outStream.printf("done in %.3fs.\n\n",
-				(System.currentTimeMillis() - startTime) / 1000.);
+		this.outStream.printf("done in %.3fs with %d SAT calls.%n%n",
+				(System.currentTimeMillis() - startTime) / 1000.,backboneComputer.getNumberOfSATCalls());
 		runCLI();
 	}
 

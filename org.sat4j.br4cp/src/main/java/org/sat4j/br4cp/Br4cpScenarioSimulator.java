@@ -62,7 +62,6 @@ public class Br4cpScenarioSimulator {
 				continue;
 			}
 			++currentScenarioIndex;
-			backboneComputer.clearAssumptions();
 			this.nbRemovedValues = new ArrayList<Integer>();
 			this.nbRemovedValues.add(Integer.valueOf(backboneComputer
 					.domainReductions().size()));
@@ -87,6 +86,7 @@ public class Br4cpScenarioSimulator {
 			this.outStream.printf("Total number of SAT calls: %d%n",
 					totalNumberofSATCalls);
 			overalTotalNumberOfSATCalls += totalNumberofSATCalls;
+			backboneComputer.clearAssumptions();
 		}
 		this.outStream.printf(this.solver.getLogPrefix()
 				+ "solving done in %.3fs.\n",
@@ -115,6 +115,11 @@ public class Br4cpScenarioSimulator {
 				+ word);
 		String assump = word.replaceAll("_", ".");
 		assump = assump.replaceAll("=", ".");
+		Set<String> propagated = backboneComputer.propagatedConfigVars();
+		if (propagated.contains(assump)) {
+			this.outStream.println("Skipping "+assump);
+			return;
+		}
 		try {
 			if (this.varMap.isAdditionalVar(assump)) {
 				backboneComputer.addAdditionalVarAssumption(assump);
@@ -144,8 +149,8 @@ public class Br4cpScenarioSimulator {
 				.getNumberOfSATCalls());
 		totalNumberofSATCalls += backboneComputer
 				.getNumberOfSATCalls();
-		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
-				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
+//		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
+//				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
 		this.nbRemovedValues.add(Integer.valueOf(backboneComputer
 				.domainReductions().size()));
 	}
