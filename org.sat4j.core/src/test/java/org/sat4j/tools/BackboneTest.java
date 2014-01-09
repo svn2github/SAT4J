@@ -30,6 +30,7 @@
 package org.sat4j.tools;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class BackboneTest {
         assertEquals(0, backbone.size());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void testCaseWithUnsatProblem() throws ContradictionException,
             TimeoutException {
         ISolver solver = SolverFactory.newDefault();
@@ -101,7 +102,6 @@ public class BackboneTest {
         solver.addClause(clause);
         clause.clear();
         IVecInt backbone = Backbone.instance().compute(solver);
-        assertEquals(0, backbone.size());
     }
 
     /**
@@ -156,5 +156,31 @@ public class BackboneTest {
         assertEquals(vecInt3.size(), 2);
         assertTrue(vecInt3.contains(1));
         assertTrue(vecInt3.contains(3));
+    }
+
+    public void testFilter() throws ContradictionException, TimeoutException {
+        ISolver solver = SolverFactory.newDefault();
+        IVecInt clause = new VecInt();
+        clause.push(1).push(2).push(3);
+        solver.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(2).push(3);
+        solver.addClause(clause);
+        clause.clear();
+        clause.push(1).push(-2);
+        solver.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(-2);
+        solver.addClause(clause);
+        clause.clear();
+        IVecInt filter = new VecInt(new int[] { 1, 2 });
+        IVecInt backbone = Backbone.instance().compute(solver, filter);
+        assertEquals(1, backbone.size());
+        assertTrue(backbone.contains(-2));
+        assertFalse(backbone.contains(3));
+        backbone = Backbone.instance().compute(solver);
+        assertEquals(2, backbone.size());
+        assertTrue(backbone.contains(-2));
+        assertTrue(backbone.contains(3));
     }
 }
