@@ -29,8 +29,7 @@
  *******************************************************************************/
 package org.sat4j.tools;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.BitSet;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -51,39 +50,89 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class Backbone {
 
-    interface Backboner {
-        IVecInt compute(ISolver solver, int[] implicant, IVecInt assumptions)
-                throws TimeoutException;
-
-        int nbSatTests();
-    }
-
-    private static final Backboner BB = new Backboner() {
+    static abstract class Backboner {
         private int nbSatTests;
 
-        /**
-         * Computes the backbone of a formula following the iterative algorithm
-         * described in João Marques-Silva, Mikolás Janota, Inês Lynce: On
-         * Computing Backbones of Propositional Theories. ECAI 2010: 15-20 and
-         * using Sat4j specific prime implicant computation.
-         * 
-         * @param solver
-         * @return
-         * @throws TimeoutException
-         */
         public IVecInt compute(ISolver solver, int[] implicant,
                 IVecInt assumptions) throws TimeoutException {
             nbSatTests = 0;
-            Set<Integer> assumptionsSet = new HashSet<Integer>();
+            BitSet assumptionsSet = new BitSet(solver.nVars());
             for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
-                assumptionsSet.add(it.next());
+                assumptionsSet.set(Math.abs(it.next()));
             }
             IVecInt litsToTest = new VecInt();
             for (int p : implicant) {
-                if (!assumptionsSet.contains(p)) {
+                if (!assumptionsSet.get(Math.abs(p))) {
                     litsToTest.push(-p);
                 }
             }
+            return compute(solver, assumptions, litsToTest);
+        }
+
+        public int nbSatTests() {
+            return this.nbSatTests;
+        }
+
+        void incSatTests() {
+            nbSatTests++;
+        }
+
+        public IVecInt compute(ISolver solver, int[] implicant,
+                IVecInt assumptions, IVecInt filter) throws TimeoutException {
+            nbSatTests = 0;
+            BitSet assumptionsSet = new BitSet(solver.nVars());
+            for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
+                assumptionsSet.set(Math.abs(it.next()));
+            }
+            BitSet filterSet = new BitSet();
+            for (IteratorInt it = filter.iterator(); it.hasNext();) {
+                filterSet.set(Math.abs(it.next()));
+            }
+            IVecInt litsToTest = new VecInt();
+            for (int p : implicant) {
+                if (!assumptionsSet.get(Math.abs(p))
+                        && filterSet.get(Math.abs(p))) {
+                    litsToTest.push(-p);
+                }
+            }
+            return compute(solver, assumptions, litsToTest);
+        }
+
+        abstract IVecInt compute(ISolver solver, IVecInt assumptions,
+                IVecInt litsToTest) throws TimeoutException;
+
+        static void removeVarNotPresentAndSatisfiedLits(int[] implicant,
+                IVecInt litsToTest, int n) {
+            int[] marks = new int[n + 1];
+            for (int p : implicant) {
+                marks[p > 0 ? p : -p] = p;
+            }
+            int q, mark;
+            for (int i = 0; i < litsToTest.size();) {
+                q = litsToTest.get(i);
+                mark = marks[q > 0 ? q : -q];
+                if (mark == 0 || mark == q) {
+                    litsToTest.delete(i);
+                } else {
+                    i++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Computes the backbone of a formula following the iterative algorithm
+     * described in João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing
+     * Backbones of Propositional Theories. ECAI 2010: 15-20 and using Sat4j
+     * specific prime implicant computation.
+     * 
+     */
+    private static final Backboner BB = new Backboner() {
+
+        @Override
+        IVecInt compute(ISolver solver, IVecInt assumptions, IVecInt litsToTest)
+                throws TimeoutException {
+            int[] implicant;
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             int p;
@@ -99,43 +148,25 @@ public final class Backbone {
                 } else {
                     candidates.pop().push(-p);
                 }
-                nbSatTests++;
+                incSatTests();
             }
             return candidates;
-        }
-
-        public int nbSatTests() {
-            return this.nbSatTests;
         }
     };
 
     /**
      * Computes the backbone of a formula using the iterative approach found in
      * BB but testing a set of literals at once instead of only one. This
-     * approach outperforms BB in terms of SAT calls. Both approach are made
+     * approach outperforms BB in terms of SAT calls. Both approaches are made
      * available for testing purposes.
      * 
-     * @param solver
-     * @return
-     * @throws TimeoutException
      */
     private static final Backboner IBB = new Backboner() {
 
-        private int nbSatTests;
-
-        public IVecInt compute(ISolver solver, int[] implicant,
-                IVecInt assumptions) throws TimeoutException {
-            nbSatTests = 0;
-            Set<Integer> assumptionsSet = new HashSet<Integer>();
-            for (IteratorInt it = assumptions.iterator(); it.hasNext();) {
-                assumptionsSet.add(it.next());
-            }
-            IVecInt litsToTest = new VecInt();
-            for (int p : implicant) {
-                if (!assumptionsSet.contains(p)) {
-                    litsToTest.push(-p);
-                }
-            }
+        @Override
+        IVecInt compute(ISolver solver, IVecInt assumptions, IVecInt litsToTest)
+                throws TimeoutException {
+            int[] implicant;
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             IConstr constr;
@@ -161,13 +192,9 @@ public final class Backbone {
                     }
                     litsToTest.clear();
                 }
-                nbSatTests++;
+                incSatTests();
             }
             return candidates;
-        }
-
-        public int nbSatTests() {
-            return this.nbSatTests;
         }
     };
 
@@ -196,55 +223,99 @@ public final class Backbone {
     }
 
     /**
-     * Computes the backbone of a formula following the algorithm described in
-     * João Marques-Silva, Mikolás Janota, Inês Lynce: On Computing Backbones of
-     * Propositional Theories. ECAI 2010: 15-20
+     * Computes the backbone of a formula.
      * 
      * 
      * @param solver
+     *            a solver containing a satisfiable set of constraints.
      * @param assumptions
-     * @return
+     *            a set of literals to satisfy
+     * @return the backbone of the solver when the assumptions are satisfied
      * @throws TimeoutException
+     *             if the computation cannot be done within the timeout
+     * @throws IllegalArgumentException
+     *             if solver is unsatisfiable
      */
     public IVecInt compute(ISolver solver, IVecInt assumptions)
             throws TimeoutException {
         boolean result = solver.isSatisfiable(assumptions);
         if (!result) {
-            return VecInt.EMPTY;
+            throw new IllegalArgumentException("Formula is UNSAT!");
         }
-        return compute(solver, solver.primeImplicant(), assumptions);
+        return bb.compute(solver, solver.primeImplicant(), assumptions);
 
     }
 
+    /**
+     * Computes the backbone of a formula.
+     * 
+     * 
+     * @param solver
+     *            a solver containing a satisfiable set of constraints.
+     * @param assumptions
+     *            a set of literals to satisfy
+     * @param filter
+     *            a set of variables
+     * @return the backbone of the solver restricted to the variables of filter
+     *         when the assumptions are satisfied
+     * @throws TimeoutException
+     *             if the computation cannot be done within the timeout
+     * @throws IllegalArgumentException
+     *             if solver is unsatisfiable
+     */
+    public IVecInt compute(ISolver solver, IVecInt assumptions, IVecInt filter)
+            throws TimeoutException {
+        boolean result = solver.isSatisfiable(assumptions);
+        if (!result) {
+            throw new IllegalArgumentException("Formula is UNSAT!");
+        }
+        return bb.compute(solver, solver.primeImplicant(), assumptions, filter);
+
+    }
+
+    /**
+     * Computes the backbone of a formula.
+     * 
+     * 
+     * @param solver
+     *            a solver containing a satisfiable set of constraints.
+     * @param implicant
+     *            an implicant of solver
+     * @return the backbone of the solver
+     * @throws TimeoutException
+     *             if the computation cannot be done within the timeout
+     */
     public IVecInt compute(ISolver solver, int[] implicant)
             throws TimeoutException {
-        return compute(solver, implicant, VecInt.EMPTY);
+        return bb.compute(solver, implicant, VecInt.EMPTY);
     }
 
+    /**
+     * Computes the backbone of a formula.
+     * 
+     * 
+     * @param solver
+     *            a solver containing a satisfiable set of constraints.
+     * @param implicant
+     *            an implicant of solver
+     * @param assumptions
+     *            a set of literals to satisfy
+     * @return the backbone of the solver when the assumptions are satisfied
+     * @throws TimeoutException
+     *             if the computation cannot be done within the timeout
+     */
     public IVecInt compute(ISolver solver, int[] implicant, IVecInt assumptions)
             throws TimeoutException {
         return bb.compute(solver, implicant, assumptions);
     }
 
+    /**
+     * Returns the number of calls to the SAT solver needed to compute the
+     * backbone.
+     * 
+     * @return the number of underlying calls to the SAT solver.
+     */
     public int getNumberOfSatCalls() {
         return bb.nbSatTests();
-    }
-
-    private static void removeVarNotPresentAndSatisfiedLits(int[] implicant,
-            IVecInt litsToTest, int n) {
-        int[] marks = new int[n + 1];
-        for (int p : implicant) {
-            marks[p > 0 ? p : -p] = p;
-        }
-        int q, mark;
-        for (int i = 0; i < litsToTest.size();) {
-            q = litsToTest.get(i);
-            mark = marks[q > 0 ? q : -q];
-            if (mark == 0 || mark == q) {
-                litsToTest.delete(i);
-            } else {
-                i++;
-            }
-        }
     }
 }
