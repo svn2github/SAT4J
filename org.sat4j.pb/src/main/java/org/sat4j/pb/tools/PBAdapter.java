@@ -31,7 +31,13 @@
 package org.sat4j.pb.tools;
 
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
+import org.sat4j.core.ConstrGroup;
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
@@ -39,6 +45,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.tools.SolverDecorator;
 
 /**
@@ -65,46 +72,131 @@ public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
 
     public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
             boolean moreThan, BigInteger d) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        return moreThan ? addAtLeast(lits, coeffs, d) : addAtMost(lits, coeffs,
+                d);
     }
 
     public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException();
+        BigInteger coeffsSum = BigInteger.ZERO;
+        IVecInt newLiterals = new VecInt(literals.size());
+        for (IteratorInt it = literals.iterator(); it.hasNext();)
+            newLiterals.push(-it.next());
+        IVecInt newCoeffs = new VecInt(coeffs.size());
+        for (IteratorInt it = coeffs.iterator(); it.hasNext();) {
+            int c = it.next();
+            newCoeffs.push(c);
+            coeffsSum = coeffsSum.add(BigInteger.valueOf(c));
+        }
+        int newDegree = coeffsSum.intValue() - degree;
+        return addAtLeast(newLiterals, newCoeffs, newDegree);
     }
 
     public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        BigInteger coeffsSum = BigInteger.ZERO;
+        IVecInt newLiterals = new VecInt(literals.size());
+        for (IteratorInt it = literals.iterator(); it.hasNext();)
+            newLiterals.push(-it.next());
+        IVec<BigInteger> newCoeffs = new Vec<BigInteger>(coeffs.size());
+        for (Iterator<BigInteger> it = coeffs.iterator(); it.hasNext();) {
+            BigInteger c = it.next();
+            newCoeffs.push(c);
+            coeffsSum = coeffsSum.add(c);
+        }
+        BigInteger newDegree = coeffsSum.subtract(degree);
+        return addAtLeast(newLiterals, newCoeffs, newDegree);
     }
 
     public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException();
+        assertConstraintIsCard(coeffs);
+        Set<Integer> negLitsSet = new HashSet<Integer>(literals.size());
+        for (IteratorInt it = literals.iterator(); it.hasNext();)
+            negLitsSet.add(-it.next());
+        int clausesDegree = literals.size() - degree + 1;
+        ConstrGroup group = new ConstrGroup(false);
+        CombinationIterator combIt = new CombinationIterator(literals.size()
+                - degree, negLitsSet);
+        combIt.init();
+        for (Set<Integer> comb : combIt) {
+            for (IteratorInt it = literals.iterator(); it.hasNext();) {
+                int lit = it.next();
+                if (!comb.contains(-lit)) {
+                    IVecInt clause = new VecInt(clausesDegree);
+                    clause.push(lit);
+                    for (Integer negLit : comb) {
+                        clause.push(negLit);
+                    }
+                    group.add(addClause(clause));
+                }
+            }
+        }
+        return group;
     }
 
     public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        assertConstraintIsCard(coeffs);
+        Set<Integer> negLitsSet = new HashSet<Integer>(literals.size());
+        for (IteratorInt it = literals.iterator(); it.hasNext();)
+            negLitsSet.add(-it.next());
+        int clausesDegree = literals.size() - degree.intValue() + 1;
+        ConstrGroup group = new ConstrGroup(false);
+        CombinationIterator combIt = new CombinationIterator(literals.size()
+                - degree.intValue(), negLitsSet);
+        combIt.init();
+        for (Set<Integer> comb : combIt) {
+            for (IteratorInt it = literals.iterator(); it.hasNext();) {
+                int lit = it.next();
+                if (!comb.contains(-lit)) {
+                    IVecInt clause = new VecInt(clausesDegree);
+                    clause.push(lit);
+                    for (Integer negLit : comb) {
+                        clause.push(negLit);
+                    }
+                    group.add(addClause(clause));
+                }
+            }
+        }
+        return group;
     }
 
     public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
             throws ContradictionException {
-        throw new UnsupportedOperationException();
+        ConstrGroup group = new ConstrGroup(false);
+        group.add(addAtLeast(literals, coeffs, weight));
+        group.add(addAtMost(literals, coeffs, weight));
+        return group;
     }
 
     public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger weight) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        ConstrGroup group = new ConstrGroup(false);
+        group.add(addAtLeast(literals, coeffs, weight));
+        group.add(addAtMost(literals, coeffs, weight));
+        return group;
     }
 
     public void setObjectiveFunction(ObjectiveFunction obj) {
+        if (obj == null)
+            return;
         throw new UnsupportedOperationException();
-
     }
 
     public ObjectiveFunction getObjectiveFunction() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
+    private void assertConstraintIsCard(IVecInt weights) {
+        for (IteratorInt it = weights.iterator(); it.hasNext();)
+            if (it.next() != 1)
+                throw new UnsupportedOperationException();
+    }
+
+    private void assertConstraintIsCard(IVec<BigInteger> weights) {
+        for (Iterator<BigInteger> it = weights.iterator(); it.hasNext();)
+            if (it.next().compareTo(BigInteger.ONE) != 0)
+                throw new UnsupportedOperationException();
+    }
 }
