@@ -54,6 +54,8 @@ public abstract class AbstractOutputSolver implements ISolver {
 
     protected boolean firstConstr = true;
 
+    private boolean verbose;
+
     /**
 	 * 
 	 */
@@ -193,14 +195,14 @@ public abstract class AbstractOutputSolver implements ISolver {
      * @since 2.2
      */
     public boolean isVerbose() {
-        return true;
+        return this.verbose;
     }
 
     /**
      * @since 2.2
      */
     public void setVerbose(boolean value) {
-        // do nothing
+        this.verbose = value;
     }
 
     /**
