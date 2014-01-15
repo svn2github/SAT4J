@@ -126,7 +126,7 @@ public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
                     IVecInt clause = new VecInt(clausesDegree);
                     clause.push(lit);
                     for (Integer negLit : comb) {
-                        clause.push(negLit);
+                        clause.push(-negLit);
                     }
                     group.add(addClause(clause));
                 }
@@ -153,7 +153,7 @@ public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
                     IVecInt clause = new VecInt(clausesDegree);
                     clause.push(lit);
                     for (Integer negLit : comb) {
-                        clause.push(negLit);
+                        clause.push(-negLit);
                     }
                     group.add(addClause(clause));
                 }
