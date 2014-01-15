@@ -48,12 +48,12 @@ public class Policy extends EncodingStrategyAdapter {
      * 
      */
     private static final long serialVersionUID = 1L;
-    private final Sequential seq = new Sequential();
-    private final Binary binary = new Binary();
-    private final Product product = new Product();
-    private final Commander commander = new Commander();
-    private final Binomial binomial = new Binomial();
-    private final Ladder ladder = new Ladder();
+    private static final Sequential seq = new Sequential();
+    private static final Binary binary = new Binary();
+    private static final Product product = new Product();
+    private static final Commander commander = new Commander();
+    private static final Binomial binomial = new Binomial();
+    private static final Ladder ladder = new Ladder();
 
     private EncodingStrategyAdapter atMostOneEncoding = null;
     private EncodingStrategyAdapter atMostKEncoding = null;
@@ -62,28 +62,29 @@ public class Policy extends EncodingStrategyAdapter {
     private EncodingStrategyAdapter atLeastOneEncoding = null;
     private EncodingStrategyAdapter atLeastKEncoding = null;
 
-    private EncodingStrategyAdapter getAdapterFromEncodingName(
+    public static EncodingStrategyAdapter getAdapterFromEncodingName(
             EncodingStrategy encodingName) {
         switch (encodingName) {
         case BINARY:
-            return this.binary;
+            return binary;
         case BINOMIAL:
-            return this.binomial;
+            return binomial;
         case COMMANDER:
-            return this.commander;
+            return commander;
         case LADDER:
-            return this.ladder;
+            return ladder;
         case PRODUCT:
-            return this.product;
+            return product;
         case SEQUENTIAL:
-            return this.seq;
+            return seq;
         case NATIVE:
         default:
-            return null;
+            throw new IllegalStateException(
+                    "The switch does not cover all encodings");
         }
     }
 
-    private EncodingStrategy getEncodingTypeFromAdapter(
+    public static EncodingStrategy getEncodingTypeFromAdapter(
             EncodingStrategyAdapter adapter) {
         if (adapter instanceof Binary) {
             return EncodingStrategy.BINARY;
