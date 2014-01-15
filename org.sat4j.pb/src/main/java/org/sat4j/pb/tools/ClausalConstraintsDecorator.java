@@ -151,7 +151,7 @@ public class ClausalConstraintsDecorator extends
         boolean result = true;
         int i = 0;
         while (result && i < coeffs.size()) {
-            result = (coeffs.get(i) == BigInteger.ONE);
+            result = (coeffs.get(i).equals(BigInteger.ONE));
             i++;
         }
         return result;
