@@ -2152,9 +2152,15 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             if (this.trail.isEmpty()) {
                 return;
             }
+            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
+                trailLim.pop();
+            }
             current = this.trail.last();
         }
         undoOne();
+        if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
+            trailLim.pop();
+        }
         this.qhead = this.trail.size();
     }
 
