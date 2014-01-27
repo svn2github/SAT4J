@@ -112,12 +112,12 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
             assert degree.compareTo(MAX_INT_VALUE) < 0;
             return constructCard(new VecInt(literals), degree.intValue());
         }
-        if (coefficientsEqualTo(coefs[0], coefs)) {
-            assert degree.compareTo(MAX_INT_VALUE) < 0;
-            System.err.println("Using TCS division!!!");
-            return constructCard(new VecInt(literals), degree.divide(coefs[0])
-                    .intValue() + 1);
-        }
+        // if (coefficientsEqualTo(coefs[0], coefs)) {
+        // assert degree.compareTo(MAX_INT_VALUE) < 0;
+        // System.err.println("Using TCS division!!!");
+        // return constructCard(new VecInt(literals), degree.divide(coefs[0])
+        // .intValue() + 1);
+        // }
         return constructPB(literals, coefs, degree);
     }
 
