@@ -268,7 +268,7 @@ public class LecteurDimacs extends Reader implements Serializable {
 
     @Override
     public void decode(int[] model, PrintWriter out) {
-        if (hasAMapping()) {
+        if (isUsingMapping() && hasAMapping()) {
             decodeWithMapping(model, out);
         } else {
             for (int element : model) {

@@ -167,11 +167,47 @@ public abstract class Reader {
 
     private boolean verbose = false;
 
+    private boolean useMapping = false;
+
+    /**
+     * Does the reader found a mapping.
+     * 
+     * @return true iff the solver found a mapping in the problem
+     * @since 2.3.6
+     */
     public boolean hasAMapping() {
         return false;
     }
 
+    /**
+     * Returns the mapping found in the problem.
+     * 
+     * @return the mapping varid->String found in the problem.
+     */
     public Map<Integer, String> getMapping() {
         return null;
+    }
+
+    /**
+     * Check if the reader is going to use the mapping available in the file or
+     * not.
+     * 
+     * @return true iff the solver will output a model in terms of mapping
+     * @since 2.3.6
+     */
+    public boolean isUsingMapping() {
+        return this.useMapping;
+    }
+
+    /**
+     * Change the behavior of the solver regarding the mapping
+     * 
+     * @param b
+     *            set to true to display the solution in terms of mapped id and
+     *            false to display dimacs variables.
+     * @since 2.3.6
+     */
+    public void setUseMapping(boolean b) {
+        this.useMapping = b;
     }
 }
