@@ -241,7 +241,7 @@ public class LecteurDimacs extends Reader implements Serializable {
             if (mapping == null) {
                 mapping = new HashMap<Integer, String>();
             }
-            mapping.put(Integer.valueOf(values[0]), values[1]);
+            mapping.put(Integer.valueOf(values[0].trim()), values[1].trim());
         }
         return car;
     }
