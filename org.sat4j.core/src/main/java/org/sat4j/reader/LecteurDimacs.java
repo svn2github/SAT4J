@@ -236,12 +236,15 @@ public class LecteurDimacs extends Reader implements Serializable {
             stb.append(car);
         } while (car != '\n' && car != EOF);
         String str = stb.toString().trim();
-        String[] values = str.split("=");
-        if (values.length == 2) {
-            if (mapping == null) {
-                mapping = new HashMap<Integer, String>();
+
+        if (isUsingMapping()) {
+            String[] values = str.split("=");
+            if (values.length == 2) {
+                if (mapping == null) {
+                    mapping = new HashMap<Integer, String>();
+                }
+                mapping.put(Integer.valueOf(values[0].trim()), values[1].trim());
             }
-            mapping.put(Integer.valueOf(values[0].trim()), values[1].trim());
         }
         return car;
     }
