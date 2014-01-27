@@ -307,16 +307,19 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public void setTimeout(int t) {
         this.timeout = t * 1000L;
         this.timeBasedTimeout = true;
+        this.undertimeout = true;
     }
 
     public void setTimeoutMs(long t) {
         this.timeout = t;
         this.timeBasedTimeout = true;
+        this.undertimeout = true;
     }
 
     public void setTimeoutOnConflicts(int count) {
         this.timeout = count;
         this.timeBasedTimeout = false;
+        this.undertimeout = true;
     }
 
     /*
@@ -1938,6 +1941,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.dsfactory.reset();
         this.stats.reset();
         this.constrTypes.clear();
+        this.undertimeout = true;
     }
 
     public int nVars() {
