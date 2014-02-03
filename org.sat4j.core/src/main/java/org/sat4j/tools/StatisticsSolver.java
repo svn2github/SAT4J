@@ -296,7 +296,7 @@ public class StatisticsSolver implements ISolver {
             return;
         }
         int max = sizeoccurrences.length - 1;
-        for (int i = 1; i < max; i += 2) {
+        for (int i = 2; i < max; i += 2) {
             sizeV = 0;
             oneNull = false;
             for (int k = 0; k < 2; k++) {
@@ -341,14 +341,14 @@ public class StatisticsSolver implements ISolver {
         }
 
         System.out
-                .printf("c Real number of variables, literals, number of clauses, #pureliterals, ");
+                .printf("c Real number of variables, literals, number of clauses, size (#literals), #pureliterals, ");
         System.out.printf("variable occurrences (min/max/avg) ");
         System.out.printf("literals occurrences (min/max/avg) ");
         System.out
                 .println("Specific clauses: #positive  #negative #horn  #dualhorn #remaining");
 
-        System.out.printf("%d %d %d %d %d %d %d %d %d %d ",
-                realNumberOfVariables, realNumberOfLiterals, nbclauses,
+        System.out.printf("%d %d %d %d %d %d %d %d %d %d %d ",
+                realNumberOfVariables, realNumberOfLiterals, nbclauses, sumL,
                 pureLiterals, minOccV, maxOccV, sumV / realNumberOfVariables,
                 minOccL, maxOccL, sumL / realNumberOfLiterals);
         System.out.printf("%d %d %d %d %d%n", allpositive, allnegative, horn,
