@@ -32,6 +32,7 @@ package org.sat4j.tools;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.sat4j.core.LiteralsUtils;
@@ -347,10 +348,11 @@ public class StatisticsSolver implements ISolver {
         System.out
                 .println("Specific clauses: #positive  #negative #horn  #dualhorn #remaining");
 
-        System.out.printf("%d %d %d %d %d %d %d %d %d %d %d ",
+        System.out.printf(Locale.US, "%d %d %d %d %d %d %d %.2f %d %d %.2f ",
                 realNumberOfVariables, realNumberOfLiterals, nbclauses, sumL,
-                pureLiterals, minOccV, maxOccV, sumV / realNumberOfVariables,
-                minOccL, maxOccL, sumL / realNumberOfLiterals);
+                pureLiterals, minOccV, maxOccV, sumV
+                        / (realNumberOfVariables * 1.0), minOccL, maxOccL, sumL
+                        / (realNumberOfLiterals * 1.0));
         System.out.printf("%d %d %d %d %d%n", allpositive, allnegative, horn,
                 dualhorn, nbclauses - allpositive - allnegative - horn
                         - dualhorn);
