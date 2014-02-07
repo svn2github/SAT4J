@@ -357,7 +357,8 @@ public class StatisticsSolver implements ISolver {
         System.out.printf("literals occurrences (min/max/avg) ");
         System.out
                 .println("Specific clauses: #positive  #negative #horn  #dualhorn #binary #binarynegative #binarypositive #binaryhorn #remaining");
-        int nbBinary = sizes.get(2).getValue();
+        Counter binaryCounter = sizes.get(2);
+        int nbBinary = binaryCounter == null ? 0 : binaryCounter.getValue();
         System.out.printf(Locale.US, "%d %d %d %d %d %d %d %.2f %d %d %.2f ",
                 realNumberOfVariables, realNumberOfLiterals, nbclauses, sumL,
                 pureLiterals, minOccV, maxOccV, sumV
