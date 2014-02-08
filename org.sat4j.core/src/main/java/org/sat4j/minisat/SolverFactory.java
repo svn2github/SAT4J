@@ -144,7 +144,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
     public static ICDCL<DataStructureFactory> newGlucose21() {
         Solver<DataStructureFactory> solver = newMiniLearningHeapRsatExpSimp();
         solver.setRestartStrategy(new Glucose21Restarts());
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         return solver;
     }
 
@@ -215,7 +215,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
     public static ICDCL<DataStructureFactory> newBest17() {
         Solver<DataStructureFactory> solver = newBestCurrentSolverConfiguration(new MixedDataStructureSingleWL());
         solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION_WLONLY);
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         LimitedLearning<DataStructureFactory> learning = new PercentLengthLearning<DataStructureFactory>(
                 10);
         solver.setLearningStrategy(learning);
@@ -227,7 +227,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
      */
     public static Solver<DataStructureFactory> newGlucose() {
         Solver<DataStructureFactory> solver = newBestWL();
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         solver.setRestartStrategy(new LubyRestarts(512));
         return solver;
     }
@@ -348,9 +348,23 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         return new OptToSatAdapter(new MinOneDecorator(newDefault()));
     }
 
+    /**
+     * 
+     * @return the default solver with an aggressive LCDS based on age
+     */
     public static ISolver newAgeLCDS() {
         Solver<?> solver = (Solver<?>) newGlucose21();
         solver.setLearnedConstraintsDeletionStrategy(solver.age_based);
+        return solver;
+    }
+
+    /**
+     * 
+     * @return the default solver with an aggressive LCDS based on activity
+     */
+    public static ISolver newActivityLCDS() {
+        Solver<?> solver = (Solver<?>) newGlucose21();
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based);
         return solver;
     }
 
@@ -421,7 +435,7 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
     public static Solver newSAT() {
         Solver solver = (Solver) newGlucose21();
         solver.setRestartStrategy(new LubyRestarts(100));
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         return solver;
     }
 

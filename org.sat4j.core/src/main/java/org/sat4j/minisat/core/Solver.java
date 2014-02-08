@@ -1600,25 +1600,21 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         };
     }
 
-    private LearnedConstraintsDeletionStrategy activityBased(
-            final ConflictTimer timer) {
-        return new ActivityLCDS(this, timer);
-    }
-
     private final ConflictTimer memoryTimer = new MemoryBasedConflictTimer(
             this, 500);
 
     /**
      * @since 2.1
      */
-    public final LearnedConstraintsDeletionStrategy memory_based = activityBased(this.memoryTimer);
+    public final LearnedConstraintsDeletionStrategy activity_based_low_memory = new ActivityLCDS(
+            this, this.memoryTimer);
 
     private final ConflictTimer lbdTimer = new LBDConflictTimer(this, 1000);
 
     /**
      * @since 2.1
      */
-    public final LearnedConstraintsDeletionStrategy glucose = new Glucose2LCDS<D>(
+    public final LearnedConstraintsDeletionStrategy lbd_based = new Glucose2LCDS<D>(
             this, this.lbdTimer);
 
     /**
@@ -1627,7 +1623,13 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public final LearnedConstraintsDeletionStrategy age_based = new AgeLCDS(
             this, this.lbdTimer);
 
-    protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = this.glucose;
+    /**
+     * @since 2.3.6
+     */
+    public final LearnedConstraintsDeletionStrategy activity_based = new ActivityLCDS(
+            this, this.lbdTimer);
+
+    protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = this.lbd_based;
 
     /*
      * (non-Javadoc)
@@ -2281,7 +2283,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         }
         switch (evaluation) {
         case ACTIVITY:
-            this.learnedConstraintsDeletionStrategy = activityBased(timer);
+            this.learnedConstraintsDeletionStrategy = new ActivityLCDS(this,
+                    timer);
             break;
         case LBD:
             this.learnedConstraintsDeletionStrategy = new GlucoseLCDS<D>(this,
@@ -2306,7 +2309,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                 .getTimer();
         switch (evaluation) {
         case ACTIVITY:
-            this.learnedConstraintsDeletionStrategy = activityBased(aTimer);
+            this.learnedConstraintsDeletionStrategy = new ActivityLCDS(this,
+                    aTimer);
             break;
         case LBD:
             this.learnedConstraintsDeletionStrategy = new GlucoseLCDS<D>(this,
