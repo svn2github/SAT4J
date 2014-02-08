@@ -30,7 +30,6 @@
 package org.sat4j.tools;
 
 import java.util.BitSet;
-import java.util.Comparator;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.specs.ContradictionException;
@@ -171,7 +170,6 @@ public final class Backbone {
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             IConstr constr;
-            System.err.println("AAA " + assumptions);
             while (!litsToTest.isEmpty()) {
                 try {
                     constr = solver.addClause(litsToTest);
@@ -181,15 +179,6 @@ public final class Backbone {
                                 litsToTest, solver.nVars());
                         solver.removeSubsumedConstr(constr);
                     } else {
-                        litsToTest.sort(new Comparator<Integer>() {
-
-                            public int compare(Integer o1, Integer o2) {
-                                int a = Math.abs(o1.intValue());
-                                int b = Math.abs(o2.intValue());
-                                return a - b;
-                            }
-                        });
-                        System.err.println(litsToTest);
                         for (IteratorInt it = litsToTest.iterator(); it
                                 .hasNext();) {
                             candidates.push(-it.next());
