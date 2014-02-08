@@ -1438,7 +1438,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             strategy = new WatcherBasedPrimeImplicantStrategy();
         }
         int[] implicant = strategy.compute(this);
-        prime = strategy.getPrimeImplicantAsArrayWithHoles();
+        this.prime = strategy.getPrimeImplicantAsArrayWithHoles();
         return implicant;
     }
 
