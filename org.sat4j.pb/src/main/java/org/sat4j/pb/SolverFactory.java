@@ -536,7 +536,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         learning.setDataStructureFactory(solver.getDSFactory());
         learning.setVarActivityListener(solver);
         solver.setRestartStrategy(new ArminRestarts());
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         return solver;
     }
 
@@ -614,7 +614,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
     public static PBSolverResolution newSAT() {
         PBSolverResolution solver = newResolutionGlucose();
         solver.setRestartStrategy(new LubyRestarts(100));
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         return solver;
     }
 
@@ -642,7 +642,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
         solver.setSimplifier(Solver.NO_SIMPLIFICATION);
         solver.setRestartStrategy(new Glucose21Restarts());
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         return solver;
     }
 
@@ -698,7 +698,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static IPBSolver newSimpleSimplification() {
         PBSolverResolution solver = newCompetPBResWLMixedConstraintsObjectiveExpSimp();
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
         return solver;
     }
@@ -712,7 +712,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static IPBSolver newResolutionSimpleRestarts() {
         PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-        solver.setLearnedConstraintsDeletionStrategy(solver.glucose);
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
         solver.setRestartStrategy(new MiniSATRestarts());
         return solver;
     }
@@ -727,7 +727,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static IPBSolver newResolutionMaxMemory() {
         PBSolverResolution solver = newCompetPBResLongWLMixedConstraintsObjectiveExpSimp();
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         return solver;
     }
 
@@ -809,7 +809,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         learning.setVarActivityListener(solver);
         solver.setTimeoutOnConflicts(300);
         solver.setVerbose(false);
-        solver.setLearnedConstraintsDeletionStrategy(solver.memory_based);
+        solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
     }
 
