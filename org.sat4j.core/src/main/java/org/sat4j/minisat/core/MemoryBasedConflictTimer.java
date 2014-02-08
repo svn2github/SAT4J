@@ -47,4 +47,11 @@ final class MemoryBasedConflictTimer extends ConflictTimerAdapter {
             getSolver().setNeedToReduceDB(true);
         }
     }
+
+    @Override
+    public String toString() {
+        return "check every " + bound() + " if the memory bound "
+                + this.memorybound + " is reached";
+    }
+
 }

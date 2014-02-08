@@ -29,39 +29,51 @@
  *******************************************************************************/
 package org.sat4j.minisat.core;
 
-import org.sat4j.specs.Constr;
-
-class Glucose2LCDS<D extends DataStructureFactory> extends GlucoseLCDS<D> {
-
-    /**
-     * 
-     */
-    private final Solver<D> solver;
-    /**
-    	 * 
-    	 */
+/**
+ * Mimics the checks found in Glucose.
+ * 
+ * @author daniel
+ * 
+ */
+final class LBDConflictTimer extends ConflictTimerAdapter {
     private static final long serialVersionUID = 1L;
+    private int nbconflict = 0;
+    private static final int MAX_CLAUSE = 5000;
+    private static final int INC_CLAUSE = 1000;
+    private int nextbound = MAX_CLAUSE;
 
-    Glucose2LCDS(Solver<D> solver, ConflictTimer timer) {
-        super(solver, timer);
-        this.solver = solver;
+    LBDConflictTimer(Solver<? extends DataStructureFactory> solver, int bound) {
+        super(solver, bound);
+    }
+
+    @Override
+    public void run() {
+        this.nbconflict += bound();
+        if (this.nbconflict >= this.nextbound) {
+            this.nextbound += INC_CLAUSE;
+            // if (nextbound > wall) {
+            // nextbound = wall;
+            // }
+            this.nbconflict = 0;
+            getSolver().setNeedToReduceDB(true);
+        }
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+        this.nextbound = MAX_CLAUSE;
+        if (this.nbconflict >= this.nextbound) {
+            this.nbconflict = 0;
+            getSolver().setNeedToReduceDB(true);
+        }
     }
 
     @Override
     public String toString() {
-        return "Glucose 2 learned constraints deletion strategy (LBD updated on propagation) with timer "
-                + getTimer();
-    }
-
-    @Override
-    public void onPropagation(Constr from) {
-        if (from.getActivity() > 2.0) {
-            int nblevel = computeLBD(from);
-            if (nblevel < from.getActivity()) {
-                solver.stats.updateLBD++;
-                from.setActivity(nblevel);
-            }
-        }
+        return "check every " + bound()
+                + " if the learned constraints reach increasing bounds: "
+                + MAX_CLAUSE + " step " + INC_CLAUSE;
     }
 
 }

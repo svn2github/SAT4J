@@ -1613,42 +1613,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      */
     public final LearnedConstraintsDeletionStrategy memory_based = activityBased(this.memoryTimer);
 
-    static final class LBDConflictTimer extends ConflictTimerAdapter {
-        private static final long serialVersionUID = 1L;
-        private int nbconflict = 0;
-        private static final int MAX_CLAUSE = 5000;
-        private static final int INC_CLAUSE = 1000;
-        private int nextbound = MAX_CLAUSE;
-
-        LBDConflictTimer(Solver<? extends DataStructureFactory> solver,
-                int bound) {
-            super(solver, bound);
-        }
-
-        @Override
-        public void run() {
-            this.nbconflict += bound();
-            if (this.nbconflict >= this.nextbound) {
-                this.nextbound += INC_CLAUSE;
-                // if (nextbound > wall) {
-                // nextbound = wall;
-                // }
-                this.nbconflict = 0;
-                getSolver().setNeedToReduceDB(true);
-            }
-        }
-
-        @Override
-        public void reset() {
-            super.reset();
-            this.nextbound = MAX_CLAUSE;
-            if (this.nbconflict >= this.nextbound) {
-                this.nbconflict = 0;
-                getSolver().setNeedToReduceDB(true);
-            }
-        }
-    }
-
     private final ConflictTimer lbdTimer = new LBDConflictTimer(this, 1000);
 
     /**

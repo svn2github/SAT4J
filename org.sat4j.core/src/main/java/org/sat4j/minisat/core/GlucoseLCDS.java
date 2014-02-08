@@ -44,11 +44,11 @@ class GlucoseLCDS<D extends DataStructureFactory> implements
     private int flag = 0;
     // private int wall = 0;
 
-    private final ConflictTimer clauseManagement;
+    private final ConflictTimer timer;
 
     GlucoseLCDS(Solver<D> solver, ConflictTimer timer) {
         this.solver = solver;
-        this.clauseManagement = timer;
+        this.timer = timer;
     }
 
     public void reduce(IVec<Constr> learnedConstrs) {
@@ -75,12 +75,13 @@ class GlucoseLCDS<D extends DataStructureFactory> implements
     }
 
     public ConflictTimer getTimer() {
-        return this.clauseManagement;
+        return this.timer;
     }
 
     @Override
     public String toString() {
-        return "Glucose learned constraints deletion strategy";
+        return "Glucose learned constraints deletion strategy with timer "
+                + timer;
     }
 
     public void init() {
@@ -90,7 +91,7 @@ class GlucoseLCDS<D extends DataStructureFactory> implements
             this.flags = new int[howmany + 1];
         }
         this.flag = 0;
-        this.clauseManagement.reset();
+        this.timer.reset();
     }
 
     public void onClauseLearning(Constr constr) {

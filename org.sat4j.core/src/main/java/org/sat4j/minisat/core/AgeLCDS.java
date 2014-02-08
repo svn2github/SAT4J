@@ -32,19 +32,24 @@ package org.sat4j.minisat.core;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.IVec;
 
-final class ActivityLCDS implements LearnedConstraintsDeletionStrategy {
+/**
+ * A deletion strategy only based on the age of the learned clause. The solver
+ * tries to remove half of the constraints but binary clauses as in a FIFO.
+ * 
+ * @author daniel
+ * 
+ */
+final class AgeLCDS implements LearnedConstraintsDeletionStrategy {
     private static final long serialVersionUID = 1L;
     private final ConflictTimer timer;
     private final Solver<? extends DataStructureFactory> solver;
 
-    ActivityLCDS(Solver<? extends DataStructureFactory> solver,
-            ConflictTimer timer) {
+    AgeLCDS(Solver<? extends DataStructureFactory> solver, ConflictTimer timer) {
         this.timer = timer;
         this.solver = solver;
     }
 
     public void reduce(IVec<Constr> learnedConstrs) {
-        solver.sortOnActivity();
         int i, j;
         for (i = j = 0; i < solver.learnts.size() / 2; i++) {
             Constr c = solver.learnts.get(i);
@@ -73,7 +78,7 @@ final class ActivityLCDS implements LearnedConstraintsDeletionStrategy {
 
     @Override
     public String toString() {
-        return "Activity based learned constraints deletion strategy with timer "
+        return "Age based learned constraints deletion strategy with timer "
                 + timer;
     }
 
