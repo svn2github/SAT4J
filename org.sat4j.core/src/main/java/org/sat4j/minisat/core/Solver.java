@@ -1621,6 +1621,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public final LearnedConstraintsDeletionStrategy glucose = new Glucose2LCDS<D>(
             this, this.lbdTimer);
 
+    /**
+     * @since 2.3.6
+     */
+    public final LearnedConstraintsDeletionStrategy age_based = new AgeLCDS(
+            this, this.lbdTimer);
+
     protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = this.glucose;
 
     /*
