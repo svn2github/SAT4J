@@ -348,6 +348,12 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         return new OptToSatAdapter(new MinOneDecorator(newDefault()));
     }
 
+    public static ISolver newAgeLCDS() {
+        Solver<?> solver = (Solver<?>) newGlucose21();
+        solver.setLearnedConstraintsDeletionStrategy(solver.age_based);
+        return solver;
+    }
+
     /**
      * Default solver of the SolverFactory. This solver is meant to be used on
      * challenging SAT benchmarks.
