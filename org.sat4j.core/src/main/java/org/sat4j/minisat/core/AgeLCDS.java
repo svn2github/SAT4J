@@ -92,9 +92,7 @@ final class AgeLCDS implements LearnedConstraintsDeletionStrategy {
     }
 
     public void onConflictAnalysis(Constr reason) {
-        if (reason.learnt()) {
-            solver.claBumpActivity(reason);
-        }
+        // do nothing
     }
 
     public void onPropagation(Constr from) {

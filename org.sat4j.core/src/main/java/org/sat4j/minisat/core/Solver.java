@@ -1629,6 +1629,12 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     public final LearnedConstraintsDeletionStrategy activity_based = new ActivityLCDS(
             this, this.lbdTimer);
 
+    /**
+     * @since 2.3.6
+     */
+    public final LearnedConstraintsDeletionStrategy size_based = new SizeLCDS(
+            this, this.lbdTimer);
+
     protected LearnedConstraintsDeletionStrategy learnedConstraintsDeletionStrategy = this.lbd_based;
 
     /*

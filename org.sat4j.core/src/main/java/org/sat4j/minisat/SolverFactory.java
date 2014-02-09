@@ -369,6 +369,16 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
     }
 
     /**
+     * 
+     * @return the default solver with an aggressive LCDS based on size
+     */
+    public static ISolver newSizeLCDS() {
+        Solver<?> solver = (Solver<?>) newGlucose21();
+        solver.setLearnedConstraintsDeletionStrategy(solver.size_based);
+        return solver;
+    }
+
+    /**
      * Default solver of the SolverFactory. This solver is meant to be used on
      * challenging SAT benchmarks.
      * 
