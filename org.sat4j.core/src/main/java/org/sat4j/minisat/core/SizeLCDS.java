@@ -51,7 +51,7 @@ final class SizeLCDS implements LearnedConstraintsDeletionStrategy {
         int i, j;
         for (i = j = learnedConstrs.size() / 2; i < learnedConstrs.size(); i++) {
             Constr c = learnedConstrs.get(i);
-            if (c.locked() || c.getActivity() <= 2.0) {
+            if (c.locked() || c.size() == 2) {
                 learnedConstrs.set(j++, solver.learnts.get(i));
             } else {
                 c.remove(solver);
