@@ -32,6 +32,7 @@ package org.sat4j.minisat;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielHT;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
+import org.sat4j.minisat.constraints.MixedDataStructureDanielWLConciseBinary;
 import org.sat4j.minisat.constraints.MixedDataStructureSingleWL;
 import org.sat4j.minisat.core.DataStructureFactory;
 import org.sat4j.minisat.core.ICDCL;
@@ -458,6 +459,19 @@ public final class SolverFactory extends ASolverFactory<ISolver> {
         Solver solver = (Solver) newGlucose21();
         solver.setRestartStrategy(new NoRestarts());
         solver.setSimplifier(solver.SIMPLE_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static Solver newConcise() {
+        Solver solver = (Solver) newGlucose21();
+        solver.setDataStructureFactory(new MixedDataStructureDanielWLConciseBinary());
+        solver.setSimplifier(solver.NO_SIMPLIFICATION);
+        return solver;
+    }
+
+    public static Solver newNoSimplification() {
+        Solver solver = (Solver) newGlucose21();
+        solver.setSimplifier(solver.NO_SIMPLIFICATION);
         return solver;
     }
 }
