@@ -105,4 +105,13 @@ public interface IBr4cpBackboneComputer {
 	 */
 	public int getNumberOfSATCalls();
 
+	/**
+	 * Check if a particular value is still in the domain of a variable.
+	 * 
+	 * @param var a variable
+	 * @param val a value
+	 * @return true iff the variable is still in the domain of var
+	 */
+	public boolean isPresentInCurrentDomain(String var, String val);
+
 }

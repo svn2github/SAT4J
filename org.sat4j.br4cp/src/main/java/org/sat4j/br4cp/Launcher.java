@@ -16,7 +16,7 @@ public class Launcher {
 			if (scenarioFile != null) {
 				new Br4cpScenarioSimulator(instanceFile, scenarioFile);
 			} else {
-			new Br4cpCLI(instanceFile,options.getPriceFile());
+			new Br4cpCLI(instanceFile,options.getPriceFile()).runCLI();
 			}
 		}else{
 			throw new IllegalArgumentException("An instance file is required");

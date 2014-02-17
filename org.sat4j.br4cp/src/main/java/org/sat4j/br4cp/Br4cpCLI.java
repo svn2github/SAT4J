@@ -48,7 +48,6 @@ public class Br4cpCLI {
 		printAsserted(backboneComputer, "rootPropagated:", "rootReduced:");
 		this.outStream.printf("done in %.3fs with %d SAT calls.%n%n",
 				(System.currentTimeMillis() - startTime) / 1000.,backboneComputer.getNumberOfSATCalls());
-		runCLI();
 	}
 
 	private void printAsserted(IBr4cpBackboneComputer backboneComputer,
@@ -95,7 +94,7 @@ public class Br4cpCLI {
 		}
 	}
 
-	private void runCLI() throws Exception {
+	public void runCLI() throws Exception {
 		this.outStream.println("available commands : ");
 		this.outStream.println("  #restart       : clean all assumptions");
 		this.outStream
@@ -173,60 +172,55 @@ public class Br4cpCLI {
 
 	}
 
-	private void assume(String line) throws Exception {
-		String assump = line.replaceAll("_", ".");
-		assump = assump.replaceAll("=", ".");
-		try {
-			if (this.varMap.isAdditionalVar(assump)) {
-				backboneComputer.addAdditionalVarAssumption(assump);
-			} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
-				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
-			} else if (this.varMap.isAdditionalVar(assump)) {
-				backboneComputer.addAdditionalVarAssumption(assump);
-			} else if (this.varMap.isConfigVar(assump)) {
-				addAssumption(assump);
-			} else {
-				this.outStream.println(assump + " is not defined");
-				return;
-			}
-			for (Iterator<String> it = this.assumptions.iterator(); it
-					.hasNext();) {
-				String next = it.next();
-				if (next.substring(0, next.lastIndexOf("=")).equals(
-						line.substring(0, line.lastIndexOf('=')))) {
-					it.remove();
-					break;
-				}
-			}
-			this.assumptions.add(line);
-			printAssumptions();
-			printAsserted(backboneComputer);
+	public void assume(String line) throws Exception {
 
+		try {
+			if (assumeMe(line)) {
+				printAssumptions();
+				printAsserted(backboneComputer);
+			}
 		} catch (IllegalArgumentException e) {
 			this.outStream.println("ERROR: " + e.getMessage());
+			throw e;
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void minimize(String line) throws Exception {
-		if (optimizer.getObjectiveFunction()==null) {
-			this.outStream
-			.println("nothing to minimize. requires a price file.");
-			return;
+	public boolean assumeMe(String line) throws Exception {
+		String assump = line.replaceAll("_", ".");
+		assump = assump.replaceAll("=", ".");
+		if (this.varMap.isAdditionalVar(assump)) {
+			backboneComputer.addAdditionalVarAssumption(assump);
+		} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
+			backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
+		} else if (this.varMap.isAdditionalVar(assump)) {
+			backboneComputer.addAdditionalVarAssumption(assump);
+		} else if (this.varMap.isConfigVar(assump)) {
+			addAssumption(assump);
+		} else {
+			this.outStream.println(assump + " is not defined");
+			return false;
 		}
-		muses.reset();
-		IVecInt assumptions = new VecInt();
-		for (Set<Integer> assumpsSet : this.backboneComputer
-				.getSolverAssumptions()) {
-			for (Integer n : assumpsSet) {
-				assumptions.push(n);
+		for (Iterator<String> it = this.assumptions.iterator(); it.hasNext();) {
+			String next = it.next();
+			if (next.substring(0, next.lastIndexOf("=")).equals(
+					line.substring(0, line.lastIndexOf('=')))) {
+				it.remove();
+				break;
 			}
 		}
-		for (int p : solver.getAddedVars()) {
-			assumptions.push(-p);
+		this.assumptions.add(line);
+		return true;
+	}
+
+	@SuppressWarnings("unused")
+	public void minimize(String line) throws Exception {
+		if (optimizer.getObjectiveFunction() == null) {
+			this.outStream
+					.println("nothing to minimize. requires a price file.");
+			return;
 		}
 		try {
-			if (optimizer.isSatisfiable(assumptions)) {
+			if (minimize()) {
 				this.outStream.println(optimizer.getCurrentObjectiveValue());
 				int[] model = optimizer.model();
 				String varName;
@@ -254,6 +248,34 @@ public class Br4cpCLI {
 		}
 	}
 
+	@SuppressWarnings("unused")
+	public boolean minimize() throws Exception {
+		if (optimizer.getObjectiveFunction() == null) {
+			return false;
+		}
+		muses.reset();
+		IVecInt assumptions = new VecInt();
+		for (Set<Integer> assumpsSet : this.backboneComputer
+				.getSolverAssumptions()) {
+			for (Integer n : assumpsSet) {
+				assumptions.push(n);
+			}
+		}
+		for (int p : solver.getAddedVars()) {
+			assumptions.push(-p);
+		}
+		try {
+			return optimizer.isSatisfiable(assumptions);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	Number getObjectiveValue() {
+		return optimizer.getCurrentObjectiveValue();
+	}
+
 	private void printAssumptions() {
 		this.outStream.print("d");
 		for (Iterator<String> it = this.assumptions.iterator(); it.hasNext();) {
@@ -273,6 +295,14 @@ public class Br4cpCLI {
 		} catch (ContradictionException e) {
 			throw new IllegalArgumentException(e.getMessage());
 		}
+	}
+
+	public IBr4cpBackboneComputer getBackboneComputer() {
+		return backboneComputer;
+	}
+
+	public boolean isPresentInCurrentDomain(String var, String val) {
+		return backboneComputer.isPresentInCurrentDomain(var, val);
 	}
 
 }

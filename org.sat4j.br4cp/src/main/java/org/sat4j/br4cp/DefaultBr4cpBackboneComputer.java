@@ -224,4 +224,8 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		return Backbone.instance().getNumberOfSatCalls();
 	}
 
+	@Override
+	public boolean isPresentInCurrentDomain(String var, String val) {
+		return !this.domainReductions.contains(var+"="+val)&&(!fixedVars.contains(var)||propagatedConfigVars.contains(var+"="+val));
+	}
 }
