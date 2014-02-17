@@ -10,7 +10,6 @@ public class Br4cpConfigurator implements Configurator {
 	private Br4cpCLI br4cp;
 	private boolean fault = false;
 	
-	@Override
 	public void readProblem(String problemName) {
 		String instance = problemName + ".txt";
 		String prices = problemName + "_prices.txt";
@@ -24,7 +23,6 @@ public class Br4cpConfigurator implements Configurator {
 
 	}
 
-	@Override
 	public void assign(String var, String val) {
 		fault = false;
 		try {
@@ -35,19 +33,16 @@ public class Br4cpConfigurator implements Configurator {
 		}
 	}
 
-	@Override
 	public void unassign(String var) {
-		throw new UnsupportedOperationException();
+		br4cp.unassign(var);
 
 	}
 
-	@Override
 	public void propagateChoices() {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public int mincost() {
 		try {
 			if (br4cp.minimize()) {
@@ -63,57 +58,46 @@ public class Br4cpConfigurator implements Configurator {
 		}
 	}
 
-	@Override
 	public Map<String, String> mincostCertificate() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public int maxcost() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public int getSizeOfCurrentDomainOf(String var) {
-		throw new UnsupportedOperationException();
+		return br4cp.getSizeOfCurrentDomainOf(var);
 	}
 
-	@Override
 	public boolean isPresentInCurrentDomain(String var, String val) {
 		return br4cp.isPresentInCurrentDomain(var,val);
 	}
 
-	@Override
 	public Set<String> getCurrentDomainOf(String var) {
-		throw new UnsupportedOperationException();
+		return br4cp.getCurrentDomainOf(var);
 	}
 
-	@Override
 	public Map<String, Integer> mincosts(String var) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Map<String, Integer> maxcosts(String var) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Set<String> getFreeVariables() {
-		throw new UnsupportedOperationException();
+		return br4cp.getFreeVariables();
 	}
 
-	@Override
 	public boolean hasNoChoice() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public boolean isPossiblyConsistent() {
 		return !fault;
 	}
 
-	@Override
 	public Set<String> getAlternativeDomainOf(String var) {
 		throw new UnsupportedOperationException();
 	}

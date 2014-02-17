@@ -20,6 +20,7 @@ import org.sat4j.tools.Backbone;
  * assumptions.
  * 
  * @author lonca
+ * @author leberre
  */
 public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 
@@ -224,8 +225,48 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		return Backbone.instance().getNumberOfSatCalls();
 	}
 
-	@Override
 	public boolean isPresentInCurrentDomain(String var, String val) {
 		return !this.domainReductions.contains(var+"="+val)&&(!fixedVars.contains(var)||propagatedConfigVars.contains(var+"="+val));
+	}
+
+	public int getSizeOfCurrentDomainOf(String var) {
+		if (fixedVars.contains(var)) {
+			return 1;
+		}
+		int size = varMap.getDomain(var).size();
+		for (String value : varMap.getDomain(var)) {
+			if (domainReductions.contains(value)) {
+				size--;
+			}
+		}
+		return size;
+	}
+
+	public Set<String> getCurrentDomainOf(String var) {
+		Set<String> domain = new HashSet<String>();
+		String value;
+		for (Iterator<String> it = varMap.getDomain(var).iterator();it.hasNext();) {
+			value = it.next();
+			if (!domainReductions.contains(value)) {
+				domain.add(value.replace(".", "="));
+			}
+		}
+		return domain;
+	}
+
+	public void unassign(String var) throws TimeoutException {
+		removeAssumedConfigVar(var);
+		computeBackbone(solver);
+	}
+
+	public Set<String> getFreeVariables() {
+		Set<String> all = varMap.getVars();
+		Set<String> free = new HashSet<String>();
+		for (String var : all) {
+			if (!fixedVars.contains(var)) {
+				free.add(var);
+			}
+		}
+		return free;
 	}
 }

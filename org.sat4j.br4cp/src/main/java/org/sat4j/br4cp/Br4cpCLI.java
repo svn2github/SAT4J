@@ -305,4 +305,24 @@ public class Br4cpCLI {
 		return backboneComputer.isPresentInCurrentDomain(var, val);
 	}
 
+	public int getSizeOfCurrentDomainOf(String var) {
+		return backboneComputer.getSizeOfCurrentDomainOf(var);
+	}
+
+	public Set<String> getCurrentDomainOf(String var) {
+		return backboneComputer.getCurrentDomainOf(var);
+	}
+
+	public void unassign(String var) {
+		 try {
+			backboneComputer.unassign(var);
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		}		
+	}
+
+	public Set<String> getFreeVariables() {
+		return backboneComputer.getFreeVariables();
+	}
+
 }

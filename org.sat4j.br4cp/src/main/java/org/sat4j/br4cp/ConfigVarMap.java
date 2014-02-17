@@ -156,7 +156,7 @@ public class ConfigVarMap {
 	 * one passed as a parameter (included) as a set of String.
 	 * 
 	 * @param configVar
-	 *            the configuration variable
+	 *            the configuration variable with a value (SAT encoding)
 	 * @return a set of String which contains which contains all the
 	 *         configuration variables that have the same name.
 	 */
@@ -170,6 +170,24 @@ public class ConfigVarMap {
 		return res;
 	}
 
+	/**
+	 * Returns all the configuration variables which have the same name as the
+	 * one passed as a parameter (included) as a set of String.
+	 * 
+	 * @param name
+	 *            the configuration variable with no value (original encoding)
+	 * @return a set of String which contains which contains all the
+	 *         configuration variables that have the same name.
+	 */
+	public Set<String> getDomain(String name) {
+		Set<Integer> versions = this.configVarDomains.get(name);
+		Set<String> res = new HashSet<String>();
+		for (Integer v : versions) {
+			res.add(name + "." + v.toString());
+		}
+		return res;
+	}
+	
 	/**
 	 * Sets a configuration variable (and all the ones which have the same name)
 	 * as optional. This method must be called for some other, included
@@ -217,4 +235,7 @@ public class ConfigVarMap {
 		return this.additionalVars.contains(s);
 	}
 
+	public Set<String> getVars() {
+		return this.configVarDomains.keySet();
+	}
 }

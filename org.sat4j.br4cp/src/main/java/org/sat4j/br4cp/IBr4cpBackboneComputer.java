@@ -25,7 +25,7 @@ public interface IBr4cpBackboneComputer {
 	 * @throws ContradictionException
 	 *             if the new configuration variable causes a contradiction
 	 */
-	public void addAssumption(String configVar) throws TimeoutException,
+	void addAssumption(String configVar) throws TimeoutException,
 			ContradictionException;
 
 	/**
@@ -37,7 +37,7 @@ public interface IBr4cpBackboneComputer {
 	 * @throws TimeoutException
 	 *             if the computation time exceed the solver given time
 	 */
-	public void setOptionalConfigVarAsNotInstalled(String optConfigVar)
+	void setOptionalConfigVarAsNotInstalled(String optConfigVar)
 			throws TimeoutException;
 
 	/**
@@ -49,13 +49,12 @@ public interface IBr4cpBackboneComputer {
 	 * @throws TimeoutException
 	 *             if the computation time exceed the solver given time.
 	 */
-	public void addAdditionalVarAssumption(String addVar)
-			throws TimeoutException;
+	void addAdditionalVarAssumption(String addVar) throws TimeoutException;
 
 	/**
 	 * Removes all the assumptions.
 	 */
-	public void clearAssumptions();
+	void clearAssumptions();
 
 	/**
 	 * Returns all the propagated configurations variables, that is the ones for
@@ -64,7 +63,7 @@ public interface IBr4cpBackboneComputer {
 	 * @return all the propagated configurations variables, that is the ones for
 	 *         which only one version is available due to the assumptions.
 	 */
-	public Set<String> propagatedConfigVars();
+	Set<String> propagatedConfigVars();
 
 	/**
 	 * Returns the variables which became unavailable due to the assumptions.
@@ -72,23 +71,23 @@ public interface IBr4cpBackboneComputer {
 	 * 
 	 * @return the variables which became unavailable due to the assumptions.
 	 */
-	public Set<String> domainReductions();
+	Set<String> domainReductions();
 
 	/**
-	 * Returns the propagated additional variables due to the assumptions, ended with "=1".
-	 * Additional variables propagated to false are not returned, see
+	 * Returns the propagated additional variables due to the assumptions, ended
+	 * with "=1". Additional variables propagated to false are not returned, see
 	 * {@link IBr4cpBackboneComputer#unavailableAdditionalVars()}
 	 * 
 	 * @return the propagated additional variables due to the assumptions.
 	 */
-	public Set<String> propagatedAdditionalVars();
-	
+	Set<String> propagatedAdditionalVars();
+
 	/**
 	 * Returns the additional variables propagated to false, ended with "=1".
 	 * 
 	 * @return the additional variables propagated to false, ended with "=1".
 	 */
-	public Set<String> unavailableAdditionalVars();
+	Set<String> unavailableAdditionalVars();
 
 	/**
 	 * Allow to get the assumptions made by the computer. The solver variables
@@ -96,22 +95,44 @@ public interface IBr4cpBackboneComputer {
 	 * 
 	 * @return the solver variables in the assumption stack
 	 */
-	public List<Set<Integer>> getSolverAssumptions();
-	
+	List<Set<Integer>> getSolverAssumptions();
+
 	/**
 	 * Returns the number of SAT calls needed to compute the backbone.
 	 * 
 	 * @return the numbers of calls to the underlying SAT solver.
 	 */
-	public int getNumberOfSATCalls();
+	int getNumberOfSATCalls();
 
 	/**
 	 * Check if a particular value is still in the domain of a variable.
 	 * 
-	 * @param var a variable
-	 * @param val a value
+	 * @param var
+	 *            a variable
+	 * @param val
+	 *            a value
 	 * @return true iff the variable is still in the domain of var
 	 */
-	public boolean isPresentInCurrentDomain(String var, String val);
+	boolean isPresentInCurrentDomain(String var, String val);
+
+	/**
+	 * Get the size of the domain of a given variable.
+	 * 
+	 * @param var
+	 * @return the size of the domain, equals to its initial size minus the non
+	 *         GIC values.
+	 */
+	int getSizeOfCurrentDomainOf(String var);
+
+	/**
+	 * 
+	 * @param var
+	 * @return
+	 */
+	Set<String> getCurrentDomainOf(String var);
+
+	void unassign(String var) throws TimeoutException;
+
+	Set<String> getFreeVariables();
 
 }
