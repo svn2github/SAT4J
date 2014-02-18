@@ -2,6 +2,7 @@ package org.sat4j.br4cp;
 
 import static org.junit.Assert.*;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -78,5 +79,12 @@ public class TestConfigurator {
 		assertFalse(configurator.getFreeVariables().contains("v19"));
 		configurator.unassign("v19");
 		assertTrue(configurator.getFreeVariables().contains("v19"));
+	}
+	
+	@Test
+	public void testMinCosts() {
+		Map<String,Integer> mincosts = configurator.mincosts("v19");
+		System.out.println(mincosts);
+		
 	}
 }
