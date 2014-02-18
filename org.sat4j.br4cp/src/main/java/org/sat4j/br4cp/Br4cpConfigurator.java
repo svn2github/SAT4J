@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assume;
-
 import br4cp.Configurator;
 
 public class Br4cpConfigurator implements Configurator {
