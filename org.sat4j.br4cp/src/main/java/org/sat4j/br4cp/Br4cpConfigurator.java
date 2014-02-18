@@ -24,7 +24,7 @@ public class Br4cpConfigurator implements Configurator {
 
 	}
 
-	public void assign(String var, String val) {
+	public void assignAndPropagate(String var, String val) {
 		fault = false;
 		try {
 			br4cp.assumeMe(var + "=" + val);
@@ -34,17 +34,12 @@ public class Br4cpConfigurator implements Configurator {
 		}
 	}
 
-	public void unassign(String var) {
+	public void unassignAndRestore(String var) {
 		br4cp.unassign(var);
 
 	}
 
-	public void propagateChoices() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public int mincost() {
+	public int minCost() {
 		try {
 			if (br4cp.minimize()) {
 				return br4cp.getObjectiveValue().intValue();
@@ -59,14 +54,18 @@ public class Br4cpConfigurator implements Configurator {
 		}
 	}
 
-	public Map<String, String> mincostCertificate() {
+	public Map<String, String> minCostConfiguration() {
 		throw new UnsupportedOperationException();
 	}
 
-	public int maxcost() {
+	public int maxCost() {
 		throw new UnsupportedOperationException();
 	}
 
+	public Map<String, String> maxCostConfiguration() {
+		throw new UnsupportedOperationException();
+	}
+	
 	public int getSizeOfCurrentDomainOf(String var) {
 		return br4cp.getSizeOfCurrentDomainOf(var);
 	}
@@ -79,17 +78,17 @@ public class Br4cpConfigurator implements Configurator {
 		return br4cp.getCurrentDomainOf(var);
 	}
 
-	public Map<String, Integer> mincosts(String var) {		
+	public Map<String, Integer> minCosts(String var) {		
 		Map<String,Integer> certificate = new HashMap<String,Integer>();
 		for (String value : getCurrentDomainOf(var)) {
-			assign(var, value);
-			certificate.put(value, mincost());
+			assignAndPropagate(var, value);
+			certificate.put(value, minCost());
 		}
-		unassign(var);
+		unassignAndRestore(var);
 		return certificate;
 	}
 
-	public Map<String, Integer> maxcosts(String var) {
+	public Map<String, Integer> maxCosts(String var) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -97,7 +96,7 @@ public class Br4cpConfigurator implements Configurator {
 		return br4cp.getFreeVariables();
 	}
 
-	public boolean hasNoChoice() {
+	public boolean isConfigurationComplete() {
 		throw new UnsupportedOperationException();
 	}
 

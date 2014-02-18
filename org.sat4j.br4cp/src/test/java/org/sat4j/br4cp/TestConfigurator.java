@@ -22,21 +22,19 @@ public class TestConfigurator {
 	
 	@Test
 	public void testReadInstance() {
-		assertTrue(configurator.mincost()>0);
+		assertTrue(configurator.minCost()>0);
 	}
 	
 	@Test
 	public void testAssume() {
-		configurator.assign("v93", "7");
-		configurator.propagateChoices();
+		configurator.assignAndPropagate("v93", "7");
 		assertTrue(configurator.isPresentInCurrentDomain("v93", "7"));
 		assertTrue(configurator.isPossiblyConsistent());
 	}
 	
 	@Test
 	public void testAssumeWrongValue() {
-		configurator.assign("v19", "10");
-		configurator.propagateChoices();
+		configurator.assignAndPropagate("v19", "10");
 		assertFalse(configurator.isPossiblyConsistent());
 	}
 	
@@ -65,9 +63,9 @@ public class TestConfigurator {
 	@Test
 	public void testUnassign() {
 		assertEquals(12,configurator.getSizeOfCurrentDomainOf("v19"));
-		configurator.assign("v19", "11");
+		configurator.assignAndPropagate("v19", "11");
 		assertEquals(1,configurator.getSizeOfCurrentDomainOf("v19"));
-		configurator.unassign("v19");
+		configurator.unassignAndRestore("v19");
 		assertEquals(12,configurator.getSizeOfCurrentDomainOf("v19"));
 	}
 	
@@ -75,15 +73,15 @@ public class TestConfigurator {
 	public void testFreeVars() {
 		System.out.println(configurator.getFreeVariables());
 		assertTrue(configurator.getFreeVariables().contains("v19"));
-		configurator.assign("v19", "7");
+		configurator.assignAndPropagate("v19", "7");
 		assertFalse(configurator.getFreeVariables().contains("v19"));
-		configurator.unassign("v19");
+		configurator.unassignAndRestore("v19");
 		assertTrue(configurator.getFreeVariables().contains("v19"));
 	}
 	
 	@Test
 	public void testMinCosts() {
-		Map<String,Integer> mincosts = configurator.mincosts("v19");
+		Map<String,Integer> mincosts = configurator.minCosts("v19");
 		System.out.println(mincosts);
 		
 	}
