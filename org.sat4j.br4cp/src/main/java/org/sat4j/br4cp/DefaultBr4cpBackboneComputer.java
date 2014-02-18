@@ -248,7 +248,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		for (Iterator<String> it = varMap.getDomain(var).iterator();it.hasNext();) {
 			value = it.next();
 			if (!domainReductions.contains(value)) {
-				domain.add(value.replace(".", "="));
+				domain.add(value.split("\\.")[1]);
 			}
 		}
 		return domain;

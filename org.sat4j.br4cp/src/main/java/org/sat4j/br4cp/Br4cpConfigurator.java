@@ -1,7 +1,10 @@
 package org.sat4j.br4cp;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.junit.Assume;
 
 import br4cp.Configurator;
 
@@ -78,8 +81,14 @@ public class Br4cpConfigurator implements Configurator {
 		return br4cp.getCurrentDomainOf(var);
 	}
 
-	public Map<String, Integer> mincosts(String var) {
-		throw new UnsupportedOperationException();
+	public Map<String, Integer> mincosts(String var) {		
+		Map<String,Integer> certificate = new HashMap<String,Integer>();
+		for (String value : getCurrentDomainOf(var)) {
+			assign(var, value);
+			certificate.put(value, mincost());
+		}
+		unassign(var);
+		return certificate;
 	}
 
 	public Map<String, Integer> maxcosts(String var) {
