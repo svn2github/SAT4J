@@ -233,8 +233,9 @@ public class BinaryClauses implements Constr, Propagatable, Serializable {
     }
 
     public void remove(UnitPropagationListener upl) {
-        // TODO: implement this method !
-        throw new UnsupportedOperationException("Not implemented yet!");
+        if (voc.watches(reason).contains(this)) {
+            voc.watches(reason).remove(this);
+        }
     }
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
