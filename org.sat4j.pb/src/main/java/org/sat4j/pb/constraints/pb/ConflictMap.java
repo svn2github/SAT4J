@@ -541,7 +541,8 @@ public class ConflictMap extends MapPb implements IConflict {
      * @return the least common factor
      */
     protected static BigInteger ppcm(BigInteger a, BigInteger b) {
-        return a.divide(a.gcd(b)).multiply(b);
+        BigInteger gcd = a.gcd(b);
+        return a.divide(gcd).multiply(b.divide(gcd));
     }
 
     /**
