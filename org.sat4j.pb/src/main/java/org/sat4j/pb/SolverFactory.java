@@ -65,6 +65,7 @@ import org.sat4j.pb.constraints.PuebloPBMinDataStructure;
 import org.sat4j.pb.core.PBDataStructureFactory;
 import org.sat4j.pb.core.PBSolver;
 import org.sat4j.pb.core.PBSolverCP;
+import org.sat4j.pb.core.PBSolverCPLong;
 import org.sat4j.pb.core.PBSolverCautious;
 import org.sat4j.pb.core.PBSolverClause;
 import org.sat4j.pb.core.PBSolverResCP;
@@ -540,6 +541,19 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return solver;
     }
 
+    private static PBSolverCP newPBCPStar(PBDataStructureFactory dsf,
+            IOrder order, boolean noRemove) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCPLong(learning, dsf, order, noRemove);
+        // PBSolverCP solver = new PBSolverCautious(learning, dsf, order,
+        // PBSolverCautious.BOUND);
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setRestartStrategy(new ArminRestarts());
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
+        return solver;
+    }
+
     private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
         return newPBCP(dsf, order, true);
     }
@@ -561,6 +575,11 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
      */
     public static IPBSolver newCuttingPlanes() {
         return newCompetPBCPMixedConstraintsObjective();
+    }
+
+    public static IPBSolver newCuttingPlanesStar() {
+        return newPBCPStar(new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), true);
     }
 
     /**
