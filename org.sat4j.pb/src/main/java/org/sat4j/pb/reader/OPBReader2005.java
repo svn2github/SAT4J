@@ -704,6 +704,8 @@ public class OPBReader2005 extends Reader implements Serializable {
 
         readMetaData();
 
+        skipComments();
+
         readVariablesExplanation();
 
         skipComments();
