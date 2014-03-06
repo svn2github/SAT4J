@@ -181,6 +181,9 @@ public class ConfigVarMap {
 	 */
 	public Set<String> getDomain(String name) {
 		Set<Integer> versions = this.configVarDomains.get(name);
+		if (versions==null) {
+			return null;
+		}
 		Set<String> res = new HashSet<String>();
 		for (Integer v : versions) {
 			res.add(name + "." + v.toString());
@@ -236,6 +239,9 @@ public class ConfigVarMap {
 	}
 
 	public Set<String> getVars() {
-		return this.configVarDomains.keySet();
+		Set<String> vars =  new HashSet<String>();
+		vars.addAll(this.configVarDomains.keySet());
+		vars.addAll(this.additionalVars);
+		return vars;
 	}
 }

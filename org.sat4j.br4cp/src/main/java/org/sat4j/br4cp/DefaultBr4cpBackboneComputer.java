@@ -35,6 +35,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	private Set<String> unavailableAdditionalVars;
 
 	private IVecInt filter;
+
 	public DefaultBr4cpBackboneComputer(ISolver solver, ConfigVarMap varMap)
 			throws TimeoutException {
 		this.solver = solver;
@@ -50,12 +51,11 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 
 	protected void computeBackbone(ISolver solver) throws TimeoutException {
 		IVecInt assumps = new VecInt();
-			for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it
-					.hasNext();) {
-				for (Iterator<Integer> it2 = it.next().iterator(); it2
-						.hasNext();)
-					assumps.push(it2.next());
-			}
+		for (Iterator<Set<Integer>> it = solverAssumptions.iterator(); it
+				.hasNext();) {
+			for (Iterator<Integer> it2 = it.next().iterator(); it2.hasNext();)
+				assumps.push(it2.next());
+		}
 		try {
 			IVecInt backbone = Backbone.instance().compute(solver, assumps,
 					filter);
@@ -226,17 +226,27 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	}
 
 	public boolean isPresentInCurrentDomain(String var, String val) {
-		return !this.domainReductions.contains(var+"="+val)&&(!fixedVars.contains(var)||propagatedConfigVars.contains(var+"="+val));
+		return !this.domainReductions.contains(var + "=" + val)
+				&& (!fixedVars.contains(var) || propagatedConfigVars
+						.contains(var + "=" + val));
 	}
 
 	public int getSizeOfCurrentDomainOf(String var) {
 		if (fixedVars.contains(var)) {
 			return 1;
 		}
-		int size = varMap.getDomain(var).size();
-		for (String value : varMap.getDomain(var)) {
-			if (domainReductions.contains(value)) {
-				size--;
+		int size = 0;
+		Set<String> originalDomain = varMap.getDomain(var);
+		if (originalDomain == null) {
+			if (varMap.isAdditionalVar(var)) {
+				size = 2;
+			}
+		} else {
+			size = varMap.getDomain(var).size();
+			for (String value : varMap.getDomain(var)) {
+				if (domainReductions.contains(value)) {
+					size--;
+				}
 			}
 		}
 		return size;
@@ -245,10 +255,18 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	public Set<String> getCurrentDomainOf(String var) {
 		Set<String> domain = new HashSet<String>();
 		String value;
-		for (Iterator<String> it = varMap.getDomain(var).iterator();it.hasNext();) {
-			value = it.next();
-			if (!domainReductions.contains(value)) {
-				domain.add(value.split("\\.")[1]);
+		Set<String> originalDomain = varMap.getDomain(var);
+		if (originalDomain == null) {
+			if (varMap.isAdditionalVar(var)) {
+				domain.add("0");
+				domain.add("1");
+			}
+		} else {
+			for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
+				value = it.next();
+				if (!domainReductions.contains(value)) {
+					domain.add(value.split("\\.")[1]);
+				}
 			}
 		}
 		return domain;

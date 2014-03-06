@@ -85,4 +85,12 @@ public class TestConfigurator {
 		System.out.println(mincosts);
 		
 	}
+	
+	
+	@Test
+	public void testSeries() {
+		assertEquals(2,configurator.getSizeOfCurrentDomainOf("v31.0.Serie"));
+		Set<String> domain = configurator.getCurrentDomainOf("v31.0.Serie");
+		assertEquals(2,domain.size());
+	}
 }
