@@ -42,7 +42,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		this.varMap = varMap;
 		filter = new VecInt(solver.nVars());
 		for (int i = 1; i <= solver.nVars(); i++) {
-			if (varMap.isConfigVar(i)) {
+			if (varMap.isConfigVar(i)||varMap.isAdditionalVar(i)) {
 				filter.push(i);
 			}
 		}
@@ -241,8 +241,12 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		Set<String> originalDomain = varMap.getDomain(var);
 		if (originalDomain == null) {
 			if (varMap.isAdditionalVar(var)) {
-				domain.add("1");
-				if (!unavailableAdditionalVars.contains(var + "=1")) {
+				if (propagatedAdditionalVars.contains(var+"=1")) {
+				    domain.add("99");
+				} else if (unavailableAdditionalVars.contains(var + "=1")) {
+					domain.add("1");
+				} else {
+					domain.add("1");
 					domain.add("99");
 				}
 			}
@@ -259,7 +263,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 				}
 			}
 		}
-		assert !fixedVars.contains(var) || (domain.size() == 1) || varMap.isAdditionalVar(var): var + domain;
+		assert !fixedVars.contains(var) || (domain.size() == 1): var + domain;
 		return domain;
 	}
 
