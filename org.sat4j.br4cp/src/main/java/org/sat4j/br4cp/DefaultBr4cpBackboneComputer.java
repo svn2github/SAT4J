@@ -232,24 +232,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	}
 
 	public int getSizeOfCurrentDomainOf(String var) {
-		if (fixedVars.contains(var)) {
-			return 1;
-		}
-		int size = 0;
-		Set<String> originalDomain = varMap.getDomain(var);
-		if (originalDomain == null) {
-			if (varMap.isAdditionalVar(var)) {
-				size = 2;
-			}
-		} else {
-			size = varMap.getDomain(var).size();
-			for (String value : varMap.getDomain(var)) {
-				if (domainReductions.contains(value)) {
-					size--;
-				}
-			}
-		}
-		return size;
+		return getCurrentDomainOf(var).size();
 	}
 
 	public Set<String> getCurrentDomainOf(String var) {
@@ -258,8 +241,10 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		Set<String> originalDomain = varMap.getDomain(var);
 		if (originalDomain == null) {
 			if (varMap.isAdditionalVar(var)) {
-				domain.add("0");
 				domain.add("1");
+				if (!unavailableAdditionalVars.contains(var + "=1")) {
+					domain.add("99");
+				}
 			}
 		} else {
 			for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
@@ -267,8 +252,14 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 				if (!domainReductions.contains(value)) {
 					domain.add(value.split("\\.")[1]);
 				}
+				if (propagatedConfigVars.contains(value.replace('.', '='))) {
+					domain.clear();
+					domain.add(value);
+					break;
+				}
 			}
 		}
+		assert !fixedVars.contains(var) || (domain.size() == 1) || varMap.isAdditionalVar(var): var + domain;
 		return domain;
 	}
 
@@ -281,7 +272,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		Set<String> all = varMap.getVars();
 		Set<String> free = new HashSet<String>();
 		for (String var : all) {
-			if (!fixedVars.contains(var)) {
+			if (getCurrentDomainOf(var).size() > 1) {
 				free.add(var);
 			}
 		}

@@ -1,8 +1,11 @@
 package org.sat4j.br4cp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.junit.Before;
@@ -92,5 +95,21 @@ public class TestConfigurator {
 		assertEquals(2,configurator.getSizeOfCurrentDomainOf("v31.0.Serie"));
 		Set<String> domain = configurator.getCurrentDomainOf("v31.0.Serie");
 		assertEquals(2,domain.size());
+	}
+	
+	@Test
+	public void testIsComplete() {
+		Random rand = new Random(12345);
+		assertFalse(configurator.isConfigurationComplete());
+		while (!configurator.isConfigurationComplete()) {
+			Set<String> free = configurator.getFreeVariables();
+			System.out.println("free=>"+free);
+			String var = (String)free.toArray()[rand.nextInt(free.size())];
+			System.out.print(""+var+"=");
+			Set<String> domain = configurator.getCurrentDomainOf(var);
+			String val = (String)domain.toArray()[rand.nextInt(domain.size())];
+			System.out.println(val);
+			configurator.assignAndPropagate(var, val);
+		}
 	}
 }

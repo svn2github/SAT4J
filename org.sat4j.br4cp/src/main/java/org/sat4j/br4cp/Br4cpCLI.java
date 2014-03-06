@@ -110,6 +110,7 @@ public class Br4cpCLI {
 		while (!this.quit) {
 			this.outStream.print("$> ");
 			this.outStream.flush();
+			try {
 			String line = inReader.readLine();
 			if (line == null)
 				break;
@@ -123,6 +124,9 @@ public class Br4cpCLI {
 				toCall.invoke(this, new Object[] { line });
 			} catch (NoSuchMethodException e) {
 				assume(line);
+			}
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
 			}
 		}
 		this.outStream.println("Exiting. Bye!");
@@ -323,6 +327,10 @@ public class Br4cpCLI {
 
 	public Set<String> getFreeVariables() {
 		return backboneComputer.getFreeVariables();
+	}
+
+	public boolean isConfigurationComplete() {
+		return getFreeVariables().size()==0;
 	}
 
 }

@@ -97,7 +97,7 @@ public class Br4cpConfigurator implements Configurator {
 	}
 
 	public boolean isConfigurationComplete() {
-		throw new UnsupportedOperationException();
+		return br4cp.isConfigurationComplete();
 	}
 
 	public boolean isPossiblyConsistent() {
