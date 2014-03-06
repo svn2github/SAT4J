@@ -16,7 +16,6 @@ public class Sat4jConfiguratorFactory implements ConfiguratorFactory {
 		return instance;
 	}
 	
-	@Override
 	public Configurator make(Protocol p) {
 		// ready to take into account the protocols in the future
 		switch (p) {
