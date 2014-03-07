@@ -52,6 +52,9 @@ public class ConfigVarComparator implements Comparator<String> {
 					return n1.compareTo(n2);
 				}
 			}
+			if (t1[i].equals(t2[i])) {
+				continue;
+			}
 			return t1[i].compareTo(t2[i]);
 		}
 		return t1.length - t2.length;
