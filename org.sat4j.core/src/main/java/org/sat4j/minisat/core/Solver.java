@@ -1762,6 +1762,8 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                     @Override
                     public void run() {
                         Solver.this.undertimeout = false;
+                        Solver.this.timer.cancel();
+                        Solver.this.timer = null;
                     }
                 };
                 this.timer = new Timer(true);
