@@ -2166,6 +2166,9 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * @since 2.2
      */
     public IVecInt unsatExplanation() {
+        if (this.unsatExplanationInTermsOfAssumptions == null) {
+            return null;
+        }
         IVecInt copy = new VecInt(
                 this.unsatExplanationInTermsOfAssumptions.size());
         this.unsatExplanationInTermsOfAssumptions.copyTo(copy);
