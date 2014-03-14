@@ -51,6 +51,9 @@ public class TestConfigurator {
 		Set<String> values = configurator.getCurrentDomainOf("v19");
 		System.out.println(values);
 		assertEquals(12,values.size());
+		for (String value : new String[]{"0","1","2","3","4","5","6","7","8","11","12","13"}) {
+			assertTrue(values.contains(value));
+		}
 	}
 	
 	@Test
