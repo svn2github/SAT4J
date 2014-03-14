@@ -108,6 +108,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
                             / 1000.0 + "s)");
                 }
             }
+            expireTimeout();
             sfl.onUnsatTermination();
             if (isVerbose()) {
                 System.out.println(getLogPrefix()
@@ -126,6 +127,7 @@ public class OptToPBSATAdapter extends PBSolverDecorator {
                 throw e;
             }
         } catch (ContradictionException ce) {
+            expireTimeout();
             sfl.onUnsatTermination();
         }
         return satisfiable;

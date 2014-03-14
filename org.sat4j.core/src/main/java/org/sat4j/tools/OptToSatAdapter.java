@@ -108,6 +108,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
                             / 1000.0 + "s)");
                 }
             } while (this.problem.admitABetterSolution(myAssumps));
+            expireTimeout();
             sfl.onUnsatTermination();
         } catch (TimeoutException e) {
             if (isVerbose()) {
@@ -116,6 +117,7 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
                         + "s)");
             }
         } catch (ContradictionException ce) {
+            expireTimeout();
             sfl.onUnsatTermination();
         }
         return true;

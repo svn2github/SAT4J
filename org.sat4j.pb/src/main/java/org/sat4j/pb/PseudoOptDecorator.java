@@ -132,7 +132,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     @Override
     public boolean isSatisfiable(IVecInt assumps, boolean global)
             throws TimeoutException {
-        boolean result = super.isSatisfiable(assumps, true);
+        boolean result = super.isSatisfiable(assumps, global);
         if (result) {
             this.prevmodel = super.model();
             this.prevmodelwithadditionalvars = super
@@ -158,7 +158,7 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     @Override
     public boolean isSatisfiable(IVecInt assumps) throws TimeoutException {
-        return isSatisfiable(assumps, true);
+        return isSatisfiable(assumps, false);
     }
 
     @Override
