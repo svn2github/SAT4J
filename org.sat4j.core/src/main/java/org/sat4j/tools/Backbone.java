@@ -172,7 +172,7 @@ public final class Backbone {
             IConstr constr;
             while (!litsToTest.isEmpty()) {
                 try {
-                    constr = solver.addClause(litsToTest);
+                    constr = solver.addBlockingClause(litsToTest);
                     if (solver.isSatisfiable(candidates)) {
                         implicant = solver.primeImplicant();
                         removeVarNotPresentAndSatisfiedLits(implicant,
