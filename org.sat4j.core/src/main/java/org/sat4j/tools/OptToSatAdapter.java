@@ -45,7 +45,6 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
 
     private final IOptimizationProblem problem;
 
-    private boolean optimalValueForced = false;
     private final IVecInt assumps = new VecInt();
 
     private long begin;
@@ -66,7 +65,6 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
     @Override
     public void reset() {
         super.reset();
-        this.optimalValueForced = false;
     }
 
     @Override
