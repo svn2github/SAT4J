@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import java.math.BigInteger;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.IIntegerPBSolver;
@@ -34,7 +34,7 @@ public class MinSumOWAOptimizerTest {
         this.satAdapter = new OptToPBSATAdapter(optimizer);
     }
 
-    @Ignore
+    @Test
     public void test1() {
         try {
             optimizer.newVar(7);
