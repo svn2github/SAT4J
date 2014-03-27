@@ -10,7 +10,7 @@ public class Br4cpConfigurator implements Configurator {
 
 	private Br4cpCLI br4cp;
 	private boolean fault = false;
-	
+
 	public void readProblem(String problemName) {
 		String instance = problemName + ".txt";
 		String prices = problemName + "_prices.txt";
@@ -22,6 +22,10 @@ public class Br4cpConfigurator implements Configurator {
 			System.exit(0);
 		}
 
+	}
+
+	public void initialize() {
+		br4cp.initialize();
 	}
 
 	public void assignAndPropagate(String var, String val) {
@@ -65,21 +69,21 @@ public class Br4cpConfigurator implements Configurator {
 	public Map<String, String> maxCostConfiguration() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public int getSizeOfCurrentDomainOf(String var) {
 		return br4cp.getSizeOfCurrentDomainOf(var);
 	}
 
 	public boolean isPresentInCurrentDomain(String var, String val) {
-		return br4cp.isPresentInCurrentDomain(var,val);
+		return br4cp.isPresentInCurrentDomain(var, val);
 	}
 
 	public Set<String> getCurrentDomainOf(String var) {
 		return br4cp.getCurrentDomainOf(var);
 	}
 
-	public Map<String, Integer> minCosts(String var) {		
-		Map<String,Integer> certificate = new HashMap<String,Integer>();
+	public Map<String, Integer> minCosts(String var) {
+		Map<String, Integer> certificate = new HashMap<String, Integer>();
 		for (String value : getCurrentDomainOf(var)) {
 			assignAndPropagate(var, value);
 			certificate.put(value, minCost());

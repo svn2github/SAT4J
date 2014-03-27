@@ -34,6 +34,8 @@ public class Br4cpCLI {
 	private final AllMUSes muses = new AllMUSes(true, SolverFactory.instance());
 	private Br4cpAraliaReader reader;
 
+	private double timeReduced;
+
 	public Br4cpCLI(String instance, String prices) throws Exception {
 		solver = muses.getSolverInstance();
 		pbSolver = (IPBSolver) solver.getSolvingEngine();
@@ -41,13 +43,25 @@ public class Br4cpCLI {
 		varMap = new ConfigVarMap(solver);
 		this.outStream = Options.getInstance().getOutStream();
 		readInstance(instance, prices, solver, varMap);
+	}
+
+	public void initialize() {
 		long startTime = System.currentTimeMillis();
 		this.outStream.println("computing problem backbone...");
 		backboneComputer = Options.getInstance().getBackboneComputer(solver,
 				varMap);
 		printAsserted(backboneComputer, "rootPropagated:", "rootReduced:");
+		timeReduced = (System.currentTimeMillis() - startTime) / 1000.0;
 		this.outStream.printf("done in %.3fs with %d SAT calls.%n%n",
-				(System.currentTimeMillis() - startTime) / 1000.,backboneComputer.getNumberOfSATCalls());
+				timeReduced, backboneComputer.getNumberOfSATCalls());
+	}
+
+	public double getTimeForMaintainingGIC() {
+		return timeReduced;
+	}
+
+	public Set<String> getNonGICValues() {
+		return backboneComputer.domainReductions();
 	}
 
 	private void printAsserted(IBr4cpBackboneComputer backboneComputer,
@@ -111,20 +125,20 @@ public class Br4cpCLI {
 			this.outStream.print("$> ");
 			this.outStream.flush();
 			try {
-			String line = inReader.readLine();
-			if (line == null)
-				break;
-			if (line.length() == 0) {
-				continue;
-			}
-			try {
-				Method toCall = getClass().getDeclaredMethod(
-						line.substring(1).split(" ")[0],
-						new Class<?>[] { String.class });
-				toCall.invoke(this, new Object[] { line });
-			} catch (NoSuchMethodException e) {
-				assume(line);
-			}
+				String line = inReader.readLine();
+				if (line == null)
+					break;
+				if (line.length() == 0) {
+					continue;
+				}
+				try {
+					Method toCall = getClass().getDeclaredMethod(
+							line.substring(1).split(" ")[0],
+							new Class<?>[] { String.class });
+					toCall.invoke(this, new Object[] { line });
+				} catch (NoSuchMethodException e) {
+					assume(line);
+				}
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
@@ -318,11 +332,11 @@ public class Br4cpCLI {
 	}
 
 	public void unassign(String var) {
-		 try {
+		try {
 			backboneComputer.unassign(var);
 		} catch (TimeoutException e) {
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	public Set<String> getFreeVariables() {
@@ -330,7 +344,6 @@ public class Br4cpCLI {
 	}
 
 	public boolean isConfigurationComplete() {
-		return getFreeVariables().size()==0;
+		return getFreeVariables().size() == 0;
 	}
-
 }

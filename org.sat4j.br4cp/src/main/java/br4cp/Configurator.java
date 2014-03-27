@@ -18,6 +18,15 @@ public interface Configurator {
 	void readProblem(String problemName);
 
 	/**
+	 * Such method should be used by the configurator to perform the tasks on
+	 * the configuration problem before the first user choice. This method can
+	 * be used for instance to maintain GIC on the initial configuration
+	 * problem. This method MUST BE called after {@link #readProblem(String)}
+	 * and before any other method of the interface.
+	 */
+	void initialize();
+
+	/**
 	 * Assign a specific value to a variable.
 	 * 
 	 * @param var
@@ -45,7 +54,8 @@ public interface Configurator {
 	/**
 	 * Provide a full configuration of minimal cost.
 	 * 
-	 * @return a full assignment var->value of minimal cost (given by {@link #minCost()}
+	 * @return a full assignment var->value of minimal cost (given by
+	 *         {@link #minCost()}
 	 */
 	Map<String, String> minCostConfiguration();
 
@@ -56,11 +66,12 @@ public interface Configurator {
 	 * @return the cost of the configuration
 	 */
 	int maxCost();
-	
+
 	/**
 	 * Provide a full configuration of maximal cost.
 	 * 
-	 * @return a full assignment var->value of maximal cost (given by {@link #maxCost()}
+	 * @return a full assignment var->value of maximal cost (given by
+	 *         {@link #maxCost()}
 	 */
 	Map<String, String> maxCostConfiguration();
 
@@ -89,7 +100,7 @@ public interface Configurator {
 	 *            a variable id
 	 * @return a map value->mincost
 	 */
-	Map<String, Integer> minCosts(String var); 
+	Map<String, Integer> minCosts(String var);
 
 	/**
 	 * Retrieve for each valid value of the variable the maximal cost of the
@@ -99,21 +110,21 @@ public interface Configurator {
 	 *            a variable id
 	 * @return a map value->maxcost
 	 */
-	Map<String, Integer> maxCosts(String var); 
+	Map<String, Integer> maxCosts(String var);
 
 	/**
 	 * Get all unassigned variables.
 	 * 
 	 * @return a set of non assigned variables.
 	 */
-	Set<String> getFreeVariables(); 
+	Set<String> getFreeVariables();
 
 	/**
 	 * Check that there is no more choice for the user.
 	 * 
 	 * @return true iff there is exactly one value left per variable.
 	 */
-	boolean isConfigurationComplete(); 
+	boolean isConfigurationComplete();
 
 	/**
 	 * Check there there is at least one value in each domain. Note that
@@ -122,7 +133,7 @@ public interface Configurator {
 	 * 
 	 * @return true iff there is at least one value left per variable.
 	 */
-	boolean isPossiblyConsistent(); 
+	boolean isPossiblyConsistent();
 
 	Set<String> getAlternativeDomainOf(String var);
 }
