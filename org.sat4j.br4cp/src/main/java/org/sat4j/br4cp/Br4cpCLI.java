@@ -16,6 +16,7 @@ import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.pb.SolverFactory;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IGroupSolver;
+import org.sat4j.specs.IProblem;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.AllMUSes;
@@ -62,6 +63,10 @@ public class Br4cpCLI {
 
 	public Set<String> getNonGICValues() {
 		return backboneComputer.domainReductions();
+	}
+
+	public IProblem getProblem() {
+		return solver;
 	}
 
 	private void printAsserted(IBr4cpBackboneComputer backboneComputer,
