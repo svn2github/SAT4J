@@ -53,6 +53,9 @@ public class ConfigVarMap {
 				}
 				versions.add(version);
 			} catch (NumberFormatException e) {
+				Set<Integer> versions = new HashSet<Integer>();
+				versions.add(1);
+				this.configVarDomains.put(configVar, versions);
 				this.additionalVars.add(configVar);
 			}
 		}
@@ -96,7 +99,7 @@ public class ConfigVarMap {
 		String name = this.solverVarToConfigVar.get(solverVar);
 		return (name != null) && this.additionalVars.contains(name);
 	}
-	
+
 	/**
 	 * Checks if a solver variable or its negation is mapped with an additional
 	 * variable
@@ -106,7 +109,13 @@ public class ConfigVarMap {
 	 * @return true iff a solver variable is mapped with an additional variable
 	 */
 	public boolean isAdditionalVar(String var) {
-		return this.additionalVars.contains(var) || this.additionalVars.contains(var.substring(0, Math.max(var.lastIndexOf('.'), var.lastIndexOf('='))));
+		return this.additionalVars.contains(var)
+				|| this.additionalVars.contains(var.substring(
+						0,
+						Math.max(
+								0,
+								Math.max(var.lastIndexOf('_'),
+										var.lastIndexOf('=')))));
 	}
 
 	/**
@@ -165,7 +174,7 @@ public class ConfigVarMap {
 		Set<Integer> versions = this.configVarDomains.get(name);
 		Set<String> res = new HashSet<String>();
 		for (Integer v : versions) {
-			res.add(name + "." + v.toString());
+			res.add(name + "_" + v.toString());
 		}
 		return res;
 	}
@@ -181,16 +190,16 @@ public class ConfigVarMap {
 	 */
 	public Set<String> getDomain(String name) {
 		Set<Integer> versions = this.configVarDomains.get(name);
-		if (versions==null) {
+		if (versions == null) {
 			return null;
 		}
 		Set<String> res = new HashSet<String>();
 		for (Integer v : versions) {
-			res.add(name + "." + v.toString());
+			res.add(name + "_" + v.toString());
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Sets a configuration variable (and all the ones which have the same name)
 	 * as optional. This method must be called for some other, included
@@ -200,7 +209,15 @@ public class ConfigVarMap {
 	 *            the configuration variable
 	 */
 	public void setAsOptionalConfigVar(String configVar) {
-		this.optionalConfigVars.add(extractVarName(configVar));
+		String varName = extractVarName(configVar);
+		this.optionalConfigVars.add(varName);
+		Set<Integer> versions = this.configVarDomains.get(varName);
+		if (versions == null)
+			versions = this.configVarDomains.get(configVar);
+		if (versions == null) {
+			throw new IllegalStateException("Missing domain for " + configVar);
+		}
+		versions.add(99);
 	}
 
 	/**
@@ -215,22 +232,22 @@ public class ConfigVarMap {
 	}
 
 	private String extractVarName(String var) {
-		int lastDotIndex = Math.max(var.lastIndexOf('.'), var.lastIndexOf('='));
-		if(lastDotIndex == -1){
+		int lastDotIndex = Math.max(var.lastIndexOf('_'), var.lastIndexOf('='));
+		if (lastDotIndex == -1) {
 			throw new IllegalArgumentException(var + " is not defined");
 		}
 		return var.substring(0, lastDotIndex);
 	}
 
 	private Integer extractVarVersion(String var) {
-		int lastDotIndex = Math.max(var.lastIndexOf('.'), var.lastIndexOf('='));
-		if(lastDotIndex == -1){
+		int lastDotIndex = Math.max(var.lastIndexOf('_'), var.lastIndexOf('='));
+		if (lastDotIndex == -1) {
 			throw new IllegalArgumentException(var + " is not defined");
 		}
 		try {
 			return Integer.valueOf(var.substring(lastDotIndex + 1));
 		} catch (NumberFormatException e) {
-			throw new NumberFormatException(var+" has no version or state");
+			throw new NumberFormatException(var + " has no version or state");
 		}
 	}
 
@@ -239,7 +256,7 @@ public class ConfigVarMap {
 	}
 
 	public Set<String> getVars() {
-		Set<String> vars =  new HashSet<String>();
+		Set<String> vars = new HashSet<String>();
 		vars.addAll(this.configVarDomains.keySet());
 		vars.addAll(this.additionalVars);
 		return vars;

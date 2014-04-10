@@ -36,7 +36,7 @@ public class Br4cpScenarioSimulator {
 	private PrintStream outStream = System.out;
 	private int totalNumberofSATCalls;
 	private int overalTotalNumberOfSATCalls;
-	
+
 	public Br4cpScenarioSimulator(String instance, String scenario)
 			throws IOException, TimeoutException {
 		solver = muses.getSolverInstance();
@@ -91,7 +91,8 @@ public class Br4cpScenarioSimulator {
 		this.outStream.printf(this.solver.getLogPrefix()
 				+ "solving done in %.3fs.\n",
 				(System.currentTimeMillis() - startTime) / 1000.);
-		this.outStream.printf("Total number of SAT calls for the scenario: %d%n",
+		this.outStream.printf(
+				"Total number of SAT calls for the scenario: %d%n",
 				overalTotalNumberOfSATCalls);
 		reader.close();
 	}
@@ -113,11 +114,10 @@ public class Br4cpScenarioSimulator {
 			String word) throws TimeoutException {
 		this.outStream.println(this.solver.getLogPrefix() + "selected : "
 				+ word);
-		String assump = word.replaceAll("_", ".");
-		assump = assump.replaceAll("=", ".");
+		String assump = word.replaceAll("=", "_");
 		Set<String> propagated = backboneComputer.propagatedConfigVars();
 		if (propagated.contains(assump)) {
-			this.outStream.println("Skipping "+assump);
+			this.outStream.println("Skipping " + assump);
 			return;
 		}
 		try {
@@ -145,12 +145,10 @@ public class Br4cpScenarioSimulator {
 	private void printNewlyAsserted(IBr4cpBackboneComputer backboneComputer) {
 		this.outStream.print(this.solver.getLogPrefix());
 		this.outStream.print("number of SAT calls: ");
-		this.outStream.println(backboneComputer
-				.getNumberOfSATCalls());
-		totalNumberofSATCalls += backboneComputer
-				.getNumberOfSATCalls();
-//		printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
-//				+ "propagated :", this.solver.getLogPrefix() + "reduced :");
+		this.outStream.println(backboneComputer.getNumberOfSATCalls());
+		totalNumberofSATCalls += backboneComputer.getNumberOfSATCalls();
+		// printNewlyAsserted(backboneComputer, this.solver.getLogPrefix()
+		// + "propagated :", this.solver.getLogPrefix() + "reduced :");
 		this.nbRemovedValues.add(Integer.valueOf(backboneComputer
 				.domainReductions().size()));
 	}

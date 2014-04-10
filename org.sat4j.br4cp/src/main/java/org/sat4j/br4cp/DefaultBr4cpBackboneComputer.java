@@ -42,7 +42,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		this.varMap = varMap;
 		filter = new VecInt(solver.nVars());
 		for (int i = 1; i <= solver.nVars(); i++) {
-			if (varMap.isConfigVar(i)||varMap.isAdditionalVar(i)) {
+			if (varMap.isConfigVar(i) || varMap.isAdditionalVar(i)) {
 				filter.push(i);
 			}
 		}
@@ -69,7 +69,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			for (Iterator<Integer> it = removed.iterator(); it.hasNext();) {
 				String nextVar = this.varMap.getConfigVar(Math.abs(it.next()));
 				this.fixedVars.remove(nextVar.substring(0,
-						nextVar.lastIndexOf('.')));
+						nextVar.lastIndexOf('_')));
 			}
 			throw new IllegalArgumentException(
 					"last assumption implies a contradiction");
@@ -88,14 +88,14 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			int next = it.next();
 			if ((next > 0) && this.varMap.isConfigVar(next)) {
 				String name = this.varMap.getConfigVar(next);
-				int lastDotIndex = name.lastIndexOf('.');
+				int lastDotIndex = name.lastIndexOf('_');
 				name = name.substring(0, lastDotIndex) + "="
 						+ name.substring(lastDotIndex + 1);
 				this.fixedVars.add(name.substring(0, lastDotIndex));
 				this.propagatedConfigVars.add(name);
 			} else if ((next < 0) && this.varMap.isConfigVar(next)) {
 				String name = this.varMap.getConfigVar(-next);
-				int lastDotIndex = name.lastIndexOf('.');
+				int lastDotIndex = name.lastIndexOf('_');
 				name = name.substring(0, lastDotIndex) + "="
 						+ name.substring(lastDotIndex + 1);
 				this.domainReductions.add(name);
@@ -121,7 +121,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	public void addAssumption(String configVar) throws TimeoutException,
 			ContradictionException {
 		if (this.varMap.configVarExists(configVar)) {
-			int lastDotIndex = configVar.lastIndexOf('.');
+			int lastDotIndex = configVar.lastIndexOf('_');
 			String configVarName = configVar.substring(0, lastDotIndex);
 			if (this.fixedVars.contains(configVarName)
 					&& Options.getInstance().areReplacementAllowed()) {
@@ -146,7 +146,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			for (Iterator<Integer> it2 = nextSet.iterator(); it2.hasNext();) {
 				String nextVar = this.varMap.getConfigVar(Math.abs(it2.next()));
 				String nextVarName = nextVar.substring(0,
-						nextVar.lastIndexOf('.'));
+						nextVar.lastIndexOf('_'));
 				if (configVarName.equals(nextVarName)) {
 					it.remove();
 					break;
@@ -166,13 +166,13 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		}
 		this.solverAssumptions.add(newAssumps);
 		this.fixedVars.add(optConfigVar.substring(0,
-				optConfigVar.lastIndexOf('.')));
+				optConfigVar.lastIndexOf('_')));
 		computeBackbone(solver);
 	}
 
 	public void addAdditionalVarAssumption(String addVar)
 			throws TimeoutException {
-		int lastDotIndex = addVar.lastIndexOf('.');
+		int lastDotIndex = addVar.lastIndexOf('_');
 		String name = addVar.substring(0, lastDotIndex);
 		int state;
 		try {
@@ -181,10 +181,10 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 			throw new NumberFormatException(addVar + " has no version or state");
 		}
 		Set<Integer> newAssumpSet = new HashSet<Integer>();
-		if (state == 1) {
-			newAssumpSet.add(this.varMap.getSolverVar(name));
-		} else {
+		if (state == 99) {
 			newAssumpSet.add(-this.varMap.getSolverVar(name));
+		} else {
+			newAssumpSet.add(this.varMap.getSolverVar(name));
 		}
 		this.solverAssumptions.add(newAssumpSet);
 		this.fixedVars.add(name);
@@ -239,31 +239,25 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		Set<String> domain = new HashSet<String>();
 		String value;
 		Set<String> originalDomain = varMap.getDomain(var);
-		if (originalDomain == null) {
-			if (varMap.isAdditionalVar(var)) {
-				if (propagatedAdditionalVars.contains(var+"=1")) {
-				    domain.add("99");
-				} else if (unavailableAdditionalVars.contains(var + "=1")) {
-					domain.add("1");
-				} else {
-					domain.add("1");
-					domain.add("99");
-				}
+		assert originalDomain != null;
+		for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
+			value = it.next();
+			if (!domainReductions.contains(value)
+					&& !unavailableAdditionalVars.contains(value)) {
+				String[] values = value.split("\\_");
+				domain.add(values[values.length - 1]);
 			}
-		} else {
-			for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
-				value = it.next();
-				if (!domainReductions.contains(value)) {
-					domain.add(value.split("\\.")[1]);
-				}
-				if (propagatedConfigVars.contains(value.replace('.', '='))) {
-					domain.clear();
-					domain.add(value);
-					break;
-				}
+			int lastDotIndex = value.lastIndexOf('_');
+			value = value.substring(0, lastDotIndex) + "="
+					+ value.substring(lastDotIndex + 1);
+			if (propagatedConfigVars.contains(value)
+					|| propagatedAdditionalVars.contains(value)) {
+				domain.clear();
+				domain.add(value);
+				break;
 			}
 		}
-		assert !fixedVars.contains(var) || (domain.size() == 1): var + domain;
+		assert !fixedVars.contains(var) || (domain.size() == 1) : var + domain;
 		return domain;
 	}
 

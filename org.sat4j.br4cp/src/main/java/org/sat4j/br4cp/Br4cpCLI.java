@@ -169,8 +169,7 @@ public class Br4cpCLI {
 		IVecInt assumptions = new VecInt();
 		String[] words = line.split(" ");
 		for (int i = 1; i < words.length; i++) {
-			String assump = words[i].replaceAll("_", ".");
-			assump = assump.replaceAll("=", ".");
+			String assump = words[i].replaceAll("=", "_");
 			assumptions.push((assump.charAt(0) == '-') ? (this.varMap
 					.getSolverVar(assump.substring(1))) : (-this.varMap
 					.getSolverVar(assump)));
@@ -209,8 +208,7 @@ public class Br4cpCLI {
 	}
 
 	public boolean assumeMe(String line) throws Exception {
-		String assump = line.replaceAll("_", ".");
-		assump = assump.replaceAll("=", ".");
+		String assump = line.replaceAll("=", "_");
 		if (this.varMap.isAdditionalVar(assump)) {
 			backboneComputer.addAdditionalVarAssumption(assump);
 		} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
@@ -255,7 +253,7 @@ public class Br4cpCLI {
 									&& !varName.contains("Serie")
 									&& !varName.contains("Pack")
 									&& !varName.contains("Option")) {
-								varName = varName.replace(".", "=");
+								varName = varName.replace("_", "=");
 							}
 							this.outStream.print(varName + " ");
 						}

@@ -5,8 +5,8 @@ import java.util.Comparator;
 public class ConfigVarComparator implements Comparator<String> {
 
 	public int compare(String arg0, String arg1) {
-		String[] t1 = arg0.split("[.=]");
-		String[] t2 = arg1.split("[.=]");
+		String[] t1 = arg0.split("[_=]");
+		String[] t2 = arg1.split("[_=]");
 		for (int i = 0; i < Math.min(t1.length, t2.length); ++i) {
 			boolean firstIsInteger = false, secondIsInteger = false;
 			Integer n1 = null, n2 = null;
