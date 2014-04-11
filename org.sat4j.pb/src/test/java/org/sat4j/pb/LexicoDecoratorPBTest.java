@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
+import java.math.BigInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,15 +59,16 @@ public class LexicoDecoratorPBTest {
         clause.push(1).push(2).push(3).push(4).push(5).push(6).push(7).push(8);
         lexico.addCriterion(clause);
 
+        IPBSolver solver = new OptToPBSATAdapter(lexico);
         try {
-            if (lexico.admitABetterSolution()) {
+            if (solver.isSatisfiable()) {
                 int[] expectedModel = new int[] { -1, 2, -3, -4, -5, 6, -7, -8 };
-                int[] actualModel = lexico.model();
+                int[] actualModel = solver.model();
                 for (int i = 0; i < expectedModel.length; ++i) {
                     assertEquals(expectedModel[i], actualModel[i]);
                 }
-                System.out.println(Arrays.toString(actualModel));
-                System.out.println(lexico.getObjectiveValue());
+                // System.out.println(Arrays.toString(actualModel));
+                assertEquals(BigInteger.valueOf(2), lexico.getObjectiveValue());
 
             }
         } catch (TimeoutException e) {
