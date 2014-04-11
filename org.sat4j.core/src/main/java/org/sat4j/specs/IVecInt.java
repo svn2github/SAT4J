@@ -210,4 +210,12 @@ public interface IVecInt extends Serializable {
      * @since 2.3.1
      */
     IVecInt[] subset(int k);
+
+    /**
+     * Clone the object.
+     * 
+     * @return a copy of the object.
+     * @since 2.3.6
+     */
+    IVecInt clone();
 }

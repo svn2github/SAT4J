@@ -216,4 +216,11 @@ public final class ReadOnlyVecInt implements IVecInt {
     public void sort(Comparator<Integer> comparator) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public IVecInt clone() {
+        IVecInt cloned = new VecInt(this.size());
+        this.copyTo(cloned);
+        return cloned;
+    }
 }

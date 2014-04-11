@@ -188,4 +188,10 @@ public final class ReadOnlyVec<T> implements IVec<T> {
         return this.vec.equals(obj);
     }
 
+    @Override
+    public IVec<T> clone() {
+        IVec<T> cloned = new Vec<T>(this.size());
+        this.copyTo(cloned);
+        return new ReadOnlyVec<T>(cloned);
+    }
 }

@@ -199,4 +199,12 @@ public interface IVec<T> extends Serializable {
      * @since 2.2
      */
     int indexOf(T element);
+
+    /**
+     * Clone the object.
+     * 
+     * @return a copy of the object.
+     * @since 2.3.6
+     */
+    IVec<T> clone();
 }

@@ -506,4 +506,11 @@ public final class Vec<T> implements IVec<T> {
         }
         return -1;
     }
+
+    @Override
+    public IVec<T> clone() {
+        IVec<T> cloned = new Vec<T>(this.size());
+        this.copyTo(cloned);
+        return cloned;
+    }
 }

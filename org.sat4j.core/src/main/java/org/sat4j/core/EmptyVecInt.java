@@ -189,4 +189,9 @@ final class EmptyVecInt implements IVecInt {
 
     public void sort(Comparator<Integer> comparator) {
     }
+
+    @Override
+    public IVecInt clone() {
+        return new EmptyVecInt();
+    }
 }

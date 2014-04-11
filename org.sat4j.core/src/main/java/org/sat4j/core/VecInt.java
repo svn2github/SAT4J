@@ -641,4 +641,10 @@ public final class VecInt implements IVecInt {
         sort(0, this.nbelem, comparator);
     }
 
+    @Override
+    public IVecInt clone() {
+        IVecInt cloned = new VecInt(this.size());
+        this.copyTo(cloned);
+        return cloned;
+    }
 }
