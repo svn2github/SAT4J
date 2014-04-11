@@ -88,7 +88,7 @@ public class OPBReader2012 extends OPBReader2010 {
     protected void readObjective() throws IOException, ParseFormatException {
         super.readObjective();
         if (lexico != null && !lits.isEmpty()) {
-            lexico.addCriterion(lits, coeffs);
+            lexico.addCriterion(lits.clone(), coeffs.clone());
             lits.clear();
             coeffs.clear();
             readObjective();
