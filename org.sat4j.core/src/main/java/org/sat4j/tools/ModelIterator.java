@@ -175,12 +175,8 @@ public class ModelIterator extends SolverDecorator<ISolver> {
     public int[] primeImplicant() {
         int[] last = super.primeImplicant();
         this.nbModelFound += Math.pow(2, nVars() - last.length);
-        IVecInt clause = new VecInt(last.length);
-        for (int q : last) {
-            clause.push(-q);
-        }
         try {
-            addBlockingClause(clause);
+            discardCurrentModel();
         } catch (ContradictionException e) {
             this.trivialfalsity = true;
         }
