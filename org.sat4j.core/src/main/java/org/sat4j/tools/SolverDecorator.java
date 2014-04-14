@@ -252,6 +252,25 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
     /*
      * (non-Javadoc)
      * 
+     * @see org.sat4j.ISolver#discardCurrentModel()
+     */
+    public IConstr discardCurrentModel() throws ContradictionException {
+        return this.solver.discardCurrentModel();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.sat4j.ISolver#createBlockingClauseForCurrentModel()
+     */
+    public IVecInt createBlockingClauseForCurrentModel()
+            throws ContradictionException {
+        return this.solver.createBlockingClauseForCurrentModel();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.sat4j.ISolver#addAtMost(org.sat4j.datatype.VecInt, int)
      */
     public IConstr addAtMost(IVecInt literals, int degree)

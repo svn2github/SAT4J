@@ -439,6 +439,21 @@ public class ManyCore<S extends ISolver> extends
         return group;
     }
 
+    public IVecInt createBlockingClauseForCurrentModel()
+            throws ContradictionException {
+        return this.solvers.get(this.winnerId)
+                .createBlockingClauseForCurrentModel();
+    }
+
+    public IConstr discardCurrentModel() throws ContradictionException {
+        ConstrGroup group = new ConstrGroup(false);
+        IVecInt blockingClause = createBlockingClauseForCurrentModel();
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addBlockingClause(blockingClause));
+        }
+        return group;
+    }
+
     public boolean removeSubsumedConstr(IConstr c) {
         if (c instanceof ConstrGroup) {
             ConstrGroup group = (ConstrGroup) c;

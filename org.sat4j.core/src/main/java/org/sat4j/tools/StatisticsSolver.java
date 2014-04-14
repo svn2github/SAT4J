@@ -226,6 +226,15 @@ public class StatisticsSolver implements ISolver {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 
+    public IConstr discardCurrentModel() throws ContradictionException {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+    }
+
+    public IVecInt createBlockingClauseForCurrentModel()
+            throws ContradictionException {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+    }
+
     public boolean removeConstr(IConstr c) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }

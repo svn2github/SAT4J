@@ -2121,6 +2121,19 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         return addClause(literals);
     }
 
+    public IConstr discardCurrentModel() throws ContradictionException {
+        return addClause(createBlockingClauseForCurrentModel());
+    }
+
+    public IVecInt createBlockingClauseForCurrentModel()
+            throws ContradictionException {
+        IVecInt clause = new VecInt();
+        for (int i = 0; i < decisions.size(); i++) {
+            clause.push(-decisions.get(i));
+        }
+        return clause;
+    }
+
     /**
      * @since 2.1
      */

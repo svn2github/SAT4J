@@ -133,6 +133,23 @@ public interface ISolver extends IProblem, Serializable {
     IConstr addBlockingClause(IVecInt literals) throws ContradictionException;
 
     /**
+     * Discards current model. This can be used when iterating on models instead
+     * of adding a blocking clause.
+     * 
+     * @return
+     * @throws ContradictionException
+     */
+    IConstr discardCurrentModel() throws ContradictionException;
+
+    /**
+     * Creates a VecInt representing a clause for discarding current model
+     * 
+     * @return
+     * @throws ContradictionException
+     */
+    IVecInt createBlockingClauseForCurrentModel() throws ContradictionException;
+
+    /**
      * Remove a constraint returned by one of the add method from the solver.
      * All learned clauses will be cleared.
      * 
