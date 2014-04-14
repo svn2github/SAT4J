@@ -32,6 +32,7 @@ package org.sat4j;
 import java.io.PrintWriter;
 
 import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ILogAble;
@@ -53,6 +54,9 @@ final class OptimizationMode implements ILauncherMode {
     private int nbSolutions;
     private ExitCode exitCode = ExitCode.UNKNOWN;
     private boolean isIncomplete = false;
+    private PrintWriter out;
+    private long beginTime;
+    private IOptimizationProblem problem;
 
     public void setIncomplete(boolean isIncomplete) {
         this.isIncomplete = isIncomplete;
@@ -108,6 +112,10 @@ final class OptimizationMode implements ILauncherMode {
         IOptimizationProblem optproblem = (IOptimizationProblem) problem;
         exitCode = ExitCode.UNKNOWN;
 
+        this.out = out;
+        this.beginTime = beginTime;
+        this.problem = optproblem;
+
         try {
             while (optproblem.admitABetterSolution()) {
                 ++this.nbSolutions;
@@ -149,7 +157,15 @@ final class OptimizationMode implements ILauncherMode {
     }
 
     public void onSolutionFound(int[] solution) {
-        throw new UnsupportedOperationException("Not implemented yet!");
+        this.nbSolutions++;
+        // this.exitCode = ExitCode.SATISFIABLE;
+        this.out.printf("c Found solution #%d  (%.2f)s%n", nbSolutions,
+                (System.currentTimeMillis() - beginTime) / 1000.0);
+        this.out.println("c Value of objective function : "
+                + problem.getObjectiveValue());
+        if (System.getProperty("printallmodels") != null) {
+            this.out.println(new VecInt(solution));
+        }
     }
 
     public void onSolutionFound(IVecInt solution) {
