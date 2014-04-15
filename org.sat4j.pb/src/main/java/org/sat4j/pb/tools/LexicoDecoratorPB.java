@@ -81,16 +81,23 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 
     @Override
     public void addCriterion(IVecInt literals) {
-        this.objs.add(new ObjectiveFunction(literals, new Vec<BigInteger>(
+        addCriterion(new ObjectiveFunction(literals, new Vec<BigInteger>(
                 literals.size(), BigInteger.ONE)));
     }
 
     public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
-        this.objs.add(new ObjectiveFunction(literals, coefs));
+        addCriterion(new ObjectiveFunction(literals, coefs));
     }
 
     public void addCriterion(ObjectiveFunction objf) {
-        this.objs.add(new ObjectiveFunction(objf.getVars(), objf.getCoeffs()));
+        // FIXME
+        // ObjectiveFunction objC = new ObjectiveFunction(objf.getVars(),
+        // objf.getCoeffs());
+        this.objs.add(objf);
+        if (decorated().getObjectiveFunction() == null) {
+            decorated().setObjectiveFunction(objf);
+        }
+
     }
 
     @Override

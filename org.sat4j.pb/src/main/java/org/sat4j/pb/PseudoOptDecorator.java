@@ -59,6 +59,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     private boolean[] prevfullmodel;
 
+    private IVecInt prevModelBlockingClause;
+
     private IConstr previousPBConstr;
 
     private boolean isSolutionOptimal;
@@ -135,6 +137,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         boolean result = super.isSatisfiable(assumps, global);
         if (result) {
             this.prevmodel = super.model();
+            this.prevModelBlockingClause = super
+                    .createBlockingClauseForCurrentModel();
             this.prevmodelwithadditionalvars = super
                     .modelWithInternalVariables();
             this.prevfullmodel = new boolean[nVars()];
@@ -182,6 +186,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
                 } else {
                     this.prevmodel = super.model();
                 }
+                this.prevModelBlockingClause = super
+                        .createBlockingClauseForCurrentModel();
                 this.prevmodelwithadditionalvars = super
                         .modelWithInternalVariables();
                 this.prevfullmodel = new boolean[nVars()];
@@ -341,5 +347,10 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
             return;
         super.removeSubsumedConstr(previousPBConstr);
         this.previousPBConstr = null;
+    }
+
+    @Override
+    public IConstr discardCurrentModel() throws ContradictionException {
+        return addClause(prevModelBlockingClause);
     }
 }

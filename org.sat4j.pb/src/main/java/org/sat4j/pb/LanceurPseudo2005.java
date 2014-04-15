@@ -43,6 +43,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ILogAble;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.SolverDecorator;
 
 /**
  * Launcher especially dedicated to the pseudo boolean 05 evaluation (@link
@@ -157,7 +158,13 @@ public class LanceurPseudo2005 extends AbstractLauncher implements ILogAble {
     protected IProblem readProblem(String problemname)
             throws ParseFormatException, IOException, ContradictionException {
         IProblem problem = super.readProblem(problemname);
-        ObjectiveFunction obj = ((IPBSolver) problem).getObjectiveFunction();
+        ObjectiveFunction obj = null;
+        if (super.feedWithDecorated) {
+            SolverDecorator<IPBSolver> decorator = (SolverDecorator<IPBSolver>) problem;
+            obj = (decorator.decorated()).getObjectiveFunction();
+        } else {
+            obj = ((IPBSolver) problem).getObjectiveFunction();
+        }
         if (obj != null) {
             this.out.println(COMMENT_PREFIX + "objective function length is "
                     + obj.getVars().size() + " literals");

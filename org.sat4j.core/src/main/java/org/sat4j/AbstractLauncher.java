@@ -54,6 +54,7 @@ import org.sat4j.tools.ModelIteratorToSATAdapter;
 import org.sat4j.tools.RupSearchListener;
 import org.sat4j.tools.SearchEnumeratorListener;
 import org.sat4j.tools.SearchMinOneListener;
+import org.sat4j.tools.SolverDecorator;
 
 /**
  * That class is used by launchers used to solve decision problems, i.e.
@@ -76,6 +77,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
     protected ExitCode exitCode = ExitCode.UNKNOWN;
 
     protected Reader reader;
+
+    protected boolean feedWithDecorated = false;
 
     protected transient PrintWriter out = new PrintWriter(System.out, true);
 
@@ -183,8 +186,15 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             throws ParseFormatException, IOException, ContradictionException {
         log("solving " + problemname); //$NON-NLS-1$
         log("reading problem ... "); //$NON-NLS-1$
-        this.reader = createReader(this.solver, problemname);
+        SolverDecorator<ISolver> decorator = null;
+        if (feedWithDecorated) {
+            decorator = (SolverDecorator<ISolver>) this.solver;
+            this.reader = createReader(decorator.decorated(), problemname);
+        } else {
+            this.reader = createReader(this.solver, problemname);
+        }
         IProblem aProblem = this.reader.parseInstance(problemname);
+
         if (this.reader.hasAMapping()) {
             SearchListener<?> listener = this.solver.getSearchListener();
             if (listener instanceof DotSearchTracing) {
@@ -210,6 +220,9 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
                         + "Generating unsat proof in file " + proofFile);
             }
         }
+        if (feedWithDecorated) {
+            return decorator;
+        }
         return aProblem;
     }
 
@@ -227,26 +240,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             if (!this.silent) {
                 this.solver.setVerbose(true);
             }
-            String all = System.getProperty("all");
-            if (all != null) {
-                if ("external".equals(all)) {
-                    this.solver = new ModelIteratorToSATAdapter(this.solver,
-                            launcherMode);
-                    System.out.println(this.solver.getLogPrefix()
-                            + "model enumeration using the external way");
-                } else {
-                    SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
-                            launcherMode);
-                    this.solver.setSearchListener(enumerator);
-                    System.out.println(this.solver.getLogPrefix()
-                            + "model enumeration using the internal way");
-                }
-            }
-            if (System.getProperty("minone") != null) {
-                SearchMinOneListener minone = new SearchMinOneListener(
-                        launcherMode);
-                this.solver.setSearchListener(minone);
-            }
+            configureLauncher();
             String instanceName = getInstanceName(args);
             if (instanceName == null) {
                 usage();
@@ -269,6 +263,29 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             log("(trivial inconsistency)"); //$NON-NLS-1$
         } catch (ParseFormatException e) {
             System.err.println("FATAL " + e.getLocalizedMessage());
+        }
+    }
+
+    protected void configureLauncher() {
+        String all = System.getProperty("all");
+        if (all != null) {
+            feedWithDecorated = true;
+            if ("external".equals(all)) {
+                this.solver = new ModelIteratorToSATAdapter(this.solver,
+                        launcherMode);
+                System.out.println(this.solver.getLogPrefix()
+                        + "model enumeration using the external way");
+            } else {
+                SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
+                        launcherMode);
+                this.solver.setSearchListener(enumerator);
+                System.out.println(this.solver.getLogPrefix()
+                        + "model enumeration using the internal way");
+            }
+        }
+        if (System.getProperty("minone") != null) {
+            SearchMinOneListener minone = new SearchMinOneListener(launcherMode);
+            this.solver.setSearchListener(minone);
         }
     }
 

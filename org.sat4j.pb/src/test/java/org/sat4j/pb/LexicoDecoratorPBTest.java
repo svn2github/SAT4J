@@ -8,6 +8,7 @@ import java.math.BigInteger;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sat4j.AbstractLauncher;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.tools.LexicoDecoratorPB;
 import org.sat4j.specs.ContradictionException;
@@ -74,5 +75,12 @@ public class LexicoDecoratorPBTest {
         } catch (TimeoutException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void testWithFile() {
+        final AbstractLauncher lanceur = new LanceurPseudo2007();
+        lanceur.run(new String[] { "/Users/stephanieroussel/Downloads/toto (1).opb" });
+        System.exit(lanceur.getExitCode().value());
     }
 }
