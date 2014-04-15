@@ -166,8 +166,7 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
         return decorated.discardCurrentModel();
     }
 
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         return decorated.createBlockingClauseForCurrentModel();
     }
 

@@ -263,8 +263,7 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
      * 
      * @see org.sat4j.ISolver#createBlockingClauseForCurrentModel()
      */
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         return this.solver.createBlockingClauseForCurrentModel();
     }
 

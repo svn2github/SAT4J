@@ -230,8 +230,7 @@ public class StatisticsSolver implements ISolver {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 

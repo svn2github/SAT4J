@@ -145,9 +145,8 @@ public interface ISolver extends IProblem, Serializable {
      * Creates a VecInt representing a clause for discarding current model
      * 
      * @return
-     * @throws ContradictionException
      */
-    IVecInt createBlockingClauseForCurrentModel() throws ContradictionException;
+    IVecInt createBlockingClauseForCurrentModel();
 
     /**
      * Remove a constraint returned by one of the add method from the solver.

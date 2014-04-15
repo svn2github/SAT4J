@@ -83,6 +83,13 @@ public interface ISolverService {
     IConstr addAtMostOnTheFly(int[] literals, int degree);
 
     /**
+     * Creates a VecInt representing a clause for discarding current model
+     * 
+     * @return
+     */
+    IVecInt createBlockingClauseForCurrentModel();
+
+    /**
      * To access the truth value of a specific literal under current assignment.
      * 
      * @param literal
@@ -166,4 +173,5 @@ public interface ISolverService {
      * @since 2.3.3
      */
     String getLogPrefix();
+
 }

@@ -605,8 +605,7 @@ public class SumLeximinDecompositionOWAOptimizer implements
         return solver.discardCurrentModel();
     }
 
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         return solver.createBlockingClauseForCurrentModel();
     }
 

@@ -65,11 +65,8 @@ public class SearchEnumeratorListener extends
 
     @Override
     public void solutionFound(int[] model, RandomAccessModel lazyModel) {
-        int[] clause = new int[model.length];
-        for (int i = 0; i < model.length; i++) {
-            clause[i] = -model[i];
-        }
-        this.solverService.addClauseOnTheFly(clause);
+        this.solverService.addClauseOnTheFly(this.solverService
+                .createBlockingClauseForCurrentModel().toArray());
         this.nbsolutions++;
         sfl.onSolutionFound(model);
     }

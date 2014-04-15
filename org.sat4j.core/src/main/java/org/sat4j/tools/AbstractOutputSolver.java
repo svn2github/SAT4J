@@ -181,8 +181,7 @@ public abstract class AbstractOutputSolver implements ISolver {
         throw new UnsupportedOperationException();
     }
 
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         throw new UnsupportedOperationException();
     }
 

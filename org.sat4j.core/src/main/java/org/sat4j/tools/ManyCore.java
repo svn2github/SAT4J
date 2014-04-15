@@ -439,8 +439,7 @@ public class ManyCore<S extends ISolver> extends
         return group;
     }
 
-    public IVecInt createBlockingClauseForCurrentModel()
-            throws ContradictionException {
+    public IVecInt createBlockingClauseForCurrentModel() {
         return this.solvers.get(this.winnerId)
                 .createBlockingClauseForCurrentModel();
     }
