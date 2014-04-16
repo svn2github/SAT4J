@@ -30,6 +30,7 @@
 package org.sat4j.tools;
 
 import org.sat4j.specs.ISolverService;
+import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.Lbool;
 import org.sat4j.specs.RandomAccessModel;
 
@@ -65,8 +66,11 @@ public class SearchEnumeratorListener extends
 
     @Override
     public void solutionFound(int[] model, RandomAccessModel lazyModel) {
-        this.solverService.addClauseOnTheFly(this.solverService
-                .createBlockingClauseForCurrentModel().toArray());
+        IVecInt clauseToAdd = this.solverService
+                .createBlockingClauseForCurrentModel();
+        int[] vecint = new int[clauseToAdd.size()];
+        clauseToAdd.copyTo(vecint);
+        this.solverService.addClauseOnTheFly(vecint);
         this.nbsolutions++;
         sfl.onSolutionFound(model);
     }
