@@ -1180,6 +1180,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
             undoOne();
             if (trailLim.last() == trail.size()) {
                 trailLim.pop();
+                decisions.pop();
             }
         }
     }
@@ -1227,18 +1228,10 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
                             confl = this.sharedConflict;
                             this.sharedConflict = null;
                         } else {
-                            int begin = trail.size();
                             int level = this.sharedConflict.getAssertionLevel(
                                     trail, decisionLevel());
-                            System.out.println("model=" + new VecInt(model)
-                                    + ", trail=" + this.trail + ", trailLim="
-                                    + trailLim + ", level=" + level
-                                    + ", confl=" + this.sharedConflict);
                             cancelUntilTrailLevel(level);
                             this.qhead = this.trail.size();
-                            System.out
-                                    .printf("Asserting after backjumping %d assignments \n",
-                                            begin - trail.size());
                             this.sharedConflict.assertConstraint(this);
                             this.sharedConflict = null;
 
@@ -1360,6 +1353,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
      * 
      */
     void modelFound() {
+        decisions.clear();
         IVecInt tempmodel = new VecInt(nVars());
         this.userbooleanmodel = new boolean[realNumberOfVariables()];
         this.fullmodel = null;
@@ -2126,7 +2120,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     }
 
     public IVecInt createBlockingClauseForCurrentModel() {
-        IVecInt clause = new VecInt();
+        IVecInt clause = new VecInt(decisions.size());
         for (int i = 0; i < decisions.size(); i++) {
             clause.push(-decisions.get(i));
         }
