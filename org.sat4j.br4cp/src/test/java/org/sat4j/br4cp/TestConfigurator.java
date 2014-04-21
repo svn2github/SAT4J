@@ -144,4 +144,17 @@ public class TestConfigurator {
 		configurator.unassignAndRestore("v29");
 		assertEquals(2, configurator.getCurrentDomainOf("v29").size());
 	}
+
+	@Test
+	public void testBugYacineRandom() {
+		configurator = new Br4cpConfigurator();
+		configurator.readProblem("big");
+		configurator.initialize();
+		assertEquals(2, configurator.getCurrentDomainOf("v73").size());
+		configurator.assignAndPropagate("v73", "1");
+		assertEquals(1, configurator.getCurrentDomainOf("v73").size());
+		assertEquals(2, configurator.getCurrentDomainOf("v75").size());
+		configurator.assignAndPropagate("v75", "3");
+		assertEquals(1, configurator.getCurrentDomainOf("v75").size());
+	}
 }
