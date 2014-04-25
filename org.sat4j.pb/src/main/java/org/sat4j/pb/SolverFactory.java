@@ -554,7 +554,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return solver;
     }
 
-    private static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
+    public static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
         return newPBCP(dsf, order, true);
     }
 

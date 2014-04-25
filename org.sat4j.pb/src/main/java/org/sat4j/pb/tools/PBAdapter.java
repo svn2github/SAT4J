@@ -118,7 +118,6 @@ public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
         ConstrGroup group = new ConstrGroup(false);
         CombinationIterator combIt = new CombinationIterator(literals.size()
                 - degree, negLitsSet);
-        combIt.init();
         for (Set<Integer> comb : combIt) {
             for (IteratorInt it = literals.iterator(); it.hasNext();) {
                 int lit = it.next();
@@ -145,7 +144,6 @@ public class PBAdapter extends SolverDecorator<ISolver> implements IPBSolver {
         ConstrGroup group = new ConstrGroup(false);
         CombinationIterator combIt = new CombinationIterator(literals.size()
                 - degree.intValue(), negLitsSet);
-        combIt.init();
         for (Set<Integer> comb : combIt) {
             for (IteratorInt it = literals.iterator(); it.hasNext();) {
                 int lit = it.next();
