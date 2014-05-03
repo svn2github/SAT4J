@@ -30,6 +30,8 @@
 package org.sat4j.opt;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
@@ -69,6 +71,11 @@ public abstract class AbstractSelectorVariablesDecorator extends
 
     private boolean isSolutionOptimal;
 
+    /**
+     * @since 2.3.6
+     */
+    private IVecInt prevBlockingClause;
+
     public AbstractSelectorVariablesDecorator(ISolver solver) {
         super(solver);
     }
@@ -100,6 +107,8 @@ public abstract class AbstractSelectorVariablesDecorator extends
             }
             this.prevfullmodel = super.modelWithInternalVariables();
             this.prevmodel = super.model();
+            this.prevBlockingClause = super
+                    .createBlockingClauseForCurrentModel();
             calculateObjectiveValue();
         } else {
             this.isSolutionOptimal = true;
@@ -117,6 +126,16 @@ public abstract class AbstractSelectorVariablesDecorator extends
     @Override
     public boolean model(int var) {
         return this.prevboolmodel[var - 1];
+    }
+
+    @Override
+    public IConstr discardCurrentModel() throws ContradictionException {
+        return addBlockingClause(this.prevBlockingClause);
+    }
+
+    @Override
+    public IVecInt createBlockingClauseForCurrentModel() {
+        return this.prevBlockingClause;
     }
 
     public boolean isOptimal() {

@@ -668,7 +668,7 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
         while ((this.lits[indFalsified] ^ 1) != p) {
             indFalsified++;
         }
-        assert this.watchCumul > this.degree;
+        assert this.watchCumul >= this.degree;
 
         // Recherche du litt?ral swap
         int indSwap = this.savedindex;

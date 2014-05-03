@@ -351,6 +351,6 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     @Override
     public IConstr discardCurrentModel() throws ContradictionException {
-        return addClause(prevModelBlockingClause);
+        return addBlockingClause(this.prevModelBlockingClause);
     }
 }

@@ -50,6 +50,8 @@ public final class LearntWLClause extends WLClause {
      * @see org.sat4j.minisat.constraints.cnf.WLClause#register()
      */
     public void register() {
+        if (this.lits.length == 0)
+            return;
         assert this.lits.length > 1;
         // prendre un deuxieme litt???ral ??? surveiller
         int maxi = 1;

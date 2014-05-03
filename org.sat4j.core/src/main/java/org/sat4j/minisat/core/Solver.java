@@ -1178,7 +1178,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     protected void cancelUntilTrailLevel(int level) {
         while (!trail.isEmpty() && trail.size() > level) {
             undoOne();
-            if (trailLim.last() == trail.size()) {
+            if (!trailLim.isEmpty() && trailLim.last() == trail.size()) {
                 trailLim.pop();
                 decisions.pop();
             }
@@ -2116,13 +2116,24 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
     }
 
     public IConstr discardCurrentModel() throws ContradictionException {
-        return addClause(createBlockingClauseForCurrentModel());
+        IVecInt blockingClause = createBlockingClauseForCurrentModel();
+        if (blockingClause.isEmpty()) {
+            throw new ContradictionException();
+        }
+        return addBlockingClause(blockingClause);
     }
 
     public IVecInt createBlockingClauseForCurrentModel() {
         IVecInt clause = new VecInt(decisions.size());
-        for (int i = 0; i < decisions.size(); i++) {
-            clause.push(-decisions.get(i));
+        if (realNumberOfVariables() > nVars()) {
+            // we rely on the model projection in that case
+            for (int p : this.model) {
+                clause.push(-p);
+            }
+        } else {
+            for (int i = 0; i < decisions.size(); i++) {
+                clause.push(-decisions.get(i));
+            }
         }
         return clause;
     }

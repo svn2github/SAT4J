@@ -31,9 +31,11 @@ package org.sat4j.tools;
 
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -45,7 +47,8 @@ import org.sat4j.specs.IteratorInt;
  * @author leberre
  * 
  */
-public class DimacsOutputSolver extends AbstractOutputSolver {
+public class DimacsOutputSolver extends AbstractOutputSolver implements
+        IGroupSolver {
 
     /**
      * 
@@ -213,5 +216,19 @@ public class DimacsOutputSolver extends AbstractOutputSolver {
     public void printInfos(PrintWriter out) {
         throw new UnsupportedOperationException();
 
+    }
+
+    public IConstr addClause(IVecInt literals, int desc)
+            throws ContradictionException {
+        this.out.print(desc + "> ");
+        for (IteratorInt iterator = literals.iterator(); iterator.hasNext();) {
+            this.out.print(iterator.next() + " ");
+        }
+        this.out.println("0");
+        return null;
+    }
+
+    public Collection<Integer> getAddedVars() {
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 }

@@ -44,7 +44,7 @@ public class TestGroupedTimeoutModelEnumeration {
     private ISolver solver;
 
     @Before
-    public void tearDDown() throws ContradictionException {
+    public void setUp() throws ContradictionException {
         this.solver = new ModelIterator(SolverFactory.newDefault());
         IVecInt clause = new VecInt();
         for (int i = 1; i <= 1000; i++) {

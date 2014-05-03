@@ -82,7 +82,6 @@ public class UnitClause implements Constr {
     }
 
     public void register() {
-        throw new UnsupportedOperationException();
     }
 
     public void remove(UnitPropagationListener upl) {

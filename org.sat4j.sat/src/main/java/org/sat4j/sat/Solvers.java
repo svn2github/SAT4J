@@ -317,26 +317,26 @@ public final class Solvers {
                         .forName("org.sat4j." + framework + ".SolverFactory"); //$NON-NLS-1$ //$NON-NLS-2$
                 Class<?>[] params = {};
                 Method m = clazz.getMethod("instance", params); //$NON-NLS-1$
-                factory = (ASolverFactory) m.invoke(null, (Object[]) null);
+                factory = (ASolverFactory<ISolver>) m.invoke(null, (Object[]) null);
             } catch (Exception e) { // DLB Findbugs warning ok
                 logger.log("Wrong framework: " + framework
                         + ". Using minisat instead.");
                 factory = org.sat4j.minisat.SolverFactory.instance();
             }
 
-            ICDCL asolver;
+            ICDCL<?> asolver;
             if (cmd.hasOption("s")) {
                 String solvername = cmd.getOptionValue("s");
                 if (solvername == null) {
                     logger.log("No solver for option s. Launching default solver.");
                     logger.log("Available solvers: "
                             + Arrays.asList(factory.solverNames()));
-                    asolver = (Solver) factory.defaultSolver();
+                    asolver = (Solver<?>) factory.defaultSolver();
                 } else {
-                    asolver = (Solver) factory.createSolverByName(solvername);
+                    asolver = (Solver<?>) factory.createSolverByName(solvername);
                 }
             } else {
-                asolver = (Solver) factory.defaultSolver();
+                asolver = (Solver<?>) factory.defaultSolver();
             }
 
             if (cmd.hasOption("S")) {
