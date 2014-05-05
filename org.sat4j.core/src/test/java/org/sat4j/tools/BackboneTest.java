@@ -158,6 +158,7 @@ public class BackboneTest {
         assertTrue(vecInt3.contains(3));
     }
 
+    @Test
     public void testFilter() throws ContradictionException, TimeoutException {
         ISolver solver = SolverFactory.newDefault();
         IVecInt clause = new VecInt();
@@ -174,7 +175,8 @@ public class BackboneTest {
         solver.addClause(clause);
         clause.clear();
         IVecInt filter = new VecInt(new int[] { 1, 2 });
-        IVecInt backbone = Backbone.instance().compute(solver, filter);
+        IVecInt backbone = Backbone.instance().compute(solver, VecInt.EMPTY,
+                filter);
         assertEquals(1, backbone.size());
         assertTrue(backbone.contains(-2));
         assertFalse(backbone.contains(3));
@@ -184,6 +186,7 @@ public class BackboneTest {
         assertTrue(backbone.contains(3));
     }
 
+    @Test
     public void testBugBr4cp() throws ContradictionException, TimeoutException {
         ISolver solver = SolverFactory.newDefault();
         IVecInt clause = new VecInt();
