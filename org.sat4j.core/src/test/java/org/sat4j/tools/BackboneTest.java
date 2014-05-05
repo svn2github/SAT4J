@@ -183,4 +183,37 @@ public class BackboneTest {
         assertTrue(backbone.contains(-2));
         assertTrue(backbone.contains(3));
     }
+
+    public void testBugBr4cp() throws ContradictionException, TimeoutException {
+        ISolver solver = SolverFactory.newDefault();
+        IVecInt clause = new VecInt();
+        clause.push(1);
+        solver.addClause(clause);
+        clause.clear();
+        clause.push(2).push(3);
+        solver.addClause(clause);
+        clause.clear();
+        clause.push(-2).push(-3);
+        solver.addClause(clause);
+        clause.clear();
+        IVecInt backbone = Backbone.instance().compute(solver);
+        assertEquals(1, backbone.size());
+        assertEquals(1, backbone.get(0));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { 2 })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { 3 })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { -2 })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { -3 })));
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { 2 }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { -2 }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { 3 }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { -3 }));
+        assertEquals(3, backbone.size());
+    }
 }
