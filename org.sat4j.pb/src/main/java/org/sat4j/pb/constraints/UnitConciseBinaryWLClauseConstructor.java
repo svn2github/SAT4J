@@ -63,7 +63,7 @@ public class UnitConciseBinaryWLClauseConstructor implements IClauseConstructor 
         assert literals.size() == 2;
         if (binaryClauses == null) {
             binaryClauses = new BinaryClauses[voc.nVars() * 2 + 2];
-        } else if (binaryClauses.length < voc.nVars() * 2) {
+        } else if (binaryClauses.length < voc.nVars() * 2 + 1) {
             BinaryClauses[] newBinaryClauses = new BinaryClauses[voc.nVars() * 2 + 2];
             System.arraycopy(binaryClauses, 0, newBinaryClauses, 0,
                     binaryClauses.length);
