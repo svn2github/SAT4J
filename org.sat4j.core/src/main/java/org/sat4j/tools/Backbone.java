@@ -199,7 +199,7 @@ public final class Backbone {
 
     private final Backboner bb;
 
-    private final static Backbone instance = ibb();
+    private final static Backbone instance = bb();
 
     private Backbone(Backboner bb) {
         this.bb = bb;
