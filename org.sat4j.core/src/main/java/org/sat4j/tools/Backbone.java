@@ -177,15 +177,14 @@ public final class Backbone {
                         implicant = solver.primeImplicant();
                         removeVarNotPresentAndSatisfiedLits(implicant,
                                 litsToTest, solver.nVars());
-                        solver.removeSubsumedConstr(constr);
                     } else {
                         for (IteratorInt it = litsToTest.iterator(); it
                                 .hasNext();) {
                             candidates.push(-it.next());
                         }
-                        solver.removeConstr(constr);
                         litsToTest.clear();
                     }
+                    solver.removeConstr(constr);
                 } catch (ContradictionException e) {
                     for (IteratorInt it = litsToTest.iterator(); it.hasNext();) {
                         candidates.push(-it.next());
