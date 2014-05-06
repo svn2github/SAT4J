@@ -1,5 +1,7 @@
 package org.sat4j.br4cp;
 
+import static org.sat4j.br4cp.Utils.JOKER;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,6 +46,7 @@ public class Br4cpCLI {
 		varMap = new ConfigVarMap(solver);
 		this.outStream = Options.getInstance().getOutStream();
 		readInstance(instance, prices, solver, varMap);
+		System.out.println(solver);
 	}
 
 	public void initialize() {
@@ -93,7 +96,7 @@ public class Br4cpCLI {
 				this.outStream.print(" " + s);
 			}
 			for (String s : unavailableAdditionalVars) {
-				this.outStream.print(" " + s.replaceAll("=99", "=1"));
+				this.outStream.print(" " + s.replaceAll("=" + JOKER, "=NA"));
 			}
 			this.outStream.println();
 		}
@@ -209,9 +212,7 @@ public class Br4cpCLI {
 
 	public boolean assumeMe(String line) throws Exception {
 		String assump = line.replaceAll("=", "_");
-		if (this.varMap.isAdditionalVar(assump)) {
-			backboneComputer.addAdditionalVarAssumption(assump);
-		} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
+		if (this.varMap.isJokerValuedConfigVar(assump)) {
 			backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
 		} else if (this.varMap.isAdditionalVar(assump)) {
 			backboneComputer.addAdditionalVarAssumption(assump);

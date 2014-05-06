@@ -61,6 +61,7 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 					filter);
 			computePropagationsAndReductions(backbone);
 		} catch (IllegalArgumentException ise) {
+			ise.printStackTrace();
 			if (this.solverAssumptions.isEmpty()) {
 				throw ise;
 			}
@@ -86,7 +87,15 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 				new ConfigVarComparator());
 		for (IteratorInt it = backbone.iterator(); it.hasNext();) {
 			int next = it.next();
-			if ((next > 0) && this.varMap.isConfigVar(next)) {
+			if (this.varMap.isAdditionalVar(next)) {
+				String name = this.varMap.getConfigVar(Math.abs(next));
+				assert name != null;
+				if (next < 0) {
+					this.unavailableAdditionalVars.add(name);
+				} else {
+					this.propagatedAdditionalVars.add(name);
+				}
+			} else if ((next > 0) && this.varMap.isConfigVar(next)) {
 				String name = this.varMap.getConfigVar(next);
 				int lastDotIndex = name.lastIndexOf('_');
 				name = name.substring(0, lastDotIndex) + "="
@@ -99,13 +108,6 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 				name = name.substring(0, lastDotIndex) + "="
 						+ name.substring(lastDotIndex + 1);
 				this.domainReductions.add(name);
-			} else if (this.varMap.isAdditionalVar(next)) {
-				String name = this.varMap.getConfigVar(Math.abs(next)) + "=1";
-				if (next < 0) {
-					this.unavailableAdditionalVars.add(name);
-				} else {
-					this.propagatedAdditionalVars.add(name);
-				}
 			}
 		}
 		for (Iterator<String> it = this.domainReductions.iterator(); it
@@ -172,22 +174,18 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 
 	public void addAdditionalVarAssumption(String addVar)
 			throws TimeoutException {
-		int lastDotIndex = addVar.lastIndexOf('_');
-		String name = addVar.substring(0, lastDotIndex);
-		int state;
-		try {
-			state = Integer.valueOf(addVar.substring(lastDotIndex + 1));
-		} catch (NumberFormatException e) {
+		Valeur valeur = Utils.extractValeur(addVar);
+		if (valeur.valeur == -1) {
 			throw new NumberFormatException(addVar + " has no version or state");
 		}
 		Set<Integer> newAssumpSet = new HashSet<Integer>();
-		if (state == 99) {
-			newAssumpSet.add(-this.varMap.getSolverVar(name));
+		if (valeur.valeur == Utils.JOKER) {
+			newAssumpSet.add(-this.varMap.getSolverVar(valeur.variable));
 		} else {
-			newAssumpSet.add(this.varMap.getSolverVar(name));
+			newAssumpSet.add(this.varMap.getSolverVar(valeur.variable));
 		}
 		this.solverAssumptions.add(newAssumpSet);
-		this.fixedVars.add(name);
+		this.fixedVars.add(valeur.variable);
 		computeBackbone(solver);
 	}
 
@@ -242,22 +240,28 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		assert originalDomain != null;
 		for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
 			value = it.next();
-			if (!domainReductions.contains(value)
-					&& !unavailableAdditionalVars.contains(value)) {
-				String[] values = value.split("\\_");
-				domain.add(values[values.length - 1]);
-			}
-			int lastDotIndex = value.lastIndexOf('_');
-			value = value.substring(0, lastDotIndex) + "="
-					+ value.substring(lastDotIndex + 1);
-			if (propagatedConfigVars.contains(value)
-					|| propagatedAdditionalVars.contains(value)) {
+			Valeur valeur = Utils.extractValeur(value);
+			if(unavailableAdditionalVars.contains(var) && valeur.valeur == Utils.JOKER) {
 				domain.clear();
 				domain.add(value);
 				break;
 			}
+			if(propagatedAdditionalVars.contains(var) && valeur.valeur != Utils.JOKER) {
+				domain.clear();
+				domain.add(value);
+				break;
+			}
+			if (propagatedConfigVars.contains(valeur.toString())) {
+				domain.clear();
+				domain.add(value);
+				break;
+			}
+			if (!domainReductions.contains(valeur.toString())) {
+				domain.add(String.valueOf(valeur.valeur));
+			}
 		}
-		assert !fixedVars.contains(var) || (domain.size() == 1) : var + domain;
+		assert !fixedVars.contains(var) || (domain.size() == 1) : fixedVars
+				+ "/" + var + domain;
 		return domain;
 	}
 

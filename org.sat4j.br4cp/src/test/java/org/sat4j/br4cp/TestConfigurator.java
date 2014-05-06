@@ -27,10 +27,10 @@ public class TestConfigurator {
 		configurator.initialize();
 	}
 
-	@Test
-	public void testReadInstance() {
-		assertTrue(configurator.minCost() > 0);
-	}
+//	@Test
+//	public void testReadInstance() {
+//		assertTrue(configurator.minCost() > 0);
+//	}
 
 	@Test
 	public void testAssume() {
@@ -77,6 +77,7 @@ public class TestConfigurator {
 		configurator.assignAndPropagate("v19", "11");
 		assertEquals(1, configurator.getSizeOfCurrentDomainOf("v19"));
 		configurator.unassignAndRestore("v19");
+		System.out.println(">> "+configurator.getSizeOfCurrentDomainOf("v19"));
 		assertEquals(12, configurator.getSizeOfCurrentDomainOf("v19"));
 	}
 
@@ -89,11 +90,11 @@ public class TestConfigurator {
 		assertTrue(configurator.getFreeVariables().contains("v19"));
 	}
 
-	@Test
-	public void testMinCosts() {
-		Map<String, Integer> mincosts = configurator.minCosts("v19");
-		System.out.println(mincosts);
-	}
+//	@Test
+//	public void testMinCosts() {
+//		Map<String, Integer> mincosts = configurator.minCosts("v19");
+//		System.out.println(mincosts);
+//	}
 
 	@Test
 	public void testSeries() {
@@ -108,12 +109,10 @@ public class TestConfigurator {
 		assertFalse(configurator.isConfigurationComplete());
 		while (!configurator.isConfigurationComplete()) {
 			Set<String> free = configurator.getFreeVariables();
-			System.out.println("free=>" + free);
 			String var = (String) free.toArray()[rand.nextInt(free.size())];
-			System.out.print("" + var + "=");
 			Set<String> domain = configurator.getCurrentDomainOf(var);
 			String val = (String) domain.toArray()[rand.nextInt(domain.size())];
-			System.out.println(val);
+			System.out.println("assigning and propagating var \""+var+"\" to value: "+val);
 			configurator.assignAndPropagate(var, val);
 		}
 	}

@@ -123,7 +123,7 @@ public class Br4cpScenarioSimulator {
 		try {
 			if (this.varMap.isAdditionalVar(assump)) {
 				backboneComputer.addAdditionalVarAssumption(assump);
-			} else if (this.varMap.isOutOfDomainConfigVar(assump)) {
+			} else if (this.varMap.isJokerValuedConfigVar(assump)) {
 				backboneComputer.setOptionalConfigVarAsNotInstalled(assump);
 			} else if (this.varMap.isConfigVar(assump)) {
 				try {

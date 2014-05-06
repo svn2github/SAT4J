@@ -56,7 +56,6 @@ public class ConfigVarMap {
 				Set<Integer> versions = new HashSet<Integer>();
 				versions.add(1);
 				this.configVarDomains.put(configVar, versions);
-				this.additionalVars.add(configVar);
 			}
 		}
 		return solverVar;
@@ -153,11 +152,11 @@ public class ConfigVarMap {
 	 * @return true iff a variable is a configuration variable with a valid
 	 *         version number.
 	 */
-	public boolean isOutOfDomainConfigVar(String var) {
-		String name = extractVarName(var);
-		int version = extractVarVersion(var);
-		return this.configVarDomains.containsKey(name)
-				&& !this.configVarDomains.get(name).contains(version);
+	public boolean isJokerValuedConfigVar(String var) {
+		Valeur valeur = Utils.extractValeur(var);
+		return this.configVarDomains.containsKey(valeur.variable)
+				&& !this.configVarDomains.get(valeur.variable).contains(
+						valeur.valeur);
 	}
 
 	/**
@@ -208,14 +207,20 @@ public class ConfigVarMap {
 	 * @param configVar
 	 *            the configuration variable
 	 */
-	public void setAsOptionalConfigVar(String configVar) {
-		String varName = extractVarName(configVar);
-		this.optionalConfigVars.add(varName);
+	public void setAsOptionalConfigVar(String[] configVar) {
+		for (String version : configVar) {
+			this.optionalConfigVars.add(version);
+		}
+		String varName = Utils.extractName(configVar[0]);
 		Set<Integer> versions = this.configVarDomains.get(varName);
-		if (versions == null)
-			versions = this.configVarDomains.get(configVar);
+		// if (versions == null)
+		// versions = this.configVarDomains.get(configVar[0]);
 		if (versions == null) {
-			throw new IllegalStateException("Missing domain for " + configVar);
+			throw new IllegalStateException("Missing domain for "
+					+ configVar[0] + "/" + varName);
+		}
+		if (versions.size() == 1) {
+			this.additionalVars.add(configVar[0]);
 		}
 		versions.add(99);
 	}
@@ -228,27 +233,23 @@ public class ConfigVarMap {
 	 * @return true iff a configuration variable is optional.
 	 */
 	public boolean isOptionalDomainVar(String configVar) {
-		return this.optionalConfigVars.contains(extractVarName(configVar));
+		return this.optionalConfigVars.contains(configVar);
 	}
 
 	private String extractVarName(String var) {
-		int lastDotIndex = Math.max(var.lastIndexOf('_'), var.lastIndexOf('='));
-		if (lastDotIndex == -1) {
+		Valeur valeur = Utils.extractValeur(var);
+		if (valeur.valeur == -1) {
 			throw new IllegalArgumentException(var + " is not defined");
 		}
-		return var.substring(0, lastDotIndex);
+		return valeur.variable;
 	}
 
 	private Integer extractVarVersion(String var) {
-		int lastDotIndex = Math.max(var.lastIndexOf('_'), var.lastIndexOf('='));
-		if (lastDotIndex == -1) {
-			throw new IllegalArgumentException(var + " is not defined");
-		}
-		try {
-			return Integer.valueOf(var.substring(lastDotIndex + 1));
-		} catch (NumberFormatException e) {
+		Valeur valeur = Utils.extractValeur(var);
+		if (valeur.valeur == -1) {
 			throw new NumberFormatException(var + " has no version or state");
 		}
+		return valeur.valeur;
 	}
 
 	private boolean isBooleanVar(String s) {
@@ -258,7 +259,11 @@ public class ConfigVarMap {
 	public Set<String> getVars() {
 		Set<String> vars = new HashSet<String>();
 		vars.addAll(this.configVarDomains.keySet());
-		vars.addAll(this.additionalVars);
+		// vars.addAll(this.additionalVars);
 		return vars;
+	}
+
+	public Map<Integer, String> getMapping() {
+		return this.solverVarToConfigVar;
 	}
 }
