@@ -40,10 +40,14 @@ public class Br4cpCLI {
 	private double timeReduced;
 
 	public Br4cpCLI(String instance, String prices) throws Exception {
-		solver = muses.getSolverInstance();
-		pbSolver = (IPBSolver) solver.getSolvingEngine();
+		solver = muses.getSolverInstance(); // new
+											// UserFriendlyPBStringSolver<String>();//
+		pbSolver = (IPBSolver) solver.getSolvingEngine(); // (IPBSolver) solver;
+															// //
 		optimizer = new OptToPBSATAdapter(new PseudoOptDecorator(pbSolver));
 		varMap = new ConfigVarMap(solver);
+		// ((UserFriendlyPBStringSolver<String>) solver).setMapping(varMap
+		// .getMapping());
 		this.outStream = Options.getInstance().getOutStream();
 		readInstance(instance, prices, solver, varMap);
 		System.out.println(solver);

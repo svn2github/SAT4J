@@ -14,7 +14,6 @@ import org.sat4j.core.VecInt;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -68,10 +67,10 @@ public class Br4cpAraliaReader {
 		int objectivevars = this.constrGroup;
 		IVecInt lits = new VecInt();
 		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-
 		while ((line = priceReader.readLine()) != null) {
 			line = removeComments(line);
-			if(line.trim().isEmpty()) continue;
+			if (line.trim().isEmpty())
+				continue;
 			data = line.split(";");
 			data[0] = normalizeLine(data[0]);
 			data[1] = data[1].replace(",", "");
@@ -148,8 +147,7 @@ public class Br4cpAraliaReader {
 	private Integer newClausalConstraint(String line) {
 		this.constrGroup++;
 		dimacsToAralia.put(this.constrGroup, line);
-		Integer res = newClausalConstraint(line, this.constrGroup, true);
-		return res;
+		return newClausalConstraint(line, this.constrGroup, true);
 	}
 
 	private Integer newClausalConstraint(String line, int newvar,

@@ -21,6 +21,9 @@ public class Utils {
 
 	public static String extractName(String araliaName) {
 		int index = araliaName.lastIndexOf('_');
+		if (index == -1) {
+			return araliaName;
+		}
 		String version = araliaName.substring(index + 1);
 		try {
 			Integer.valueOf(version);

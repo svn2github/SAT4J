@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import br4cp.Configurator;
@@ -27,10 +28,10 @@ public class TestConfigurator {
 		configurator.initialize();
 	}
 
-//	@Test
-//	public void testReadInstance() {
-//		assertTrue(configurator.minCost() > 0);
-//	}
+	@Ignore
+	public void testReadInstance() {
+		assertTrue(configurator.minCost() > 0);
+	}
 
 	@Test
 	public void testAssume() {
@@ -77,7 +78,8 @@ public class TestConfigurator {
 		configurator.assignAndPropagate("v19", "11");
 		assertEquals(1, configurator.getSizeOfCurrentDomainOf("v19"));
 		configurator.unassignAndRestore("v19");
-		System.out.println(">> "+configurator.getSizeOfCurrentDomainOf("v19"));
+		System.out
+				.println(">> " + configurator.getSizeOfCurrentDomainOf("v19"));
 		assertEquals(12, configurator.getSizeOfCurrentDomainOf("v19"));
 	}
 
@@ -90,11 +92,11 @@ public class TestConfigurator {
 		assertTrue(configurator.getFreeVariables().contains("v19"));
 	}
 
-//	@Test
-//	public void testMinCosts() {
-//		Map<String, Integer> mincosts = configurator.minCosts("v19");
-//		System.out.println(mincosts);
-//	}
+	@Test
+	public void testMinCosts() {
+		Map<String, Integer> mincosts = configurator.minCosts("v19");
+		System.out.println(mincosts);
+	}
 
 	@Test
 	public void testSeries() {
@@ -112,7 +114,8 @@ public class TestConfigurator {
 			String var = (String) free.toArray()[rand.nextInt(free.size())];
 			Set<String> domain = configurator.getCurrentDomainOf(var);
 			String val = (String) domain.toArray()[rand.nextInt(domain.size())];
-			System.out.println("assigning and propagating var \""+var+"\" to value: "+val);
+			System.out.println("assigning and propagating var \"" + var
+					+ "\" to value: " + val);
 			configurator.assignAndPropagate(var, val);
 		}
 	}
@@ -150,9 +153,9 @@ public class TestConfigurator {
 		configurator.readProblem("big");
 		configurator.initialize();
 		assertEquals(2, configurator.getCurrentDomainOf("v73").size());
+		assertEquals(4, configurator.getCurrentDomainOf("v75").size());
 		configurator.assignAndPropagate("v73", "1");
 		assertEquals(1, configurator.getCurrentDomainOf("v73").size());
-		assertEquals(2, configurator.getCurrentDomainOf("v75").size());
 		configurator.assignAndPropagate("v75", "3");
 		assertEquals(1, configurator.getCurrentDomainOf("v75").size());
 	}

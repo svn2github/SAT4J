@@ -142,18 +142,17 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 	private void removeAssumedConfigVar(String configVarName) {
 		this.fixedVars = new HashSet<String>();
 		boolean found = false;
-		for (Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); !found
-				&& it.hasNext();) {
+		for (Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); it
+				.hasNext();) {
 			Set<Integer> nextSet = it.next();
 			for (Iterator<Integer> it2 = nextSet.iterator(); it2.hasNext();) {
 				String nextVar = this.varMap.getConfigVar(Math.abs(it2.next()));
-				String nextVarName = nextVar.substring(0,
-						nextVar.lastIndexOf('_'));
-				if (configVarName.equals(nextVarName)) {
+				nextVar = Utils.extractName(nextVar);
+				if (configVarName.equals(nextVar)) {
 					it.remove();
 					break;
 				} else {
-					this.fixedVars.add(nextVarName);
+					this.fixedVars.add(nextVar);
 				}
 			}
 		}
@@ -161,14 +160,21 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 
 	public void setOptionalConfigVarAsNotInstalled(String optConfigVar)
 			throws TimeoutException {
-		Set<String> domain = this.varMap.getConfigVarDomain(optConfigVar);
 		Set<Integer> newAssumps = new HashSet<Integer>();
-		for (String s : domain) {
-			newAssumps.add(-this.varMap.getSolverVar(s));
+		if (this.varMap.isAdditionalVar(optConfigVar)) {
+			newAssumps.add(-this.varMap.getSolverVar(optConfigVar));
+			this.fixedVars.add(optConfigVar);
+		} else {
+			Set<String> domain = this.varMap.getConfigVarDomain(optConfigVar);
+			for (String s : domain) {
+				Valeur valeur = Utils.extractValeur(s);
+				if (valeur.valeur != Utils.JOKER) {
+					newAssumps.add(-this.varMap.getSolverVar(s));
+				}
+			}
+			this.fixedVars.add(optConfigVar);
 		}
 		this.solverAssumptions.add(newAssumps);
-		this.fixedVars.add(optConfigVar.substring(0,
-				optConfigVar.lastIndexOf('_')));
 		computeBackbone(solver);
 	}
 
@@ -241,19 +247,32 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 		for (Iterator<String> it = originalDomain.iterator(); it.hasNext();) {
 			value = it.next();
 			Valeur valeur = Utils.extractValeur(value);
-			if(unavailableAdditionalVars.contains(var) && valeur.valeur == Utils.JOKER) {
+			// for Series, Pack, etc.
+			if (unavailableAdditionalVars.contains(var)) {
 				domain.clear();
-				domain.add(value);
+				domain.add(String.valueOf(Utils.JOKER));
 				break;
 			}
-			if(propagatedAdditionalVars.contains(var) && valeur.valeur != Utils.JOKER) {
+			// for optional vx_0
+			if (unavailableAdditionalVars.contains(value)) {
 				domain.clear();
-				domain.add(value);
+				domain.add(String.valueOf(Utils.JOKER));
 				break;
 			}
-			if (propagatedConfigVars.contains(valeur.toString())) {
+			if (propagatedAdditionalVars.contains(var)
+					&& valeur.valeur != Utils.JOKER) {
 				domain.clear();
-				domain.add(value);
+				domain.add(String.valueOf(valeur.valeur));
+				break;
+			}
+			if (propagatedAdditionalVars.contains(value)) {
+				domain.clear();
+				domain.add(String.valueOf(valeur.valeur));
+				break;
+			}
+			if (propagatedConfigVars.contains(value)) {
+				domain.clear();
+				domain.add(String.valueOf(valeur.valeur));
 				break;
 			}
 			if (!domainReductions.contains(valeur.toString())) {

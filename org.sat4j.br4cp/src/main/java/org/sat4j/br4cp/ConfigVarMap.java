@@ -155,8 +155,7 @@ public class ConfigVarMap {
 	public boolean isJokerValuedConfigVar(String var) {
 		Valeur valeur = Utils.extractValeur(var);
 		return this.configVarDomains.containsKey(valeur.variable)
-				&& !this.configVarDomains.get(valeur.variable).contains(
-						valeur.valeur);
+				&& Utils.JOKER == valeur.valeur;
 	}
 
 	/**
@@ -221,8 +220,10 @@ public class ConfigVarMap {
 		}
 		if (versions.size() == 1) {
 			this.additionalVars.add(configVar[0]);
+			this.configVarToSolverVar.put(varName,
+					this.configVarToSolverVar.get(configVar[0]));
 		}
-		versions.add(99);
+		versions.add(Utils.JOKER);
 	}
 
 	/**
