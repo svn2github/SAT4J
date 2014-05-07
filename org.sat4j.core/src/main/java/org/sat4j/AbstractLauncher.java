@@ -268,9 +268,9 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     protected void configureLauncher() {
         String all = System.getProperty("all");
-        if (all != null) {
-            feedWithDecorated = true;
+        if (all != null) {      
             if ("external".equals(all)) {
+                feedWithDecorated = true;
                 this.solver = new ModelIteratorToSATAdapter(this.solver,
                         launcherMode);
                 System.out.println(this.solver.getLogPrefix()
