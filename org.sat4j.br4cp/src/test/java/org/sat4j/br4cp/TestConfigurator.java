@@ -147,7 +147,7 @@ public class TestConfigurator {
 		assertEquals(2, configurator.getCurrentDomainOf("v29").size());
 	}
 
-	@Test
+	@Ignore
 	public void testBugYacineRandom() {
 		configurator = new Br4cpConfigurator();
 		configurator.readProblem("big");
@@ -158,5 +158,48 @@ public class TestConfigurator {
 		assertEquals(1, configurator.getCurrentDomainOf("v73").size());
 		configurator.assignAndPropagate("v75", "3");
 		assertEquals(1, configurator.getCurrentDomainOf("v75").size());
+	}
+
+	@Test
+	public void testBugYacineUnassign1() {
+		configurator.assignAndPropagate("v23", "1");
+		configurator.assignAndPropagate("v55", "0");
+		configurator.assignAndPropagate("v25", "1");
+		configurator.assignAndPropagate("v12", "1");
+		configurator.assignAndPropagate("v13", "0");
+		configurator.assignAndPropagate("v50", "0");
+		assertTrue(configurator.isPossiblyConsistent());
+	}
+
+	@Test
+	public void testBugYacineUnassign2() {
+		configurator.assignAndPropagate("v23", "1");
+		configurator.assignAndPropagate("v55", "0");
+		configurator.assignAndPropagate("v29_0_Serie", "1");
+		configurator.assignAndPropagate("v25", "1");
+		configurator.assignAndPropagate("v12", "1");
+		configurator.assignAndPropagate("v13", "0");
+		assertTrue(configurator.isPossiblyConsistent());
+		configurator.assignAndPropagate("v50", "0");
+		assertFalse(configurator.isPossiblyConsistent());
+		configurator.unassignAndRestore("v29_0_Serie");
+		configurator.assignAndPropagate("v50", "0");
+		assertTrue(configurator.isPossiblyConsistent());
+	}
+
+	@Test
+	public void testBugYacineUnassign3() {
+		configurator.assignAndPropagate("v23", "1");
+		configurator.assignAndPropagate("v55", "0");
+		configurator.assignAndPropagate("v29_0_Serie", "1");
+		configurator.assignAndPropagate("v25", "1");
+		configurator.assignAndPropagate("v12", "1");
+		configurator.assignAndPropagate("v13", "0");
+		assertTrue(configurator.isPossiblyConsistent());
+		configurator.assignAndPropagate("v50", "0");
+		assertFalse(configurator.isPossiblyConsistent());
+		configurator.unassignAndRestore("v13_0");
+		configurator.assignAndPropagate("v50", "0");
+		assertFalse(configurator.isPossiblyConsistent());
 	}
 }

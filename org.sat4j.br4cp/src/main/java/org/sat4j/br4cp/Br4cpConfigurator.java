@@ -39,8 +39,13 @@ public class Br4cpConfigurator implements Configurator {
 	}
 
 	public void unassignAndRestore(String var) {
-		br4cp.unassign(var);
-
+		fault = false;
+		try {
+			br4cp.unassign(var);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			fault = true;
+		}
 	}
 
 	public int minCost() {

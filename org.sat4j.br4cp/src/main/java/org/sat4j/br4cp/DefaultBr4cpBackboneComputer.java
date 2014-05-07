@@ -141,7 +141,6 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 
 	private void removeAssumedConfigVar(String configVarName) {
 		this.fixedVars = new HashSet<String>();
-		boolean found = false;
 		for (Iterator<Set<Integer>> it = this.solverAssumptions.iterator(); it
 				.hasNext();) {
 			Set<Integer> nextSet = it.next();
@@ -149,7 +148,10 @@ public class DefaultBr4cpBackboneComputer implements IBr4cpBackboneComputer {
 				String nextVar = this.varMap.getConfigVar(Math.abs(it2.next()));
 				nextVar = Utils.extractName(nextVar);
 				if (configVarName.equals(nextVar)) {
-					it.remove();
+					it2.remove();
+					if (nextSet.isEmpty()) {
+						it.remove();
+					}
 					break;
 				} else {
 					this.fixedVars.add(nextVar);
