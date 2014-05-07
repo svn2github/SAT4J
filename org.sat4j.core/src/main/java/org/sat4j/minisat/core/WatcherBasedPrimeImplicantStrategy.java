@@ -127,7 +127,7 @@ public class WatcherBasedPrimeImplicantStrategy implements
         if (solver.isVerbose()) {
             System.out
                     .printf("%s prime implicant computation statistics BRESIL (reverse = %b)%n",
-                            solver.getLogPrefix(), this.comparator);
+                            solver.getLogPrefix(), this.comparator != null);
             System.out
                     .printf("%s implied: %d, decision: %d, removed %d (+%d), propagated %d, time(ms):%d %n",
                             solver.getLogPrefix(), solver.implied.size(),
