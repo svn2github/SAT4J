@@ -60,10 +60,8 @@ public class Predicate implements Clausifiable {
             cx.evaluateReader(scope, new InputStreamReader(url.openStream()),
                     "predefinedfunctions.js", 1, null);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
