@@ -78,13 +78,9 @@ public class OptimalModelIterator extends PBSolverDecorator {
                 ObjectiveFunction obj = getObjectiveFunction();
                 objectiveValue = obj.calculateDegree(solver);
 
-                BigInteger degree = BigInteger.valueOf(objectiveValue
-                        .intValue() + 1);
-
                 solver.addAtMost(obj.getVars(), obj.getCoeffs(), objectiveValue);
                 isFirstModel = false;
             }
-            // discardCurrentModel();
 
         } catch (ContradictionException e) {
             trivialfalsity = true;
