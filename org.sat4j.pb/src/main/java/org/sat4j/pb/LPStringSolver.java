@@ -122,12 +122,6 @@ public class LPStringSolver extends DimacsStringSolver implements IPBSolver {
         throw new TimeoutException();
     }
 
-    @Override
-    public boolean isSatisfiable(IVecInt assumps, boolean global)
-            throws TimeoutException {
-        return super.isSatisfiable(assumps, global);
-    }
-
     public IConstr addPseudoBoolean(IVecInt lits, IVec<BigInteger> coeffs,
             boolean moreThan, BigInteger d) throws ContradictionException {
         if (moreThan) {

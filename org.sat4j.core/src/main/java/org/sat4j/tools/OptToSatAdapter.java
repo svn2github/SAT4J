@@ -63,11 +63,6 @@ public class OptToSatAdapter extends SolverDecorator<ISolver> {
     }
 
     @Override
-    public void reset() {
-        super.reset();
-    }
-
-    @Override
     public boolean isSatisfiable() throws TimeoutException {
         return isSatisfiable(VecInt.EMPTY);
     }

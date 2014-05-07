@@ -83,6 +83,9 @@ public class UnitConciseBinaryWLClauseConstructor implements IClauseConstructor 
         first.addBinaryClause(literals.get(1));
         second.addBinaryClause(literals.get(0));
         return first;
+        // return new BinaryClauseHandle(literals.get(0), literals.get(1),
+        // first,
+        // second);
     }
 
     public Constr constructLearntClause(ILits voc, IVecInt literals) {

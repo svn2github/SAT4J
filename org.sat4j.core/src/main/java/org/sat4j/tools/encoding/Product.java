@@ -158,12 +158,6 @@ public class Product extends EncodingStrategyAdapter {
     }
 
     @Override
-    public IConstr addAtMost(ISolver solver, IVecInt literals, int k)
-            throws ContradictionException {
-        return super.addAtMost(solver, literals, k);
-    }
-
-    @Override
     public IConstr addAtMostOne(ISolver solver, IVecInt literals)
             throws ContradictionException {
 

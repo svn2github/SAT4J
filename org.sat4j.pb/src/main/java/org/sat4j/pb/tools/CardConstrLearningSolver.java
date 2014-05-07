@@ -153,18 +153,6 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
     }
 
     @Override
-    public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
-            throws ContradictionException {
-        return super.addAtMost(literals, coeffs, degree);
-    }
-
-    @Override
-    public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
-            BigInteger degree) throws ContradictionException {
-        return super.addAtMost(literals, coeffs, degree);
-    }
-
-    @Override
     public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
         for (int i = 0; i < coeffs.size(); ++i) {
@@ -194,20 +182,6 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         if (degree.compareTo(BigInteger.ONE) == 0)
             return addClause(literals);
         return super.addAtLeast(literals, coeffs, degree);
-    }
-
-    @Override
-    public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)
-            throws ContradictionException {
-        // TODO Auto-generated method stub
-        return super.addExactly(literals, coeffs, weight);
-    }
-
-    @Override
-    public IConstr addExactly(IVecInt literals, IVec<BigInteger> coeffs,
-            BigInteger weight) throws ContradictionException {
-        // TODO Auto-generated method stub
-        return super.addExactly(literals, coeffs, weight);
     }
 
     @Override

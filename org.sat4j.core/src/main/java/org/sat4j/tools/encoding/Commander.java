@@ -145,12 +145,6 @@ public class Commander extends EncodingStrategyAdapter {
     }
 
     @Override
-    public IConstr addAtMost(ISolver solver, IVecInt literals, int degree)
-            throws ContradictionException {
-        return super.addAtMost(solver, literals, degree);
-    }
-
-    @Override
     public IConstr addExactlyOne(ISolver solver, IVecInt literals)
             throws ContradictionException {
         ConstrGroup group = new ConstrGroup(false);
