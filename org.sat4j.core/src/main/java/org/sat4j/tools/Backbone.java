@@ -50,7 +50,7 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class Backbone {
 
-    static abstract class Backboner {
+    abstract static class Backboner {
         private int nbSatTests;
 
         public IVecInt compute(ISolver solver, int[] implicant,
