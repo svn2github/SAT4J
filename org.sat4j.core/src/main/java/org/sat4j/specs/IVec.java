@@ -38,7 +38,7 @@ import java.util.Iterator;
  * 
  * @author leberre
  */
-public interface IVec<T> extends Serializable {
+public interface IVec<T> extends Serializable, Cloneable {
 
     /**
      * @return the number of elements contained in the vector

@@ -37,7 +37,7 @@ import java.util.Comparator;
  * 
  * @author leberre
  */
-public interface IVecInt extends Serializable {
+public interface IVecInt extends Serializable, Cloneable {
 
     int size();
 
