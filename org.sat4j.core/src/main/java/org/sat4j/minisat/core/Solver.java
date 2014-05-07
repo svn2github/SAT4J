@@ -1667,6 +1667,7 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.slistener.init(this);
         this.slistener.start();
         this.model = null; // forget about previous model
+        this.fullmodel = null;
         this.userbooleanmodel = null;
         this.prime = null;
         this.unsatExplanationInTermsOfAssumptions = null;
