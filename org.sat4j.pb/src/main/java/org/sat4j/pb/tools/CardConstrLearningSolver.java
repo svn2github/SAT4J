@@ -40,6 +40,8 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     private final int maxAtMostDegree = 3;
 
+    private boolean verbose = true;
+
     public CardConstrLearningSolver(ASolverFactory<IPBSolver> factory,
             String solverName) {
         super(factory, solverName, solverName);
@@ -73,8 +75,9 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
     }
 
     private void sat4jPreprocessing() {
-        System.out
-                .println("c launching cardinality constraint revelation process");
+        if (verbose)
+            System.out
+                    .println("c launching cardinality constraint revelation process");
         long start = System.currentTimeMillis();
         this.cardFinder.searchCards();
         for (Iterator<AtLeastCard> it = this.cardFinder; it.hasNext();) {
@@ -95,13 +98,15 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         this.preprocessingTime += (System.currentTimeMillis() - start);
         this.initDone = true;
         PrintWriter out = new PrintWriter(System.out, true);
-        printPreprocessingStats(out);
+        if (verbose)
+            printPreprocessingStats(out);
         this.solvers.set(1, null);
     }
 
     private void rissPreprocessing() {
-        System.out
-                .println("c launching cardinality constraint revelation process");
+        if (verbose)
+            System.out
+                    .println("c launching cardinality constraint revelation process");
         long start = System.currentTimeMillis();
         this.cardFinder.rissPreprocessing(this.rissLocation, this.instance);
         for (Iterator<AtLeastCard> it = this.cardFinder; it.hasNext();) {
@@ -122,13 +127,15 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         this.preprocessingTime += (System.currentTimeMillis() - start);
         this.initDone = true;
         PrintWriter out = new PrintWriter(System.out, true);
-        printPreprocessingStats(out);
+        if (verbose)
+            printPreprocessingStats(out);
         this.solvers.get(1).reset();
     }
 
     public void setPreprocessing(boolean preprocessing) {
         this.preprocessing = preprocessing;
-        System.out.println("c preprocessing set to " + preprocessing);
+        if (verbose)
+            System.out.println("c preprocessing set to " + preprocessing);
     }
 
     //
@@ -250,6 +257,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         return this.solvers.get(solverIndex).model(var);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void printInfos(PrintWriter out, String prefix) {
         this.solvers.get(solverIndex).printInfos(out, prefix);
@@ -268,6 +276,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     @Override
     public void setVerbose(boolean value) {
+        this.verbose = value;
         this.solvers.get(solverIndex).setVerbose(value);
     }
 

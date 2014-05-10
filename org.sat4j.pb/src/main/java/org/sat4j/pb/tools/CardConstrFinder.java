@@ -59,6 +59,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     private Set<Integer> authorizedExtLits = null;
 
+    private boolean verbose = false;
+
     @SuppressWarnings("unchecked")
     public CardConstrFinder(IPBSolver coSolver) {
         this.coSolver = coSolver;
@@ -82,22 +84,22 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
     public void rissPreprocessing(String rissLocation, String instance) {
         this.initNumberOfClauses = this.clauses.size();
         int status = -1;
-        System.out.println("c executing riss subprocess");
+        if (verbose)
+            System.out.println("c executing riss subprocess");
         try {
             // Process p = Runtime.getRuntime().exec(
             // rissLocation + " -findCard -card_print -card_noLim "
             // + instance);
-            // Process p = Runtime
-            // .getRuntime()
-            // .exec(rissLocation
-            // +
-            // " -findCard -card_print -no-card_amt -no-card_amo -no-card_sub -no-card_twoProd -no-card_merge -card_noLim "
-            // + instance);
             Process p = Runtime
                     .getRuntime()
                     .exec(rissLocation
-                            + " -findCard -card_print -no-card_semCard -card_noLim "
+                            + " -findCard -card_print -no-card_amt -no-card_amo -no-card_sub -no-card_twoProd -no-card_merge -card_noLim "
                             + instance);
+            // Process p = Runtime
+            // .getRuntime()
+            // .exec(rissLocation
+            // + " -findCard -card_print -no-card_semCard -card_noLim "
+            // + instance);
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     p.getErrorStream()));
             String line;
@@ -110,8 +112,9 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
                     for (int i = 0; i < words.length - 2; ++i)
                         lits.push(Integer.valueOf(words[i]));
                     int degree = Integer.valueOf(words[words.length - 1]);
-                    System.out.println("c riss extracted: "
-                            + new AtMostCard(lits, degree));
+                    if (verbose)
+                        System.out.println("c riss extracted: "
+                                + new AtMostCard(lits, degree));
                     storeAtMostCard(lits, degree);
                 } catch (Exception e) {
                     System.err.println("WARNING: read \"" + line
@@ -120,7 +123,9 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
             }
             reader.close();
             status = p.waitFor();
-            System.out.println("c riss process exited with status " + status);
+            if (verbose)
+                System.out.println("c riss process exited with status "
+                        + status);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -425,6 +430,10 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     public void setPrintCards(boolean b) {
         this.printCards = b;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
     }
 
 }

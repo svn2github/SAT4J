@@ -14,6 +14,8 @@ public class CardConstrLearningSolverLauncher {
 
     private final long solverStart;
 
+    private final boolean verbose = false;
+
     /* Temporally launcher ; do not use */
     @Deprecated
     public static void main(String args[]) throws Exception {
@@ -24,6 +26,8 @@ public class CardConstrLearningSolverLauncher {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                if (!verbose)
+                    return;
                 long solvingTime = System.currentTimeMillis() - solverStart;
                 PrintWriter out = new PrintWriter(System.out, true);
                 solver.printStat(out);
@@ -38,15 +42,17 @@ public class CardConstrLearningSolverLauncher {
         } else {
             reader = new DimacsReader(solver);
         }
-        System.out.println(solver.toString("c "));
-        System.out.println("c reading instance");
+        if (verbose)
+            System.out.println(solver.toString("c "));
+        if (verbose)
+            System.out.println("c reading instance");
         try {
             reader.parseInstance(instance);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
-        solver.setVerbose(true);
+        solver.setVerbose(verbose);
         if (System.getProperties().getProperty("nopreprocessing") != null)
             solver.setPreprocessing(false);
         else if (System.getProperties().getProperty("riss") != null) {
