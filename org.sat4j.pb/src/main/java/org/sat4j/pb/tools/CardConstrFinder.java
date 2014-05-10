@@ -403,6 +403,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
     }
 
     public boolean hasNext() {
+        if (cardIt == null)
+            return false;
         boolean res = cardIt.hasNext();
         if (!res)
             this.cardIt = this.atLeastCardDegree.keySet().iterator();
