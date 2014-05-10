@@ -72,6 +72,7 @@ import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
+import org.sat4j.pb.tools.CardConstrLearningSolver;
 import org.sat4j.pb.tools.ManyCorePB;
 
 /**
@@ -830,6 +831,11 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         solver.setVerbose(false);
         solver.setLearnedConstraintsDeletionStrategy(solver.activity_based_low_memory);
         return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
+    }
+
+    public static CardConstrLearningSolver<IPBSolver> newCPCardConstrLearningSolver() {
+        return new CardConstrLearningSolver<IPBSolver>(
+                SolverFactory.newCuttingPlanes());
     }
 
 }
