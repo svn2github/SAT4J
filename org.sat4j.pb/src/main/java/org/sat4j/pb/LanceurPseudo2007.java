@@ -34,6 +34,7 @@ import org.sat4j.ILauncherMode;
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.pb.reader.OPBReader2012;
 import org.sat4j.pb.tools.OptimalModelIterator;
+import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
@@ -61,6 +62,8 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
 
     @Override
     protected Reader createReader(ISolver theSolver, String problemname) {
+        if (problemname.endsWith(".cnf"))
+            return new DimacsReader(theSolver);
         return new OPBReader2012((IPBSolver) theSolver);
     }
 
