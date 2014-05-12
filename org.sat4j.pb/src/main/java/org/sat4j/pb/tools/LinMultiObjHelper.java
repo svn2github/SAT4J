@@ -36,7 +36,7 @@ import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.OptToPBSATAdapter;
-import org.sat4j.pb.multiobjective.AbstractLinMultiObjOptimizer;
+import org.sat4j.pb.multiobjective.IMultiObjOptimizationProblem;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -45,20 +45,20 @@ import org.sat4j.tools.SolutionFoundListener;
 public class LinMultiObjHelper<T, C> extends DependencyHelper<T, C> implements
         SolutionFoundListener {
 
-    private AbstractLinMultiObjOptimizer solver;
+    private IMultiObjOptimizationProblem solver;
     private boolean hasASolution;
     private boolean isOptimal = false;
 
-    public LinMultiObjHelper(AbstractLinMultiObjOptimizer solver) {
+    public LinMultiObjHelper(IMultiObjOptimizationProblem solver) {
         this(solver, false);
     }
 
-    public LinMultiObjHelper(AbstractLinMultiObjOptimizer solver,
+    public LinMultiObjHelper(IMultiObjOptimizationProblem solver,
             boolean explanationEnabled) {
         this(solver, false, false);
     }
 
-    public LinMultiObjHelper(AbstractLinMultiObjOptimizer solver,
+    public LinMultiObjHelper(IMultiObjOptimizationProblem solver,
             boolean explanationEnabled, boolean canonicalOptFunctionEnabled) {
         super(new OptToPBSATAdapter(solver), explanationEnabled,
                 canonicalOptFunctionEnabled);
