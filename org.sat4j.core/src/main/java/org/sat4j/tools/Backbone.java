@@ -50,7 +50,10 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class Backbone {
 
+    private static IBackboneProgressListener listener = null;
+
     abstract static class Backboner {
+
         private int nbSatTests;
 
         public IVecInt compute(ISolver solver, int[] implicant,
@@ -136,7 +139,13 @@ public final class Backbone {
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             int p;
+            int initLitsToTestSize = litsToTest.size();
+            if (listener != null)
+                listener.start(initLitsToTestSize);
             while (!litsToTest.isEmpty()) {
+                if (listener != null)
+                    listener.inProgress(initLitsToTestSize - litsToTest.size(),
+                            initLitsToTestSize);
                 p = litsToTest.last();
                 candidates.push(p);
                 litsToTest.pop();
@@ -150,6 +159,8 @@ public final class Backbone {
                 }
                 incSatTests();
             }
+            if (listener != null)
+                listener.end();
             return candidates;
         }
     };
@@ -170,7 +181,13 @@ public final class Backbone {
             IVecInt candidates = new VecInt();
             assumptions.copyTo(candidates);
             IConstr constr;
+            int initLitsToTestSize = litsToTest.size();
+            if (listener != null)
+                listener.start(initLitsToTestSize);
             while (!litsToTest.isEmpty()) {
+                if (listener != null)
+                    listener.inProgress(initLitsToTestSize - litsToTest.size(),
+                            initLitsToTestSize);
                 try {
                     constr = solver.addBlockingClause(litsToTest);
                     if (solver.isSatisfiable(candidates)) {
@@ -193,6 +210,8 @@ public final class Backbone {
                 }
                 incSatTests();
             }
+            if (listener != null)
+                listener.end();
             return candidates;
         }
     };
@@ -316,5 +335,9 @@ public final class Backbone {
      */
     public int getNumberOfSatCalls() {
         return bb.nbSatTests();
+    }
+
+    public void setBackboneProgressListener(IBackboneProgressListener listener) {
+        Backbone.listener = listener;
     }
 }
