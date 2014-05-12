@@ -50,11 +50,14 @@ import org.sat4j.specs.TimeoutException;
  */
 public final class Backbone {
 
-    private static IBackboneProgressListener listener = null;
-
     abstract static class Backboner {
-
+        protected IBackboneProgressListener listener = IBackboneProgressListener.VOID;
         private int nbSatTests;
+
+        public void setBackboneProgressListener(
+                IBackboneProgressListener listener) {
+            this.listener = listener;
+        }
 
         public IVecInt compute(ISolver solver, int[] implicant,
                 IVecInt assumptions) throws TimeoutException {
@@ -140,12 +143,10 @@ public final class Backbone {
             assumptions.copyTo(candidates);
             int p;
             int initLitsToTestSize = litsToTest.size();
-            if (listener != null)
-                listener.start(initLitsToTestSize);
+            listener.start(initLitsToTestSize);
             while (!litsToTest.isEmpty()) {
-                if (listener != null)
-                    listener.inProgress(initLitsToTestSize - litsToTest.size(),
-                            initLitsToTestSize);
+                listener.inProgress(initLitsToTestSize - litsToTest.size(),
+                        initLitsToTestSize);
                 p = litsToTest.last();
                 candidates.push(p);
                 litsToTest.pop();
@@ -159,8 +160,7 @@ public final class Backbone {
                 }
                 incSatTests();
             }
-            if (listener != null)
-                listener.end();
+            listener.end();
             return candidates;
         }
     };
@@ -182,12 +182,10 @@ public final class Backbone {
             assumptions.copyTo(candidates);
             IConstr constr;
             int initLitsToTestSize = litsToTest.size();
-            if (listener != null)
-                listener.start(initLitsToTestSize);
+            listener.start(initLitsToTestSize);
             while (!litsToTest.isEmpty()) {
-                if (listener != null)
-                    listener.inProgress(initLitsToTestSize - litsToTest.size(),
-                            initLitsToTestSize);
+                listener.inProgress(initLitsToTestSize - litsToTest.size(),
+                        initLitsToTestSize);
                 try {
                     constr = solver.addBlockingClause(litsToTest);
                     if (solver.isSatisfiable(candidates)) {
@@ -210,8 +208,7 @@ public final class Backbone {
                 }
                 incSatTests();
             }
-            if (listener != null)
-                listener.end();
+            listener.end();
             return candidates;
         }
     };
@@ -225,6 +222,11 @@ public final class Backbone {
     }
 
     public static Backbone instance() {
+        return instance;
+    }
+
+    public static Backbone instance(IBackboneProgressListener listener) {
+        instance.bb.setBackboneProgressListener(listener);
         return instance;
     }
 
@@ -335,9 +337,5 @@ public final class Backbone {
      */
     public int getNumberOfSatCalls() {
         return bb.nbSatTests();
-    }
-
-    public void setBackboneProgressListener(IBackboneProgressListener listener) {
-        Backbone.listener = listener;
     }
 }
