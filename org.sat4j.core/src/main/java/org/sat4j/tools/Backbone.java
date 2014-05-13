@@ -53,10 +53,22 @@ public final class Backbone {
     abstract static class Backboner {
         protected IBackboneProgressListener listener = IBackboneProgressListener.VOID;
         private int nbSatTests;
+        private boolean implicant = true;
 
         public void setBackboneProgressListener(
                 IBackboneProgressListener listener) {
             this.listener = listener;
+        }
+
+        public void setImplicantSimplification(boolean b) {
+            this.implicant = b;
+        }
+
+        public int[] simplifiedModel(ISolver solver) {
+            if (implicant) {
+                return solver.primeImplicant();
+            }
+            return solver.model();
         }
 
         public IVecInt compute(ISolver solver, int[] implicant,
@@ -152,7 +164,7 @@ public final class Backbone {
                 litsToTest.pop();
                 if (solver.isSatisfiable(candidates)) {
                     candidates.pop();
-                    implicant = solver.primeImplicant();
+                    implicant = simplifiedModel(solver);
                     removeVarNotPresentAndSatisfiedLits(implicant, litsToTest,
                             solver.nVars());
                 } else {
@@ -189,7 +201,7 @@ public final class Backbone {
                 try {
                     constr = solver.addBlockingClause(litsToTest);
                     if (solver.isSatisfiable(candidates)) {
-                        implicant = solver.primeImplicant();
+                        implicant = simplifiedModel(solver);
                         removeVarNotPresentAndSatisfiedLits(implicant,
                                 litsToTest, solver.nVars());
                     } else {
@@ -225,8 +237,10 @@ public final class Backbone {
         return instance;
     }
 
-    public static Backbone instance(IBackboneProgressListener listener) {
+    public static Backbone instance(IBackboneProgressListener listener,
+            boolean primeImplicantSimplification) {
         instance.bb.setBackboneProgressListener(listener);
+        instance.bb.setImplicantSimplification(primeImplicantSimplification);
         return instance;
     }
 
