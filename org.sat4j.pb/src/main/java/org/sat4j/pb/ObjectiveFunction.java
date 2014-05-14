@@ -32,10 +32,12 @@ package org.sat4j.pb;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.sat4j.core.ReadOnlyVec;
 import org.sat4j.core.ReadOnlyVecInt;
+import org.sat4j.core.Vec;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -57,7 +59,7 @@ public class ObjectiveFunction implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // contains the coeffs of the objective function for each variable
-    private final IVec<BigInteger> coeffs;
+    private IVec<BigInteger> coeffs;
 
     private final IVecInt vars;
 
@@ -195,5 +197,15 @@ public class ObjectiveFunction implements Serializable {
             map.put(this.vars.get(i), this.coeffs.get(i));
         }
         return map;
+    }
+
+    public void negate() {
+        IVec<BigInteger> newCoeffs = new Vec<BigInteger>(this.coeffs.size());
+        for (Iterator<BigInteger> coeffIt = this.coeffs.iterator(); coeffIt
+                .hasNext();) {
+            newCoeffs.push(coeffIt.next().negate());
+        }
+        this.coeffs = newCoeffs;
+        this.correction = this.correction.negate();
     }
 }
