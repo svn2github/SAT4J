@@ -45,7 +45,7 @@ public interface IBackboneProgressListener {
         public void inProgress(int processed, int initLitsToTest) {
         }
 
-        public void end() {
+        public void end(int nCallsToSolver) {
         }
     };
 
@@ -53,6 +53,6 @@ public interface IBackboneProgressListener {
 
     void inProgress(int processed, int initLitsToTest);
 
-    void end();
+    void end(int nCallsToSolver);
 
 }

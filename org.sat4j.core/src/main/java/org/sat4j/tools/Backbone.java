@@ -52,7 +52,7 @@ public final class Backbone {
 
     abstract static class Backboner {
         protected IBackboneProgressListener listener = IBackboneProgressListener.VOID;
-        private int nbSatTests;
+        protected int nbSatTests;
         private boolean implicant = true;
 
         public void setBackboneProgressListener(
@@ -172,7 +172,7 @@ public final class Backbone {
                 }
                 incSatTests();
             }
-            listener.end();
+            listener.end(nbSatTests);
             return candidates;
         }
     };
@@ -220,7 +220,7 @@ public final class Backbone {
                 }
                 incSatTests();
             }
-            listener.end();
+            listener.end(nbSatTests);
             return candidates;
         }
     };
