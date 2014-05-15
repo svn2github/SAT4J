@@ -384,6 +384,10 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
         return decorated;
     }
 
+    protected void setDecorated(T solver) {
+        this.solver = solver;
+    }
+
     /*
      * (non-Javadoc)
      * 

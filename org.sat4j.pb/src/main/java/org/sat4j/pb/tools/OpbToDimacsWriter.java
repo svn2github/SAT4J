@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.PBSolverHandle;
 import org.sat4j.pb.reader.OPBReader2012;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.specs.ContradictionException;
@@ -36,7 +37,7 @@ public class OpbToDimacsWriter {
             DimacsStringSolver dss = new DimacsStringSolver();
             IPBSolver solver = new ClausalConstraintsDecorator(new PBAdapter(
                     dss), Policy.getAdapterFromEncodingName(strategy));
-            OPBReader2012 reader = new OPBReader2012(solver);
+            OPBReader2012 reader = new OPBReader2012(new PBSolverHandle(solver));
             solver.setVerbose(false);
             reader.parseInstance(args[0]);
             FileWriter fwriter = new FileWriter(args[0] + ".cardEncoding."

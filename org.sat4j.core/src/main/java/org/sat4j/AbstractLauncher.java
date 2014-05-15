@@ -187,14 +187,15 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         log("solving " + problemname); //$NON-NLS-1$
         log("reading problem ... "); //$NON-NLS-1$
         SolverDecorator<ISolver> decorator = null;
+        ISolver originalProblem;
         if (feedWithDecorated) {
             decorator = (SolverDecorator<ISolver>) this.solver;
-            this.reader = createReader(decorator.decorated(), problemname);
+            originalProblem = decorator.decorated();
         } else {
-            this.reader = createReader(this.solver, problemname);
+            originalProblem = this.solver;
         }
+        this.reader = createReader(originalProblem, problemname);
         IProblem aProblem = this.reader.parseInstance(problemname);
-
         if (this.reader.hasAMapping()) {
             SearchListener<?> listener = this.solver.getSearchListener();
             if (listener instanceof DotSearchTracing) {
@@ -268,7 +269,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     protected void configureLauncher() {
         String all = System.getProperty("all");
-        if (all != null) {      
+        if (all != null) {
             if ("external".equals(all)) {
                 feedWithDecorated = true;
                 this.solver = new ModelIteratorToSATAdapter(this.solver,

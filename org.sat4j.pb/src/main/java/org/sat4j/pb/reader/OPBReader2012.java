@@ -32,7 +32,7 @@ package org.sat4j.pb.reader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 
-import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.PBSolverHandle;
 import org.sat4j.pb.tools.LexicoDecoratorPB;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.specs.ContradictionException;
@@ -52,7 +52,7 @@ public class OPBReader2012 extends OPBReader2010 {
 	 */
     private static final long serialVersionUID = 1L;
 
-    public OPBReader2012(IPBSolver solver) {
+    public OPBReader2012(PBSolverHandle solver) {
         super(solver);
     }
 
@@ -71,7 +71,9 @@ public class OPBReader2012 extends OPBReader2010 {
         if ("#aggregation=".equals(s)) {
             s = readWord();
             assert "lexico".equals(s);
-            lexico = new LexicoDecoratorPB(solver);
+            PBSolverHandle handle = (PBSolverHandle) solver;
+            lexico = new LexicoDecoratorPB(handle.decorated());
+            handle.changeDecorated(lexico);
         }
         if ("beginMapping".equals(s)) {
             startsMapping();
@@ -99,10 +101,9 @@ public class OPBReader2012 extends OPBReader2010 {
     public IProblem parseInstance(final java.io.Reader input)
             throws ParseFormatException, ContradictionException {
         IProblem problem = parseInstance(new LineNumberReader(input));
-        if (lexico != null) {
-            return lexico;
+        if (lexico == null) {
+            this.solver.setObjectiveFunction(getObjectiveFunction());
         }
-        this.solver.setObjectiveFunction(getObjectiveFunction());
-        return problem;
+        return ((PBSolverHandle) solver).decorated();
     }
 }

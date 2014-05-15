@@ -37,7 +37,7 @@ public class CardConstrLearningSolverLauncher {
         solver = SolverFactory.newCPCardConstrLearningSolver();
         Reader reader;
         if (instance.endsWith(".opb") || instance.endsWith(".opb.bz2")) {
-            reader = new OPBReader2012(solver);
+            reader = new OPBReader2012(new PBSolverHandle(solver));
         } else {
             reader = new DimacsReader(solver);
         }

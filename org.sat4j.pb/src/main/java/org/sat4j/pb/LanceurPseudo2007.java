@@ -64,16 +64,19 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
     protected Reader createReader(ISolver theSolver, String problemname) {
         if (problemname.endsWith(".cnf"))
             return new DimacsReader(theSolver);
-        return new OPBReader2012((IPBSolver) theSolver);
+        return new OPBReader2012(handle);
     }
+
+    private PBSolverHandle handle;
 
     @Override
     protected void configureLauncher() {
+        this.handle = new PBSolverHandle((IPBSolver) this.solver);
         String all = System.getProperty("all");
         if (all != null) {
             feedWithDecorated = true;
             this.solver = new OptimalModelIterator(new OptToPBSATAdapter(
-                    (IOptimizationProblem) this.solver));
+                    (IOptimizationProblem) this.handle));
             setLauncherMode(ILauncherMode.DECISION);
         }
         super.configureLauncher();

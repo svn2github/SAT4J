@@ -30,6 +30,7 @@
 package org.sat4j.pb.reader;
 
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.PBSolverHandle;
 import org.sat4j.reader.InstanceReader;
 import org.sat4j.reader.Reader;
 
@@ -52,7 +53,7 @@ public class PBInstanceReader extends InstanceReader {
 
     private Reader getDefaultOPBReader() {
         if (this.opb == null) {
-            this.opb = new OPBReader2012(this.solver);
+            this.opb = new OPBReader2012(new PBSolverHandle(this.solver));
         }
         return this.opb;
     }

@@ -74,14 +74,12 @@ public class OptimalModelIterator extends PBSolverDecorator {
         this.nbModelFound++;
 
         try {
-            if (isFirstModel) {
-                ObjectiveFunction obj = getObjectiveFunction();
+            ObjectiveFunction obj = this.getObjectiveFunction();
+            if (isFirstModel && obj != null) {
                 objectiveValue = obj.calculateDegree(solver);
-
                 solver.addAtMost(obj.getVars(), obj.getCoeffs(), objectiveValue);
                 isFirstModel = false;
             }
-
         } catch (ContradictionException e) {
             trivialfalsity = true;
         }
