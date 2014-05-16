@@ -48,28 +48,30 @@ import org.sat4j.specs.TimeoutException;
  */
 public class AllMUSes {
 
-    private AbstractClauseSelectorSolver<ISolver> css;
+    private final AbstractClauseSelectorSolver<? extends ISolver> css;
     private final List<IVecInt> mssList;
     private final List<IVecInt> secondPhaseClauses;
     private final List<IVecInt> musList;
     private final ASolverFactory<? extends ISolver> factory;
 
     public AllMUSes(boolean group, ASolverFactory<? extends ISolver> factory) {
-        if (!group) {
-            this.css = new FullClauseSelectorSolver<ISolver>(
-                    factory.defaultSolver(), false);
-        } else {
-            this.css = new GroupClauseSelectorSolver<ISolver>(
-                    factory.defaultSolver());
-        }
-        this.mssList = new ArrayList<IVecInt>();
-        this.musList = new ArrayList<IVecInt>();
-        this.secondPhaseClauses = new ArrayList<IVecInt>();
-        this.factory = factory;
+        this(group ? new GroupClauseSelectorSolver<ISolver>(
+                factory.defaultSolver())
+                : new FullClauseSelectorSolver<ISolver>(
+                        factory.defaultSolver(), false), factory);
     }
 
     public AllMUSes(ASolverFactory<? extends ISolver> factory) {
         this(false, factory);
+    }
+
+    public AllMUSes(AbstractClauseSelectorSolver<? extends ISolver> css,
+            ASolverFactory<? extends ISolver> factory) {
+        this.css = css;
+        this.factory = factory;
+        this.mssList = new ArrayList<IVecInt>();
+        this.musList = new ArrayList<IVecInt>();
+        this.secondPhaseClauses = new ArrayList<IVecInt>();
     }
 
     /**

@@ -44,13 +44,14 @@ public interface IGroupSolver extends ISolver {
      * 
      * @param literals
      *            a clause
-     * @param desc
+     * @param groupId
      *            the level of the clause set. The specific level 0 is used to
      *            denote hard clauses.
      * @return on object representing that clause in the solver.
      * @throws ContradictionException
      */
-    IConstr addClause(IVecInt literals, int desc) throws ContradictionException;
+    IConstr addClause(IVecInt literals, int groupId)
+            throws ContradictionException;
 
     /**
      * 

@@ -58,14 +58,19 @@ public class GroupClauseSelectorSolver<T extends ISolver> extends
         if (desc == 0) {
             return super.addClause(literals);
         }
-        Integer hlvar = this.highLevelToVar.get(desc);
-        if (hlvar == null) {
-            hlvar = createNewVar(literals);
-            this.highLevelToVar.put(desc, hlvar);
-            this.varToHighLevel.put(hlvar, desc);
-        }
+        Integer hlvar = getGroupVar(literals, desc);
         literals.push(hlvar);
         return super.addClause(literals);
+    }
+
+    protected Integer getGroupVar(IVecInt literals, int groupid) {
+        Integer hlvar = this.highLevelToVar.get(groupid);
+        if (hlvar == null) {
+            hlvar = createNewVar(literals);
+            this.highLevelToVar.put(groupid, hlvar);
+            this.varToHighLevel.put(hlvar, groupid);
+        }
+        return hlvar;
     }
 
     public IConstr addNonControlableClause(IVecInt literals)
