@@ -17,8 +17,6 @@ import java.util.TimerTask;
 import java.util.TreeSet;
 
 import org.sat4j.core.VecInt;
-import org.sat4j.minisat.constraints.MixedDataStructureDanielWLConciseBinary;
-import org.sat4j.minisat.core.Solver;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.IPBSolverService;
 import org.sat4j.specs.ISolverService;
@@ -28,7 +26,8 @@ import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.SearchListenerAdapter;
 
-public class CardConstrFinder implements Iterator<AtLeastCard> {
+public class CardConstrFinder implements Iterator<AtLeastCard>,
+        Iterable<AtLeastCard> {
 
     private final IPBSolver coSolver;
 
@@ -38,8 +37,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     private final SearchListener<ISolverService> oldListener;
 
-    private final SortedSet<IVecInt> clauses = new TreeSet<IVecInt>(
-            new ClauseSizeComparator());
+    private final SortedSet<AtLeastCard> atLeastCards = new TreeSet<AtLeastCard>(
+            new AtLeastCardDegreeComparator());
 
     private final Map<Integer, List<BitSet>> atLeastCardCache = new HashMap<Integer, List<BitSet>>();
 
@@ -47,9 +46,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     private Iterator<BitSet> cardIt;
 
-    private final int maxCardDegree = Integer.MAX_VALUE - 1;
-
-    private int initNumberOfClauses;
+    private int initNumberOfConstraints;
 
     private BitSet zeroProps = null;
 
@@ -61,11 +58,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     private boolean verbose = false;
 
-    @SuppressWarnings("unchecked")
     public CardConstrFinder(IPBSolver coSolver) {
         this.coSolver = coSolver;
-        ((Solver<MixedDataStructureDanielWLConciseBinary>) coSolver)
-                .setDataStructureFactory(new MixedDataStructureDanielWLConciseBinary());
         this.coSolver.setTimeoutOnConflicts(Integer.MAX_VALUE);
         this.oldListener = this.coSolver.getSearchListener();
         this.coSolver.setSearchListener(new CardConstrFinderListener(this));
@@ -76,30 +70,28 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
     }
 
     public void addClause(IVecInt clause) {
-        IVecInt copy = new VecInt(clause.size());
-        clause.copyTo(copy);
-        this.clauses.add(copy);
+        addAtLeast(clause, 1);
+    }
+
+    public void addAtLeast(IVecInt lits, int threshold) {
+        this.atLeastCards.add(new AtLeastCard(lits, threshold));
+    }
+
+    public void addAtMost(IVecInt vec, int threshold) {
+        this.atLeastCards.add(new AtMostCard(vec, threshold).toAtLeast());
     }
 
     public void rissPreprocessing(String rissLocation, String instance) {
-        this.initNumberOfClauses = this.clauses.size();
+        this.initNumberOfConstraints = this.atLeastCards.size();
         int status = -1;
         if (verbose)
             System.out.println("c executing riss subprocess");
         try {
-            // Process p = Runtime.getRuntime().exec(
-            // rissLocation + " -findCard -card_print -card_noLim "
-            // + instance);
             Process p = Runtime
                     .getRuntime()
                     .exec(rissLocation
                             + " -findCard -card_print -no-card_amt -no-card_amo -no-card_sub -no-card_twoProd -no-card_merge -card_noLim "
                             + instance);
-            // Process p = Runtime
-            // .getRuntime()
-            // .exec(rissLocation
-            // + " -findCard -card_print -no-card_semCard -card_noLim "
-            // + instance);
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     p.getErrorStream()));
             String line;
@@ -129,24 +121,21 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (Iterator<IVecInt> clIt = this.clauses.iterator(); clIt.hasNext();) {
-            IVecInt clause = clIt.next();
-            if (clause.size() <= this.maxCardDegree + 1) {
-                BitSet atLeastLits = new BitSet(clause.size());
-                for (IteratorInt it = clause.iterator(); it.hasNext();)
-                    atLeastLits.set(it.next()
-                            + this.coSolver.realNumberOfVariables());
-                if (clauseInFoundCard(atLeastLits)) {
-                    clIt.remove();
-                }
+        for (Iterator<AtLeastCard> cardIt = this.atLeastCards.iterator(); cardIt
+                .hasNext();) {
+            AtLeastCard card = cardIt.next();
+            BitSet atLeastLits = new BitSet(card.getLits().size());
+            for (IteratorInt litIt = card.getLits().iterator(); litIt.hasNext();)
+                atLeastLits.set(litIt.next()
+                        + this.coSolver.realNumberOfVariables());
+            if (cardIsSubsumed(atLeastLits, card.getDegree())) {
+                cardIt.remove();
             }
         }
         this.cardIt = this.atLeastCardDegree.keySet().iterator();
     }
 
     public void searchCards() {
-        this.initNumberOfClauses = this.clauses.size();
-        System.out.println("c " + this.clauses.size() + " clauses to process");
         int cpt = 0;
         Timer timerStatus = new Timer();
         timerStatus.scheduleAtFixedRate(new TimerTask() {
@@ -155,40 +144,39 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
                 shouldDisplayStatus = true;
             }
         }, 30 * 1000, 30 * 1000);
-        for (Iterator<IVecInt> clIt = this.clauses.iterator(); clIt.hasNext();) {
-            IVecInt clause = clIt.next();
-            if (clause.size() <= this.maxCardDegree + 1) {
-                BitSet atLeastLits = new BitSet(clause.size());
-                for (IteratorInt it = clause.iterator(); it.hasNext();) {
-                    int nextLit = it.next();
-                    atLeastLits.set(nextLit
-                            + this.coSolver.realNumberOfVariables());
+        for (Iterator<AtLeastCard> itCard = this.atLeastCards.iterator(); itCard
+                .hasNext();) {
+            AtLeastCard atLeastCard = itCard.next();
+            BitSet atLeastLits = new BitSet(atLeastCard.getLits().size());
+            for (IteratorInt itLits = atLeastCard.getLits().iterator(); itLits
+                    .hasNext();) {
+                atLeastLits.set(itLits.next()
+                        + this.coSolver.realNumberOfVariables());
+            }
+            if (!cardIsSubsumed(atLeastLits, atLeastCard.getDegree())) {
+                BitSet cardFound = searchCardFromAtLeastCard(atLeastLits,
+                        atLeastCard.getDegree());
+                if (cardFound != null) {
+                    itCard.remove();
                 }
-                if (!clauseInFoundCard(atLeastLits)) {
-                    BitSet cardFound = searchCardFromAtLeastOneCard(atLeastLits);
-                    if (cardFound != null) {
-                        clIt.remove();
-                    }
-                } else {
-                    clIt.remove();
-                }
+            } else {
+                itCard.remove();
             }
             ++cpt;
             if (this.shouldDisplayStatus) {
                 System.out.println("c processed " + cpt + "/"
-                        + this.initNumberOfClauses + " clauses");
+                        + this.initNumberOfConstraints + " constraints");
                 this.shouldDisplayStatus = false;
             }
         }
         timerStatus.cancel();
-        this.cardIt = this.atLeastCardDegree.keySet().iterator();
     }
 
     public IVecInt searchCardFromClause(IVecInt clause) {
         BitSet atLeastLits = new BitSet(clause.size());
         for (IteratorInt it = clause.iterator(); it.hasNext();)
             atLeastLits.set(it.next() + this.coSolver.realNumberOfVariables());
-        BitSet cardFound = searchCardFromAtLeastOneCard(atLeastLits);
+        BitSet cardFound = searchCardFromAtLeastCard(atLeastLits, 1);
         IVecInt atMostLits = new VecInt(cardFound.cardinality());
         for (int from = 0; (from = cardFound.nextSetBit(from)) != -1; ++from) {
             atMostLits.push(from - this.coSolver.realNumberOfVariables());
@@ -196,17 +184,16 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         return atMostLits;
     }
 
-    private BitSet searchCardFromAtLeastOneCard(BitSet atLeastLits) {
+    private BitSet searchCardFromAtLeastCard(BitSet atLeastLits, int threshold) {
         BitSet atMostLits = new BitSet(atLeastLits.cardinality());
         int from = 0;
         int cur;
         while ((cur = atLeastLits.nextSetBit(from)) != -1) {
             int negBit = 2 * this.coSolver.realNumberOfVariables() - cur;
-            assert negBit != this.coSolver.realNumberOfVariables();
             atMostLits.set(negBit);
             from = cur + 1;
         }
-        int atMostDegree = atLeastLits.cardinality() - 1;
+        int atMostDegree = atLeastLits.cardinality() - threshold;
         Set<Integer> newLits = expendAtMostCard(atMostLits, atMostDegree);
         for (Integer lit : newLits) {
             atLeastLits.set(-lit + this.coSolver.realNumberOfVariables());
@@ -221,7 +208,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         return atMostLits;
     }
 
-    private boolean clauseInFoundCard(BitSet atLeastLits) {
+    private boolean cardIsSubsumed(BitSet atLeastLits, int threshold) {
         List<BitSet> storedCards = this.atLeastCardCache.get(atLeastLits
                 .nextSetBit(0) - this.coSolver.realNumberOfVariables());
         if (storedCards == null) {
@@ -231,14 +218,14 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         // literals
         if (storedCards != null) {
             for (BitSet storedCard : storedCards) {
-                BitSet clauseClone = (BitSet) atLeastLits.clone();
-                clauseClone.andNot(storedCard);
-                if (clauseClone.isEmpty()) {
+                BitSet atLeastLitsClone = (BitSet) atLeastLits.clone();
+                atLeastLitsClone.andNot(storedCard);
+                if (atLeastLitsClone.isEmpty()) {
                     // L>=d dominates L'>=d' iff |L\L'| <= d-d'
                     BitSet intersection = ((BitSet) storedCard.clone());
                     intersection.andNot(atLeastLits);
                     if (intersection.cardinality() <= this.atLeastCardDegree
-                            .get(storedCard) - 1) {
+                            .get(storedCard) - threshold) {
                         return true;
                     }
                 }
@@ -337,8 +324,9 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         if (this.zeroProps == null) {
             this.zeroProps = new BitSet(0);
             this.zeroProps = impliedBy(new BitSet(0));
-            System.out.println("c " + zeroProps.cardinality()
-                    + " literals propagated at decision level 0");
+            if (verbose)
+                System.out.println("c " + zeroProps.cardinality()
+                        + " literals propagated at decision level 0");
         }
         BitSet cached = this.implied.get(lits);
         if (cached != null)
@@ -361,12 +349,12 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         return this.propagated;
     }
 
-    public Set<IVecInt> remainingClauses() {
-        return this.clauses;
+    public Set<AtLeastCard> remainingAtLeastCards() {
+        return this.atLeastCards;
     }
 
     public int initNumberOfClauses() {
-        return this.initNumberOfClauses;
+        return this.initNumberOfConstraints;
     }
 
     public void setAuthorizedExtLits(IVecInt lits) {
@@ -387,10 +375,6 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
         @Override
         public void propagating(int p) {
-            if (Math.abs(p) > ccf.coSolver.realNumberOfVariables()) {
-                System.out.println();
-                assert Math.abs(p) <= ccf.coSolver.realNumberOfVariables();
-            }
             if (authorizedExtLits != null && !authorizedExtLits.contains(p))
                 return;
             ccf.propagated.set(p + ccf.coSolver.realNumberOfVariables());
@@ -421,11 +405,12 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
         cardIt.remove();
     }
 
-    private class ClauseSizeComparator implements Comparator<IVecInt> {
+    private class AtLeastCardDegreeComparator implements
+            Comparator<AtLeastCard> {
 
-        public int compare(IVecInt o1, IVecInt o2) {
-            int sizeDif = o1.size() - o2.size();
-            return sizeDif != 0 ? sizeDif : -1;
+        public int compare(AtLeastCard arg0, AtLeastCard arg1) {
+            return arg0.getLits().size() - arg0.getDegree()
+                    - arg1.getLits().size() + arg1.getDegree();
         }
 
     }
@@ -436,6 +421,11 @@ public class CardConstrFinder implements Iterator<AtLeastCard> {
 
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
+    }
+
+    public Iterator<AtLeastCard> iterator() {
+        this.cardIt = this.atLeastCardDegree.keySet().iterator();
+        return this;
     }
 
 }

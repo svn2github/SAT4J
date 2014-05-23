@@ -3,6 +3,8 @@ package org.sat4j.pb.tools;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.sat4j.specs.IConstr;
 import org.sat4j.specs.ISolverService;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
@@ -42,6 +45,10 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     private boolean verbose = true;
 
+    private Map<Integer, BigInteger> objWeightsMap = null;
+
+    private BigInteger objMinBound = null;
+
     public CardConstrLearningSolver(ASolverFactory<IPBSolver> factory,
             String solverName) {
         super(factory, solverName, solverName);
@@ -59,6 +66,14 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
     }
 
     public void init() {
+        if (getObjectiveFunction() != null) {
+            this.objWeightsMap = new HashMap<Integer, BigInteger>();
+            IteratorInt litsIt = getObjectiveFunction().getVars().iterator();
+            Iterator<BigInteger> weightsIt = getObjectiveFunction().getCoeffs()
+                    .iterator();
+            for (; litsIt.hasNext();)
+                this.objWeightsMap.put(litsIt.next(), weightsIt.next());
+        }
         if (this.preprocessing) {
             sat4jPreprocessing();
         } else if (this.rissLocation != null) {
@@ -80,21 +95,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
                     .println("c launching cardinality constraint revelation process");
         long start = System.currentTimeMillis();
         this.cardFinder.searchCards();
-        for (Iterator<AtLeastCard> it = this.cardFinder; it.hasNext();) {
-            AtLeastCard card = it.next();
-            ++this.preprocessingCardsFound;
-            try {
-                this.solvers.get(0)
-                        .addAtLeast(card.getLits(), card.getDegree());
-            } catch (ContradictionException e) {
-            }
-        }
-        for (IVecInt cl : this.cardFinder.remainingClauses()) {
-            try {
-                this.solvers.get(0).addClause(cl);
-            } catch (ContradictionException e) {
-            }
-        }
+        doPreprocessing();
         this.preprocessingTime += (System.currentTimeMillis() - start);
         this.initDone = true;
         PrintWriter out = new PrintWriter(System.out, true);
@@ -103,14 +104,45 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         this.solvers.set(1, null);
     }
 
+    private void updateObjMinBound(AtLeastCard card) {
+        AtMostCard atMost = card.toAtMost();
+        if (this.objWeightsMap == null)
+            return;
+        List<BigInteger> weights = new ArrayList<BigInteger>();
+        for (IteratorInt it = atMost.getLits().iterator(); it.hasNext();) {
+            BigInteger weight = this.objWeightsMap.get(-it.next());
+            if (weight != null)
+                weights.add(weight);
+        }
+        Collections.sort(weights);
+        BigInteger newMinBound = BigInteger.ZERO;
+        for (int i = 0; i < weights.size() - atMost.getDegree(); ++i) {
+            newMinBound = newMinBound.add(weights.get(i));
+        }
+        if (this.objMinBound == null
+                || this.objMinBound.compareTo(newMinBound) == -1)
+            this.objMinBound = newMinBound;
+    }
+
     private void rissPreprocessing() {
         if (verbose)
             System.out
                     .println("c launching cardinality constraint revelation process");
         long start = System.currentTimeMillis();
         this.cardFinder.rissPreprocessing(this.rissLocation, this.instance);
+        doPreprocessing();
+        this.preprocessingTime += (System.currentTimeMillis() - start);
+        this.initDone = true;
+        PrintWriter out = new PrintWriter(System.out, true);
+        if (verbose)
+            printPreprocessingStats(out);
+        this.solvers.set(1, null);
+    }
+
+    private void doPreprocessing() {
         for (Iterator<AtLeastCard> it = this.cardFinder; it.hasNext();) {
             AtLeastCard card = it.next();
+            updateObjMinBound(card);
             ++this.preprocessingCardsFound;
             try {
                 this.solvers.get(0)
@@ -118,18 +150,13 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
             } catch (ContradictionException e) {
             }
         }
-        for (IVecInt cl : this.cardFinder.remainingClauses()) {
+        for (AtLeastCard card : this.cardFinder.remainingAtLeastCards()) {
             try {
-                this.solvers.get(0).addClause(cl);
+                this.solvers.get(0)
+                        .addAtLeast(card.getLits(), card.getDegree());
             } catch (ContradictionException e) {
             }
         }
-        this.preprocessingTime += (System.currentTimeMillis() - start);
-        this.initDone = true;
-        PrintWriter out = new PrintWriter(System.out, true);
-        if (verbose)
-            printPreprocessingStats(out);
-        this.solvers.get(1).reset();
     }
 
     public void setPreprocessing(boolean preprocessing) {
@@ -314,8 +341,8 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
     private void printPreprocessingStats(PrintWriter out) {
         if (this.cardFinder == null)
             return;
-        out.println("c remaining clauses: "
-                + this.cardFinder.remainingClauses().size() + "/"
+        out.println("c remaining constraints: "
+                + this.cardFinder.remainingAtLeastCards().size() + "/"
                 + this.cardFinder.initNumberOfClauses());
         out.println("c cardinality constraints found (preprocessing): "
                 + this.preprocessingCardsFound);
@@ -391,6 +418,10 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     public IVecInt searchCardFromClause(IVecInt clause) {
         return this.cardFinder.searchCardFromClause(clause);
+    }
+
+    public BigInteger getObjMinBound() {
+        return this.objMinBound;
     }
 
 }

@@ -35,6 +35,14 @@ public class AtMostCard {
         return degree;
     }
 
+    public AtLeastCard toAtLeast() {
+        IVecInt atLeastLits = new VecInt(this.lits.size());
+        for (IteratorInt it = this.lits.iterator(); it.hasNext();)
+            atLeastLits.push(-it.next());
+        int atLeastDegree = this.lits.size() - this.degree;
+        return new AtLeastCard(atLeastLits, atLeastDegree);
+    }
+
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
