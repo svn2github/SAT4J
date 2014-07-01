@@ -82,7 +82,7 @@ public class GroupPBSelectorSolver extends GroupClauseSelectorSolver<IPBSolver>
         IVecInt coeffs = new VecInt(literals.size(), 1);
         int newvar = getGroupVar(literals, groupid);
         literals.push(newvar);
-        coeffs.push(coeffs.size() - degree);
+        coeffs.push(degree);
         return decorated().addAtLeast(literals, coeffs, degree);
     }
 
@@ -96,7 +96,7 @@ public class GroupPBSelectorSolver extends GroupClauseSelectorSolver<IPBSolver>
         IConstr constr1 = decorated().addAtMost(literals, coeffs, n);
         // at least
         coeffs.pop();
-        coeffs.push(coeffs.size() - n);
+        coeffs.push(n);
         IConstr constr2 = decorated().addAtLeast(literals, coeffs, n);
         if (constr1 == null && constr2 == null) {
             discardLastestVar();
