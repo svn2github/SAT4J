@@ -34,7 +34,8 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.tools.xplain.InsertionStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
-public class TestInsertionXplain extends AbstractXplainTest<ISolver> {
+public class TestInsertionXplain extends
+        AbstractXplainTest<ISolver, Xplain<ISolver>> {
 
     @Override
     protected Xplain<ISolver> getXplain() {

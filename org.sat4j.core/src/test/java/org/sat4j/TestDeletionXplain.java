@@ -34,7 +34,8 @@ import org.sat4j.specs.ISolver;
 import org.sat4j.tools.xplain.DeletionStrategy;
 import org.sat4j.tools.xplain.Xplain;
 
-public class TestDeletionXplain extends AbstractXplainTest<ISolver> {
+public class TestDeletionXplain extends
+        AbstractXplainTest<ISolver, Xplain<ISolver>> {
 
     @Override
     protected Xplain<ISolver> getXplain() {

@@ -45,11 +45,11 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.xplain.Xplain;
 
-public abstract class AbstractXplainTest<T extends ISolver> {
+public abstract class AbstractXplainTest<T extends ISolver, G extends Xplain<T>> {
 
-    protected Xplain<T> solver;
+    protected G solver;
 
-    protected abstract Xplain<T> getXplain();
+    protected abstract G getXplain();
 
     @Before
     public void startUp() {
@@ -294,6 +294,32 @@ public abstract class AbstractXplainTest<T extends ISolver> {
         assump.push(4);
         assertFalse(this.solver.isSatisfiable(assump));
         Collection<IConstr> explanation = this.solver.explain();
+        assertEquals(4, explanation.size());
+    }
+
+    @Test
+    public void testDavidTestCase() throws ContradictionException,
+            TimeoutException {
+        this.solver.newVar(2);
+        IVecInt clause = new VecInt();
+        clause.push(1);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(2);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-1);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(1).push(2);
+        this.solver.addClause(clause);
+        clause.clear();
+        clause.push(-1).push(-2);
+        this.solver.addClause(clause);
+        clause.clear();
+        assertFalse(this.solver.isSatisfiable());
+        Collection<IConstr> explanation = this.solver.explain();
+        System.out.println(explanation);
         assertEquals(4, explanation.size());
     }
 }
