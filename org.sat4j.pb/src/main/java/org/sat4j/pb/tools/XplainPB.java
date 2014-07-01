@@ -101,7 +101,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
         IConstr constr1 = decorated().addAtMost(literals, coeffs, n);
         // at least
         coeffs.pop();
-        coeffs.push(coeffs.size() - n);
+        coeffs.push(n);
         IConstr constr2 = decorated().addAtLeast(literals, coeffs, n);
         if (constr1 == null && constr2 == null) {
             discardLastestVar();
