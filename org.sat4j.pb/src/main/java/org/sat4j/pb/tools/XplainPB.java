@@ -41,6 +41,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.specs.IteratorInt;
 import org.sat4j.tools.xplain.Xplain;
 
 public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
@@ -60,7 +61,7 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
         IVecInt coeffs = new VecInt(literals.size(), 1);
         int newvar = createNewVar(literals);
         literals.push(newvar);
-        coeffs.push(coeffs.size() - degree);
+        coeffs.push(degree);
         IConstr constr = decorated().addAtLeast(literals, coeffs, degree);
         if (constr == null) {
             // constraint trivially satisfied
@@ -139,6 +140,32 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
         return constr;
     }
 
+    private IConstr addPseudoBoolean(IVecInt lits, IVecInt coeffs,
+            boolean moreThan, int d) throws ContradictionException {
+        int newvar = createNewVar(lits);
+        lits.push(newvar);
+        if (moreThan && d >= 0) {
+            coeffs.push(d);
+        } else {
+            int sum = 0;
+            for (IteratorInt ite = coeffs.iterator(); ite.hasNext();) {
+                sum += ite.next();
+            }
+            sum = sum - d;
+            coeffs.push(-sum);
+        }
+        IConstr constr = moreThan ? decorated().addAtLeast(lits, coeffs, d)
+                : decorated().addAtMost(lits, coeffs, d);
+        if (constr == null) {
+            // constraint trivially satisfied
+            discardLastestVar();
+            // System.err.println(lits.toString()+"/"+coeffs+"/"+(moreThan?">=":"<=")+d);
+        } else {
+            getConstrs().put(newvar, constr);
+        }
+        return constr;
+    }
+
     public void setObjectiveFunction(ObjectiveFunction obj) {
         decorated().setObjectiveFunction(obj);
     }
@@ -149,22 +176,22 @@ public class XplainPB extends Xplain<IPBSolver> implements IPBSolver {
 
     public IConstr addAtMost(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException();
+        return addPseudoBoolean(literals, coeffs, false, degree);
     }
 
     public IConstr addAtMost(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        return addPseudoBoolean(literals, coeffs, false, degree);
     }
 
     public IConstr addAtLeast(IVecInt literals, IVecInt coeffs, int degree)
             throws ContradictionException {
-        throw new UnsupportedOperationException();
+        return addPseudoBoolean(literals, coeffs, true, degree);
     }
 
     public IConstr addAtLeast(IVecInt literals, IVec<BigInteger> coeffs,
             BigInteger degree) throws ContradictionException {
-        throw new UnsupportedOperationException();
+        return addPseudoBoolean(literals, coeffs, true, degree);
     }
 
     public IConstr addExactly(IVecInt literals, IVecInt coeffs, int weight)

@@ -38,13 +38,14 @@ import java.util.Collection;
 import org.junit.Test;
 import org.sat4j.AbstractXplainTest;
 import org.sat4j.core.VecInt;
+import org.sat4j.pb.tools.XplainPB;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 
 public abstract class AbstractPBXplainTest extends
-        AbstractXplainTest<IPBSolver> {
+        AbstractXplainTest<IPBSolver, XplainPB> {
 
     @Test
     public void testExactlyConstraint() throws ContradictionException,
@@ -70,5 +71,34 @@ public abstract class AbstractPBXplainTest extends
         Collection<IConstr> explanation = this.solver.explain();
         assertEquals(5, explanation.size());
         assertTrue(explanation.contains(c1));
+    }
+
+    @Override
+    @Test
+    public void testDavidTestCase() throws ContradictionException,
+            TimeoutException {
+        IVecInt coeffs = new VecInt();
+        coeffs.push(1);
+        this.solver.newVar(2);
+        IVecInt clause = new VecInt();
+        clause.push(1);
+        this.solver.addAtLeast(clause, coeffs, 1);
+        clause.clear();
+        clause.push(2);
+        this.solver.addAtLeast(clause, 1);
+        clause.clear();
+        clause.push(-1);
+        this.solver.addAtLeast(clause, 1);
+        clause.clear();
+        clause.push(1).push(2);
+        this.solver.addAtLeast(clause, 1);
+        clause.clear();
+        clause.push(-1).push(-2);
+        this.solver.addAtLeast(clause, 1);
+        clause.clear();
+        assertFalse(this.solver.isSatisfiable());
+        Collection<IConstr> explanation = this.solver.explain();
+        System.out.println(explanation);
+        assertEquals(2, explanation.size());
     }
 }
