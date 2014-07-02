@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IGroupSolver;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
@@ -217,6 +218,44 @@ public class BackboneTest {
         assertEquals(3, backbone.size());
         backbone = Backbone.instance().compute(solver,
                 new VecInt(new int[] { -3 }));
+        assertEquals(3, backbone.size());
+    }
+
+    @Test
+    public void testBugBr4cpWithExplanation() throws ContradictionException,
+            TimeoutException {
+        AllMUSes muses = new AllMUSes(true, SolverFactory.instance());
+        IGroupSolver solver = muses.getSolverInstance();
+        IVecInt clause = new VecInt();
+        int one, two, three;
+        clause.push(one = solver.nextFreeVarId(true));
+        solver.addClause(clause, 1);
+        clause.clear();
+        clause.push(two = solver.nextFreeVarId(true)).push(
+                three = solver.nextFreeVarId(true));
+        solver.addClause(clause, 2);
+        clause.clear();
+        clause.push(-two).push(-three);
+        solver.addClause(clause, 3);
+        clause.clear();
+        IVecInt backbone = Backbone.instance().compute(solver);
+        assertEquals(1, backbone.size());
+        assertEquals(one, backbone.get(0));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { two })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { three })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { -two })));
+        assertTrue(solver.isSatisfiable(new VecInt(new int[] { -three })));
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { two }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { -two }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { three }));
+        assertEquals(3, backbone.size());
+        backbone = Backbone.instance().compute(solver,
+                new VecInt(new int[] { -three }));
         assertEquals(3, backbone.size());
     }
 }
