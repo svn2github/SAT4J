@@ -30,7 +30,6 @@
 package org.sat4j.minisat.core;
 
 import java.io.Serializable;
-import java.util.Iterator;
 
 import org.sat4j.core.Vec;
 import org.sat4j.specs.IVec;
@@ -61,16 +60,14 @@ public class ConflictTimerContainer implements Serializable, ConflictTimer {
     }
 
     public void reset() {
-        Iterator<ConflictTimer> it = this.timers.iterator();
-        while (it.hasNext()) {
-            it.next().reset();
+        for (int i = 0; i < this.timers.size(); i++) {
+            this.timers.get(i).reset();
         }
     }
 
     public void newConflict() {
-        Iterator<ConflictTimer> it = this.timers.iterator();
-        while (it.hasNext()) {
-            it.next().newConflict();
+        for (int i = 0; i < this.timers.size(); i++) {
+            this.timers.get(i).newConflict();
         }
     }
 }
