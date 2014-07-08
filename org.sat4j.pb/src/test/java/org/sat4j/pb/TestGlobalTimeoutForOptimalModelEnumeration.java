@@ -63,7 +63,7 @@ public class TestGlobalTimeoutForOptimalModelEnumeration {
         this.solver = new ModelIterator(pbsolver);
     }
 
-    @Test(expected = TimeoutException.class, timeout = 3000)
+    @Test(expected = TimeoutException.class, timeout = 10000)
     public void testTimeoutOnSeconds() throws TimeoutException {
         this.solver.setTimeout(2);
         while (this.solver.isSatisfiable()) {
