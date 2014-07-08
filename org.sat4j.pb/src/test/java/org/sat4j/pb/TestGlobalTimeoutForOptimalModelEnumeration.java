@@ -74,7 +74,7 @@ public class TestGlobalTimeoutForOptimalModelEnumeration {
         }
     }
 
-    @Test(expected = TimeoutException.class, timeout = 5000)
+    // this test is no longer possible because the solver hardly conflicts.
     public void testTimeoutOnConflicts() throws TimeoutException {
         this.solver.setTimeoutOnConflicts(1000);
         while (this.solver.isSatisfiable()) {
