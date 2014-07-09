@@ -424,4 +424,14 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         return this.objMinBound;
     }
 
+    @Override
+    public boolean removeConstr(IConstr c) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean removeSubsumedConstr(IConstr c) {
+        throw new UnsupportedOperationException();
+    }
+
 }
