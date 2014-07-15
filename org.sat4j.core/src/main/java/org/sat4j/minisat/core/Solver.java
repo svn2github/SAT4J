@@ -1473,7 +1473,6 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         this.stats.reduceddb++;
         this.slistener.cleaning();
         this.learnedConstraintsDeletionStrategy.reduce(this.learnts);
-        System.gc();
     }
 
     /**
