@@ -833,7 +833,7 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
     }
 
-    public static CardConstrLearningSolver<IPBSolver> newCPCardConstrLearningSolver() {
+    public static CardConstrLearningSolver<IPBSolver> newDetectCards() {
         return new CardConstrLearningSolver<IPBSolver>(
                 SolverFactory.newCuttingPlanes());
     }
