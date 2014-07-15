@@ -131,6 +131,44 @@ public class ModelIteratorTest {
     }
 
     @Test
+    public void testInnerModelIteratorWithOneCard() {
+        try {
+            ISolver solver = SolverFactory.newDefault();
+            SolutionFoundListener sfl = new SolutionFoundListener() {
+
+                public void onSolutionFound(int[] solution) {
+                    System.out.println(new VecInt(solution));
+                }
+
+                public void onSolutionFound(IVecInt solution) {
+                    throw new UnsupportedOperationException(
+                            "Not implemented yet!");
+                }
+
+                public void onUnsatTermination() {
+                    // do nothing
+                }
+
+            };
+            SearchEnumeratorListener enumerator = new SearchEnumeratorListener(
+                    sfl);
+            solver.setSearchListener(enumerator);
+            solver.newVar(3);
+            IVecInt clause = new VecInt();
+            clause.push(1);
+            clause.push(2);
+            clause.push(3);
+            solver.addExactly(clause, 1);
+            assertTrue(solver.isSatisfiable());
+            assertEquals(3, enumerator.getNumberOfSolutionFound());
+        } catch (ContradictionException e) {
+            fail();
+        } catch (TimeoutException e) {
+            fail();
+        }
+    }
+
+    @Test
     public void testInplicantCoverIterator() {
         try {
             ModelIterator solver = new ModelIterator(SolverFactory.newDefault());
