@@ -33,7 +33,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     private boolean initDone = false;
 
-    private boolean preprocessing = false;
+    private boolean preprocessing = true;
 
     private long preprocessingTime = 0;
 
