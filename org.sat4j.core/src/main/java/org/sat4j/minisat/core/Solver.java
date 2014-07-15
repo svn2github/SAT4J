@@ -1357,20 +1357,21 @@ public class Solver<D extends DataStructureFactory> implements ISolverService,
         IVecInt tempmodel = new VecInt(nVars());
         this.userbooleanmodel = new boolean[realNumberOfVariables()];
         this.fullmodel = null;
+        Constr reason;
         for (int i = 1; i <= nVars(); i++) {
             if (this.voc.belongsToPool(i)) {
                 int p = this.voc.getFromPool(i);
                 if (!this.voc.isUnassigned(p)) {
                     tempmodel.push(this.voc.isSatisfied(p) ? i : -i);
                     this.userbooleanmodel[i - 1] = this.voc.isSatisfied(p);
-                    if (this.voc.getReason(p) == null
-                            && this.voc.getLevel(p) > 0
-                            // we consider literals propagated by learned
-                            // clauses
-                            // as decisions to allow blocking models by
-                            // decisions.
-                            // TODO check the impact on implicant computation
-                            || this.voc.getReason(p).learnt()) {
+                    reason = this.voc.getReason(p);
+                    if (reason == null && this.voc.getLevel(p) > 0
+                    // we consider literals propagated by learned
+                    // clauses
+                    // as decisions to allow blocking models by
+                    // decisions.
+                    // TODO check the impact on implicant computation
+                            || reason != null && reason.learnt()) {
                         this.decisions.push(tempmodel.last());
                     } else {
                         this.implied.push(tempmodel.last());
