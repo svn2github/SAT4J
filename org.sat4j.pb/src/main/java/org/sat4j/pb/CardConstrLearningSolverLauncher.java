@@ -34,7 +34,7 @@ public class CardConstrLearningSolverLauncher {
                 out.println("c solving time: " + solvingTime + "ms");
             }
         });
-        solver = SolverFactory.newCPCardConstrLearningSolver();
+        solver = SolverFactory.newDetectCards();
         Reader reader;
         if (instance.endsWith(".opb") || instance.endsWith(".opb.bz2")) {
             reader = new OPBReader2012(new PBSolverHandle(solver));
