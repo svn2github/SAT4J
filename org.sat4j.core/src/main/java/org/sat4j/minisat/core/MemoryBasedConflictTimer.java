@@ -30,19 +30,27 @@
 package org.sat4j.minisat.core;
 
 final class MemoryBasedConflictTimer extends ConflictTimerAdapter {
+    private static final long NO_BOUND_COMPUTED_YET = -1L;
     private static final long serialVersionUID = 1L;
-    final long memorybound = Runtime.getRuntime().freeMemory() / 10;
+    private long memorybound = NO_BOUND_COMPUTED_YET;
 
     MemoryBasedConflictTimer(Solver<? extends DataStructureFactory> solver,
             int bound) {
         super(solver, bound);
     }
 
+    private long getMemoryBound() {
+        if (memorybound == NO_BOUND_COMPUTED_YET) {
+            memorybound = Runtime.getRuntime().freeMemory() / 10;
+        }
+        return memorybound;
+    }
+
     @Override
     public void run() {
         long freemem = Runtime.getRuntime().freeMemory();
         // System.out.println("c Free memory "+freemem);
-        if (freemem < this.memorybound) {
+        if (freemem < getMemoryBound()) {
             // Reduce the set of learnt clauses
             getSolver().setNeedToReduceDB(true);
         }
