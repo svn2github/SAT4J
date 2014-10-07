@@ -15,11 +15,11 @@
                         System.out.println("Unsatisfiable !");
                 }
         } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
+                // take action when the CNF file is not found
         } catch (ParseFormatException e) {
-                // TODO Auto-generated catch block
+                // take action when the CNF file is not correctly formatted
         } catch (IOException e) {
-                // TODO Auto-generated catch block
+                // take action if something really goes wrong
         } catch (ContradictionException e) {
                 System.out.println("Unsatisfiable (trivial)!");
         } catch (TimeoutException e) {
