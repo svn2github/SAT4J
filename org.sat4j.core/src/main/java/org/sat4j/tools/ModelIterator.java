@@ -135,6 +135,7 @@ public class ModelIterator extends SolverDecorator<ISolver> {
     @Override
     public boolean isSatisfiable() throws TimeoutException {
         if (this.trivialfalsity || this.nbModelFound >= this.bound) {
+            expireTimeout();
             return false;
         }
         this.trivialfalsity = false;

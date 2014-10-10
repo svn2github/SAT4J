@@ -65,6 +65,7 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
             lastModel = super.model();
             this.sfl.onSolutionFound(lastModel);
         }
+        expireTimeout();
         return isSat;
     }
 
@@ -76,6 +77,7 @@ public class ModelIteratorToSATAdapter extends ModelIterator {
             lastModel = super.model();
             this.sfl.onSolutionFound(lastModel);
         }
+        expireTimeout();
         return isSat;
     }
 
