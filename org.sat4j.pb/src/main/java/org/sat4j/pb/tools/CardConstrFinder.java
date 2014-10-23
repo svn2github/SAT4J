@@ -409,8 +409,10 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
             Comparator<AtLeastCard> {
 
         public int compare(AtLeastCard arg0, AtLeastCard arg1) {
-            return arg0.getLits().size() - arg0.getDegree()
+            int degreeComparison = arg0.getLits().size() - arg0.getDegree()
                     - arg1.getLits().size() + arg1.getDegree();
+            return degreeComparison != 0 ? degreeComparison : arg0.hashCode()
+                    - arg1.hashCode();
         }
 
     }
