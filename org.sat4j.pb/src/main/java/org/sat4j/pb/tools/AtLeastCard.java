@@ -14,7 +14,8 @@ public class AtLeastCard {
     private final int degree;
 
     public AtLeastCard(IVecInt atLeastLits, int degree) {
-        this.lits = atLeastLits;
+        this.lits = new VecInt(atLeastLits.size());
+        atLeastLits.copyTo(lits);
         this.degree = degree;
     }
 

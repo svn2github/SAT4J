@@ -170,6 +170,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
             }
         }
         timerStatus.cancel();
+        this.cardIt = this.atLeastCardDegree.keySet().iterator();
     }
 
     public IVecInt searchCardFromClause(IVecInt clause) {
