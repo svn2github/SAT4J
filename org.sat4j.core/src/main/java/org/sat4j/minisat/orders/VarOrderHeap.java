@@ -196,6 +196,10 @@ public class VarOrderHeap implements IOrder, Serializable {
         return cpt;
     }
 
+    protected Heap createHeap(double[] activity) {
+        return new Heap(new ActivityBasedVariableComparator(activity));
+    }
+
     /**
      * that method has the responsibility to initialize all arrays in the
      * heuristics. PLEASE CALL super.init() IF YOU OVERRIDE THAT METHOD.
@@ -207,7 +211,7 @@ public class VarOrderHeap implements IOrder, Serializable {
         }
         this.phaseStrategy.init(nlength);
         this.activity[0] = -1;
-        this.heap = new Heap(this.activity);
+        this.heap = createHeap(this.activity);
         this.heap.setBounds(nlength);
         for (int i = 1; i < nlength; i++) {
             assert i > 0;

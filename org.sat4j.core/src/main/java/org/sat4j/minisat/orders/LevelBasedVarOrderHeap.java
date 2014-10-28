@@ -29,50 +29,80 @@
  *******************************************************************************/
 package org.sat4j.minisat.orders;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.sat4j.core.VecInt;
 import org.sat4j.minisat.core.Heap;
+import org.sat4j.minisat.core.IPhaseSelectionStrategy;
+import org.sat4j.specs.IVecInt;
 
-public class SubsetVarOrder extends VarOrderHeap {
+/**
+ * This heuristic allows to order the selection of the variables using different
+ * levels.
+ * 
+ * @author leberre
+ *
+ */
+public class LevelBasedVarOrderHeap extends VarOrderHeap {
 
-    private final int[] varsToTest;
-    private boolean[] inSubset;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-    public SubsetVarOrder(int[] varsToTest) {
-        this.varsToTest = new int[varsToTest.length];
-        System.arraycopy(varsToTest, 0, this.varsToTest, 0, varsToTest.length);
+    private int[] level;
+
+    private final List<IVecInt> varsByLevel = new ArrayList<IVecInt>();
+
+    public LevelBasedVarOrderHeap() {
+    }
+
+    public LevelBasedVarOrderHeap(IPhaseSelectionStrategy strategy) {
+        super(strategy);
+    }
+
+    @Override
+    protected Heap createHeap(double[] activity) {
+        return new Heap(new LevelAndActivityVariableComparator(activity, level));
     }
 
     /**
-	 * 
-	 */
-    private static final long serialVersionUID = 1L;
+     * Add a new level with vars
+     * 
+     * @param vars
+     */
+    public void addLevel(IVecInt vars) {
+        this.varsByLevel.add(vars.clone());
+    }
 
-    @Override
-    public void init() {
-        int nlength = this.lits.nVars() + 1;
-        if (this.activity == null || this.activity.length < nlength) {
-            this.activity = new double[nlength];
-        }
-        this.inSubset = new boolean[nlength];
-        this.phaseStrategy.init(nlength);
-        this.activity[0] = -1;
-        this.heap = new Heap(new ActivityBasedVariableComparator(this.activity));
-        this.heap.setBounds(nlength);
-        for (int var : this.varsToTest) {
-            assert var > 0;
-            assert var <= this.lits.nVars() : "" + this.lits.nVars() + "/" + var; //$NON-NLS-1$ //$NON-NLS-2$
-            this.inSubset[var] = true;
-            this.activity[var] = 0.0;
-            if (this.lits.belongsToPool(var)) {
-                this.heap.insert(var);
-            }
-        }
+    public void addLevel(int[] vars) {
+        this.varsByLevel.add(new VecInt(vars));
     }
 
     @Override
-    public void undo(int x) {
-        if (this.inSubset[x] && !this.heap.inHeap(x)) {
-            this.heap.insert(x);
+    public void init() {
+        // fill in level array
+        int nlength = this.lits.nVars() + 1;
+        if (level == null || level.length < nlength) {
+            this.level = new int[nlength];
+            for (int i = 0; i < nlength; i++) {
+                level[i] = Integer.MAX_VALUE;
+            }
         }
+        IVecInt currentLevel;
+        for (int i = 1; i <= varsByLevel.size(); i++) {
+            currentLevel = varsByLevel.get(i - 1);
+            for (int j = 0; j < currentLevel.size(); j++) {
+                level[currentLevel.get(j)] = i;
+            }
+        }
+        super.init();
+    }
+
+    @Override
+    public String toString() {
+        return "Level and activity based heuristics using a heap " + this.phaseStrategy; //$NON-NLS-1$
     }
 
 }

@@ -32,6 +32,7 @@ package org.sat4j.minisat.core;
 import java.io.Serializable;
 
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.orders.VariableComparator;
 import org.sat4j.specs.IVecInt;
 
 /**
@@ -59,20 +60,16 @@ public final class Heap implements Serializable {
         return i >> 1;
     }
 
-    private boolean comp(int a, int b) {
-        return this.activity[a] > this.activity[b];
-    }
-
     private final IVecInt heap = new VecInt(); // heap of ints
 
     private final IVecInt indices = new VecInt(); // int -> index in heap
 
-    private final double[] activity;
+    private final VariableComparator comparator;
 
     void percolateUp(int i) {
         int x = this.heap.get(i);
         int p = parent(i);
-        while (i != 1 && comp(x, this.heap.get(p))) {
+        while (i != 1 && comparator.preferredTo(x, this.heap.get(p))) {
             this.heap.set(i, this.heap.get(p));
             this.indices.set(this.heap.get(p), i);
             i = p;
@@ -86,9 +83,9 @@ public final class Heap implements Serializable {
         int x = this.heap.get(i);
         while (left(i) < this.heap.size()) {
             int child = right(i) < this.heap.size()
-                    && comp(this.heap.get(right(i)), this.heap.get(left(i))) ? right(i)
-                    : left(i);
-            if (!comp(this.heap.get(child), x)) {
+                    && comparator.preferredTo(this.heap.get(right(i)),
+                            this.heap.get(left(i))) ? right(i) : left(i);
+            if (!comparator.preferredTo(this.heap.get(child), x)) {
                 break;
             }
             this.heap.set(i, this.heap.get(child));
@@ -103,8 +100,8 @@ public final class Heap implements Serializable {
         return n >= 0 && n < this.indices.size();
     }
 
-    public Heap(double[] activity) { // NOPMD
-        this.activity = activity;
+    public Heap(VariableComparator comparator) { // NOPMD
+        this.comparator = comparator;
         this.heap.push(-1);
     }
 
@@ -161,7 +158,7 @@ public final class Heap implements Serializable {
 
     public boolean heapProperty(int i) {
         return i >= this.heap.size()
-                || (parent(i) == 0 || !comp(this.heap.get(i),
+                || (parent(i) == 0 || !comparator.preferredTo(this.heap.get(i),
                         this.heap.get(parent(i)))) && heapProperty(left(i))
                 && heapProperty(right(i));
     }
