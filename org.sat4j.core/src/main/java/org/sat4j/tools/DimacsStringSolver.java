@@ -31,10 +31,12 @@ package org.sat4j.tools;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IGroupSolver;
+import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.IteratorInt;
 
@@ -258,4 +260,12 @@ public class DimacsStringSolver extends AbstractOutputSolver implements
     public Collection<Integer> getAddedVars() {
         throw new UnsupportedOperationException("Not implemented yet!");
     }
+
+    @Override
+    public void addAllClauses(IVec<IVecInt> clauses)
+            throws ContradictionException {
+        for (Iterator<IVecInt> it = clauses.iterator(); it.hasNext();)
+            addClause(it.next());
+    }
+
 }
