@@ -392,8 +392,10 @@ public class ManyCore<S extends ISolver> extends
                 }
             }
             this.sleepTime = FAST_SLEEP;
-            System.out.println(getLogPrefix() + "And the winner is "
-                    + this.availableSolvers[this.winnerId]);
+            if (isVerbose()) {
+                System.out.println(getLogPrefix() + "And the winner is "
+                        + this.availableSolvers[this.winnerId]);
+            }
         }
         this.remainingSolvers.getAndDecrement();
     }
