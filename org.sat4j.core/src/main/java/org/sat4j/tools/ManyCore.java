@@ -182,6 +182,7 @@ public class ManyCore<S extends ISolver> extends
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.get(i).clearLearntClauses();
         }
+        sharedUnitClauses.clear();
     }
 
     public void expireTimeout() {
@@ -247,6 +248,7 @@ public class ManyCore<S extends ISolver> extends
                             & this.solvers.get(i).removeConstr(toRemove);
                 }
             }
+            sharedUnitClauses.clear();
             return removed;
         }
         throw new IllegalArgumentException(
