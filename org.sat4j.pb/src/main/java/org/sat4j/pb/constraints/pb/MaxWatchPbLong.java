@@ -407,7 +407,7 @@ public final class MaxWatchPbLong extends WatchPbLong {
         return -1;
     }
 
-    private class WatchPbLongPbConstrDecorator implements PBConstr {
+    private static class WatchPbLongPbConstrDecorator implements PBConstr {
 
         private final WatchPbLong cstr;
 

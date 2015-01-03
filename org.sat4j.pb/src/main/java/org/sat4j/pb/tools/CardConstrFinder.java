@@ -406,7 +406,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
         cardIt.remove();
     }
 
-    private class AtLeastCardDegreeComparator implements
+    private static class AtLeastCardDegreeComparator implements
             Comparator<AtLeastCard> {
 
         public int compare(AtLeastCard arg0, AtLeastCard arg1) {

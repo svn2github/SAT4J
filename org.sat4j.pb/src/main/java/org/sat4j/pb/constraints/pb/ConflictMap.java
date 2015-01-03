@@ -144,7 +144,7 @@ public class ConflictMap extends MapPb implements IConflict {
      */
     private final IRemoveSatisfiedLiterals rmSatLit;
 
-    private class NoRemoveSatisfied implements IRemoveSatisfiedLiterals {
+    private static class NoRemoveSatisfied implements IRemoveSatisfiedLiterals {
 
         public BigInteger removeSatisfiedLiteralsFromHigherDecisionLevels(
                 IWatchPb wpb, final BigInteger[] coefsBis,
