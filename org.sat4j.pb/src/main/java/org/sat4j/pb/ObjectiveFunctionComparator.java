@@ -1,10 +1,17 @@
 package org.sat4j.pb;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Map;
 
-public class ObjectiveFunctionComparator implements Comparator<Integer> {
+public class ObjectiveFunctionComparator implements Comparator<Integer>,
+        Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     private final Map<Integer, BigInteger> obj;
 

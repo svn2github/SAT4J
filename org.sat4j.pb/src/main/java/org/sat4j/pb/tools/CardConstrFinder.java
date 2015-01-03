@@ -2,6 +2,7 @@ package org.sat4j.pb.tools;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.BitSet;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -405,7 +406,12 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
     }
 
     private static class AtLeastCardDegreeComparator implements
-            Comparator<AtLeastCard> {
+            Comparator<AtLeastCard>, Serializable {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
 
         public int compare(AtLeastCard arg0, AtLeastCard arg1) {
             int degreeComparison = arg0.getLits().size() - arg0.getDegree()
