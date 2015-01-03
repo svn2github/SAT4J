@@ -18,7 +18,6 @@
 *******************************************************************************/
 package org.sat4j.csp;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
