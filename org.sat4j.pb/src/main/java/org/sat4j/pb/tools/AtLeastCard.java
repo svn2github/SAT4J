@@ -67,7 +67,7 @@ public class AtLeastCard {
         Set<Integer> litsSet = new HashSet<Integer>();
         for (IteratorInt it = lits.iterator(); it.hasNext();)
             litsSet.add(it.next());
-        result = prime * result + ((litsSet == null) ? 0 : litsSet.hashCode());
+        result = prime * result + litsSet.hashCode();
         return result;
     }
 

@@ -217,18 +217,16 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
         }
         // if clause is subsumed by a card, a card contain all the clause
         // literals
-        if (storedCards != null) {
-            for (BitSet storedCard : storedCards) {
-                BitSet atLeastLitsClone = (BitSet) atLeastLits.clone();
-                atLeastLitsClone.andNot(storedCard);
-                if (atLeastLitsClone.isEmpty()) {
-                    // L>=d dominates L'>=d' iff |L\L'| <= d-d'
-                    BitSet intersection = ((BitSet) storedCard.clone());
-                    intersection.andNot(atLeastLits);
-                    if (intersection.cardinality() <= this.atLeastCardDegree
-                            .get(storedCard) - threshold) {
-                        return true;
-                    }
+        for (BitSet storedCard : storedCards) {
+            BitSet atLeastLitsClone = (BitSet) atLeastLits.clone();
+            atLeastLitsClone.andNot(storedCard);
+            if (atLeastLitsClone.isEmpty()) {
+                // L>=d dominates L'>=d' iff |L\L'| <= d-d'
+                BitSet intersection = ((BitSet) storedCard.clone());
+                intersection.andNot(atLeastLits);
+                if (intersection.cardinality() <= this.atLeastCardDegree
+                        .get(storedCard) - threshold) {
+                    return true;
                 }
             }
         }

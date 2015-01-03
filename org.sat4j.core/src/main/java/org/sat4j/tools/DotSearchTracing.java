@@ -156,15 +156,13 @@ public class DotSearchTracing<T> extends SearchListenerAdapter<ISolverService>
             saveLine(lineTab("\"" + this.currentNodeName + "\"" + " -- " + "\""
                     + newName + "\"" + "[label=" + "\" " + map(p)
                     + "\", fontcolor = gray, color = gray, style = bold]"));
-            if (reason != null) {
-                String reasonName = newName + ".reason";
-                saveLine(lineTab("\"" + reasonName + "\" [label=\""
-                        + reason.toString(this)
-                        + "\", shape=box, color=\"gray\", style=dotted]"));
-                saveLine("\"" + reasonName + "\"" + "--" + "\""
-                        + this.currentNodeName + "\""
-                        + "[label=\"\", color=gray, style=dotted]");
-            }
+            String reasonName = newName + ".reason";
+            saveLine(lineTab("\"" + reasonName + "\" [label=\""
+                    + reason.toString(this)
+                    + "\", shape=box, color=\"gray\", style=dotted]"));
+            saveLine("\"" + reasonName + "\"" + "--" + "\""
+                    + this.currentNodeName + "\""
+                    + "[label=\"\", color=gray, style=dotted]");
             this.currentNodeName = newName;
         }
     }
