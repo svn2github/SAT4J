@@ -360,12 +360,13 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
             Integer size = sizeMap.get(card.getLits().size());
             sizeMap.put(card.getLits().size(), size == null ? 1 : size + 1);
         }
-        for (Integer cardinality : cardsStats.keySet()) {
-            for (Integer size : cardsStats.get(cardinality).keySet()) {
-                int count = cardsStats.get(cardinality).get(size);
-                out.println("c found " + count
+        for (Map.Entry<Integer, Map<Integer, Integer>> cardinality : cardsStats
+                .entrySet()) {
+            for (Map.Entry<Integer, Integer> size : cardinality.getValue()
+                    .entrySet()) {
+                out.println("c found " + size.getValue()
                         + " at-most cardinality constraint of degree "
-                        + cardinality + " and size " + size);
+                        + cardinality.getKey() + " and size " + size.getKey());
             }
         }
         System.out
