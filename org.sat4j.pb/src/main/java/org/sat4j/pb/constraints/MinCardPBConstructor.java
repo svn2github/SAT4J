@@ -55,6 +55,8 @@ public class MinCardPBConstructor implements ICardConstructor {
         IVecInt resLits = new VecInt();
         IVec<BigInteger> resCoefs = new Vec<BigInteger>();
         dspb.buildConstraintFromConflict(resLits, resCoefs);
+        // trying to fix a bug (NullPointerException): dspb.cardDegree is null
+        dspb.isCardinality();
         return new MinWatchCardPB(voc, resLits, true, dspb.getCardDegree()
                 .intValue());
     }

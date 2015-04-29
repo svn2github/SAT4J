@@ -841,7 +841,9 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
 
     public static IPBSolver newInprocDetectCard() {
         return new InprocCardConstrLearningSolver(
-                SolverFactory.newCuttingPlanes());
+                new MiniSATLearning<PBDataStructureFactory>(),
+                new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap(),
+                true);
     }
 
 }

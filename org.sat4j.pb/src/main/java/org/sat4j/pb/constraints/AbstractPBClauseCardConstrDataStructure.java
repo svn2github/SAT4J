@@ -160,7 +160,7 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         literals.copyTo(lits);
         BigInteger[] bc = new BigInteger[coefs.size()];
         coefs.copyTo(bc);
-        System.out.println("Checking 1");
+        // System.out.println("Checking 1");
         degree = Pseudos.niceCheckedParametersForCompetition(lits, bc,
                 moreThan, degree);
 
@@ -171,9 +171,9 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
             return constructLearntCard(new VecInt(lits),
                     new Vec<BigInteger>(bc), degree);
         }
-        System.out.println("Checking 2");
+        // System.out.println("Checking 2");
         if (coefficientsEqualTo(bc[0], bc)) {
-            System.out.println("Learned new card ! ");
+            // System.out.println("Learned new card ! ");
             return constructLearntCard(new VecInt(lits),
                     new Vec<BigInteger>(bc),
                     degree.divide(bc[0]).add(BigInteger.ONE));
