@@ -34,7 +34,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
 
     private BitSet propagated = null;
 
-    private final Map<BitSet, BitSet> implied = new HashMap<BitSet, BitSet>();
+    // private final Map<BitSet, BitSet> implied = new HashMap<BitSet,
+    // BitSet>();
 
     private final SearchListener<ISolverService> oldListener;
 
@@ -175,10 +176,17 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
     }
 
     public IVecInt searchCardFromClause(IVecInt clause) {
-        BitSet atLeastLits = new BitSet(clause.size());
-        for (IteratorInt it = clause.iterator(); it.hasNext();)
+        return searchCardFromAtMostCard(clause, clause.size() - 1);
+    }
+
+    public IVecInt searchCardFromAtMostCard(IVecInt literals, int threshold) {
+        BitSet atLeastLits = new BitSet(literals.size());
+        for (IteratorInt it = literals.iterator(); it.hasNext();)
             atLeastLits.set(it.next() + this.coSolver.realNumberOfVariables());
-        BitSet cardFound = searchCardFromAtLeastCard(atLeastLits, 1);
+        BitSet cardFound = searchCardFromAtLeastCard(atLeastLits,
+                atLeastLits.cardinality() - threshold);
+        if (cardFound == null)
+            return null;
         IVecInt atMostLits = new VecInt(cardFound.cardinality());
         for (int from = 0; (from = cardFound.nextSetBit(from)) != -1; ++from) {
             atMostLits.push(from - this.coSolver.realNumberOfVariables());
@@ -328,9 +336,9 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
                 System.out.println("c " + zeroProps.cardinality()
                         + " literals propagated at decision level 0");
         }
-        BitSet cached = this.implied.get(lits);
-        if (cached != null)
-            return cached;
+        // BitSet cached = this.implied.get(lits);
+        // if (cached != null)
+        // return cached;
         IVecInt litVec = new VecInt(this.zeroProps.cardinality()
                 + lits.cardinality());
         int from = 0;
@@ -345,7 +353,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
         } catch (TimeoutException e) {
         }
         this.propagated.andNot(this.zeroProps);
-        this.implied.put(lits, this.propagated);
+        // this.implied.put(lits, this.propagated);
         return this.propagated;
     }
 

@@ -3,14 +3,14 @@ package org.sat4j.pb;
 import java.io.PrintWriter;
 
 import org.sat4j.pb.reader.OPBReader2012;
-import org.sat4j.pb.tools.CardConstrLearningSolver;
+import org.sat4j.pb.tools.PreprocCardConstrLearningSolver;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.TimeoutException;
 
 public class CardConstrLearningSolverLauncher {
 
-    private final CardConstrLearningSolver<IPBSolver> solver;
+    private final PreprocCardConstrLearningSolver<IPBSolver> solver;
 
     private final long solverStart;
 

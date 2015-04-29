@@ -24,7 +24,7 @@ import org.sat4j.specs.IteratorInt;
 import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 
-public class CardConstrLearningSolver<S extends IPBSolver> extends
+public class PreprocCardConstrLearningSolver<S extends IPBSolver> extends
         ManyCorePB<IPBSolver> {
 
     private static final long serialVersionUID = 1L;
@@ -49,7 +49,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
 
     private BigInteger objMinBound = null;
 
-    public CardConstrLearningSolver(ASolverFactory<IPBSolver> factory,
+    public PreprocCardConstrLearningSolver(ASolverFactory<IPBSolver> factory,
             String solverName) {
         super(factory, solverName, solverName);
         this.solvers.get(0).setVerbose(true);
@@ -57,7 +57,7 @@ public class CardConstrLearningSolver<S extends IPBSolver> extends
         this.cardFinder = new CardConstrFinder(this.solvers.get(1));
     }
 
-    public CardConstrLearningSolver(IPBSolver solverToFill) {
+    public PreprocCardConstrLearningSolver(IPBSolver solverToFill) {
         super(solverToFill, SolverFactory.newPBCP(
                 new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap()));
         this.solvers.get(0).setVerbose(true);

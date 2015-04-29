@@ -72,8 +72,9 @@ import org.sat4j.pb.core.PBSolverResCP;
 import org.sat4j.pb.core.PBSolverResolution;
 import org.sat4j.pb.core.PBSolverWithImpliedClause;
 import org.sat4j.pb.orders.VarOrderHeapObjective;
-import org.sat4j.pb.tools.CardConstrLearningSolver;
+import org.sat4j.pb.tools.InprocCardConstrLearningSolver;
 import org.sat4j.pb.tools.ManyCorePB;
+import org.sat4j.pb.tools.PreprocCardConstrLearningSolver;
 
 /**
  * User friendly access to pre-constructed solvers.
@@ -833,8 +834,13 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return new OptToPBSATAdapter(new PseudoOptDecorator(solver));
     }
 
-    public static CardConstrLearningSolver<IPBSolver> newDetectCards() {
-        return new CardConstrLearningSolver<IPBSolver>(
+    public static PreprocCardConstrLearningSolver<IPBSolver> newDetectCards() {
+        return new PreprocCardConstrLearningSolver<IPBSolver>(
+                SolverFactory.newCuttingPlanes());
+    }
+
+    public static IPBSolver newInprocDetectCard() {
+        return new InprocCardConstrLearningSolver(
                 SolverFactory.newCuttingPlanes());
     }
 
