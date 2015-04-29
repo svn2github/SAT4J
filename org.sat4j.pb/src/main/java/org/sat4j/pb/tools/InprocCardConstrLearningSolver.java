@@ -132,7 +132,10 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
     @Override
     public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
         // TODO Auto-generated method stub
-        super.analyzeCP(myconfl, results);
+        if (extendedConstr == null)
+            super.analyzeCP(myconfl, results);
+        else
+            super.analyzeCP(extendedConstr, results);
     }
 
     // Overriding constaint adding methods to store constraints in both solver
