@@ -171,6 +171,7 @@ public class PBSolverCP extends PBSolver {
         // assert confl.isAssertive(currentLevel);
         if (decisionLevel() == 0 || this.trail.size() == 0) {
             results.backtrackLevel = -1;
+            results.reason = null;
         } else {
             results.backtrackLevel = confl.getBacktrackLevel(currentLevel);
         }
