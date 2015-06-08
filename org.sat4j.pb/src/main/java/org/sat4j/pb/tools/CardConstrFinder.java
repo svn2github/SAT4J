@@ -138,6 +138,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
     }
 
     public void searchCards() {
+        this.initNumberOfConstraints = this.atLeastCards.size();
         int cpt = 0;
         Timer timerStatus = new Timer();
         timerStatus.scheduleAtFixedRate(new TimerTask() {
@@ -424,8 +425,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
         public int compare(AtLeastCard arg0, AtLeastCard arg1) {
             int degreeComparison = arg0.getLits().size() - arg0.getDegree()
                     - arg1.getLits().size() + arg1.getDegree();
-            return degreeComparison != 0 ? degreeComparison : arg0.hashCode()
-                    - arg1.hashCode();
+            return degreeComparison != 0 ? degreeComparison : 1;
         }
 
     }
