@@ -96,7 +96,21 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
             public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
                 handleConflict(confl);
             }
+
+            @Override
+            public void learn(IConstr c) {
+                // handleLearnt(c);
+            }
+
+            @Override
+            public void conflictFound(int p) {
+                // System.out.println(getLogPrefix() + "litCfl: " + p);
+            }
         });
+    }
+
+    protected void handleLearnt(IConstr c) {
+        // System.out.println(getLogPrefix() + "learnt: " + c);
     }
 
     protected void handleConflict(IConstr confl) {
@@ -107,6 +121,7 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
     }
 
     private void handleCardConflict(PBConstr confl) {
+        // System.out.println("c CFL: " + confl);
         // translation from Minisat literals to Dimacs literals
         IVecInt atMostLits = new VecInt(confl.getLits().length);
         for (int lit : confl.getLits()) {
@@ -114,31 +129,30 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
         }
         IVecInt discovered = this.cardFinder.searchCardFromAtMostCard(
                 atMostLits, confl.getDegree().intValue());
-        if (discovered == null) {
-            System.out.println(getLogPrefix() + "noCardFrom: "
-                    + confl.toString());
-        } else {
-            System.out.println(getLogPrefix() + "newCard: " + discovered
-                    + " <= " + (atMostLits.size() - 1) + " from: "
-                    + confl.toString());
-            // IConstr constr = this.addAtMost(discovered,
-            // atMostLits.size() - 1);
+        // if (discovered == null) {
+        // System.out.println(getLogPrefix() + "noCardFrom: "
+        // + confl.toString());
+        // }
+        if (discovered != null) {
             IConstr constr = this.addAtMostOnTheFly(discovered, new VecInt(
                     discovered.size(), 1), atMostLits.size() - 1);
+            this.sharedConflict = null;
+            // System.out.println(getLogPrefix() + "newCard: " + constr
+            // + " from: " + confl.toString());
             this.extendedConstr = (Constr) constr;
         }
     }
 
     @Override
     public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
-        // TODO Auto-generated method stub
-        if (extendedConstr == null)
+        if (extendedConstr == null) {
             super.analyzeCP(myconfl, results);
-        else
+        } else {
             super.analyzeCP(extendedConstr, results);
+        }
     }
 
-    // Overriding constaint adding methods to store constraints in both solver
+    // Overriding constraint adding methods to store constraints in both solver
     // and coSolver
 
     @Override

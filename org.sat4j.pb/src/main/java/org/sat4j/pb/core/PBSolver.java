@@ -169,6 +169,7 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         IVecInt vlits = dimacs2internal(literals);
         this.sharedConflict = this.dsfactory
                 .createUnregisteredAtMostConstraint(vlits, coefs, degree);
+        this.sharedConflict.setLearnt();
         this.sharedConflict.register();
         addConstr(this.sharedConflict);
         // // backtrack to the first decision level with a reason
