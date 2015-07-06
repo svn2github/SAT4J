@@ -66,6 +66,7 @@ import org.sat4j.pb.core.PBDataStructureFactory;
 import org.sat4j.pb.core.PBSolver;
 import org.sat4j.pb.core.PBSolverCP;
 import org.sat4j.pb.core.PBSolverCPLong;
+import org.sat4j.pb.core.PBSolverCPLongReduceToCard;
 import org.sat4j.pb.core.PBSolverCautious;
 import org.sat4j.pb.core.PBSolverClause;
 import org.sat4j.pb.core.PBSolverResCP;
@@ -258,6 +259,28 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
      *         constraint learning. Clauses and cardinalities with watched
      *         literals are also handled (and learnt). A specific heuristics
      *         taking into account the objective value is used. Conflict
+     *         analysis reduces to cardinalities to avoid computations
+     */
+    // public static PBSolverCP
+    // newCardLearningOPBLongClauseCardConstrMaxSpecificOrderIncrementalReductionToCardinality()
+    // {
+    // // LimitedLearning learning = new LimitedLearning(10);
+    // MiniSATLearning<PBDataStructureFactory> learning = new
+    // MiniSATLearning<PBDataStructureFactory>();
+    // // LearningStrategy learning = new NoLearningButHeuristics();
+    // PBSolverCP solver = new PBSolverCard(learning,
+    // new PBLongMaxClauseCardConstrDataStructure(),
+    // new VarOrderHeapObjective());
+    // learning.setDataStructureFactory(solver.getDSFactory());
+    // learning.setVarActivityListener(solver);
+    // return solver;
+    // }
+
+    /**
+     * @return MiniLearning with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A specific heuristics
+     *         taking into account the objective value is used. Conflict
      *         analysis reduces to clauses to avoid computations
      */
     public static PBSolverCP newMiniLearningOPBClauseCardConstrMaxSpecificOrderIncrementalReductionToClause() {
@@ -396,6 +419,25 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         learning.setVarActivityListener(solver);
         return solver;
     }
+
+    /**
+     * @return MiniSAT with Counter-based pseudo boolean constraints and
+     *         constraint learning. Clauses and cardinalities with watched
+     *         literals are also handled (and learnt). A reduction of
+     *         PB-constraints to cardinalities is made in order to simplify
+     *         cutting planes.
+     */
+    // public static PBSolverCard
+    // newPBCPMixedLongConstraintsReduceToCardinality() {
+    // MiniSATLearning<PBDataStructureFactory> learning = new
+    // MiniSATLearning<PBDataStructureFactory>();
+    // PBSolverCard solver = new PBSolverCard(learning,
+    // new PBLongMaxClauseCardConstrDataStructure(),
+    // new VarOrderHeap());
+    // learning.setDataStructureFactory(solver.getDSFactory());
+    // learning.setVarActivityListener(solver);
+    // return solver;
+    // }
 
     /**
      * @return MiniSAT with Counter-based pseudo boolean constraints and
@@ -556,6 +598,18 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
         return solver;
     }
 
+    private static PBSolverCP newPBCPStarReduceToCard(
+            PBDataStructureFactory dsf, IOrder order, boolean noRemove) {
+        MiniSATLearning<PBDataStructureFactory> learning = new MiniSATLearning<PBDataStructureFactory>();
+        PBSolverCP solver = new PBSolverCPLongReduceToCard(learning, dsf,
+                order, noRemove);
+        learning.setDataStructureFactory(solver.getDSFactory());
+        learning.setVarActivityListener(solver);
+        solver.setRestartStrategy(new ArminRestarts());
+        solver.setLearnedConstraintsDeletionStrategy(solver.lbd_based);
+        return solver;
+    }
+
     public static PBSolverCP newPBCP(PBDataStructureFactory dsf, IOrder order) {
         return newPBCP(dsf, order, true);
     }
@@ -581,6 +635,12 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
 
     public static IPBSolver newCuttingPlanesStar() {
         return newPBCPStar(new PBMaxClauseCardConstrDataStructure(),
+                new VarOrderHeapObjective(), true);
+    }
+
+    public static IPBSolver newCuttingPlanesStarReduceToCard() {
+        return newPBCPStarReduceToCard(
+                new PBMaxClauseCardConstrDataStructure(),
                 new VarOrderHeapObjective(), true);
     }
 
