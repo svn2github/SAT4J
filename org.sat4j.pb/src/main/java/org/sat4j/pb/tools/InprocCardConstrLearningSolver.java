@@ -104,21 +104,7 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
             public void conflictFound(IConstr confl, int dlevel, int trailLevel) {
                 handleConflict(confl);
             }
-
-            @Override
-            public void learn(IConstr c) {
-                // handleLearnt(c);
-            }
-
-            @Override
-            public void conflictFound(int p) {
-                // System.out.println(getLogPrefix() + "litCfl: " + p);
-            }
         });
-    }
-
-    protected void handleLearnt(IConstr c) {
-        // System.out.println(getLogPrefix() + "learnt: " + c);
     }
 
     protected void handleConflict(IConstr confl) {
@@ -135,13 +121,20 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
             atMostLits.push((lit >> 1) * ((lit & 1) == 1 ? -1 : 1));
         }
         IVecInt discovered = this.cardFinder.searchCardFromAtMostCard(
-                atMostLits, confl.getDegree().intValue());
+                atMostLits, atMostLits.size() - 1);
         if (discovered != null) {
             IConstr constr = this.addAtMostOnTheFly(discovered, new VecInt(
                     discovered.size(), 1), atMostLits.size() - 1);
+            // if (this.isVerbose())
+            // this.out.log(getLogPrefix() + "newCard " + constr
+            // + " discovered from " + confl);
             this.sharedConflict = null;
             this.extendedConstr = (Constr) constr;
         }
+        // else {
+        // if (this.isVerbose())
+        // this.out.log(getLogPrefix() + "noCard from " + confl);
+        // }
     }
 
     private boolean constraintIsAdmissibleForExtension(IConstr confl) {

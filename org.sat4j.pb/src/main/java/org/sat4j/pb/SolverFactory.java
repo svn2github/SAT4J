@@ -899,14 +899,14 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
                 SolverFactory.newCuttingPlanes());
     }
 
-    public static IPBSolver newInprocDetectCard() {
+    public static IPBSolver newInprocDetectCards() {
         InprocCardConstrLearningSolver solver = (InprocCardConstrLearningSolver) SolverFactory
-                .newLazyInprocDetectCard();
+                .newLazyInprocDetectCards();
         solver.setDetectCardFromAllConstraintsInCflAnalysis(true);
         return solver;
     }
 
-    public static IPBSolver newLazyInprocDetectCard() {
+    public static IPBSolver newLazyInprocDetectCards() {
         return new InprocCardConstrLearningSolver(
                 new MiniSATLearning<PBDataStructureFactory>(),
                 new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap(),
