@@ -48,7 +48,7 @@ public class PBSolverClause extends PBSolverCP {
     }
 
     @Override
-    IConflict chooseConflict(PBConstr myconfl, int level) {
+    protected IConflict chooseConflict(PBConstr myconfl, int level) {
         return ConflictMapClause.createConflict(myconfl, level);
     }
 

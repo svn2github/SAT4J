@@ -53,7 +53,7 @@ public class PBSolverCautious extends PBSolverCP {
     }
 
     @Override
-    IConflict chooseConflict(PBConstr myconfl, int level) {
+    protected IConflict chooseConflict(PBConstr myconfl, int level) {
         return ConflictMapSwitchToClause.createConflict(myconfl, level);
     }
 

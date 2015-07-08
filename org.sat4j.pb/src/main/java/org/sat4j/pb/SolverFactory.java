@@ -900,6 +900,13 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
     }
 
     public static IPBSolver newInprocDetectCard() {
+        InprocCardConstrLearningSolver solver = (InprocCardConstrLearningSolver) SolverFactory
+                .newLazyInprocDetectCard();
+        solver.setDetectCardFromAllConstraintsInCflAnalysis(true);
+        return solver;
+    }
+
+    public static IPBSolver newLazyInprocDetectCard() {
         return new InprocCardConstrLearningSolver(
                 new MiniSATLearning<PBDataStructureFactory>(),
                 new PBMaxClauseCardConstrDataStructure(), new VarOrderHeap(),

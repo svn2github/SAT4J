@@ -177,7 +177,7 @@ public class PBSolverCP extends PBSolver {
         }
     }
 
-    IConflict chooseConflict(PBConstr myconfl, int level) {
+    protected IConflict chooseConflict(PBConstr myconfl, int level) {
         return ConflictMap.createConflict(myconfl, level, noRemove);
     }
 
