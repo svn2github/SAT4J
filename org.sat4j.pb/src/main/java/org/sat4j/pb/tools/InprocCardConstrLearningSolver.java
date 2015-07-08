@@ -123,7 +123,7 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
 
     protected void handleConflict(IConstr confl) {
         this.extendedConstr = null;
-        if (confl instanceof PBConstr && !confl.canBePropagatedMultipleTimes()) {
+        if (constraintIsAdmissibleForExtension(confl)) {
             tryToExtendConstraint((PBConstr) confl);
         }
     }
@@ -142,6 +142,12 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
             this.sharedConflict = null;
             this.extendedConstr = (Constr) constr;
         }
+    }
+
+    private boolean constraintIsAdmissibleForExtension(IConstr confl) {
+        return confl instanceof PBConstr
+                && ((PBConstr) confl).canBeSatisfiedByCountingLiterals()
+                && ((PBConstr) confl).requiredNumberOfSatisfiedLiterals() == 1;
     }
 
     @Override
@@ -173,8 +179,7 @@ public class InprocCardConstrLearningSolver extends PBSolverCP {
             }
             PBConstr constraint = (PBConstr) this.voc.getReason(litImplied);
             this.extendedConstr = null;
-            if (constraint instanceof PBConstr
-                    && !constraint.canBePropagatedMultipleTimes()) {
+            if (constraintIsAdmissibleForExtension(constraint)) {
                 tryToExtendConstraint(constraint);
             }
             if (this.extendedConstr != null) {
