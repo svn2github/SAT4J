@@ -60,6 +60,8 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
 
     private boolean verbose = false;
 
+    private final Map<BitSet, BitSet> implied = new HashMap<BitSet, BitSet>();
+
     public CardConstrFinder(IPBSolver coSolver) {
         this.coSolver = coSolver;
         this.coSolver.setTimeoutOnConflicts(Integer.MAX_VALUE);
@@ -337,9 +339,9 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
                 System.out.println("c " + zeroProps.cardinality()
                         + " literals propagated at decision level 0");
         }
-        // BitSet cached = this.implied.get(lits);
-        // if (cached != null)
-        // return cached;
+        BitSet cached = this.implied.get(lits);
+        if (cached != null)
+            return cached;
         IVecInt litVec = new VecInt(this.zeroProps.cardinality()
                 + lits.cardinality());
         int from = 0;
@@ -354,7 +356,7 @@ public class CardConstrFinder implements Iterator<AtLeastCard>,
         } catch (TimeoutException e) {
         }
         this.propagated.andNot(this.zeroProps);
-        // this.implied.put(lits, this.propagated);
+        this.implied.put(lits, (BitSet) this.propagated.clone());
         return this.propagated;
     }
 
