@@ -84,7 +84,17 @@ public abstract class AbstractPBDataStructureFactory extends
                     cliterals.delete(i);
                     ccoefs.delete(i);
                 } else {
-                    i++;
+                    if (voc.isSatisfied(cliterals.get(i))) {
+                        degree = degree.subtract(ccoefs.get(i));
+                        cliterals.delete(i);
+                        ccoefs.delete(i);
+                    } else {
+                        if (voc.isFalsified(cliterals.get(i))) {
+                            cliterals.delete(i);
+                            ccoefs.delete(i);
+                        } else
+                            i++;
+                    }
                 }
             }
             int[] theLits = new int[cliterals.size()];
@@ -104,7 +114,24 @@ public abstract class AbstractPBDataStructureFactory extends
         public PBContainer nice(IVecInt literals, IVec<BigInteger> coefs,
                 boolean moreThan, BigInteger degree, ILits voc)
                 throws ContradictionException {
-            IDataStructurePB res = Pseudos.niceParameters(literals, coefs,
+            IVecInt cliterals = new VecInt(literals.size());
+            literals.copyTo(cliterals);
+            IVec<BigInteger> ccoefs = new Vec<BigInteger>(literals.size());
+            coefs.copyTo(ccoefs);
+            for (int i = 0; i < cliterals.size();) {
+                if (voc.isSatisfied(cliterals.get(i))) {
+                    degree = degree.subtract(ccoefs.get(i));
+                    cliterals.delete(i);
+                    ccoefs.delete(i);
+                } else {
+                    if (voc.isFalsified(cliterals.get(i))) {
+                        cliterals.delete(i);
+                        ccoefs.delete(i);
+                    } else
+                        i++;
+                }
+            }
+            IDataStructurePB res = Pseudos.niceParameters(cliterals, ccoefs,
                     moreThan, degree, voc);
             int size = res.size();
             int[] theLits = new int[size];
