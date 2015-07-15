@@ -37,8 +37,17 @@ public final class ConflictMapClause extends ConflictMap {
         super(cpb, level);
     }
 
+    public ConflictMapClause(PBConstr cpb, int level, boolean noRemove) {
+        super(cpb, level, noRemove);
+    }
+
     public static IConflict createConflict(PBConstr cpb, int level) {
         return new ConflictMapClause(cpb, level);
+    }
+
+    public static IConflict createConflict(PBConstr cpb, int level,
+            boolean noRemove) {
+        return new ConflictMapClause(cpb, level, noRemove);
     }
 
     /**

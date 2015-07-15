@@ -56,7 +56,7 @@ public class PBSolverCP extends PBSolver {
      * removing or not satisfied literals at a higher level before cutting
      * planes.
      */
-    private boolean noRemove = true;
+    protected boolean noRemove = true;
 
     /**
      * @param acg

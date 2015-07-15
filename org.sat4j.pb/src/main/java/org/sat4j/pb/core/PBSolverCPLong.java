@@ -52,7 +52,8 @@ public class PBSolverCPLong extends PBSolverCP {
 
     @Override
     protected IConflict chooseConflict(PBConstr myconfl, int level) {
-        return ConflictMapReduceToClause.createConflict(myconfl, level);
+        return ConflictMapReduceToClause.createConflict(myconfl, level,
+                noRemove);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class PBSolverCPLong extends PBSolverCP {
         return super.toString(prefix)
                 + "\n"
                 + prefix
-                + "Reduce coefficients of asserted PB constraints from BigInteger to Long";
+                + "Reduce coefficients of asserted PB constraints from BigInteger to Long and reduce to clauses during conflict analysis if necessary";
     }
 
 }

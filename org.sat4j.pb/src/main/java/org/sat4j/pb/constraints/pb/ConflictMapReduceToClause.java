@@ -43,6 +43,11 @@ public final class ConflictMapReduceToClause extends ConflictMap {
         // TODO Auto-generated constructor stub
     }
 
+    public static IConflict createConflict(PBConstr cpb, int level,
+            boolean noRemove) {
+        return new ConflictMapReduceToClause(cpb, level, noRemove);
+    }
+
     public static IConflict createConflict(PBConstr cpb, int level) {
         return new ConflictMapReduceToClause(cpb, level);
     }
