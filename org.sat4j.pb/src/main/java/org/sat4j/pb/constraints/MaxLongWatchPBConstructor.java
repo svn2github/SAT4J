@@ -51,12 +51,18 @@ public class MaxLongWatchPBConstructor implements IPBConstructor {
     public Constr constructPB(UnitPropagationListener solver, ILits voc,
             int[] theLits, BigInteger[] coefs, BigInteger degree,
             BigInteger sumCoefs) throws ContradictionException {
+        Constr constr;
         if (sumCoefs.bitLength() < Long.SIZE) {
-            return MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc, theLits,
+            constr = MaxWatchPbLong.normalizedMaxWatchPbNew(solver, voc,
+                    theLits, coefs, degree, sumCoefs);
+        } else {
+            constr = MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits,
                     coefs, degree, sumCoefs);
         }
-        return MaxWatchPb.normalizedMaxWatchPbNew(solver, voc, theLits, coefs,
-                degree, sumCoefs);
+        if (constr == null) {
+            return Constr.TAUTOLOGY;
+        }
+        return constr;
     }
 
     // public static boolean isLongSufficient(BigInteger[] coefs, BigInteger
