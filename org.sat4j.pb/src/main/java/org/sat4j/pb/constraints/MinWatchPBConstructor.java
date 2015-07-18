@@ -41,7 +41,11 @@ import org.sat4j.specs.UnitPropagationListener;
 public class MinWatchPBConstructor implements IPBConstructor {
 
     public Constr constructLearntPB(ILits voc, IDataStructurePB dspb) {
-        return MinWatchPb.normalizedWatchPbNew(voc, dspb);
+        Constr constr = MinWatchPb.normalizedWatchPbNew(voc, dspb);
+        if (constr == null) {
+            return Constr.TAUTOLOGY;
+        }
+        return constr;
     }
 
     public Constr constructPB(UnitPropagationListener solver, ILits voc,

@@ -47,8 +47,12 @@ public class MinCardPBConstructor implements ICardConstructor {
 
     public Constr constructCard(UnitPropagationListener solver, ILits voc,
             IVecInt theLits, int degree) throws ContradictionException {
-        return MinWatchCardPB.minWatchCardPBNew(solver, voc, theLits,
+        Constr constr = MinWatchCardPB.minWatchCardPBNew(solver, voc, theLits,
                 MinWatchCard.ATLEAST, degree);
+        if (constr == null) {
+            return Constr.TAUTOLOGY;
+        }
+        return constr;
     }
 
     public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
