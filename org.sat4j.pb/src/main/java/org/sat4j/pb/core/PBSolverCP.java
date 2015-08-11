@@ -169,7 +169,9 @@ public class PBSolverCP extends PBSolver {
         // the conflict give the highest decision level for the backtrack
         // (which is less than current level)
         // assert confl.isAssertive(currentLevel);
-        if (decisionLevel() == 0 || this.trail.size() == 0) {
+        if (decisionLevel() == 0
+                || (this.trail.size() == 0 && confl
+                        .getBacktrackLevel(currentLevel) > 0)) {
             results.backtrackLevel = -1;
             results.reason = null;
         } else {
