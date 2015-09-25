@@ -97,6 +97,9 @@ public abstract class PBSolver extends Solver<PBDataStructureFactory> implements
         if (order instanceof IOrderObjective) {
             ((IOrderObjective) order).setObjectiveFunction(obj);
         }
+        // register literals only visible in the objective function (see
+        // SAT-130)
+        dimacs2internal(obj.getVars());
     }
 
     public ObjectiveFunction getObjectiveFunction() {
