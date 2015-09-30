@@ -89,25 +89,22 @@ public class ConflictMapReduceToCard extends ConflictMap {
         return BigInteger.valueOf(cpt + 1);
     }
 
-    
-//    private BigInteger reduceToCard(int ind, IWatchPb wpb,
-//            BigInteger[] reducedCoefs, BigInteger degreeReduced) {
-//        BigInteger somCoefs = BigInteger.ZERO;
-//        int cpt = 0;
-//        for (int i = 0; i < reducedCoefs.length; i++) {
-//            if (somCoefs.compareTo(degreeReduced) < 0) {
-//                somCoefs = somCoefs.add(reducedCoefs[i]);
-//                cpt++;
-//            }
-//            if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i))) {
-//                reducedCoefs[i] = BigInteger.ONE;
-//            } else {
-//                reducedCoefs[i] = BigInteger.ZERO;
-//            }
-//        }
-//        return BigInteger.valueOf(cpt);
-//    }
+    // private BigInteger reduceToCard(int ind, IWatchPb wpb,
+    // BigInteger[] reducedCoefs, BigInteger degreeReduced) {
+    // BigInteger somCoefs = BigInteger.ZERO;
+    // int cpt = 0;
+    // for (int i = 0; i < reducedCoefs.length; i++) {
+    // if (somCoefs.compareTo(degreeReduced) < 0) {
+    // somCoefs = somCoefs.add(reducedCoefs[i]);
+    // cpt++;
+    // }
+    // if (i == ind || wpb.getVocabulary().isFalsified(wpb.get(i))) {
+    // reducedCoefs[i] = BigInteger.ONE;
+    // } else {
+    // reducedCoefs[i] = BigInteger.ZERO;
+    // }
+    // }
+    // return BigInteger.valueOf(cpt);
+    // }
 
-}
-    
 }
