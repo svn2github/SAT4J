@@ -66,7 +66,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * constructs the data structure needed to perform cutting planes
      * 
      * @param cpb
-     *            pseudo-boolean constraint which rosed the conflict
+     *            pseudo-boolean constraint which raised the conflict
      * @param level
      *            current decision level
      * @return a conflict on which cutting plane can be performed.

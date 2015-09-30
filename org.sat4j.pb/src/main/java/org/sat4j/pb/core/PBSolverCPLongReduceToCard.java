@@ -58,7 +58,7 @@ public class PBSolverCPLongReduceToCard extends PBSolverCP {
 
     @Override
     protected IConflict chooseConflict(PBConstr myconfl, int level) {
-        return ConflictMapReduceToCard.createConflict(myconfl, level);
+        return ConflictMapReduceToCard.createConflict(myconfl, level, noRemove);
     }
 
     @Override
