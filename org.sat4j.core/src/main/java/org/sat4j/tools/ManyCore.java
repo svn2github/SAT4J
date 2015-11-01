@@ -93,6 +93,11 @@ public class ManyCore<S extends ISolver> extends
     private final IVec<Counter> solversStats = new Vec<Counter>();
 
     public ManyCore(ASolverFactory<S> factory, String... solverNames) {
+        this(factory, false, solverNames);
+    }
+
+    public ManyCore(ASolverFactory<S> factory, boolean shareLearnedUnitClauses,
+            String... solverNames) {
         this.availableSolvers = solverNames;
         this.numberOfSolvers = solverNames.length;
         this.solvers = new ArrayList<S>(this.numberOfSolvers);
@@ -100,7 +105,9 @@ public class ManyCore<S extends ISolver> extends
         for (int i = 0; i < this.numberOfSolvers; i++) {
             solver = factory.createSolverByName(this.availableSolvers[i]);
             solver.setSearchListener(this);
-            solver.setUnitClauseProvider(this);
+            if (shareLearnedUnitClauses) {
+                solver.setUnitClauseProvider(this);
+            }
             this.solvers.add(solver);
             this.solversStats.push(new Counter(0));
         }
@@ -115,13 +122,22 @@ public class ManyCore<S extends ISolver> extends
      *            the solvers
      */
     public ManyCore(String[] names, S... solverObjects) {
-        this(solverObjects);
+        this(false, names, solverObjects);
+    }
+
+    public ManyCore(boolean shareLearnedUnitClauses, String[] names,
+            S... solverObjects) {
+        this(shareLearnedUnitClauses, solverObjects);
         for (int i = 0; i < names.length; i++) {
             this.availableSolvers[i] = names[i];
         }
     }
 
     public ManyCore(S... solverObjects) {
+        this(false, solverObjects);
+    }
+
+    public ManyCore(boolean shareLearnedUnitClauses, S... solverObjects) {
         this.availableSolvers = new String[solverObjects.length];
         for (int i = 0; i < solverObjects.length; i++) {
             this.availableSolvers[i] = "solver" + i;
@@ -131,7 +147,9 @@ public class ManyCore<S extends ISolver> extends
         for (int i = 0; i < this.numberOfSolvers; i++) {
             this.solvers.add(solverObjects[i]);
             solverObjects[i].setSearchListener(this);
-            solverObjects[i].setUnitClauseProvider(this);
+            if (shareLearnedUnitClauses) {
+                solverObjects[i].setUnitClauseProvider(this);
+            }
             this.solversStats.push(new Counter(0));
         }
     }
