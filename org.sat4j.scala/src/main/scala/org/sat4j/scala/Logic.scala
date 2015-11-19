@@ -296,12 +296,18 @@ object Logic {
   }
 
   private def simplifyClause(c: List[BoolExp]): List[BoolExp] = c match {
-    case Nil => List()
-    case True :: t => List(True)
+    case Nil             => List()
+    case True :: t       => List(True)
     case Not(False) :: t => List(True)
-    case False :: t => simplifyClause(t)
-    case Not(True) :: t => simplifyClause(t)
-    case h :: t => h :: simplifyClause(t)
+    case False :: t      => simplifyClause(t)
+    case Not(True) :: t  => simplifyClause(t)
+    case h :: t => {
+      val tSimp = simplifyClause(t)  
+      tSimp match {
+        case List(True) => tSimp
+        case _          => h :: tSimp
+      }
+    }
   }
 
   def simplifyCnf(l: List[List[BoolExp]]): List[List[BoolExp]] = l match {
