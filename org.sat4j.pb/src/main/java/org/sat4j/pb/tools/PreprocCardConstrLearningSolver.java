@@ -49,6 +49,8 @@ public class PreprocCardConstrLearningSolver<S extends IPBSolver> extends
 
     private BigInteger objMinBound = null;
 
+    private boolean outputCardsAndExit = false;
+
     public PreprocCardConstrLearningSolver(ASolverFactory<IPBSolver> factory,
             String solverName) {
         super(factory, solverName, solverName);
@@ -63,6 +65,14 @@ public class PreprocCardConstrLearningSolver<S extends IPBSolver> extends
         this.solvers.get(0).setVerbose(true);
         this.solvers.get(1).setVerbose(false);
         this.cardFinder = new CardConstrFinder(this.solvers.get(1));
+    }
+
+    public PreprocCardConstrLearningSolver(IPBSolver solverToFill,
+            boolean outputCardsAndExit) {
+        this(solverToFill);
+        this.outputCardsAndExit = outputCardsAndExit;
+        if (outputCardsAndExit)
+            this.cardFinder.setPrintCards(true);
     }
 
     public void init() {
@@ -81,6 +91,8 @@ public class PreprocCardConstrLearningSolver<S extends IPBSolver> extends
         } else {
             noPreprocessing();
         }
+        if (this.outputCardsAndExit)
+            System.exit(0);
     }
 
     private void noPreprocessing() {

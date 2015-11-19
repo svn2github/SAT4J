@@ -899,6 +899,11 @@ public final class SolverFactory extends ASolverFactory<IPBSolver> {
                 SolverFactory.newCuttingPlanes());
     }
 
+    public static PreprocCardConstrLearningSolver<IPBSolver> newDetectCardsAndExit() {
+        return new PreprocCardConstrLearningSolver<IPBSolver>(
+                SolverFactory.newDefault(), true);
+    }
+
     public static IPBSolver newInprocDetectCards() {
         InprocCardConstrLearningSolver solver = (InprocCardConstrLearningSolver) SolverFactory
                 .newLazyInprocDetectCards();
