@@ -174,9 +174,14 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         // System.out.println("Checking 2");
         if (coefficientsEqualTo(bc[0], bc)) {
             // System.out.println("Learned new card ! ");
+            BigInteger[] division = degree.divideAndRemainder(bc[0]);
+            System.out.println("Ici : degree - bc[0] - quotient - reste :"
+                    + degree + " - " + bc[0] + " - " + division[0] + " - "
+                    + division[1]);
+            if (!division[1].equals(BigInteger.ZERO))
+                division[0] = division[0].add(BigInteger.ONE);
             return constructLearntCard(new VecInt(lits),
-                    new Vec<BigInteger>(bc),
-                    degree.divide(bc[0]).add(BigInteger.ONE));
+                    new Vec<BigInteger>(bc), division[0]);
         }
         return constructLearntPB(new VecInt(lits), new Vec<BigInteger>(bc),
                 degree);

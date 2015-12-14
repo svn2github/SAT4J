@@ -90,7 +90,10 @@ public class MapPb implements IDataStructurePB {
                 }
             }
             this.cpCardsReduction++;
-            this.cardDegree = degree.divide(value).add(BigInteger.ONE);
+            BigInteger[] division = degree.divideAndRemainder(value);
+            if (!division[1].equals(BigInteger.ZERO))
+                division[0] = division[0].add(BigInteger.ONE);
+            this.cardDegree = division[0];
         } else
             this.cardDegree = degree;
         return true;
