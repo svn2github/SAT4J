@@ -113,6 +113,20 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
             return constructCard(new VecInt(literals), degree.intValue());
         }
         // if (coefficientsEqualTo(coefs[0], coefs)) {
+        // assert !coefs[0].equals(BigInteger.ZERO);
+        // BigInteger[] division = degree.divideAndRemainder(coefs[0]);
+        // if (!division[1].equals(BigInteger.ZERO))
+        // division[0] = division[0].add(BigInteger.ONE);
+        // if (division[0].compareTo(MAX_INT_VALUE) < 0) {
+        // return constructCard(new VecInt(literals),
+        // division[0].intValue());
+        // } else {
+        // for (int i = 0; i < coefs.length; i++)
+        // coefs[i] = BigInteger.ONE;
+        // return constructPB(literals, coefs, division[0]);
+        // }
+        // }
+        // if (coefficientsEqualTo(coefs[0], coefs)) {
         // assert degree.compareTo(MAX_INT_VALUE) < 0;
         // System.err.println("Using TCS division!!!");
         // return constructCard(new VecInt(literals), degree.divide(coefs[0])
@@ -160,7 +174,6 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
         literals.copyTo(lits);
         BigInteger[] bc = new BigInteger[coefs.size()];
         coefs.copyTo(bc);
-        // System.out.println("Checking 1");
         degree = Pseudos.niceCheckedParametersForCompetition(lits, bc,
                 moreThan, degree);
 
@@ -171,15 +184,12 @@ public abstract class AbstractPBClauseCardConstrDataStructure extends
             return constructLearntCard(new VecInt(lits),
                     new Vec<BigInteger>(bc), degree);
         }
-        // System.out.println("Checking 2");
         if (coefficientsEqualTo(bc[0], bc)) {
-            // System.out.println("Learned new card ! ");
             BigInteger[] division = degree.divideAndRemainder(bc[0]);
-            System.out.println("Ici : degree - bc[0] - quotient - reste :"
-                    + degree + " - " + bc[0] + " - " + division[0] + " - "
-                    + division[1]);
             if (!division[1].equals(BigInteger.ZERO))
                 division[0] = division[0].add(BigInteger.ONE);
+            // for (int i = 0; i < bc.length; i++)
+            // bc[i] = BigInteger.ONE;
             return constructLearntCard(new VecInt(lits),
                     new Vec<BigInteger>(bc), division[0]);
         }
