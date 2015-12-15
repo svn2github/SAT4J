@@ -45,7 +45,7 @@ public class UnitBinaryWLClauseConstructor implements IClauseConstructor {
             IVecInt v) {
         if (v == null) {
             // tautological clause
-            return null;
+            return Constr.TAUTOLOGY;
         }
         if (v.size() == 1) {
             return new UnitClause(v.last());

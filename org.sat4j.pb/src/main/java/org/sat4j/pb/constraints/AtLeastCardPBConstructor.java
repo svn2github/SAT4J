@@ -46,7 +46,11 @@ public class AtLeastCardPBConstructor implements ICardConstructor {
 
     public Constr constructCard(UnitPropagationListener solver, ILits voc,
             IVecInt theLits, int degree) throws ContradictionException {
-        return AtLeastPB.atLeastNew(solver, voc, theLits, degree);
+        Constr constr = AtLeastPB.atLeastNew(solver, voc, theLits, degree);
+        if (constr == null) {
+            return Constr.TAUTOLOGY;
+        }
+        return constr;
     }
 
     public Constr constructLearntCard(ILits voc, IDataStructurePB dspb) {
