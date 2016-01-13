@@ -154,7 +154,9 @@ public final class Lits implements Serializable, ILits {
         if (howmany >= this.pool.length) {
             init(Math.max(howmany, this.pool.length << 1));
         }
-        this.maxvarid = howmany;
+        if (this.maxvarid < howmany) {
+            this.maxvarid = howmany;
+        }
     }
 
     public void unassign(int lit) {
