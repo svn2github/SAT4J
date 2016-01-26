@@ -44,8 +44,8 @@ import org.sat4j.specs.TimeoutException;
  * @author daniel
  * 
  */
-public class PseudoOptDecorator extends PBSolverDecorator implements
-        IOptimizationProblem {
+public class PseudoOptDecorator extends PBSolverDecorator
+        implements IOptimizationProblem {
 
     /**
      * 
@@ -137,10 +137,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         boolean result = super.isSatisfiable(assumps, global);
         if (result) {
             this.prevmodel = super.model();
-            this.prevModelBlockingClause = super
-                    .createBlockingClauseForCurrentModel();
-            this.prevmodelwithadditionalvars = super
-                    .modelWithInternalVariables();
+            this.prevModelBlockingClause = super.createBlockingClauseForCurrentModel();
+            this.prevmodelwithadditionalvars = super.modelWithInternalVariables();
             this.prevfullmodel = new boolean[nVars()];
             for (int i = 0; i < nVars(); i++) {
                 this.prevfullmodel[i] = decorated().model(i + 1);
@@ -186,10 +184,8 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
                 } else {
                     this.prevmodel = super.model();
                 }
-                this.prevModelBlockingClause = super
-                        .createBlockingClauseForCurrentModel();
-                this.prevmodelwithadditionalvars = super
-                        .modelWithInternalVariables();
+                this.prevModelBlockingClause = super.createBlockingClauseForCurrentModel();
+                this.prevmodelwithadditionalvars = super.modelWithInternalVariables();
                 this.prevfullmodel = new boolean[nVars()];
                 for (int i = 0; i < nVars(); i++) {
                     this.prevfullmodel[i] = decorated().model(i + 1);
@@ -274,9 +270,9 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
         }
         if (decorated().getObjectiveFunction() != null
                 && this.objectiveValue != null) {
-            this.previousPBConstr = super.addPseudoBoolean(decorated()
-                    .getObjectiveFunction().getVars(), decorated()
-                    .getObjectiveFunction().getCoeffs(), false,
+            this.previousPBConstr = super.addPseudoBoolean(
+                    decorated().getObjectiveFunction().getVars(),
+                    decorated().getObjectiveFunction().getCoeffs(), false,
                     this.objectiveValue.subtract(BigInteger.ONE));
         }
     }
@@ -290,7 +286,11 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
     @Override
     public int[] model() {
         // DLB findbugs ok
-        return this.prevmodel;
+        if (this.prevmodel.length <= nVars()) {
+            return this.prevmodel;
+        }
+        throw new RuntimeException(
+                "New variables have been added since the last model found");
     }
 
     @Override
@@ -300,16 +300,16 @@ public class PseudoOptDecorator extends PBSolverDecorator implements
 
     @Override
     public String toString(String prefix) {
-        return prefix
-                + "Pseudo Boolean Optimization by upper bound\n"
-                + (useAnImplicantForEvaluation ? prefix
-                        + "using prime implicants for evaluating the objective function\n"
-                        : "") + super.toString(prefix);
+        return prefix + "Pseudo Boolean Optimization by upper bound\n"
+                + (useAnImplicantForEvaluation
+                        ? prefix + "using prime implicants for evaluating the objective function\n"
+                        : "")
+                + super.toString(prefix);
     }
 
     public Number getObjectiveValue() {
-        return this.objectiveValue.add(decorated().getObjectiveFunction()
-                .getCorrection());
+        return this.objectiveValue
+                .add(decorated().getObjectiveFunction().getCorrection());
     }
 
     public void discard() throws ContradictionException {
