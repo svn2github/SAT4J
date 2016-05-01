@@ -104,12 +104,17 @@ public class LecteurDimacs extends Reader implements Serializable {
         return this.s;
     }
 
-    /** on passe les commentaires et on lit le nombre de literaux */
-    private char passerCommentaire() throws IOException {
+    /**
+     * on passe les commentaires et on lit le nombre de literaux
+     * 
+     * @throws ParseFormatException
+     */
+    private char passerCommentaire() throws IOException, ParseFormatException {
         char car;
         for (;;) {
             car = passerEspaces();
             if (car == 'p') {
+                checkFormat();
                 car = lectureNombreLiteraux();
             }
             if (car != 'c' && car != 'p') {
@@ -123,12 +128,26 @@ public class LecteurDimacs extends Reader implements Serializable {
         return car;
     }
 
+    private void checkFormat() throws ParseFormatException {
+        // check if the format is really cnf
+        try {
+            char car = passerEspaces();
+            if ('c' != car || 'n' != in.read() || 'f' != in.read()) {
+                throw new ParseFormatException("Expecting file in cnf format.");
+            }
+        } catch (IOException e) {
+            throw new ParseFormatException(e);
+        }
+    }
+
     /** lit le nombre repr?sentant le nombre de literaux */
     private char lectureNombreLiteraux() throws IOException {
         char car = nextChiffre(); /* on lit le prchain chiffre */
         if (car != EOF) {
             this.nbVars = car - '0';
-            for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
+            for (;;) { /*
+                        * on lit le chiffre repr?sentant le nombre de literaux
+                        */
                 car = (char) this.in.read();
                 if (car < '0' || car > '9') {
                     break;
@@ -137,7 +156,9 @@ public class LecteurDimacs extends Reader implements Serializable {
             }
             car = nextChiffre();
             this.nbClauses = car - '0';
-            for (;;) { /* on lit le chiffre repr?sentant le nombre de literaux */
+            for (;;) { /*
+                        * on lit le chiffre repr?sentant le nombre de literaux
+                        */
                 car = (char) this.in.read();
                 if (car < '0' || car > '9') {
                     break;
@@ -156,8 +177,8 @@ public class LecteurDimacs extends Reader implements Serializable {
      * 
      * @throws ParseFormatException
      */
-    private void ajouterClauses(char car) throws IOException,
-            ContradictionException, ParseFormatException {
+    private void ajouterClauses(char car)
+            throws IOException, ContradictionException, ParseFormatException {
         final IVecInt lit = new VecInt();
         int val = 0;
         boolean neg = false;
@@ -243,7 +264,8 @@ public class LecteurDimacs extends Reader implements Serializable {
                 if (mapping == null) {
                     mapping = new HashMap<Integer, String>();
                 }
-                mapping.put(Integer.valueOf(values[0].trim()), values[1].trim());
+                mapping.put(Integer.valueOf(values[0].trim()),
+                        values[1].trim());
             }
         }
         return car;
