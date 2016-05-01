@@ -37,7 +37,6 @@ import org.sat4j.pb.tools.OptimalModelIterator;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
 import org.sat4j.specs.ISolver;
-import org.sat4j.tools.TextOutputTracing;
 
 /**
  * Launcher for the Pseudo Boolean 2007 competition.
@@ -48,8 +47,8 @@ import org.sat4j.tools.TextOutputTracing;
 public class LanceurPseudo2007 extends LanceurPseudo2005 {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public LanceurPseudo2007() {
@@ -75,12 +74,11 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
         String all = System.getProperty("all");
         if (all != null) {
             feedWithDecorated = true;
-            this.solver = new OptimalModelIterator(new OptToPBSATAdapter(
-                    this.handle));
+            this.solver = new OptimalModelIterator(
+                    new OptToPBSATAdapter(this.handle));
             setLauncherMode(ILauncherMode.DECISION);
         }
         super.configureLauncher();
-        this.solver.setSearchListener(new TextOutputTracing<String>(null));
     }
 
     /**
