@@ -36,8 +36,8 @@ import org.sat4j.pb.reader.OPBReader2012;
 import org.sat4j.pb.tools.OptimalModelIterator;
 import org.sat4j.reader.DimacsReader;
 import org.sat4j.reader.Reader;
-import org.sat4j.specs.IOptimizationProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.tools.TextOutputTracing;
 
 /**
  * Launcher for the Pseudo Boolean 2007 competition.
@@ -76,10 +76,11 @@ public class LanceurPseudo2007 extends LanceurPseudo2005 {
         if (all != null) {
             feedWithDecorated = true;
             this.solver = new OptimalModelIterator(new OptToPBSATAdapter(
-                    (IOptimizationProblem) this.handle));
+                    this.handle));
             setLauncherMode(ILauncherMode.DECISION);
         }
         super.configureLauncher();
+        this.solver.setSearchListener(new TextOutputTracing<String>(null));
     }
 
     /**

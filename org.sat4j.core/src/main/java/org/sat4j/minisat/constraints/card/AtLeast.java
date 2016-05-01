@@ -36,7 +36,6 @@ import java.util.Set;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.constraints.cnf.Lits;
-import org.sat4j.minisat.constraints.cnf.OriginalBinaryClause;
 import org.sat4j.minisat.constraints.cnf.OriginalWLClause;
 import org.sat4j.minisat.constraints.cnf.UnitClauses;
 import org.sat4j.minisat.core.ILits;
@@ -144,9 +143,6 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
             return new UnitClauses(ps);
         }
         if (degree == 1) {
-            if (ps.size() == 2) {
-                return OriginalBinaryClause.brandNewClause(s, voc, ps);
-            }
             return OriginalWLClause.brandNewClause(s, voc, ps);
         }
         Constr constr = new AtLeast(voc, ps, degree);
@@ -161,6 +157,7 @@ public class AtLeast implements Propagatable, Constr, Undoable, Serializable {
         for (int q : this.lits) {
             this.voc.watches(q ^ 1).remove(this);
         }
+
     }
 
     /*

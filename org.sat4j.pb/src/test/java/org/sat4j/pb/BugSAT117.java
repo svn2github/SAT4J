@@ -132,13 +132,14 @@ public class BugSAT117 {
         while (now.getTime() - beginTime < 60000) {
             solve(gateTranslator, modelIterator);
             now = new Date();
+            solver.reset();
         }
     }
 
     private List<List<Integer>> solve(GateTranslator gateTranslator,
             ModelIterator modelIterator) {
         List<List<Integer>> solution = new ArrayList<List<Integer>>();
-        solver.newVar(5);
+        solver.newVar(9);
 
         // (x1 ∨ ¬x5 ∨ x4) ∧ (¬x1 ∨ x5 ∨ x3 ∨ x4)
         try {

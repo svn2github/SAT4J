@@ -1930,6 +1930,7 @@ public class Solver<D extends DataStructureFactory>
         this.stats.reset();
         this.constrTypes.clear();
         this.undertimeout = true;
+        this.declaredMaxVarId = 0;
     }
 
     public int nVars() {

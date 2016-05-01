@@ -88,6 +88,7 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
             this.prevfullmodel = decorated().model();
             this.prevmodelwithinternalvars = decorated()
                     .modelWithInternalVariables();
+            System.err.println(new VecInt(this.prevfullmodel));
             calculateObjective();
             return true;
         }

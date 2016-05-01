@@ -67,13 +67,17 @@ public class BinaryClauses implements Constr, Propagatable, Serializable {
         clauses.push(p);
     }
 
+    public void removeBinaryClause(int p) {
+        clauses.remove(p);
+    }
+
     /*
      * (non-Javadoc)
      * 
      * @see org.sat4j.minisat.Constr#remove()
      */
     public void remove() {
-        // do nothing
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -235,9 +239,11 @@ public class BinaryClauses implements Constr, Propagatable, Serializable {
     }
 
     public void remove(UnitPropagationListener upl) {
-        if (voc.watches(reason).contains(this)) {
-            voc.watches(reason).remove(this);
-        }
+        throw new UnsupportedOperationException(
+                "Cannot remove all the binary clauses at once!");
+        // if (voc.watches(reason).contains(this)) {
+        // voc.watches(reason).remove(this);
+        // }
     }
 
     public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
