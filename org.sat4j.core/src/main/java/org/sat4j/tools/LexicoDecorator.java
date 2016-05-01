@@ -59,8 +59,8 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
     protected boolean isSolutionOptimal;
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public LexicoDecorator(T solver) {
@@ -88,7 +88,6 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
             this.prevfullmodel = decorated().model();
             this.prevmodelwithinternalvars = decorated()
                     .modelWithInternalVariables();
-            System.err.println(new VecInt(this.prevfullmodel));
             calculateObjective();
             return true;
         }
@@ -113,9 +112,9 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
                 throw new IllegalStateException(e);
             }
             if (isVerbose()) {
-                System.out.println(getLogPrefix()
-                        + "Found optimal criterion number "
-                        + (this.currentCriterion + 1));
+                System.out.println(
+                        getLogPrefix() + "Found optimal criterion number "
+                                + (this.currentCriterion + 1));
             }
             this.currentCriterion++;
             calculateObjective();
@@ -219,8 +218,8 @@ public class LexicoDecorator<T extends ISolver> extends SolverDecorator<T>
         for (IteratorInt it = this.criteria.get(this.currentCriterion)
                 .iterator(); it.hasNext();) {
             lit = it.next();
-            if (lit > 0 && this.prevboolmodel[lit - 1] || lit < 0
-                    && !this.prevboolmodel[-lit - 1]) {
+            if (lit > 0 && this.prevboolmodel[lit - 1]
+                    || lit < 0 && !this.prevboolmodel[-lit - 1]) {
                 value++;
             }
         }
