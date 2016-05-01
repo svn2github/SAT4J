@@ -411,7 +411,7 @@ public class Solver<D extends DataStructureFactory>
         if (howmany > this.declaredMaxVarId
                 && this.voc.nVars() > this.declaredMaxVarId) {
             throw new IllegalStateException(
-                    "Caution, you are making solver's internel var id public with uncontrolled consequences with features requiring internal/hidden variables.");
+                    "Caution, you are making solver's internal var id public with uncontrolled consequences with features requiring internal/hidden variables.");
         }
         this.voc.ensurePool(howmany);
         this.declaredMaxVarId = howmany;
