@@ -30,9 +30,9 @@
 
 package org.sat4j.minisat;
 
-import junit.framework.TestSuite;
-
 import org.sat4j.specs.ISolver;
+
+import junit.framework.TestSuite;
 
 /**
  * @author leberre
@@ -71,7 +71,7 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
         for (String name2 : names) {
             name = name2;
             if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name)
-                    && !"Statistics".equals(name)) {
+                    && !"Statistics".equals(name) && !"Concise".equals(name)) {
                 suite.addTest(new GenericM2Test(name));
             }
         }
