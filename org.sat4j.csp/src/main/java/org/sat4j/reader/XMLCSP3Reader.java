@@ -113,11 +113,9 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	public void decode(int[] model, PrintWriter out) {
 		StringBuffer sbuf = new StringBuffer();
 		for (Var v : varmapping.values()) {
-			out.print(v.toString()+" ");
 			sbuf.append(v.findValue(model));
 			sbuf.append(" ");
 		}
-		out.println("");
 		out.print(sbuf.toString());
 	}
 
