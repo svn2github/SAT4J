@@ -97,9 +97,10 @@ public class SolverFactory extends ASolverFactory<ISolver> {
      *      instance of ASolverFactory.
      */
     public static ISolver newDefault() {
-        Solver<DataStructureFactory> solver = newMiniSAT(new MixedDataStructureDanielWL());
-        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
-        return solver;
+//        Solver<DataStructureFactory> solver = newMiniSAT(new MixedDataStructureDanielWL());
+//        solver.setSimplifier(solver.EXPENSIVE_SIMPLIFICATION);
+//        return solver;
+    	return newSAT();
     }
 
     public static ISolver newSAT() {

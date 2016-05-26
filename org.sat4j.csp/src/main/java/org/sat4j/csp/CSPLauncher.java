@@ -19,9 +19,9 @@
 package org.sat4j.csp;
 
 import org.sat4j.AbstractLauncher;
-import org.sat4j.reader.CSPExtSupportReader;
+import org.sat4j.ILauncherMode;
+import org.sat4j.reader.ECSPFormat;
 import org.sat4j.reader.Reader;
-import org.sat4j.reader.XMLCSPReader;
 import org.sat4j.specs.ISolver;
 
 public class CSPLauncher extends AbstractLauncher {
@@ -58,14 +58,9 @@ public class CSPLauncher extends AbstractLauncher {
 	@Override
 	protected Reader createReader(final ISolver aSolver,
 			final String problemname) {
-		Reader aReader;
-		boolean allDiffCards = System.getProperty("allDiffCards") != null;
-		if (problemname.endsWith(".txt")) {
-			aReader = new CSPExtSupportReader(aSolver, allDiffCards);
-		} else {
-			assert problemname.endsWith(".xml");
-			aReader = new XMLCSPReader(aSolver, allDiffCards);
-		}
+		ECSPFormat cspFormat = ECSPFormat.inferInstanceType(problemname);
+		Reader aReader = cspFormat.getReader(aSolver);
+		setLauncherMode(cspFormat.isOptimizationModeRequired() ? ILauncherMode.OPTIMIZATION : ILauncherMode.DECISION);
 		if (System.getProperty("verbose") != null) {
 			log("verbose mode on");
 			aReader.setVerbosity(true);
