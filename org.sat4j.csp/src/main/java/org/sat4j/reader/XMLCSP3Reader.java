@@ -407,4 +407,47 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		this.solver.getObjectiveFunction().negate();
 	}
 	
+	/**
+	 * @see XCallbacks2#buildCtrNoOverlap(String, XVarInteger[], int[], boolean)
+	 */
+	public void buildCtrNoOverlap(String id, XVarInteger[] origins, int[] lengths, boolean zeroIgnored) {
+		if(!zeroIgnored) {
+			throw new UnsupportedOperationException("not implemented yet: zeroIgnored=false in buildCtrNoOverlap");
+		}
+		for(int i=0; i<origins.length-1; ++i) {
+			for(int j=i+1; j<origins.length; ++j) {
+				XVarInteger var1 = origins[i];
+				XVarInteger var2 = origins[j];
+				int length1 = lengths[i];
+				int length2 = lengths[j];
+				Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(var1.id), this.varmapping.get(var2.id)});
+				Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(var1.id), this.varmapping.get(var2.id)});
+				buildDirectionalNoOverlapCstr(var1, var2, length1, scope, vars);
+				buildDirectionalNoOverlapCstr(var2, var1, length2, scope, vars);
+			}
+		}
+	}
+
+	private void buildDirectionalNoOverlapCstr(XVarInteger var1,
+			XVarInteger var2, int length1, Vec<Var> scope, Vec<Evaluable> vars) {
+		Predicate p = new Predicate();
+		p.addVariable(normalizeCspVarName(var2.id));
+		p.addVariable(normalizeCspVarName(var1.id));
+		String expr = "ge(sub("+normalizeCspVarName(var2.id)+","+normalizeCspVarName(var1.id)+"),"+length1+")";
+		p.setExpression(expr);
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrNoOverlap(String, XVarInteger[][], int[][], boolean)
+	 */
+	public void buildCtrNoOverlap(String id, XVarInteger[][] origins, int[][] lengths, boolean zeroIgnored) {
+		for(int i=0; i<origins.length; ++i) {
+			buildCtrNoOverlap(id, origins[i], lengths[i], zeroIgnored);
+		}
+	}
 }
