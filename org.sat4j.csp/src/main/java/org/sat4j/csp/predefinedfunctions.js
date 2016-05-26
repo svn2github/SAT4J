@@ -101,3 +101,7 @@ function ite(x, y, z) {
 function iff(x, y) {
     return x && y || !x && !y;
 }
+
+function dist(x, y) {
+	return abs(x - y);
+}
