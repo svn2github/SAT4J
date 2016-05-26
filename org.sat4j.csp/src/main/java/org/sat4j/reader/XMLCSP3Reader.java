@@ -234,7 +234,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorRel op, int k) {
-		String expr = op.name().toLowerCase()+"("+x.id+","+k+")";
+		String expr = op.name().toLowerCase()+"("+normalizeCspVarName(x.id)+","+k+")";
 		IVec<Var> scope = new Vec<Var>(1);
 		scope.push(this.varmapping.get(x.id));
 		IVec<Evaluable> vars = new Vec<Evaluable>(1);
@@ -254,7 +254,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator opa, XVarInteger y, TypeConditionOperatorRel op, int k) {
-		String expr = op.name().toLowerCase()+"("+opa.name().toLowerCase()+"("+x.id+","+y.id+"),"+k+")";
+		String expr = op.name().toLowerCase()+"("+opa.name().toLowerCase()+"("+normalizeCspVarName(x.id)+","+normalizeCspVarName(y.id)+"),"+k+")";
 		Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
 		Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
 		Predicate p = new Predicate();

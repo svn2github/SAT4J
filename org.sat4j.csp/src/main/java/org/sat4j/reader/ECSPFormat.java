@@ -109,7 +109,7 @@ public enum ECSPFormat {
 	 * @return a reader corresponding to the problem
 	 */
 	public Reader getReader(ISolver solver) {
-		throw new IllegalStateException("This code should never has been called");
+		throw new IllegalStateException("This code should never be called");
 	}
 	
 	/**
