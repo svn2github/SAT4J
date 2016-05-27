@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,6 +51,7 @@ import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.w3c.dom.Document;
 import org.xcsp.parser.XCallbacks2;
+import org.xcsp.parser.XDomains.XDomInteger;
 import org.xcsp.parser.XEnums.TypeArithmeticOperator;
 import org.xcsp.parser.XEnums.TypeConditionOperatorRel;
 import org.xcsp.parser.XEnums.TypeFlag;
@@ -57,6 +60,9 @@ import org.xcsp.parser.XNodeExpr;
 import org.xcsp.parser.XNodeExpr.XNodeLeaf;
 import org.xcsp.parser.XNodeExpr.XNodeParent;
 import org.xcsp.parser.XParser;
+import org.xcsp.parser.XVariables.VEntry;
+import org.xcsp.parser.XVariables.XArray;
+import org.xcsp.parser.XVariables.XVar;
 import org.xcsp.parser.XVariables.XVarInteger;
 
 /**
@@ -80,6 +86,9 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	
 	/** the last solver internal variable used to encode a CSP variable */
 	private int lastVarNumber;
+	
+	/** contains all the variables defined in the instance, including the ones not explicitly create by buildVarXXX methods */
+	private List<XVar> allVars = new ArrayList<>();
 	
 	/** a mapping from the CSP variable names to Sat4j CSP variables */
 	private final Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
@@ -111,12 +120,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void decode(int[] model, PrintWriter out) {
-		StringBuffer sbuf = new StringBuffer();
-		for (Var v : varmapping.values()) {
-			sbuf.append(v.findValue(model));
-			sbuf.append(" ");
-		}
-		out.print(sbuf.toString());
+		out.print(decode(model));
 	}
 
 	/**
@@ -124,12 +128,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public String decode(int[] model) {
-		StringBuilder stb = new StringBuilder();
-		for (Var v : varmapping.values()) {
-			stb.append(v.findValue(model));
-			stb.append(" ");
+		StringBuffer sbuf = new StringBuffer();
+		for(XVar xvar : this.allVars) {
+			Var var = varmapping.get(xvar.id);
+			sbuf.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+			sbuf.append(' ');
 		}
-		return stb.toString();
+		return sbuf.toString();
 	}
 
 	/**
@@ -410,6 +415,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/**
 	 * @see XCallbacks2#buildCtrNoOverlap(String, XVarInteger[], int[], boolean)
 	 */
+	@Override
 	public void buildCtrNoOverlap(String id, XVarInteger[] origins, int[] lengths, boolean zeroIgnored) {
 		if(!zeroIgnored) {
 			throw new UnsupportedOperationException("not implemented yet: zeroIgnored=false in buildCtrNoOverlap");
@@ -445,9 +451,31 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/**
 	 * @see XCallbacks2#buildCtrNoOverlap(String, XVarInteger[][], int[][], boolean)
 	 */
+	@Override
 	public void buildCtrNoOverlap(String id, XVarInteger[][] origins, int[][] lengths, boolean zeroIgnored) {
 		for(int i=0; i<origins.length; ++i) {
 			buildCtrNoOverlap(id, origins[i], lengths[i], zeroIgnored);
+		}
+	}
+	
+	/**
+	 * @see XCallbacks2#beginVariables(List)
+	 */
+	@Override
+	public void beginVariables(List<VEntry> vEntries) {
+		for(VEntry entry : vEntries) {
+			manageEntry(entry);
+		}
+	}
+
+	private void manageEntry(VEntry entry) {
+		if(entry instanceof XArray) {
+			XArray array = (XArray) entry;
+			for(VEntry subEntry : array.vars) {
+				manageEntry(subEntry);
+			}
+		} else {
+			this.allVars.add((XVar) entry);
 		}
 	}
 }
