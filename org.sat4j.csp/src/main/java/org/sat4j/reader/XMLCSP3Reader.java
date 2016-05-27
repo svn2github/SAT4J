@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,13 @@ import org.xcsp.parser.XEnums.TypeArithmeticOperator;
 import org.xcsp.parser.XEnums.TypeConditionOperatorRel;
 import org.xcsp.parser.XEnums.TypeFlag;
 import org.xcsp.parser.XEnums.TypeObjective;
+import org.xcsp.parser.XEnums.TypeOperator;
 import org.xcsp.parser.XNodeExpr;
 import org.xcsp.parser.XNodeExpr.XNodeLeaf;
 import org.xcsp.parser.XNodeExpr.XNodeParent;
+import org.xcsp.parser.XParser.Condition;
+import org.xcsp.parser.XParser.ConditionVal;
+import org.xcsp.parser.XParser.ConditionVar;
 import org.xcsp.parser.XParser;
 import org.xcsp.parser.XVariables.VEntry;
 import org.xcsp.parser.XVariables.XArray;
@@ -146,6 +151,10 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		callbacksParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_TERNARY_INTENSION_CASES);
 		try {
 			loadInstance(in);
+			if(System.getProperty("justRead") != null) {
+				System.out.println("c the solver has been set to exit after reading. Exiting now with \"SUCCESS\" status code.");
+				System.exit(0);
+			}
 		} catch(ParseFormatException | ContradictionException | IOException e) {
 			throw e;
 		} catch (Exception e) {
@@ -340,6 +349,16 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		}
 	}
 	
+	/**
+	 * @see XCallbacks2#buildCtrAllDifferentList(String, XVarInteger[][])
+	 */
+	@Override
+	public void buildCtrAllDifferentList(String id, XVarInteger[][] lists) {
+		for(XVarInteger[] list : lists) {
+			buildCtrAllDifferent(id, list);
+		}
+	}
+	
 	private String normalizeCspVarName(String name) {
 		return name.replaceAll("\\[", VAR_NAME_OP_BRACK_REPL).replaceAll("\\]", VAR_NAME_CL_BRACK_REPL);
 	}
@@ -437,9 +456,11 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	private void buildDirectionalNoOverlapCstr(XVarInteger var1,
 			XVarInteger var2, int length1, Vec<Var> scope, Vec<Evaluable> vars) {
 		Predicate p = new Predicate();
-		p.addVariable(normalizeCspVarName(var2.id));
-		p.addVariable(normalizeCspVarName(var1.id));
-		String expr = "ge(sub("+normalizeCspVarName(var2.id)+","+normalizeCspVarName(var1.id)+"),"+length1+")";
+		String normalize2 = normalizeCspVarName(var2.id);
+		p.addVariable(normalize2);
+		String normalized1 = normalizeCspVarName(var1.id);
+		p.addVariable(normalized1);
+		String expr = "ge(sub("+normalize2+","+normalized1+"),"+length1+")";
 		p.setExpression(expr);
 		try {
 			p.toClause(this.solver, scope, vars);
@@ -456,6 +477,96 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		for(int i=0; i<origins.length; ++i) {
 			buildCtrNoOverlap(id, origins[i], lengths[i], zeroIgnored);
 		}
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrOrdered(String, XVarInteger[], TypeOperator)
+	 */
+	@Override
+	public void buildCtrOrdered(String id, XVarInteger[] list, TypeOperator operator) {
+		for(int i=0; i<list.length-1; ++i) {
+			Predicate p = new Predicate();
+			String normalized1 = normalizeCspVarName(list[i].id);
+			p.addVariable(normalized1);
+			String normalized2 = normalizeCspVarName(list[i+1].id);
+			p.addVariable(normalized2);
+			String expr = operator.name().toLowerCase()+"("+normalized1+","+normalized2+")";
+			p.setExpression(expr);
+			Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(list[i].id), this.varmapping.get(list[i+1].id)});
+			Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(list[i].id), this.varmapping.get(list[i+1].id)});
+			try {
+				p.toClause(this.solver, scope, vars);
+			} catch (ContradictionException e) {
+				this.contradictionFound = true;
+			}
+		}
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrSum(String, XVarInteger[], Condition)
+	 */
+	public void buildCtrSum(String id, XVarInteger[] list, Condition condition) {
+		int[] coeffs = new int[list.length];
+		Arrays.fill(coeffs, 1);
+		buildCtrSum(id, list, coeffs, condition);
+	}
+
+	/**
+	 * @see XCallbacks2#buildCtrSum(String, XVarInteger[], int[], Condition)
+	 */
+	public void buildCtrSum(String id, XVarInteger[] list, int[] coeffs, Condition condition) {
+		Predicate p = new Predicate();
+		Vec<Var> scope = new Vec<Var>();
+		Vec<Evaluable> vars = new Vec<Evaluable>();
+		String varId;
+		StringBuffer exprBuf = new StringBuffer();
+		exprBuf.append(condition.operator.toString().toLowerCase());
+		exprBuf.append('(');
+		for(int i=0; i<list.length-1; ++i) {
+			exprBuf.append("add(");
+			if(coeffs[i] != 1) {
+				exprBuf.append("mul(");
+				exprBuf.append(coeffs[i]);
+				exprBuf.append(',');
+			}
+			varId = list[i].id;
+			addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
+			if(coeffs[i] != 1) {
+				exprBuf.append(')');
+			}
+			exprBuf.append(',');
+		}
+		varId = list[list.length-1].id;
+		addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
+		for(int i=0; i<list.length-1; ++i) {
+			exprBuf.append(')');
+		}
+		exprBuf.append(',');
+		if(condition instanceof ConditionVar) {
+			varId = ((ConditionVar) condition).x.id;
+			addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
+		} else if(condition instanceof ConditionVal) {
+			exprBuf.append(((ConditionVal) condition).k);
+		} else {
+			throw new UnsupportedOperationException("this kind of condition is not supported yet.");
+		}
+		exprBuf.append(')');
+		String expr = exprBuf.toString();
+		p.setExpression(expr);
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+
+	private void addVarToPredExprBuffer(String varId, Predicate p, Vec<Var> scope,
+			Vec<Evaluable> vars, StringBuffer exprBuf) {
+		scope.push(this.varmapping.get(varId));
+		vars.push(this.varmapping.get(varId));
+		String normalizeName = normalizeCspVarName(varId);
+		p.addVariable(normalizeName);
+		exprBuf.append(normalizeName);
 	}
 	
 	/**
