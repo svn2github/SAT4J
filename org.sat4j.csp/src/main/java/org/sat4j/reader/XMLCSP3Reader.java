@@ -358,6 +358,60 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 			buildCtrAllDifferent(id, list);
 		}
 	}
+
+	/**
+	 * @see XCallbacks2#buildCtrAllDifferentExcept(String, XVarInteger[], int[])
+	 */
+	@Override
+	public void buildCtrAllDifferentExcept(String id, XVarInteger[] list, int[] except) {
+		if(except.length == 0) {
+			buildCtrAllDifferent(id, list);
+			return;
+		}
+		Vec<Var> scope = new Vec<Var>(list.length);
+		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
+		Predicate p = new Predicate();
+		String exceptBase = "eq(X,"+except[0]+")";
+		for(int i=1; i<except.length; ++i) {
+			exceptBase = "or("+exceptBase+",eq(X,"+except[i]+"))";
+		}
+		String[] exprs = new String[list.length-1];
+		for(int i=0; i<list.length-1; ++i) {
+			scope.push(varmapping.get(list[i].id));
+			vars.push(varmapping.get(list[i].id));
+			String normalizedCurVar = normalizeCspVarName(list[i].id);
+			p.addVariable(normalizedCurVar);
+			String exceptExpr = exceptBase.replaceAll("X", normalizedCurVar);
+			String neExpr = "ne("+normalizedCurVar+","+normalizeCspVarName(list[i+1].id)+")";
+			for(int j=i+2; j<list.length; ++j) {
+				neExpr = "and("+neExpr+",ne("+normalizedCurVar+","+normalizeCspVarName(list[j].id)+"))";
+			}
+			exprs[i] = "or("+exceptExpr+","+neExpr+")";
+		}
+		XVarInteger lastVar = list[list.length-1];
+		scope.push(varmapping.get(lastVar.id));
+		vars.push(varmapping.get(lastVar.id));
+		String normalizedCurVar = normalizeCspVarName(lastVar.id);
+		p.addVariable(normalizedCurVar);
+		p.setExpression(chainExpressions(exprs, "and"));
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+
+	/**
+	 * @see XCallbacks2#buildCtrAllDifferentMatrix(String, XVarInteger[][])
+	 */
+	@Override
+	public void buildCtrAllDifferentMatrix(String id, XVarInteger[][] matrix) {
+		XVarInteger[][] tMatrix = transposeMatrix(matrix);
+		for(int i=0; i<matrix.length; ++i) {
+			buildCtrAllDifferent(id, matrix[i]);
+			buildCtrAllDifferent(id, tMatrix[i]);
+		}		
+	}
 	
 	private String normalizeCspVarName(String name) {
 		return name.replaceAll("\\[", VAR_NAME_OP_BRACK_REPL).replaceAll("\\]", VAR_NAME_CL_BRACK_REPL);
@@ -400,10 +454,18 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		if(type != TypeObjective.SUM) {
+		ObjectiveFunction globalObj = null;
+		switch(type) {
+		case SUM:
+		case MINIMUM:
+			globalObj = buildObjForVarSum(xlist, xcoeffs);
+			break;
+		case MAXIMUM:
+			globalObj = buildObjForVarMax(xlist, xcoeffs);
+			break;
+		default:
 			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
 		}
-		ObjectiveFunction globalObj = buildObjForVarSum(xlist, xcoeffs);
 		this.solver.setObjectiveFunction(globalObj);
 	}
 
@@ -422,13 +484,139 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		return globalObj;
 	}
 	
+	private ObjectiveFunction buildObjForVarMax(XVarInteger[] xlist,
+			int[] xcoeffs) {
+		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
+		long max = Long.MIN_VALUE;
+		for(int i=0; i<xlist.length; ++i) {
+			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
+			varObjs[i] = buildObjForVar(xlist[i]);
+		}
+		ObjectiveFunction finalObj = buildBoundObj(max);
+		for(ObjectiveFunction obj : varObjs) {
+			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
+					finalObj);
+			try {
+				this.solver.addAtLeast(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
+			} catch (ContradictionException e) {
+				this.contradictionFound = true;
+			}
+		}
+		return finalObj;
+	}
+	
+	private ObjectiveFunction buildObjForVarMin(XVarInteger[] xlist,
+			int[] xcoeffs) {
+		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
+		long max = Long.MIN_VALUE;
+		for(int i=0; i<xlist.length; ++i) {
+			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
+			varObjs[i] = buildObjForVar(xlist[i]);
+		}
+		ObjectiveFunction finalObj = buildBoundObj(max);
+		for(ObjectiveFunction obj : varObjs) {
+			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
+					finalObj);
+			try {
+				this.solver.addAtMost(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
+			} catch (ContradictionException e) {
+				this.contradictionFound = true;
+			}
+		}
+		return finalObj;
+	}
+
+	private ObjectiveFunction buildBoundConstraintParams(
+			ObjectiveFunction varObj, ObjectiveFunction finalObj) {
+		IVec<BigInteger> objCoeffs = varObj.getCoeffs();
+		IVecInt cstrLits = new VecInt(objCoeffs.size() + finalObj.getVars().size());
+		IVec<BigInteger> cstrCoeffs = new Vec<>(objCoeffs.size() + finalObj.getVars().size());
+		finalObj.getVars().copyTo(cstrLits);
+		finalObj.getCoeffs().copyTo(cstrCoeffs);
+		varObj.getVars().copyTo(cstrLits);
+		for(int i=0; i<objCoeffs.size(); ++i) {
+			cstrCoeffs.push(objCoeffs.get(i).negate());
+		}
+		ObjectiveFunction boundCstrParams = new ObjectiveFunction(cstrLits, cstrCoeffs);
+		return boundCstrParams;
+	}
+
+	private ObjectiveFunction buildBoundObj(long max) {
+		int nNewVars = 0;
+		while(max > 0) {
+			++nNewVars;
+			max >>= 1;
+		}
+		lastVarNumber += nNewVars;
+		IVecInt maxVarLits = new VecInt(nNewVars);
+		IVec<BigInteger> maxVarCoeffs = new Vec<>(nNewVars);
+		BigInteger fact = BigInteger.ONE;
+		for(int i=0; i<nNewVars; ++i) {
+			maxVarLits.push(solver.nextFreeVarId(true));
+			maxVarCoeffs.push(fact);
+			fact = fact.shiftLeft(1);
+		}
+		ObjectiveFunction finalObj = new ObjectiveFunction(maxVarLits, maxVarCoeffs);
+		return finalObj;
+	}
+	
 	/**
 	 * @see XCallbacks2#buildObjToMaximize(String, TypeObjective, XVarInteger[], int[])
 	 */
 	@Override
 	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		buildObjToMinimize(id, type, xlist, xcoeffs);
-		this.solver.getObjectiveFunction().negate();
+		ObjectiveFunction globalObj = null;
+		switch(type) {
+		case SUM:
+		case MAXIMUM:
+			globalObj = buildObjForVarSum(xlist, xcoeffs);
+			globalObj.negate();
+			break;
+		case MINIMUM:
+			globalObj = buildObjForVarMin(xlist, xcoeffs);
+			break;
+		default:
+			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
+		}
+		this.solver.setObjectiveFunction(globalObj);
+	}
+	
+	/**
+	 * @see XCallbacks2#buildObjToMinimize(String, XNodeParent)
+	 */
+	@Override
+	public void buildObjToMinimize(String id, XNodeParent syntaxTreeRoot) {
+		unimplementedCase(id);
+		// TODO
+	}
+
+	/**
+	 * @see XCallbacks2#buildObjToMaximize(String, XNodeParent)
+	 */
+	@Override
+	public void buildObjToMaximize(String id, XNodeParent syntaxTreeRoot) {
+		unimplementedCase(id);
+		// TODO
+	}
+
+	/**
+	 * @see XCallbacks2#buildObjToMinimize(String, TypeObjective, XVarInteger[])
+	 */
+	@Override
+	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] list) {
+		int[] coeffs = new int[list.length];
+		Arrays.fill(coeffs, 1);
+		buildObjToMinimize(id, type, list, coeffs);
+	}
+
+	/**
+	 * @see XCallbacks2#buildObjToMaximize(String, TypeObjective, XVarInteger[])
+	 */
+	@Override
+	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] list) {
+		int[] coeffs = new int[list.length];
+		Arrays.fill(coeffs, 1);
+		buildObjToMaximize(id, type, list, coeffs);
 	}
 	
 	/**
@@ -567,6 +755,126 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		String normalizeName = normalizeCspVarName(varId);
 		p.addVariable(normalizeName);
 		exprBuf.append(normalizeName);
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrLex(String, XVarInteger[][], TypeOperator)
+	 */
+	public void buildCtrLex(String id, XVarInteger[][] lists, TypeOperator operator) {
+		for(int i=0; i<lists.length-1; ++i) {
+			buildCtrLex(id, lists[0], lists[1], operator);
+		}
+	}
+
+	private void buildCtrLex(String id, XVarInteger[] list1,
+			XVarInteger[] list2, TypeOperator operator) {
+		TypeOperator strictOp = strictTypeOperator(operator);
+		Predicate p = new Predicate();
+		Vec<Var> scope = new Vec<Var>();
+		Vec<Evaluable> vars = new Vec<Evaluable>();
+		for(int i=0; i<list1.length; ++i) {
+			String id01 = list1[i].id;
+			String id02 = list2[i].id;
+			scope.push(this.varmapping.get(id01));
+			scope.push(this.varmapping.get(id02));
+			vars.push(this.varmapping.get(id01));
+			vars.push(this.varmapping.get(id02));
+			p.addVariable(normalizeCspVarName(id01));
+			p.addVariable(normalizeCspVarName(id02));
+		}
+		String[] chains = new String[list1.length];
+		String id01 = list1[0].id;
+		String id02 = list2[0].id;
+		chains[0] = list1.length == 1
+				? operator.name().toLowerCase()+"("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")"
+				: strictOp.name().toLowerCase()+"("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")";
+		for(int i=1; i<list1.length; ++i) {
+			String eqChain = "eq("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")";
+			for(int j=1; j<i; ++j) {
+				String idj1 = list1[j].id;
+				String idj2 = list2[j].id;
+				eqChain = "and("+eqChain+",eq("+normalizeCspVarName(idj1)+","+normalizeCspVarName(idj2)+"))";
+			}
+			String idi1 = list1[i].id;
+			String idi2 = list2[i].id;
+			String finalMember =  i == list1.length-1
+					? operator.name().toLowerCase()+"("+normalizeCspVarName(idi1)+","+normalizeCspVarName(idi2)+")"
+					: strictOp.name().toLowerCase()+"("+normalizeCspVarName(idi1)+","+normalizeCspVarName(idi2)+")";
+			chains[i] = "and("+eqChain+","+finalMember+")";
+		}
+		p.setExpression(chainExpressions(chains, "or"));
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+
+	private String chainExpressions(String[] exprs, String op) {
+		StringBuffer exprBuff = new StringBuffer();
+		for(int i=0; i<exprs.length-1; ++i) {
+			exprBuff.append(op);
+			exprBuff.append("(");
+		}
+		exprBuff.append(exprs[0]);
+		for(int i=1; i<exprs.length; ++i) {
+			exprBuff.append(',');
+			exprBuff.append(exprs[i]);
+			exprBuff.append(')');
+		}
+		return exprBuff.toString();
+	}
+	
+	private TypeOperator strictTypeOperator(TypeOperator op) {
+		switch(op) {
+		case GE: return TypeOperator.GT;
+		case LE: return TypeOperator.LT;
+		case SUBSEQ: return TypeOperator.SUBSET;
+		case SUPSEQ: return TypeOperator.SUPSET;
+		default: return op;
+		}
+	}
+
+	/**
+	 * @see XCallbacks2#buildCtrLexMatrix(String, XVarInteger[][], TypeOperator)
+	 */
+	public void buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperator operator) {
+		buildCtrLex(id, matrix, operator);
+		XVarInteger[][] tMatrix = transposeMatrix(matrix);
+		buildCtrLex(id, tMatrix, operator);
+	}
+
+	private XVarInteger[][] transposeMatrix(XVarInteger[][] matrix) {
+		XVarInteger[][] tMatrix = new XVarInteger[matrix[0].length][matrix.length];
+		for(int i=0; i<matrix[0].length; ++i) {
+			for(int j=0; j<matrix.length; ++j) {
+				tMatrix[i][j] = matrix[j][i];
+			}
+		}
+		return tMatrix;
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrAllEqual(String, XVarInteger[])
+	 */
+	@Override
+	public void buildCtrAllEqual(String id, XVarInteger[] list) {
+		for(int i=0; i<list.length-1; ++i) {
+			Predicate p = new Predicate();
+			Var[] varArray = new Var[]{varmapping.get(list[i].id), varmapping.get(list[i+1].id)};
+			Vec<Var> scope = new Vec<Var>(varArray);
+			Vec<Evaluable> vars = new Vec<Evaluable>(varArray);
+			String norm1 = normalizeCspVarName(list[i].id);
+			p.addVariable(norm1);
+			String norm2 = normalizeCspVarName(list[i+1].id);
+			p.addVariable(norm2);
+			p.setExpression("eq("+norm1+","+norm2+")");
+			try {
+				p.toClause(this.solver, scope, vars);
+			} catch (ContradictionException e) {
+				this.contradictionFound = true;
+			}
+		}
 	}
 	
 	/**

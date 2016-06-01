@@ -67,8 +67,14 @@ function xor(x, y) {
     return x && !y || !x && y;
 }
 
-function eq(x, y) {
-    return x === y;
+function eq() {
+	var len = arguments.length-1;
+	for(var i=0; i<len; ++i) {
+		if(arguments[i] !== arguments[i+1]) {
+			return false;
+		}
+	}
+	return true;
 }
 
 function ne(x, y) {
