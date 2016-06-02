@@ -111,3 +111,22 @@ function iff(x, y) {
 function dist(x, y) {
 	return abs(x - y);
 }
+
+function set() {
+	var result = [];
+	var len = arguments.length;
+	for(var i=0; i<len; ++i) {
+		result = result + arguments[i];
+	}
+	return result
+}
+
+function inSet(x, theSet) {
+	var len = theSet.length;
+	for(var i=0; i<len; ++i) {
+		if(theSet[i] === x) {
+			return true;
+		}
+	}
+	return false;
+}

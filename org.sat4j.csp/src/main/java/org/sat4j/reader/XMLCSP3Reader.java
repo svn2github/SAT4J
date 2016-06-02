@@ -223,7 +223,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive, Set<TypeFlag> flags) {
-		if(flags.contains(TypeFlag.UNCLEAN_TUPLES) || flags.contains(TypeFlag.STARRED_TUPLES)) {
+		if(flags.contains(TypeFlag.STARRED_TUPLES)) {
 			throw new UnsupportedOperationException();
 		}
 		IVec<Var> scope = new Vec<Var>(list.length);
