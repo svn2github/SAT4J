@@ -65,6 +65,7 @@ import org.xcsp.parser.XParser.Condition;
 import org.xcsp.parser.XParser.ConditionVal;
 import org.xcsp.parser.XParser.ConditionVar;
 import org.xcsp.parser.XParser;
+import org.xcsp.parser.XValues.IntegerEntity;
 import org.xcsp.parser.XVariables.VEntry;
 import org.xcsp.parser.XVariables.XArray;
 import org.xcsp.parser.XVariables.XVar;
@@ -875,6 +876,116 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 				this.contradictionFound = true;
 			}
 		}
+	}
+	
+	private void checkChannelPrerequisites(XVarInteger[] list, int startIndex) {
+		if(startIndex < 0) {
+			throw new IllegalArgumentException("negative startIndex ("+startIndex+") given for channel constraint");
+		}
+		for(XVarInteger var : list) {
+			XDomInteger domain = (XDomInteger)(var.dom);
+			if(domain.getFirstValue() < startIndex || domain.getLastValue() >= (list.length + startIndex)) {
+				throw new IllegalArgumentException("incompatible variable domain in channel constraint");
+			}
+		}
+	}
+	
+	private void buildChannelImplCstr(XVarInteger v1, int v1Index, XVarInteger v2, int v2Index) {
+		Predicate p = new Predicate();
+		Var[] varArray = new Var[]{varmapping.get(v1.id), varmapping.get(v2.id)};
+		Vec<Var> scope = new Vec<Var>(varArray);
+		Vec<Evaluable> vars = new Vec<Evaluable>(varArray);
+		String norm1 = normalizeCspVarName(v1.id);
+		p.addVariable(norm1);
+		String norm2 = normalizeCspVarName(v2.id);
+		p.addVariable(norm2);
+		String expr = "or(not(eq("+norm1+","+v2Index+")),eq("+norm2+","+v1Index+"))";
+		p.setExpression(expr);
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+	
+	private void buildListCtrChannel(XVarInteger[] list1, int startIndex1,
+			XVarInteger[] list2, int startIndex2) {
+		for(int i=0; i<list2.length; ++i) {
+			XVarInteger var = list2[i];
+			XDomInteger domain = (XDomInteger)(var.dom);
+			for(int j=0; j<domain.getNbValues(); ++j) {
+				int value = (int) ((IntegerEntity) domain.values[j]).smallest();
+				buildChannelImplCstr(var, i+startIndex2, list1[value-startIndex1], value);
+			}
+		}
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrChannel(String, XVarInteger[], int)
+	 */
+	@Override
+	public void buildCtrChannel(String id, XVarInteger[] list, int startIndex) {
+		checkChannelPrerequisites(list, startIndex);
+		buildListCtrChannel(list, startIndex, list, startIndex);
+	}
+	
+	/**
+	 * @see XCallbacks2#buildCtrChannel(String, XVarInteger[], int, XVarInteger)
+	 */
+	@Override
+	public void buildCtrChannel(String id, XVarInteger[] list, int startIndex, XVarInteger value) {
+		buildSumEqOneCstr(list);
+		for(int i=0; i<list.length; ++i) {
+			XVarInteger var = list[i];
+			Predicate p = new Predicate();
+			Var[] varArray = new Var[]{varmapping.get(var.id)};
+			Vec<Var> scope = new Vec<Var>(varArray);
+			Vec<Evaluable> vars = new Vec<Evaluable>(varArray);
+			String norm = normalizeCspVarName(var.id);
+			p.addVariable(norm);
+			String expr = "iff(eq("+norm+",1),eq("+value+","+(i+startIndex)+"))";
+			p.setExpression(expr);
+			try {
+				p.toClause(this.solver, scope, vars);
+			} catch (ContradictionException e) {
+				this.contradictionFound = true;
+			}
+		}
+	}
+
+	private void buildSumEqOneCstr(XVarInteger[] list) {
+		Predicate p = new Predicate();
+		Vec<Var> scope = new Vec<Var>(list.length);
+		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
+		String[] toChain = new String[list.length];
+		for(int i=0; i<list.length; ++i) {
+			XVarInteger var = list[i];
+			scope.push(varmapping.get(var.id));
+			vars.push(varmapping.get(var.id));
+			String norm = normalizeCspVarName(var.id);
+			p.addVariable(norm);
+			toChain[i] = norm;
+		}
+		p.setExpression("eq("+chainExpressions(toChain, "add")+",1)");
+		try {
+			p.toClause(this.solver, scope, vars);
+		} catch (ContradictionException e) {
+			this.contradictionFound = true;
+		}
+	}
+
+	/**
+	 * @see XCallbacks2#buildCtrChannel(String, XVarInteger[], int, XVarInteger[], int)
+	 */
+	@Override
+	public void buildCtrChannel(String id, XVarInteger[] list1, int startIndex1, XVarInteger[] list2, int startIndex2) {
+		if(list1.length != list2.length) {
+			throw new IllegalArgumentException("lists of different sizes provided as arguments of channel constraint");
+		}
+		checkChannelPrerequisites(list1, startIndex2);
+		checkChannelPrerequisites(list2, startIndex1);
+		buildListCtrChannel(list2, startIndex2, list1, startIndex1);
+		buildListCtrChannel(list1, startIndex1, list2, startIndex2);
 	}
 	
 	/**
