@@ -19,6 +19,7 @@
 package org.sat4j.csp.constraints3;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.sat4j.core.Vec;
@@ -43,9 +44,11 @@ import org.xcsp.parser.XVariables.XVarInteger;
  */
 public class SumCtrBuilder {
 	
+	/** the solver in which the problem is encoded */
 	private IPBSolver solver;
 	
-	private Map<String, Var> varmapping;
+	/** a mapping from the CSP variable names to Sat4j CSP variables */
+	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
 
 	public SumCtrBuilder(IPBSolver solver, Map<String, Var> varmapping) {
 		this.solver = solver;

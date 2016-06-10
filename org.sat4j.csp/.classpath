@@ -28,5 +28,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/lonca/software/eclipse/workspace/org.ow2.sat4j.pom/lib/xcsp3parser.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

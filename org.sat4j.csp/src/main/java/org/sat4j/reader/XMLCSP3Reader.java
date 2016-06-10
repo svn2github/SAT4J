@@ -21,9 +21,7 @@ package org.sat4j.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,6 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.sat4j.core.Vec;
-import org.sat4j.core.VecInt;
 import org.sat4j.csp.Domain;
 import org.sat4j.csp.Domains;
 import org.sat4j.csp.Evaluable;
@@ -46,15 +43,14 @@ import org.sat4j.csp.constraints3.ChannelCtrBuilder;
 import org.sat4j.csp.constraints3.IntensionCtrBuilder;
 import org.sat4j.csp.constraints3.LexCtrBuilder;
 import org.sat4j.csp.constraints3.NoOverlapCtrBuilder;
+import org.sat4j.csp.constraints3.ObjBuilder;
 import org.sat4j.csp.constraints3.SumCtrBuilder;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
-import org.sat4j.specs.IVecInt;
 import org.w3c.dom.Document;
 import org.xcsp.parser.XCallbacks2;
 import org.xcsp.parser.XDomains.XDomInteger;
@@ -64,8 +60,8 @@ import org.xcsp.parser.XEnums.TypeFlag;
 import org.xcsp.parser.XEnums.TypeObjective;
 import org.xcsp.parser.XEnums.TypeOperator;
 import org.xcsp.parser.XNodeExpr.XNodeParent;
-import org.xcsp.parser.XParser.Condition;
 import org.xcsp.parser.XParser;
+import org.xcsp.parser.XParser.Condition;
 import org.xcsp.parser.XVariables.VEntry;
 import org.xcsp.parser.XVariables.XArray;
 import org.xcsp.parser.XVariables.XVar;
@@ -90,9 +86,6 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/** the solver in which the problem is encoded */
 	private IPBSolver solver;
 	
-	/** the last solver internal variable used to encode a CSP variable */
-	private int lastVarNumber;
-	
 	/** contains all the variables defined in the instance, including the ones not explicitly create by buildVarXXX methods */
 	private List<XVar> allVars = new ArrayList<>();
 	
@@ -108,12 +101,26 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/** a flag set iff a contradiction has been bound while parsing */
 	private boolean contradictionFound = false;
 	
+	/** object dedicated to allDifferent constraints building */
 	private AllDifferentCtrBuilder allDifferentBuilder;
+	
+	/** object dedicated to channel constraints building */
 	private ChannelCtrBuilder channelBuilder;
+	
+	/** object dedicated to lex constraints building */
 	private LexCtrBuilder lexBuilder;
+	
+	/** object dedicated to noOverlap constraints building */
 	private NoOverlapCtrBuilder noOverlapBuilder;
+	
+	/** object dedicated to intension (and associated "primitive") constraints building */
 	private IntensionCtrBuilder intensionBuilder;
+	
+	/** object dedicated to sum constraints building */
 	private SumCtrBuilder sumBuilder;
+	
+	/** object dedicated to objective function building */
+	private ObjBuilder objBuilder;
 	
 	/**
 	 * Builds a new parser.
@@ -132,6 +139,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		this.noOverlapBuilder = new NoOverlapCtrBuilder(solver, varmapping);
 		this.intensionBuilder = new IntensionCtrBuilder(solver, varmapping);
 		this.sumBuilder = new SumCtrBuilder(solver, varmapping);
+		this.objBuilder = new ObjBuilder(solver, varmapping, firstInternalVarMapping);
 	}
 	
 	/**
@@ -221,7 +229,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	}
 
 	private void createNewCspVar(XVarInteger var, Domain dom) {
-		Var cspVar = new Var(normalizeCspVarName(var.id), dom, this.lastVarNumber);
+		Var cspVar = new Var(normalizeCspVarName(var.id), dom, this.solver.nextFreeVarId(false)-1);
 		this.firstInternalVarMapping.put(cspVar, this.solver.nextFreeVarId(false));
 		try {
 			cspVar.toClause(solver);
@@ -229,7 +237,6 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 			this.contradictionFound = true;
 		}
 		this.varmapping.put(var.id, cspVar);
-		this.lastVarNumber += dom.size();
 	}
 	
 	/**
@@ -322,22 +329,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, XVarInteger x) {
-		ObjectiveFunction obj = buildObjForVar(x);
-		this.solver.setObjectiveFunction(obj);
-	}
-
-	private ObjectiveFunction buildObjForVar(XVarInteger x) {
-		Var var = this.varmapping.get(x.id);
-		Domain dom = var.domain();
-		IVecInt literals = new VecInt(dom.size());
-		IVec<BigInteger> coeffs = new Vec<BigInteger>(dom.size());
-		Integer firstIndex = this.firstInternalVarMapping.get(var);
-		for(int i=0; i<dom.size(); ++i) {
-			literals.push(firstIndex+i);
-			coeffs.push(BigInteger.valueOf(dom.get(i)));
-		}
-		ObjectiveFunction obj = new ObjectiveFunction(literals, coeffs);
-		return obj;
+		this.objBuilder.buildObjToMaximize(id, x);
 	}
 	
 	/**
@@ -345,8 +337,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMaximize(String id, XVarInteger x) {
-		buildObjToMinimize(id, x);
-		this.solver.getObjectiveFunction().negate();
+		this.objBuilder.buildObjToMaximize(id, x);
 	}
 	
 	/**
@@ -354,110 +345,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		ObjectiveFunction globalObj = null;
-		switch(type) {
-		case SUM:
-		case MINIMUM:
-			globalObj = buildObjForVarSum(xlist, xcoeffs);
-			break;
-		case MAXIMUM:
-			globalObj = buildObjForVarMax(xlist, xcoeffs);
-			break;
-		default:
-			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
-		}
-		this.solver.setObjectiveFunction(globalObj);
-	}
-
-	private ObjectiveFunction buildObjForVarSum(XVarInteger[] xlist,
-			int[] xcoeffs) {
-		IVecInt lits = new VecInt();
-		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		for(int i=0; i<xlist.length; ++i) {
-			ObjectiveFunction subObj = buildObjForVar(xlist[i]);
-			for(int j=0; j<subObj.getVars().size(); ++j) {
-				lits.push(subObj.getVars().get(j));
-				coeffs.push(subObj.getCoeffs().get(j).multiply(BigInteger.valueOf(xcoeffs[i])));
-			}
-		}
-		ObjectiveFunction globalObj = new ObjectiveFunction(lits, coeffs);
-		return globalObj;
-	}
-	
-	private ObjectiveFunction buildObjForVarMax(XVarInteger[] xlist,
-			int[] xcoeffs) {
-		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
-		long max = Long.MIN_VALUE;
-		for(int i=0; i<xlist.length; ++i) {
-			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
-			varObjs[i] = buildObjForVar(xlist[i]);
-		}
-		ObjectiveFunction finalObj = buildBoundObj(max);
-		for(ObjectiveFunction obj : varObjs) {
-			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
-					finalObj);
-			try {
-				this.solver.addAtLeast(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
-			} catch (ContradictionException e) {
-				this.contradictionFound = true;
-			}
-		}
-		return finalObj;
-	}
-	
-	private ObjectiveFunction buildObjForVarMin(XVarInteger[] xlist,
-			int[] xcoeffs) {
-		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
-		long max = Long.MIN_VALUE;
-		for(int i=0; i<xlist.length; ++i) {
-			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
-			varObjs[i] = buildObjForVar(xlist[i]);
-		}
-		ObjectiveFunction finalObj = buildBoundObj(max);
-		for(ObjectiveFunction obj : varObjs) {
-			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
-					finalObj);
-			try {
-				this.solver.addAtMost(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
-			} catch (ContradictionException e) {
-				this.contradictionFound = true;
-			}
-		}
-		return finalObj;
-	}
-
-	private ObjectiveFunction buildBoundConstraintParams(
-			ObjectiveFunction varObj, ObjectiveFunction finalObj) {
-		IVec<BigInteger> objCoeffs = varObj.getCoeffs();
-		IVecInt cstrLits = new VecInt(objCoeffs.size() + finalObj.getVars().size());
-		IVec<BigInteger> cstrCoeffs = new Vec<>(objCoeffs.size() + finalObj.getVars().size());
-		finalObj.getVars().copyTo(cstrLits);
-		finalObj.getCoeffs().copyTo(cstrCoeffs);
-		varObj.getVars().copyTo(cstrLits);
-		for(int i=0; i<objCoeffs.size(); ++i) {
-			cstrCoeffs.push(objCoeffs.get(i).negate());
-		}
-		ObjectiveFunction boundCstrParams = new ObjectiveFunction(cstrLits, cstrCoeffs);
-		return boundCstrParams;
-	}
-
-	private ObjectiveFunction buildBoundObj(long max) {
-		int nNewVars = 0;
-		while(max > 0) {
-			++nNewVars;
-			max >>= 1;
-		}
-		lastVarNumber += nNewVars;
-		IVecInt maxVarLits = new VecInt(nNewVars);
-		IVec<BigInteger> maxVarCoeffs = new Vec<>(nNewVars);
-		BigInteger fact = BigInteger.ONE;
-		for(int i=0; i<nNewVars; ++i) {
-			maxVarLits.push(solver.nextFreeVarId(true));
-			maxVarCoeffs.push(fact);
-			fact = fact.shiftLeft(1);
-		}
-		ObjectiveFunction finalObj = new ObjectiveFunction(maxVarLits, maxVarCoeffs);
-		return finalObj;
+		this.objBuilder.buildObjToMinimize(id, type, xlist, xcoeffs);
 	}
 	
 	/**
@@ -465,20 +353,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		ObjectiveFunction globalObj = null;
-		switch(type) {
-		case SUM:
-		case MAXIMUM:
-			globalObj = buildObjForVarSum(xlist, xcoeffs);
-			globalObj.negate();
-			break;
-		case MINIMUM:
-			globalObj = buildObjForVarMin(xlist, xcoeffs);
-			break;
-		default:
-			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
-		}
-		this.solver.setObjectiveFunction(globalObj);
+		this.objBuilder.buildObjToMaximize(id, type, xlist, xcoeffs);
 	}
 	
 	/**
@@ -504,9 +379,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] list) {
-		int[] coeffs = new int[list.length];
-		Arrays.fill(coeffs, 1);
-		buildObjToMinimize(id, type, list, coeffs);
+		this.objBuilder.buildObjToMinimize(id, type, list);
 	}
 
 	/**
@@ -514,9 +387,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] list) {
-		int[] coeffs = new int[list.length];
-		Arrays.fill(coeffs, 1);
-		buildObjToMaximize(id, type, list, coeffs);
+		this.objBuilder.buildObjToMaximize(id, type, list);
 	}
 	
 	/**
