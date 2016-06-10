@@ -38,10 +38,15 @@ import org.sat4j.csp.Domains;
 import org.sat4j.csp.Evaluable;
 import org.sat4j.csp.Predicate;
 import org.sat4j.csp.Var;
-import org.sat4j.csp.constraints.AllDiffCard;
 import org.sat4j.csp.constraints.GentSupports;
 import org.sat4j.csp.constraints.Nogoods;
 import org.sat4j.csp.constraints.Relation;
+import org.sat4j.csp.constraints3.AllDifferentCtrBuilder;
+import org.sat4j.csp.constraints3.ChannelCtrBuilder;
+import org.sat4j.csp.constraints3.IntensionCtrBuilder;
+import org.sat4j.csp.constraints3.LexCtrBuilder;
+import org.sat4j.csp.constraints3.NoOverlapCtrBuilder;
+import org.sat4j.csp.constraints3.SumCtrBuilder;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PseudoOptDecorator;
@@ -58,14 +63,9 @@ import org.xcsp.parser.XEnums.TypeConditionOperatorRel;
 import org.xcsp.parser.XEnums.TypeFlag;
 import org.xcsp.parser.XEnums.TypeObjective;
 import org.xcsp.parser.XEnums.TypeOperator;
-import org.xcsp.parser.XNodeExpr;
-import org.xcsp.parser.XNodeExpr.XNodeLeaf;
 import org.xcsp.parser.XNodeExpr.XNodeParent;
 import org.xcsp.parser.XParser.Condition;
-import org.xcsp.parser.XParser.ConditionVal;
-import org.xcsp.parser.XParser.ConditionVar;
 import org.xcsp.parser.XParser;
-import org.xcsp.parser.XValues.IntegerEntity;
 import org.xcsp.parser.XVariables.VEntry;
 import org.xcsp.parser.XVariables.XArray;
 import org.xcsp.parser.XVariables.XVar;
@@ -108,6 +108,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/** a flag set iff a contradiction has been bound while parsing */
 	private boolean contradictionFound = false;
 	
+	private AllDifferentCtrBuilder allDifferentBuilder;
+	private ChannelCtrBuilder channelBuilder;
+	private LexCtrBuilder lexBuilder;
+	private NoOverlapCtrBuilder noOverlapBuilder;
+	private IntensionCtrBuilder intensionBuilder;
+	private SumCtrBuilder sumBuilder;
+	
 	/**
 	 * Builds a new parser.
 	 * 
@@ -119,6 +126,12 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		}
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
+		this.allDifferentBuilder = new AllDifferentCtrBuilder(solver, varmapping);
+		this.channelBuilder = new ChannelCtrBuilder(solver, varmapping);
+		this.lexBuilder = new LexCtrBuilder(solver, varmapping);
+		this.noOverlapBuilder = new NoOverlapCtrBuilder(solver, varmapping);
+		this.intensionBuilder = new IntensionCtrBuilder(solver, varmapping);
+		this.sumBuilder = new SumCtrBuilder(solver, varmapping);
 	}
 	
 	/**
@@ -249,19 +262,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorRel op, int k) {
-		String expr = op.name().toLowerCase()+"("+normalizeCspVarName(x.id)+","+k+")";
-		IVec<Var> scope = new Vec<Var>(1);
-		scope.push(this.varmapping.get(x.id));
-		IVec<Evaluable> vars = new Vec<Evaluable>(1);
-		vars.push(this.varmapping.get(x.id));
-		Predicate p = new Predicate();
-		p.addVariable(normalizeCspVarName(x.id));
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.intensionBuilder.buildCtrPrimitive(id, x, op, k);
 	}
 	
 	/**
@@ -269,18 +270,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator opa, XVarInteger y, TypeConditionOperatorRel op, int k) {
-		String expr = op.name().toLowerCase()+"("+opa.name().toLowerCase()+"("+normalizeCspVarName(x.id)+","+normalizeCspVarName(y.id)+"),"+k+")";
-		Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
-		Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
-		Predicate p = new Predicate();
-		p.addVariable(normalizeCspVarName(x.id));
-		p.addVariable(normalizeCspVarName(y.id));
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.intensionBuilder.buildCtrPrimitive(id, x, opa, y, op, k);
 	}
 
 	/**
@@ -288,46 +278,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent syntaxTreeRoot) {
-		syntaxTreeRootToString(syntaxTreeRoot);
-		Vec<Var> scope = new Vec<Var>(xscope.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(xscope.length);
-		Predicate p = new Predicate();
-		for(XVarInteger vxscope : xscope) {
-			String strVar = vxscope.toString();
-			p.addVariable(normalizeCspVarName(strVar));
-			scope.push(varmapping.get(strVar));
-			vars.push(varmapping.get(strVar));
-		}
-		String expr = syntaxTreeRootToString(syntaxTreeRoot);
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
-	}
-
-	private String syntaxTreeRootToString(XNodeParent syntaxTreeRoot) {
-		StringBuffer treeToString = new StringBuffer();
-		fillSyntacticStrBuffer(syntaxTreeRoot, treeToString);
-		return treeToString.toString();
-	}
-
-	private void fillSyntacticStrBuffer(XNodeExpr root,
-			StringBuffer treeToString) {
-		if(root instanceof XNodeLeaf) {
-			treeToString.append(normalizeCspVarName(root.toString()));
-			return;
-		}
-		treeToString.append(root.getType().toString().toLowerCase());
-		XNodeExpr[] sons = ((XNodeParent) root).sons;
-		treeToString.append('(');
-		fillSyntacticStrBuffer(sons[0], treeToString);
-		for(int i=1; i<sons.length; ++i) {
-			treeToString.append(',');
-			fillSyntacticStrBuffer(sons[i], treeToString);
-		}
-		treeToString.append(')');
+		this.contradictionFound |= this.intensionBuilder.buildCtrIntension(id, xscope, syntaxTreeRoot);
 	}
 	
 	/**
@@ -335,19 +286,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrAllDifferent(String id, XVarInteger[] list) {
-		Vec<Var> scope = new Vec<Var>(list.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
-		for(XVarInteger vxscope : list) {
-			String strVar = vxscope.toString();
-			scope.push(varmapping.get(strVar));
-			vars.push(varmapping.get(strVar));
-		}
-		AllDiffCard card = new AllDiffCard();
-		try {
-			card.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.allDifferentBuilder.buildCtrAllDifferent(id, list);
 	}
 	
 	/**
@@ -355,9 +294,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrAllDifferentList(String id, XVarInteger[][] lists) {
-		for(XVarInteger[] list : lists) {
-			buildCtrAllDifferent(id, list);
-		}
+		this.contradictionFound |= this.allDifferentBuilder.buildCtrAllDifferentList(id, lists);
 	}
 
 	/**
@@ -365,41 +302,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrAllDifferentExcept(String id, XVarInteger[] list, int[] except) {
-		if(except.length == 0) {
-			buildCtrAllDifferent(id, list);
-			return;
-		}
-		Vec<Var> scope = new Vec<Var>(list.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
-		Predicate p = new Predicate();
-		String exceptBase = "eq(X,"+except[0]+")";
-		for(int i=1; i<except.length; ++i) {
-			exceptBase = "or("+exceptBase+",eq(X,"+except[i]+"))";
-		}
-		String[] exprs = new String[list.length-1];
-		for(int i=0; i<list.length-1; ++i) {
-			scope.push(varmapping.get(list[i].id));
-			vars.push(varmapping.get(list[i].id));
-			String normalizedCurVar = normalizeCspVarName(list[i].id);
-			p.addVariable(normalizedCurVar);
-			String exceptExpr = exceptBase.replaceAll("X", normalizedCurVar);
-			String neExpr = "ne("+normalizedCurVar+","+normalizeCspVarName(list[i+1].id)+")";
-			for(int j=i+2; j<list.length; ++j) {
-				neExpr = "and("+neExpr+",ne("+normalizedCurVar+","+normalizeCspVarName(list[j].id)+"))";
-			}
-			exprs[i] = "or("+exceptExpr+","+neExpr+")";
-		}
-		XVarInteger lastVar = list[list.length-1];
-		scope.push(varmapping.get(lastVar.id));
-		vars.push(varmapping.get(lastVar.id));
-		String normalizedCurVar = normalizeCspVarName(lastVar.id);
-		p.addVariable(normalizedCurVar);
-		p.setExpression(chainExpressions(exprs, "and"));
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.allDifferentBuilder.buildCtrAllDifferentExcept(id, list, except);
 	}
 
 	/**
@@ -407,11 +310,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrAllDifferentMatrix(String id, XVarInteger[][] matrix) {
-		XVarInteger[][] tMatrix = transposeMatrix(matrix);
-		for(int i=0; i<matrix.length; ++i) {
-			buildCtrAllDifferent(id, matrix[i]);
-			buildCtrAllDifferent(id, tMatrix[i]);
-		}		
+		this.contradictionFound |= this.allDifferentBuilder.buildCtrAllDifferentMatrix(id, matrix);		
 	}
 	
 	private String normalizeCspVarName(String name) {
@@ -625,37 +524,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrNoOverlap(String id, XVarInteger[] origins, int[] lengths, boolean zeroIgnored) {
-		if(!zeroIgnored) {
-			throw new UnsupportedOperationException("not implemented yet: zeroIgnored=false in buildCtrNoOverlap");
-		}
-		for(int i=0; i<origins.length-1; ++i) {
-			for(int j=i+1; j<origins.length; ++j) {
-				XVarInteger var1 = origins[i];
-				XVarInteger var2 = origins[j];
-				int length1 = lengths[i];
-				int length2 = lengths[j];
-				Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(var1.id), this.varmapping.get(var2.id)});
-				Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(var1.id), this.varmapping.get(var2.id)});
-				buildDirectionalNoOverlapCstr(var1, var2, length1, scope, vars);
-				buildDirectionalNoOverlapCstr(var2, var1, length2, scope, vars);
-			}
-		}
-	}
-
-	private void buildDirectionalNoOverlapCstr(XVarInteger var1,
-			XVarInteger var2, int length1, Vec<Var> scope, Vec<Evaluable> vars) {
-		Predicate p = new Predicate();
-		String normalize2 = normalizeCspVarName(var2.id);
-		p.addVariable(normalize2);
-		String normalized1 = normalizeCspVarName(var1.id);
-		p.addVariable(normalized1);
-		String expr = "ge(sub("+normalize2+","+normalized1+"),"+length1+")";
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.noOverlapBuilder.buildCtrNoOverlap(id, origins, lengths, zeroIgnored);
 	}
 	
 	/**
@@ -663,9 +532,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrNoOverlap(String id, XVarInteger[][] origins, int[][] lengths, boolean zeroIgnored) {
-		for(int i=0; i<origins.length; ++i) {
-			buildCtrNoOverlap(id, origins[i], lengths[i], zeroIgnored);
-		}
+		this.contradictionFound |= this.noOverlapBuilder.buildCtrNoOverlap(id, origins, lengths, zeroIgnored);
 	}
 	
 	/**
@@ -695,164 +562,30 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildCtrSum(String, XVarInteger[], Condition)
 	 */
 	public void buildCtrSum(String id, XVarInteger[] list, Condition condition) {
-		int[] coeffs = new int[list.length];
-		Arrays.fill(coeffs, 1);
-		buildCtrSum(id, list, coeffs, condition);
+		this.contradictionFound |= this.sumBuilder.buildCtrSum(id, list, condition);
 	}
 
 	/**
 	 * @see XCallbacks2#buildCtrSum(String, XVarInteger[], int[], Condition)
 	 */
 	public void buildCtrSum(String id, XVarInteger[] list, int[] coeffs, Condition condition) {
-		Predicate p = new Predicate();
-		Vec<Var> scope = new Vec<Var>();
-		Vec<Evaluable> vars = new Vec<Evaluable>();
-		String varId;
-		StringBuffer exprBuf = new StringBuffer();
-		exprBuf.append(condition.operator.toString().toLowerCase());
-		exprBuf.append('(');
-		for(int i=0; i<list.length-1; ++i) {
-			exprBuf.append("add(");
-			if(coeffs[i] != 1) {
-				exprBuf.append("mul(");
-				exprBuf.append(coeffs[i]);
-				exprBuf.append(',');
-			}
-			varId = list[i].id;
-			addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
-			if(coeffs[i] != 1) {
-				exprBuf.append(')');
-			}
-			exprBuf.append(',');
-		}
-		varId = list[list.length-1].id;
-		addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
-		for(int i=0; i<list.length-1; ++i) {
-			exprBuf.append(')');
-		}
-		exprBuf.append(',');
-		if(condition instanceof ConditionVar) {
-			varId = ((ConditionVar) condition).x.id;
-			addVarToPredExprBuffer(varId, p, scope, vars, exprBuf);
-		} else if(condition instanceof ConditionVal) {
-			exprBuf.append(((ConditionVal) condition).k);
-		} else {
-			throw new UnsupportedOperationException("this kind of condition is not supported yet.");
-		}
-		exprBuf.append(')');
-		String expr = exprBuf.toString();
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
-	}
-
-	private void addVarToPredExprBuffer(String varId, Predicate p, Vec<Var> scope,
-			Vec<Evaluable> vars, StringBuffer exprBuf) {
-		scope.push(this.varmapping.get(varId));
-		vars.push(this.varmapping.get(varId));
-		String normalizeName = normalizeCspVarName(varId);
-		p.addVariable(normalizeName);
-		exprBuf.append(normalizeName);
+		this.contradictionFound |= this.sumBuilder.buildCtrSum(id, list, coeffs, condition);
 	}
 	
 	/**
 	 * @see XCallbacks2#buildCtrLex(String, XVarInteger[][], TypeOperator)
 	 */
+	@Override
 	public void buildCtrLex(String id, XVarInteger[][] lists, TypeOperator operator) {
-		for(int i=0; i<lists.length-1; ++i) {
-			buildCtrLex(id, lists[0], lists[1], operator);
-		}
-	}
-
-	private void buildCtrLex(String id, XVarInteger[] list1,
-			XVarInteger[] list2, TypeOperator operator) {
-		TypeOperator strictOp = strictTypeOperator(operator);
-		Predicate p = new Predicate();
-		Vec<Var> scope = new Vec<Var>();
-		Vec<Evaluable> vars = new Vec<Evaluable>();
-		for(int i=0; i<list1.length; ++i) {
-			String id01 = list1[i].id;
-			String id02 = list2[i].id;
-			scope.push(this.varmapping.get(id01));
-			scope.push(this.varmapping.get(id02));
-			vars.push(this.varmapping.get(id01));
-			vars.push(this.varmapping.get(id02));
-			p.addVariable(normalizeCspVarName(id01));
-			p.addVariable(normalizeCspVarName(id02));
-		}
-		String[] chains = new String[list1.length];
-		String id01 = list1[0].id;
-		String id02 = list2[0].id;
-		chains[0] = list1.length == 1
-				? operator.name().toLowerCase()+"("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")"
-				: strictOp.name().toLowerCase()+"("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")";
-		for(int i=1; i<list1.length; ++i) {
-			String eqChain = "eq("+normalizeCspVarName(id01)+","+normalizeCspVarName(id02)+")";
-			for(int j=1; j<i; ++j) {
-				String idj1 = list1[j].id;
-				String idj2 = list2[j].id;
-				eqChain = "and("+eqChain+",eq("+normalizeCspVarName(idj1)+","+normalizeCspVarName(idj2)+"))";
-			}
-			String idi1 = list1[i].id;
-			String idi2 = list2[i].id;
-			String finalMember =  i == list1.length-1
-					? operator.name().toLowerCase()+"("+normalizeCspVarName(idi1)+","+normalizeCspVarName(idi2)+")"
-					: strictOp.name().toLowerCase()+"("+normalizeCspVarName(idi1)+","+normalizeCspVarName(idi2)+")";
-			chains[i] = "and("+eqChain+","+finalMember+")";
-		}
-		p.setExpression(chainExpressions(chains, "or"));
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
-	}
-
-	private String chainExpressions(String[] exprs, String op) {
-		StringBuffer exprBuff = new StringBuffer();
-		for(int i=0; i<exprs.length-1; ++i) {
-			exprBuff.append(op);
-			exprBuff.append("(");
-		}
-		exprBuff.append(exprs[0]);
-		for(int i=1; i<exprs.length; ++i) {
-			exprBuff.append(',');
-			exprBuff.append(exprs[i]);
-			exprBuff.append(')');
-		}
-		return exprBuff.toString();
-	}
-	
-	private TypeOperator strictTypeOperator(TypeOperator op) {
-		switch(op) {
-		case GE: return TypeOperator.GT;
-		case LE: return TypeOperator.LT;
-		case SUBSEQ: return TypeOperator.SUBSET;
-		case SUPSEQ: return TypeOperator.SUPSET;
-		default: return op;
-		}
+		this.contradictionFound |= this.lexBuilder.buildCtrLex(id, lists, operator);
 	}
 
 	/**
 	 * @see XCallbacks2#buildCtrLexMatrix(String, XVarInteger[][], TypeOperator)
 	 */
+	@Override
 	public void buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperator operator) {
-		buildCtrLex(id, matrix, operator);
-		XVarInteger[][] tMatrix = transposeMatrix(matrix);
-		buildCtrLex(id, tMatrix, operator);
-	}
-
-	private XVarInteger[][] transposeMatrix(XVarInteger[][] matrix) {
-		XVarInteger[][] tMatrix = new XVarInteger[matrix[0].length][matrix.length];
-		for(int i=0; i<matrix[0].length; ++i) {
-			for(int j=0; j<matrix.length; ++j) {
-				tMatrix[i][j] = matrix[j][i];
-			}
-		}
-		return tMatrix;
+		this.contradictionFound |= this.lexBuilder.buildCtrLexMatrix(id, matrix, operator);
 	}
 	
 	/**
@@ -878,55 +611,12 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		}
 	}
 	
-	private void checkChannelPrerequisites(XVarInteger[] list, int startIndex) {
-		if(startIndex < 0) {
-			throw new IllegalArgumentException("negative startIndex ("+startIndex+") given for channel constraint");
-		}
-		for(XVarInteger var : list) {
-			XDomInteger domain = (XDomInteger)(var.dom);
-			if(domain.getFirstValue() < startIndex || domain.getLastValue() >= (list.length + startIndex)) {
-				throw new IllegalArgumentException("incompatible variable domain in channel constraint");
-			}
-		}
-	}
-	
-	private void buildChannelImplCstr(XVarInteger v1, int v1Index, XVarInteger v2, int v2Index) {
-		Predicate p = new Predicate();
-		Var[] varArray = new Var[]{varmapping.get(v1.id), varmapping.get(v2.id)};
-		Vec<Var> scope = new Vec<Var>(varArray);
-		Vec<Evaluable> vars = new Vec<Evaluable>(varArray);
-		String norm1 = normalizeCspVarName(v1.id);
-		p.addVariable(norm1);
-		String norm2 = normalizeCspVarName(v2.id);
-		p.addVariable(norm2);
-		String expr = "or(not(eq("+norm1+","+v2Index+")),eq("+norm2+","+v1Index+"))";
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
-	}
-	
-	private void buildListCtrChannel(XVarInteger[] list1, int startIndex1,
-			XVarInteger[] list2, int startIndex2) {
-		for(int i=0; i<list2.length; ++i) {
-			XVarInteger var = list2[i];
-			XDomInteger domain = (XDomInteger)(var.dom);
-			for(int j=0; j<domain.getNbValues(); ++j) {
-				int value = (int) ((IntegerEntity) domain.values[j]).smallest();
-				buildChannelImplCstr(var, i+startIndex2, list1[value-startIndex1], value);
-			}
-		}
-	}
-	
 	/**
 	 * @see XCallbacks2#buildCtrChannel(String, XVarInteger[], int)
 	 */
 	@Override
 	public void buildCtrChannel(String id, XVarInteger[] list, int startIndex) {
-		checkChannelPrerequisites(list, startIndex);
-		buildListCtrChannel(list, startIndex, list, startIndex);
+		this.contradictionFound |= this.channelBuilder.buildCtrChannel(id, list, startIndex);
 	}
 	
 	/**
@@ -934,44 +624,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrChannel(String id, XVarInteger[] list, int startIndex, XVarInteger value) {
-		buildSumEqOneCstr(list);
-		for(int i=0; i<list.length; ++i) {
-			XVarInteger var = list[i];
-			Predicate p = new Predicate();
-			Var[] varArray = new Var[]{varmapping.get(var.id)};
-			Vec<Var> scope = new Vec<Var>(varArray);
-			Vec<Evaluable> vars = new Vec<Evaluable>(varArray);
-			String norm = normalizeCspVarName(var.id);
-			p.addVariable(norm);
-			String expr = "iff(eq("+norm+",1),eq("+value+","+(i+startIndex)+"))";
-			p.setExpression(expr);
-			try {
-				p.toClause(this.solver, scope, vars);
-			} catch (ContradictionException e) {
-				this.contradictionFound = true;
-			}
-		}
-	}
-
-	private void buildSumEqOneCstr(XVarInteger[] list) {
-		Predicate p = new Predicate();
-		Vec<Var> scope = new Vec<Var>(list.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
-		String[] toChain = new String[list.length];
-		for(int i=0; i<list.length; ++i) {
-			XVarInteger var = list[i];
-			scope.push(varmapping.get(var.id));
-			vars.push(varmapping.get(var.id));
-			String norm = normalizeCspVarName(var.id);
-			p.addVariable(norm);
-			toChain[i] = norm;
-		}
-		p.setExpression("eq("+chainExpressions(toChain, "add")+",1)");
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
+		this.contradictionFound |= this.channelBuilder.buildCtrChannel(id, list, startIndex, value);
 	}
 
 	/**
@@ -979,13 +632,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrChannel(String id, XVarInteger[] list1, int startIndex1, XVarInteger[] list2, int startIndex2) {
-		if(list1.length != list2.length) {
-			throw new IllegalArgumentException("lists of different sizes provided as arguments of channel constraint");
-		}
-		checkChannelPrerequisites(list1, startIndex2);
-		checkChannelPrerequisites(list2, startIndex1);
-		buildListCtrChannel(list2, startIndex2, list1, startIndex1);
-		buildListCtrChannel(list1, startIndex1, list2, startIndex2);
+		this.contradictionFound |= this.channelBuilder.buildCtrChannel(id, list1, startIndex1, list2, startIndex2);
 	}
 	
 	/**
