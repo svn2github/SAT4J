@@ -309,9 +309,11 @@ public final class MaxWatchPb extends WatchPb {
     public static MaxWatchPb normalizedMaxWatchPbNew(UnitPropagationListener s,
             ILits voc, int[] lits, BigInteger[] coefs, BigInteger degree,
             BigInteger sumCoefs) throws ContradictionException {
+        MyHandler reduced = Pseudos.removeDuplicatedWeightedVariable(lits,
+                coefs);
         // Parameters must not be modified
-        MaxWatchPb outclause = new MaxWatchPb(voc, lits, coefs, degree,
-                sumCoefs);
+        MaxWatchPb outclause = new MaxWatchPb(voc, reduced.lits,
+                reduced.coeffs, degree, sumCoefs);
 
         if (outclause.degree.signum() <= 0) {
             return null;

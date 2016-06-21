@@ -177,4 +177,32 @@ public abstract class Pseudos {
         return initial;
     }
 
+    public static MyHandler removeDuplicatedWeightedVariable(int[] lits,
+            BigInteger[] coeffs) {
+        assert lits.length == coeffs.length;
+        Map<Integer, BigInteger> reduced = new HashMap<Integer, BigInteger>();
+        int lit;
+        for (int i = 0; i < lits.length; i++) {
+            lit = lits[i];
+            BigInteger oldCoef = reduced.get(lit);
+            if (oldCoef == null) {
+                reduced.put(lit, coeffs[i]);
+            } else {
+                reduced.put(lit, oldCoef.add(coeffs[i]));
+            }
+        }
+        assert reduced.size() <= lits.length;
+        if (reduced.size() < lits.length) {
+            int[] newlits = new int[reduced.size()];
+            BigInteger[] newcoeffs = new BigInteger[reduced.size()];
+            int i = 0;
+            for (Map.Entry<Integer, BigInteger> entry : reduced.entrySet()) {
+                newlits[i] = entry.getKey();
+                newcoeffs[i] = entry.getValue();
+                i++;
+            }
+            return new MyHandler(newlits, newcoeffs);
+        }
+        return new MyHandler(lits, coeffs);
+    }
 }
