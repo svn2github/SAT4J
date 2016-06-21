@@ -1,27 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.ow2.sat4j</groupId>
-    <artifactId>org.ow2.sat4j.pom</artifactId>
-    <version>2.3.6-SNAPSHOT</version>
-  </parent>
-  <artifactId>org.ow2.sat4j.csp</artifactId>
-  <name>SAT4J csp</name>
-  <dependencies>
-    <dependency>
-      <groupId>org.ow2.sat4j</groupId>
-      <artifactId>org.ow2.sat4j.pb</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ow2.sat4j</groupId>
-      <artifactId>org.ow2.sat4j.csp.xmlparser</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
-      <version>1.7R2</version>
-    </dependency>
-  </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.ow2.sat4j</groupId>
+		<artifactId>org.ow2.sat4j.pom</artifactId>
+		<version>2.3.6-SNAPSHOT</version>
+	</parent>
+	<artifactId>org.ow2.sat4j.csp</artifactId>
+	<name>SAT4J csp</name>
+	<properties>
+		<!-- compiler params -->
+		<javaSource>1.8</javaSource>
+		<javaTarget>1.8</javaTarget>
+		<testSource>1.8</testSource>
+		<testTarget>1.8</testTarget>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- common distribution locations -->
+		<siteRepositoryId />
+		<siteRepositoryUrl />
+		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
+		<sat4j.custom.version>${project.version}.v${maven.build.timestamp}</sat4j.custom.version>
+		<next.eclipse.release.date>June, 2010</next.eclipse.release.date>
+		<bundle-manifest>${project.build.directory}/META-INF/MANIFEST.MF</bundle-manifest>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.ow2.sat4j</groupId>
+			<artifactId>org.ow2.sat4j.pb</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.sat4j</groupId>
+			<artifactId>org.ow2.sat4j.csp.xmlparser</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>rhino</groupId>
+			<artifactId>js</artifactId>
+			<version>1.7R2</version>
+		</dependency>
+	</dependencies>
 </project>
