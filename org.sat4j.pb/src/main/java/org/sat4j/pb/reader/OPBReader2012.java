@@ -30,7 +30,6 @@
 package org.sat4j.pb.reader;
 
 import java.io.IOException;
-import java.io.LineNumberReader;
 
 import org.sat4j.pb.PBSolverHandle;
 import org.sat4j.pb.tools.LexicoDecoratorPB;
@@ -48,8 +47,8 @@ public class OPBReader2012 extends OPBReader2010 {
     private LexicoDecoratorPB lexico = null;
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public OPBReader2012(PBSolverHandle solver) {
@@ -100,7 +99,7 @@ public class OPBReader2012 extends OPBReader2010 {
     @Override
     public IProblem parseInstance(final java.io.Reader input)
             throws ParseFormatException, ContradictionException {
-        IProblem problem = parseInstance(new LineNumberReader(input));
+        super.parseInstance(input);
         if (lexico == null) {
             this.solver.setObjectiveFunction(getObjectiveFunction());
         }
