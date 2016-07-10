@@ -156,6 +156,11 @@ public class ModelIterator extends SolverDecorator<ISolver> {
         return super.isSatisfiable(assumps, true);
     }
 
+    @Override
+    public boolean isSatisfiable(boolean global) throws TimeoutException {
+        return isSatisfiable();
+    }
+
     /*
      * (non-Javadoc)
      * 
