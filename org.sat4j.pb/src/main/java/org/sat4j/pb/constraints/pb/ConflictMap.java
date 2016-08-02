@@ -43,7 +43,7 @@ import org.sat4j.specs.IteratorInt;
  */
 public class ConflictMap extends MapPb implements IConflict {
 
-    private final ILits voc;
+    final ILits voc;
 
     protected boolean hasBeenReduced = false;
     protected long numberOfReductions = 0;
@@ -238,7 +238,7 @@ public class ConflictMap extends MapPb implements IConflict {
             return this.degree;
         }
 
-        assert slackConflict().signum() <= 0;
+        assert slackConflict().signum() < 0;
         assert this.degree.signum() >= 0;
 
         // coefficients of the constraint must be copied in an other structure
@@ -306,7 +306,7 @@ public class ConflictMap extends MapPb implements IConflict {
 
         }
 
-        assert slackConflict().signum() <= 0;
+        assert slackConflict().signum() < 0;
 
         // cutting plane
         this.degree = cuttingPlane(cpb, degreeCons, coefsCons,
@@ -318,11 +318,11 @@ public class ConflictMap extends MapPb implements IConflict {
         assert getLevelByLevel(litImplied) == -1;
         assert getLevelByLevel(nLitImplied) == -1;
         assert this.degree.signum() > 0;
-        assert slackConflict().signum() <= 0;
+        assert slackConflict().signum() < 0;
 
         // saturation
         this.degree = saturation();
-        assert slackConflict().signum() <= 0;
+        assert slackConflict().signum() < 0;
 
         return this.degree;
     }
@@ -334,7 +334,7 @@ public class ConflictMap extends MapPb implements IConflict {
      * reduceUntilConflict by a call to possConstraint and is modified directly
      * in reduceInConstraint and in saturation methods.
      */
-    private BigInteger possReducedCoefs = BigInteger.ZERO;
+    BigInteger possReducedCoefs = BigInteger.ZERO;
 
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
             BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {

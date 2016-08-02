@@ -30,6 +30,7 @@
 package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class ConflictMapRounding extends ConflictMap {
 
@@ -59,21 +60,34 @@ public class ConflictMapRounding extends ConflictMap {
         return new ConflictMapRounding(cpb, level, noRemove);
     }
 
+    static BigInteger ceildiv(BigInteger p, BigInteger q) {
+        return p.add(q).subtract(BigInteger.ONE).divide(q);
+    }
+
     @Override
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
             BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         BigInteger coefLit = wpb.getCoef(ind);
         int size = wpb.size();
-        for (int i = 0; i < size; i++) {
-            BigInteger[] result = reducedCoefs[i].divideAndRemainder(coefLit);
-            if (!result[1].equals(BigInteger.ZERO))
-                result[0].add(BigInteger.ONE);
-            reducedCoefs[i] = result[0];
+        while (true) {
+            BigInteger slack = BigInteger.ZERO;
+            for (int i = 0; i < size; i++) {
+                if (!voc.isFalsified(wpb.get(i))) {
+                    slack = slack.add(ceildiv(reducedCoefs[i], coefLit));
+                }
+            }
+            slack = slack.subtract(ceildiv(degreeReduced, coefLit));
+            if (!slack.equals(BigInteger.ZERO)) {
+                for (int i = 0; i < size; i++) {
+                    if (!voc.isFalsified(wpb.get(i)) && wpb.get(i) != litImplied && !reducedCoefs[i].equals(BigInteger.ZERO)) {
+                        reducedCoefs[i] = BigInteger.ZERO;
+                        break;
+                    }
+                }
+            } else break;
         }
-        BigInteger[] result = degreeReduced.divideAndRemainder(coefLit);
-        if (!result[1].equals(BigInteger.ZERO))
-            result[0].add(BigInteger.ONE);
-        degreeReduced = result[0];
+        for (int i = 0; i < size; i++) reducedCoefs[i] = ceildiv(reducedCoefs[i], coefLit);
+        degreeReduced = ceildiv(degreeReduced, coefLit);
         degreeReduced = saturation(reducedCoefs, degreeReduced, wpb);
         this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
         this.coefMult = BigInteger.ONE;

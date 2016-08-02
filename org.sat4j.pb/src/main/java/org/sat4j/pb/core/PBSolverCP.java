@@ -122,7 +122,7 @@ public class PBSolverCP extends PBSolver {
             // result of the resolution is in the conflict (confl)
             confl.resolve(constraint, litImplied, this);
             updateNumberOfReductions(confl);
-            assert confl.slackConflict().signum() <= 0;
+            assert confl.slackConflict().signum() < 0;
             // implication trail is reduced
             if (this.trail.size() == 1) {
                 break;
