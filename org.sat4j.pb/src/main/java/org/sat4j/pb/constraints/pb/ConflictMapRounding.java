@@ -77,14 +77,17 @@ public class ConflictMapRounding extends ConflictMap {
                 }
             }
             slack = slack.subtract(ceildiv(degreeReduced, coefLit));
+            boolean found = false;
             if (!slack.equals(BigInteger.ZERO)) {
                 for (int i = 0; i < size; i++) {
                     if (!voc.isFalsified(wpb.get(i)) && wpb.get(i) != litImplied && !reducedCoefs[i].equals(BigInteger.ZERO)) {
                         reducedCoefs[i] = BigInteger.ZERO;
+                        found = true;
                         break;
                     }
                 }
-            } else break;
+            }
+            if (!found) break;
         }
         for (int i = 0; i < size; i++) reducedCoefs[i] = ceildiv(reducedCoefs[i], coefLit);
         degreeReduced = ceildiv(degreeReduced, coefLit);
