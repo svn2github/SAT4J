@@ -68,31 +68,32 @@ public class ConflictMapRounding extends ConflictMap {
             BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         BigInteger coefLit = wpb.getCoef(ind);
         int size = wpb.size();
-        while (true) {
-            BigInteger slack = BigInteger.ZERO;
-            for (int i = 0; i < size; i++) {
-                if (!voc.isFalsified(wpb.get(i))) {
-                    slack = slack.add(ceildiv(reducedCoefs[i], coefLit));
-                }
+        BigInteger slack = BigInteger.ZERO;
+        for (int i = 0; i < size; i++) {
+            if (!voc.isFalsified(wpb.get(i))) {
+                slack = slack.add(ceildiv(reducedCoefs[i], coefLit));
             }
-            slack = slack.subtract(ceildiv(degreeReduced, coefLit));
-            if (slack.equals(BigInteger.ZERO)) {
-                break;
-            }
+        }
+        BigInteger dividedDegree = ceildiv(degreeReduced, coefLit);
+        slack = slack.subtract(dividedDegree);
+        while (!slack.equals(BigInteger.ZERO)) {
             for (int i = 0; i < size; i++) {
                 if (!voc.isFalsified(wpb.get(i)) && wpb.get(i) != litImplied
                         && !reducedCoefs[i].equals(BigInteger.ZERO)) {
-                    degreeReduced = degreeReduced.subtract(reducedCoefs[i]);
+                    // incremental computation of the slack proposed by Jakob
+                    slack = slack.subtract(ceildiv(reducedCoefs[i], coefLit))
+                            .add(dividedDegree)
+                            .subtract(ceildiv(
+                                    degreeReduced.subtract(reducedCoefs[i]),
+                                    coefLit));
                     reducedCoefs[i] = BigInteger.ZERO;
-                    // TO PROVE: no need to do saturation here (cf Jakob
-                    // argument).
                     break;
                 }
             }
         }
         for (int i = 0; i < size; i++)
             reducedCoefs[i] = ceildiv(reducedCoefs[i], coefLit);
-        degreeReduced = ceildiv(degreeReduced, coefLit);
+        degreeReduced = dividedDegree;
         degreeReduced = saturation(reducedCoefs, degreeReduced, wpb);
         this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
         this.coefMult = BigInteger.ONE;
