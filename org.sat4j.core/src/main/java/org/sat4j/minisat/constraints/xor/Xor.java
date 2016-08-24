@@ -144,7 +144,6 @@ public class Xor implements Constr, Propagatable {
     @Override
     public void calcReason(int p, IVecInt outReason) {
         for (int i = p == ILits.UNDEFINED ? 0 : 1; i < lits.length; i++) {
-            assert this.voc.isFalsified(lits[i]);
             if (this.voc.isFalsified(lits[i])) {
                 outReason.push(lits[i] ^ 1);
             } else {
