@@ -76,6 +76,7 @@ public class ConflictMapRounding extends ConflictMap {
         }
         BigInteger dividedDegree = ceildiv(degreeReduced, coefLit);
         slack = slack.subtract(dividedDegree);
+        BigInteger updatedDegree = degreeReduced;
         for (int i = 0; i < size; i++) {
             if (!slack.equals(BigInteger.ZERO) && !voc.isFalsified(wpb.get(i))
                     && wpb.get(i) != litImplied
@@ -87,11 +88,12 @@ public class ConflictMapRounding extends ConflictMap {
                         .subtract(
                                 ceildiv(degreeReduced.subtract(reducedCoefs[i]),
                                         coefLit));
+                updatedDegree = updatedDegree.subtract(reducedCoefs[i]);
                 reducedCoefs[i] = BigInteger.ZERO;
             } else
                 reducedCoefs[i] = ceildiv(reducedCoefs[i], coefLit);
         }
-        degreeReduced = dividedDegree;
+        degreeReduced = ceildiv(updatedDegree, coefLit);
         degreeReduced = saturation(reducedCoefs, degreeReduced, wpb);
         this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
         this.coefMult = BigInteger.ONE;
