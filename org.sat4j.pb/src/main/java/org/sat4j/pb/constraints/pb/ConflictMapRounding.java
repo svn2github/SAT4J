@@ -67,9 +67,6 @@ public class ConflictMapRounding extends ConflictMap {
     protected BigInteger reduceUntilConflict(int litImplied, int ind,
             BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
         BigInteger coefLit = wpb.getCoef(ind);
-        if (coefLit.equals(wpb.getCoef(ind)))
-            return super.reduceUntilConflict(litImplied, ind, reducedCoefs,
-                    degreeReduced, wpb);
         int size = wpb.size();
         BigInteger slack = BigInteger.ZERO;
         for (int i = 0; i < size; i++) {
