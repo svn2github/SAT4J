@@ -28,6 +28,9 @@ import org.sat4j.specs.VarMapper;
  * 
  * where v1 are dimacs positive literals (using Sat4j internal representation)
  * 
+ * if rhs is false, then an even number of literals must be satisfied, else an
+ * odd number of literals must be satisfied (thus the name parity constraints).
+ * 
  * @author leberre
  * @since 2.3.6
  */
@@ -37,7 +40,7 @@ public class Xor implements Constr, Propagatable {
     private final boolean parity;
     private final ILits voc;
 
-    public static Xor createParityConstraint(int[] lits, boolean parity,
+    public static Xor createParityConstraint(IVecInt lits, boolean parity,
             ILits voc) {
         // TODO ensure normal form
         Xor xor = new Xor(lits, parity, voc);
@@ -45,8 +48,9 @@ public class Xor implements Constr, Propagatable {
         return xor;
     }
 
-    public Xor(int[] lits, boolean parity, ILits voc) {
-        this.lits = lits;
+    public Xor(IVecInt lits, boolean parity, ILits voc) {
+        this.lits = new int[lits.size()];
+        lits.copyTo(this.lits);
         this.parity = parity;
         this.voc = voc;
     }
@@ -93,10 +97,10 @@ public class Xor implements Constr, Propagatable {
             lits[1] = lits[0];
             lits[0] = tmp;
         }
-        if (lits[1] == LiteralsUtils.neg(p)) {
+        if (this.voc.isSatisfied(lits[1])) {
             nbSatisfied = 1;
         }
-        // look for new literal to watch: applying move to front strategy
+        // look for new literal to watch and counting satisfied literals
         for (int i = 2; i < lits.length; i++) {
             if (this.voc.isSatisfied(lits[i])) {
                 nbSatisfied++;
@@ -113,7 +117,7 @@ public class Xor implements Constr, Propagatable {
         this.voc.watch(p, this);
         // propagates first watched literal, depending on the number of
         // satisfied literals
-        int toPropagate = ((nbSatisfied & 1) == 1) != parity ? lits[0]
+        int toPropagate = ((nbSatisfied & 1) == 1) == parity ? lits[0]
                 : LiteralsUtils.neg(lits[0]);
         return s.enqueue(toPropagate, this);
     }
