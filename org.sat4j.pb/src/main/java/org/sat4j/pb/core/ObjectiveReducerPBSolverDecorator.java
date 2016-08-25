@@ -136,7 +136,8 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
         return decorated.addAtMost(literals, coeffs, degree);
     }
 
-    public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
+    public boolean isSatisfiable(boolean globalTimeout)
+            throws TimeoutException {
         return decorated.isSatisfiable(globalTimeout);
     }
 
@@ -288,8 +289,8 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
                 try {
                     for (IteratorInt it = lits.iterator(); it.hasNext();) {
                         int nextInt = it.next();
-                        this.decorated.addClause(new VecInt(new int[] {
-                                nextInt, newObjVar }));
+                        this.decorated.addClause(
+                                new VecInt(new int[] { nextInt, newObjVar }));
                         oldVarsToIgnore.add(Integer.valueOf(nextInt));
                         ++nbReduc;
                     }
@@ -432,6 +433,10 @@ public class ObjectiveReducerPBSolverDecorator implements IPBSolver {
 
     public IConstr addConstr(Constr constr) {
         return decorated.addConstr(constr);
+    }
+
+    public IConstr addParity(IVecInt literals, boolean even) {
+        return decorated.addParity(literals, even);
     }
 
 }
