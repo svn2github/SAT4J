@@ -255,6 +255,19 @@ public interface ISolver extends IProblem, Serializable {
     IConstr addExactly(IVecInt literals, int n) throws ContradictionException;
 
     /**
+     * Add a parity constraint (aka XOR constraint) to the solver.
+     * 
+     * The aim of that constraint is to enforce that an odd (or even) number of
+     * literals are satisfied.
+     *
+     * If the xor of all the literals results in false, that the number of
+     * satisfied literals must be even, else it must be odd.
+     * 
+     * @since 2.3.6
+     */
+    IConstr addParity(IVecInt literals, boolean even);
+
+    /**
      * Add a user defined constraint to the solver.
      * 
      * @param constr

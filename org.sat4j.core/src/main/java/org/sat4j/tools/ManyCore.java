@@ -66,17 +66,17 @@ import org.sat4j.specs.UnitPropagationListener;
  * @param <S>
  *            the type of the solver (ISolver of IPBSolver)
  */
-public class ManyCore<S extends ISolver> extends
-        SearchListenerAdapter<ISolverService> implements ISolver,
-        OutcomeListener, UnitClauseProvider {
+public class ManyCore<S extends ISolver>
+        extends SearchListenerAdapter<ISolverService>
+        implements ISolver, OutcomeListener, UnitClauseProvider {
 
     private static final int NORMAL_SLEEP = 500;
 
     private static final int FAST_SLEEP = 50;
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private final String[] availableSolvers; // = { };
@@ -367,7 +367,8 @@ public class ManyCore<S extends ISolver> extends
         return this.resultFound;
     }
 
-    public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
+    public boolean isSatisfiable(boolean globalTimeout)
+            throws TimeoutException {
         throw new UnsupportedOperationException();
     }
 
@@ -483,9 +484,8 @@ public class ManyCore<S extends ISolver> extends
             for (int i = 0; i < this.numberOfSolvers; i++) {
                 toRemove = group.getConstr(i);
                 if (toRemove != null) {
-                    removed = removed
-                            & this.solvers.get(i)
-                                    .removeSubsumedConstr(toRemove);
+                    removed = removed & this.solvers.get(i)
+                            .removeSubsumedConstr(toRemove);
                 }
             }
             return removed;
@@ -561,7 +561,8 @@ public class ManyCore<S extends ISolver> extends
     }
 
     public ISolver getSolvingEngine() {
-        throw new UnsupportedOperationException("Not supported yet in ManyCore");
+        throw new UnsupportedOperationException(
+                "Not supported yet in ManyCore");
     }
 
     /**
@@ -571,8 +572,8 @@ public class ManyCore<S extends ISolver> extends
         for (int i = 0; i < this.numberOfSolvers; i++) {
             out.printf(
                     "%s>>>>>>>>>> Solver number %d (%d answers) <<<<<<<<<<<<<<<<<<%n",
-                    this.solvers.get(i).getLogPrefix(), i, this.solversStats
-                            .get(i).getValue());
+                    this.solvers.get(i).getLogPrefix(), i,
+                    this.solversStats.get(i).getValue());
             this.solvers.get(i).printStat(out);
         }
     }
@@ -609,6 +610,14 @@ public class ManyCore<S extends ISolver> extends
     public IConstr addConstr(Constr constr) {
         throw new UnsupportedOperationException(
                 "Not implemented yet in ManyCore: cannot add a specific constraint to each solver");
+    }
+
+    public IConstr addParity(IVecInt literals, boolean even) {
+        ConstrGroup group = new ConstrGroup(false);
+        for (int i = 0; i < this.numberOfSolvers; i++) {
+            group.add(this.solvers.get(i).addParity(literals, even));
+        }
+        return group;
     }
 }
 

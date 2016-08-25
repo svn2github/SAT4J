@@ -52,6 +52,7 @@ import org.sat4j.core.ConstrGroup;
 import org.sat4j.core.LiteralsUtils;
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
+import org.sat4j.minisat.constraints.xor.Xor;
 import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
@@ -490,6 +491,11 @@ public class Solver<D extends DataStructureFactory>
         return group;
     }
 
+    public IConstr addParity(IVecInt literals, boolean even) {
+        IVecInt vlits = dimacs2internal(literals);
+        return addConstr(Xor.createParityConstraint(vlits, even, voc));
+    }
+    
     @SuppressWarnings("unchecked")
     public boolean simplifyDB() {
         // Simplifie la base de clauses apres la premiere propagation des

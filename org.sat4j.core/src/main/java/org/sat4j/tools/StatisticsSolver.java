@@ -122,7 +122,8 @@ public class StatisticsSolver implements ISolver {
         throw new TimeoutException(THAT_SOLVER_ONLY_COMPUTE_STATISTICS);
     }
 
-    public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
+    public boolean isSatisfiable(boolean globalTimeout)
+            throws TimeoutException {
         throw new TimeoutException(THAT_SOLVER_ONLY_COMPUTE_STATISTICS);
     }
 
@@ -354,24 +355,24 @@ public class StatisticsSolver implements ISolver {
         System.out.println("c Distribution of constraints size:");
         int nbclauses = 0;
         for (Map.Entry<Integer, Counter> entry : sizes.entrySet()) {
-            System.out.printf("c %d => %d%n", entry.getKey(), entry.getValue()
-                    .getValue());
+            System.out.printf("c %d => %d%n", entry.getKey(),
+                    entry.getValue().getValue());
             nbclauses += entry.getValue().getValue();
         }
 
-        System.out
-                .printf("c Real number of variables, literals, number of clauses, size (#literals), #pureliterals, ");
+        System.out.printf(
+                "c Real number of variables, literals, number of clauses, size (#literals), #pureliterals, ");
         System.out.printf("variable occurrences (min/max/avg) ");
         System.out.printf("literals occurrences (min/max/avg) ");
-        System.out
-                .println("Specific clauses: #positive  #negative #horn  #dualhorn #binary #binarynegative #binarypositive #binaryhorn #remaining");
+        System.out.println(
+                "Specific clauses: #positive  #negative #horn  #dualhorn #binary #binarynegative #binarypositive #binaryhorn #remaining");
         Counter binaryCounter = sizes.get(2);
         int nbBinary = binaryCounter == null ? 0 : binaryCounter.getValue();
         System.out.printf(Locale.US, "%d %d %d %d %d %d %d %.2f %d %d %.2f ",
                 realNumberOfVariables, realNumberOfLiterals, nbclauses, sumL,
-                pureLiterals, minOccV, maxOccV, sumV
-                        / (realNumberOfVariables * 1.0), minOccL, maxOccL, sumL
-                        / (realNumberOfLiterals * 1.0));
+                pureLiterals, minOccV, maxOccV,
+                sumV / (realNumberOfVariables * 1.0), minOccL, maxOccL,
+                sumL / (realNumberOfLiterals * 1.0));
         System.out.printf("%d %d %d %d %d %d %d %d %d%n", allpositive,
                 allnegative, horn, dualhorn, nbBinary, binarynegative,
                 binarypositive, (nbBinary - binarynegative - binarypositive),
@@ -450,6 +451,10 @@ public class StatisticsSolver implements ISolver {
     }
 
     public IConstr addConstr(Constr constr) {
+        throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
+    }
+
+    public IConstr addParity(IVecInt literals, boolean even) {
         throw new UnsupportedOperationException(NOT_IMPLEMENTED_YET);
     }
 }

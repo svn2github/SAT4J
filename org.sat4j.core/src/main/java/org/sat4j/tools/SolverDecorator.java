@@ -54,8 +54,8 @@ import org.sat4j.specs.UnitClauseProvider;
 public abstract class SolverDecorator<T extends ISolver> implements ISolver {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public boolean isDBSimplificationAllowed() {
@@ -547,4 +547,12 @@ public abstract class SolverDecorator<T extends ISolver> implements ISolver {
     public IConstr addConstr(Constr constr) {
         return this.solver.addConstr(constr);
     }
+
+    /**
+     * @since 2.3.6
+     */
+    public IConstr addParity(IVecInt literals, boolean even) {
+        return this.solver.addParity(literals, even);
+    }
+
 }

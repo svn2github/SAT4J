@@ -47,8 +47,8 @@ import org.sat4j.specs.IteratorInt;
  * @author leberre
  * 
  */
-public class DimacsOutputSolver extends AbstractOutputSolver implements
-        IGroupSolver {
+public class DimacsOutputSolver extends AbstractOutputSolver
+        implements IGroupSolver {
 
     /**
      * 
@@ -115,8 +115,8 @@ public class DimacsOutputSolver extends AbstractOutputSolver implements
         }
         for (int i = 0; i <= literals.size(); i++) {
             for (int j = i + 1; j < literals.size(); j++) {
-                this.out.println("" + -literals.get(i) + " " + -literals.get(j)
-                        + " 0");
+                this.out.println(
+                        "" + -literals.get(i) + " " + -literals.get(j) + " 0");
             }
         }
         return null;
@@ -229,6 +229,11 @@ public class DimacsOutputSolver extends AbstractOutputSolver implements
     }
 
     public Collection<Integer> getAddedVars() {
+        throw new UnsupportedOperationException("Not implemented yet!");
+    }
+
+    @Override
+    public IConstr addParity(IVecInt literals, boolean even) {
         throw new UnsupportedOperationException("Not implemented yet!");
     }
 }
