@@ -27,8 +27,8 @@ import org.sat4j.specs.SearchListener;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.specs.UnitClauseProvider;
 
-public class SumLeximinDecompositionOWAOptimizer implements
-        IMultiObjOptimizationProblem, IIntegerPBSolver {
+public class SumLeximinDecompositionOWAOptimizer
+        implements IMultiObjOptimizationProblem, IIntegerPBSolver {
 
     private final List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
     private final BigInteger[] weights;
@@ -122,8 +122,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
         }
         BigInteger minDiv = weights[weights.length - 1];
         for (int i = 0; i < weights.length - 1; ++i) {
-            minDiv = minDiv.min(weights[i + 1].multiply(weightsSum).divide(
-                    weights[i]));
+            minDiv = minDiv.min(
+                    weights[i + 1].multiply(weightsSum).divide(weights[i]));
         }
         BigInteger objBound = weightsSum.divide(weights[weights.length - 1])
                 .multiply(getObjectiveValues()[weights.length - 1]);
@@ -191,8 +191,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
         IVec<BigInteger> sumObjCoeffs = new Vec<BigInteger>();
         IVec<BigInteger> lexObjCoeffs = new Vec<BigInteger>();
         BigInteger lexFactor = BigInteger.ONE;
-        for (Iterator<IntegerVariable> intVarIt = objBoundVariables.iterator(); intVarIt
-                .hasNext();) {
+        for (Iterator<IntegerVariable> intVarIt = objBoundVariables
+                .iterator(); intVarIt.hasNext();) {
             BigInteger sumFactor = BigInteger.ONE;
             IntegerVariable nextBoundVar = intVarIt.next();
             for (IteratorInt nextBoundVarLitsIt = nextBoundVar.getVars()
@@ -208,8 +208,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
         this.lexObj = new ObjectiveFunction(auxObjsVars, lexObjCoeffs);
     }
 
-    private void addBoundConstraint(int boundVarIndex,
-            IntegerVariable boundVar, int objIndex) {
+    private void addBoundConstraint(int boundVarIndex, IntegerVariable boundVar,
+            int objIndex) {
         IVecInt literals = new VecInt();
         IVec<BigInteger> coeffs = new Vec<BigInteger>();
         this.objs.get(objIndex).getVars().copyTo(literals);
@@ -252,8 +252,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
     private BigInteger maxObjValue(ObjectiveFunction obj) {
         IVec<BigInteger> objCoeffs = obj.getCoeffs();
         BigInteger coeffsSum = BigInteger.ZERO;
-        for (Iterator<BigInteger> objCoeffsIt = objCoeffs.iterator(); objCoeffsIt
-                .hasNext();) {
+        for (Iterator<BigInteger> objCoeffsIt = objCoeffs
+                .iterator(); objCoeffsIt.hasNext();) {
             coeffsSum = coeffsSum.add(objCoeffsIt.next());
         }
         return coeffsSum;
@@ -261,8 +261,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
 
     private void createGlobalObj() {
         ObjectiveFunction oldObj = getObjectiveFunction();
-        this.solver.setObjectiveFunction(new ObjectiveFunction(new VecInt(),
-                new Vec<BigInteger>()));
+        this.solver.setObjectiveFunction(
+                new ObjectiveFunction(new VecInt(), new Vec<BigInteger>()));
         for (int i = 0; i < objBoundVariables.size(); ++i) {
             this.solver.addIntegerVariableToObjectiveFunction(
                     objBoundVariables.get(i), weights[weights.length - i - 1]);
@@ -283,8 +283,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
         this.bestValue = BigInteger.ZERO;
         BigInteger[] values = getObjectiveValues();
         for (int i = 0; i < this.objs.size(); ++i) {
-            this.bestValue = this.bestValue.add(values[i]
-                    .multiply(this.weights[i]));
+            this.bestValue = this.bestValue
+                    .add(values[i].multiply(this.weights[i]));
         }
         return this.bestValue;
     }
@@ -361,7 +361,8 @@ public class SumLeximinDecompositionOWAOptimizer implements
         return solver.isSatisfiable(assumps, globalTimeout);
     }
 
-    public boolean isSatisfiable(boolean globalTimeout) throws TimeoutException {
+    public boolean isSatisfiable(boolean globalTimeout)
+            throws TimeoutException {
         return solver.isSatisfiable(globalTimeout);
     }
 
@@ -698,6 +699,10 @@ public class SumLeximinDecompositionOWAOptimizer implements
 
     public void reset() {
         solver.reset();
+    }
+
+    public IConstr addParity(IVecInt literals, boolean even) {
+        return solver.addParity(literals, even);
     }
 
     // END DELEGATION
