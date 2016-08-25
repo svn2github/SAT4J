@@ -10,32 +10,27 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sat4j.core.VecInt;
 import org.sat4j.minisat.SolverFactory;
-import org.sat4j.minisat.constraints.xor.Xor;
-import org.sat4j.minisat.core.Solver;
-import org.sat4j.minisat.restarts.NoRestarts;
 import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.ModelIterator;
 
 public class TestXor {
 
-    private Solver<?> solver;
+    private ISolver solver;
 
     @Before
     public void setUp() {
-        solver = (Solver<?>) SolverFactory.newDefault();
-        solver.setRestartStrategy(new NoRestarts());
+        solver = SolverFactory.newDefault();
     }
 
     @Test
     public void twoOppositeParity() throws TimeoutException {
         solver.newVar(5);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3, 4, 5 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), false, solver.getVocabulary()));
+        solver.addParity(lits, true);
+        solver.addParity(lits, false);
         assertFalse(solver.isSatisfiable());
     }
 
@@ -47,10 +42,8 @@ public class TestXor {
         for (int i = 0; i < size; i++) {
             lits.push(i + 1);
         }
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), false, solver.getVocabulary()));
+        solver.addParity(lits, true);
+        solver.addParity(lits, false);
         assertFalse(solver.isSatisfiable());
         solver.printStat(new PrintWriter(System.out, true));
     }
@@ -60,8 +53,7 @@ public class TestXor {
             throws TimeoutException, ContradictionException {
         solver.newVar(5);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3, 4, 5 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
+        solver.addParity(lits, true);
         solver.addAtMost(lits, 2);
         assertTrue(solver.isSatisfiable());
         System.out.println(new VecInt(solver.model()));
@@ -80,8 +72,7 @@ public class TestXor {
         clause.push(-1).push(-5);
         solver.addClause(clause);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3, 4, 5 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), false, solver.getVocabulary()));
+        solver.addParity(lits, false);
         solver.addAtMost(lits, 2);
         assertTrue(solver.isSatisfiable());
         System.out.println(new VecInt(solver.model()));
@@ -92,8 +83,7 @@ public class TestXor {
             throws TimeoutException, ContradictionException {
         solver.newVar(3);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
+        solver.addParity(lits, true);
         ModelIterator iterator = new ModelIterator(solver);
         while (iterator.isSatisfiable()) {
             iterator.model(); // to go to the next model
@@ -107,8 +97,7 @@ public class TestXor {
             throws TimeoutException, ContradictionException {
         solver.newVar(3);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
+        solver.addParity(lits, true);
         IVecInt clause = new VecInt(new int[] { 1, 2, 3 });
         solver.addClause(clause);
         clause.clear();
@@ -127,8 +116,7 @@ public class TestXor {
             throws TimeoutException, ContradictionException {
         solver.newVar(3);
         IVecInt lits = new VecInt(new int[] { 1, 2, 3 });
-        solver.addConstr(Xor.createParityConstraint(
-                solver.dimacs2internal(lits), true, solver.getVocabulary()));
+        solver.addParity(lits, true);
         solver.addAtLeast(lits, 1);
         ModelIterator iterator = new ModelIterator(solver);
         while (iterator.isSatisfiable()) {
