@@ -36,8 +36,8 @@ import org.sat4j.minisat.core.SolverStats;
 public class PBSolverStats extends SolverStats {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public long numberOfReductions;
@@ -48,6 +48,8 @@ public class PBSolverStats extends SolverStats {
 
     public long numberOfCP;
 
+    public long numberOfRoundingOperations;
+
     @Override
     public void reset() {
         super.reset();
@@ -55,21 +57,24 @@ public class PBSolverStats extends SolverStats {
         this.numberOfLearnedConstraintsReduced = 0;
         this.numberOfResolution = 0;
         this.numberOfCP = 0;
+        this.numberOfRoundingOperations = 0;
     }
 
     @Override
     public void printStat(PrintWriter out, String prefix) {
         super.printStat(out, prefix);
-        out.println(prefix
-                + "number of reductions to clauses (during analyze)\t: "
-                + this.numberOfReductions);
-        out.println(prefix
-                + "number of learned constraints concerned by reduction\t: "
-                + this.numberOfLearnedConstraintsReduced);
+        out.println(
+                prefix + "number of reductions to clauses (during analyze)\t: "
+                        + this.numberOfReductions);
+        out.println(
+                prefix + "number of learned constraints concerned by reduction\t: "
+                        + this.numberOfLearnedConstraintsReduced);
         out.println(prefix + "number of learning phase by resolution\t: "
                 + this.numberOfResolution);
         out.println(prefix + "number of learning phase by cutting planes\t: "
                 + this.numberOfCP);
+        out.println(prefix + "number of rounding to 1 operations\t: "
+                + this.numberOfRoundingOperations);
     }
 
 }

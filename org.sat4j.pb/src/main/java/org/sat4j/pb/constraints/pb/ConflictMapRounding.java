@@ -31,14 +31,19 @@ package org.sat4j.pb.constraints.pb;
 
 import java.math.BigInteger;
 
+import org.sat4j.pb.core.PBSolverStats;
+
 public class ConflictMapRounding extends ConflictMap {
+
+    private final PBSolverStats stats;
 
     /**
      * @param cpb
      * @param level
      */
-    public ConflictMapRounding(PBConstr cpb, int level) {
+    public ConflictMapRounding(PBConstr cpb, int level, PBSolverStats stats) {
         super(cpb, level);
+        this.stats = stats;
     }
 
     /**
@@ -46,17 +51,15 @@ public class ConflictMapRounding extends ConflictMap {
      * @param level
      * @param noRemove
      */
-    public ConflictMapRounding(PBConstr cpb, int level, boolean noRemove) {
+    public ConflictMapRounding(PBConstr cpb, int level, boolean noRemove,
+            PBSolverStats stats) {
         super(cpb, level, noRemove);
-    }
-
-    public static IConflict createConflict(PBConstr cpb, int level) {
-        return new ConflictMapRounding(cpb, level);
+        this.stats = stats;
     }
 
     public static IConflict createConflict(PBConstr cpb, int level,
-            boolean noRemove) {
-        return new ConflictMapRounding(cpb, level, noRemove);
+            boolean noRemove, PBSolverStats stats) {
+        return new ConflictMapRounding(cpb, level, stats);
     }
 
     static BigInteger ceildiv(BigInteger p, BigInteger q) {
@@ -94,6 +97,7 @@ public class ConflictMapRounding extends ConflictMap {
         tprime = saturation(abc, tprime, xyz);
         this.coefMultCons = this.weightedLits.get(x ^ 1);
         this.coefMult = BigInteger.ONE;
+        this.stats.numberOfRoundingOperations++;
         return tprime;
     }
 
