@@ -64,40 +64,37 @@ public class ConflictMapRounding extends ConflictMap {
     }
 
     @Override
-    protected BigInteger reduceUntilConflict(int litImplied, int ind,
-            BigInteger[] reducedCoefs, BigInteger degreeReduced, IWatchPb wpb) {
-        BigInteger coefLit = wpb.getCoef(ind);
-        int size = wpb.size();
-        BigInteger slack = BigInteger.ZERO;
-        for (int i = 0; i < size; i++) {
-            if (!voc.isFalsified(wpb.get(i))) {
-                slack = slack.add(ceildiv(reducedCoefs[i], coefLit));
+    protected BigInteger reduceUntilConflict(int x, int xindex,
+            BigInteger[] abc, BigInteger t, IWatchPb xyz) {
+        BigInteger a = abc[xindex];
+        int n = xyz.size();
+        BigInteger sprime = BigInteger.ZERO;
+        for (int k = 0; k < n; k++) {
+            if (!voc.isFalsified(xyz.get(k))) {
+                sprime = sprime.add(ceildiv(abc[k], a));
             }
         }
-        BigInteger dividedDegree = ceildiv(degreeReduced, coefLit);
-        slack = slack.subtract(dividedDegree);
-        BigInteger updatedDegree = degreeReduced;
-        for (int i = 0; i < size; i++) {
-            if (!slack.equals(BigInteger.ZERO) && !voc.isFalsified(wpb.get(i))
-                    && wpb.get(i) != litImplied
-                    && !reducedCoefs[i].equals(BigInteger.ZERO)) {
+        BigInteger tprime = ceildiv(t, a);
+        sprime = sprime.subtract(tprime);
+        BigInteger bigt = t;
+        BigInteger tnewprime;
+        for (int k = 0; k < n; k++) {
+            if (!sprime.equals(BigInteger.ZERO) && !voc.isFalsified(xyz.get(k))
+                    && xyz.get(k) != x && !abc[k].equals(BigInteger.ZERO)) {
                 // incremental computation of the slack proposed by Jakob
-                slack = slack
-                        .subtract(ceildiv(reducedCoefs[i], coefLit))
-                        .add(dividedDegree)
-                        .subtract(
-                                ceildiv(degreeReduced.subtract(reducedCoefs[i]),
-                                        coefLit));
-                updatedDegree = updatedDegree.subtract(reducedCoefs[i]);
-                reducedCoefs[i] = BigInteger.ZERO;
+                bigt = bigt.subtract(abc[k]);
+                tnewprime = ceildiv(bigt, a);
+                sprime = sprime.add(tprime).subtract(ceildiv(abc[k], a))
+                        .subtract(tnewprime);
+                tprime = tnewprime;
+                abc[k] = BigInteger.ZERO;
             } else
-                reducedCoefs[i] = ceildiv(reducedCoefs[i], coefLit);
+                abc[k] = ceildiv(abc[k], a);
         }
-        degreeReduced = ceildiv(updatedDegree, coefLit);
-        degreeReduced = saturation(reducedCoefs, degreeReduced, wpb);
-        this.coefMultCons = this.weightedLits.get(litImplied ^ 1);
+        tprime = saturation(abc, tprime, xyz);
+        this.coefMultCons = this.weightedLits.get(x ^ 1);
         this.coefMult = BigInteger.ONE;
-        return degreeReduced;
+        return tprime;
     }
 
 }
