@@ -50,6 +50,8 @@ public class PBSolverStats extends SolverStats {
 
     public long numberOfRoundingOperations;
 
+    public long numberOfEasyRoundingOperations;
+
     @Override
     public void reset() {
         super.reset();
@@ -75,6 +77,9 @@ public class PBSolverStats extends SolverStats {
                 + this.numberOfCP);
         out.println(prefix + "number of rounding to 1 operations\t: "
                 + this.numberOfRoundingOperations);
+        out.println(
+                prefix + "number of easy rounding to 1 operations (no literal elimination needed)\t: "
+                        + this.numberOfEasyRoundingOperations);
     }
 
 }

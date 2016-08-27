@@ -81,6 +81,7 @@ public class ConflictMapRounding extends ConflictMap {
         sprime = sprime.subtract(tprime);
         BigInteger bigt = t;
         BigInteger tnewprime;
+        boolean easyRounding = true;
         for (int k = 0; k < n; k++) {
             if (!sprime.equals(BigInteger.ZERO) && !voc.isFalsified(xyz.get(k))
                     && xyz.get(k) != x && !abc[k].equals(BigInteger.ZERO)) {
@@ -91,6 +92,7 @@ public class ConflictMapRounding extends ConflictMap {
                         .subtract(tnewprime);
                 tprime = tnewprime;
                 abc[k] = BigInteger.ZERO;
+                easyRounding = false;
             } else
                 abc[k] = ceildiv(abc[k], a);
         }
@@ -98,6 +100,9 @@ public class ConflictMapRounding extends ConflictMap {
         this.coefMultCons = this.weightedLits.get(x ^ 1);
         this.coefMult = BigInteger.ONE;
         this.stats.numberOfRoundingOperations++;
+        if (easyRounding) {
+            this.stats.numberOfEasyRoundingOperations++;
+        }
         return tprime;
     }
 
