@@ -58,8 +58,13 @@ public class ConflictMapRounding extends ConflictMap {
     }
 
     public static IConflict createConflict(PBConstr cpb, int level,
-            boolean noRemove, PBSolverStats stats) {
+            PBSolverStats stats) {
         return new ConflictMapRounding(cpb, level, stats);
+    }
+
+    public static IConflict createConflict(PBConstr cpb, int level,
+            boolean noRemove, PBSolverStats stats) {
+        return new ConflictMapRounding(cpb, level, noRemove, stats);
     }
 
     static BigInteger ceildiv(BigInteger p, BigInteger q) {
