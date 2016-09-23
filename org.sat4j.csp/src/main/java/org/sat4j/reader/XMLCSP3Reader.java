@@ -72,7 +72,7 @@ import org.xcsp.parser.XVariables.XVarInteger;
  * Reads an instance and encodes it as a SAT problem using an {@link IPBSolver}.
  * This class may lack some XCSP3 capabilities handling - work in progress.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class XMLCSP3Reader extends Reader implements XCallbacks2 {

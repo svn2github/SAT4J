@@ -36,7 +36,7 @@ import org.xcsp.parser.XVariables.XVarInteger;
  * Used by {@link XMLCSP3Reader}.
  * This class is dedicated to lex constraints.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class LexCtrBuilder {

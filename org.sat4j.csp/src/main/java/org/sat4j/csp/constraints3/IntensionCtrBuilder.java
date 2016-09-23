@@ -41,7 +41,7 @@ import org.xcsp.parser.XVariables.XVarInteger;
  * Used by {@link XMLCSP3Reader}.
  * This class is dedicated to intension (including "primitive" special cases) constraints.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class IntensionCtrBuilder {

@@ -31,7 +31,7 @@ import org.sat4j.specs.ISolver;
  * An enumeration whose values correspond to handle input formats.
  * Given an instance, it aims at determining the format, build a reader, and determine whether or not optimization mode must be set.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public enum ECSPFormat {

@@ -32,7 +32,7 @@ import org.xcsp.parser.XVariables.XVarInteger;
 /**
  * A utility class for XCSP3 constraint builders.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class CtrBuilderUtils {

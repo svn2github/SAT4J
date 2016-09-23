@@ -41,7 +41,7 @@ import org.xcsp.parser.XVariables.XVarInteger;
  * An objective function builder for XCSP3 instance format.
  * Used by {@link XMLCSP3Reader}.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class ObjBuilder {

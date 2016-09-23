@@ -26,7 +26,7 @@ import java.util.Map;
  * A class based on the singleton DP to globally store the domains defined in a CSP problem.
  * Mappings are used to prevent defining several equivalent domains.
  * 
- * @author Emmanuel Lonca <lonca@cril.fr>
+ * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
 public class Domains {
