@@ -37,30 +37,46 @@ function pow(x, y) {
     return t;
 }
 
-function min(x, y) {
-    if (x < y) {
-        return x;
+function min() {
+  var ret = arguments[0];
+  for(var i=1; i<arguments.length; ++i) {
+    if(arguments[i] < ret) {
+      ret = arguments[i];
     }
-    return y;
+  }
+  return ret;
 }
 
-function max(x, y) {
-    if (x < y) {
-        return y;
+function max() {
+  var ret = arguments[0];
+  for(var i=1; i<arguments.length; ++i) {
+    if(arguments[i] > ret) {
+      ret = arguments[i];
     }
-    return x;
+  }
+  return ret;
 }
 
 function not(x) {
     return !x;
 }
 
-function and(x, y) {
-    return x && y;
+function and() {
+	for(var i=0; i<arguments.length; ++i) {
+		if(!arguments[i]) {
+			return false;
+		}
+	}
+	return true;
 }
 
-function or(x, y) {
-    return x || y;
+function or() {
+	for(var i=0; i<arguments.length; ++i) {
+		if(arguments[i]) {
+			return true;
+		}
+	}
+	return false;
 }
 
 function xor(x, y) {
@@ -108,6 +124,10 @@ function iff(x, y) {
     return x && y || !x && !y;
 }
 
+function ifThen(x, y) {
+	return (!x) || y;
+}
+
 function dist(x, y) {
 	return abs(x - y);
 }
@@ -121,12 +141,34 @@ function set() {
 	return result
 }
 
-function inSet(x, theSet) {
-	var len = theSet.length;
-	for(var i=0; i<len; ++i) {
-		if(theSet[i] === x) {
-			return true;
-		}
+function inSet() {
+	for(var i=1; i<arguments.length; ++i) {
+		if(arguments[i] == arguments[0]) return true;
 	}
 	return false;
+}
+
+function distinct(list, except) {
+  var effectiveLength = list.length;
+  if (except != null) {
+    for (var j = 0; j < except.length; ++j) {
+      for (var i = 0; i < effectiveLength; ++i) {
+        if (list[i] === except[j]) {
+          list[i] = list[effectiveLength - 1];
+          --i;
+          --effectiveLength
+        }
+      }
+    }
+  }
+  for (var i = 0; i < effectiveLength - 1; ++i) {
+    for (var j = i + 1; j < effectiveLength; ++j) {
+      if (list[i] === list[j]) {
+        list[j] = list[effectiveLength - 1];
+        --j;
+        --effectiveLength;
+      }
+    }
+  }
+  return effectiveLength;
 }

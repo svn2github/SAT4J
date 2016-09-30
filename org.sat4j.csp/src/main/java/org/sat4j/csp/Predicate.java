@@ -68,11 +68,18 @@ public class Predicate implements Clausifiable {
     }
 
     public void setExpression(String expr) {
-        this.expr = expr.replaceAll("if\\(", "ite(").replaceAll("in\\(", "inSet(");
+        this.expr = expr.replaceAll("if\\(", "ite(").replaceAll("([^m])in\\(", "$1inSet(");
     }
 
     public void addVariable(String name) {
         variables.push(name);
+    }
+    
+    public boolean containsVariable(String name) {
+        for(int i=0; i<variables.size(); ++i) {
+            if(variables.get(i).equals(name)) return true;
+        }
+        return false;
     }
 
     private boolean evaluate(int[] values) {

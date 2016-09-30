@@ -18,6 +18,7 @@
 *******************************************************************************/
 package org.sat4j.csp.constraints3;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.sat4j.core.Vec;
@@ -26,7 +27,10 @@ import org.sat4j.csp.Predicate;
 import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
-import org.xcsp.parser.XEnums.TypeOperator;
+import org.sat4j.specs.IVec;
+import org.xcsp.common.XEnums.TypeOperator;
+import org.xcsp.parser.XDomains.XDomInteger;
+import org.xcsp.parser.XValues.IntegerEntity;
 import org.xcsp.parser.XVariables.XVarInteger;
 
 /**
@@ -57,6 +61,22 @@ public class CtrBuilderUtils {
 		return name.replaceAll("\\[", VAR_NAME_OP_BRACK_REPL).replaceAll("\\]", VAR_NAME_CL_BRACK_REPL);
 	}
 	
+	public static IVec<Var> toVarVec(Collection<Var> vars) {
+		IVec<Var> vec = new Vec<>(vars.size());
+		for(Var v : vars) {
+			vec.push(v);
+		}
+		return vec;
+	}
+	
+	public static IVec<Evaluable> toEvaluableVec(Collection<Var> vars) {
+		IVec<Evaluable> vec = new Vec<>(vars.size());
+		for(Var v : vars) {
+			vec.push(v);
+		}
+		return vec;
+	}
+	
 	public static String chainExpressions(String[] exprs, String op) {
 		StringBuffer exprBuff = new StringBuffer();
 		for(int i=0; i<exprs.length-1; ++i) {
@@ -68,6 +88,16 @@ public class CtrBuilderUtils {
 			exprBuff.append(',');
 			exprBuff.append(exprs[i]);
 			exprBuff.append(')');
+		}
+		return exprBuff.toString();
+	}
+	
+	public static String chainExpressionsAssociative(String[] exprs, String op) {
+		StringBuffer exprBuff = new StringBuffer();
+		exprBuff.append(exprs[0]);
+		for(int i=1; i<exprs.length; ++i) {
+			exprBuff.append(op);
+			exprBuff.append(exprs[i]);
 		}
 		return exprBuff.toString();
 	}
@@ -102,6 +132,25 @@ public class CtrBuilderUtils {
 		case SUPSEQ: return TypeOperator.SUPSET;
 		default: return op;
 		}
+	}
+
+	public static int getDomainVar(XVarInteger involvedVar, Integer solverVarForFirstValue, Long varValue) {
+		IntegerEntity[] domain = (IntegerEntity[]) ((XDomInteger)(involvedVar.dom)).values;
+		int offset = 0;
+		for(int i=0; i<domain.length; ++i) {
+			if(domain[i].isSingleton()) {
+				if(domain[i].greatest() == varValue.longValue()) break;
+				++offset;
+			} else {
+				if(varValue.longValue() > domain[i].greatest()) {
+					offset += domain[i].width();
+					continue;
+				}
+				offset += varValue.longValue() - domain[i].smallest();
+				break;
+			}
+		}
+		return solverVarForFirstValue + offset;
 	}
 
 }

@@ -33,8 +33,8 @@ import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.xcsp.common.XEnums.TypeObjective;
 import org.xcsp.parser.XDomains.XDomInteger;
-import org.xcsp.parser.XEnums.TypeObjective;
 import org.xcsp.parser.XVariables.XVarInteger;
 
 /**
