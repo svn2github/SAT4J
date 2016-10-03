@@ -48,7 +48,6 @@ import org.xcsp.common.predicates.XNodeLeaf;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.XDomains.XDomInteger;
 import org.xcsp.parser.XValues.IntegerEntity;
-import org.xcsp.parser.XVariables.XVar;
 import org.xcsp.parser.XVariables.XVarInteger;
 
 /**
@@ -105,7 +104,7 @@ public class GenericCtrBuilder {
 		return false;
 	}
 	
-	public boolean buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVar> syntaxTreeRoot) {
+	public boolean buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVarInteger> syntaxTreeRoot) {
 		syntaxTreeRootToString(syntaxTreeRoot);
 		Vec<Var> scope = new Vec<Var>(xscope.length);
 		Vec<Evaluable> vars = new Vec<Evaluable>(xscope.length);
@@ -126,20 +125,20 @@ public class GenericCtrBuilder {
 		return false;
 	}
 	
-	private String syntaxTreeRootToString(XNodeParent<XVar> syntaxTreeRoot) {
+	private String syntaxTreeRootToString(XNodeParent<XVarInteger> syntaxTreeRoot) {
 		StringBuffer treeToString = new StringBuffer();
 		fillSyntacticStrBuffer(syntaxTreeRoot, treeToString);
 		return treeToString.toString();
 	}
 
-	private void fillSyntacticStrBuffer(XNodeExpr<XVar> root,
+	private void fillSyntacticStrBuffer(XNodeExpr<XVarInteger> child,
 			StringBuffer treeToString) {
-		if(root instanceof XNodeLeaf<?>) {
-			treeToString.append(CtrBuilderUtils.normalizeCspVarName(root.toString()));
+		if(child instanceof XNodeLeaf<?>) {
+			treeToString.append(CtrBuilderUtils.normalizeCspVarName(child.toString()));
 			return;
 		}
-		treeToString.append(root.getType().toString().toLowerCase());
-		XNodeExpr<XVar>[] sons = ((XNodeParent<XVar>) root).sons;
+		treeToString.append(child.getType().toString().toLowerCase());
+		XNodeExpr<XVarInteger>[] sons = ((XNodeParent<XVarInteger>) child).sons;
 		treeToString.append('(');
 		fillSyntacticStrBuffer(sons[0], treeToString);
 		for(int i=1; i<sons.length; ++i) {

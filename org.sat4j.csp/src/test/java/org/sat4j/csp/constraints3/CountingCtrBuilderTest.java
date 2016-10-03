@@ -336,10 +336,7 @@ public class CountingCtrBuilderTest {
 				+ "<occurs> i2 i3 </occurs>"
 				+ "</cardinality>";
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
-		TestUtils.assertEqualsSortedModels(sortedModels,
-				"0 0 2 0", "0 1 1 1", "0 2 1 0",
-				"1 0 1 1", "1 1 0 2", "1 2 0 1",
-				"2 0 1 0", "2 1 0 1", "2 2 0 0");
+		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 2 0", "0 1 1 1", "1 0 1 1", "1 1 0 2");
 	}
 	
 	@Test
@@ -378,7 +375,7 @@ public class CountingCtrBuilderTest {
 				+ "<occurs> i0 i0 </occurs>"
 				+ "</cardinality>";
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
-		TestUtils.assertEqualsSortedModels(sortedModels, "0");
+		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 
 }
