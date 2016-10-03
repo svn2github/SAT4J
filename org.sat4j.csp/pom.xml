@@ -40,5 +40,12 @@
 			<artifactId>js</artifactId>
 			<version>1.7R2</version>
 		</dependency>
+                <dependency>
+                        <groupId>org.xcsp3</groupId>
+                        <artifactId>org.xcsp3.parser</artifactId>
+                        <version>3.0</version>
+                        <scope>system</scope>
+                        <systemPath>${basedir}/../lib/xcsp3parser.jar</systemPath>
+                </dependency>
 	</dependencies>
 </project>
