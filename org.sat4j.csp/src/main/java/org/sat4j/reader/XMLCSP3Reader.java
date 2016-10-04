@@ -304,7 +304,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildCtrIntension(String, XVarInteger[], XNodeParent)
 	 */
 	@Override
-	public void buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVar> syntaxTreeRoot) {
+	public void buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVarInteger> syntaxTreeRoot) {
 		this.contradictionFound |= this.genericCtrBuilder.buildCtrIntension(id, xscope, syntaxTreeRoot);
 	}
 
@@ -376,7 +376,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildObjToMinimize(String, XNodeParent)
 	 */
 	@Override
-	public void buildObjToMinimize(String id, XNodeParent<XVar> syntaxTreeRoot) {
+	public void buildObjToMinimize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
 		unimplementedCase(id); // TODO
 	}
 
@@ -384,7 +384,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildObjToMaximize(String, XNodeParent)
 	 */
 	@Override
-	public void buildObjToMaximize(String id, XNodeParent<XVar> syntaxTreeRoot) {
+	public void buildObjToMaximize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
 		unimplementedCase(id); // TODO
 	}
 
@@ -822,7 +822,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		unimplementedCase(x.id); // TODO
 	}
 
-	public void buildCtrIntension(String id, XVarSymbolic[] scope, XNodeParent<XVar> syntaxTreeRoot) {
+	public void buildCtrIntension(String id, XVarSymbolic[] scope, XNodeParent<XVarSymbolic> syntaxTreeRoot) {
 		unimplementedCase(id); // TODO
 	}
 
