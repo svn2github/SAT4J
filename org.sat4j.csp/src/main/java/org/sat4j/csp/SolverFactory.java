@@ -26,8 +26,12 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
+import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.OPBStringSolver;
+import org.sat4j.pb.tools.PBAdapter;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;
+import org.sat4j.tools.DimacsStringSolver;
 
 /**
  * User friendly access to pre-constructed solvers.
@@ -138,6 +142,10 @@ public class SolverFactory extends ASolverFactory<ISolver> {
 
     public static ISolver newDimacsOutput() {
         return new DimacsOutputSolver();
+    }
+    
+    public static IPBSolver newDimacsOutputPB() {
+    	return new PBAdapter(new DimacsStringSolver());
     }
 
 }
