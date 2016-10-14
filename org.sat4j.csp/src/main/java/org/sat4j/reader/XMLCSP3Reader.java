@@ -126,7 +126,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		}
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
-		this.elementaryCtrBuilder = new ElementaryCtrBuilder(solver, varmapping);
+		this.elementaryCtrBuilder = new ElementaryCtrBuilder(solver, varmapping, firstInternalVarMapping);
 		this.comparisonCtrBuilder = new ComparisonCtrBuilder(solver, varmapping);
 		this.connectionCtrBuilder = new ConnectionCtrBuilder(solver, varmapping);
 		this.schedulingCtrBuilder = new SchedulingCtrBuilder(solver, varmapping);
