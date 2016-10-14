@@ -132,7 +132,8 @@ public enum ECSPFormat {
 	private static ECSPFormat tryToInferXmlType(String filename) {
 		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
 			String line;
-			while((line = reader.readLine().trim()) != null) {
+			while((line = reader.readLine()) != null) {
+				line = line.trim();
 				if(line.startsWith("<instance")) {
 					return tryToInferXmlTypeFromRootMarkup(line);
 				}
