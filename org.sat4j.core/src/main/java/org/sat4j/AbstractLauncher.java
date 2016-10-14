@@ -253,7 +253,6 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             }
             this.beginTime = System.currentTimeMillis();
             this.problem = readProblem(instanceName);
-            this.out.println(this.solver.toString());
             try {
                 solve(this.problem);
             } catch (TimeoutException e) {
