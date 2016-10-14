@@ -233,6 +233,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	private void createNewCspVar(XVarInteger var, Domain dom) {
 		Var cspVar = new Var(CtrBuilderUtils.normalizeCspVarName(var.id), dom, this.solver.nextFreeVarId(false)-1);
 		this.firstInternalVarMapping.put(cspVar, this.solver.nextFreeVarId(false));
+		for(int i=0; i<dom.size(); ++i) this.solver.nextFreeVarId(true);
 		try {
 			cspVar.toClause(solver);
 		} catch (ContradictionException e) {
