@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -67,18 +68,7 @@ public abstract class Reader {
             throws ParseFormatException, IOException, ContradictionException {
         InputStream in = null;
         try {
-            if (filename.startsWith("http://")) {
-                in = new URL(filename).openStream();
-            } else {
-                in = new FileInputStream(filename);
-            }
-            if (filename.endsWith(".gz")) {
-                in = new GZIPInputStream(in);
-            } else if (filename.endsWith(".bz2")) {
-                in.close();
-                in = Runtime.getRuntime().exec("bunzip2 -c " + filename)
-                        .getInputStream();
-            }
+            in = getInputStreamFromFilename(filename);
             IProblem problem;
             problem = parseInstance(in);
             return problem;
@@ -93,6 +83,41 @@ public abstract class Reader {
                 in.close();
             }
         }
+    }
+
+    /**
+     * This method tries to get an input type from a file, whether it is
+     * compressed or not.
+     * 
+     * @param filename
+     *            the file to read in
+     * @return a corresponding input stream to read in the file
+     * 
+     * @throws IOException
+     *             if an I/O exception occurs
+     * @throws MalformedURLException
+     *             if a provided URL is incorrect
+     */
+    public static InputStream getInputStreamFromFilename(final String filename)
+            throws IOException, MalformedURLException {
+        InputStream in;
+        if (filename.startsWith("http://")) {
+            in = new URL(filename).openStream();
+        } else {
+            in = new FileInputStream(filename);
+        }
+        if (filename.endsWith(".gz")) {
+            in = new GZIPInputStream(in);
+        } else if (filename.endsWith(".bz2")) {
+            in.close();
+            in = Runtime.getRuntime().exec("bunzip2 -c " + filename)
+                    .getInputStream();
+        } else if (filename.endsWith(".lzma")) {
+            in.close();
+            in = Runtime.getRuntime().exec("lzma -d -c " + filename)
+                    .getInputStream();
+        }
+        return in;
     }
 
     /**
