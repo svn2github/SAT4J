@@ -47,22 +47,22 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.w3c.dom.Document;
-import org.xcsp.common.XEnums.TypeArithmeticOperator;
-import org.xcsp.common.XEnums.TypeConditionOperatorRel;
-import org.xcsp.common.XEnums.TypeFlag;
-import org.xcsp.common.XEnums.TypeObjective;
-import org.xcsp.common.XEnums.TypeOperator;
-import org.xcsp.common.XEnums.TypeRank;
+import org.xcsp.common.Condition;
+import org.xcsp.common.Types.TypeArithmeticOperator;
+import org.xcsp.common.Types.TypeConditionOperatorRel;
+import org.xcsp.common.Types.TypeFlag;
+import org.xcsp.common.Types.TypeObjective;
+import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.XCallbacks2;
-import org.xcsp.parser.XDomains.XDomInteger;
 import org.xcsp.parser.XParser;
-import org.xcsp.parser.XParser.Condition;
-import org.xcsp.parser.XVariables.VEntry;
-import org.xcsp.parser.XVariables.XArray;
-import org.xcsp.parser.XVariables.XVar;
-import org.xcsp.parser.XVariables.XVarInteger;
-import org.xcsp.parser.XVariables.XVarSymbolic;
+import org.xcsp.parser.entries.AnyEntry.VEntry;
+import org.xcsp.parser.entries.XDomains.XDomInteger;
+import org.xcsp.parser.entries.XVariables.XArray;
+import org.xcsp.parser.entries.XVariables.XVar;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
+import org.xcsp.parser.entries.XVariables.XVarSymbolic;
 
 /**
  * A reader for XCSP3 instance format.
@@ -169,9 +169,9 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	@Override
 	public IProblem parseInstance(InputStream in) throws ParseFormatException,
 	ContradictionException, IOException {
-		callbacksParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_UNARY_INTENSION_CASES);
-		callbacksParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_BINARY_INTENSION_CASES);
-		callbacksParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_TERNARY_INTENSION_CASES);
+		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_UNARY_INTENSION_CASES);
+		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_BINARY_INTENSION_CASES);
+		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_TERNARY_INTENSION_CASES);
 		try {
 			loadInstance(in);
 			if(System.getProperty("justRead") != null) {
@@ -837,6 +837,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 
 	public void buildCtrAllDifferent(String id, XVarSymbolic[] list) {
 		unimplementedCase(id); // TODO
+	}
+	
+	private Implem dataStructureImplementor = new Implem (this) ;
+
+	@Override
+	public Implem implem () {
+	  return dataStructureImplementor ;
 	}
 
 }

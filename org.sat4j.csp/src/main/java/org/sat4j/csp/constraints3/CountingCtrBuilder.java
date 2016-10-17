@@ -31,10 +31,10 @@ import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
-import org.xcsp.parser.XParser.Condition;
-import org.xcsp.parser.XParser.ConditionVal;
-import org.xcsp.parser.XParser.ConditionVar;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.common.Condition;
+import org.xcsp.common.Condition.ConditionVal;
+import org.xcsp.common.Condition.ConditionVar;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * A constraint builder for XCSP3 instance format.
@@ -92,7 +92,7 @@ public class CountingCtrBuilder {
 		}
 		exprBuf.append(',');
 		if(condition instanceof ConditionVar) {
-			varId = ((ConditionVar) condition).x.id;
+			varId = ((ConditionVar) condition).x.id();
 			addVarToPredExprBuffer(varId, strVars, vars, exprBuf);
 		} else if(condition instanceof ConditionVal) {
 			exprBuf.append(((ConditionVal) condition).k);

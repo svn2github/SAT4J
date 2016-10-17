@@ -33,9 +33,9 @@ import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
-import org.xcsp.common.XEnums.TypeObjective;
-import org.xcsp.parser.XDomains.XDomInteger;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.common.Types.TypeObjective;
+import org.xcsp.parser.entries.XDomains.XDomInteger;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * An objective function builder for XCSP3 instance format.

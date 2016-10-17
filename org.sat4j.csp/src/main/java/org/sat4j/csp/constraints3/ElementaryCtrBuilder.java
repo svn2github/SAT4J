@@ -11,7 +11,7 @@ import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVecInt;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /** 
 * @author Emmanuel Lonca - lonca@cril.fr

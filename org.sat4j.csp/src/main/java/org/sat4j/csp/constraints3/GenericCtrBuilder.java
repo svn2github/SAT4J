@@ -39,16 +39,15 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
-import org.xcsp.common.XConstants;
-import org.xcsp.common.XEnums.TypeArithmeticOperator;
-import org.xcsp.common.XEnums.TypeConditionOperatorRel;
-import org.xcsp.common.XEnums.TypeFlag;
-import org.xcsp.common.predicates.XNodeExpr;
+import org.xcsp.common.Types.TypeArithmeticOperator;
+import org.xcsp.common.Types.TypeConditionOperatorRel;
+import org.xcsp.common.Types.TypeFlag;
+import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeLeaf;
 import org.xcsp.common.predicates.XNodeParent;
-import org.xcsp.parser.XDomains.XDomInteger;
-import org.xcsp.parser.XValues.IntegerEntity;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.parser.entries.XDomains.XDomInteger;
+import org.xcsp.parser.entries.XValues.IntegerEntity;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * A constraint builder for XCSP3 instance format.
@@ -131,14 +130,14 @@ public class GenericCtrBuilder {
 		return treeToString.toString();
 	}
 
-	private void fillSyntacticStrBuffer(XNodeExpr<XVarInteger> child,
+	private void fillSyntacticStrBuffer(XNode<XVarInteger> child,
 			StringBuffer treeToString) {
 		if(child instanceof XNodeLeaf<?>) {
 			treeToString.append(CtrBuilderUtils.normalizeCspVarName(child.toString()));
 			return;
 		}
 		treeToString.append(child.getType().toString().toLowerCase());
-		XNodeExpr<XVarInteger>[] sons = ((XNodeParent<XVarInteger>) child).sons;
+		XNode<XVarInteger>[] sons = ((XNodeParent<XVarInteger>) child).sons;
 		treeToString.append('(');
 		fillSyntacticStrBuffer(sons[0], treeToString);
 		for(int i=1; i<sons.length; ++i) {
@@ -188,7 +187,7 @@ public class GenericCtrBuilder {
 			List<XVarInteger> starredVars = new ArrayList<>();
 			List<Integer> starredIndexes = new LinkedList<>();
 			for(int j=0; j<tuples[i].length; ++j) {
-				if(tuples[i][j] == XConstants.STAR_INT) {
+				if(tuples[i][j] == Integer.MAX_VALUE-1) { // STARRED TUPLE 
 					starredVars.add(list[j]);
 					starredIndexes.add(j);
 				}

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sat4j.csp.Predicate;
-import org.xcsp.parser.XParser.Condition;
-import org.xcsp.parser.XParser.ConditionIntvl;
-import org.xcsp.parser.XParser.ConditionVal;
-import org.xcsp.parser.XParser.ConditionVar;
+import org.xcsp.common.Condition;
+import org.xcsp.common.Condition.ConditionIntvl;
+import org.xcsp.common.Condition.ConditionVal;
+import org.xcsp.common.Condition.ConditionVar;
 
 /** 
 * @author Emmanuel Lonca - lonca@cril.fr
@@ -21,7 +21,7 @@ public class StringCondition {
 	private List<String> vars = new ArrayList<String>();
 
 	public StringCondition(ConditionVar condition) {
-		String varId = ((ConditionVar)condition).x.id;
+		String varId = ((ConditionVar)condition).x.id();
 		vars.add(varId);
 		this.asString = condition.operator.name().toLowerCase()+"("+LEFT_OPERAND+","+CtrBuilderUtils.normalizeCspVarName(varId)+")";
 	}

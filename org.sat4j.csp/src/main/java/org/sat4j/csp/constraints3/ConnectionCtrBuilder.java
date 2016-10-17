@@ -30,10 +30,10 @@ import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
-import org.xcsp.common.XEnums.TypeRank;
-import org.xcsp.parser.XDomains.XDomInteger;
-import org.xcsp.parser.XParser.Condition;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.common.Condition;
+import org.xcsp.common.Types.TypeRank;
+import org.xcsp.parser.entries.XDomains.XDomInteger;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * A constraint builder for XCSP3 instance format.

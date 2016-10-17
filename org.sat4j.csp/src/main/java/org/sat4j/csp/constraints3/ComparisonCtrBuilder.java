@@ -31,8 +31,8 @@ import org.sat4j.csp.constraints.AllDiffCard;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
-import org.xcsp.common.XEnums.TypeOperator;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * A constraint builder for XCSP3 instance format.

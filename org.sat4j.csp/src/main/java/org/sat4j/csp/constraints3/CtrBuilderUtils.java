@@ -28,10 +28,10 @@ import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
-import org.xcsp.common.XEnums.TypeOperator;
-import org.xcsp.parser.XDomains.XDomInteger;
-import org.xcsp.parser.XValues.IntegerEntity;
-import org.xcsp.parser.XVariables.XVarInteger;
+import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.parser.entries.XDomains.XDomInteger;
+import org.xcsp.parser.entries.XValues.IntegerEntity;
+import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
  * A utility class for XCSP3 constraint builders.
