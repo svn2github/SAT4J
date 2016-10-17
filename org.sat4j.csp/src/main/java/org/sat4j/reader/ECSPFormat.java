@@ -20,8 +20,9 @@ package org.sat4j.reader;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -130,7 +131,15 @@ public enum ECSPFormat {
 	}
 	
 	private static ECSPFormat tryToInferXmlType(String filename) {
-		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+		try(InputStream is = Reader.getInputStreamFromFilename(filename)) {
+			return tryToInferXmlType(is);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+	
+	private static ECSPFormat tryToInferXmlType(InputStream is) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 			String line;
 			while((line = reader.readLine()) != null) {
 				line = line.trim();
