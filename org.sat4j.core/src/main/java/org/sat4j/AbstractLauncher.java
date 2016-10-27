@@ -82,6 +82,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     protected transient PrintWriter out = new PrintWriter(System.out, true);
 
+    private StringBuffer logBuffer;
+
     private boolean displaySolutionLine = true;
 
     protected transient Thread shutdownHook = new Thread() {
@@ -304,7 +306,11 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      * @param message
      */
     public void log(String message) {
-        if (!this.silent) {
+        if (this.silent)
+            return;
+        if (this.logBuffer != null) {
+            this.logBuffer.append(COMMENT_PREFIX).append(message).append('\n');
+        } else {
             this.out.println(COMMENT_PREFIX + message);
         }
     }
@@ -416,5 +422,14 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
                 log(name);
             }
         }
+    }
+
+    protected void bufferizeLog() {
+        this.logBuffer = new StringBuffer();
+    }
+
+    protected void flushLog() {
+        this.out.print(logBuffer.toString());
+        logBuffer = null;
     }
 }

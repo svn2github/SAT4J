@@ -103,6 +103,7 @@ final class OptimizationMode implements ILauncherMode {
 
         logger.log("Total wall clock time (in seconds): " //$NON-NLS-1$
                 + (System.currentTimeMillis() - beginTime) / 1000.0);
+        out.flush();
     }
 
     public void solve(IProblem problem, Reader reader, ILogAble logger,
