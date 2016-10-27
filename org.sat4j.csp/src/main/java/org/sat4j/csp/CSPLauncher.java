@@ -30,6 +30,10 @@ public class CSPLauncher extends AbstractLauncher {
      * 
      */
 	private static final long serialVersionUID = 1L;
+	
+	public CSPLauncher() {
+		bufferizeLog();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -59,7 +63,9 @@ public class CSPLauncher extends AbstractLauncher {
 	protected Reader createReader(final ISolver aSolver,
 			final String problemname) {
 		ECSPFormat cspFormat = ECSPFormat.inferInstanceType(problemname);
-		Reader aReader = cspFormat.getReader(aSolver);
+		this.out = cspFormat.decoratePrintWriter(this.out);
+		flushLog();
+		Reader aReader = cspFormat.getReader(this, aSolver);
 		setLauncherMode(cspFormat.isOptimizationModeRequired() ? ILauncherMode.OPTIMIZATION : ILauncherMode.DECISION);
 		if (System.getProperty("verbose") != null) {
 			log("verbose mode on");

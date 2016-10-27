@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.sat4j.AbstractLauncher;
 import org.sat4j.csp.Domain;
 import org.sat4j.csp.Domains;
 import org.sat4j.csp.Var;
@@ -115,15 +116,20 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	/** object dedicated to objective function building */
 	private ObjBuilder objBuilder;
 
+	/** the CSP launchers that made this parser ; needed for model decoding */
+	private final AbstractLauncher launcher;
+
 	/**
 	 * Builds a new parser.
 	 * 
 	 * @param aSolver the solver in which the problem will be encoded
+	 * @param optimizationProblem tells whether the problem is a decision one or an optimization one
 	 */
-	public XMLCSP3Reader(ISolver aSolver) {
+	public XMLCSP3Reader(ISolver aSolver, AbstractLauncher launcher) {
 		if(!(aSolver instanceof IPBSolver)) {
 			throw new IllegalArgumentException("provided solver must have PB capabilities");
 		}
+		this.launcher = launcher;
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
 		this.elementaryCtrBuilder = new ElementaryCtrBuilder(solver, varmapping, firstInternalVarMapping);
@@ -134,6 +140,15 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		this.countingCtrBuilder = new CountingCtrBuilder(solver, varmapping);
 		this.languageCtrBuilder = new LanguageCtrBuilder(solver, varmapping, firstInternalVarMapping);
 		this.objBuilder = new ObjBuilder(solver, varmapping, firstInternalVarMapping);
+	}
+	
+	/**
+	 * Builds a new parser for decision problems.
+	 * 
+	 * @param aSolver the solver in which the problem will be encoded
+	 */
+	public XMLCSP3Reader(ISolver aSolver) {
+		this(aSolver, null);
 	}
 
 	/**
@@ -149,18 +164,58 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public String decode(int[] model) {
+		if(this.launcher == null) {
+			throw new IllegalStateException("decoding a model needs to know the solver state");
+		}
 		if(model.length == 0) return "";
-		StringBuffer sbuf = new StringBuffer();
+		StringBuffer strModelBuffer = new StringBuffer();
+		switch(this.launcher.getExitCode()) {
+		case OPTIMUM_FOUND:
+			strModelBuffer.append("<instantiation type=\"optimum\" cost=\"")
+				.append(this.solver.getObjectiveFunction().calculateDegree(this.solver).toString())
+				.append("\">\n");
+			appendModel(strModelBuffer, model);
+			break;
+		case UPPER_BOUND:
+		case SATISFIABLE:
+			strModelBuffer.append("<instantiation type=\"solution\">\n");
+			appendModel(strModelBuffer, model);
+			break;
+		case UNSATISFIABLE:
+			strModelBuffer.append(AbstractLauncher.COMMENT_PREFIX).append(" no model");
+			break;
+		case UNKNOWN:
+		default:
+			strModelBuffer.append(AbstractLauncher.COMMENT_PREFIX).append(" unknown state");
+			break;
+		}
+		strModelBuffer.append("v </instantiation>");
+		return strModelBuffer.toString();
+	}
+
+	private void appendModel(StringBuffer strModelBuffer, int[] model) {
+		StringBuffer sbufList = new StringBuffer();
+		sbufList.append("v \t<list> ");
+		StringBuffer sbufValues = new StringBuffer();
+		sbufValues.append("v \t<values> ");
+		decodeModel(model, sbufList, sbufValues);
+		sbufValues.append(" </values>\n");
+		sbufList.append(" </list>\n");
+		strModelBuffer.append(sbufList);
+		strModelBuffer.append(sbufValues);
+	}
+
+	private void decodeModel(int[] model, StringBuffer sbufList, StringBuffer sbufValues) {
 		XVar xvar = this.allVars.get(0);
 		Var var = varmapping.get(xvar.id);
-		sbuf.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+		sbufList.append(xvar.id());
+		sbufValues.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
 		for(int i=1; i<this.allVars.size(); ++i) {
-			sbuf.append(' ');
 			xvar = this.allVars.get(i);
 			var = varmapping.get(xvar.id);
-			sbuf.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+			sbufList.append(' ').append(xvar.id());
+			sbufValues.append(' ').append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
 		}
-		return sbuf.toString();
 	}
 
 	/**
@@ -206,7 +261,6 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		loadConstraints(parser);
 		endConstraints();
 		beginObjectives(parser.oEntries, parser.typeCombination);
-		//loadObjectives(parser.oEntries);
 		loadObjectives(parser);
 		endObjectives();
 		endInstance();

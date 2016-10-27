@@ -27,7 +27,6 @@ import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
 import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.OPBStringSolver;
 import org.sat4j.pb.tools.PBAdapter;
 import org.sat4j.specs.ISolver;
 import org.sat4j.tools.DimacsOutputSolver;

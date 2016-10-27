@@ -23,9 +23,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.sat4j.AbstractLauncher;
 import org.sat4j.specs.ISolver;
 
 /**
@@ -44,9 +46,16 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#getReader(ISolver)
 		 */
-		public Reader getReader(ISolver solver) {
+		public Reader getReader(AbstractLauncher launcher, ISolver solver) {
 			boolean allDiffCards = System.getProperty("allDiffCards") != null;
 			return new CSPExtSupportReader(solver, allDiffCards);
+		}
+		
+		/**
+		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
+		 */
+		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+			return pw;
 		}
 	},
 	
@@ -57,9 +66,16 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#getReader(ISolver)
 		 */
-		public Reader getReader(ISolver solver) {
+		public Reader getReader(AbstractLauncher launcher, ISolver solver) {
 			boolean allDiffCards = System.getProperty("allDiffCards") != null;
 			return new XMLCSPReader(solver, allDiffCards);
+		}
+		
+		/**
+		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
+		 */
+		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+			return pw;
 		}
 	},
 	
@@ -70,8 +86,17 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#getReader(ISolver)
 		 */
-		public Reader getReader(ISolver solver) {
-			return new XMLCSP3Reader(solver);
+		public Reader getReader(AbstractLauncher launcher, ISolver solver) {
+			return new XMLCSP3Reader(solver, launcher);
+		}
+		
+		/**
+		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
+		 */
+		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+			XmlCommentPrintWriter commentPrintWriter = new XmlCommentPrintWriter(pw);
+			commentPrintWriter.addDncPrefix("v ");
+			return commentPrintWriter;
 		}
 	},
 	
@@ -82,8 +107,15 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#getReader(ISolver)
 		 */
-		public Reader getReader(ISolver solver) {
+		public Reader getReader(AbstractLauncher launcher, ISolver solver) {
 			throw new IllegalArgumentException("unable to determine instance type");
+		}
+		
+		/**
+		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
+		 */
+		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+			return pw;
 		}
 	};
 	
@@ -106,10 +138,21 @@ public enum ECSPFormat {
 	/**
 	 * Returns a reader corresponding to the instance format.
 	 * 
+	 * @param launcher the CSP launcher
 	 * @param solver the solver used by the reader
 	 * @return a reader corresponding to the problem
 	 */
-	public Reader getReader(ISolver solver) {
+	public Reader getReader(AbstractLauncher launcher, ISolver solver) {
+		throw new IllegalStateException("This code should never be called");
+	}
+	
+	/**
+	 * Decorates a {@link PrintWriter} dedicated to solver output in order to provide the correct output given the CSP format.
+	 * 
+	 * @param pw the default writer
+	 * @return the decorator
+	 */
+	public PrintWriter decoratePrintWriter(PrintWriter pw) {
 		throw new IllegalStateException("This code should never be called");
 	}
 	
