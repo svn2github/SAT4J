@@ -36,15 +36,13 @@ package org.sat4j;
  * @author leberre
  * 
  */
-public final class ExitCode {
+public enum ExitCode {
 
-    public static final ExitCode OPTIMUM_FOUND = new ExitCode(30,
-            "OPTIMUM FOUND");
-    public static final ExitCode UPPER_BOUND = new ExitCode(30, "UPPER BOUND");
-    public static final ExitCode SATISFIABLE = new ExitCode(10, "SATISFIABLE");
-    public static final ExitCode UNKNOWN = new ExitCode(0, "UNKNOWN");
-    public static final ExitCode UNSATISFIABLE = new ExitCode(20,
-            "UNSATISFIABLE");
+    OPTIMUM_FOUND(30, "OPTIMUM FOUND"),
+    UPPER_BOUND(30, "UPPER BOUND"),
+    SATISFIABLE(10, "SATISFIABLE"),
+    UNKNOWN(0, "UNKNOWN"),
+    UNSATISFIABLE(20, "UNSATISFIABLE");
 
     /** value of the exit code. */
     private final int value;
