@@ -71,7 +71,7 @@ public class TestUtils {
 		List<int[]> models = TestUtils.getAllModels(solver);
 		SortedSet<String> strModels = new TreeSet<String>();
 		for(int i=0; i<models.size(); ++i) {
-			strModels.add(reader.decode(models.get(i)));
+			strModels.add(reader.decodeModelAsValueSequence(models.get(i)));
 		}
 		return new ArrayList<String>(strModels);
 	}

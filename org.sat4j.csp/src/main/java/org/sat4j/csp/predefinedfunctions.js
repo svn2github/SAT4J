@@ -9,16 +9,24 @@ function abs(x) {
     return -x;
 }
 
-function add(x, y) {
-    return x + y;
+function add() {
+	var ret = 0;
+	for(var i=0; i<arguments.length; ++i) {
+		ret += arguments[i];
+	}
+    return ret;
 }
 
 function sub(x, y) {
     return x - y;
 }
 
-function mul(x, y) {
-    return x * y;
+function mul() {
+    var ret = 1;
+	for(var i=0; i<arguments.length; ++i) {
+		ret *= arguments[i];
+	}
+    return ret;
 }
 
 function div(x, y) {
@@ -57,6 +65,10 @@ function max() {
   return ret;
 }
 
+function dist(x, y) {
+	return abs(x - y);
+}
+
 function not(x) {
     return !x;
 }
@@ -79,8 +91,12 @@ function or() {
 	return false;
 }
 
-function xor(x, y) {
-    return x && !y || !x && y;
+function xor() {
+	var ret = !!(arguments[0] ^ arguments[1]);
+	for(var i=2; i<arguments.length; ++i) {
+		ret = !!(ret ^ arguments[i]);
+	}
+    return ret;
 }
 
 function eq() {
@@ -128,10 +144,6 @@ function ifThen(x, y) {
 	return (!x) || y;
 }
 
-function dist(x, y) {
-	return abs(x - y);
-}
-
 function set() {
 	var result = [];
 	var len = arguments.length;
@@ -141,9 +153,9 @@ function set() {
 	return result
 }
 
-function inSet() {
-	for(var i=1; i<arguments.length; ++i) {
-		if(arguments[i] == arguments[0]) return true;
+function inSet(x, s) {
+	for(var i=0; i<s.length; ++i) {
+		if(x == s[i]) return true;
 	}
 	return false;
 }

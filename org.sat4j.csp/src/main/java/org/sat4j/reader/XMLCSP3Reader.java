@@ -204,6 +204,19 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		strModelBuffer.append(sbufList);
 		strModelBuffer.append(sbufValues);
 	}
+	
+	public String decodeModelAsValueSequence(int model[]) {
+		XVar xvar = this.allVars.get(0);
+		Var var = varmapping.get(xvar.id);
+		StringBuffer sbufValues = new StringBuffer();
+		sbufValues.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+		for(int i=1; i<this.allVars.size(); ++i) {
+			xvar = this.allVars.get(i);
+			var = varmapping.get(xvar.id);
+			sbufValues.append(' ').append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+		}
+		return sbufValues.toString();
+	}
 
 	private void decodeModel(int[] model, StringBuffer sbufList, StringBuffer sbufValues) {
 		XVar xvar = this.allVars.get(0);

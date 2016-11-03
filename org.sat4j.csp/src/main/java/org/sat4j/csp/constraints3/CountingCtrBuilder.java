@@ -135,11 +135,12 @@ public class CountingCtrBuilder {
 			vars.add(varmapping.get(condVar));
 		}
 		StringBuffer inExprBuf = new StringBuffer();
-		inExprBuf.append(Integer.toString(values[0]));
+		inExprBuf.append('[').append(Integer.toString(values[0]));
 		for(int i=1; i<values.length; ++i) {
 			inExprBuf.append(',');
 			inExprBuf.append(Integer.toString(values[i]));
 		}
+		inExprBuf.append(']');
 		String inExpr = inExprBuf.toString();
 		String sumExprs[] = new String[list.length];
 		for(int i=0; i<list.length; ++i) {
@@ -180,11 +181,12 @@ public class CountingCtrBuilder {
 			vars.add(varmapping.get(condVar));
 		}
 		StringBuffer inExprBuf = new StringBuffer();
-		inExprBuf.append(CtrBuilderUtils.normalizeCspVarName(values[0].id));
+		inExprBuf.append('[').append(CtrBuilderUtils.normalizeCspVarName(values[0].id));
 		for(int i=1; i<values.length; ++i) {
 			inExprBuf.append(',');
 			inExprBuf.append(CtrBuilderUtils.normalizeCspVarName(values[i].id));
 		}
+		inExprBuf.append(']');
 		String inExpr = inExprBuf.toString();
 		String sumExprs[] = new String[listLength];
 		for(int i=0; i<listLength; ++i) {
