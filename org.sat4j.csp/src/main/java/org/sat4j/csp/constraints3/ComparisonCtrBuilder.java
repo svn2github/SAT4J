@@ -18,19 +18,11 @@
 *******************************************************************************/
 package org.sat4j.csp.constraints3;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.sat4j.core.Vec;
-import org.sat4j.csp.Evaluable;
-import org.sat4j.csp.Predicate;
-import org.sat4j.csp.Var;
-import org.sat4j.csp.constraints.AllDiffCard;
-import org.sat4j.pb.IPBSolver;
+import org.sat4j.csp.intension.IntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
-import org.sat4j.specs.ContradictionException;
 import org.xcsp.common.Types.TypeOperator;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
@@ -44,30 +36,20 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class ComparisonCtrBuilder {
 	
-	/** the solver in which the problem is encoded */
-	private IPBSolver solver;
-	
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
+	private final IntensionCtrEncoder intensionCtrEncoder;
 
-	public ComparisonCtrBuilder(IPBSolver solver, Map<String, Var> varmapping) {
-		this.solver = solver;
-		this.varmapping = varmapping;		
+	public ComparisonCtrBuilder(IntensionCtrEncoder intensionEnc) {
+		this.intensionCtrEncoder = intensionEnc;
 	}
 	
-	public boolean buildCtrAllDifferent(String id, XVarInteger[] list) {
-		Vec<Var> scope = new Vec<Var>(list.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(list.length);
-		for(XVarInteger vxscope : list) {
-			String strVar = vxscope.toString();
-			scope.push(varmapping.get(strVar));
-			vars.push(varmapping.get(strVar));
-		}
-		AllDiffCard card = new AllDiffCard();
-		try {
-			card.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			return true;
+	public boolean buildCtrAllDifferent(String id, XVarInteger[] list) { // TODO: remove dependence to varmapping
+		for(int i=0; i<list.length-1; ++i) {
+			final String norm1 = CtrBuilderUtils.normalizeCspVarName(list[i].id);
+			for(int j=i+1; j<list.length; ++j) {
+				final String norm2 = CtrBuilderUtils.normalizeCspVarName(list[j].id);
+				final String expr = "ne("+norm1+","+norm2+")";
+				if(this.intensionCtrEncoder.encode(expr)) return true;
+			}
 		}
 		return false;
 	}
@@ -83,19 +65,13 @@ public class ComparisonCtrBuilder {
 			return buildCtrAllDifferent(id, cleanList);
 		}
 		if(cleanList.length < 2) return false;
-		Vec<Var> scope = new Vec<Var>(cleanList.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(cleanList.length);
-		Predicate p = new Predicate();
 		String exceptBase = "eq(X,"+except[0]+")";
 		for(int i=1; i<except.length; ++i) {
 			exceptBase = "or("+exceptBase+",eq(X,"+except[i]+"))";
 		}
 		String[] exprs = new String[cleanList.length-1];
 		for(int i=0; i<cleanList.length-1; ++i) {
-			scope.push(varmapping.get(cleanList[i].id));
-			vars.push(varmapping.get(cleanList[i].id));
 			String normalizedCurVar = CtrBuilderUtils.normalizeCspVarName(cleanList[i].id);
-			p.addVariable(normalizedCurVar);
 			String exceptExpr = exceptBase.replaceAll("X", normalizedCurVar);
 			String neExpr = "ne("+normalizedCurVar+","+CtrBuilderUtils.normalizeCspVarName(cleanList[i+1].id)+")";
 			for(int j=i+2; j<cleanList.length; ++j) {
@@ -103,63 +79,34 @@ public class ComparisonCtrBuilder {
 			}
 			exprs[i] = "or("+exceptExpr+","+neExpr+")";
 		}
-		XVarInteger lastVar = cleanList[cleanList.length-1];
-		scope.push(varmapping.get(lastVar.id));
-		vars.push(varmapping.get(lastVar.id));
-		String normalizedCurVar = CtrBuilderUtils.normalizeCspVarName(lastVar.id);
-		p.addVariable(normalizedCurVar);
-		p.setExpression(CtrBuilderUtils.chainExpressions(exprs, "and"));
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		return this.intensionCtrEncoder.encode(CtrBuilderUtils.chainExpressionsForAssociativeOp(exprs, "and"));
 	}
 	
 	public boolean buildCtrAllDifferentList(String id, XVarInteger[][] lists) {
 		for(int i=0; i<lists.length-1; ++i) {
 			for(int j=i+1; j<lists.length; ++j) {
-				Predicate p = new Predicate();
-				SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-				SortedSet<String> strVars = new TreeSet<>();
 				StringBuffer sbufExpr = new StringBuffer();
 				sbufExpr.append("or(");
-				buildCtrAllDifferentListAux(lists, i, j, strVars, vars, sbufExpr, 0);
+				buildCtrAllDifferentListAux(lists, i, j, sbufExpr, 0);
 				for(int k=1; k<lists[i].length; ++k) {
 					sbufExpr.append(',');
-					buildCtrAllDifferentListAux(lists, i, j, strVars, vars, sbufExpr, k);
+					buildCtrAllDifferentListAux(lists, i, j, sbufExpr, k);
 				}
 				sbufExpr.append(')');
-				for(String strVar : strVars) p.addVariable(strVar);
-				p.setExpression(sbufExpr.toString());
-				try {
-					p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-				} catch (ContradictionException e) {
-					return true;
-				}
+				if(this.intensionCtrEncoder.encode(sbufExpr.toString())) return true;
 			}
 		}
 		return false;
 	}
 
-	private void buildCtrAllDifferentListAux(XVarInteger[][] lists, int i, int j, SortedSet<String> strVars,
-			SortedSet<Var> vars, StringBuffer sbufExpr, int k) {
+	private void buildCtrAllDifferentListAux(XVarInteger[][] lists, int i, int j, StringBuffer sbufExpr, int k) {
 		sbufExpr.append("ne(");
 		String var1Id = lists[i][k].id;
 		String normVar1 = CtrBuilderUtils.normalizeCspVarName(var1Id);
-		sbufExpr.append(normVar1);
-		strVars.add(normVar1);
-		Var var1Mapping = this.varmapping.get(var1Id);
-		vars.add(var1Mapping);
-		sbufExpr.append(',');
+		sbufExpr.append(normVar1).append(',');
 		String var2Id = lists[j][k].id;
 		String normVar2 = CtrBuilderUtils.normalizeCspVarName(var2Id);
-		sbufExpr.append(normVar2);
-		strVars.add(normVar2);
-		Var var2Mapping = this.varmapping.get(var2Id);
-		vars.add(var2Mapping);
-		sbufExpr.append(')');
+		sbufExpr.append(normVar2).append(')');
 	}
 
 	public boolean buildCtrAllDifferentMatrix(String id, XVarInteger[][] matrix) {
@@ -176,45 +123,19 @@ public class ComparisonCtrBuilder {
 	
 	public boolean buildCtrAllEqual(String id, XVarInteger[] list) {
 		for(int i=0; i<list.length-1; ++i) {
-			Predicate p = new Predicate();
-			SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-			SortedSet<String> strVars = new TreeSet<>();
 			String norm1 = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			vars.add(varmapping.get(list[i].id));
-			strVars.add(norm1);
 			String norm2 = CtrBuilderUtils.normalizeCspVarName(list[i+1].id);
-			vars.add(varmapping.get(list[i+1].id));
-			strVars.add(norm2);
-			p.setExpression("eq("+norm1+","+norm2+")");
-			for(String var : strVars) p.addVariable(var);
-			try {
-				p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-			} catch (ContradictionException e) {
-				return true;
-			}
+			if(this.intensionCtrEncoder.encode("eq("+norm1+","+norm2+")")) return true;
 		}
 		return false;
 	}
 	
 	public boolean buildCtrOrdered(String id, XVarInteger[] list, TypeOperator operator) {
 		for(int i=0; i<list.length-1; ++i) {
-			Predicate p = new Predicate();
-			SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-			SortedSet<String> strVars = new TreeSet<>();
 			String normalized1 = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			strVars.add(normalized1);
 			String normalized2 = CtrBuilderUtils.normalizeCspVarName(list[i+1].id);
-			strVars.add(normalized2);
 			String expr = operator.name().toLowerCase()+"("+normalized1+","+normalized2+")";
-			p.setExpression(expr);
-			for(String var : strVars) p.addVariable(var);
-			vars.add(varmapping.get(list[i].id));
-			vars.add(varmapping.get(list[i+1].id));
-			try {
-				p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-			} catch (ContradictionException e) {
-				return true;
-			}
+			if(this.intensionCtrEncoder.encode(expr)) return true;
 		}
 		return false;
 	}
@@ -238,17 +159,6 @@ public class ComparisonCtrBuilder {
 	private boolean buildCtrLex(String id, XVarInteger[] list1,
 			XVarInteger[] list2, TypeOperator operator) {
 		TypeOperator strictOp = CtrBuilderUtils.strictTypeOperator(operator);
-		Predicate p = new Predicate();
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-		SortedSet<String> strVars = new TreeSet<>();
-		for(int i=0; i<list1.length; ++i) {
-			String id01 = list1[i].id;
-			String id02 = list2[i].id;
-			vars.add(this.varmapping.get(id01));
-			vars.add(this.varmapping.get(id02));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(id01));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(id02));
-		}
 		String[] chains = new String[list1.length];
 		String id01 = list1[0].id;
 		String id02 = list2[0].id;
@@ -269,14 +179,7 @@ public class ComparisonCtrBuilder {
 					: strictOp.name().toLowerCase()+"("+CtrBuilderUtils.normalizeCspVarName(idi1)+","+CtrBuilderUtils.normalizeCspVarName(idi2)+")";
 			chains[i] = "and("+eqChain+","+finalMember+")";
 		}
-		p.setExpression(CtrBuilderUtils.chainExpressions(chains, "or"));
-		for(String var : strVars) p.addVariable(var);
-		try {
-			p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		return this.intensionCtrEncoder.encode(CtrBuilderUtils.chainExpressionsForAssociativeOp(chains, "or"));
 	}
 
 }

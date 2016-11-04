@@ -61,7 +61,7 @@ public class StringCondition {
 		return this.vars.size() > 0;
 	}
 	
-	private String asString(String leftOperand) {
+	public String asString(String leftOperand) {
 		return this.asString.replaceAll(LEFT_OPERAND, leftOperand);
 	}
 	

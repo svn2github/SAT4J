@@ -34,7 +34,7 @@ public class LanguageCtrBuilder {
 		this.varmapping = varmapping;
 		this.firstInternalVarMapping = firstInternalVarMapping;
 	}
-	
+
 	public boolean buildCtrMDD(String id, XVarInteger[] list, Object[][] objTransitions) {
 		String startState = (String) objTransitions[0][0];
 		Map<String, List<Transition>> transitions = extractTransitions(objTransitions, startState);

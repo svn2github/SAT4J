@@ -29,18 +29,14 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.sat4j.core.Vec;
-import org.sat4j.csp.Evaluable;
-import org.sat4j.csp.Predicate;
 import org.sat4j.csp.Var;
 import org.sat4j.csp.constraints.GentSupports;
 import org.sat4j.csp.constraints.Nogoods;
 import org.sat4j.csp.constraints.Relation;
+import org.sat4j.csp.intension.IntensionCtrEncoder;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVec;
-import org.xcsp.common.Types.TypeArithmeticOperator;
-import org.xcsp.common.Types.TypeConditionOperatorRel;
 import org.xcsp.common.Types.TypeFlag;
 import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeLeaf;
@@ -65,62 +61,18 @@ public class GenericCtrBuilder {
 	/** a mapping from the CSP variable names to Sat4j CSP variables */
 	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
 
-	public GenericCtrBuilder(IPBSolver solver, Map<String, Var> varmapping) {
+	private final IntensionCtrEncoder intensionCtrEnc;
+
+	public GenericCtrBuilder(IPBSolver solver, Map<String, Var> varmapping, IntensionCtrEncoder intensionEnc) {
 		this.solver = solver;
-		this.varmapping = varmapping;		
-	}
-	
-	public boolean buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorRel op, int k) { // NOTE: unused at this time because of the use of callbacksParameters.remove(XCallbacksParameters)
-		String expr = op.name().toLowerCase()+"("+CtrBuilderUtils.normalizeCspVarName(x.id)+","+k+")";
-		IVec<Var> scope = new Vec<Var>(1);
-		scope.push(this.varmapping.get(x.id));
-		IVec<Evaluable> vars = new Vec<Evaluable>(1);
-		vars.push(this.varmapping.get(x.id));
-		Predicate p = new Predicate();
-		p.addVariable(CtrBuilderUtils.normalizeCspVarName(x.id));
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator opa, XVarInteger y, TypeConditionOperatorRel op, int k) { // NOTE: unused at this time because of the use of callbacksParameters.remove(XCallbacksParameters)
-		String expr = op.name().toLowerCase()+"("+opa.name().toLowerCase()+"("+CtrBuilderUtils.normalizeCspVarName(x.id)+","+CtrBuilderUtils.normalizeCspVarName(y.id)+"),"+k+")";
-		Vec<Var> scope = new Vec<Var>(new Var[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
-		Vec<Evaluable> vars = new Vec<Evaluable>(new Evaluable[]{this.varmapping.get(x.id), this.varmapping.get(y.id)});
-		Predicate p = new Predicate();
-		p.addVariable(CtrBuilderUtils.normalizeCspVarName(x.id));
-		p.addVariable(CtrBuilderUtils.normalizeCspVarName(y.id));
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		this.varmapping = varmapping;
+		this.intensionCtrEnc = intensionEnc;
 	}
 	
 	public boolean buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVarInteger> syntaxTreeRoot) {
 		syntaxTreeRootToString(syntaxTreeRoot);
-		Vec<Var> scope = new Vec<Var>(xscope.length);
-		Vec<Evaluable> vars = new Vec<Evaluable>(xscope.length);
-		Predicate p = new Predicate();
-		for(XVarInteger vxscope : xscope) {
-			String strVar = vxscope.toString();
-			p.addVariable(CtrBuilderUtils.normalizeCspVarName(strVar));
-			scope.push(varmapping.get(strVar));
-			vars.push(varmapping.get(strVar));
-		}
 		String expr = syntaxTreeRootToString(syntaxTreeRoot);
-		p.setExpression(expr);
-		try {
-			p.toClause(this.solver, scope, vars);
-		} catch (ContradictionException e) {
-			return true;
-		}
+		this.intensionCtrEnc.encode(expr);
 		return false;
 	}
 	
@@ -157,7 +109,7 @@ public class GenericCtrBuilder {
 		return buildCtrExtension(id, xArr, tuples, positive, flags);
 	}
 	
-	public boolean buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive, Set<TypeFlag> flags) {
+	public boolean buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive, Set<TypeFlag> flags) { // TODO: remove varmapping dependence
 		if(flags.contains(TypeFlag.STARRED_TUPLES)) {
 			tuples = unfoldStarredTuples(list, tuples);
 		}
@@ -174,7 +126,7 @@ public class GenericCtrBuilder {
 			cstr.addTuple(i, tuples[i]);
 		}
 		try {
-			cstr.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), new Vec<>()); // TODO : check scope == vars
+			cstr.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), new Vec<>());
 		} catch (ContradictionException e) {
 			return true;
 		}

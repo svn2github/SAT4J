@@ -19,18 +19,9 @@
 package org.sat4j.csp.constraints3;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import org.sat4j.core.Vec;
-import org.sat4j.csp.Evaluable;
-import org.sat4j.csp.Predicate;
-import org.sat4j.csp.Var;
-import org.sat4j.pb.IPBSolver;
+import org.sat4j.csp.intension.IntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
-import org.sat4j.specs.ContradictionException;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Condition.ConditionVal;
 import org.xcsp.common.Condition.ConditionVar;
@@ -46,15 +37,10 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class CountingCtrBuilder {
 
-	/** the solver in which the problem is encoded */
-	private IPBSolver solver;
+	private final IntensionCtrEncoder intensionCtrEnc;
 
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
-
-	public CountingCtrBuilder(IPBSolver solver, Map<String, Var> varmapping) {
-		this.solver = solver;
-		this.varmapping = varmapping;		
+	public CountingCtrBuilder(IntensionCtrEncoder intensionEnc) {
+		this.intensionCtrEnc = intensionEnc;
 	}
 
 	public boolean buildCtrSum(String id, XVarInteger[] list, Condition condition) {
@@ -64,9 +50,6 @@ public class CountingCtrBuilder {
 	}
 
 	public boolean buildCtrSum(String id, XVarInteger[] list, int[] coeffs, Condition condition) {
-		Predicate p = new Predicate();
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-		SortedSet<String> strVars = new TreeSet<>();
 		String varId;
 		StringBuffer exprBuf = new StringBuffer();
 		exprBuf.append(condition.operator.toString().toLowerCase());
@@ -74,26 +57,24 @@ public class CountingCtrBuilder {
 		for(int i=0; i<list.length-1; ++i) {
 			exprBuf.append("add(");
 			if(coeffs[i] != 1) {
-				exprBuf.append("mul(");
-				exprBuf.append(coeffs[i]);
-				exprBuf.append(',');
+				exprBuf.append("mul(").append(coeffs[i]).append(',');
 			}
 			varId = list[i].id;
-			addVarToPredExprBuffer(varId, strVars, vars, exprBuf);
+			exprBuf.append(CtrBuilderUtils.normalizeCspVarName(varId));
 			if(coeffs[i] != 1) {
 				exprBuf.append(')');
 			}
 			exprBuf.append(',');
 		}
 		varId = list[list.length-1].id;
-		addVarToPredExprBuffer(varId, strVars, vars, exprBuf);
+		exprBuf.append(CtrBuilderUtils.normalizeCspVarName(varId));
 		for(int i=0; i<list.length-1; ++i) {
 			exprBuf.append(')');
 		}
 		exprBuf.append(',');
 		if(condition instanceof ConditionVar) {
 			varId = ((ConditionVar) condition).x.id();
-			addVarToPredExprBuffer(varId, strVars, vars, exprBuf);
+			exprBuf.append(CtrBuilderUtils.normalizeCspVarName(varId));
 		} else if(condition instanceof ConditionVal) {
 			exprBuf.append(((ConditionVal) condition).k);
 		} else {
@@ -101,21 +82,7 @@ public class CountingCtrBuilder {
 		}
 		exprBuf.append(')');
 		String expr = exprBuf.toString();
-		p.setExpression(expr);
-		for(String var : strVars) p.addVariable(var);
-		try {
-			p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
-	}
-
-	private void addVarToPredExprBuffer(String varId, SortedSet<String> strVars, SortedSet<Var> vars, StringBuffer exprBuf) {
-		vars.add(this.varmapping.get(varId));
-		String normalizeName = CtrBuilderUtils.normalizeCspVarName(varId);
-		strVars.add(normalizeName);
-		exprBuf.append(normalizeName);
+		return this.intensionCtrEnc.encode(expr);
 	}
 
 	public boolean buildCtrCount(String id, XVarInteger[] list, int[] values, Condition condition) {
@@ -123,40 +90,21 @@ public class CountingCtrBuilder {
 	}
 
 	private boolean buildCtrCount(String id, XVarInteger[] list, int[] values, StringCondition condition) {
-		Predicate p = new Predicate();
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-		SortedSet<String> strVars = new TreeSet<>();
-		for(int i=0; i<list.length; ++i) {
-			vars.add(varmapping.get(list[i].id));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(list[i].id));
-		}
-		if(condition.hasVariables()) {
-			String condVar = condition.getVarIds().get(0);
-			vars.add(varmapping.get(condVar));
-		}
 		StringBuffer inExprBuf = new StringBuffer();
-		inExprBuf.append('[').append(Integer.toString(values[0]));
+		inExprBuf.append("set(").append(Integer.toString(values[0]));
 		for(int i=1; i<values.length; ++i) {
 			inExprBuf.append(',');
 			inExprBuf.append(Integer.toString(values[i]));
 		}
-		inExprBuf.append(']');
+		inExprBuf.append(')');
 		String inExpr = inExprBuf.toString();
 		String sumExprs[] = new String[list.length];
 		for(int i=0; i<list.length; ++i) {
 			String normVar = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			sumExprs[i] = "ite(inSet("+normVar+","+inExpr+"),1,0)";
+			sumExprs[i] = "if(in("+normVar+","+inExpr+"),1,0)";
 		}
-		String sumExpr = CtrBuilderUtils.chainExpressions(sumExprs, "add");
-		strVars.addAll(condition.getVarIds());
-		for(String var : strVars) p.addVariable(var);
-		condition.setPredicateExpression(p, sumExpr, false);
-		try {
-			p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		String sumExpr = CtrBuilderUtils.chainExpressionsForAssociativeOp(sumExprs, "add");
+		return this.intensionCtrEnc.encode(condition.asString(sumExpr));
 	}
 
 	public boolean buildCtrCount(String id, XVarInteger[] list, XVarInteger[] values, Condition condition) {
@@ -164,45 +112,22 @@ public class CountingCtrBuilder {
 	}
 
 	private boolean buildCtrCount(String id, XVarInteger[] list, XVarInteger[] values, StringCondition condition) {
-		Predicate p = new Predicate();
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-		SortedSet<String> strVars = new TreeSet<>();
 		int listLength = list.length;
-		for(int i=0; i<listLength; ++i) {
-			vars.add(varmapping.get(list[i].id));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(list[i].id));
-		}
-		for(int i=0; i<values.length; ++i) {
-			vars.add(varmapping.get(values[i].id));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(values[i].id));
-		}
-		if(condition.hasVariables()) {
-			String condVar = condition.getVarIds().get(0);
-			vars.add(varmapping.get(condVar));
-		}
 		StringBuffer inExprBuf = new StringBuffer();
-		inExprBuf.append('[').append(CtrBuilderUtils.normalizeCspVarName(values[0].id));
+		inExprBuf.append("set(").append(CtrBuilderUtils.normalizeCspVarName(values[0].id));
 		for(int i=1; i<values.length; ++i) {
 			inExprBuf.append(',');
 			inExprBuf.append(CtrBuilderUtils.normalizeCspVarName(values[i].id));
 		}
-		inExprBuf.append(']');
+		inExprBuf.append(')');
 		String inExpr = inExprBuf.toString();
 		String sumExprs[] = new String[listLength];
 		for(int i=0; i<listLength; ++i) {
 			String normVar = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			sumExprs[i] = "ite(inSet("+normVar+","+inExpr+"),1,0)";
+			sumExprs[i] = "if(in("+normVar+","+inExpr+"),1,0)";
 		}
-		String sumExpr = CtrBuilderUtils.chainExpressions(sumExprs, "add");
-		strVars.addAll(condition.getVarIds());
-		for(String var : strVars) p.addVariable(var);
-		condition.setPredicateExpression(p, sumExpr, false);
-		try {
-			p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		String sumExpr = CtrBuilderUtils.chainExpressionsForAssociativeOp(sumExprs, "add");
+		return this.intensionCtrEnc.encode(condition.asString(sumExpr));
 	}
 
 	public boolean buildCtrAtLeast(String id, XVarInteger[] list, int value, int k) {
@@ -248,19 +173,9 @@ public class CountingCtrBuilder {
 	}
 
 	private boolean buildCtrNValuesExcept(String id, XVarInteger[] list, int[] except, StringCondition strCond) {
-		Predicate p = new Predicate();
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
-		SortedSet<String> strVars = new TreeSet<>();
-		for(int i=0; i<list.length; ++i) {
-			vars.add(varmapping.get(list[i].id));
-			strVars.add(CtrBuilderUtils.normalizeCspVarName(list[i].id));
-		}
-		if(strCond.hasVariables()) {
-			vars.add(varmapping.get(strCond.getVarIds().get(0)));
-		}
 		StringBuffer sbuf = new StringBuffer();
 		String normalized;
-		sbuf.append("distinct([");
+		sbuf.append("distinct(set(");
 		normalized = CtrBuilderUtils.normalizeCspVarName(list[0].id);
 		sbuf.append(normalized);
 		for(int i=1; i<list.length; ++i) {
@@ -268,7 +183,7 @@ public class CountingCtrBuilder {
 			sbuf.append(',');
 			sbuf.append(normalized);
 		}
-		sbuf.append("],[");
+		sbuf.append("),set(");
 		if(except.length > 0) {
 			sbuf.append(except[0]);
 			for(int i=1; i<except.length; ++i) {
@@ -276,16 +191,8 @@ public class CountingCtrBuilder {
 				sbuf.append(except[i]);
 			}
 		}
-		sbuf.append("])");
-		strVars.addAll(strCond.getVarIds());
-		for(String var : strVars) p.addVariable(var);
-		strCond.setPredicateExpression(p, sbuf.toString(), false);
-		try {
-			p.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), CtrBuilderUtils.toEvaluableVec(vars));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		sbuf.append("))");
+		return this.intensionCtrEnc.encode(strCond.asString(sbuf.toString()));
 	}
 
 	public boolean buildCtrNotAllEqual(String id, XVarInteger[] list) {
@@ -303,32 +210,14 @@ public class CountingCtrBuilder {
 	private boolean manageClosedCardinality(String id, XVarInteger[] list, boolean closed, int[] values) {
 		if(!closed) return false;
 		for(int i=0; i<list.length; ++i) {
-			Predicate p = new Predicate();
 			String normVar = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			p.addVariable(normVar);
 			StringBuffer exprBuff = new StringBuffer();
-			exprBuff.append("or(");
-			exprBuff.append("eq(");
-			exprBuff.append(normVar);
-			exprBuff.append(',');
-			exprBuff.append(values[0]);
-			exprBuff.append(')');
+			exprBuff.append("or(eq(").append(normVar).append(',').append(values[0]).append(')');
 			for(int j=1; j<values.length; ++j) {
-				exprBuff.append(',');
-				exprBuff.append("eq(");
-				exprBuff.append(normVar);
-				exprBuff.append(',');
-				exprBuff.append(values[j]);
-				exprBuff.append(')');
+				exprBuff.append(",eq(").append(normVar).append(',').append(values[j]).append(')');
 			}
 			exprBuff.append(')');
-			p.setExpression(exprBuff.toString());
-			try {
-				Var varMapping = varmapping.get(list[i].id);
-				p.toClause(this.solver, new Vec<Var>(new Var[]{varMapping}), new Vec<Evaluable>(new Evaluable[]{varMapping}));
-			} catch (ContradictionException e) {
-				return true;
-			}
+			if(this.intensionCtrEnc.encode(exprBuff.toString())) return true;
 		}
 		return false;
 	}

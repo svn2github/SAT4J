@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.sat4j.AbstractLauncher;
+import org.sat4j.core.VecInt;
 import org.sat4j.csp.Domain;
 import org.sat4j.csp.Domains;
 import org.sat4j.csp.Var;
@@ -40,6 +41,8 @@ import org.sat4j.csp.constraints3.ElementaryCtrBuilder;
 import org.sat4j.csp.constraints3.GenericCtrBuilder;
 import org.sat4j.csp.constraints3.LanguageCtrBuilder;
 import org.sat4j.csp.constraints3.SchedulingCtrBuilder;
+import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.csp.constraints3.ObjBuilder;
 import org.sat4j.csp.constraints3.CountingCtrBuilder;
 import org.sat4j.pb.IPBSolver;
@@ -73,7 +76,7 @@ import org.xcsp.parser.entries.XVariables.XVarSymbolic;
  * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
-public class XMLCSP3Reader extends Reader implements XCallbacks2 {
+public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncoder {
 
 	/** the solver in which the problem is encoded */
 	private IPBSolver solver;
@@ -132,12 +135,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		this.launcher = launcher;
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
-		this.elementaryCtrBuilder = new ElementaryCtrBuilder(solver, varmapping, firstInternalVarMapping);
-		this.comparisonCtrBuilder = new ComparisonCtrBuilder(solver, varmapping);
-		this.connectionCtrBuilder = new ConnectionCtrBuilder(solver, varmapping);
-		this.schedulingCtrBuilder = new SchedulingCtrBuilder(solver, varmapping);
-		this.genericCtrBuilder = new GenericCtrBuilder(solver, varmapping);
-		this.countingCtrBuilder = new CountingCtrBuilder(solver, varmapping);
+		IntensionCtrEncoder intensionEnc = new IntensionCtrEncoder(this);
+		this.elementaryCtrBuilder = new ElementaryCtrBuilder(intensionEnc);
+		this.comparisonCtrBuilder = new ComparisonCtrBuilder(intensionEnc);
+		this.connectionCtrBuilder = new ConnectionCtrBuilder(intensionEnc);
+		this.schedulingCtrBuilder = new SchedulingCtrBuilder(intensionEnc);
+		this.genericCtrBuilder = new GenericCtrBuilder(solver, varmapping, intensionEnc); // TODO: refactor to keep only intension encoder as parameter
+		this.countingCtrBuilder = new CountingCtrBuilder(intensionEnc);
 		this.languageCtrBuilder = new LanguageCtrBuilder(solver, varmapping, firstInternalVarMapping);
 		this.objBuilder = new ObjBuilder(solver, varmapping, firstInternalVarMapping);
 	}
@@ -278,6 +282,40 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		endObjectives();
 		endInstance();
 	}
+	
+	@Override
+	public int[] getCspVarDomain(String var) {
+		final Domain domain = this.varmapping.get(var).domain();
+		final int domSize = domain.size();
+		int[] domArray = new int[domSize];
+		for(int i=0; i<domSize; ++i) {
+			domArray[i] = domain.get(i);
+		}
+		return domArray;
+	}
+
+	@Override
+	public int getSolverVar(String strVar, Integer value) {
+		final Var var = this.varmapping.get(strVar);
+		int solverVar = this.firstInternalVarMapping.get(var);
+		final Domain domain = var.domain();
+		final int domSize = domain.size();
+		for(int i=0; i<domSize; ++i) {
+			if(domain.get(i) == value) return solverVar;
+			++solverVar;
+		}
+		throw new IllegalArgumentException();
+	}
+
+	@Override
+	public boolean addClause(int[] clause) {
+		try {
+			this.solver.addClause(new VecInt(clause));
+		} catch (ContradictionException e) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * @see XCallbacks2#buildVarInteger(XVarInteger, int, int)
@@ -357,7 +395,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeConditionOperatorRel op, int k) {
-		this.contradictionFound |= this.genericCtrBuilder.buildCtrPrimitive(id, x, op, k);
+		// not implemented ; not necessary due to removal of XCallbacksParameters.RECOGNIZE_SPECIAL_X_INTENSION_CASES
 	}
 
 	/**
@@ -365,7 +403,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildCtrPrimitive(String id, XVarInteger x, TypeArithmeticOperator opa, XVarInteger y, TypeConditionOperatorRel op, int k) {
-		this.contradictionFound |= this.genericCtrBuilder.buildCtrPrimitive(id, x, opa, y, op, k);
+		// not implemented ; not necessary due to removal of XCallbacksParameters.RECOGNIZE_SPECIAL_X_INTENSION_CASES
 	}
 
 	/**

@@ -41,12 +41,6 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class CtrBuilderUtils {
 	
-	/** String replacement for opening brackets in variable names */
-	private static final String VAR_NAME_OP_BRACK_REPL = "_";
-	
-	/** String replacement for closing brackets in variable names */
-	private static final String VAR_NAME_CL_BRACK_REPL = "";
-	
 	public static XVarInteger[][] transposeMatrix(XVarInteger[][] matrix) {
 		XVarInteger[][] tMatrix = new XVarInteger[matrix[0].length][matrix.length];
 		for(int i=0; i<matrix[0].length; ++i) {
@@ -57,8 +51,8 @@ public class CtrBuilderUtils {
 		return tMatrix;
 	}
 	
-	public static String normalizeCspVarName(String name) {
-		return name.replaceAll("\\[", VAR_NAME_OP_BRACK_REPL).replaceAll("\\]", VAR_NAME_CL_BRACK_REPL);
+	public static String normalizeCspVarName(String name) { // TODO: remove unnecessary calls to this method
+		return name;
 	}
 	
 	public static IVec<Var> toVarVec(Collection<Var> vars) {
@@ -77,19 +71,12 @@ public class CtrBuilderUtils {
 		return vec;
 	}
 	
-	public static String chainExpressions(String[] exprs, String op) {
-		StringBuffer exprBuff = new StringBuffer();
-		for(int i=0; i<exprs.length-1; ++i) {
-			exprBuff.append(op);
-			exprBuff.append("(");
-		}
-		exprBuff.append(exprs[0]);
-		for(int i=1; i<exprs.length; ++i) {
-			exprBuff.append(',');
-			exprBuff.append(exprs[i]);
-			exprBuff.append(')');
-		}
-		return exprBuff.toString();
+	public static String chainExpressionsForAssociativeOp(String[] exprs, String op) {
+		StringBuffer exprBuf = new StringBuffer();
+		exprBuf.append(op).append('(').append(exprs[0]);
+		for(int i=1; i<exprs.length; ++i) exprBuf.append(',').append(exprs[i]);
+		exprBuf.append(')');
+		return exprBuf.toString();
 	}
 	
 	public static String chainExpressionsAssociative(String[] exprs, String op) {
@@ -115,7 +102,7 @@ public class CtrBuilderUtils {
 			p.addVariable(norm);
 			toChain[i] = norm;
 		}
-		p.setExpression("eq("+chainExpressions(toChain, "add")+",1)");
+		p.setExpression("eq("+chainExpressionsForAssociativeOp(toChain, "add")+",1)");
 		try {
 			p.toClause(solver, scope, vars);
 		} catch (ContradictionException e) {
