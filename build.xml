@@ -7,7 +7,7 @@
         <property name="testreport.dir" value="tests"/>
 	<property name="build" value="bin" />
 	<property name="doc" value="api" />
-	<property name="target" value="1.6"/>
+	<property name="target" value="1.8"/>
         <property name="dist" value="dist"/>
         <property name="release" value="CUSTOM"/>
         <property name="tag" value="HEAD"/>
@@ -137,6 +137,7 @@
 			   <include name="org.sat4j.csp.xmlparser.jar"/>
 		   </zipgroupfileset>
                    <zipgroupfileset dir="${lib}">
+                           <include name="xcsp3parser.jar"/>
                            <include name="js.jar"/>
 		   </zipgroupfileset>
                </jar>
@@ -301,7 +302,7 @@
 		<echo>Generating Javodoc</echo>
 		<javadoc destdir="${doc}/${module}" 
 				 access="public" 
-				 source="1.6" 
+				 source="1.8" 
 				 use="true" 
 				 notree="false" 
 				 nonavbar="false" 
@@ -327,7 +328,7 @@
 		<javac
 		srcdir="${src}"
 		destdir="${build}"
-		source="1.6"
+		source="1.8"
 		target="${target}"
 		debug="true"
 	        includeantruntime="false">
@@ -434,7 +435,7 @@
         <target name="tests" 
           description="Launch JUnit tests and generate a report">
 		<echo>Compiling test files</echo>
-		<javac srcdir="${test}" destdir="${build}" source="1.6" target="1.5" debug="true">
+		<javac srcdir="${test}" destdir="${build}" source="1.8" target="1.8" debug="true">
 			<classpath refid="somePath"/>
 		</javac>
 		<echo>Running JUNIT tests</echo>
