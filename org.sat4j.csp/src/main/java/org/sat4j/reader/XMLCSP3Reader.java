@@ -41,8 +41,9 @@ import org.sat4j.csp.constraints3.ElementaryCtrBuilder;
 import org.sat4j.csp.constraints3.GenericCtrBuilder;
 import org.sat4j.csp.constraints3.LanguageCtrBuilder;
 import org.sat4j.csp.constraints3.SchedulingCtrBuilder;
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.NogoodBasedIntensionCtrEncoder;
 import org.sat4j.csp.intension.ICspToSatEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.csp.constraints3.ObjBuilder;
 import org.sat4j.csp.constraints3.CountingCtrBuilder;
 import org.sat4j.pb.IPBSolver;
@@ -50,6 +51,7 @@ import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
+import org.sat4j.specs.IVecInt;
 import org.w3c.dom.Document;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Types.TypeArithmeticOperator;
@@ -135,7 +137,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		this.launcher = launcher;
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
-		IntensionCtrEncoder intensionEnc = new IntensionCtrEncoder(this);
+		IIntensionCtrEncoder intensionEnc = new NogoodBasedIntensionCtrEncoder(this);
 		this.elementaryCtrBuilder = new ElementaryCtrBuilder(intensionEnc);
 		this.comparisonCtrBuilder = new ComparisonCtrBuilder(intensionEnc);
 		this.connectionCtrBuilder = new ConnectionCtrBuilder(intensionEnc);
@@ -221,6 +223,26 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		}
 		return sbufValues.toString();
 	}
+	
+	public boolean discardModel(int model[]) {
+		IVecInt cl = new VecInt();
+		for(XVar xvar : this.allVars) {
+			Var var = this.varmapping.get(xvar.id);
+			Integer firstSolverVar = this.firstInternalVarMapping.get(var);
+			for(int i=0;;++i) {
+				if(model[firstSolverVar+i-1] > 0) {
+					cl.push(-firstSolverVar-i);
+					break;
+				}
+			}
+		}
+		try {
+			this.solver.addClause(cl);
+		} catch (ContradictionException e) {
+			return true;
+		}
+		return false;
+	}
 
 	private void decodeModel(int[] model, StringBuffer sbufList, StringBuffer sbufValues) {
 		XVar xvar = this.allVars.get(0);
@@ -241,9 +263,9 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 	@Override
 	public IProblem parseInstance(InputStream in) throws ParseFormatException,
 	ContradictionException, IOException {
-		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_UNARY_INTENSION_CASES);
-		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_BINARY_INTENSION_CASES);
-		implem().currentParameters.remove(XCallbacksParameters.RECOGNIZE_SPECIAL_TERNARY_INTENSION_CASES);
+		implem().currParameters.remove(XCallbacksParameters.RECOGNIZE_UNARY_PRIMITIVES);
+		implem().currParameters.remove(XCallbacksParameters.RECOGNIZE_BINARY_PRIMITIVES);
+		implem().currParameters.remove(XCallbacksParameters.RECOGNIZE_TERNARY_PRIMITIVES);
 		try {
 			loadInstance(in);
 			if(System.getProperty("justRead") != null) {
@@ -253,7 +275,8 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		} catch(ParseFormatException | ContradictionException | IOException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ParseFormatException(e);
+//			throw new ParseFormatException(e);
+			e.printStackTrace();
 		}
 		if(this.contradictionFound) {
 			throw new ContradictionException();
@@ -947,8 +970,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 	private Implem dataStructureImplementor = new Implem (this) ;
 
 	@Override
-	public Implem implem () {
+	public Implem implem() {
 	  return dataStructureImplementor ;
+	}
+
+	@Override
+	public Integer newVar() {
+		return this.solver.nextFreeVarId(true);
 	}
 
 }

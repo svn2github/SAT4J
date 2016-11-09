@@ -20,9 +20,10 @@ package org.sat4j.csp.constraints3;
 
 import java.util.Arrays;
 
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.xcsp.common.Condition;
+import org.xcsp.common.Condition.ConditionRel;
 import org.xcsp.common.Condition.ConditionVal;
 import org.xcsp.common.Condition.ConditionVar;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
@@ -37,9 +38,9 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class CountingCtrBuilder {
 
-	private final IntensionCtrEncoder intensionCtrEnc;
+	private final IIntensionCtrEncoder intensionCtrEnc;
 
-	public CountingCtrBuilder(IntensionCtrEncoder intensionEnc) {
+	public CountingCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionCtrEnc = intensionEnc;
 	}
 
@@ -52,7 +53,7 @@ public class CountingCtrBuilder {
 	public boolean buildCtrSum(String id, XVarInteger[] list, int[] coeffs, Condition condition) {
 		String varId;
 		StringBuffer exprBuf = new StringBuffer();
-		exprBuf.append(condition.operator.toString().toLowerCase());
+		exprBuf.append(((ConditionRel)condition).operator.toString().toLowerCase());
 		exprBuf.append('(');
 		for(int i=0; i<list.length-1; ++i) {
 			exprBuf.append("add(");
@@ -171,27 +172,43 @@ public class CountingCtrBuilder {
 	public boolean buildCtrNValuesExcept(String id, XVarInteger[] list, int[] except, Condition condition) {
 		return buildCtrNValuesExcept(id, list, except, StringCondition.buildStringCondition(condition));
 	}
-
+	
 	private boolean buildCtrNValuesExcept(String id, XVarInteger[] list, int[] except, StringCondition strCond) {
 		StringBuffer sbuf = new StringBuffer();
-		String normalized;
-		sbuf.append("distinct(set(");
-		normalized = CtrBuilderUtils.normalizeCspVarName(list[0].id);
-		sbuf.append(normalized);
-		for(int i=1; i<list.length; ++i) {
-			normalized = CtrBuilderUtils.normalizeCspVarName(list[i].id);
-			sbuf.append(',');
-			sbuf.append(normalized);
-		}
-		sbuf.append("),set(");
-		if(except.length > 0) {
-			sbuf.append(except[0]);
-			for(int i=1; i<except.length; ++i) {
+		boolean firstAddMember = true;
+		sbuf.append("add(");
+		for(int i=0; i<list.length; ++i) {
+			if(!firstAddMember) {
 				sbuf.append(',');
-				sbuf.append(except[i]);
 			}
+			if(i == 0 && except.length == 0) {
+				sbuf.append('1');
+				firstAddMember = false;
+				continue;
+			}
+			String normVar = CtrBuilderUtils.normalizeCspVarName(list[i].id);
+			sbuf.append("if(and(");
+			boolean firstAndMember = true;
+			for(int j=0; j<except.length; ++j) {
+				if(!firstAndMember) {
+					sbuf.append(',');
+					firstAndMember = false;
+				}
+				sbuf.append("ne(").append(normVar).append(',').append(except[j]).append(')');
+				firstAndMember = false;
+			}
+			for(int j=0; j<i; ++j) {
+				if(!firstAndMember) {
+					sbuf.append(',');
+					firstAndMember = false;
+				}
+				sbuf.append("ne(").append(normVar).append(',').append(CtrBuilderUtils.normalizeCspVarName(list[j].id)).append(')');
+				firstAndMember = false;
+			}
+			sbuf.append("),1,0)");
+			firstAddMember = false;
 		}
-		sbuf.append("))");
+		sbuf.append(')');
 		return this.intensionCtrEnc.encode(strCond.asString(sbuf.toString()));
 	}
 

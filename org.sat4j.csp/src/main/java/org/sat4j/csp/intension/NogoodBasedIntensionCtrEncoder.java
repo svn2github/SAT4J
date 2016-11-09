@@ -5,13 +5,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class IntensionCtrEncoder implements ICspToSatEncoder {
+public class NogoodBasedIntensionCtrEncoder implements ICspToSatEncoder, IIntensionCtrEncoder {
 	
-	private final  ICspToSatEncoder solver;
+	private final ICspToSatEncoder solver;
 	
 	private final Map<String, int[]> domains = new HashMap<>();
 
-	public IntensionCtrEncoder(ICspToSatEncoder solver) {
+	public NogoodBasedIntensionCtrEncoder(ICspToSatEncoder solver) {
 		this.solver = solver;
 	}
 	
@@ -166,6 +166,11 @@ public class IntensionCtrEncoder implements ICspToSatEncoder {
 	@Override
 	public boolean addClause(int[] clause) {
 		return this.solver.addClause(clause);
+	}
+
+	@Override
+	public Integer newVar() {
+		return this.solver.newVar();
 	}
 
 }

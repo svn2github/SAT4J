@@ -8,4 +8,6 @@ public interface ICspToSatEncoder {
 
 	boolean addClause(int[] clause);
 
+	Integer newVar();
+
 }

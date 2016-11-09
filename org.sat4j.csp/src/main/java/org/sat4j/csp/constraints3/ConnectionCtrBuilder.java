@@ -18,7 +18,7 @@
 *******************************************************************************/
 package org.sat4j.csp.constraints3;
 
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Types.TypeRank;
@@ -35,9 +35,9 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class ConnectionCtrBuilder {
 
-	private final IntensionCtrEncoder intensionCtrEncoder;
+	private final IIntensionCtrEncoder intensionCtrEncoder;
 
-	public ConnectionCtrBuilder(IntensionCtrEncoder intensionEnc) {
+	public ConnectionCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionCtrEncoder = intensionEnc;
 	}
 	

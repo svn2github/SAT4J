@@ -21,7 +21,7 @@ package org.sat4j.csp.constraints3;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.xcsp.common.Condition;
 import org.xcsp.parser.entries.XDomains.XDomInteger;
@@ -37,9 +37,9 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class SchedulingCtrBuilder {
 
-	private final IntensionCtrEncoder intensionEnc;
+	private final IIntensionCtrEncoder intensionEnc;
 
-	public SchedulingCtrBuilder(IntensionCtrEncoder intensionEnc) {
+	public SchedulingCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionEnc = intensionEnc;
 	}
 	

@@ -1,6 +1,6 @@
 package org.sat4j.csp.constraints3;
 
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /** 
@@ -8,9 +8,9 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
 */
 public class ElementaryCtrBuilder {
 
-	private final IntensionCtrEncoder intensionEncoder;
+	private final IIntensionCtrEncoder intensionEncoder;
 
-	public ElementaryCtrBuilder(IntensionCtrEncoder intensionEnc) {
+	public ElementaryCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionEncoder = intensionEnc;
 	}
 	

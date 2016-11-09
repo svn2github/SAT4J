@@ -21,7 +21,7 @@ package org.sat4j.csp.constraints3;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.xcsp.common.Types.TypeOperator;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
@@ -36,9 +36,9 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class ComparisonCtrBuilder {
 	
-	private final IntensionCtrEncoder intensionCtrEncoder;
+	private final IIntensionCtrEncoder intensionCtrEncoder;
 
-	public ComparisonCtrBuilder(IntensionCtrEncoder intensionEnc) {
+	public ComparisonCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionCtrEncoder = intensionEnc;
 	}
 	

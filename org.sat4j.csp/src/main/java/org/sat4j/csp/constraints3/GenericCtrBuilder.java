@@ -33,7 +33,7 @@ import org.sat4j.csp.Var;
 import org.sat4j.csp.constraints.GentSupports;
 import org.sat4j.csp.constraints.Nogoods;
 import org.sat4j.csp.constraints.Relation;
-import org.sat4j.csp.intension.IntensionCtrEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
@@ -61,9 +61,9 @@ public class GenericCtrBuilder {
 	/** a mapping from the CSP variable names to Sat4j CSP variables */
 	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
 
-	private final IntensionCtrEncoder intensionCtrEnc;
+	private final IIntensionCtrEncoder intensionCtrEnc;
 
-	public GenericCtrBuilder(IPBSolver solver, Map<String, Var> varmapping, IntensionCtrEncoder intensionEnc) {
+	public GenericCtrBuilder(IPBSolver solver, Map<String, Var> varmapping, IIntensionCtrEncoder intensionEnc) {
 		this.solver = solver;
 		this.varmapping = varmapping;
 		this.intensionCtrEnc = intensionEnc;
