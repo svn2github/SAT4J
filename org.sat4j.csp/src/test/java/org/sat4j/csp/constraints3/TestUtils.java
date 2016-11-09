@@ -68,7 +68,7 @@ public class TestUtils {
 	}
 
 	public static List<String> getSortedStringModels(XMLCSP3Reader reader, IPBSolver solver) {
-		List<int[]> models = TestUtils.getAllModels(solver);
+		List<int[]> models = TestUtils.getAllModels(reader, solver);
 		SortedSet<String> strModels = new TreeSet<String>();
 		for(int i=0; i<models.size(); ++i) {
 			strModels.add(reader.decodeModelAsValueSequence(models.get(i)));
@@ -76,17 +76,13 @@ public class TestUtils {
 		return new ArrayList<String>(strModels);
 	}
 
-	public static List<int[]> getAllModels(ISolver solver) {
+	public static List<int[]> getAllModels(XMLCSP3Reader reader, ISolver solver) {
 		List<int[]> models = new ArrayList<int[]>();
 		try {
 			while(solver.isSatisfiable()) {
 				int[] model = solver.model();
 				models.add(model);
-				try {
-					solver.discardCurrentModel();
-				} catch (ContradictionException e) {
-					break;
-				}
+				if(reader.discardModel(model)) break;
 			}
 		} catch (TimeoutException e) {
 			throw new RuntimeException(e);

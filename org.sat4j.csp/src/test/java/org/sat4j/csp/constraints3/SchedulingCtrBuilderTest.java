@@ -1,7 +1,5 @@
 package org.sat4j.csp.constraints3;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,25 +99,6 @@ public class SchedulingCtrBuilderTest {
 		Arrays.sort(stretchesArrays);
 		TestUtils.assertEqualsSortedModels(sortedModels, 
 				stretchesArrays);
-	}
-	
-	@Test
-	public void testStretch3() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
-		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 2));
-		String ctrSection = "<stretch>"
-				+ "<list> i0 i0 i0 </list>"
-				+ "<values> 0 1 2 3 </values>"
-				+ "<widths> 0..0 1..1 2..2 3..3 </widths>"
-				+ "</stretch>";
-		List<String> sortedModels = null;
-		try {
-			sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
-		} catch(AssertionError e) {
-			assertTrue(e.getMessage().startsWith("java.lang.IllegalArgumentException:"));
-			return;
-		}
-		TestUtils.assertEqualsSortedModels(sortedModels, "3");
 	}
 	
 	String[] noOverlapArrays(int originMax, int nOrigins, int lengthMin, int lengthMax, boolean zeroIgnored, boolean justOriginsVars) {
