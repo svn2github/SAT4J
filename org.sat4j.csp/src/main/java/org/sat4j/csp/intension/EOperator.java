@@ -2,10 +2,10 @@ package org.sat4j.csp.intension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 public enum EOperator {
 	
@@ -13,11 +13,27 @@ public enum EOperator {
 		public int evaluate(final int[] v) {
 			return -v[0];
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			Map<Integer, Integer> ret = new HashMap<>();
+			for(Map.Entry<Integer, Integer> entry : mappings.get(0).entrySet()) {
+				ret.put(-entry.getKey(), entry.getValue());
+			}
+			return ret;
+		}
 	},
 	
 	ABSOLUTE_VALUE("abs", EExpressionType.INTEGER, 1, 1, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return Math.abs(v[0]);
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			Map<Integer, Integer> ret = new HashMap<>();
+			for(Map.Entry<Integer, Integer> entry : mappings.get(0).entrySet()) {
+				ret.put(Math.abs(entry.getKey()), entry.getValue());
+			}
+			return ret;
 		}
 	},
 	
@@ -27,11 +43,43 @@ public enum EOperator {
 			for(int i:v) sum+= i;
 			return sum;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()+entry2.getKey());
+				}
+			}
+			return ret;
+		}
 	},
 	
 	SUBTRACTION("sub", EExpressionType.INTEGER, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]-v[1];
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()-entry2.getKey());
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -41,11 +89,43 @@ public enum EOperator {
 			for(int i:v) prod *= i;
 			return prod;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()*entry2.getKey());
+				}
+			}
+			return ret;
+		}
 	},
 	
 	INTEGER_DIVISION("div", EExpressionType.INTEGER, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]/v[1];
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()/entry2.getKey());
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -53,11 +133,35 @@ public enum EOperator {
 		public int evaluate(final int[] v) {
 			return v[0]%v[1];
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()%entry2.getKey());
+				}
+			}
+			return ret;
+		}
 	},
 	
 	SQUARE("sqr", EExpressionType.INTEGER, 1, 1, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]*v[0];
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			Map<Integer, Integer> ret = new HashMap<>();
+			for(Map.Entry<Integer, Integer> entry : mappings.get(0).entrySet()) {
+				ret.put(entry.getKey()*entry.getKey(), entry.getValue());
+			}
+			return ret;
 		}
 	},
 	
@@ -71,6 +175,22 @@ public enum EOperator {
 			if((b&1)==0) return halfPow*halfPow;
 			return a*halfPow*halfPow;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), (int)Math.pow(entry1.getKey(),entry2.getKey()));
+				}
+			}
+			return ret;
+		}
 	},
 	
 	MINIMUM("min", EExpressionType.INTEGER, 1, EOperator.INFINITE_ARITY, EAssociativityState.ASSOCIATIVE) {
@@ -78,6 +198,22 @@ public enum EOperator {
 			int m = Integer.MAX_VALUE;
 			for(int i:v) m = Math.min(m, i);
 			return m;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), Math.min(entry1.getKey(),entry2.getKey()));
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -87,11 +223,43 @@ public enum EOperator {
 			for(int i:v) m = Math.max(m, i);
 			return m;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), Math.max(entry1.getKey(),entry2.getKey()));
+				}
+			}
+			return ret;
+		}
 	},
 	
 	DISTANCE("dist", EExpressionType.INTEGER, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return Math.abs(v[0]-v[1]);
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), Math.abs(entry1.getKey()-entry2.getKey()));
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -99,11 +267,43 @@ public enum EOperator {
 		public int evaluate(final int[] v) {
 			return v[0] < v[1] ? 1 : 0;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()<entry2.getKey()?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	LESS_THAN_OR_EQUAL("le", EExpressionType.BOOLEAN, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0] <= v[1] ? 1 : 0;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()<=entry2.getKey()?1:0);
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -111,17 +311,65 @@ public enum EOperator {
 		public int evaluate(final int[] v) {
 			return v[0] > v[1] ? 1 : 0;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()>entry2.getKey()?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	GREATER_THAN_OR_EQUAL("ge", EExpressionType.BOOLEAN, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0] >= v[1] ? 1 : 0;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()>=entry2.getKey()?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	DIFFERENT_FROM("ne", EExpressionType.BOOLEAN, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0] != v[1] ? 1 : 0;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()!=entry2.getKey()?1:0);
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -130,25 +378,55 @@ public enum EOperator {
 			for(int i:v) if(i != v[0]) return 0;
 			return 1;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()==entry2.getKey()?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	SET("set", EExpressionType.SET, 0, EOperator.INFINITE_ARITY, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
-			return 0;
+			throw new IllegalStateException("this operator must be translated before encoding");
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			throw new IllegalStateException("this operator must be translated before encoding");
 		}
 	},
 	
 	MEMBERSHIP("in", EExpressionType.BOOLEAN, 2, 2, EAssociativityState.NONE) {
-		// set members are v[1] ... v[n]
 		public int evaluate(final int[] v) {
-			for(int i=1; i<v.length; ++i) if(v[i] == v[0]) return 1;
-			return 0;
+			throw new IllegalStateException("this operator must be translated before encoding");
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			throw new IllegalStateException("this operator must be translated before encoding");
 		}
 	},
 	
 	LOGICAL_NOT("not", EExpressionType.BOOLEAN, 1, 1, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]==0 ? 1 : 0;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			Map<Integer, Integer> ret = new HashMap<>();
+			for(Map.Entry<Integer, Integer> entry : mappings.get(0).entrySet()) {
+				ret.put(entry.getKey()==0 ? 1 : 0, entry.getValue());
+			}
+			return ret;
 		}
 	},
 	
@@ -157,6 +435,22 @@ public enum EOperator {
 			for(int i:v) if(i == 0) return 0;
 			return 1;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()!=0 && entry2.getKey()!=0?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	LOGICAL_OR("or", EExpressionType.BOOLEAN, 1, EOperator.INFINITE_ARITY, EAssociativityState.ASSOCIATIVE) {
@@ -164,11 +458,43 @@ public enum EOperator {
 			for(int i:v) if(i != 0) return 1;
 			return 0;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()!=0 || entry2.getKey()!=0?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	LOGICAL_XOR("xor", EExpressionType.BOOLEAN, 2, EOperator.INFINITE_ARITY, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]==0 && v[1]!=0 ? 1 : v[0]!=0 && v[1]==0 ? 1 : 0;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()!=0 ^ entry2.getKey()!=0?1:0);
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -177,11 +503,43 @@ public enum EOperator {
 			for(int i:v) if((i!=0 && v[0]==0) || (i==0 && v[0] != 0)) return 0;
 			return 1;
 		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), (entry1.getKey()!=0) == (entry2.getKey()!=0)?1:0);
+				}
+			}
+			return ret;
+		}
 	},
 	
 	LOGICAL_IMPLICATION("imp", EExpressionType.BOOLEAN, 2, 2, EAssociativityState.NONE) {
 		public int evaluate(final int[] v) {
 			return v[0]==0 || v[1] != 0 ? 1 : 0;
+		}
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			if(mappings.size() == 1) return mappings.get(0);
+			if(mappings.size() > 2) throw new UnsupportedOperationException("use associativity property to build 2-arity operators");
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry1.getKey()==0 || entry2.getKey()!=0?1:0);
+				}
+			}
+			return ret;
 		}
 	},
 	
@@ -189,14 +547,23 @@ public enum EOperator {
 		public int evaluate(final int[] v) {
 			return v[0]!=0 ? v[1] : v[2];
 		}
-	},
-	
-	DISTINCT_VALUES("distinct", EExpressionType.INTEGER, 1, 2, EAssociativityState.NONE) {
-		// values to check are v[0] ... v[n]
-		public int evaluate(final int[] v) {
-			Set<Integer> values = new HashSet<>();
-			for(int i:v) values.add(i);
-			return values.size();
+		
+		public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+			Map<Integer, Integer> ret = new HashMap<>();
+			Iterator<Entry<Integer, Integer>> it1 = mappings.get(0).entrySet().iterator();
+			while(it1.hasNext()) {
+				Entry<Integer, Integer> entry1 = it1.next();
+				Iterator<Entry<Integer, Integer>> it2 = mappings.get(1).entrySet().iterator();
+				while(it2.hasNext()) {
+					Entry<Integer, Integer> entry2 = it2.next();
+					Iterator<Entry<Integer, Integer>> it3 = mappings.get(2).entrySet().iterator();
+					while(it3.hasNext()) {
+						Entry<Integer, Integer> entry3 = it3.next();
+						buildImplVar(solver, ret, entry1.getValue(), entry2.getValue(), entry3.getValue(), entry1.getKey()!=0?entry2.getKey():entry3.getKey());
+					}
+				}
+			}
+			return ret;
 		}
 	};
 	
@@ -262,13 +629,14 @@ public enum EOperator {
 	public int evaluate(final int[] v) {
 		throw new UnsupportedOperationException("method not implemented for operator "+this.name());
 	}
+	
+	public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver, List<Map<Integer,Integer>> mappings) {
+		throw new UnsupportedOperationException("method not implemented for operator "+this.name());
+	}
 
 	public int evaluate(final IExpression[] operands, final Map<String, Integer> bindings) {
 		if(this == EOperator.MEMBERSHIP) {
 			return evaluateMembership(operands, bindings);
-		}
-		if(this == EOperator.DISTINCT_VALUES) {
-			return evaluateDistinctValues(operands, bindings);
 		}
 		final int[] childrenEvaluation = new int[operands.length];
 		for(int i=0; i<operands.length; ++i) {
@@ -280,9 +648,6 @@ public enum EOperator {
 	public int updateEvaluation(final IExpression[] operands, final Map<String, Integer> bindingsChange) {
 		if(this == EOperator.MEMBERSHIP) {
 			return updateMembershipEvaluation(operands, bindingsChange);
-		}
-		if(this == EOperator.DISTINCT_VALUES) {
-			return updateDistinctValuesEvaluation(operands, bindingsChange);
 		}
 		final int[] childrenEvaluation = new int[operands.length];
 		for(int i=0; i<operands.length; ++i) {
@@ -313,36 +678,60 @@ public enum EOperator {
 		return this.evaluate(valuesArray);
 	}
 	
-	private int evaluateDistinctValues(IExpression[] operands, Map<String, Integer> bindings) {
-		Set<Integer> values = new HashSet<>();
-		for(IExpression expr : operands[0].operands()) {
-			values.add(expr.evaluate(bindings));
+	private static void buildImplVar(ICspToSatEncoder solver, Map<Integer, Integer> mapping, Integer var1, Integer var2,
+			int value) {
+		if(var1 == null) {
+			var1 = var2;
+			var2 = null;
 		}
-		if(operands.length > 1) {
-			for(IExpression expr : operands[1].operands()) {
-				values.remove(expr.evaluate(bindings));
-			}
+		if(var1 == null) {
+			mapping.put(value, null);
+			return;
 		}
-		final int[] valuesArray = new int[values.size()];
-		int i=0;
-		for(Integer value : values) valuesArray[i++] = value;
-		return this.evaluate(valuesArray);
+		Integer implVar = mapping.get(value);
+		if(implVar == null) {
+			implVar = solver.newVar();
+			mapping.put(value, implVar);
+		}
+		if(var2 == null) {
+			solver.addClause(new int[]{-var1, implVar});
+		} else {
+			solver.addClause(new int[]{-var1, -var2, implVar});
+		}
 	}
-
-	private int updateDistinctValuesEvaluation(IExpression[] operands, Map<String, Integer> bindingsChange) {
-		Set<Integer> values = new HashSet<>();
-		for(IExpression expr : operands[0].operands()) {
-			values.add(expr.updateEvaluation(bindingsChange));
+	
+	private static void buildImplVar(ICspToSatEncoder solver, Map<Integer, Integer> mapping, Integer var1, Integer var2,
+			Integer var3, int value) {
+		Integer implVar = mapping.get(value);
+		if(var1 == null) {
+			var1 = var2;
+			var2 = null;
 		}
-		if(operands.length > 1) {
-			for(IExpression expr : operands[1].operands()) {
-				values.remove(expr.updateEvaluation(bindingsChange));
+		if(var1 == null) {
+			var1 = var3;
+			var3 = null;
+		}
+		if(var1 == null) {
+			mapping.put(value, null);
+			return;
+		}
+		if(var2 == null) {
+			var2 = var3;
+			var3 = null;
+		}
+		if(implVar == null) {
+			implVar = solver.newVar();
+			mapping.put(value, implVar);
+		}
+		if(var2 == null) {
+			solver.addClause(new int[]{-var1, implVar});
+		} else {
+			if(var3 == null) {
+				solver.addClause(new int[]{-var1, -var2, implVar});
+			} else {
+				solver.addClause(new int[]{-var1, -var3, implVar});
 			}
 		}
-		final int[] valuesArray = new int[values.size()];
-		int i=0;
-		for(Integer value : values) valuesArray[i++] = value;
-		return this.evaluate(valuesArray);
 	}
 
 }

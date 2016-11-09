@@ -1,5 +1,6 @@
 package org.sat4j.csp.intension;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,7 @@ public class VarExpression implements IExpression {
 	@Override
 	public int evaluate(final Map<String, Integer> bindings) {
 		final Integer value = bindings.get(this.var);
-		if(value == null) throw new IllegalArgumentException("missing varaible in provided bindings: "+this.var);
+		if(value == null) throw new IllegalArgumentException("missing variable in provided bindings: "+this.var);
 		this.lastEvaluation = value;
 		return value;
 	}
@@ -76,6 +77,16 @@ public class VarExpression implements IExpression {
 		if(value == null) return this.lastEvaluation;
 		this.lastEvaluation = value;
 		return value;
+	}
+
+	@Override
+	public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver) {
+		Map<Integer, Integer> result = new HashMap<>();
+		int[] domain = solver.getCspVarDomain(this.var);
+		for(int value : domain) {
+			result.put(value, solver.getSolverVar(this.var, value));
+		}
+		return result;
 	}
 
 	@Override

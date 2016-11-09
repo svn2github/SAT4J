@@ -14,4 +14,6 @@ public interface IExpression extends Comparable<IExpression> {
 	int evaluate(Map<String, Integer> bindings);
 	
 	int updateEvaluation(Map<String, Integer> bindingsChange);
+	
+	Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver);
 }

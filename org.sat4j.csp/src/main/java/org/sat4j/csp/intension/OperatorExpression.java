@@ -1,7 +1,9 @@
 package org.sat4j.csp.intension;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,10 +19,25 @@ public class OperatorExpression implements IExpression {
 
 	public OperatorExpression(final EOperator op, IExpression[] operands) {
 		for(IExpression expr : operands) this.involvedVars.addAll(expr.involvedVars());
+		if(handleMembershipCase(op, operands)) return;
 		if(handleAssociativityCase(op, operands)) return;
 		this.op = op;
 		this.operands = operands;
 		expressionType = op.resultType();
+	}
+
+	private boolean handleMembershipCase(EOperator op, IExpression[] operands) {
+		if(op != EOperator.MEMBERSHIP) return false;
+		IExpression inclTest = operands[0];
+		IExpression[] setMembers = operands[1].operands();
+		IExpression[] newOperands = new IExpression[setMembers.length];
+		for(int i=0; i<setMembers.length; ++i) {
+			newOperands[i] = new OperatorExpression(EOperator.EQUAL_TO, new IExpression[]{inclTest, setMembers[i]});
+		}
+		this.op = EOperator.LOGICAL_OR;
+		this.operands = newOperands;
+		handleAssociativityCase(this.op, this.operands);
+		return true;
 	}
 
 	private boolean handleAssociativityCase(EOperator tmpOp, IExpression[] tmpOperands) {
@@ -147,6 +164,13 @@ public class OperatorExpression implements IExpression {
 	@Override
 	public boolean isAndOperator() {
 		return this.op == EOperator.LOGICAL_AND;
+	}
+
+	@Override
+	public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver) {
+		List<Map<Integer, Integer>> mappings = new ArrayList<>();
+		for(IExpression operand : this.operands) mappings.add(operand.encodeWithTseitin(solver));
+		return this.op.encodeWithTseitin(solver, mappings);
 	}
 
 }
