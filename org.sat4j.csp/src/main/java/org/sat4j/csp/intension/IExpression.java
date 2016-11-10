@@ -5,15 +5,11 @@ import java.util.Set;
 
 public interface IExpression extends Comparable<IExpression> {
 	
-	boolean isAndOperator();
+	String typeAsString();
 	
 	Set<String> involvedVars();
 	
-	IExpression[] operands();
-	
-	int evaluate(Map<String, Integer> bindings);
-	
-	int updateEvaluation(Map<String, Integer> bindingsChange);
+	IExpression[] getOperands();
 	
 	Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver);
 }

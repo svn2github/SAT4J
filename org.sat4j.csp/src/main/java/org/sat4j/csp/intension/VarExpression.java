@@ -11,11 +11,13 @@ public class VarExpression implements IExpression {
 	
 	private final Set<String> involvedVars = new HashSet<>();
 	
-	private int lastEvaluation;
-	
 	public VarExpression(final String value) {
 		this.var = value;
 		this.involvedVars.add(value);
+	}
+	
+	public String getVar() {
+		return this.var;
 	}
 
 	@Override
@@ -59,24 +61,8 @@ public class VarExpression implements IExpression {
 	}
 	
 	@Override
-	public IExpression[] operands() {
+	public IExpression[] getOperands() {
 		return null;
-	}
-
-	@Override
-	public int evaluate(final Map<String, Integer> bindings) {
-		final Integer value = bindings.get(this.var);
-		if(value == null) throw new IllegalArgumentException("missing variable in provided bindings: "+this.var);
-		this.lastEvaluation = value;
-		return value;
-	}
-
-	@Override
-	public int updateEvaluation(final Map<String, Integer> bindingsChange) {
-		final Integer value = bindingsChange.get(this.var);
-		if(value == null) return this.lastEvaluation;
-		this.lastEvaluation = value;
-		return value;
 	}
 
 	@Override
@@ -90,8 +76,8 @@ public class VarExpression implements IExpression {
 	}
 
 	@Override
-	public boolean isAndOperator() {
-		return false;
+	public String typeAsString() {
+		return "var";
 	}
 
 }

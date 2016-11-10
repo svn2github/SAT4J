@@ -60,23 +60,8 @@ public class IntegerExpression implements IExpression {
 	}
 
 	@Override
-	public IExpression[] operands() {
+	public IExpression[] getOperands() {
 		return null;
-	}
-	
-	@Override
-	public int evaluate(final Map<String, Integer> bindings) {
-		return this.value;
-	}
-
-	@Override
-	public int updateEvaluation(final Map<String, Integer> bindingsChange) {
-		return this.value;
-	}
-
-	@Override
-	public boolean isAndOperator() {
-		return false;
 	}
 
 	@Override
@@ -84,6 +69,11 @@ public class IntegerExpression implements IExpression {
 		Map<Integer, Integer> result = new HashMap<>();
 		result.put(this.value, null);
 		return result;
+	}
+
+	@Override
+	public String typeAsString() {
+		return "integer";
 	}
 
 }

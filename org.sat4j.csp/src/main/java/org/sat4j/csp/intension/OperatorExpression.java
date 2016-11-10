@@ -15,8 +15,6 @@ public class OperatorExpression implements IExpression {
 	
 	private final Set<String> involvedVars = new HashSet<>();
 	
-	private int lastEvaluation;
-
 	public OperatorExpression(final EOperator op, IExpression[] operands) {
 		for(IExpression expr : operands) this.involvedVars.addAll(expr.involvedVars());
 		if(handleMembershipCase(op, operands)) return;
@@ -29,7 +27,7 @@ public class OperatorExpression implements IExpression {
 	private boolean handleMembershipCase(EOperator op, IExpression[] operands) {
 		if(op != EOperator.MEMBERSHIP) return false;
 		IExpression inclTest = operands[0];
-		IExpression[] setMembers = operands[1].operands();
+		IExpression[] setMembers = operands[1].getOperands();
 		IExpression[] newOperands = new IExpression[setMembers.length];
 		for(int i=0; i<setMembers.length; ++i) {
 			newOperands[i] = new OperatorExpression(EOperator.EQUAL_TO, new IExpression[]{inclTest, setMembers[i]});
@@ -85,6 +83,10 @@ public class OperatorExpression implements IExpression {
 		OperatorExpression tmpExpression = new OperatorExpression(this.op, andOperands);
 		this.operands = tmpExpression.operands;
 	}
+	
+	public EOperator getOperator() {
+		return this.op;
+	}
 
 	@Override
 	public String toString() {
@@ -135,35 +137,8 @@ public class OperatorExpression implements IExpression {
 	}
 	
 	@Override
-	public IExpression[] operands() {
+	public IExpression[] getOperands() {
 		return this.operands;
-	}
-
-	@Override
-	public int evaluate(final Map<String, Integer> bindings) {
-		final int value = this.op.evaluate(this.operands, bindings);
-		this.lastEvaluation = value;
-		return value;
-	}
-
-	@Override
-	public int updateEvaluation(final Map<String, Integer> bindingsChange) {
-		boolean inCache = true;
-		for(String var : bindingsChange.keySet()) {
-			if(this.involvedVars.contains(var)) {
-				inCache = false;
-				break;
-			}
-		}
-		if(inCache) return this.lastEvaluation;
-		final int value = this.op.updateEvaluation(this.operands, bindingsChange);
-		this.lastEvaluation = value;
-		return value;
-	}
-
-	@Override
-	public boolean isAndOperator() {
-		return this.op == EOperator.LOGICAL_AND;
 	}
 
 	@Override
@@ -171,6 +146,11 @@ public class OperatorExpression implements IExpression {
 		List<Map<Integer, Integer>> mappings = new ArrayList<>();
 		for(IExpression operand : this.operands) mappings.add(operand.encodeWithTseitin(solver));
 		return this.op.encodeWithTseitin(solver, mappings);
+	}
+	
+	@Override
+	public String typeAsString() {
+		return "operator";
 	}
 
 }
