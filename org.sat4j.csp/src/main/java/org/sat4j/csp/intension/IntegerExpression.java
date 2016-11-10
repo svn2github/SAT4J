@@ -1,8 +1,6 @@
 package org.sat4j.csp.intension;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class IntegerExpression implements IExpression {
@@ -55,20 +53,13 @@ public class IntegerExpression implements IExpression {
 	}
 
 	@Override
-	public Set<String> involvedVars() {
+	public Set<String> getInvolvedVars() {
 		return this.involvedVars;
 	}
 
 	@Override
 	public IExpression[] getOperands() {
 		return null;
-	}
-
-	@Override
-	public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver) {
-		Map<Integer, Integer> result = new HashMap<>();
-		result.put(this.value, null);
-		return result;
 	}
 
 	@Override

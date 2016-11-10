@@ -1,10 +1,7 @@
 package org.sat4j.csp.intension;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class OperatorExpression implements IExpression {
@@ -16,7 +13,7 @@ public class OperatorExpression implements IExpression {
 	private final Set<String> involvedVars = new HashSet<>();
 	
 	public OperatorExpression(final EOperator op, IExpression[] operands) {
-		for(IExpression expr : operands) this.involvedVars.addAll(expr.involvedVars());
+		for(IExpression expr : operands) this.involvedVars.addAll(expr.getInvolvedVars());
 		if(handleMembershipCase(op, operands)) return;
 		if(handleAssociativityCase(op, operands)) return;
 		this.op = op;
@@ -132,20 +129,13 @@ public class OperatorExpression implements IExpression {
 	}
 
 	@Override
-	public Set<String> involvedVars() {
+	public Set<String> getInvolvedVars() {
 		return this.involvedVars;
 	}
 	
 	@Override
 	public IExpression[] getOperands() {
 		return this.operands;
-	}
-
-	@Override
-	public Map<Integer, Integer> encodeWithTseitin(ICspToSatEncoder solver) {
-		List<Map<Integer, Integer>> mappings = new ArrayList<>();
-		for(IExpression operand : this.operands) mappings.add(operand.encodeWithTseitin(solver));
-		return this.op.encodeWithTseitin(solver, mappings);
 	}
 	
 	@Override

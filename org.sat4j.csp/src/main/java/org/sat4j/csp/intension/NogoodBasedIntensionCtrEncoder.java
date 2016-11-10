@@ -32,7 +32,7 @@ public class NogoodBasedIntensionCtrEncoder implements ICspToSatEncoder, IIntens
 		if(expression instanceof OperatorExpression && ((OperatorExpression) expression).getOperator() == EOperator.LOGICAL_AND) {
 			return encodeGlobalAndExpression(expression);
 		}
-		final Set<String> involved = expression.involvedVars();
+		final Set<String> involved = expression.getInvolvedVars();
 		extractDomains(involved);
 		InstantiationIterator instantiationIterator = new InstantiationIterator(involved, this.domains);
 		for(Map<String, Integer> fullInstantiation : instantiationIterator) {
@@ -90,7 +90,7 @@ public class NogoodBasedIntensionCtrEncoder implements ICspToSatEncoder, IIntens
 		OperatorExpression expr = (OperatorExpression) iexpr;
 		boolean inCache = true;
 		for(String var : bindingsChange.keySet()) {
-			if(expr.involvedVars().contains(var)) {
+			if(expr.getInvolvedVars().contains(var)) {
 				inCache = false;
 				break;
 			}
