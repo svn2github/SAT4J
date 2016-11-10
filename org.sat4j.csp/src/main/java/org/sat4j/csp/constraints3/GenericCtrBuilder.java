@@ -20,23 +20,14 @@ package org.sat4j.csp.constraints3;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-import org.sat4j.core.Vec;
-import org.sat4j.csp.Var;
-import org.sat4j.csp.constraints.GentSupports;
-import org.sat4j.csp.constraints.Nogoods;
-import org.sat4j.csp.constraints.Relation;
+import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.csp.intension.IIntensionCtrEncoder;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.reader.XMLCSP3Reader;
-import org.sat4j.specs.ContradictionException;
 import org.xcsp.common.Types.TypeFlag;
 import org.xcsp.common.predicates.XNode;
 import org.xcsp.common.predicates.XNodeLeaf;
@@ -54,18 +45,13 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  *
  */
 public class GenericCtrBuilder {
-	
-	/** the solver in which the problem is encoded */
-	private IPBSolver solver;
-	
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
 
 	private final IIntensionCtrEncoder intensionCtrEnc;
 
-	public GenericCtrBuilder(IPBSolver solver, Map<String, Var> varmapping, IIntensionCtrEncoder intensionEnc) {
-		this.solver = solver;
-		this.varmapping = varmapping;
+	private final ICspToSatEncoder cspToSatSolver;
+
+	public GenericCtrBuilder(ICspToSatEncoder cspToSatEncoder, IIntensionCtrEncoder intensionEnc) {
+		this.cspToSatSolver = cspToSatEncoder;
 		this.intensionCtrEnc = intensionEnc;
 	}
 	
@@ -109,28 +95,19 @@ public class GenericCtrBuilder {
 		return buildCtrExtension(id, xArr, tuples, positive, flags);
 	}
 	
-	public boolean buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive, Set<TypeFlag> flags) { // TODO: remove varmapping dependence
+	public boolean buildCtrExtension(String id, XVarInteger[] list, int[][] tuples, boolean positive, Set<TypeFlag> flags) {
 		if(flags.contains(TypeFlag.STARRED_TUPLES)) {
 			tuples = unfoldStarredTuples(list, tuples);
 		}
-		SortedSet<Var> vars = new TreeSet<Var>((v1,v2) -> v1.toString().compareTo(v2.toString()));
+		Set<String> vars = new HashSet<>();
 		for(int i=0; i<list.length; ++i) {
-			vars.add(this.varmapping.get(list[i].id));
+			vars.add(list[i].id);
 		}
 		if(vars.size() != list.length) {
 			tuples = removeUnsatTuples(list, tuples);
 			if(tuples.length == 0) return positive;
 		}
-		Relation cstr = positive ? new GentSupports(vars.size(), tuples.length) : new Nogoods(vars.size(), tuples.length);
-		for(int i=0; i<tuples.length; ++i) {
-			cstr.addTuple(i, tuples[i]);
-		}
-		try {
-			cstr.toClause(this.solver, CtrBuilderUtils.toVarVec(vars), new Vec<>());
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
+		return positive ? buildCtrSupports(list, tuples) : buildCtrNogoods(list, tuples);
 	}
 
 	private int[][] unfoldStarredTuples(XVarInteger[] list, int[][] tuples) {
@@ -203,6 +180,33 @@ public class GenericCtrBuilder {
 		}
 		int[][] tuplesArray = new int[tuplesList.size()][];
 		return tuplesList.toArray(tuplesArray);
+	}
+	
+	private boolean buildCtrNogoods(XVarInteger[] list, int[][] tuples) {
+		for(int[] tuple : tuples) {
+			int[] clause = new int[tuple.length];
+			for(int i=0; i<tuple.length; ++i) {
+				clause[i] = -this.cspToSatSolver.getSolverVar(list[i].id, tuple[i]);
+			}
+			if(this.cspToSatSolver.addClause(clause)) return true;
+		}
+		return false;
+	}
+	
+	private boolean buildCtrSupports(XVarInteger[] list, int[][] tuples) {
+		StringBuffer sbuf = new StringBuffer();
+		sbuf.append("or(");
+		boolean firstTuple = true;
+		for(int[] tuple : tuples) {
+			if(firstTuple) firstTuple = false; else sbuf.append(',');
+			sbuf.append("and(").append("eq(").append(list[0].id).append(',').append(tuple[0]).append(')');
+			for(int i=1; i<tuple.length; ++i) {
+				sbuf.append(",eq(").append(list[i].id).append(',').append(tuple[i]).append(')');
+			}
+			sbuf.append(')');
+		}
+		sbuf.append(")");
+		return this.intensionCtrEnc.encode(sbuf.toString());
 	}
 
 }

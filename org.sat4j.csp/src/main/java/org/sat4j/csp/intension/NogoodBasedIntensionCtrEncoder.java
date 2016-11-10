@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class NogoodBasedIntensionCtrEncoder implements ICspToSatEncoder, IIntensionCtrEncoder {
+public class NogoodBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 
 	private final ICspToSatEncoder solver;
 
@@ -339,23 +339,8 @@ public class NogoodBasedIntensionCtrEncoder implements ICspToSatEncoder, IIntens
 	}
 
 	@Override
-	public int[] getCspVarDomain(String var) {
-		return this.solver.getCspVarDomain(var);
-	}
-
-	@Override
-	public int getSolverVar(String var, Integer value) {
-		return this.solver.getSolverVar(var, value);
-	}
-
-	@Override
-	public boolean addClause(int[] clause) {
-		return this.solver.addClause(clause);
-	}
-
-	@Override
-	public Integer newVar() {
-		return this.solver.newVar();
+	public ICspToSatEncoder getSolver() {
+		return this.solver;
 	}
 
 }

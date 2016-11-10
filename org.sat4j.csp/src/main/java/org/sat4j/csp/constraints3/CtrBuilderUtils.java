@@ -29,8 +29,6 @@ import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.xcsp.common.Types.TypeOperator;
-import org.xcsp.parser.entries.XDomains.XDomInteger;
-import org.xcsp.parser.entries.XValues.IntegerEntity;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
@@ -119,25 +117,6 @@ public class CtrBuilderUtils {
 		case SUPSEQ: return TypeOperator.SUPSET;
 		default: return op;
 		}
-	}
-
-	public static int getDomainVar(XVarInteger involvedVar, Integer solverVarForFirstValue, Long varValue) {
-		IntegerEntity[] domain = (IntegerEntity[]) ((XDomInteger)(involvedVar.dom)).values;
-		int offset = 0;
-		for(int i=0; i<domain.length; ++i) {
-			if(domain[i].isSingleton()) {
-				if(domain[i].greatest() == varValue.longValue()) break;
-				++offset;
-			} else {
-				if(varValue.longValue() > domain[i].greatest()) {
-					offset += domain[i].width();
-					continue;
-				}
-				offset += varValue.longValue() - domain[i].smallest();
-				break;
-			}
-		}
-		return solverVarForFirstValue + offset;
 	}
 
 }

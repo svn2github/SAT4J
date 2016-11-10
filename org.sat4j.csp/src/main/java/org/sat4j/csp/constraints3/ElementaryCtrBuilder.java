@@ -1,5 +1,6 @@
 package org.sat4j.csp.constraints3;
 
+import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
@@ -16,8 +17,9 @@ public class ElementaryCtrBuilder {
 	
 	public boolean buildCtrInstantiation(String id, XVarInteger[] list, int[] values) {
 		for(int i=0; i<list.length; ++i) {
-			final int[] unitCl = new int[]{this.intensionEncoder.getSolverVar(list[i].id, values[i])};
-			if(this.intensionEncoder.addClause(unitCl)) return true;
+			final ICspToSatEncoder solver = this.intensionEncoder.getSolver();
+			final int[] unitCl = new int[]{solver.getSolverVar(list[i].id, values[i])};
+			if(solver.addClause(unitCl)) return true;
 		}
 		return false;
 	}

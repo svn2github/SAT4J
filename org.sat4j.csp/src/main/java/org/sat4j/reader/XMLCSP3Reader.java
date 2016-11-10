@@ -22,36 +22,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.sat4j.AbstractLauncher;
-import org.sat4j.core.VecInt;
-import org.sat4j.csp.Domain;
-import org.sat4j.csp.Domains;
-import org.sat4j.csp.Var;
 import org.sat4j.csp.constraints3.ComparisonCtrBuilder;
 import org.sat4j.csp.constraints3.ConnectionCtrBuilder;
-import org.sat4j.csp.constraints3.CtrBuilderUtils;
+import org.sat4j.csp.constraints3.CountingCtrBuilder;
 import org.sat4j.csp.constraints3.ElementaryCtrBuilder;
 import org.sat4j.csp.constraints3.GenericCtrBuilder;
 import org.sat4j.csp.constraints3.LanguageCtrBuilder;
+import org.sat4j.csp.constraints3.ObjBuilder;
 import org.sat4j.csp.constraints3.SchedulingCtrBuilder;
+import org.sat4j.csp.intension.CspToPBSolverDecorator;
 import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.csp.intension.IntensionCtrEncoderFactory;
-import org.sat4j.csp.constraints3.ObjBuilder;
-import org.sat4j.csp.constraints3.CountingCtrBuilder;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.PseudoOptDecorator;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
-import org.sat4j.specs.IVecInt;
 import org.w3c.dom.Document;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Types.TypeArithmeticOperator;
@@ -78,25 +71,20 @@ import org.xcsp.parser.entries.XVariables.XVarSymbolic;
  * @author Emmanuel Lonca - lonca@cril.fr
  *
  */
-public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncoder {
+public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 
 	/** the solver in which the problem is encoded */
 	private IPBSolver solver;
+	
+	private final ICspToSatEncoder cspToSatEncoder;
 
 	/** contains all the variables defined in the instance, including the ones not explicitly create by buildVarXXX methods */
 	private List<XVar> allVars = new ArrayList<>();
 
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private final Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
-
-	/** a mapping from a Sat4j CSP variable to the first solver internal variable used to encode it */
-	private final Map<Var, Integer> firstInternalVarMapping = new LinkedHashMap<Var, Integer>();
-
-	/** the {@link Domains} class instance */
-	private Domains domains = Domains.getInstance();
-
 	/** a flag set iff a contradiction has been bound while parsing */
 	private boolean contradictionFound = false;
+	
+	private final IIntensionCtrEncoder intensionEnc;
 	
 	/** object dedicated to elementary constraints building */
 	private ElementaryCtrBuilder elementaryCtrBuilder;
@@ -137,15 +125,16 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		this.launcher = launcher;
 		this.solver = new PseudoOptDecorator((IPBSolver) aSolver);
 		this.solver.setVerbose(true);
-		IIntensionCtrEncoder intensionEnc = IntensionCtrEncoderFactory.getInstance().newDefault(this);
-		this.elementaryCtrBuilder = new ElementaryCtrBuilder(intensionEnc);
-		this.comparisonCtrBuilder = new ComparisonCtrBuilder(intensionEnc);
-		this.connectionCtrBuilder = new ConnectionCtrBuilder(intensionEnc);
-		this.schedulingCtrBuilder = new SchedulingCtrBuilder(intensionEnc);
-		this.genericCtrBuilder = new GenericCtrBuilder(solver, varmapping, intensionEnc); // TODO: refactor to keep only intension encoder as parameter
-		this.countingCtrBuilder = new CountingCtrBuilder(intensionEnc);
-		this.languageCtrBuilder = new LanguageCtrBuilder(solver, varmapping, firstInternalVarMapping);
-		this.objBuilder = new ObjBuilder(solver, varmapping, firstInternalVarMapping);
+		this.cspToSatEncoder = new CspToPBSolverDecorator(this.solver);
+		this.intensionEnc = IntensionCtrEncoderFactory.getInstance().newDefault(this.cspToSatEncoder);
+		this.elementaryCtrBuilder = new ElementaryCtrBuilder(this.intensionEnc);
+		this.comparisonCtrBuilder = new ComparisonCtrBuilder(this.intensionEnc);
+		this.connectionCtrBuilder = new ConnectionCtrBuilder(this.intensionEnc);
+		this.schedulingCtrBuilder = new SchedulingCtrBuilder(this.intensionEnc);
+		this.genericCtrBuilder = new GenericCtrBuilder(this.cspToSatEncoder, this.intensionEnc);
+		this.countingCtrBuilder = new CountingCtrBuilder(this.intensionEnc);
+		this.languageCtrBuilder = new LanguageCtrBuilder(this.cspToSatEncoder);
+//		this.objBuilder = new ObjBuilder(solver, this.cspToSatEncoder.getVarmapping(), this.cspToSatEncoder.getFirstInternalVarMapping());
 	}
 	
 	/**
@@ -204,56 +193,61 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		sbufList.append("v \t<list> ");
 		StringBuffer sbufValues = new StringBuffer();
 		sbufValues.append("v \t<values> ");
-		decodeModel(model, sbufList, sbufValues);
+		decodeModel(sbufList, sbufValues);
 		sbufValues.append(" </values>\n");
 		sbufList.append(" </list>\n");
 		strModelBuffer.append(sbufList);
 		strModelBuffer.append(sbufValues);
 	}
 	
-	public String decodeModelAsValueSequence(int model[]) {
-		XVar xvar = this.allVars.get(0);
-		Var var = varmapping.get(xvar.id);
+	public String decodeModelAsValueSequence(int model[]) { // remove dependence to sat4j (type Var)
 		StringBuffer sbufValues = new StringBuffer();
-		sbufValues.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
-		for(int i=1; i<this.allVars.size(); ++i) {
-			xvar = this.allVars.get(i);
-			var = varmapping.get(xvar.id);
-			sbufValues.append(' ').append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
+		for(int i=0; i<this.allVars.size(); ++i) {
+			if(i>0) sbufValues.append(' ');
+			XVar xvar = this.allVars.get(i);
+			appendVarValue(sbufValues, xvar, model);
 		}
 		return sbufValues.toString();
 	}
 	
 	public boolean discardModel(int model[]) {
-		IVecInt cl = new VecInt();
+		List<Integer> cl = new ArrayList<>();
 		for(XVar xvar : this.allVars) {
-			Var var = this.varmapping.get(xvar.id);
-			Integer firstSolverVar = this.firstInternalVarMapping.get(var);
-			for(int i=0;;++i) {
-				if(model[firstSolverVar+i-1] > 0) {
-					cl.push(-firstSolverVar-i);
+			int[] domain = this.cspToSatEncoder.getCspVarDomain(xvar.id);
+			for(int i=0; i<domain.length; ++i) {
+				final int solverVar = this.cspToSatEncoder.getSolverVar(xvar.id, domain[i]);
+				if(model[solverVar-1] > 0) cl.add(-solverVar);
+			}
+		}
+		int[] clArray = new int[cl.size()];
+		for(int i=0; i<clArray.length; ++i) clArray[i] = cl.get(i);
+		return this.cspToSatEncoder.addClause(clArray);
+	}
+	
+	private void decodeModel(StringBuffer sbufList, StringBuffer sbufValues) {
+		int[] model = this.solver.model();
+		for(int i=0; i<this.allVars.size(); ++i) {
+			if(i > 0) {
+				sbufList.append(' ');
+				sbufValues.append(' ');
+			}
+			XVar xvar = this.allVars.get(i);
+			sbufList.append(xvar.id());
+			appendVarValue(sbufValues, xvar, model);
+		}
+	}
+
+	private void appendVarValue(StringBuffer buffer, XVar xvar, int[] model) {
+		int[] domain = this.cspToSatEncoder.getCspVarDomain(xvar.id);
+		if(domain == null) {
+			buffer.append(((XDomInteger)xvar.dom).getFirstValue());
+		} else {
+			for(int j=0; j<domain.length; ++j) {
+				if(model[this.cspToSatEncoder.getSolverVar(xvar.id, domain[j])-1] > 0) {
+					buffer.append(domain[j]);
 					break;
 				}
 			}
-		}
-		try {
-			this.solver.addClause(cl);
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
-	}
-
-	private void decodeModel(int[] model, StringBuffer sbufList, StringBuffer sbufValues) {
-		XVar xvar = this.allVars.get(0);
-		Var var = varmapping.get(xvar.id);
-		sbufList.append(xvar.id());
-		sbufValues.append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
-		for(int i=1; i<this.allVars.size(); ++i) {
-			xvar = this.allVars.get(i);
-			var = varmapping.get(xvar.id);
-			sbufList.append(' ').append(xvar.id());
-			sbufValues.append(' ').append(var == null ? ((XDomInteger)xvar.dom).getFirstValue() : var.findValue(model));
 		}
 	}
 
@@ -305,48 +299,13 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 		endObjectives();
 		endInstance();
 	}
-	
-	@Override
-	public int[] getCspVarDomain(String var) {
-		final Domain domain = this.varmapping.get(var).domain();
-		final int domSize = domain.size();
-		int[] domArray = new int[domSize];
-		for(int i=0; i<domSize; ++i) {
-			domArray[i] = domain.get(i);
-		}
-		return domArray;
-	}
-
-	@Override
-	public int getSolverVar(String strVar, Integer value) {
-		final Var var = this.varmapping.get(strVar);
-		int solverVar = this.firstInternalVarMapping.get(var);
-		final Domain domain = var.domain();
-		final int domSize = domain.size();
-		for(int i=0; i<domSize; ++i) {
-			if(domain.get(i) == value) return solverVar;
-			++solverVar;
-		}
-		throw new IllegalArgumentException();
-	}
-
-	@Override
-	public boolean addClause(int[] clause) {
-		try {
-			this.solver.addClause(new VecInt(clause));
-		} catch (ContradictionException e) {
-			return true;
-		}
-		return false;
-	}
 
 	/**
 	 * @see XCallbacks2#buildVarInteger(XVarInteger, int, int)
 	 */
 	@Override
 	public void buildVarInteger(XVarInteger var, int minValue, int maxValue) {
-		Domain dom = domains.getDomain(minValue, maxValue);
-		createNewCspVar(var, dom);
+		this.cspToSatEncoder.newCspVar(var, minValue, maxValue);
 	}
 
 	/**
@@ -354,20 +313,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 	 */
 	@Override
 	public void buildVarInteger(XVarInteger var, int[] values) {
-		Domain dom = domains.getDomain(values);
-		createNewCspVar(var, dom);
-	}
-
-	private void createNewCspVar(XVarInteger var, Domain dom) {
-		Var cspVar = new Var(CtrBuilderUtils.normalizeCspVarName(var.id), dom, this.solver.nextFreeVarId(false)-1);
-		this.firstInternalVarMapping.put(cspVar, this.solver.nextFreeVarId(false));
-		for(int i=0; i<dom.size(); ++i) this.solver.nextFreeVarId(true);
-		try {
-			cspVar.toClause(solver);
-		} catch (ContradictionException e) {
-			this.contradictionFound = true;
-		}
-		this.varmapping.put(var.id, cspVar);
+		this.cspToSatEncoder.newCspVar(var, values);
 	}
 
 	/**
@@ -972,11 +918,6 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2, ICspToSatEncod
 	@Override
 	public Implem implem() {
 	  return dataStructureImplementor ;
-	}
-
-	@Override
-	public Integer newVar() {
-		return this.solver.nextFreeVarId(true);
 	}
 
 }

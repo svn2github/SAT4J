@@ -470,7 +470,7 @@ public class TseitinBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 		}
 		Integer implVar = mapping.get(value);
 		if(implVar == null) {
-			implVar = solver.newVar();
+			implVar = solver.newSatSolverVar();
 			mapping.put(value, implVar);
 		}
 		if(var2 == null) {
@@ -500,7 +500,7 @@ public class TseitinBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 			var3 = null;
 		}
 		if(implVar == null) {
-			implVar = solver.newVar();
+			implVar = solver.newSatSolverVar();
 			mapping.put(value, implVar);
 		}
 		if(var2 == null) {
@@ -515,23 +515,8 @@ public class TseitinBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 	}
 
 	@Override
-	public int[] getCspVarDomain(String var) {
-		return this.solver.getCspVarDomain(var);
-	}
-
-	@Override
-	public int getSolverVar(String var, Integer value) {
-		return this.solver.getSolverVar(var, value);
-	}
-
-	@Override
-	public boolean addClause(int[] clause) {
-		return this.solver.addClause(clause);
-	}
-
-	@Override
-	public Integer newVar() {
-		return this.solver.newVar();
+	public ICspToSatEncoder getSolver() {
+		return this.solver;
 	}
 
 }

@@ -2,15 +2,11 @@ package org.sat4j.csp.constraints3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.sat4j.core.VecInt;
-import org.sat4j.csp.Var;
-import org.sat4j.pb.IPBSolver;
+import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.IVecInt;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /** 
@@ -19,20 +15,13 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
 public class LanguageCtrBuilder {
 
 	/** the solver in which the problem is encoded */
-	private IPBSolver solver;
-
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
-
-	private Map<Var, Integer> firstInternalVarMapping;
+	private ICspToSatEncoder solver;
 
 	// fromState -> var -> varValue -> solverVar
 	private Map<String, Map<XVarInteger, Map<Long, Integer>>> transitionVarsMap = new HashMap<>();
 
-	public LanguageCtrBuilder(IPBSolver solver, Map<String, Var> varmapping, Map<Var, Integer> firstInternalVarMapping) {
+	public LanguageCtrBuilder(ICspToSatEncoder solver) {
 		this.solver = solver;
-		this.varmapping = varmapping;
-		this.firstInternalVarMapping = firstInternalVarMapping;
 	}
 
 	public boolean buildCtrMDD(String id, XVarInteger[] list, Object[][] objTransitions) {
@@ -114,28 +103,29 @@ public class LanguageCtrBuilder {
 				}
 			}
 			if(shouldContinue) continue;
-			newVars.put(trEntry.getKey(), solver.nextFreeVarId(true));
+			newVars.put(trEntry.getKey(), this.solver.newSatSolverVar());
 		}
 		return newVars;
 	}
 
 	private void buildTransitionCtrs(Map<String, Integer> stateSolverVars, Map<String, List<Transition>> transitions) throws ContradictionException {
 		for(String toState : transitions.keySet()) {
-			IVecInt firstEqCl = new VecInt();
+			List<Integer> firstEqCl = new ArrayList<>();
 			Integer toStateSolverVar = stateSolverVars.get(toState);
-			firstEqCl.push(-toStateSolverVar);
+			firstEqCl.add(-toStateSolverVar);
 			for(Transition tr : transitions.get(toState)) {
 				Integer transitionVar = null;
 				if(tr.isFromStartState()) {
-					transitionVar = retrieveAssignmentSolverVar(tr);
+					transitionVar = this.solver.getSolverVar(tr.getInvolvedVar().id, tr.getVarValue().intValue());
 				} else {
 					transitionVar = transitionVar(stateSolverVars, transitionVarsMap, tr);
 				}
-				firstEqCl.push(transitionVar);
-				IVecInt binaryEqCl = new VecInt(new int[]{toStateSolverVar, -transitionVar});
-				this.solver.addClause(binaryEqCl);
+				firstEqCl.add(transitionVar);
+				this.solver.addClause(new int[]{toStateSolverVar, -transitionVar});
 			}
-			this.solver.addClause(firstEqCl);
+			int[] clArray = new int[firstEqCl.size()];
+			for(int i=0; i<clArray.length; ++i) clArray[i] = firstEqCl.get(i);
+			this.solver.addClause(clArray);
 		}
 	}
 
@@ -160,26 +150,20 @@ public class LanguageCtrBuilder {
 	}
 
 	private Integer createVarAssignmentSolverVar(Map<String, Integer> stateSolverVars, Transition tr) throws ContradictionException {
-		int assignmentVar = retrieveAssignmentSolverVar(tr);
+		int assignmentVar = this.solver.getSolverVar(tr.getInvolvedVar().id, tr.getVarValue().intValue());
 		int stateVar = stateSolverVars.get(tr.getFromState());
-		int newVar = this.solver.nextFreeVarId(true);
-		this.solver.addClause(new VecInt(new int[]{-newVar, stateVar}));
-		this.solver.addClause(new VecInt(new int[]{-newVar, assignmentVar}));
-		this.solver.addClause(new VecInt(new int[]{newVar, -stateVar, -assignmentVar}));
+		int newVar = this.solver.newSatSolverVar();
+		this.solver.addClause(new int[]{-newVar, stateVar});
+		this.solver.addClause(new int[]{-newVar, assignmentVar});
+		this.solver.addClause(new int[]{newVar, -stateVar, -assignmentVar});
 		return newVar;
-	}
-
-	private int retrieveAssignmentSolverVar(Transition tr) {
-		return CtrBuilderUtils.getDomainVar(tr.getInvolvedVar(), firstInternalVarMapping.get(varmapping.get(tr.getInvolvedVar().id)), tr.getVarValue());
 	}
 
 
 	private void buildFinalStateCtr(Map<String, Integer> regularAuxVars, String[] finalStates) throws ContradictionException {
-		IVecInt lits = new VecInt(finalStates.length);
-		for(String finalState : finalStates) {
-			lits.push(regularAuxVars.get(finalState));
-		}
-		this.solver.addClause(lits);
+		int[] cl = new int[finalStates.length];
+		for(int i=0; i<finalStates.length; ++i) cl[i] = regularAuxVars.get(finalStates[i]);
+		this.solver.addClause(cl);
 	}
 
 	private Map<String, List<Transition>> extractTransitions(XVarInteger[] list, Object[][] objTransitions, String startState) {
