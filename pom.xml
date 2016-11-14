@@ -157,7 +157,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<version>2.19.1</version>
 				<configuration>
 					<forkMode>pertest</forkMode>
-					<argLine>${argLine} -enableassertions -Xmx1024m</argLine>
+					<argLine>-enableassertions -Xmx1024m</argLine>
 					<includes>
 						<include>**/Bug*</include>
 						<include>**/*Test*</include>
