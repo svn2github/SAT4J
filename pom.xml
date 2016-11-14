@@ -187,7 +187,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.1</version>
+				<version>3.6.0</version>
 				<configuration>
 					<source>${javaSource}</source>
 					<target>${javaTarget}</target>
