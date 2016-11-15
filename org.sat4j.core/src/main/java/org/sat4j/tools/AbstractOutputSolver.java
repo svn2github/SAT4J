@@ -189,7 +189,7 @@ public abstract class AbstractOutputSolver implements ISolver {
      * @since 2.2
      */
     public <S extends ISolverService> SearchListener<S> getSearchListener() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     /**
