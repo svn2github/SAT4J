@@ -34,6 +34,7 @@ import java.math.BigInteger;
 import org.sat4j.minisat.core.IOrder;
 import org.sat4j.minisat.core.LearningStrategy;
 import org.sat4j.pb.constraints.pb.PBConstr;
+import org.sat4j.specs.Constr;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IConstr;
 import org.sat4j.specs.IVec;
@@ -58,10 +59,10 @@ public class PBSolverWithImpliedClause extends PBSolverCP {
         IVecInt vlits = dimacs2internal(literals);
         assert vlits.size() == literals.size();
         assert literals.size() == coeffs.size();
-        PBConstr result = (PBConstr) this.dsfactory
-                .createPseudoBooleanConstraint(vlits, coeffs, moreThan, degree);
-        if (result != null) {
-            IVecInt clits = result.computeAnImpliedClause();
+        Constr result = this.dsfactory.createPseudoBooleanConstraint(vlits,
+                coeffs, moreThan, degree);
+        if (result != null && result != Constr.TAUTOLOGY) {
+            IVecInt clits = ((PBConstr) result).computeAnImpliedClause();
             if (clits != null) {
                 addConstr(this.dsfactory.createClause(clits));
             }
