@@ -18,10 +18,16 @@
  *******************************************************************************/
 package org.sat4j.csp;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ILauncherMode;
 import org.sat4j.reader.ECSPFormat;
+import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
+import org.sat4j.specs.ContradictionException;
+import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 
 public class CSPLauncher extends AbstractLauncher {
@@ -75,6 +81,29 @@ public class CSPLauncher extends AbstractLauncher {
 			aSolver.setVerbose(false);
 		}
 		return aReader;
+	}
+
+	@Override
+	protected IProblem readProblem(String problemname)
+			throws ParseFormatException, IOException, ContradictionException {
+		this.silent = true;
+		IProblem problem = super.readProblem(problemname);
+		if(this.reader.hasAMapping()) {
+			this.out.write("c CSP to SAT var mapping:");
+			Map<Integer, String> mapping = this.reader.getMapping();
+			String lastVar="";
+			for(Map.Entry<Integer, String> entry : mapping.entrySet()) {
+				final String curVarAssignment = entry.getValue();
+				final String curVar = curVarAssignment.substring(0, curVarAssignment.indexOf("="));
+				if(!curVar.equals(lastVar)) {
+					this.out.write("\nc ");
+				}
+				this.out.write(curVarAssignment+":"+entry.getKey()+" ");
+				lastVar = curVar;
+			}
+			this.out.write("\n");
+		}
+		return problem;
 	}
 
 	public static void main(String[] args) {

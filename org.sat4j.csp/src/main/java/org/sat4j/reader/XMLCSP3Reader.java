@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -249,6 +250,21 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean hasAMapping() {
+		return true;
+	}
+
+	@Override
+	public Map<Integer, String> getMapping() {
+		return this.cspToSatEncoder.getMapping();
+	}
+
+	@Override
+	public boolean isUsingMapping() {
+		return true;
 	}
 
 	/**

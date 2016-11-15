@@ -1,5 +1,7 @@
 package org.sat4j.csp.intension;
 
+import java.util.Map;
+
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 public interface ICspToSatEncoder {
@@ -9,6 +11,8 @@ public interface ICspToSatEncoder {
 	int getSolverVar(String var, Integer value);
 
 	Integer newSatSolverVar();
+	
+	Map<Integer, String> getMapping();
 	
 	void newCspVar(XVarInteger var, int[] dom);
 	

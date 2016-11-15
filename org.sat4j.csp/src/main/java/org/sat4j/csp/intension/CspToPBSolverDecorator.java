@@ -3,6 +3,8 @@ package org.sat4j.csp.intension;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.sat4j.core.VecInt;
 import org.sat4j.csp.Domain;
@@ -98,6 +100,19 @@ public class CspToPBSolverDecorator implements ICspToSatEncoder {
 			throw new IllegalStateException("cannot occur");
 		}
 		this.varmapping.put(var.id, cspVar);
+	}
+	
+	@Override
+	public Map<Integer, String> getMapping() {
+		final SortedMap<Integer, String> mapping = new TreeMap<>(); 
+		for(String var : this.varmapping.keySet()) {
+			int[] domain = getCspVarDomain(var);
+			for(int i=0; i<domain.length; ++i) {
+				final int solverVar = getSolverVar(var, domain[i]);
+				mapping.put(solverVar, var+"="+domain[i]);
+			}
+		}
+		return mapping;
 	}
 
 }
