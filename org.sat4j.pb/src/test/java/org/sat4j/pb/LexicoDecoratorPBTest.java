@@ -62,12 +62,12 @@ public class LexicoDecoratorPBTest {
         IPBSolver solver = new OptToPBSATAdapter(lexico);
         try {
             if (solver.isSatisfiable()) {
-                int[] expectedModel = new int[] { -1, 2, -3, -4, -5, 6, -7, -8 };
+                int[] expectedModel = new int[] { -1, 2, -3, -4, -5, 6, -7,
+                        -8 };
                 int[] actualModel = solver.model();
                 for (int i = 0; i < expectedModel.length; ++i) {
                     assertEquals(expectedModel[i], actualModel[i]);
                 }
-                // System.out.println(Arrays.toString(actualModel));
                 assertEquals(BigInteger.valueOf(2), lexico.getObjectiveValue());
 
             }

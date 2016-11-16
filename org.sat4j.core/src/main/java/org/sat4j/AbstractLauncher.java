@@ -66,8 +66,8 @@ import org.sat4j.tools.SolverDecorator;
 public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public static final String COMMENT_PREFIX = "c "; //$NON-NLS-1$
@@ -130,18 +130,16 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
 
     public abstract void usage();
 
-    /**
-     * @throws IOException
-     */
     protected final void displayHeader() {
         displayLicense();
         URL url = AbstractLauncher.class.getResource("/sat4j.version"); //$NON-NLS-1$
         if (url == null) {
-            log("no version file found!!!"); //$NON-NLS-1$                      
+            log("no version file found!!!"); //$NON-NLS-1$
         } else {
             BufferedReader in = null;
             try {
-                in = new BufferedReader(new InputStreamReader(url.openStream()));
+                in = new BufferedReader(
+                        new InputStreamReader(url.openStream()));
                 log("version " + in.readLine()); //$NON-NLS-1$
             } catch (IOException e) {
                 log("c ERROR: " + e.getMessage());
@@ -156,11 +154,12 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             }
         }
         Properties prop = System.getProperties();
-        String[] infoskeys = {
-                "java.runtime.name", "java.vm.name", "java.vm.version", "java.vm.vendor", "sun.arch.data.model", "java.version", "os.name", "os.version", "os.arch" }; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
+        String[] infoskeys = { "java.runtime.name", "java.vm.name", //$NON-NLS-1$//$NON-NLS-2$
+                "java.vm.version", "java.vm.vendor", "sun.arch.data.model", //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$
+                "java.version", "os.name", "os.version", "os.arch" };
         for (String key : infoskeys) {
-            log(key
-                    + (key.length() < 14 ? "\t\t" : "\t") + prop.getProperty(key)); //$NON-NLS-1$
+            log(key + (key.length() < 14 ? "\t\t" : "\t") //$NON-NLS-1$
+                    + prop.getProperty(key));
         }
         Runtime runtime = Runtime.getRuntime();
         log("Free memory \t\t" + runtime.freeMemory()); //$NON-NLS-1$
@@ -205,12 +204,13 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         if (this.reader.hasAMapping()) {
             SearchListener<?> listener = this.solver.getSearchListener();
             if (listener instanceof DotSearchTracing) {
-                ((DotSearchTracing) listener).setMapping(this.reader
-                        .getMapping());
+                ((DotSearchTracing) listener)
+                        .setMapping(this.reader.getMapping());
             }
         }
         log("... done. Wall clock time " //$NON-NLS-1$
-                + (System.currentTimeMillis() - this.beginTime) / 1000.0 + "s."); //$NON-NLS-1$
+                + (System.currentTimeMillis() - this.beginTime) / 1000.0
+                + "s."); //$NON-NLS-1$
         log("declared #vars     " + aProblem.nVars()); //$NON-NLS-1$
         if (this.solver.nVars() < this.solver.realNumberOfVariables()) {
             log("internal #vars     " + this.solver.realNumberOfVariables()); //$NON-NLS-1$
@@ -219,9 +219,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         aProblem.printInfos(this.out);
         if (System.getProperty("UNSATPROOF") != null) {
             String proofFile = problemname + ".rupproof";
-            this.solver
-                    .setSearchListener(new RupSearchListener<ISolverService>(
-                            proofFile));
+            this.solver.setSearchListener(
+                    new RupSearchListener<ISolverService>(proofFile));
             if (!this.silent) {
                 System.out.println(this.solver.getLogPrefix()
                         + "Generating unsat proof in file " + proofFile);
@@ -233,7 +232,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         return aProblem;
     }
 
-    protected abstract Reader createReader(ISolver theSolver, String problemname);
+    protected abstract Reader createReader(ISolver theSolver,
+            String problemname);
 
     public void run(String[] args) {
 
@@ -291,7 +291,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
             }
         }
         if (System.getProperty("minone") != null) {
-            SearchMinOneListener minone = new SearchMinOneListener(launcherMode);
+            SearchMinOneListener minone = new SearchMinOneListener(
+                    launcherMode);
             this.solver.setSearchListener(minone);
         }
     }
@@ -385,8 +386,8 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
         this.silent = b;
     }
 
-    private void readObject(ObjectInputStream stream) throws IOException,
-            ClassNotFoundException {
+    private void readObject(ObjectInputStream stream)
+            throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
         this.out = new PrintWriter(System.out, true);
         this.shutdownHook = new Thread() {
@@ -400,7 +401,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
     protected <T extends ISolver> void showAvailableSolvers(
             ASolverFactory<T> afactory) {
         // if (afactory != null) {
-        //                      log("Available solvers: "); //$NON-NLS-1$
+        // log("Available solvers: "); //$NON-NLS-1$
         // String[] names = afactory.solverNames();
         // for (int i = 0; i < names.length; i++) {
         // log(names[i]);

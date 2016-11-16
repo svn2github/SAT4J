@@ -58,18 +58,17 @@ public class OptimalModelIteratorTest {
 
             public void onSolutionFound(IVecInt solution) {
                 nbSolutions++;
-                System.out.println(nbSolutions);
             }
 
             public void onSolutionFound(int[] solution) {
                 nbSolutions++;
-                System.out.println(nbSolutions);
             }
         };
 
         ISolver decore = new ModelIteratorToSATAdapter(
-                new OptimalModelIterator(new OptToPBSATAdapter(
-                        new PseudoOptDecorator(solver))), slf);
+                new OptimalModelIterator(
+                        new OptToPBSATAdapter(new PseudoOptDecorator(solver))),
+                slf);
 
         decore.isSatisfiable();
 
