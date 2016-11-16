@@ -26,8 +26,7 @@ public class BugSAT117ModelIterator {
 
         Date now = new Date();
         while (now.getTime() - beginTime < 60000) {
-            List<List<Integer>> solutions = solve();
-            System.out.println(solutions);
+            solve();
             now = new Date();
         }
     }
