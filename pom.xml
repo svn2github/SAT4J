@@ -156,7 +156,7 @@ The aim of the SAT4J library is to provide an efficient library of SAT solvers i
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.19.1</version>
 				<configuration>
-                                        <forkCount>3</threadCount>
+                                        <forkCount>3</forkCount>
                                         <reuseForks>true</reuseForks>
 					<argLine>-enableassertions -Xmx1024m</argLine>
 					<includes>
