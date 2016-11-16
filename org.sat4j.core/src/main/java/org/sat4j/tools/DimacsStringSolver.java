@@ -242,7 +242,7 @@ public class DimacsStringSolver extends AbstractOutputSolver
      * @since 2.3.3
      */
     public void printInfos(PrintWriter out) {
-        System.out.println(toString());
+        out.println(toString());
     }
 
     public IConstr addClause(IVecInt literals, int desc)
