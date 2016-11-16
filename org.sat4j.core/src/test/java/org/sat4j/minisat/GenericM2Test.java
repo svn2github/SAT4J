@@ -67,9 +67,7 @@ public class GenericM2Test extends AbstractM2Test<ISolver> {
     public static TestSuite suite() {
         TestSuite suite = new TestSuite();
         String[] names = FACTORY.solverNames();
-        String name;
-        for (String name2 : names) {
-            name = name2;
+        for (String name : names) {
             if (!"Mini3SAT".equals(name) && !"DimacsOutput".equals(name)
                     && !"Statistics".equals(name) && !"Concise".equals(name)
                     && !"DimacsStringSolver".equals(name)) {
