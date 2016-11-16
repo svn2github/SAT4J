@@ -52,17 +52,18 @@ final class DecisionMode implements ILauncherMode {
     private PrintWriter out;
     private long beginTime;
 
-    public void displayResult(ISolver solver, IProblem problem,
-            ILogAble logger, PrintWriter out, Reader reader, long beginTime,
+    public void displayResult(ISolver solver, IProblem problem, ILogAble logger,
+            PrintWriter out, Reader reader, long beginTime,
             boolean displaySolutionLine) {
         if (solver != null) {
             out.flush();
-            double wallclocktime = (System.currentTimeMillis() - beginTime) / 1000.0;
+            double wallclocktime = (System.currentTimeMillis() - beginTime)
+                    / 1000.0;
             solver.printStat(out);
             out.println(ANSWER_PREFIX + exitCode);
             if (exitCode != ExitCode.UNKNOWN
                     && exitCode != ExitCode.UNSATISFIABLE) {
-                int[] model = solver.model();
+                int[] model = problem.model();
                 if (System.getProperty("prime") != null) {
                     int initiallength = model.length;
                     logger.log("returning a prime implicant ...");

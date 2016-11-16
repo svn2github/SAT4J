@@ -42,6 +42,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVecInt;
+import org.sat4j.tools.Minimal4InclusionModel;
 
 /**
  * Dimacs Reader written by Frederic Laihem. It is much faster than DimacsReader
@@ -61,7 +62,7 @@ public class LecteurDimacs extends Reader implements Serializable {
     /* taille du buffer */
     private static final int TAILLE_BUF = 16384;
 
-    private final ISolver s;
+    private ISolver s;
 
     private transient BufferedInputStream in;
 
@@ -71,6 +72,8 @@ public class LecteurDimacs extends Reader implements Serializable {
     private int nbClauses = -1;
 
     private static final char EOF = (char) -1;
+
+    private final boolean pminimal = false;
 
     /*
      * nomFichier repr?sente le nom du fichier ? lire
@@ -257,8 +260,15 @@ public class LecteurDimacs extends Reader implements Serializable {
             stb.append(car);
         } while (car != '\n' && car != EOF);
         String str = stb.toString().trim();
-
-        if (isUsingMapping()) {
+        if (str.startsWith("pmin")) {
+            String[] tokens = str.split(" ");
+            IVecInt p = new VecInt(tokens.length - 2);
+            for (int i = 1; i < tokens.length - 1; i++) {
+                p.push(Integer.parseInt(tokens[i]));
+            }
+            s = new Minimal4InclusionModel(s, p);
+            System.out.println("c computing p-minimal model for p=" + p);
+        } else if (isUsingMapping()) {
             String[] values = str.split("=");
             if (values.length == 2) {
                 if (mapping == null) {
