@@ -186,8 +186,8 @@ public final class MaxWatchPbLong extends WatchPbLong {
     public boolean propagate(UnitPropagationListener s, int p) {
         this.voc.watch(p, this);
 
-        assert this.watchCumul >= computeLeftSide() : "" + this.watchCumul
-                + "/" + computeLeftSide() + ":" + this.learnt;
+        assert this.watchCumul >= computeLeftSide() : "" + this.watchCumul + "/"
+                + computeLeftSide() + ":" + this.learnt;
 
         // compute the new value for watchCumul
         long coefP;
@@ -273,7 +273,8 @@ public final class MaxWatchPbLong extends WatchPbLong {
         if (this.litToCoeffs == null) {
             // finding the index for p in the array of literals
             int indiceP = 0;
-            while (indiceP < this.lits.length && (this.lits[indiceP] ^ 1) != p) {
+            while (indiceP < this.lits.length
+                    && (this.lits[indiceP] ^ 1) != p) {
                 indiceP++;
             }
             // compute the new value for watchCumul
@@ -394,8 +395,6 @@ public final class MaxWatchPbLong extends WatchPbLong {
                 this);
         IConflict cm = ConflictMap.createConflict(decorator, decisionLevel,
                 false);
-        int backtrackDL = cm.getBacktrackLevel(decisionLevel);
-        System.out.println("btdl=" + backtrackDL);
         Set<Integer> litsSet = new HashSet<Integer>();
         for (Integer i : this.lits)
             litsSet.add(i);
@@ -554,7 +553,8 @@ public final class MaxWatchPbLong extends WatchPbLong {
             return cstr.toConstraint();
         }
 
-        public void calcReasonOnTheFly(int p, IVecInt trail, IVecInt outReason) {
+        public void calcReasonOnTheFly(int p, IVecInt trail,
+                IVecInt outReason) {
             cstr.calcReasonOnTheFly(p, trail, outReason);
         }
 

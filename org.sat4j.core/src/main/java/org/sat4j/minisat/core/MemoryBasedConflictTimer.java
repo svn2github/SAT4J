@@ -49,7 +49,6 @@ final class MemoryBasedConflictTimer extends ConflictTimerAdapter {
     @Override
     public void run() {
         long freemem = Runtime.getRuntime().freeMemory();
-        // System.out.println("c Free memory "+freemem);
         if (freemem < getMemoryBound()) {
             // Reduce the set of learnt clauses
             getSolver().setNeedToReduceDB(true);

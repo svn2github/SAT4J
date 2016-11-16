@@ -356,8 +356,8 @@ public class OPBReader2005 extends Reader implements Serializable {
      * @throws IOException
      * @throws ParseFormatException
      */
-    protected boolean readIdentifier(StringBuffer s) throws IOException,
-            ParseFormatException {
+    protected boolean readIdentifier(StringBuffer s)
+            throws IOException, ParseFormatException {
         char c;
 
         s.setLength(0);
@@ -535,8 +535,8 @@ public class OPBReader2005 extends Reader implements Serializable {
      * @throws IOException
      * @throws ParseFormatException
      */
-    protected void readVariablesExplanation() throws IOException,
-            ParseFormatException {
+    protected void readVariablesExplanation()
+            throws IOException, ParseFormatException {
         char c = get();
         String s;
         while (c == '*') {
@@ -550,7 +550,6 @@ public class OPBReader2005 extends Reader implements Serializable {
             if ("endMapping".equals(s)) {
                 // this.in.readLine();
                 get();
-                System.out.println(mapping);
                 return;
             }
             String[] values = s.split("=");
@@ -590,14 +589,14 @@ public class OPBReader2005 extends Reader implements Serializable {
             // no objective line
             putback(c);
             if (solver.isVerbose()) {
-                System.out.println(solver.getLogPrefix()
-                        + " no objective function found");
+                System.out.println(
+                        solver.getLogPrefix() + " no objective function found");
             }
             return;
         }
         if (solver.isVerbose()) {
-            System.out.println(solver.getLogPrefix()
-                    + " objective function found");
+            System.out.println(
+                    solver.getLogPrefix() + " objective function found");
         }
         this.hasObjFunc = true;
         if (get() == 'i' && get() == 'n' && get() == ':') {
@@ -605,7 +604,8 @@ public class OPBReader2005 extends Reader implements Serializable {
 
             while (!eof()) {
                 readTerm(coeff, var);
-                constraintTerm(new BigInteger(coeff.toString()), var.toString()); // callback
+                constraintTerm(new BigInteger(coeff.toString()),
+                        var.toString()); // callback
 
                 skipSpaces();
                 c = get();
@@ -633,8 +633,8 @@ public class OPBReader2005 extends Reader implements Serializable {
      * @throws IOException
      * @throws ContradictionException
      */
-    protected void readConstraint() throws IOException, ParseFormatException,
-            ContradictionException {
+    protected void readConstraint()
+            throws IOException, ParseFormatException, ContradictionException {
         StringBuffer var = new StringBuffer();
         StringBuffer coeff = new StringBuffer();
         char c;
@@ -698,8 +698,8 @@ public class OPBReader2005 extends Reader implements Serializable {
      * @throws ParseException
      * @throws ContradictionException
      */
-    public void parse() throws IOException, ParseFormatException,
-            ContradictionException {
+    public void parse()
+            throws IOException, ParseFormatException, ContradictionException {
         mapping = null;
 
         readMetaData();
@@ -761,8 +761,7 @@ public class OPBReader2005 extends Reader implements Serializable {
             throw ce;
         } catch (ParseFormatException pfe) {
             throw new ParseFormatException(" line "
-                    + (input.getLineNumber() + 1)
-                    + ", "
+                    + (input.getLineNumber() + 1) + ", "
                     + pfe.getMessage().substring(
                             ParseFormatException.PARSING_ERROR.length()));
         } catch (Exception e) {
