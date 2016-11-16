@@ -109,9 +109,6 @@ public class OPBReader2012 extends OPBReader2010 {
     public IProblem parseInstance(final java.io.Reader input)
             throws ParseFormatException, ContradictionException {
         super.parseInstance(input);
-        if (lexico == null) {
-            this.solver.setObjectiveFunction(getObjectiveFunction());
-        }
         return ((PBSolverHandle) solver).decorated();
     }
 }
