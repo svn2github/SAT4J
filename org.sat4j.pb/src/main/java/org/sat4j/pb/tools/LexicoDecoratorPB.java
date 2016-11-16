@@ -43,12 +43,12 @@ import org.sat4j.specs.IVecInt;
 import org.sat4j.specs.TimeoutException;
 import org.sat4j.tools.LexicoDecorator;
 
-public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
-        IPBSolver {
+public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver>
+        implements IPBSolver {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     protected List<ObjectiveFunction> objs = new ArrayList<ObjectiveFunction>();
@@ -64,8 +64,9 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
     }
 
     public void setObjectiveFunction(ObjectiveFunction obj) {
-        throw new UnsupportedOperationException();
-
+        if (obj != null) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public ObjectiveFunction getObjectiveFunction() {
@@ -81,8 +82,8 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
 
     @Override
     public void addCriterion(IVecInt literals) {
-        addCriterion(new ObjectiveFunction(literals, new Vec<BigInteger>(
-                literals.size(), BigInteger.ONE)));
+        addCriterion(new ObjectiveFunction(literals,
+                new Vec<BigInteger>(literals.size(), BigInteger.ONE)));
     }
 
     public void addCriterion(IVecInt literals, IVec<BigInteger> coefs) {
@@ -117,8 +118,9 @@ public class LexicoDecoratorPB extends LexicoDecorator<IPBSolver> implements
         if (bigCurrentValue == null) {
             throw new ContradictionException("no current value computed!");
         }
-        addExactly(this.objs.get(this.currentCriterion).getVars(), this.objs
-                .get(this.currentCriterion).getCoeffs(), this.bigCurrentValue);
+        addExactly(this.objs.get(this.currentCriterion).getVars(),
+                this.objs.get(this.currentCriterion).getCoeffs(),
+                this.bigCurrentValue);
     }
 
     @Override

@@ -31,6 +31,7 @@ package org.sat4j.pb.reader;
 
 import java.io.IOException;
 
+import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.pb.PBSolverHandle;
 import org.sat4j.pb.tools.LexicoDecoratorPB;
 import org.sat4j.reader.ParseFormatException;
@@ -94,6 +95,14 @@ public class OPBReader2012 extends OPBReader2010 {
             coeffs.clear();
             readObjective();
         }
+    }
+
+    @Override
+    public ObjectiveFunction getObjectiveFunction() {
+        if (this.hasObjFunc && lexico == null) {
+            return new ObjectiveFunction(getVars(), getCoeffs());
+        }
+        return null;
     }
 
     @Override
