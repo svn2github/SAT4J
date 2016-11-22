@@ -54,7 +54,7 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
 		 */
-		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+		public PrintWriter decoratePrintWriter(boolean shouldOnlyDisplayEncoding, PrintWriter pw) {
 			return pw;
 		}
 	},
@@ -74,7 +74,7 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
 		 */
-		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+		public PrintWriter decoratePrintWriter(boolean shouldOnlyDisplayEncoding, PrintWriter pw) {
 			return pw;
 		}
 	},
@@ -93,7 +93,10 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
 		 */
-		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+		public PrintWriter decoratePrintWriter(boolean shouldOnlyDisplayEncoding, PrintWriter pw) {
+			if(shouldOnlyDisplayEncoding) {
+				return pw;
+			}
 			XmlCommentPrintWriter commentPrintWriter = new XmlCommentPrintWriter(pw);
 			commentPrintWriter.addDncPrefix("v ");
 			return commentPrintWriter;
@@ -114,7 +117,7 @@ public enum ECSPFormat {
 		/**
 		 * @see ECSPFormat#decoratePrintWriter(PrintWriter)
 		 */
-		public PrintWriter decoratePrintWriter(PrintWriter pw) {
+		public PrintWriter decoratePrintWriter(boolean shouldOnlyDisplayEncoding, PrintWriter pw) {
 			return pw;
 		}
 	};
@@ -148,11 +151,12 @@ public enum ECSPFormat {
 	
 	/**
 	 * Decorates a {@link PrintWriter} dedicated to solver output in order to provide the correct output given the CSP format.
+	 * @param shouldOnlyDisplayEncoding 
 	 * 
 	 * @param pw the default writer
 	 * @return the decorator
 	 */
-	public PrintWriter decoratePrintWriter(PrintWriter pw) {
+	public PrintWriter decoratePrintWriter(boolean shouldOnlyDisplayEncoding, PrintWriter pw) {
 		throw new IllegalStateException("This code should never be called");
 	}
 	
