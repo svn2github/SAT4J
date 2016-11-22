@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.sat4j.AbstractLauncher;
 import org.sat4j.ILauncherMode;
+import org.sat4j.pb.tools.PBAdapter;
 import org.sat4j.reader.ECSPFormat;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.Reader;
@@ -37,6 +38,8 @@ public class CSPLauncher extends AbstractLauncher {
      */
 	private static final long serialVersionUID = 1L;
 	
+	private boolean shouldOnlyDisplayEncoding = false;
+	
 	public CSPLauncher() {
 		bufferizeLog();
 	}
@@ -48,13 +51,14 @@ public class CSPLauncher extends AbstractLauncher {
 	 */
 	@Override
 	protected ISolver configureSolver(String[] args) {
-		ISolver asolver;
+		ICspPBSatSolver asolver;
 		if (args.length == 2) {
 			asolver = SolverFactory.instance().createSolverByName(args[0]);
 		} else {
-			asolver = SolverFactory.newDefault();
+			asolver = new CspSatSolverDecorator(new PBAdapter(SolverFactory.newDefault()));
 		}
 		log(asolver.toString(COMMENT_PREFIX));
+		this.shouldOnlyDisplayEncoding = asolver.shouldOnlyDisplayEncoding();
 		return asolver;
 	}
 
@@ -69,7 +73,7 @@ public class CSPLauncher extends AbstractLauncher {
 	protected Reader createReader(final ISolver aSolver,
 			final String problemname) {
 		ECSPFormat cspFormat = ECSPFormat.inferInstanceType(problemname);
-		this.out = cspFormat.decoratePrintWriter(this.out);
+		this.out = cspFormat.decoratePrintWriter(this.shouldOnlyDisplayEncoding, this.out);
 		flushLog();
 		Reader aReader = cspFormat.getReader(this, aSolver);
 		setLauncherMode(cspFormat.isOptimizationModeRequired() ? ILauncherMode.OPTIMIZATION : ILauncherMode.DECISION);
@@ -88,6 +92,13 @@ public class CSPLauncher extends AbstractLauncher {
 			throws ParseFormatException, IOException, ContradictionException {
 		this.silent = true;
 		IProblem problem = super.readProblem(problemname);
+		if(this.shouldOnlyDisplayEncoding) {
+			displayEncoding();
+		}
+		return problem;
+	}
+
+	private void displayEncoding() {
 		if(this.reader.hasAMapping()) {
 			this.out.write("c CSP to SAT var mapping:");
 			Map<Integer, String> mapping = this.reader.getMapping();
@@ -103,7 +114,6 @@ public class CSPLauncher extends AbstractLauncher {
 			}
 			this.out.write("\n");
 		}
-		return problem;
 	}
 
 	public static void main(String[] args) {

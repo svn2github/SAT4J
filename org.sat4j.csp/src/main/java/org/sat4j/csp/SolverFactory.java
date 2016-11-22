@@ -18,6 +18,9 @@
 *******************************************************************************/
 package org.sat4j.csp;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.sat4j.core.ASolverFactory;
 import org.sat4j.minisat.constraints.MixedDataStructureDanielWL;
 import org.sat4j.minisat.core.DataStructureFactory;
@@ -26,10 +29,8 @@ import org.sat4j.minisat.core.Solver;
 import org.sat4j.minisat.learning.MiniSATLearning;
 import org.sat4j.minisat.orders.VarOrderHeap;
 import org.sat4j.minisat.restarts.MiniSATRestarts;
-import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.tools.PBAdapter;
 import org.sat4j.specs.ISolver;
-import org.sat4j.tools.DimacsOutputSolver;
 import org.sat4j.tools.DimacsStringSolver;
 
 /**
@@ -74,7 +75,19 @@ public class SolverFactory extends ASolverFactory<ISolver> {
         return instance;
     }
 
-    /**
+    public ICspPBSatSolver createSolverByName(String solvername) {
+        try {
+            Class<?>[] paramtypes = {};
+            Method m = this.getClass()
+                    .getMethod("new" + solvername, paramtypes); //$NON-NLS-1$
+            return (ICspPBSatSolver) m.invoke(null, (Object[]) null);
+        } catch (SecurityException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+        return null;
+    }
+
+	/**
      * @param dsf
      *                the data structure used for representing clauses and lits
      * @return MiniSAT the data structure dsf.
@@ -106,16 +119,16 @@ public class SolverFactory extends ASolverFactory<ISolver> {
     	return newSAT();
     }
 
-    public static ISolver newSAT() {
-    	return org.sat4j.pb.SolverFactory.newSAT();
+    public static ICspPBSatSolver newSAT() {
+    	return new CspSatSolverDecorator(org.sat4j.pb.SolverFactory.newSAT());
     }
     
-    public static ISolver newUNSAT() {
-    	return org.sat4j.pb.SolverFactory.newUNSAT();
+    public static ICspPBSatSolver newUNSAT() {
+    	return new CspSatSolverDecorator(org.sat4j.pb.SolverFactory.newUNSAT());
     }
     
-    public static ISolver newCuttingPlanes() {
-    	return org.sat4j.pb.SolverFactory.newCuttingPlanes();
+    public static ICspPBSatSolver newCuttingPlanes() {
+    	return new CspSatSolverDecorator(org.sat4j.pb.SolverFactory.newCuttingPlanes());
     }
     
     @Override
@@ -130,21 +143,19 @@ public class SolverFactory extends ASolverFactory<ISolver> {
      * @see #lightSolver() the same method, polymorphic, to be called from an
      *      instance of ASolverFactory.
      */
-    public static ISolver newLight() {
-    	return newMiniSAT(new MixedDataStructureDanielWL());
+    public static ICspPBSatSolver newLight() {
+    	return new CspSatSolverDecorator(new PBAdapter(newMiniSAT(new MixedDataStructureDanielWL())));
     }
 
     @Override
-    public ISolver lightSolver() {
+    public ICspPBSatSolver lightSolver() {
         return newLight();
     }
-
-    public static ISolver newDimacsOutput() {
-        return new DimacsOutputSolver();
-    }
     
-    public static IPBSolver newDimacsOutputPB() {
-    	return new PBAdapter(new DimacsStringSolver());
+    public static ICspPBSatSolver newDimacsOutputPB() {
+    	final CspSatSolverDecorator solver = new CspSatSolverDecorator(new PBAdapter(new DimacsStringSolver()));
+    	solver.setShouldOnlyDisplayEncoding(true);
+		return solver;
     }
 
 }
