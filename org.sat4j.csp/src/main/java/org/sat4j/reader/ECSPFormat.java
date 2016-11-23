@@ -97,7 +97,7 @@ public enum ECSPFormat {
 			if(shouldOnlyDisplayEncoding) {
 				return pw;
 			}
-			XmlCommentPrintWriter commentPrintWriter = new XmlCommentPrintWriter(pw);
+			XMLCommentPrintWriter commentPrintWriter = new XMLCommentPrintWriter(pw);
 			commentPrintWriter.addDncPrefix("v ");
 			return commentPrintWriter;
 		}

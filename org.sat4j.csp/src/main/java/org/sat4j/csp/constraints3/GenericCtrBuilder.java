@@ -42,7 +42,6 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  * This class is dedicated to intension (including "primitive" special cases) constraints.
  * 
  * @author Emmanuel Lonca - lonca@cril.fr
- *
  */
 public class GenericCtrBuilder {
 

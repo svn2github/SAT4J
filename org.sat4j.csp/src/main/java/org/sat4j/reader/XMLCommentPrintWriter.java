@@ -8,10 +8,11 @@ import java.util.Locale;
 
 /**
  * A class used to make {@link PrintWriter} output XML comments.
+ * May also display "as is" lines beginning with given prefixes.
  * 
  * @author Emmanuel Lonca - lonca@cril.fr
  */
-public class XmlCommentPrintWriter extends PrintWriter {
+public class XMLCommentPrintWriter extends PrintWriter {
 	
 	/** XML comment start tag */
 	private static final String BEGIN_COMMENT = "<!-- ";
@@ -29,11 +30,11 @@ public class XmlCommentPrintWriter extends PrintWriter {
 	private List<String> dncPrefixes = new ArrayList<>();
 
 	/**
-	 * Builds a new {@link XmlCommentPrintWriter} given a {@link PrintWriter} to decorate.
+	 * Builds a new {@link XMLCommentPrintWriter} given a {@link PrintWriter} to decorate.
 	 * 
 	 * @param decorated the {@link PrintWriter} to decorate
 	 */
-	public XmlCommentPrintWriter(Writer decorated) {
+	public XMLCommentPrintWriter(Writer decorated) {
 		super(decorated);
 	}
 	

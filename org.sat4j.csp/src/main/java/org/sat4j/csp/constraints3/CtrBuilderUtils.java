@@ -32,7 +32,7 @@ import org.xcsp.common.Types.TypeOperator;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
- * A utility class for XCSP3 constraint builders.
+ * Utility class for XCSP3 constraint builders.
  * 
  * @author Emmanuel Lonca - lonca@cril.fr
  *
