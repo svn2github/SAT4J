@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.sat4j.core.Vec;
 import org.sat4j.csp.Clausifiable;
@@ -46,6 +48,7 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IProblem;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
+import org.sat4j.specs.IteratorInt;
 
 /**
  * This class is a CSP to SAT translator that is able to read a CSP problem
@@ -509,4 +512,25 @@ public class CSPReader extends Reader implements org.sat4j.csp.xml.ICSPCallback 
 			throws ParseFormatException, ContradictionException, IOException {
 		return parseInstance(new InputStreamReader(in));
 	}
+	
+	@Override
+	public boolean hasAMapping() {
+		return true;
+	}
+	
+	@Override
+	public Map<Integer, String> getMapping() {
+		final SortedMap<Integer, String> mapping = new TreeMap<>(); 
+		for(Map.Entry<String, Var> entry : this.varmapping.entrySet()) {
+			final Var var = entry.getValue();
+			final Domain dom = var.domain();
+			for(IteratorInt it = dom.iterator(); it.hasNext(); ) {
+				final int domVal = it.next();
+				final int solverVar = var.translate(domVal);
+				mapping.put(solverVar, var+"="+domVal);
+			}
+		}
+		return mapping;
+	}
+
 }

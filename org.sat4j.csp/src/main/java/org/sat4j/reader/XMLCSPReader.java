@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -91,5 +92,13 @@ public class XMLCSPReader extends org.sat4j.reader.Reader {
         super.setVerbosity(b);
         cspreader.setVerbosity(b);
     }
+
+	public boolean hasAMapping() {
+		return cspreader.hasAMapping();
+	}
+
+	public Map<Integer, String> getMapping() {
+		return cspreader.getMapping();
+	}
 
 }
