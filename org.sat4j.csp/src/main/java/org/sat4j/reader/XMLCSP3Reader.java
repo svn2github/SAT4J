@@ -284,8 +284,10 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 			}
 		} catch(ParseFormatException | ContradictionException | IOException e) {
 			throw e;
+		} catch(RuntimeException e) {
+			e.printStackTrace();
+			throw e;
 		} catch (Exception e) {
-//			throw new ParseFormatException(e);
 			e.printStackTrace();
 		}
 		if(this.contradictionFound) {
