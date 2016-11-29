@@ -100,19 +100,11 @@ public class CSPLauncher extends AbstractLauncher {
 
 	private void displayEncoding() {
 		if(this.reader.hasAMapping()) {
-			this.out.write("c CSP to SAT var mapping:");
+			this.out.write("c CSP to SAT var mapping:\n");
 			Map<Integer, String> mapping = this.reader.getMapping();
-			String lastVar="";
 			for(Map.Entry<Integer, String> entry : mapping.entrySet()) {
-				final String curVarAssignment = entry.getValue();
-				final String curVar = curVarAssignment.substring(0, curVarAssignment.indexOf("="));
-				if(!curVar.equals(lastVar)) {
-					this.out.write("\nc ");
-				}
-				this.out.write(curVarAssignment+":"+entry.getKey()+" ");
-				lastVar = curVar;
+				this.out.write(entry.getValue()+";"+entry.getKey()+"\n");
 			}
-			this.out.write("\n");
 		}
 	}
 
