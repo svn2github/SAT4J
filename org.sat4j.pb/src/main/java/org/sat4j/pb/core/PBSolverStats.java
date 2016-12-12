@@ -42,6 +42,10 @@ public class PBSolverStats extends SolverStats {
 
     public long numberOfReductions;
 
+    public long numberOfReductionsByPower2;
+
+    public long numberOfRightShiftsForCoeffs;
+
     public long numberOfLearnedConstraintsReduced;
 
     public long numberOfResolution;
@@ -60,6 +64,8 @@ public class PBSolverStats extends SolverStats {
         this.numberOfResolution = 0;
         this.numberOfCP = 0;
         this.numberOfRoundingOperations = 0;
+        this.numberOfReductionsByPower2 = 0;
+        this.numberOfRightShiftsForCoeffs = 0;
     }
 
     @Override
@@ -80,6 +86,12 @@ public class PBSolverStats extends SolverStats {
         out.println(
                 prefix + "number of easy rounding to 1 operations (no literal elimination needed)\t: "
                         + this.numberOfEasyRoundingOperations);
+        out.println(
+                prefix + "number of reductions of the coefficients by power 2 \t: "
+                        + this.numberOfReductionsByPower2);
+        out.println(
+                prefix + "number of right shift for reduction by power 2 \t: "
+                        + this.numberOfRightShiftsForCoeffs);
     }
 
 }

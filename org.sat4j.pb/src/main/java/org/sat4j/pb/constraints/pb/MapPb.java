@@ -74,6 +74,26 @@ public class MapPb implements IDataStructurePB {
         this.degree = degree;
     }
 
+    public int reduceCoeffsByPower2() {
+        int nbBits = 1;
+        for (int i = 0; i < this.weightedLits.size() && nbBits > 0; i++)
+            nbBits = Math.min(nbBits,
+                    this.weightedLits.getCoef(i).getLowestSetBit());
+        if (nbBits > 0) {
+            for (int i = 0; i < this.weightedLits.size(); i++) {
+                this.weightedLits.changeCoef(i,
+                        this.weightedLits.getCoef(i).shiftRight(nbBits));
+            }
+            // diviser le degre
+            int nbBitsDegree = this.degree.getLowestSetBit();
+            this.degree = this.degree.shiftRight(nbBits);
+            if (nbBitsDegree < nbBits) {
+                this.degree = this.degree.add(BigInteger.ONE);
+            }
+        }
+        return nbBits;
+    }
+
     public boolean isCardinality() {
         boolean newcase = false;
         for (int i = 0; i < size(); i++) {
@@ -276,8 +296,8 @@ public class MapPb implements IDataStructurePB {
     }
 
     void decreaseCoef(int lit, BigInteger decCoef) {
-        this.weightedLits
-                .put(lit, this.weightedLits.get(lit).subtract(decCoef));
+        this.weightedLits.put(lit,
+                this.weightedLits.get(lit).subtract(decCoef));
     }
 
     void setCoef(int lit, BigInteger newValue) {

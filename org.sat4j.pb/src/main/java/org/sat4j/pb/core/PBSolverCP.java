@@ -109,7 +109,8 @@ public class PBSolverCP extends PBSolver {
         }
     }
 
-    public void analyzeCP(Constr myconfl, Pair results) throws TimeoutException {
+    public void analyzeCP(Constr myconfl, Pair results)
+            throws TimeoutException {
         int litImplied = this.trail.last();
         int currentLevel = this.voc.getLevel(litImplied);
         IConflict confl = chooseConflict((PBConstr) myconfl, currentLevel);
@@ -155,13 +156,19 @@ public class PBSolverCP extends PBSolver {
         // are kept from the conflict
         if (confl.size() == 0
                 || (decisionLevel() == 0 || this.trail.size() == 0)
-                && confl.slackConflict().signum() < 0) {
+                        && confl.slackConflict().signum() < 0) {
             results.reason = null;
             results.backtrackLevel = -1;
             return;
         }
 
         // assertive PB-constraint is build and referenced
+        int nbBits = confl.reduceCoeffsByPower2();
+        if (nbBits > 0) {
+            stats.numberOfReductionsByPower2++;
+            stats.numberOfRightShiftsForCoeffs = stats.numberOfRightShiftsForCoeffs
+                    + nbBits;
+        }
         PBConstr resConstr = (PBConstr) this.dsfactory
                 .createUnregisteredPseudoBooleanConstraint(confl);
         results.reason = resConstr;
@@ -169,9 +176,8 @@ public class PBSolverCP extends PBSolver {
         // the conflict give the highest decision level for the backtrack
         // (which is less than current level)
         // assert confl.isAssertive(currentLevel);
-        if (decisionLevel() == 0
-                || (this.trail.size() == 0 && confl
-                        .getBacktrackLevel(currentLevel) > 0)) {
+        if (decisionLevel() == 0 || (this.trail.size() == 0
+                && confl.getBacktrackLevel(currentLevel) > 0)) {
             results.backtrackLevel = -1;
             results.reason = null;
         } else {
@@ -185,10 +191,8 @@ public class PBSolverCP extends PBSolver {
 
     @Override
     public String toString(String prefix) {
-        return prefix
-                + "Cutting planes based inference ("
-                + this.getClass().getName()
-                + ")"
+        return prefix + "Cutting planes based inference ("
+                + this.getClass().getName() + ")"
                 + (this.noRemove ? ""
                         : " - removing satisfied literals at a higher level before CP -")
                 + "\n" + super.toString(prefix);

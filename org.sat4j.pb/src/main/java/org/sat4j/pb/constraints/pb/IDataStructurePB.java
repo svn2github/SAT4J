@@ -51,7 +51,8 @@ public interface IDataStructurePB {
     BigInteger cuttingPlane(int lits[], BigInteger[] reducedCoefs,
             BigInteger degreeCons, BigInteger coefMult);
 
-    void buildConstraintFromConflict(IVecInt resLits, IVec<BigInteger> resCoefs);
+    void buildConstraintFromConflict(IVecInt resLits,
+            IVec<BigInteger> resCoefs);
 
     void buildConstraintFromMapPb(int[] resLits, BigInteger[] resCoefs);
 
@@ -66,5 +67,7 @@ public interface IDataStructurePB {
     int getAssertiveLiteral();
 
     boolean isLongSufficient();
+
+    int reduceCoeffsByPower2();
 
 }
