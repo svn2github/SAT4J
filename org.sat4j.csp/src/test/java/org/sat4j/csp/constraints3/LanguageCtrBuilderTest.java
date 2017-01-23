@@ -24,14 +24,15 @@ public class LanguageCtrBuilderTest {
 	public void testRegular1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(7, 0, 1));
-		String ctrSection = "<regular>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<regular>"
 				+ "<list> i0 i1 i2 i3 i4 i5 i6 </list>"
 				+ "<transitions>"
 				+ "(a,0,a) (a,1,b) (b,1,c) (c,0,d) (d,0,d) (d,1,e) (e,0,e)"
 				+ "</transitions>"
 				+ "<start> a </start>"
 				+ "<final> e </final>"
-				+ "</regular>";
+				+ "</regular>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels,
 				"0 1 1 0 0 1 0",
@@ -48,14 +49,15 @@ public class LanguageCtrBuilderTest {
 	public void testMDD() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
-		String ctrSection = "<mdd>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<mdd>"
 				+ "<list> i0 i1 i2 </list>"
 				+"<transitions>"
 				+"(r,0,n1)(r,1,n2)(r,2,n3)"
 				+"(n1,2,n4)(n2,2,n4)(n3,0,n5)"
 				+"(n4,0,t)(n5,0,t)"
 				+"</transitions>"
-				+ "</mdd>";
+				+ "</mdd>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2 0", "1 2 0", "2 0 0");
 	}

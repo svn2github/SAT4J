@@ -24,7 +24,7 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrClause1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(2));
-		String ctrSection = "<clause> b0 b1 </clause>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<clause> b0 b1 </clause>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1", "1 0", "1 1");
 	}
@@ -33,7 +33,7 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrClause2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(2));
-		String ctrSection = "<clause> b0 not(b1) </clause>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<clause> b0 not(b1) </clause>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0", "1 0", "1 1");
 	}
@@ -42,7 +42,7 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrClause3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<clause> b0 b0 </clause>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<clause> b0 b0 </clause>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1");
 	}
@@ -51,7 +51,7 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrClause4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<clause> b0 not(b0) </clause>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<clause> b0 not(b0) </clause>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1");
 	}
@@ -60,11 +60,12 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrInstantiation() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(2));
-		String ctrSection = "<clause> b0 b1 </clause>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<clause> b0 b1 </clause>"
 				+ "<instantiation>"
 				+ "<list> b0 </list>"
 				+ "<values> 1 </values>"
-				+ "</instantiation>\n";
+				+ "</instantiation>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 0", "1 1");
 	}
@@ -73,10 +74,11 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrInstantiation2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<instantiation>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<instantiation>"
 				+ "<list> b0 b0 </list>"
 				+ "<values> 1 1 </values>"
-				+ "</instantiation>\n";
+				+ "</instantiation>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1");
 	}
@@ -85,10 +87,11 @@ public class ElementaryCtrBuilderTest {
 	public void testCtrInstantiation3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<instantiation>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<instantiation>"
 				+ "<list> b0 b0 </list>"
 				+ "<values> 1 0 </values>"
-				+ "</instantiation>\n";
+				+ "</instantiation>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}

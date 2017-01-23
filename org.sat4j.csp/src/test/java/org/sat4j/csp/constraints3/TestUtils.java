@@ -55,7 +55,7 @@ public class TestUtils {
 	}
 
 	public static List<String> computeModels(XMLCSP3Reader reader, IPBSolver solver, String varSection, String ctrSection) {
-		String strInstance = TestUtils.buildInstance(varSection, TestUtils.buildConstraintsSection(ctrSection));
+		String strInstance = TestUtils.buildInstance(varSection, ctrSection);
 		try {
 			reader.parseInstance(stringAsStream(strInstance));
 		} catch (ParseFormatException | IOException e) {

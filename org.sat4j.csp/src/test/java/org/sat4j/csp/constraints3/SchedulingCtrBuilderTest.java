@@ -72,11 +72,12 @@ public class SchedulingCtrBuilderTest {
 	public void testStretch1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(7, 0, 3));
-		String ctrSection = "<stretch>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<stretch>"
 				+ "<list> i0 i1 i2 i3 i4 i5 i6 </list>"
 				+ "<values> 0 1 2 3 </values>"
 				+ "<widths> 1..3 1..3 2..3 2..4 </widths>"
-				+ "</stretch>";
+				+ "</stretch>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] stretchesArrays = stretches(7, 4, new int[]{1,1,2,2}, new int[]{3,3,3,4});
 		Arrays.sort(stretchesArrays);
@@ -88,12 +89,12 @@ public class SchedulingCtrBuilderTest {
 	public void testStretch2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(7, 0, 3));
-		String ctrSection = "<stretch>"
+		String ctrSection = TestUtils.buildConstraintsSection("<stretch>"
 				+ "<list> i0 i1 i2 i3 i4 i5 i6 </list>"
 				+ "<values> 0 1 2 3 </values>"
 				+ "<widths> 1..3 1..3 2..3 2..4 </widths>"
 				+ "<patterns> (0,1) (1,2) (2,3) </patterns>"
-				+ "</stretch>";
+				+ "</stretch>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] stretchesArrays = stretches(7, 4, new int[]{1,1,2,2}, new int[]{3,3,3,4}, new int[][]{new int[]{0,1}, new int[]{1,2}, new int[]{2,3}});
 		Arrays.sort(stretchesArrays);
@@ -157,10 +158,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 4));
-		String ctrSection = "<noOverlap>"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap>"
 				+ "<origins> i0 i1 i2 </origins>"
 				+ "<lengths> 2 2 2 </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] noOverlapArrays = noOverlapArrays(4, 3, 2, 2, true, true);
 		Arrays.sort(noOverlapArrays);
@@ -171,10 +172,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 4));
-		String ctrSection = "<noOverlap zeroIgnored=\"false\">"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap zeroIgnored=\"false\">"
 				+ "<origins> i0 i1 i2 </origins>"
 				+ "<lengths> 0 0 0 </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] noOverlapArrays = noOverlapArrays(4, 3, 0, 0, false, true);
 		Arrays.sort(noOverlapArrays);
@@ -185,10 +186,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 2));
-		String ctrSection = "<noOverlap zeroIgnored=\"true\">"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap zeroIgnored=\"true\">"
 				+ "<origins> i0 i1 i2 </origins>"
 				+ "<lengths> i3 i4 i5 </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] noOverlapArrays = noOverlapArrays(2, 3, 0, 2, true, false);
 		Arrays.sort(noOverlapArrays);
@@ -199,10 +200,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 2));
-		String ctrSection = "<noOverlap zeroIgnored=\"false\">"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap zeroIgnored=\"false\">"
 				+ "<origins> i0 i1 i2 </origins>"
 				+ "<lengths> i3 i4 i5 </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] noOverlapArrays = noOverlapArrays(2, 3, 0, 2, false, false);
 		Arrays.sort(noOverlapArrays);
@@ -213,10 +214,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 1));
-		String ctrSection = "<noOverlap zeroIgnored=\"true\">"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap zeroIgnored=\"true\">"
 				+ "<origins> (i0,i1) (i2,i3) (i4,i5) </origins>"
 				+ "<lengths> (1,1) (1,1) (1,1) </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels,
 				"0 0 0 1 1 0", "0 0 0 1 1 1", "0 0 1 0 0 1", "0 0 1 0 1 1", "0 0 1 1 0 1", "0 0 1 1 1 0",
@@ -229,10 +230,10 @@ public class SchedulingCtrBuilderTest {
 	public void testNoOverlap6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 4));
-		String ctrSection = "<noOverlap zeroIgnored=\"false\">"
+		String ctrSection = TestUtils.buildConstraintsSection("<noOverlap zeroIgnored=\"false\">"
 				+ "<origins> i0 i1 i0 </origins>"
 				+ "<lengths> 1 1 1 </lengths>"
-				+ "</noOverlap>";
+				+ "</noOverlap>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}

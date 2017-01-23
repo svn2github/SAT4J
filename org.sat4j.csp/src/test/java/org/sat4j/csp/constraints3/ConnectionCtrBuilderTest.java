@@ -24,7 +24,7 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 0, 3));
-		String ctrSection = "<channel> i0 i1 i2 i3 </channel>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<channel> i0 i1 i2 i3 </channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1 2 3", "0 1 3 2", "0 2 1 3", "0 3 2 1", "1 0 2 3", "1 0 3 2", "2 1 0 3", "2 3 0 1", "3 1 2 0", "3 2 1 0");
 	}
@@ -33,9 +33,9 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 1, 4));
-		String ctrSection = "<channel>"
+		String ctrSection = TestUtils.buildConstraintsSection("<channel>"
 				+ "<list startIndex=\"1\"> i0 i1 i2 i3 </list>"
-				+ "</channel>\n";
+				+ "</channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 2 3 4", "1 2 4 3", "1 3 2 4", "1 4 3 2", "2 1 3 4", "2 1 4 3", "3 2 1 4", "3 4 1 2", "4 2 3 1", "4 3 2 1");
 	}
@@ -44,10 +44,10 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 2));
-		String ctrSection = "<channel>"
+		String ctrSection = TestUtils.buildConstraintsSection("<channel>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<list> i3 i4 i5 </list>"
-				+ "</channel>\n";
+				+ "</channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1 2 0 1 2", "0 2 1 0 2 1", "1 0 2 1 0 2", "1 2 0 2 0 1", "2 0 1 1 2 0", "2 1 0 2 1 0");
 	}
@@ -56,10 +56,10 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 1, 3)+TestUtils.buildIntegerVars(3, 0, 2, 3));
-		String ctrSection = "<channel>"
+		String ctrSection = TestUtils.buildConstraintsSection("<channel>"
 				+ "<list startIndex=\"0\"> i0 i1 i2 </list>"
 				+ "<list startIndex=\"1\"> i3 i4 i5 </list>"
-				+ "</channel>\n";
+				+ "</channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 2 3 0 1 2", "1 3 2 0 2 1", "2 1 3 1 0 2", "2 3 1 2 0 1", "3 1 2 1 2 0", "3 2 1 2 1 0");
 	}
@@ -68,7 +68,7 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 1));
-		String ctrSection = "<channel> i0 i0 </channel>\n";
+		String ctrSection = TestUtils.buildConstraintsSection("<channel> i0 i0 </channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
@@ -77,10 +77,10 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 1));
-		String ctrSection = "<channel>"
+		String ctrSection = TestUtils.buildConstraintsSection("<channel>"
 				+ "<list> i0 i1 </list>"
 				+ "<list> i0 i1 </list>"
-				+ "</channel>\n";
+				+ "</channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1", "1 0");
 	}
@@ -89,10 +89,10 @@ public class ConnectionCtrBuilderTest {
 	public void testChannel7() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 1));
-		String ctrSection = "<channel>"
+		String ctrSection = TestUtils.buildConstraintsSection("<channel>"
 				+ "<list> i0 i0 </list>"
 				+ "<list> i1 i1 </list>"
-				+ "</channel>\n";
+				+ "</channel>\n");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
@@ -101,10 +101,10 @@ public class ConnectionCtrBuilderTest {
 	public void testElement1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(4));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list startIndex=\"1\"> b1 b2 b3 </list>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 0", "0 0 0 1", "0 0 1 0", "0 0 1 1", "0 1 0 0", "0 1 0 1", "0 1 1 0", "1 0 0 1", "1 0 1 0", "1 0 1 1", "1 1 0 0", "1 1 0 1", "1 1 1 0", "1 1 1 1");
 	}
@@ -113,11 +113,11 @@ public class ConnectionCtrBuilderTest {
 	public void testElement2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2)+TestUtils.buildBinaryVars(4));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list startIndex=\"1\"> b1 b2 b3 </list>"
 				+ "<index rank=\"any\"> i0 </index>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		String[] models = new String[42];
 		int cpt = 0;
@@ -134,11 +134,11 @@ public class ConnectionCtrBuilderTest {
 	public void testElement3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2)+TestUtils.buildBinaryVars(4));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list startIndex=\"0\"> b1 b2 b3 </list>"
 				+ "<index rank=\"first\"> i0 </index>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 0 0", "0 0 0 0 1", "0 0 0 1 0", "0 0 0 1 1", "0 1 1 0 0", "0 1 1 0 1", "0 1 1 1 0", "0 1 1 1 1",
 				"1 0 1 0 0", "1 0 1 0 1", "1 1 0 1 0", "1 1 0 1 1",
@@ -149,11 +149,11 @@ public class ConnectionCtrBuilderTest {
 	public void testElement4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 1, 3)+TestUtils.buildBinaryVars(4));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list startIndex=\"1\"> b1 b2 b3 </list>"
 				+ "<index rank=\"last\"> i0 </index>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 0 0 1 1", "1 1 1 0 0",
 				"2 0 0 0 1", "2 0 1 0 1", "2 1 0 1 0", "2 1 1 1 0",
@@ -164,10 +164,10 @@ public class ConnectionCtrBuilderTest {
 	public void testElement5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(3));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<value> 0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0", "0 0 1", "0 1 0", "0 1 1", "1 0 0", "1 0 1", "1 1 0");
 	}
@@ -176,10 +176,10 @@ public class ConnectionCtrBuilderTest {
 	public void testElement6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<value> 0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0");
 	}
@@ -188,10 +188,10 @@ public class ConnectionCtrBuilderTest {
 	public void testElement7() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1");
 	}
@@ -200,11 +200,11 @@ public class ConnectionCtrBuilderTest {
 	public void testElement8() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1)+TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<index rank=\"first\"> i0 </index>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0", "1 0");
 	}
@@ -213,11 +213,11 @@ public class ConnectionCtrBuilderTest {
 	public void testElement9() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1)+TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<element>"
+		String ctrSection = TestUtils.buildConstraintsSection("<element>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<index rank=\"last\"> i0 </index>"
 				+ "<value> b0 </value>"
-				+ "</element>";
+				+ "</element>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2", "1 2");
 	}
@@ -226,10 +226,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<condition> (eq,2) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 2", "0 1 2", "0 2 0", "0 2 1", "0 2 2",
 				"1 0 2", "1 1 2", "1 2 0", "1 2 1", "1 2 2",
@@ -240,10 +240,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list> i1 i2 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0", "1 0 1", "1 1 0", "1 1 1", "2 0 2", "2 1 2", "2 2 0", "2 2 1", "2 2 2");
 	}
@@ -252,10 +252,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list> i0 i0 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1", "2");
 	}
@@ -264,11 +264,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 2 </var><var id=\"i4\"> 1 </var>");
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<index rank=\"first\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2 0 2 1", "0 2 1 2 1", "0 2 2 2 1",
 				"1 2 0 2 1", "1 2 1 2 1", "1 2 2 2 1");
@@ -278,11 +278,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 2 </var><var id=\"i4\"> 2 </var>");
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list startIndex=\"1\"> i0 i1 i2 </list>"
 				+ "<index rank=\"first\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2 0 2 2", "0 2 1 2 2", "0 2 2 2 2",
 				"1 2 0 2 2", "1 2 1 2 2", "1 2 2 2 2");
@@ -292,11 +292,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMaximum6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 2 </var><var id=\"i4\"> 2 </var>");
-		String ctrSection = "<maximum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<maximum>"
 				+ "<list startIndex=\"1\"> i0 i1 i2 </list>"
 				+ "<index rank=\"last\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</maximum>";
+				+ "</maximum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2 0 2 2", "0 2 1 2 2", "1 2 0 2 2", "1 2 1 2 2", "2 2 0 2 2", "2 2 1 2 2");
 	}
@@ -306,10 +306,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<condition> (eq,2) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "2 2 2");
 	}
@@ -318,10 +318,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list> i1 i2 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0", "0 0 1", "0 0 2", "0 1 0", "0 2 0", "1 1 1", "1 1 2", "1 2 1", "2 2 2");
 	}
@@ -330,10 +330,10 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list> i0 i0 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1", "2");
 	}
@@ -342,11 +342,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 1 </var><var id=\"i4\"> 1 </var>");
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<index rank=\"first\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "2 1 1 1 1", "2 1 2 1 1");
 	}
@@ -355,11 +355,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 1 </var><var id=\"i4\"> 2 </var>");
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list startIndex=\"1\"> i0 i1 i2 </list>"
 				+ "<index rank=\"first\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "2 1 1 1 2", "2 1 2 1 2");
 	}
@@ -368,11 +368,11 @@ public class ConnectionCtrBuilderTest {
 	public void testMinimum6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2) + "<var id=\"i3\"> 1 </var><var id=\"i4\"> 2 </var>");
-		String ctrSection = "<minimum>"
+		String ctrSection = TestUtils.buildConstraintsSection("<minimum>"
 				+ "<list startIndex=\"1\"> i0 i1 i2 </list>"
 				+ "<index rank=\"last\"> i4 </index>"
 				+ "<condition> (eq,i3) </condition>"
-				+ "</minimum>";
+				+ "</minimum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 1 2 1 2", "2 1 2 1 2");
 	}

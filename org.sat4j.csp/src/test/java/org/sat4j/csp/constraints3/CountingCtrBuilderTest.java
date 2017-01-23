@@ -25,10 +25,11 @@ public class CountingCtrBuilderTest {
 	public void testSum1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 10)+TestUtils.buildBinaryVars(3));
-		String ctrSection = "<sum>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<sum>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</sum>";
+				+ "</sum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 0", "1 0 0 1", "1 0 1 0", "1 1 0 0", "2 0 1 1", "2 1 0 1", "2 1 1 0", "3 1 1 1");
 	}
@@ -38,11 +39,12 @@ public class CountingCtrBuilderTest {
 	public void testSum2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 10)+TestUtils.buildBinaryVars(3));
-		String ctrSection = "<sum>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<sum>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<coeffs> 2 1 1 </coeffs>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</sum>";
+				+ "</sum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 0", "1 0 0 1", "1 0 1 0", "2 0 1 1", "2 1 0 0", "3 1 0 1", "3 1 1 0", "4 1 1 1");
 	}
@@ -51,10 +53,11 @@ public class CountingCtrBuilderTest {
 	public void testSum3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(3));
-		String ctrSection = "<sum>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<sum>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<condition> (eq,2) </condition>"
-				+ "</sum>";
+				+ "</sum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1 1", "1 0 1", "1 1 0");
 	}
@@ -63,10 +66,11 @@ public class CountingCtrBuilderTest {
 	public void testSum4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(1));
-		String ctrSection = "<sum>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<sum>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<condition> (eq,3) </condition>"
-				+ "</sum>";
+				+ "</sum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1");
 	}
@@ -75,11 +79,12 @@ public class CountingCtrBuilderTest {
 	public void testSum5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 10)+TestUtils.buildBinaryVars(1));
-		String ctrSection = "<sum>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<sum>"
 				+ "<list> b0 b0 b0 </list>"
 				+ "<coeffs> 2 1 1 </coeffs>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</sum>";
+				+ "</sum>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0", "4 1");
 	}
@@ -88,11 +93,11 @@ public class CountingCtrBuilderTest {
 	public void testCount1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 0, 2));
-		String ctrSection = "<count>"
+		String ctrSection = TestUtils.buildConstraintsSection("<count>"
 				+ "<list> i1 i2 i3 </list>"
 				+ "<values> 0 1 </values>"
 				+ "<condition> (ge,i0) </condition>"
-				+ "</count>";
+				+ "</count>");
 		List<String> expected = new ArrayList<String>();
 		int count;
 		for(int i=0; i<=2; ++i) {
@@ -120,11 +125,11 @@ public class CountingCtrBuilderTest {
 	public void testCount2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 3)+TestUtils.buildBinaryVars(5));
-		String ctrSection = "<count>"
+		String ctrSection = TestUtils.buildConstraintsSection("<count>"
 				+ "<list> b2 b3 b4 </list>"
 				+ "<values> b0 b1 </values>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</count>";
+				+ "</count>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 1 1 1", "0 1 1 0 0 0",
 				"1 0 0 0 1 1", "1 0 0 1 0 1", "1 0 0 1 1 0", "1 1 1 0 0 1", "1 1 1 0 1 0", "1 1 1 1 0 0",
@@ -139,11 +144,12 @@ public class CountingCtrBuilderTest {
 	public void testCount3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 2));
-		String ctrSection = "<count>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<count>"
 				+ "<list> i1 i1 i1 </list>"
 				+ "<values> 0 1 </values>"
 				+ "<condition> (ge,i0) </condition>"
-				+ "</count>";
+				+ "</count>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0", "0 1", "0 2", "1 0", "1 1", "2 0", "2 1");
 	}
@@ -152,11 +158,12 @@ public class CountingCtrBuilderTest {
 	public void testCount4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 10));
-		String ctrSection = "<count>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<count>"
 				+ "<list> i0 i0 i0 </list>"
 				+ "<values> i0 </values>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</count>";
+				+ "</count>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "3");
 	}
@@ -165,10 +172,11 @@ public class CountingCtrBuilderTest {
 	public void testNValues() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2)+TestUtils.buildBinaryVars(3));
-		String ctrSection = "<nValues>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<nValues>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</nValues>";
+				+ "</nValues>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1 0 0 0", "1 1 1 1", "2 0 0 1", "2 0 1 0", "2 0 1 1", "2 1 0 0", "2 1 0 1", "2 1 1 0");
 	}
@@ -177,10 +185,11 @@ public class CountingCtrBuilderTest {
 	public void testNValues2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<nValues>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<nValues>"
 				+ "<list> i0 i0 i0 </list>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</nValues>";
+				+ "</nValues>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "1");
 	}
@@ -189,11 +198,12 @@ public class CountingCtrBuilderTest {
 	public void testNValuesExcept() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2)+TestUtils.buildBinaryVars(3));
-		String ctrSection = "<nValues>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<nValues>"
 				+ "<list> b0 b1 b2 </list>"
 				+ "<except> 0 </except>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</nValues>";
+				+ "</nValues>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0 0", "1 0 0 1", "1 0 1 0", "1 0 1 1", "1 1 0 0", "1 1 0 1", "1 1 1 0", "1 1 1 1");
 	}
@@ -202,11 +212,12 @@ public class CountingCtrBuilderTest {
 	public void testNValuesExcept2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<nValues>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<nValues>"
 				+ "<list> i0 i0 i0 </list>"
 				+ "<except> 0 </except>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</nValues>";
+				+ "</nValues>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1");
 	}
@@ -215,11 +226,12 @@ public class CountingCtrBuilderTest {
 	public void testNValuesExcept3() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<nValues>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<nValues>"
 				+ "<list> i0 i0 i0 </list>"
 				+ "<except> 1 </except>"
 				+ "<condition> (eq,i0) </condition>"
-				+ "</nValues>";
+				+ "</nValues>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
@@ -228,11 +240,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality1() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 0, 3));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i1 i2 i3 </list>"
 				+ "<values> 0 1 2 3 </values>"
 				+ "<occurs> 0..1 0..1 1..2 0..1 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		List<String> expectedList = new ArrayList<String>();
 		for(int i=0; i<=3; ++i) {
@@ -265,11 +278,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality2() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 0, 4));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i1 i2 i3 </list>"
 				+ "<values closed=\"true\"> 0 1 2 3 </values>"
 				+ "<occurs> 0..1 0..1 1..2 0..1 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		List<String> expectedList = new ArrayList<String>();
 		for(int i=0; i<=3; ++i) {
@@ -330,11 +344,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality4() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(4, 0, 2));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i1 </list>"
 				+ "<values> 0 1 </values>"
 				+ "<occurs> i2 i3 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 2 0", "0 1 1 1", "1 0 1 1", "1 1 0 2");
 	}
@@ -343,11 +358,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality5() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 3));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i0 i0 </list>"
 				+ "<values> 0 1 2 3 </values>"
 				+ "<occurs> 0..1 0..1 1..3 0..1 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "2");
 	}
@@ -356,11 +372,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality6() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i0 </list>"
 				+ "<values> 0 1 </values>"
 				+ "<occurs> i0 i0 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
@@ -369,11 +386,12 @@ public class CountingCtrBuilderTest {
 	public void testCardinality7() {
 		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
-		String ctrSection = "<cardinality>"
+		String ctrSection = TestUtils.buildConstraintsSection(""
+				+ "<cardinality>"
 				+ "<list> i0 i0 </list>"
 				+ "<values> 1 2 </values>"
 				+ "<occurs> i0 i0 </occurs>"
-				+ "</cardinality>";
+				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
