@@ -20,10 +20,11 @@ package org.sat4j.csp.intension;
 
 import java.util.Map;
 
+import org.sat4j.pb.ObjectiveFunction;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
- * A SAT solver with the ability to build a mapping between bollean variables and CSP variables.
+ * A SAT solver with the ability to build a mapping between boolean variables and CSP variables.
  * 
  * @author Emmanuel Lonca - lonca@cril.fr
  */
@@ -42,5 +43,9 @@ public interface ICspToSatEncoder {
 	void newCspVar(XVarInteger var, int minDom, int maxDom);
 	
 	boolean addClause(int[] clause);
+	
+	void setObjectiveFunction(ObjectiveFunction obj);
+	
+	ObjectiveFunction getObjectiveFunction();
 
 }

@@ -20,20 +20,18 @@ package org.sat4j.csp.constraints3;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.sat4j.core.Vec;
 import org.sat4j.core.VecInt;
-import org.sat4j.csp.Domain;
-import org.sat4j.csp.Var;
+import org.sat4j.csp.intension.ICspToSatEncoder;
+import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.reader.XMLCSP3Reader;
-import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
 import org.xcsp.common.Types.TypeObjective;
+import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.entries.XDomains.XDomInteger;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
@@ -46,178 +44,177 @@ import org.xcsp.parser.entries.XVariables.XVarInteger;
  */
 public class ObjBuilder {
 	
-	/** the solver in which the problem is encoded */
-	private IPBSolver solver;
-	
-	/** a mapping from the CSP variable names to Sat4j CSP variables */
-	private Map<String, Var> varmapping = new LinkedHashMap<String, Var>();
-	
-	/** a mapping from a Sat4j CSP variable to the first solver internal variable used to encode it */
-	private Map<Var, Integer> firstInternalVarMapping;
 
-	public ObjBuilder(IPBSolver solver, Map<String, Var> varmapping, Map<Var, Integer> firstInternalVarMapping) {
-		this.solver = solver;
-		this.varmapping = varmapping;
-		this.firstInternalVarMapping = firstInternalVarMapping;
+	private final ICspToSatEncoder cspToSatEncoder;
+
+	private IIntensionCtrEncoder intensionEnc;
+	
+	public ObjBuilder(final IPBSolver solver, final IIntensionCtrEncoder intensionEnc) {
+		this.intensionEnc = intensionEnc;
+		this.cspToSatEncoder = intensionEnc.getSolver();
 	}
 	
-	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		ObjectiveFunction globalObj = null;
+	public void buildObjToMinimize(final String id, final XVarInteger x) {
+		this.cspToSatEncoder.setObjectiveFunction(buildObjForVar(x));
+	}
+	
+	private ObjectiveFunction buildObjForVar(final XVarInteger x) {
+		final String varId = x.id;
+		int[] domain = this.cspToSatEncoder.getCspVarDomain(varId);
+		final IVecInt literals = new VecInt(domain.length);
+		final IVec<BigInteger> coeffs = new Vec<BigInteger>(domain.length);
+		for(Integer val : domain) {
+			literals.push(this.cspToSatEncoder.getSolverVar(varId, val));
+			coeffs.push(BigInteger.valueOf(val));
+		}
+		return new ObjectiveFunction(literals, coeffs);
+	}
+
+	public void buildObjToMaximize(final String id, final XVarInteger x) {
+		this.cspToSatEncoder.setObjectiveFunction(buildObjForVar(x).negate());
+	}
+	
+	private String opExpr(final String op, final XVarInteger[] xlist, final int[] xcoeffs) {
+		final StringBuffer sb = new StringBuffer();
+		sb.append(op);
+		sb.append('(');
+		sb.append(chainObjVars(xlist, xcoeffs));
+		sb.append(')');
+		return sb.toString();
+	}
+	
+	private String chainObjVars(final XVarInteger[] xlist, final int[] xcoeffs) {
+		final StringBuffer sb = new StringBuffer();
+		for(int i=0; i<xlist.length; ++i) {
+			if(i>0) sb.append(',');
+			if(xcoeffs[i] == 1) {
+				sb.append(CtrBuilderUtils.normalizeCspVarName(xlist[i].id));
+			} else {
+				sb.append("mul(");
+				sb.append(CtrBuilderUtils.normalizeCspVarName(xlist[i].id));
+				sb.append(',');
+				sb.append(xcoeffs[i]);
+				sb.append(")");
+			}
+		}
+		sb.append(')');
+		return sb.toString();
+	}
+
+	public void buildObjToMinimize(final String id, final TypeObjective type, final XVarInteger[] xlist, final int[] xcoeffs) {
+		ObjectiveFunction obj = null;
 		switch(type) {
 		case SUM:
+			obj = buildSumObjToMinimize(xlist, xcoeffs);
+			break;
+		case PRODUCT:
+			obj = buildExprObjToMinimize(opExpr("mul", xlist, xcoeffs));
+			break;
 		case MAXIMUM:
-			globalObj = buildObjForVarSum(xlist, xcoeffs);
-			globalObj.negate();
+			obj = buildExprObjToMinimize(opExpr("max", xlist, xcoeffs));
 			break;
 		case MINIMUM:
-			try {
-				globalObj = buildObjForVarMin(xlist, xcoeffs);
-			} catch (ContradictionException e) {
-				throw new IllegalStateException("Contradiction must not occur while setting objective function !!");
-			}
+			obj = buildExprObjToMinimize(opExpr("min", xlist, xcoeffs));
 			break;
-		default:
-			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
+		case NVALUES:
+			obj = buildExprObjToMinimize(nValuesExpr(xlist, xcoeffs));
+			break;
+		case LEX:
+			obj = buildLexObjToMinimize(xlist, xcoeffs);
+			break;
+		case EXPRESSION:
+			throw new UnsupportedOperationException();
 		}
-		this.solver.setObjectiveFunction(globalObj);
+		this.cspToSatEncoder.setObjectiveFunction(obj);
+	}
+	
+	private String nValuesExpr(final XVarInteger[] list, final int[] coeffs) {
+		final StringBuffer sbuf = new StringBuffer();
+		boolean firstAddMember = true;
+		sbuf.append("add(");
+		for(int i=0; i<list.length; ++i) {
+			if(!firstAddMember) {
+				sbuf.append(',');
+			}
+			if(i == 0) {
+				sbuf.append('1');
+				firstAddMember = false;
+				continue;
+			}
+			final String normVar = coeffs[i] == 1 ? CtrBuilderUtils.normalizeCspVarName(list[i].id) : "mul("+CtrBuilderUtils.normalizeCspVarName(list[i].id)+","+coeffs[i]+")";
+			sbuf.append("if(and(");
+			boolean firstAndMember = true;
+			for(int j=0; j<i; ++j) {
+				if(!firstAndMember) {
+					sbuf.append(',');
+					firstAndMember = false;
+				}
+				final String normOtherVar = coeffs[j] == 1 ? CtrBuilderUtils.normalizeCspVarName(list[j].id) : "mul("+CtrBuilderUtils.normalizeCspVarName(list[j].id)+","+coeffs[j]+")";
+				sbuf.append("ne(").append(normVar).append(',').append(normOtherVar).append(')');
+				firstAndMember = false;
+			}
+			sbuf.append("),1,0)");
+			firstAddMember = false;
+		}
+		sbuf.append(')');
+		return sbuf.toString();
+	}
+
+	public void buildObjToMaximize(final String id, final TypeObjective type, final XVarInteger[] xlist, final int[] xcoeffs) {
+		buildObjToMinimize(id, type, xlist, xcoeffs);
+		this.cspToSatEncoder.getObjectiveFunction().negate();
+	}
+
+	private ObjectiveFunction buildLexObjToMinimize(final XVarInteger[] xlist, final int[] xcoeffs) {
+		long max = Long.MIN_VALUE;
+		long min = Long.MAX_VALUE;
+		for(int i=0; i<xlist.length; ++i) {
+			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
+			min = Math.min(max, ((XDomInteger) xlist[i].dom).getLastValue());
+		}
+		if(min < 0) throw new UnsupportedOperationException("negative coeff");
+		final ObjectiveFunction obj = new ObjectiveFunction();
+		final BigInteger step = BigInteger.valueOf(max+1);
+		BigInteger fact = BigInteger.ONE;
+		for(int i=xlist.length; i>=0; --i) {
+			obj.add(buildObjForVar(xlist[i]).multiply(fact));
+			fact = fact.multiply(step);
+		}
+		return obj;
+	}
+
+	private ObjectiveFunction buildExprObjToMinimize(String expr) {
+		return this.intensionEnc.encodeObj(expr);
+	}
+
+	private ObjectiveFunction buildSumObjToMinimize(final XVarInteger[] xlist, final int[] xcoeffs) {
+		final ObjectiveFunction obj = new ObjectiveFunction();
+		final int size = xlist.length;
+		for(int i=0; i<size; ++i) {
+			obj.add(buildObjForVar(xlist[i]).multiply(BigInteger.valueOf(xcoeffs[i])));
+		}
+		return obj;
 	}
 
 	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] list) {
-		int[] coeffs = new int[list.length];
+		final int[] coeffs = new int[list.length];
 		Arrays.fill(coeffs, 1);
 		buildObjToMinimize(id, type, list, coeffs);
 	}
-
-	public void buildObjToMinimize(String id, XVarInteger x) {
-		ObjectiveFunction obj = buildObjForVar(x);
-		this.solver.setObjectiveFunction(obj);
-	}
-
-	private ObjectiveFunction buildObjForVar(XVarInteger x) {
-		Var var = this.varmapping.get(x.id);
-		Domain dom = var.domain();
-		IVecInt literals = new VecInt(dom.size());
-		IVec<BigInteger> coeffs = new Vec<BigInteger>(dom.size());
-		Integer firstIndex = this.firstInternalVarMapping.get(var);
-		for(int i=0; i<dom.size(); ++i) {
-			literals.push(firstIndex+i);
-			coeffs.push(BigInteger.valueOf(dom.get(i)));
-		}
-		ObjectiveFunction obj = new ObjectiveFunction(literals, coeffs);
-		return obj;
-	}
-	
-	public void buildObjToMaximize(String id, XVarInteger x) {
-		buildObjToMinimize(id, x);
-		this.solver.getObjectiveFunction().negate();
-	}
-	
-	public void buildObjToMinimize(String id, TypeObjective type, XVarInteger[] xlist, int[] xcoeffs) {
-		ObjectiveFunction globalObj = null;
-		switch(type) {
-		case SUM:
-		case MINIMUM:
-			globalObj = buildObjForVarSum(xlist, xcoeffs);
-			break;
-		case MAXIMUM:
-			try {
-				globalObj = buildObjForVarMax(xlist, xcoeffs);
-			} catch (ContradictionException e) {
-				throw new IllegalStateException("Contradiction must not occur while setting objective function !!");
-			}
-			break;
-		default:
-			throw new UnsupportedOperationException("This kind of objective function is not handled yet");
-		}
-		this.solver.setObjectiveFunction(globalObj);
-	}
 	
 	public void buildObjToMaximize(String id, TypeObjective type, XVarInteger[] list) {
-		int[] coeffs = new int[list.length];
+		final int[] coeffs = new int[list.length];
 		Arrays.fill(coeffs, 1);
 		buildObjToMaximize(id, type, list, coeffs);
 	}
-	
-	private ObjectiveFunction buildObjForVarSum(XVarInteger[] xlist,
-			int[] xcoeffs) {
-		IVecInt lits = new VecInt();
-		IVec<BigInteger> coeffs = new Vec<BigInteger>();
-		for(int i=0; i<xlist.length; ++i) {
-			ObjectiveFunction subObj = buildObjForVar(xlist[i]);
-			for(int j=0; j<subObj.getVars().size(); ++j) {
-				lits.push(subObj.getVars().get(j));
-				coeffs.push(subObj.getCoeffs().get(j).multiply(BigInteger.valueOf(xcoeffs[i])));
-			}
-		}
-		ObjectiveFunction globalObj = new ObjectiveFunction(lits, coeffs);
-		return globalObj;
-	}
-	
-	private ObjectiveFunction buildObjForVarMax(XVarInteger[] xlist,
-			int[] xcoeffs) throws ContradictionException {
-		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
-		long max = Long.MIN_VALUE;
-		for(int i=0; i<xlist.length; ++i) {
-			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
-			varObjs[i] = buildObjForVar(xlist[i]);
-		}
-		ObjectiveFunction finalObj = buildBoundObj(max);
-		for(ObjectiveFunction obj : varObjs) {
-			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
-					finalObj);
-			this.solver.addAtLeast(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
-		}
-		return finalObj;
-	}
-	
-	private ObjectiveFunction buildObjForVarMin(XVarInteger[] xlist,
-			int[] xcoeffs) throws ContradictionException {
-		ObjectiveFunction[] varObjs = new ObjectiveFunction[xlist.length];
-		long max = Long.MIN_VALUE;
-		for(int i=0; i<xlist.length; ++i) {
-			max = Math.max(max, ((XDomInteger) xlist[i].dom).getLastValue());
-			varObjs[i] = buildObjForVar(xlist[i]);
-		}
-		ObjectiveFunction finalObj = buildBoundObj(max);
-		for(ObjectiveFunction obj : varObjs) {
-			ObjectiveFunction boundCstrParams = buildBoundConstraintParams(obj,
-					finalObj);
-			this.solver.addAtMost(boundCstrParams.getVars(), boundCstrParams.getCoeffs(), BigInteger.ZERO);
-		}
-		return finalObj;
-	}
-	
-	private ObjectiveFunction buildBoundConstraintParams(
-			ObjectiveFunction varObj, ObjectiveFunction finalObj) {
-		IVec<BigInteger> objCoeffs = varObj.getCoeffs();
-		IVecInt cstrLits = new VecInt(objCoeffs.size() + finalObj.getVars().size());
-		IVec<BigInteger> cstrCoeffs = new Vec<>(objCoeffs.size() + finalObj.getVars().size());
-		finalObj.getVars().copyTo(cstrLits);
-		finalObj.getCoeffs().copyTo(cstrCoeffs);
-		varObj.getVars().copyTo(cstrLits);
-		for(int i=0; i<objCoeffs.size(); ++i) {
-			cstrCoeffs.push(objCoeffs.get(i).negate());
-		}
-		ObjectiveFunction boundCstrParams = new ObjectiveFunction(cstrLits, cstrCoeffs);
-		return boundCstrParams;
-	}
 
-	private ObjectiveFunction buildBoundObj(long max) {
-		int nNewVars = 0;
-		while(max > 0) {
-			++nNewVars;
-			max >>= 1;
-		}
-		IVecInt maxVarLits = new VecInt(nNewVars);
-		IVec<BigInteger> maxVarCoeffs = new Vec<>(nNewVars);
-		BigInteger fact = BigInteger.ONE;
-		for(int i=0; i<nNewVars; ++i) {
-			maxVarLits.push(solver.nextFreeVarId(true));
-			maxVarCoeffs.push(fact);
-			fact = fact.shiftLeft(1);
-		}
-		ObjectiveFunction finalObj = new ObjectiveFunction(maxVarLits, maxVarCoeffs);
-		return finalObj;
+	public void buildObjToMinimize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
+		buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot));
+	}
+	
+	public void buildObjToMaximize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
+		buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot));
+		this.cspToSatEncoder.getObjectiveFunction().negate();
 	}
 
 }

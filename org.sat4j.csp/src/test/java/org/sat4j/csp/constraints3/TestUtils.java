@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,6 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.reader.ParseFormatException;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
@@ -53,9 +55,13 @@ public class TestUtils {
 			}
 		}
 	}
-
+	
 	public static List<String> computeModels(XMLCSP3Reader reader, IPBSolver solver, String varSection, String ctrSection) {
-		String strInstance = TestUtils.buildInstance(varSection, ctrSection);
+		return TestUtils.computeModels(reader, solver, varSection, ctrSection, null);
+	}
+
+	public static List<String> computeModels(XMLCSP3Reader reader, IPBSolver solver, String varSection, String ctrSection, String objSection) {
+		String strInstance = TestUtils.buildInstance(varSection, ctrSection, objSection);
 		try {
 			reader.parseInstance(stringAsStream(strInstance));
 		} catch (ParseFormatException | IOException e) {
@@ -63,26 +69,37 @@ public class TestUtils {
 		} catch (ContradictionException e) {
 			return new ArrayList<>();
 		}
-		List<String> sortedModels = TestUtils.getSortedStringModels(reader, solver);
+		List<String> sortedModels = TestUtils.getSortedStringModels(reader, solver, objSection != null);
 		return sortedModels;
 	}
-
+	
 	public static List<String> getSortedStringModels(XMLCSP3Reader reader, IPBSolver solver) {
-		List<int[]> models = TestUtils.getAllModels(reader, solver);
+		return getSortedStringModels(reader, solver, false);
+	}
+
+	public static List<String> getSortedStringModels(XMLCSP3Reader reader, IPBSolver solver, boolean optRequired) {
+		List<int[]> models = TestUtils.getAllModels(reader, solver, optRequired);
 		SortedSet<String> strModels = new TreeSet<String>();
 		for(int i=0; i<models.size(); ++i) {
 			strModels.add(reader.decodeModelAsValueSequence(models.get(i)));
 		}
 		return new ArrayList<String>(strModels);
 	}
-
+	
 	public static List<int[]> getAllModels(XMLCSP3Reader reader, ISolver solver) {
+		return getAllModels(reader, solver, false);
+	}
+
+	public static List<int[]> getAllModels(XMLCSP3Reader reader, ISolver solver, boolean optRequired) {
 		List<int[]> models = new ArrayList<int[]>();
 		try {
 			while(solver.isSatisfiable()) {
 				int[] model = solver.model();
 				models.add(model);
 				if(reader.discardModel(model)) break;
+				if(models.size() == 1 && optRequired) {
+					if(!fixOptValue((IPBSolver) solver, models.get(0))) break;
+				}
 			}
 		} catch (TimeoutException e) {
 			throw new RuntimeException(e);
@@ -90,6 +107,18 @@ public class TestUtils {
 		return models;
 	}
 	
+	private static boolean fixOptValue(IPBSolver solver, int[] model) {
+		final ObjectiveFunction obj = solver.getObjectiveFunction();
+		final BigInteger degree = obj.calculateDegree(solver);
+		try {
+			solver.addAtLeast(obj.getVars(), obj.getCoeffs(), degree);
+			solver.addAtMost(obj.getVars(), obj.getCoeffs(), degree);
+		} catch (ContradictionException e) {
+			return false;
+		}
+		return true;
+	}
+
 	public static String buildIntegerVars(int nVars, int min, int max) {
 		return buildIntegerVars(nVars, min, max, 0);
 	}
@@ -149,6 +178,16 @@ public class TestUtils {
 			sbuf.append(ctrDecl);
 		}
 		sbuf.append("</constraints>\n");
+		return sbuf.toString();
+	}
+	
+	public static String buildObjectivesSection(String... objDeclarations) {
+		StringBuffer sbuf = new StringBuffer();
+		sbuf.append("<objectives>\n");
+		for(String objDecl : objDeclarations) {
+			sbuf.append(objDecl);
+		}
+		sbuf.append("</objectives>\n");
 		return sbuf.toString();
 	}
 	

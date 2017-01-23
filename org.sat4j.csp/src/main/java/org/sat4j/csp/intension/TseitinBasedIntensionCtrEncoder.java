@@ -20,12 +20,19 @@ package org.sat4j.csp.intension;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
+import org.sat4j.pb.ObjectiveFunction;
+import org.sat4j.specs.IVec;
+import org.sat4j.specs.IVecInt;
 
 /**
  * Encodes {@link IExpression} expressions into an {@link ICspToSatEncoder}.
@@ -49,6 +56,21 @@ public class TseitinBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 		parser.parse();
 		final IExpression expression = parser.getExpression();
 		return encodeExpression(expression);
+	}
+	
+	@Override
+	public ObjectiveFunction encodeObj(String expr) {
+		Parser parser = new Parser(expr);
+		parser.parse();
+		final IExpression expression = parser.getExpression();
+		Map<Integer, Integer> map = encodeWithTseitin(expression);
+		IVecInt vars = new VecInt(map.size());
+		IVec<BigInteger> coeffs = new Vec<BigInteger>(map.size());
+		for(Map.Entry<Integer, Integer> entry : map.entrySet()) {
+			vars.push(entry.getValue());
+			coeffs.push(BigInteger.valueOf(entry.getKey()));
+		}
+		return new ObjectiveFunction(vars, coeffs);
 	}
 
 	private boolean encodeExpression(IExpression expression) {

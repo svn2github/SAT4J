@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.sat4j.pb.ObjectiveFunction;
+
 /**
  * Encodes {@link IExpression} expressions into an {@link ICspToSatEncoder}.
  * Given the expression, generates all nogoods and store them in the solver.
@@ -365,6 +367,11 @@ public class NogoodBasedIntensionCtrEncoder implements IIntensionCtrEncoder {
 	@Override
 	public ICspToSatEncoder getSolver() {
 		return this.solver;
+	}
+
+	@Override
+	public ObjectiveFunction encodeObj(String expr) {
+		throw new UnsupportedOperationException("use another intension constraint encoder");
 	}
 
 }

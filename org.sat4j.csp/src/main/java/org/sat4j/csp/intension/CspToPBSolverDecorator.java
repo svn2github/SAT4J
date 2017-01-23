@@ -30,6 +30,7 @@ import org.sat4j.csp.Domains;
 import org.sat4j.csp.Var;
 import org.sat4j.csp.constraints3.CtrBuilderUtils;
 import org.sat4j.pb.IPBSolver;
+import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.specs.ContradictionException;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
@@ -136,6 +137,16 @@ public class CspToPBSolverDecorator implements ICspToSatEncoder {
 			}
 		}
 		return mapping;
+	}
+
+	@Override
+	public void setObjectiveFunction(final ObjectiveFunction obj) {
+		this.solver.setObjectiveFunction(obj);
+	}
+
+	@Override
+	public ObjectiveFunction getObjectiveFunction() {
+		return this.solver.getObjectiveFunction();
 	}
 
 }

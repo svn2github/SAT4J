@@ -18,6 +18,8 @@
  *******************************************************************************/
 package org.sat4j.csp.intension;
 
+import org.sat4j.pb.ObjectiveFunction;
+
 /**
  * An interfacer to be implemented by classes able to encode intension constraints and store them in a solver. 
  * 
@@ -28,5 +30,7 @@ public interface IIntensionCtrEncoder {
 	public boolean encode(String strExpression);
 	
 	public ICspToSatEncoder getSolver();
+
+	public ObjectiveFunction encodeObj(String expr);
 
 }
