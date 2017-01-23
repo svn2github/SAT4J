@@ -47,11 +47,11 @@ public class StringCondition {
 	}
 	
 	public StringCondition(ConditionVal condition) {
-		this.asString = condition.operator.name().toLowerCase()+"("+LEFT_OPERAND+","+Integer.toString(((ConditionVal)condition).k)+")";
+		this.asString = condition.operator.name().toLowerCase()+"("+LEFT_OPERAND+","+Long.toString(((ConditionVal)condition).k)+")";
 	}
 	
 	public StringCondition(ConditionIntvl condition) {
-		this.asString = "and(ge("+LEFT_OPERAND+","+Integer.toString(condition.min)+"),le("+LEFT_OPERAND+","+Integer.toString(condition.max)+"))";
+		this.asString = "and(ge("+LEFT_OPERAND+","+Long.toString(condition.min)+"),le("+LEFT_OPERAND+","+Long.toString(condition.max)+"))";
 	}
 	
 	public StringCondition(String str) {

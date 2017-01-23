@@ -23,7 +23,7 @@ import java.util.TreeSet;
 
 import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
-import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
@@ -130,7 +130,7 @@ public class ComparisonCtrBuilder {
 		return false;
 	}
 	
-	public boolean buildCtrOrdered(String id, XVarInteger[] list, TypeOperator operator) {
+	public boolean buildCtrOrdered(String id, XVarInteger[] list, TypeOperatorRel operator) {
 		for(int i=0; i<list.length-1; ++i) {
 			String normalized1 = CtrBuilderUtils.normalizeCspVarName(list[i].id);
 			String normalized2 = CtrBuilderUtils.normalizeCspVarName(list[i+1].id);
@@ -140,7 +140,7 @@ public class ComparisonCtrBuilder {
 		return false;
 	}
 	
-	public boolean buildCtrLex(String id, XVarInteger[][] lists, TypeOperator operator) {
+	public boolean buildCtrLex(String id, XVarInteger[][] lists, TypeOperatorRel operator) {
 		boolean contradictionFound = false;
 		for(int i=0; i<lists.length-1; ++i) {
 			contradictionFound |= buildCtrLex(id, lists[i], lists[i+1], operator);
@@ -148,7 +148,7 @@ public class ComparisonCtrBuilder {
 		return contradictionFound;
 	}
 	
-	public boolean buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperator operator) {
+	public boolean buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperatorRel operator) {
 		boolean contradictionFound = false;
 		contradictionFound |= buildCtrLex(id, matrix, operator);
 		XVarInteger[][] tMatrix = CtrBuilderUtils.transposeMatrix(matrix);
@@ -157,8 +157,8 @@ public class ComparisonCtrBuilder {
 	}
 	
 	private boolean buildCtrLex(String id, XVarInteger[] list1,
-			XVarInteger[] list2, TypeOperator operator) {
-		TypeOperator strictOp = CtrBuilderUtils.strictTypeOperator(operator);
+			XVarInteger[] list2, TypeOperatorRel operator) {
+		TypeOperatorRel strictOp = CtrBuilderUtils.strictTypeOperator(operator);
 		String[] chains = new String[list1.length];
 		String id01 = list1[0].id;
 		String id02 = list2[0].id;

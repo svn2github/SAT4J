@@ -29,8 +29,6 @@ import org.sat4j.csp.intension.ICspToSatEncoder;
 import org.sat4j.csp.intension.IIntensionCtrEncoder;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.xcsp.common.Types.TypeFlag;
-import org.xcsp.common.predicates.XNode;
-import org.xcsp.common.predicates.XNodeLeaf;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.entries.XDomains.XDomInteger;
 import org.xcsp.parser.entries.XValues.IntegerEntity;
@@ -49,39 +47,15 @@ public class GenericCtrBuilder {
 
 	private final ICspToSatEncoder cspToSatSolver;
 
-	public GenericCtrBuilder(ICspToSatEncoder cspToSatEncoder, IIntensionCtrEncoder intensionEnc) {
-		this.cspToSatSolver = cspToSatEncoder;
+	public GenericCtrBuilder(IIntensionCtrEncoder intensionEnc) {
 		this.intensionCtrEnc = intensionEnc;
+		this.cspToSatSolver = intensionEnc.getSolver();
 	}
 	
 	public boolean buildCtrIntension(String id, XVarInteger[] xscope, XNodeParent<XVarInteger> syntaxTreeRoot) {
-		syntaxTreeRootToString(syntaxTreeRoot);
-		String expr = syntaxTreeRootToString(syntaxTreeRoot);
+		String expr = CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot);
 		this.intensionCtrEnc.encode(expr);
 		return false;
-	}
-	
-	private String syntaxTreeRootToString(XNodeParent<XVarInteger> syntaxTreeRoot) {
-		StringBuffer treeToString = new StringBuffer();
-		fillSyntacticStrBuffer(syntaxTreeRoot, treeToString);
-		return treeToString.toString();
-	}
-
-	private void fillSyntacticStrBuffer(XNode<XVarInteger> child,
-			StringBuffer treeToString) {
-		if(child instanceof XNodeLeaf<?>) {
-			treeToString.append(CtrBuilderUtils.normalizeCspVarName(child.toString()));
-			return;
-		}
-		treeToString.append(child.getType().toString().toLowerCase());
-		XNode<XVarInteger>[] sons = ((XNodeParent<XVarInteger>) child).sons;
-		treeToString.append('(');
-		fillSyntacticStrBuffer(sons[0], treeToString);
-		for(int i=1; i<sons.length; ++i) {
-			treeToString.append(',');
-			fillSyntacticStrBuffer(sons[i], treeToString);
-		}
-		treeToString.append(')');
 	}
 	
 	public boolean buildCtrExtension(String id, XVarInteger x, int[] values, boolean positive, Set<TypeFlag> flags) {

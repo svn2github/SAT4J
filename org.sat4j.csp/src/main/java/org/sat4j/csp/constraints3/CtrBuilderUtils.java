@@ -28,7 +28,10 @@ import org.sat4j.csp.Var;
 import org.sat4j.pb.IPBSolver;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.IVec;
-import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.common.Types.TypeOperatorRel;
+import org.xcsp.common.predicates.XNode;
+import org.xcsp.common.predicates.XNodeLeaf;
+import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.entries.XVariables.XVarInteger;
 
 /**
@@ -109,14 +112,35 @@ public class CtrBuilderUtils {
 		return false;
 	}
 	
-	public static TypeOperator strictTypeOperator(TypeOperator op) {
+	public static TypeOperatorRel strictTypeOperator(TypeOperatorRel op) {
 		switch(op) {
-		case GE: return TypeOperator.GT;
-		case LE: return TypeOperator.LT;
-		case SUBSEQ: return TypeOperator.SUBSET;
-		case SUPSEQ: return TypeOperator.SUPSET;
+		case GE: return TypeOperatorRel.GT;
+		case LE: return TypeOperatorRel.LT;
 		default: return op;
 		}
+	}
+	
+	public static String syntaxTreeRootToString(final XNodeParent<XVarInteger> syntaxTreeRoot) {
+		final StringBuffer treeToString = new StringBuffer();
+		fillSyntacticStrBuffer(syntaxTreeRoot, treeToString);
+		return treeToString.toString();
+	}
+
+	private static void fillSyntacticStrBuffer(final XNode<XVarInteger> child,
+			final StringBuffer treeToString) {
+		if(child instanceof XNodeLeaf<?>) {
+			treeToString.append(CtrBuilderUtils.normalizeCspVarName(child.toString()));
+			return;
+		}
+		treeToString.append(child.getType().toString().toLowerCase());
+		final XNode<XVarInteger>[] sons = ((XNodeParent<XVarInteger>) child).sons;
+		treeToString.append('(');
+		fillSyntacticStrBuffer(sons[0], treeToString);
+		for(int i=1; i<sons.length; ++i) {
+			treeToString.append(',');
+			fillSyntacticStrBuffer(sons[i], treeToString);
+		}
+		treeToString.append(')');
 	}
 
 }

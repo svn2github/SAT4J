@@ -53,6 +53,7 @@ import org.xcsp.common.Types.TypeConditionOperatorRel;
 import org.xcsp.common.Types.TypeFlag;
 import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.Types.TypeOperator;
+import org.xcsp.common.Types.TypeOperatorRel;
 import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.XCallbacks2;
@@ -132,10 +133,10 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		this.comparisonCtrBuilder = new ComparisonCtrBuilder(this.intensionEnc);
 		this.connectionCtrBuilder = new ConnectionCtrBuilder(this.intensionEnc);
 		this.schedulingCtrBuilder = new SchedulingCtrBuilder(this.intensionEnc);
-		this.genericCtrBuilder = new GenericCtrBuilder(this.cspToSatEncoder, this.intensionEnc);
+		this.genericCtrBuilder = new GenericCtrBuilder(this.intensionEnc);
 		this.countingCtrBuilder = new CountingCtrBuilder(this.intensionEnc);
 		this.languageCtrBuilder = new LanguageCtrBuilder(this.cspToSatEncoder);
-//		this.objBuilder = new ObjBuilder(solver, this.cspToSatEncoder.getVarmapping(), this.cspToSatEncoder.getFirstInternalVarMapping());
+		this.objBuilder = new ObjBuilder(solver, this.intensionEnc);
 	}
 	
 	/**
@@ -438,7 +439,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, XVarInteger x) {
-		this.objBuilder.buildObjToMaximize(id, x); // TODO not under test yet
+		this.objBuilder.buildObjToMinimize(id, x); // TODO not under test yet
 	}
 
 	/**
@@ -470,7 +471,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMinimize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
-		unimplementedCase(id); // TODO
+		this.objBuilder.buildObjToMinimize(id, syntaxTreeRoot);
 	}
 
 	/**
@@ -478,7 +479,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 */
 	@Override
 	public void buildObjToMaximize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
-		unimplementedCase(id); // TODO
+		this.objBuilder.buildObjToMaximize(id, syntaxTreeRoot);
 	}
 
 	/**
@@ -533,7 +534,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildCtrOrdered(String, XVarInteger[], TypeOperator)
 	 */
 	@Override
-	public void buildCtrOrdered(String id, XVarInteger[] list, TypeOperator operator) {
+	public void buildCtrOrdered(String id, XVarInteger[] list, TypeOperatorRel operator) {
 		this.contradictionFound |= this.comparisonCtrBuilder.buildCtrOrdered(id, list, operator);
 	}
 
@@ -555,7 +556,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildCtrLex(String, XVarInteger[][], TypeOperator)
 	 */
 	@Override
-	public void buildCtrLex(String id, XVarInteger[][] lists, TypeOperator operator) {
+	public void buildCtrLex(String id, XVarInteger[][] lists, TypeOperatorRel operator) {
 		this.contradictionFound |= this.comparisonCtrBuilder.buildCtrLex(id, lists, operator);
 	}
 
@@ -563,7 +564,7 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 	 * @see XCallbacks2#buildCtrLexMatrix(String, XVarInteger[][], TypeOperator)
 	 */
 	@Override
-	public void buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperator operator) {
+	public void buildCtrLexMatrix(String id, XVarInteger[][] matrix, TypeOperatorRel operator) {
 		this.contradictionFound |= this.comparisonCtrBuilder.buildCtrLexMatrix(id, matrix, operator);
 	}
 

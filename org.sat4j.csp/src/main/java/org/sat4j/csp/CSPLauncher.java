@@ -103,7 +103,7 @@ public class CSPLauncher extends AbstractLauncher {
 			this.out.write("c CSP to SAT var mapping:\n");
 			Map<Integer, String> mapping = this.reader.getMapping();
 			for(Map.Entry<Integer, String> entry : mapping.entrySet()) {
-				this.out.write(entry.getValue()+";"+entry.getKey()+"\n");
+				this.out.write("c "+entry.getValue()+";"+entry.getKey()+"\n");
 			}
 		}
 	}
