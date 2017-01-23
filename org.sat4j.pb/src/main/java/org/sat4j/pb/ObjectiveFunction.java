@@ -38,6 +38,7 @@ import java.util.Map;
 import org.sat4j.core.ReadOnlyVec;
 import org.sat4j.core.ReadOnlyVecInt;
 import org.sat4j.core.Vec;
+import org.sat4j.core.VecInt;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
@@ -61,9 +62,14 @@ public class ObjectiveFunction implements Serializable {
     // contains the coeffs of the objective function for each variable
     private IVec<BigInteger> coeffs;
 
-    private final IVecInt vars;
+    private IVecInt vars;
 
     private BigInteger correction = BigInteger.ZERO;
+
+    public ObjectiveFunction() {
+        this.vars = new VecInt();
+        this.coeffs = new Vec<BigInteger>();
+    }
 
     public ObjectiveFunction(IVecInt vars, IVec<BigInteger> coeffs) {
         this.vars = new ReadOnlyVecInt(vars);
@@ -199,7 +205,7 @@ public class ObjectiveFunction implements Serializable {
         return map;
     }
 
-    public void negate() {
+    public ObjectiveFunction negate() {
         IVec<BigInteger> newCoeffs = new Vec<BigInteger>(this.coeffs.size());
         for (Iterator<BigInteger> coeffIt = this.coeffs.iterator(); coeffIt
                 .hasNext();) {
@@ -207,5 +213,37 @@ public class ObjectiveFunction implements Serializable {
         }
         this.coeffs = newCoeffs;
         this.correction = this.correction.negate();
+        return this;
+    }
+
+    public ObjectiveFunction add(final ObjectiveFunction other) {
+        add(other.getVars(), other.getCoeffs());
+        return this;
+    }
+
+    public ObjectiveFunction add(final IVecInt otherVars,
+            final IVec<BigInteger> otherCoeffs) {
+        final IVecInt newVars = new VecInt();
+        final IVec<BigInteger> newCoeffs = new Vec<BigInteger>();
+        for (int i = 0; i < this.coeffs.size(); ++i) {
+            newVars.push(this.vars.get(i));
+            newCoeffs.push(this.coeffs.get(i));
+        }
+        for (int i = 0; i < otherCoeffs.size(); ++i) {
+            newVars.push(otherVars.get(i));
+            newCoeffs.push(otherCoeffs.get(i));
+        }
+        this.vars = new ReadOnlyVecInt(newVars);
+        this.coeffs = new ReadOnlyVec<BigInteger>(newCoeffs);
+        return this;
+    }
+
+    public ObjectiveFunction multiply(BigInteger fact) {
+        final IVec<BigInteger> newCoeffs = new Vec<BigInteger>();
+        for (int i = 0; i < this.coeffs.size(); ++i) {
+            newCoeffs.push(this.coeffs.get(i).multiply(fact));
+        }
+        this.coeffs = new ReadOnlyVec<BigInteger>(newCoeffs);
+        return this;
     }
 }
