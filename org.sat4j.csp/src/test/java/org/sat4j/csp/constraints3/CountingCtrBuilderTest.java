@@ -243,7 +243,7 @@ public class CountingCtrBuilderTest {
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<cardinality>"
 				+ "<list> i0 i1 i2 i3 </list>"
-				+ "<values> 0 1 2 3 </values>"
+				+ "<values closed=\"true\"> 0 1 2 3 </values>"
 				+ "<occurs> 0..1 0..1 1..2 0..1 </occurs>"
 				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
@@ -347,7 +347,7 @@ public class CountingCtrBuilderTest {
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<cardinality>"
 				+ "<list> i0 i1 </list>"
-				+ "<values> 0 1 </values>"
+				+ "<values closed=\"true\"> 0 1 </values>"
 				+ "<occurs> i2 i3 </occurs>"
 				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
@@ -361,7 +361,7 @@ public class CountingCtrBuilderTest {
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<cardinality>"
 				+ "<list> i0 i0 i0 </list>"
-				+ "<values> 0 1 2 3 </values>"
+				+ "<values closed=\"true\"> 0 1 2 3 </values>"
 				+ "<occurs> 0..1 0..1 1..3 0..1 </occurs>"
 				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
@@ -375,7 +375,7 @@ public class CountingCtrBuilderTest {
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<cardinality>"
 				+ "<list> i0 i0 </list>"
-				+ "<values> 0 1 </values>"
+				+ "<values closed=\"true\"> 0 1 </values>"
 				+ "<occurs> i0 i0 </occurs>"
 				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
@@ -389,7 +389,7 @@ public class CountingCtrBuilderTest {
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<cardinality>"
 				+ "<list> i0 i0 </list>"
-				+ "<values> 1 2 </values>"
+				+ "<values closed=\"true\"> 1 2 </values>"
 				+ "<occurs> i0 i0 </occurs>"
 				+ "</cardinality>");
 		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
