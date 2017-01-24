@@ -5,50 +5,44 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.SolverFactory;
-import org.sat4j.reader.XMLCSP3Reader;
 
 /** 
 * @author Emmanuel Lonca - lonca@cril.fr
 */
 public class ComparisonCtrBuilderTest {
 	
-	private IPBSolver solver;
+	private IXCSP3Solver solver;
 	
 	@Before
 	public void setUp() {
-		this.solver = SolverFactory.newDefault();
+		this.solver = TestUtils.newSolver();
 	}
 
 	@Test
 	public void testCtrAllDiff() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allDifferent> i0 i1 i2 </allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1 2", "0 2 1", "1 0 2", "1 2 0", "2 0 1", "2 1 0");
 	}
 	
 	@Test
 	public void testCtrAllDiff2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allDifferent> i0 i0 </allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testCtrAllDiffExcept() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
 				+ "<list> i0 i1 i2 </list>"
 				+ "<except> 0 </except>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		List<String> expectedModels = new ArrayList<String>();
 		for(int i=0; i<=2; ++i) {
 			for(int j=0; j<=2; ++j) {
@@ -66,28 +60,26 @@ public class ComparisonCtrBuilderTest {
 	
 	@Test
 	public void testCtrAllDiffExcept2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
 				+ "<list> i0 i0 </list>"
 				+ "<except> 0 </except>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1", "2");
 	}
 	
 	@Test
 	public void testCtrAllDiffList() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
-		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(6));
+		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBooleanVars(6));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
 				+ "<list> b0 b1 </list>"
 				+ "<list> b2 b3 </list>"
 				+ "<list> b4 b5 </list>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		List<String> expectedModels = new ArrayList<String>();
 		for(int i=0; i<=3; ++i) {
 			for(int j=0; j<=3; ++j) {
@@ -105,33 +97,30 @@ public class ComparisonCtrBuilderTest {
 	
 	@Test
 	public void testCtrAllDiffList2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
-		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(2));
+		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBooleanVars(2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
 				+ "<list> b0 b0 </list>"
 				+ "<list> b1 b1 </list>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1", "1 0");
 	}
 	
 	@Test
 	public void testCtrAllDiffList3() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
-		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBinaryVars(2));
+		String varSection = TestUtils.buildVariablesSection(TestUtils.buildBooleanVars(2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
 				+ "<list> b0 b1 </list>"
 				+ "<list> b0 b1 </list>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testCtrAllDiffMatrix() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
@@ -141,7 +130,7 @@ public class ComparisonCtrBuilderTest {
 				+ "(i4,i5)"
 				+ "</matrix>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		List<String> expectedModels = new ArrayList<String>();
 		int[] values = new int[6];
 		int curIndex = 0;
@@ -188,7 +177,6 @@ public class ComparisonCtrBuilderTest {
 	
 	@Test
 	public void testCtrAllDiffMatrix2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<allDifferent>"
@@ -197,14 +185,13 @@ public class ComparisonCtrBuilderTest {
 				+ "(i1,i0)"
 				+ "</matrix>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1", "0 2", "1 0", "1 2", "2 0", "2 1");
 	}
 	
 	@Test
 	public void testCtrAllDiffMatrix3() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allDifferent>"
 				+ "<matrix>"
@@ -212,14 +199,13 @@ public class ComparisonCtrBuilderTest {
 				+ "(i1,i1)"
 				+ "</matrix>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testCtrAllDiffMatrix4() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allDifferent>"
 				+ "<matrix>"
@@ -227,84 +213,77 @@ public class ComparisonCtrBuilderTest {
 				+ "(i0,i1)"
 				+ "</matrix>"
 				+ "</allDifferent>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testCtrAllEqual() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allEqual> i0 i1 i2 </allEqual>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0", "1 1 1", "2 2 2");
 	}
 	
 	@Test
 	public void testCtrAllEqual2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection("<allEqual> i0 i0 i0 </allEqual>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1", "2");
 	}
 	
 	@Test
 	public void testCtrOrdered1() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 3));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<ordered>"
 				+ "<list>i0 i1 i2</list>"
 				+ "<operator> gt </operator>"
 				+ "</ordered>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "2 1 0", "3 1 0", "3 2 0", "3 2 1");
 	}
 	
 	@Test
 	public void testCtrOrdered2() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<ordered>"
 				+ "<list>i0 i1 i2</list>"
 				+ "<operator> le </operator>"
 				+ "</ordered>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 0 0", "0 0 1", "0 1 1", "1 1 1");
 	}
 	
 	@Test
 	public void testCtrOrdered3() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<ordered>"
 				+ "<list>i0 i0 i0</list>"
 				+ "<operator> le </operator>"
 				+ "</ordered>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0", "1");
 	}
 	
 	@Test
 	public void testCtrOrdered4() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(1, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<ordered>"
 				+ "<list>i0 i0 i0</list>"
 				+ "<operator> lt </operator>"
 				+ "</ordered>\n");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testLex1() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(6, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<lex>"
@@ -312,7 +291,7 @@ public class ComparisonCtrBuilderTest {
 				+ "<list> i3 i4 i5 </list>"
 				+ "<operator> lt </operator>"
 				+ "</lex>");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, 
 				"0 0 0 0 0 1", "0 0 0 0 1 0", "0 0 0 0 1 1", "0 0 0 1 0 0", "0 0 0 1 0 1", "0 0 0 1 1 0", "0 0 0 1 1 1",
 				"0 0 1 0 1 0", "0 0 1 0 1 1", "0 0 1 1 0 0", "0 0 1 1 0 1", "0 0 1 1 1 0", "0 0 1 1 1 1",
@@ -338,7 +317,7 @@ public class ComparisonCtrBuilderTest {
 	//				+ "</matrix>"
 	//				+ "<operator> le </operator>"
 	//				+ "</lex>";
-	//		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+	//		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 	//		TestUtils.assertEqualsSortedModels(sortedModels, 
 	//				"0 0 0 0 0 0", "0 0 0 0 0 1", "0 0 0 0 1 1", "0 0 0 1 1 1",
 	//				"0 0 1 0 0 1", "0 0 1 0 1 1", "0 0 1 1 1 1",
@@ -348,7 +327,6 @@ public class ComparisonCtrBuilderTest {
 	
 	@Test
 	public void testLex3() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<lex>"
@@ -356,13 +334,12 @@ public class ComparisonCtrBuilderTest {
 				+ "<list> i0 i1 i2 </list>"
 				+ "<operator> lt </operator>"
 				+ "</lex>");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, new String[]{});
 	}
 	
 	@Test
 	public void testLex4() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(2, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<lex>"
@@ -370,7 +347,7 @@ public class ComparisonCtrBuilderTest {
 				+ "<list> i1 i1 i1 </list>"
 				+ "<operator> lt </operator>"
 				+ "</lex>");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 1");
 	}
 

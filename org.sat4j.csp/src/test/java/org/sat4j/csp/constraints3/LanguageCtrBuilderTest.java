@@ -4,25 +4,21 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.SolverFactory;
-import org.sat4j.reader.XMLCSP3Reader;
 
 /** 
 * @author Emmanuel Lonca - lonca@cril.fr
 */
 public class LanguageCtrBuilderTest {
 	
-	private IPBSolver solver;
+	private IXCSP3Solver solver;
 	
 	@Before
 	public void setUp() {
-		this.solver = SolverFactory.newDefault();
+		this.solver = TestUtils.newSolver();
 	}
 	
 	@Test
 	public void testRegular1() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(7, 0, 1));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<regular>"
@@ -33,7 +29,7 @@ public class LanguageCtrBuilderTest {
 				+ "<start> a </start>"
 				+ "<final> e </final>"
 				+ "</regular>");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels,
 				"0 1 1 0 0 1 0",
 				"0 1 1 0 0 1 1",
@@ -47,7 +43,6 @@ public class LanguageCtrBuilderTest {
 
 	@Test
 	public void testMDD() {
-		XMLCSP3Reader reader = new XMLCSP3Reader(solver);
 		String varSection = TestUtils.buildVariablesSection(TestUtils.buildIntegerVars(3, 0, 2));
 		String ctrSection = TestUtils.buildConstraintsSection(""
 				+ "<mdd>"
@@ -58,7 +53,7 @@ public class LanguageCtrBuilderTest {
 				+"(n4,0,t)(n5,0,t)"
 				+"</transitions>"
 				+ "</mdd>");
-		List<String> sortedModels = TestUtils.computeModels(reader, solver, varSection, ctrSection);
+		List<String> sortedModels = TestUtils.computeModels(solver, varSection, ctrSection);
 		TestUtils.assertEqualsSortedModels(sortedModels, "0 2 0", "1 2 0", "2 0 0");
 	}
 	

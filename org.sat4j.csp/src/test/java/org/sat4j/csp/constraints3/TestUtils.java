@@ -2,127 +2,81 @@ package org.sat4j.csp.constraints3;
 
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import org.sat4j.pb.IPBSolver;
-import org.sat4j.pb.ObjectiveFunction;
-import org.sat4j.reader.ParseFormatException;
-import org.sat4j.reader.XMLCSP3Reader;
-import org.sat4j.specs.ContradictionException;
-import org.sat4j.specs.ISolver;
-import org.sat4j.specs.TimeoutException;
 
 /** 
 * @author Emmanuel Lonca - lonca@cril.fr
+* 
+* Utility methods for XCSP3 solvers test cases.
+* The newSolver() method must be implemented in order to return a new (clean) instance of IXCSP3Solver.
 */
 public class TestUtils {
+	
+	private static Class<? extends IXCSP3Solver> solverClass;
 
-	public static InputStream stringAsStream(String str) {
-		try {
-			return new ByteArrayInputStream(str.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+	public static void setSolverClass(Class<? extends IXCSP3Solver> solverClass) {
+		TestUtils.solverClass = solverClass;
 	}
-
-	public static String buildVariablesSection(String... varDeclarations) {
+	
+	public static IXCSP3Solver newSolver() {
+		return IXCSP3Solver.newSolver(TestUtils.solverClass);
+	}
+	
+	/**
+	 * Returns an XCSP3 declaration line for boolean variables (integer variables whose domain is 0,1) as a string.
+	 * Variables are named b0, b1, ... and may take all the integer values between their lower and higher bound.
+	 * 
+	 * @param n the number of boolean variables to declare
+	 * @return the string declaring the variables
+	 */
+	public static String buildBooleanVars(int n) {
+		return buildBooleanVars(n, 0);
+	}
+	
+	/**
+	 * Returns an XCSP3 declaration line for boolean variables (integer variables whose domain is 0,1) as a string.
+	 * Variables are named from bk, where k is the provided start index.
+	 * 
+	 * @param n the number of boolean variables to declare
+	 * @param startIndex the start index from which variable names are generated
+	 * @return the string declaring the variables
+	 */
+	public static String buildBooleanVars(int n, int startIndex) {
 		StringBuffer sbuf = new StringBuffer();
-		sbuf.append("<variables>\n");
-		for(String varDecl : varDeclarations) {
-			sbuf.append(varDecl);
+		for(int i=startIndex; i<startIndex+n; ++i) {
+			sbuf.append("<var id=\"b");
+			sbuf.append(Integer.toString(i));
+			sbuf.append("\"> 0 1 </var>\n");
 		}
-		sbuf.append("</variables>\n");
 		return sbuf.toString();
 	}
-
-	public static void assertEqualsSortedModels(List<String> actual, String... expected) {
-		if(expected.length != actual.size()) {
-			fail(diffModels(actual, expected));
-		}
-		for(int i=0; i<expected.length; ++i) {
-			if(!expected[i].equals(actual.get(i))) {
-				fail(diffModels(actual, expected));
-			}
-		}
-	}
 	
-	public static List<String> computeModels(XMLCSP3Reader reader, IPBSolver solver, String varSection, String ctrSection) {
-		return TestUtils.computeModels(reader, solver, varSection, ctrSection, null);
-	}
-
-	public static List<String> computeModels(XMLCSP3Reader reader, IPBSolver solver, String varSection, String ctrSection, String objSection) {
-		String strInstance = TestUtils.buildInstance(varSection, ctrSection, objSection);
-		try {
-			reader.parseInstance(stringAsStream(strInstance));
-		} catch (ParseFormatException | IOException e) {
-			fail(e.getMessage());
-		} catch (ContradictionException e) {
-			return new ArrayList<>();
-		}
-		List<String> sortedModels = TestUtils.getSortedStringModels(reader, solver, objSection != null);
-		return sortedModels;
-	}
-	
-	public static List<String> getSortedStringModels(XMLCSP3Reader reader, IPBSolver solver) {
-		return getSortedStringModels(reader, solver, false);
-	}
-
-	public static List<String> getSortedStringModels(XMLCSP3Reader reader, IPBSolver solver, boolean optRequired) {
-		List<int[]> models = TestUtils.getAllModels(reader, solver, optRequired);
-		SortedSet<String> strModels = new TreeSet<String>();
-		for(int i=0; i<models.size(); ++i) {
-			strModels.add(reader.decodeModelAsValueSequence(models.get(i)));
-		}
-		return new ArrayList<String>(strModels);
-	}
-	
-	public static List<int[]> getAllModels(XMLCSP3Reader reader, ISolver solver) {
-		return getAllModels(reader, solver, false);
-	}
-
-	public static List<int[]> getAllModels(XMLCSP3Reader reader, ISolver solver, boolean optRequired) {
-		List<int[]> models = new ArrayList<int[]>();
-		try {
-			while(solver.isSatisfiable()) {
-				int[] model = solver.model();
-				models.add(model);
-				if(reader.discardModel(model)) break;
-				if(models.size() == 1 && optRequired) {
-					if(!fixOptValue((IPBSolver) solver, models.get(0))) break;
-				}
-			}
-		} catch (TimeoutException e) {
-			throw new RuntimeException(e);
-		}
-		return models;
-	}
-	
-	private static boolean fixOptValue(IPBSolver solver, int[] model) {
-		final ObjectiveFunction obj = solver.getObjectiveFunction();
-		final BigInteger degree = obj.calculateDegree(solver);
-		try {
-			solver.addAtLeast(obj.getVars(), obj.getCoeffs(), degree);
-			solver.addAtMost(obj.getVars(), obj.getCoeffs(), degree);
-		} catch (ContradictionException e) {
-			return false;
-		}
-		return true;
-	}
-
+	/**
+	 * Returns an XCSP3 declaration line for integer variables as a string.
+	 * Variables are named i0, i1, ... and may take all the integer values between their lower and higher bound.
+	 * 
+	 * @param nVars the number of integer variables to declare
+	 * @param min the lower bound (included)
+	 * @param max the higher bound (included)
+	 * @return the string declaring the variables
+	 */
 	public static String buildIntegerVars(int nVars, int min, int max) {
 		return buildIntegerVars(nVars, min, max, 0);
 	}
 
+	/**
+	 * Returns an XCSP3 declaration line for integer variables as a string.
+	 * Variables are named from ik, where k is the provided start index.
+	 * They may take all the integer values between their lower and higher bound.
+	 * 
+	 * @param nVars the number of integer variables to declare
+	 * @param min the lower bound (included)
+	 * @param max the higher bound (included)
+	 * @param startIndex the start index from which variable names are generated
+	 * @return the string declaring the variables
+	 */
 	public static String buildIntegerVars(int nVars, int min, int max, int startIndex) {
 		StringBuffer sbuf = new StringBuffer();
 		for(int i=startIndex; i<startIndex+nVars; ++i) {
@@ -137,20 +91,15 @@ public class TestUtils {
 		return sbuf.toString();
 	}
 
-	public static String buildBinaryVars(int n) {
-		return buildBinaryVars(n, 0);
-	}
-	
-	public static String buildBinaryVars(int n, int startIndex) {
-		StringBuffer sbuf = new StringBuffer();
-		for(int i=startIndex; i<startIndex+n; ++i) {
-			sbuf.append("<var id=\"b");
-			sbuf.append(Integer.toString(i));
-			sbuf.append("\"> 0 1 </var>\n");
-		}
-		return sbuf.toString();
-	}
-
+	/**
+	 * Returns an XCSP3 instance as a string provided the variable, constraint, and optional objective sections.
+	 * Objective section must be set to null for decision problems.
+	 * 
+	 * @param varSection the variable section
+	 * @param ctrSection the constraint section
+	 * @param objSection the objective section
+	 * @return the corresponding XCSP3 instance
+	 */
 	public static String buildInstance(String varSection, String ctrSection, String objSection) {
 		StringBuffer sbuf = new StringBuffer();
 		sbuf.append("<instance format=\"XCSP3\" type=\"");
@@ -163,14 +112,39 @@ public class TestUtils {
 		return sbuf.toString();
 	}
 
+	/**
+	 * Returns a decision XCSP3 instance as a string provided the variable and constraint sections.
+	 * 
+	 * @param varSection the variable section
+	 * @param ctrSection the constraint section
+	 * @return the corresponding XCSP3 instance
+	 */
 	public static String buildInstance(String varSection, String ctrSection) {
 		return buildInstance(varSection, ctrSection, null);
 	}
-
-	public static String buildInstance(String varSection) {
-		return buildInstance(varSection, "<constraints>\n</constraints>\n", null);
+	
+	/**
+	 * Returns the XCSP3 variable section corresponding to the provided variable declarations as a string.
+	 * 
+	 * @param varDeclarations the variable declarations
+	 * @return the corresponding variable section.
+	 */
+	public static String buildVariablesSection(String... varDeclarations) {
+		StringBuffer sbuf = new StringBuffer();
+		sbuf.append("<variables>\n");
+		for(String varDecl : varDeclarations) {
+			sbuf.append(varDecl);
+		}
+		sbuf.append("</variables>\n");
+		return sbuf.toString();
 	}
 
+	/**
+	 * Returns the XCSP3 constraint section corresponding to the provided constraint declarations as a string.
+	 * 
+	 * @param ctrDeclarations the constraint declarations
+	 * @return the corresponding constraint section.
+	 */
 	public static String buildConstraintsSection(String... ctrDeclarations) {
 		StringBuffer sbuf = new StringBuffer();
 		sbuf.append("<constraints>\n");
@@ -181,6 +155,12 @@ public class TestUtils {
 		return sbuf.toString();
 	}
 	
+	/**
+	 * Returns the XCSP3 objective section corresponding to the provided objective declarations as a string.
+	 * 
+	 * @param objDeclarations the objective declarations
+	 * @return the corresponding objective section.
+	 */
 	public static String buildObjectivesSection(String... objDeclarations) {
 		StringBuffer sbuf = new StringBuffer();
 		sbuf.append("<objectives>\n");
@@ -191,12 +171,109 @@ public class TestUtils {
 		return sbuf.toString();
 	}
 	
-	public static String diffModels(List<String> actual, String... expectedArray) {
+	/**
+	 * Computes the whole set of models a decision instance admits.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models. Models must be returned in the alphabetical order.
+	 * 
+	 * @param solver the solver that will compute the models
+	 * @param instance the instance
+	 * @return the sorted set of models the instance admits
+	 */
+	public static List<String> computeModels(IXCSP3Solver solver, String instance) {
+		return solver.computeModels(instance);
+	}
+	
+	/**
+	 * Computes the whole set of models a decision instance admits.
+	 * The instance is given by its variable and constraint sections.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models. Models must be returned in the alphabetical order.
+	 * 
+	 * @param solver the solver that will compute the models
+	 * @param varSection the instance variable section
+	 * @param ctrSection the instance constraint section
+	 * @return the sorted set of models the instance admits
+	 */
+	public static List<String> computeModels(IXCSP3Solver solver, String varSection, String ctrSection) {
+		return solver.computeModels(varSection, ctrSection);
+	}
+	
+	/**
+	 * Computes the whole set of models an optimization instance admits.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models. Models must be returned in the alphabetical order.
+	 * 
+	 * @param solver the solver that will compute the models
+	 * @param instance the instance
+	 * @return the sorted set of models the instance admits
+	 */
+	public static List<String> computeOptimalModels(IXCSP3Solver solver, String instance) {
+		return solver.computeModels(instance);
+	}
+	
+	/**
+	 * Computes the whole set of models an optimization instance admits.
+	 * The instance is given by its variable, constraint and objective sections.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models. Models must be returned in the alphabetical order.
+	 * 
+	 * @param solver the solver that will compute the models
+	 * @param varSection the instance variable section
+	 * @param ctrSection the instance constraint section
+	 * @return the sorted set of models the instance admits
+	 */
+	public static List<String> computeOptimalModels(IXCSP3Solver solver, String varSection, String ctrSection, String objSection) {
+		return solver.computeOptimalModels(varSection, ctrSection, objSection);
+	}
+
+	/**
+	 * Check if two lists of models are equivalent ; call fail() junit method if it is not the case.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models.
+	 * This method is order sensitive.
+	 * 
+	 * @param actual the actual models
+	 * @param expected the expected models
+	 */
+	public static void assertEqualsSortedModels(List<String> actual, String... expected) {
+		if(expected.length != actual.size()) {
+			fail(diffModels(actual, expected));
+		}
+		for(int i=0; i<expected.length; ++i) {
+			if(!expected[i].equals(actual.get(i))) {
+				fail(diffModels(actual, expected));
+			}
+		}
+	}
+	
+	/**
+	 * Check if two lists of models are equivalent ; call fail() junit method if it is not the case.
+	 * Models are given as string composed of values split by space characters.
+	 * Each value corresponds to a variable ; the values must be given in the order the variables have been declared in the instance.
+	 * All declared variables must be involved in the models.
+	 * This method is order sensitive.
+	 * 
+	 * @param actual the actual models
+	 * @param expected the expected models
+	 */
+	public static void assertEqualsSortedModels(List<String> actual, List<String> expected) {
+		String[] expectedArray = new String[expected.size()];
+		expectedArray = expected.toArray(expectedArray);
+		assertEqualsSortedModels(actual, expectedArray);
+	}
+	
+	private static String diffModels(List<String> actual, String... expectedArray) {
 		List<String> expected = Arrays.asList(expectedArray);
 		return diffModels(actual, expected);
 	}
 	
-	public static String diffModels(List<String> actual, List<String> expected) {
+	private static String diffModels(List<String> actual, List<String> expected) {
 		List<String> onlyInExpected = new LinkedList<String>(expected);
 		onlyInExpected.removeAll(actual);
 		List<String> onlyInActual = new LinkedList<String>(actual);
