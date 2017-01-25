@@ -20,6 +20,7 @@ import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
+import org.xcsp.constraints3.test.IXCSP3Solver;
 
 public class XCSP3Sat4jSolver implements IXCSP3Solver {
 	

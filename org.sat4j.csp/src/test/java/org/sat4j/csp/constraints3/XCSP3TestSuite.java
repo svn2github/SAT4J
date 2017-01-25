@@ -4,6 +4,15 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.xcsp.constraints3.test.ComparisonCtrBuilderTest;
+import org.xcsp.constraints3.test.ConnectionCtrBuilderTest;
+import org.xcsp.constraints3.test.CountingCtrBuilderTest;
+import org.xcsp.constraints3.test.ElementaryCtrBuilderTest;
+import org.xcsp.constraints3.test.GenericCtrBuilderTest;
+import org.xcsp.constraints3.test.LanguageCtrBuilderTest;
+import org.xcsp.constraints3.test.ObjBuilderTest;
+import org.xcsp.constraints3.test.SchedulingCtrBuilderTest;
+import org.xcsp.constraints3.test.TestUtils;
 
 @RunWith(Suite.class)
 @SuiteClasses({
