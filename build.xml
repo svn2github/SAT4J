@@ -137,6 +137,7 @@
 			   <include name="org.sat4j.csp.xmlparser.jar"/>
 		   </zipgroupfileset>
                    <zipgroupfileset dir="${lib}">
+                           <include name="org.xcsp.tests-1.0.0-SNAPSHOT.jar"/>
                            <include name="xcsp3parser.jar"/>
                            <include name="js.jar"/>
 		   </zipgroupfileset>
