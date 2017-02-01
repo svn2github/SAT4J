@@ -30,6 +30,7 @@ import org.sat4j.pb.ObjectiveFunction;
 import org.sat4j.reader.XMLCSP3Reader;
 import org.sat4j.specs.IVec;
 import org.sat4j.specs.IVecInt;
+import org.xcsp.common.Types.TypeCombination;
 import org.xcsp.common.Types.TypeObjective;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.entries.XDomains.XDomInteger;
@@ -48,14 +49,39 @@ public class ObjBuilder {
 	private final ICspToSatEncoder cspToSatEncoder;
 
 	private IIntensionCtrEncoder intensionEnc;
+
+	private TypeCombination objCombination;
+	
+	private int nObjectives;
 	
 	public ObjBuilder(final IPBSolver solver, final IIntensionCtrEncoder intensionEnc) {
 		this.intensionEnc = intensionEnc;
 		this.cspToSatEncoder = intensionEnc.getSolver();
 	}
 	
+	public void setCombination(TypeCombination objCombination) {
+		this.objCombination = objCombination;
+	}
+	
+	private void addObjectiveFunction(final ObjectiveFunction obj) {
+		if(nObjectives == 1) {
+			composeObjectives();
+		}
+		this.cspToSatEncoder.setObjectiveFunction(obj);
+		++this.nObjectives;
+	}
+	
+	private void composeObjectives() {
+		switch(this.objCombination) {
+		case LEXICO:
+		case PARETO:
+			throw new UnsupportedOperationException("Multicriteria optimization is not handled yet.");
+		}
+	}
+
 	public void buildObjToMinimize(final String id, final XVarInteger x) {
-		this.cspToSatEncoder.setObjectiveFunction(buildObjForVar(x));
+		final ObjectiveFunction obj = buildObjForVar(x);
+		addObjectiveFunction(obj);
 	}
 	
 	private ObjectiveFunction buildObjForVar(final XVarInteger x) {
@@ -71,7 +97,8 @@ public class ObjBuilder {
 	}
 
 	public void buildObjToMaximize(final String id, final XVarInteger x) {
-		this.cspToSatEncoder.setObjectiveFunction(buildObjForVar(x).negate());
+		final ObjectiveFunction obj = buildObjForVar(x).negate();
+		addObjectiveFunction(obj);
 	}
 	
 	private String opExpr(final String op, final XVarInteger[] xlist, final int[] xcoeffs) {
@@ -100,8 +127,12 @@ public class ObjBuilder {
 		sb.append(')');
 		return sb.toString();
 	}
-
+	
 	public void buildObjToMinimize(final String id, final TypeObjective type, final XVarInteger[] xlist, final int[] xcoeffs) {
+		buildObjToMinimize(id, type, xlist, xcoeffs, false);
+	}
+	
+	public void buildObjToMinimize(final String id, final TypeObjective type, final XVarInteger[] xlist, final int[] xcoeffs, boolean negate) {
 		ObjectiveFunction obj = null;
 		switch(type) {
 		case SUM:
@@ -125,9 +156,12 @@ public class ObjBuilder {
 		case EXPRESSION:
 			throw new UnsupportedOperationException();
 		}
-		this.cspToSatEncoder.setObjectiveFunction(obj);
+		if(negate) {
+			obj.negate();
+		}
+		addObjectiveFunction(obj);
 	}
-	
+
 	private String nValuesExpr(final XVarInteger[] list, final int[] coeffs) {
 		final StringBuffer sbuf = new StringBuffer();
 		boolean firstAddMember = true;
@@ -161,8 +195,7 @@ public class ObjBuilder {
 	}
 
 	public void buildObjToMaximize(final String id, final TypeObjective type, final XVarInteger[] xlist, final int[] xcoeffs) {
-		buildObjToMinimize(id, type, xlist, xcoeffs);
-		this.cspToSatEncoder.getObjectiveFunction().negate();
+		buildObjToMinimize(id, type, xlist, xcoeffs, true);
 	}
 
 	private ObjectiveFunction buildLexObjToMinimize(final XVarInteger[] xlist, final int[] xcoeffs) {
@@ -184,7 +217,15 @@ public class ObjBuilder {
 	}
 
 	private ObjectiveFunction buildExprObjToMinimize(String expr) {
-		return this.intensionEnc.encodeObj(expr);
+		return buildExprObjToMinimize(expr, false);
+	}
+	
+	private ObjectiveFunction buildExprObjToMinimize(String expr, boolean negate) {
+		final ObjectiveFunction obj = this.intensionEnc.encodeObj(expr);
+		if(negate) {
+			obj.negate();
+		}
+		return obj;
 	}
 
 	private ObjectiveFunction buildSumObjToMinimize(final XVarInteger[] xlist, final int[] xcoeffs) {
@@ -209,12 +250,13 @@ public class ObjBuilder {
 	}
 
 	public void buildObjToMinimize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
-		buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot));
+		final ObjectiveFunction obj = buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot));
+		addObjectiveFunction(obj);
 	}
 	
 	public void buildObjToMaximize(String id, XNodeParent<XVarInteger> syntaxTreeRoot) {
-		buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot));
-		this.cspToSatEncoder.getObjectiveFunction().negate();
+		final ObjectiveFunction obj = buildExprObjToMinimize(CtrBuilderUtils.syntaxTreeRootToString(syntaxTreeRoot), true);
+		addObjectiveFunction(obj);
 	}
 
 }

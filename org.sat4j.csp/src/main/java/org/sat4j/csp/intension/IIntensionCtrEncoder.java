@@ -27,10 +27,10 @@ import org.sat4j.pb.ObjectiveFunction;
  */
 public interface IIntensionCtrEncoder {
 	
-	public boolean encode(String strExpression);
+	boolean encode(String strExpression);
 	
-	public ICspToSatEncoder getSolver();
+	ICspToSatEncoder getSolver();
 
-	public ObjectiveFunction encodeObj(String expr);
-
+	ObjectiveFunction encodeObj(String expr);
+	
 }

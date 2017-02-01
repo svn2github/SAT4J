@@ -49,6 +49,7 @@ import org.sat4j.specs.ISolver;
 import org.w3c.dom.Document;
 import org.xcsp.common.Condition;
 import org.xcsp.common.Types.TypeArithmeticOperator;
+import org.xcsp.common.Types.TypeCombination;
 import org.xcsp.common.Types.TypeConditionOperatorRel;
 import org.xcsp.common.Types.TypeFlag;
 import org.xcsp.common.Types.TypeObjective;
@@ -58,6 +59,7 @@ import org.xcsp.common.Types.TypeRank;
 import org.xcsp.common.predicates.XNodeParent;
 import org.xcsp.parser.XCallbacks2;
 import org.xcsp.parser.XParser;
+import org.xcsp.parser.entries.AnyEntry.OEntry;
 import org.xcsp.parser.entries.AnyEntry.VEntry;
 import org.xcsp.parser.entries.XDomains.XDomInteger;
 import org.xcsp.parser.entries.XVariables.XArray;
@@ -343,6 +345,12 @@ public class XMLCSP3Reader extends Reader implements XCallbacks2 {
 		for(VEntry entry : vEntries) {
 			manageEntry(entry);
 		}
+	}
+
+	@Override
+	public void beginObjectives(List<OEntry> oEntries, TypeCombination objCombination) {
+		XCallbacks2.super.beginObjectives(oEntries, objCombination);
+		this.objBuilder.setCombination(objCombination);
 	}
 
 	private void manageEntry(VEntry entry) {
