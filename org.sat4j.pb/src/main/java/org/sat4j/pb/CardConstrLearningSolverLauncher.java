@@ -49,7 +49,7 @@ public class CardConstrLearningSolverLauncher {
             reader.parseInstance(instance);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            throw new IllegalStateException(e);
         }
         solver.setVerbose(verbose);
         if (System.getProperties().getProperty("nopreprocessing") != null)
