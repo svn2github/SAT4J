@@ -73,9 +73,7 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
      * 
      * @param mus
      *            containing the clauses identifiers
-     * @param clauses
-     *            the original set of clauses
-     * @return
+     * @return true if mus is really minimal unsatisfiable.
      */
     public boolean checkThatItIsAMUS(IVecInt mus) {
         boolean result = false;
@@ -112,8 +110,7 @@ public class CheckMUSSolutionListener implements SolutionFoundListener {
                 result = result && solver.isSatisfiable();
                 if (!result) {
                     explain = "The subset of clauses in the MUS not containing clause "
-                            + (i + 1)
-                            + " is SAT : "
+                            + (i + 1) + " is SAT : "
                             + Arrays.toString(solver.model());
                     return result;
                 }

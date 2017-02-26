@@ -55,10 +55,12 @@ public class AllMUSes {
     private final ASolverFactory<? extends ISolver> factory;
 
     public AllMUSes(boolean group, ASolverFactory<? extends ISolver> factory) {
-        this(group ? new GroupClauseSelectorSolver<ISolver>(
-                factory.defaultSolver())
-                : new FullClauseSelectorSolver<ISolver>(
-                        factory.defaultSolver(), false), factory);
+        this(group
+                ? new GroupClauseSelectorSolver<ISolver>(
+                        factory.defaultSolver())
+                : new FullClauseSelectorSolver<ISolver>(factory.defaultSolver(),
+                        false),
+                factory);
     }
 
     public AllMUSes(ASolverFactory<? extends ISolver> factory) {
@@ -106,8 +108,10 @@ public class AllMUSes {
      * Computes all the MUSes associated to the set of constraints added to the
      * solver
      * 
-     * @param solver
-     *            the <code>ISolver</code> that contains the set of clauses
+     * @param assumptions
+     *            the assumptions under which the MUSes must be computed.
+     * @param listener
+     *            a listener to call when an MUS is found
      * @return a list containing all the MUSes
      */
     public List<IVecInt> computeAllMUSes(IVecInt assumptions,
@@ -128,7 +132,8 @@ public class AllMUSes {
         return computeAllMUSes(assumptions, listener, minSolver);
     }
 
-    public List<IVecInt> computeAllMUSesOrdered(SolutionFoundListener listener) {
+    public List<IVecInt> computeAllMUSesOrdered(
+            SolutionFoundListener listener) {
         return computeAllMUSesOrdered(VecInt.EMPTY, listener);
     }
 

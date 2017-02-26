@@ -82,13 +82,14 @@ public interface ILauncherMode extends SolutionFoundListener {
      * 
      * @param problem
      *            the problem to solve
+     * @param reader
+     *            the reader that provided the problem object
      * @param logger
      *            the element that is able to log the result
      * @param out
      *            the printwriter to associate to the solver
      * @param beginTime
      *            the time at which the solver starts
-     * @return
      */
     void solve(IProblem problem, Reader reader, ILogAble logger,
             PrintWriter out, long beginTime);
@@ -98,6 +99,8 @@ public interface ILauncherMode extends SolutionFoundListener {
      * solution in case of a time out (for maxsat competitions for instance).
      * 
      * @param isIncomplete
+     *            true if the solver should return the best solution found so
+     *            far.
      */
     void setIncomplete(boolean isIncomplete);
 
@@ -105,13 +108,16 @@ public interface ILauncherMode extends SolutionFoundListener {
      * Allow the launcher to get the current status of the problem: SAT, UNSAT,
      * UPPER_BOUND, etc.
      * 
-     * @return
+     * @return the status of the problem.
      */
     ExitCode getCurrentExitCode();
 
     /**
      * Allow to set a specific exit code to the launcher (in case of trivial
      * unsatisfiability for instance).
+     * 
+     * @param exitCode
+     *            the status of the problem to solve
      */
     void setExitCode(ExitCode exitCode);
 

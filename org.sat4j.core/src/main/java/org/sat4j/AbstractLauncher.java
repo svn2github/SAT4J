@@ -305,6 +305,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      * Display messages as comments on STDOUT
      * 
      * @param message
+     *            a textual information
      */
     public void log(String message) {
         if (this.silent)
@@ -326,6 +327,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      * if solution is very large.
      * 
      * @param value
+     *            true to display the message
      */
     protected void setDisplaySolutionLine(boolean value) {
         this.displaySolutionLine = value;
@@ -373,6 +375,7 @@ public abstract class AbstractLauncher implements Serializable, ILogAble {
      * default, the solver displays everything on System.out.
      * 
      * @param out
+     *            a new output for the statistics.
      */
     public void setLogWriter(PrintWriter out) {
         this.out = out;

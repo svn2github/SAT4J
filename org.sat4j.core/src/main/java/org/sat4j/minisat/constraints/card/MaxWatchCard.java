@@ -47,57 +47,62 @@ import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 import org.sat4j.specs.VarMapper;
 
-public final class MaxWatchCard implements Propagatable, Constr, Undoable,
-        Serializable {
+public final class MaxWatchCard
+        implements Propagatable, Constr, Undoable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * Degr? de la contrainte de cardinalit?
+     * Degree (right hand side) of the constraint.
      */
     private int degree;
 
     /**
-     * Liste des litt?raux de la contrainte
+     * Literals (left hand side) of the constraint.
      */
     private final int[] lits;
 
     /**
-     * D?termine si c'est une in?galit? sup?rieure ou ?gale
+     * Flag to denote greater than or lesser than constraint.
      */
     private boolean moreThan;
 
     /**
-     * Somme des coefficients des litt?raux observ?s
+     * Sum of the currently watched literals.
      */
     private int watchCumul;
 
     /**
-     * Vocabulaire de la contrainte
+     * Vocabulary of the constraints.
      */
     private final ILits voc;
 
     /**
-     * Constructeur de base cr?ant des contraintes vides
+     * Build a new constraint.
      * 
-     * @param size
-     *            nombre de litt?raux de la contrainte
-     * @param learnt
-     *            indique si la contrainte est apprise
+     * @param voc
+     *            the vocabulary of the constraint.
+     * @param ps
+     *            a set of literals
+     * @param moreThan
+     *            true if the constraint is of the form "greater than", else
+     *            false.
+     * @param degree
+     *            the degree/threshold of the constraint
      */
     public MaxWatchCard(ILits voc, IVecInt ps, boolean moreThan, int degree) {
 
-        // On met en place les valeurs
+        // update fields
         this.voc = voc;
         this.degree = degree;
         this.moreThan = moreThan;
 
-        // On simplifie ps
+        // Simply ps
         int[] index = new int[voc.nVars() * 2 + 2];
         for (int i = 0; i < index.length; i++) {
             index[i] = 0;
         }
-        // On repertorie les litt?raux utiles
+        // Look for opposite literals
         for (int i = 0; i < ps.size(); i++) {
             if (index[ps.get(i) ^ 1] == 0) {
                 index[ps.get(i)]++;
@@ -105,7 +110,7 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
                 index[ps.get(i) ^ 1]--;
             }
         }
-        // On supprime les litt?raux inutiles
+        // Update degree according to removed literals
         int ind = 0;
         while (ind < ps.size()) {
             if (index[ps.get(ind)] > 0) {
@@ -120,19 +125,18 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
             }
         }
 
-        // On copie les litt?raux de la contrainte
+        // Copy literals to the current constraint
         this.lits = new int[ps.size()];
         ps.moveTo(this.lits);
 
-        // On normalise la contrainte au sens de Barth
+        // Normalize the constraint
         normalize();
 
-        // Mise en place de l'observation maximale
+        // Watch all non falsified literals
         this.watchCumul = 0;
 
-        // On observe les litt?raux non falsifi?
         for (int i = 0; i < this.lits.length; i++) {
-            // Rappel: les ?l?ments falsifi?s ne seront jamais d?pil?s
+            // Note: those falsified literals will never be unset
             if (!voc.isFalsified(this.lits[i])) {
                 this.watchCumul++;
                 voc.watch(this.lits[i] ^ 1, this);
@@ -515,7 +519,8 @@ public final class MaxWatchCard implements Propagatable, Constr, Undoable,
             for (int i = 1; i < this.lits.length; i++) {
                 if (this.voc.isUnassigned(this.lits[i])) {
                     stb.append(" + "); //$NON-NLS-1$
-                    stb.append(mapper.map(LiteralsUtils.toDimacs(this.lits[i])));
+                    stb.append(
+                            mapper.map(LiteralsUtils.toDimacs(this.lits[i])));
                     stb.append(" "); //$NON-NLS-1$
                 }
             }

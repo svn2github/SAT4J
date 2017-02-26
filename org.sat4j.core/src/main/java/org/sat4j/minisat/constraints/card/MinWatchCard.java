@@ -46,8 +46,8 @@ import org.sat4j.specs.Propagatable;
 import org.sat4j.specs.UnitPropagationListener;
 import org.sat4j.specs.VarMapper;
 
-public class MinWatchCard implements Propagatable, Constr, Undoable,
-        Serializable {
+public class MinWatchCard
+        implements Propagatable, Constr, Undoable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -144,10 +144,10 @@ public class MinWatchCard implements Propagatable, Constr, Undoable,
 
     /**
      * Constructs and normalizes a cardinality constraint. used by
-     * MinWatchCardPB.normalizedMinWatchCardNew() in the normalized case. <br />
+     * MinWatchCardPB.normalizedMinWatchCardNew() in the normalized case.
+     * 
      * <strong>Should not be used if parameters are not already
-     * normalized</strong><br />
-     * This constraint is always an ATLEAST constraint.
+     * normalized</strong> This constraint is always an ATLEAST constraint.
      * 
      * @param voc
      *            vocabulary used by the constraint

@@ -43,7 +43,8 @@ public interface VarActivityListener extends Serializable {
      * Update the activity of a variable v.
      * 
      * @param p
-     *            a literal (v<<1 or v<<1^1)
+     *            a literal (<code>v&lt;&lt;1</code> or
+     *            <code>v&lt;&lt;1^1</code>)
      */
     void varBumpActivity(int p);
 }

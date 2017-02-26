@@ -42,23 +42,21 @@ import org.sat4j.specs.TimeoutException;
  * An implementation of the QuickXplain algorithm as explained by Ulrich Junker
  * in the following paper:
  * 
- * @inproceedings{DBLP:conf/aaai/Junker02, author = {Ulrich Junker}, title =
+ * <code>
+ * &#64;inproceedings{DBLP:conf/aaai/Junker02, author = {Ulrich Junker}, title =
  *                                         {Preference-Based Search and
  *                                         Multi-Criteria Optimization},
  *                                         booktitle = {AAAI/IAAI}, year =
  *                                         {2002}, pages = {34-40}, bibsource =
  *                                         {DBLP, http://dblp.uni-trier.de} }
+ * </code>
  * 
+ * The algorithm has been adapted to work properly in a context where we can
+ * afford to add a selector variable to each clause to enable or disable each
+ * constraint.
  * 
- *                                         The algorithm has been adapted to
- *                                         work properly in a context where we
- *                                         can afford to add a selector variable
- *                                         to each clause to enable or disable
- *                                         each constraint.
- * 
- *                                         Note that for the moment, QuickXplain
- *                                         does not work properly in an
- *                                         optimization setting.
+ * Note that for the moment, QuickXplain does not work properly in an
+ * optimization setting.
  * 
  * 
  * @since 2.1
@@ -66,8 +64,8 @@ import org.sat4j.specs.TimeoutException;
 public class QuickXplainStrategy implements MinimizationStrategy {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private boolean computationCanceled;
@@ -79,8 +77,8 @@ public class QuickXplainStrategy implements MinimizationStrategy {
     public IVecInt explain(ISolver solver, Map<Integer, ?> constrs,
             IVecInt assumps) throws TimeoutException {
         this.computationCanceled = false;
-        IVecInt encodingAssumptions = new VecInt(constrs.size()
-                + assumps.size());
+        IVecInt encodingAssumptions = new VecInt(
+                constrs.size() + assumps.size());
         assumps.copyTo(encodingAssumptions);
         IVecInt firstExplanation = solver.unsatExplanation();
         IVecInt results = new VecInt(firstExplanation.size());
@@ -121,8 +119,8 @@ public class QuickXplainStrategy implements MinimizationStrategy {
         int unsatcorelimit = encodingAssumptions.size() - 1;
 
         remainingVariables.copyTo(encodingAssumptions);
-        computeExplanation(solver, constrs, encodingAssumptions,
-                assumps.size(), unsatcorelimit, results);
+        computeExplanation(solver, constrs, encodingAssumptions, assumps.size(),
+                unsatcorelimit, results);
         return results;
     }
 
@@ -130,8 +128,8 @@ public class QuickXplainStrategy implements MinimizationStrategy {
             IVecInt encodingAssumptions, int start, int end, IVecInt result)
             throws TimeoutException {
         if (solver.isVerbose()) {
-            System.out.println(solver.getLogPrefix() + "qxplain " + start + "/"
-                    + end);
+            System.out.println(
+                    solver.getLogPrefix() + "qxplain " + start + "/" + end);
         }
         if (!solver.isSatisfiable(encodingAssumptions)) {
             return;

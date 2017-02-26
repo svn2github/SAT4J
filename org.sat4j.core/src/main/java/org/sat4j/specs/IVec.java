@@ -79,6 +79,7 @@ public interface IVec<T> extends Serializable, Cloneable {
      * To push an element in the vector when you know you have space for it.
      * 
      * @param elem
+     *            an element
      */
     void unsafePush(T elem);
 
@@ -128,13 +129,28 @@ public interface IVec<T> extends Serializable, Cloneable {
     T delete(int i);
 
     /**
-     * Ces operations devraient se faire en temps constant. Ce n'est pas le cas
-     * ici.
+     * Copy the content of the vector to another vector.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
      * 
      * @param copy
+     *            a non null vector
      */
     void copyTo(IVec<T> copy);
 
+    /**
+     * Copy the content of the vector to an array.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
+     * 
+     * @param dest
+     *            a non null array, containing sufficient space to copy the
+     *            content of the current vector, i.e.
+     *            <code>dest.length &lt;= this.size()</code>.
+     * @param <E>
+     *            the type of the elements of the array. It must be a superclass
+     *            of T.
+     */
     <E> void copyTo(E[] dest);
 
     /**

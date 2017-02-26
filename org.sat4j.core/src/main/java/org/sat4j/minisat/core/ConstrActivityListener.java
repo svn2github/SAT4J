@@ -37,7 +37,9 @@ import org.sat4j.specs.Constr;
 interface ConstrActivityListener {
 
     /**
-     * @param outclause
+     * 
+     * @param confl
+     *            the conflictual constraint
      */
     void claBumpActivity(Constr confl);
 }

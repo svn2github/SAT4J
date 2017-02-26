@@ -43,9 +43,9 @@ import org.sat4j.specs.Propagatable;
  * from 2 to 2*n+1.
  * 
  * For a Dimacs variable v, the variable index in SAT4J is v, it's positive
- * literal is 2*v (v << 1) and it's negative literal is 2*v+1 ((v<<1)^1). Note
- * that one can easily access to the complementary literal of p by using bitwise
- * operation ^.
+ * literal is <code>2*v (v &lt;&lt; 1)</code> and it's negative literal is
+ * <code>2*v+1 ((v&lt;&lt;1)^1)</code>. Note that one can easily access to the
+ * complementary literal of p by using bitwise operation ^.
  * 
  * In SAT4J, literals are usualy denoted by p or q and variables by v or x.
  * 

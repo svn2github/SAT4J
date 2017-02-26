@@ -205,7 +205,6 @@ public interface IProblem extends RandomAccessModel {
      * 
      * @param out
      *            the place to print the information
-     * @see #setLogPrefix(String)
      * @since 2.3.3
      * 
      */

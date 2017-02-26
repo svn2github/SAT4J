@@ -53,7 +53,7 @@ public interface ISolverService {
      * 
      * @param reason
      *            a set of literals, in Dimacs format, currently falsified, i.e.
-     *            for (int l : reason) assert truthValue(l) == Lbool.FALSE
+     *            <code>for (int l : reason) assert truthValue(l) == Lbool.FALSE</code>
      */
     void backtrack(int[] reason);
 
@@ -72,7 +72,7 @@ public interface ISolverService {
     IConstr addClauseOnTheFly(int[] literals);
 
     /**
-     * Add a new pseudo cardinality constraint sum literals <= degree in the
+     * Add a new pseudo cardinality constraint sum literals &lt;= degree in the
      * solver. The constraint must be falsified under current assignment.
      * 
      * @param literals

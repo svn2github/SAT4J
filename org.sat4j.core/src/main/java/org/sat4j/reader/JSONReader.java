@@ -50,9 +50,9 @@ import org.sat4j.specs.IVecInt;
  * Clauses are represented as an array of Dimacs literals (non zero integers).
  * Cardinality constraints are represented like a clause for its left hand side,
  * a comparator (a string) and a number.
- * <code>[[-1,-2,-3],[[1,-2,3],'>',2],[4,-3,6]]</code> for instance represents
- * three constraints, two clauses and the cardinality constraint x1 + not x2 +
- * x3 > 2.
+ * <code>[[-1,-2,-3],[[1,-2,3],'&gt;',2],[4,-3,6]]</code> for instance
+ * represents three constraints, two clauses and the cardinality constraint
+ * <code>x1 + not x2 + x3 &gt; 2</code>.
  * 
  * @author leberre
  * 
@@ -105,8 +105,8 @@ public class JSONReader<S extends ISolver> extends Reader {
         throw new ParseFormatException("Unknown constraint: " + constraint);
     }
 
-    private void handleClause(String constraint) throws ParseFormatException,
-            ContradictionException {
+    private void handleClause(String constraint)
+            throws ParseFormatException, ContradictionException {
         solver.addClause(getLiterals(constraint));
     }
 
@@ -123,8 +123,8 @@ public class JSONReader<S extends ISolver> extends Reader {
         return clause;
     }
 
-    protected void handleCard(String constraint) throws ParseFormatException,
-            ContradictionException {
+    protected void handleCard(String constraint)
+            throws ParseFormatException, ContradictionException {
         String trimmed = constraint.trim();
         trimmed = trimmed.substring(1, trimmed.length() - 1);
         Matcher matcher = CLAUSE_PATTERN.matcher(trimmed);
@@ -150,8 +150,8 @@ public class JSONReader<S extends ISolver> extends Reader {
     }
 
     @Override
-    public IProblem parseInstance(InputStream in) throws ParseFormatException,
-            ContradictionException, IOException {
+    public IProblem parseInstance(InputStream in)
+            throws ParseFormatException, ContradictionException, IOException {
         StringWriter out = new StringWriter();
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
@@ -161,8 +161,8 @@ public class JSONReader<S extends ISolver> extends Reader {
         return parseString(out.toString());
     }
 
-    public ISolver parseString(String json) throws ParseFormatException,
-            ContradictionException {
+    public ISolver parseString(String json)
+            throws ParseFormatException, ContradictionException {
         String trimmed = json.trim();
         if (!trimmed.matches(formula)) {
             throw new ParseFormatException("Wrong input " + json);

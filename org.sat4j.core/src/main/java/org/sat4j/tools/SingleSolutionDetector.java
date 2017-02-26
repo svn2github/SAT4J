@@ -85,7 +85,7 @@ public class SingleSolutionDetector extends SolverDecorator<ISolver> {
      * @return true iff there is only one way to satisfy all the constraints in
      *         the solver.
      * @throws TimeoutException
-     * @see {@link ISolver#removeConstr(IConstr)}
+     * @see ISolver#removeConstr(IConstr)
      */
     public boolean hasASingleSolution() throws TimeoutException {
         return hasASingleSolution(new VecInt());

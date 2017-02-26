@@ -37,8 +37,8 @@ import org.sat4j.specs.IGroupSolver;
 public class GroupedCNFReader extends DimacsReader {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private int numberOfComponents;
@@ -53,8 +53,6 @@ public class GroupedCNFReader extends DimacsReader {
     }
 
     /**
-     * @param in
-     *            the input stream
      * @throws IOException
      *             iff an IO occurs
      * @throws ParseFormatException
@@ -70,8 +68,8 @@ public class GroupedCNFReader extends DimacsReader {
         String[] tokens = line.split("\\s+");
         if (tokens.length < 5 || !"p".equals(tokens[0])
                 || !this.formatString.equals(tokens[1])) {
-            throw new ParseFormatException("problem line expected (p "
-                    + this.formatString + " ...)");
+            throw new ParseFormatException(
+                    "problem line expected (p " + this.formatString + " ...)");
         }
 
         int vars;
@@ -91,8 +89,8 @@ public class GroupedCNFReader extends DimacsReader {
      * @since 2.1
      */
     @Override
-    protected boolean handleLine() throws ContradictionException, IOException,
-            ParseFormatException {
+    protected boolean handleLine()
+            throws ContradictionException, IOException, ParseFormatException {
         int lit;
         boolean added = false;
         String component = this.scanner.next();
@@ -100,12 +98,12 @@ public class GroupedCNFReader extends DimacsReader {
             throw new ParseFormatException(
                     "Component index required at the beginning of the clause");
         }
-        this.currentComponentIndex = Integer.valueOf(component.substring(1,
-                component.length() - 1));
+        this.currentComponentIndex = Integer
+                .valueOf(component.substring(1, component.length() - 1));
         if (this.currentComponentIndex < 0
                 || this.currentComponentIndex > this.numberOfComponents) {
-            throw new ParseFormatException("wrong component index: "
-                    + this.currentComponentIndex);
+            throw new ParseFormatException(
+                    "wrong component index: " + this.currentComponentIndex);
         }
         while (!this.scanner.eof()) {
             lit = this.scanner.nextInt();

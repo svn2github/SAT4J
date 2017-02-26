@@ -208,7 +208,7 @@ public abstract class Reader {
     /**
      * Returns the mapping found in the problem.
      * 
-     * @return the mapping varid->String found in the problem.
+     * @return the mapping varid-&gt;String found in the problem.
      */
     public Map<Integer, String> getMapping() {
         return null;

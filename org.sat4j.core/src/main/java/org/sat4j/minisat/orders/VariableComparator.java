@@ -38,7 +38,7 @@ public interface VariableComparator {
      *            a variable id
      * @param b
      *            a variable id
-     * @return true iff a < b (a is preferred to b)
+     * @return true iff a &lt; b (a is preferred to b)
      */
     boolean preferredTo(int a, int b);
 }

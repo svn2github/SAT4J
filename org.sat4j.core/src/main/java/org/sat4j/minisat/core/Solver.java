@@ -409,7 +409,7 @@ public class Solver<D extends DataStructureFactory>
     }
 
     public int newVar(int howmany) {
-        if (this.declaredMaxVarId>0 && howmany > this.declaredMaxVarId
+        if (this.declaredMaxVarId > 0 && howmany > this.declaredMaxVarId
                 && this.voc.nVars() > this.declaredMaxVarId) {
             throw new IllegalStateException(
                     "Caution, you are making solver's internal var id public with uncontrolled consequences with features requiring internal/hidden variables.");
@@ -495,7 +495,7 @@ public class Solver<D extends DataStructureFactory>
         IVecInt vlits = dimacs2internal(literals);
         return addConstr(Xor.createParityConstraint(vlits, even, voc));
     }
-    
+
     @SuppressWarnings("unchecked")
     public boolean simplifyDB() {
         // Simplifie la base de clauses apres la premiere propagation des
@@ -1493,9 +1493,6 @@ public class Solver<D extends DataStructureFactory>
         this.learnedConstraintsDeletionStrategy.reduce(this.learnts);
     }
 
-    /**
-     * @param learnts
-     */
     protected void sortOnActivity() {
         this.learnts.sort(this.comparator);
     }

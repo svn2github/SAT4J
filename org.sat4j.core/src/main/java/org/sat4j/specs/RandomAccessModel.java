@@ -38,15 +38,15 @@ package org.sat4j.specs;
  */
 public interface RandomAccessModel {
     /**
-     * Provide the truth value of a specific variable in the model. That method
-     * should be called AFTER isSatisfiable() if the formula is satisfiable.
+     * Provide the truth value of a specific variable in the model.
+     * 
+     * That method should be called deciding that the problem is satisfiable.
      * Else an exception UnsupportedOperationException is launched.
      * 
      * @param var
      *            the variable id in Dimacs format
      * @return the truth value of that variable in the model
      * @since 1.6
-     * @see #model()
      */
     boolean model(int var);
 }

@@ -95,8 +95,8 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
     }
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -121,7 +121,7 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
      * @return an array of indexes such that the set of indexed constraints is
      *         inconsistent.
      * @throws TimeoutException
-     * @see {@link #explain()}
+     * @see #explain()
      */
     public int[] minimalExplanation() throws TimeoutException {
         IVecInt keys = explanationKeys();
@@ -144,7 +144,7 @@ public class Xplain<T extends ISolver> extends FullClauseSelectorSolver<T>
      * @since 2.1
      * @return
      * @throws TimeoutException
-     * @see {@link #minimalExplanation()}
+     * @see #minimalExplanation()
      */
     public Collection<IConstr> explain() throws TimeoutException {
         IVecInt keys = explanationKeys();

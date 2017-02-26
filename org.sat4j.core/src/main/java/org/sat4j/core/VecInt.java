@@ -121,6 +121,7 @@ public final class VecInt implements IVecInt {
      * Remove the latest nofelems elements from the vector
      * 
      * @param nofelems
+     *            the number of elements to remove
      */
     public void shrink(int nofelems) {
         // assert nofelems >= 0;
@@ -231,10 +232,11 @@ public final class VecInt implements IVecInt {
     }
 
     /**
-     * Copy the content of this vector into another one. Non constant time
-     * operation.
+     * Copy the content of this vector into another one. Uses Java
+     * {@link System#arraycopy(Object, int, Object, int, int)} to make the copy.
      * 
      * @param copy
+     *            another VecInt vector
      */
     public void copyTo(IVecInt copy) {
         VecInt ncopy = (VecInt) copy;
@@ -246,10 +248,11 @@ public final class VecInt implements IVecInt {
     }
 
     /**
-     * Copy the content of this vector into an array of integer. Non constant
-     * time operation.
+     * Copy the content of this vector into an array of integer. Uses Java
+     * {@link System#arraycopy(Object, int, Object, int, int)} to make the copy.
      * 
      * @param is
+     *            the target array.
      */
     public void copyTo(int[] is) {
         // assert is.length >= nbelem;
@@ -635,7 +638,10 @@ public final class VecInt implements IVecInt {
     }
 
     /**
+     * Sort the vector according to a given order.
+     * 
      * @param comparator
+     *            a way to order the integers of that vector.
      */
     public void sort(Comparator<Integer> comparator) {
         sort(0, this.nbelem, comparator);

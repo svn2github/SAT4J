@@ -42,20 +42,22 @@ import org.sat4j.specs.TimeoutException;
  * An implementation of the ReplayXplain algorithm as explained by Ulrich Junker
  * in the following paper:
  * 
- * @inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
+ * <code>
+ * &#64;inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
  *                 title={QUICKXPLAIN: Conflict Detection for Arbitrary
  *                 Constraint Propagation Algorithms}, booktitle={IJCAI'01
  *                 Workshop on Modelling and Solving problems with constraints
  *                 (CONS-1)}, year={2001}, month={August}, address={Seattle, WA,
  *                 USA}, url={citeseer.ist.psu.edu/junker01quickxplain.html},
  *                 url={http://www.lirmm.fr/~bessiere/ws_ijcai01/junker.ps.gz} }
+ * </code>
  * 
- *                 The algorithm has been adapted to work properly in a context
- *                 where we can afford to add a selector variable to each clause
- *                 to enable or disable each constraint.
+ * The algorithm has been adapted to work properly in a context where we can
+ * afford to add a selector variable to each clause to enable or disable each
+ * constraint.
  * 
- *                 Note that for the moment, QuickXplain does not work properly
- *                 in an optimization setting.
+ * Note that for the moment, QuickXplain does not work properly in an
+ * optimization setting.
  * 
  * 
  * @author daniel
@@ -64,8 +66,8 @@ import org.sat4j.specs.TimeoutException;
 public class InsertionStrategy implements MinimizationStrategy {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private boolean computationCanceled;
@@ -83,8 +85,8 @@ public class InsertionStrategy implements MinimizationStrategy {
     public IVecInt explain(ISolver solver, Map<Integer, ?> constrs,
             IVecInt assumps) throws TimeoutException {
         this.computationCanceled = false;
-        IVecInt encodingAssumptions = new VecInt(constrs.size()
-                + assumps.size());
+        IVecInt encodingAssumptions = new VecInt(
+                constrs.size() + assumps.size());
         assumps.copyTo(encodingAssumptions);
         IVecInt firstExplanation = solver.unsatExplanation();
         if (firstExplanation.size() == 1) {

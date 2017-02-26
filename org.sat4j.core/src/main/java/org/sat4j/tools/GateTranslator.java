@@ -57,7 +57,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> FALSE into a clause.
+     * translate <code>y &lt;=&gt; FALSE</code> into a clause.
      * 
      * @param y
      *            a variable to falsify
@@ -72,7 +72,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> TRUE into a clause.
+     * translate <code>y &lt;=&gt; TRUE</code> into a clause.
      * 
      * @param y
      *            a variable to verify
@@ -86,7 +86,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> if x1 then x2 else x3 into clauses.
+     * translate <code>y &lt;=&gt; if x1 then x2 else x3</code> into clauses.
      * 
      * @param y
      * @param x1
@@ -100,7 +100,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
             throws ContradictionException {
         IConstr[] constrs = new IConstr[6];
         IVecInt clause = new VecInt(5);
-        // y <=> (x1 -> x2) and (not x1 -> x3)
+        // y &lt;=&gt; (x1 -> x2) and (not x1 -> x3)
         // y -> (x1 -> x2) and (not x1 -> x3)
         clause.push(-y).push(-x1).push(x2);
         constrs[0] = processClause(clause);
@@ -133,7 +133,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> (x1 => x2)
+     * translate <code>y &lt;=&gt; (x1 =&gt; x2)</code>
      * 
      * @param y
      * @param x1
@@ -146,7 +146,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     public IConstr[] it(int y, int x1, int x2) throws ContradictionException {
         IConstr[] constrs = new IConstr[3];
         IVecInt clause = new VecInt(5);
-        // y <=> (x1 -> x2)
+        // y &lt;=&gt; (x1 -> x2)
         // y -> (x1 -> x2)
         clause.push(-y).push(-x1).push(x2);
         constrs[0] = processClause(clause);
@@ -165,7 +165,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * Translate y <=> x1 /\ x2 /\ ... /\ xn into clauses.
+     * Translate <code>y &lt;=&gt; x1 /\ x2 /\ ... /\ xn</code> into clauses.
      * 
      * @param y
      * @param literals
@@ -173,8 +173,9 @@ public class GateTranslator extends SolverDecorator<ISolver> {
      * @throws ContradictionException
      * @since 2.1
      */
-    public IConstr[] and(int y, IVecInt literals) throws ContradictionException {
-        // y <=> AND x1 ... xn
+    public IConstr[] and(int y, IVecInt literals)
+            throws ContradictionException {
+        // y &lt;=&gt; AND x1 ... xn
         IConstr[] constrs = new IConstr[literals.size() + 1];
         // y <= x1 .. xn
         IVecInt clause = new VecInt(literals.size() + 2);
@@ -195,7 +196,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * Translate y <=> x1 /\ x2
+     * Translate <code>y &lt;=&gt; x1 /\ x2</code>
      * 
      * @param y
      * @param x1
@@ -222,7 +223,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> x1 \/ x2 \/ ... \/ xn into clauses.
+     * translate <code>y &lt;=&gt; x1 \/ x2 \/ ... \/ xn</code> into clauses.
      * 
      * @param y
      * @param literals
@@ -230,7 +231,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
      * @since 2.1
      */
     public IConstr[] or(int y, IVecInt literals) throws ContradictionException {
-        // y <=> OR x1 x2 ...xn
+        // y &lt;=&gt; OR x1 x2 ...xn
         // y => x1 x2 ... xn
         IConstr[] constrs = new IConstr[literals.size() + 1];
         IVecInt clause = new VecInt(literals.size() + 2);
@@ -249,7 +250,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <= x1 \/ x2 \/ ... \/ xn into clauses.
+     * translate <code>y &lt;= x1 \/ x2 \/ ... \/ xn</code> into clauses.
      * 
      * @param y
      * @param literals
@@ -270,12 +271,13 @@ public class GateTranslator extends SolverDecorator<ISolver> {
         return constrs;
     }
 
-    private IConstr processClause(IVecInt clause) throws ContradictionException {
+    private IConstr processClause(IVecInt clause)
+            throws ContradictionException {
         return addClause(clause);
     }
 
     /**
-     * Translate y <=> not x into clauses.
+     * Translate <code>y &lt;=&gt; not x</code> into clauses.
      * 
      * @param y
      * @param x
@@ -285,7 +287,7 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     public IConstr[] not(int y, int x) throws ContradictionException {
         IConstr[] constrs = new IConstr[2];
         IVecInt clause = new VecInt(3);
-        // y <=> not x
+        // y &lt;=&gt; not x
         // y => not x = not y or not x
         clause.push(-y).push(-x);
         constrs[0] = processClause(clause);
@@ -297,14 +299,15 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> x1 xor x2 xor ... xor xn into clauses.
+     * translate <code>y &lt;=&gt; x1 xor x2 xor ... xor xn</code> into clauses.
      * 
      * @param y
      * @param literals
      * @throws ContradictionException
      * @since 2.1
      */
-    public IConstr[] xor(int y, IVecInt literals) throws ContradictionException {
+    public IConstr[] xor(int y, IVecInt literals)
+            throws ContradictionException {
         literals.push(-y);
         int[] f = new int[literals.size()];
         literals.copyTo(f);
@@ -316,14 +319,17 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     }
 
     /**
-     * translate y <=> (x1 <=> x2 <=> ... <=> xn) into clauses.
+     * translate
+     * <code>y &lt;=&gt; (x1 &lt;=&gt; x2 &lt;=&gt; ... &lt;=&gt; xn)</code>
+     * into clauses.
      * 
      * @param y
      * @param literals
      * @throws ContradictionException
      * @since 2.1
      */
-    public IConstr[] iff(int y, IVecInt literals) throws ContradictionException {
+    public IConstr[] iff(int y, IVecInt literals)
+            throws ContradictionException {
         literals.push(y);
         int[] f = new int[literals.size()];
         literals.copyTo(f);
@@ -490,7 +496,8 @@ public class GateTranslator extends SolverDecorator<ISolver> {
     /**
      * @since 2.2
      */
-    public void halfAdderSum(int x, int a, int b) throws ContradictionException {
+    public void halfAdderSum(int x, int a, int b)
+            throws ContradictionException {
         xor(x, a, b);
     }
 

@@ -42,17 +42,29 @@ public interface IVecInt extends Serializable, Cloneable {
     int size();
 
     /**
-     * Remove the latest nofelems elements from the vector
+     * Remove the latest nofelems elements from the vector.
      * 
      * @param nofelems
+     *            the number of elements to remove.
      */
     void shrink(int nofelems);
 
+    /**
+     * Reduce the vector to a given number of elements.
+     * 
+     * All the elements after the limit are remove from the vector.
+     * 
+     * @param newsize
+     *            the new size of the vector
+     */
     void shrinkTo(int newsize);
 
     /**
-     * depile le dernier element du vecteur. Si le vecteur est vide, ne fait
-     * rien.
+     * Removes the last element of the vector.
+     * 
+     * If the vector is empty, does nothing.
+     * 
+     * @return the vector itself, for method chaining.
      */
     IVecInt pop();
 
@@ -67,6 +79,7 @@ public interface IVecInt extends Serializable, Cloneable {
      * USE WITH CAUTION!
      * 
      * @param elem
+     *            an integer
      */
     void unsafePush(int elem);
 
@@ -83,9 +96,12 @@ public interface IVecInt extends Serializable, Cloneable {
     boolean contains(int e);
 
     /**
-     * @since 2.2
+     * Retrieve the index of an element.
+     * 
      * @param e
-     * @return
+     *            an element
+     * @return the index of the element, -1 if not found
+     * @since 2.2
      */
     int indexOf(int e);
 
@@ -94,37 +110,51 @@ public interface IVecInt extends Serializable, Cloneable {
      * 
      * @param e
      *            an integer
-     * @return the index i such that get(i)==e, else -1.
+     * @return the index i such that <code>get(i)==e, else -1</code>.
      */
     int containsAt(int e);
 
     /**
-     * returns the index of the first occurence of e occurring after from
+     * returns the index of the first occurrence of e occurring after from
      * (excluded), else -1.
      * 
      * @param e
      *            an integer
      * @param from
      *            the index to start from (excluded).
-     * @return the index i such that i>from and get(i)==e, else -1
+     * @return the index i such that
+     *         <code>i&gt;from and get(i)==e, else -1</code>
      */
     int containsAt(int e, int from);
 
     /**
-     * C'est operations devraient se faire en temps constant. Ce n'est pas le
-     * cas ici.
+     * Copy the content of the vector to another vector.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
      * 
      * @param copy
+     *            a non null vector of integers
      */
     void copyTo(IVecInt copy);
 
     /**
+     * Copy the content of the vector to an array.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
+     * 
      * @param is
+     *            a non null array, containing sufficient space to copy the
+     *            content of the current vector, i.e.
+     *            <code>is.length &gt;= this.size()</code>.
      */
     void copyTo(int[] is);
 
-    /*
-     * Copie un vecteur dans un autre (en vidant le premier), en temps constant.
+    /**
+     * Move the content of the current vector to a destination one, in constant
+     * time.
+     * 
+     * @param dest
+     *            a vector of integer.
      */
     void moveTo(IVecInt dest);
 
@@ -204,7 +234,7 @@ public interface IVecInt extends Serializable, Cloneable {
      * Compute all subsets of cardinal k of the vector.
      * 
      * @param k
-     *            a cardinal (k<= vec.size())
+     *            a cardinal (<code>k&lt;= vec.size()</code>)
      * @return an array of IVectInt representing each a k-subset of this vector.
      * @author sroussel
      * @since 2.3.1

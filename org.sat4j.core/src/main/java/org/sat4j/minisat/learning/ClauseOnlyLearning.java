@@ -38,13 +38,11 @@ import org.sat4j.specs.Constr;
  * 
  * @author daniel
  * 
- * @param <L>
- *            a data structure for the literals.
  * @param <D>
  *            a data structure for the clauses.
  */
-public final class ClauseOnlyLearning<D extends DataStructureFactory> extends
-        LimitedLearning<D> {
+public final class ClauseOnlyLearning<D extends DataStructureFactory>
+        extends LimitedLearning<D> {
 
     /**
      * 

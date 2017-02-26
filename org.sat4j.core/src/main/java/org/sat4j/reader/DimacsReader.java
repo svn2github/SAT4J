@@ -94,8 +94,6 @@ public class DimacsReader extends Reader implements Serializable {
     /**
      * Skip comments at the beginning of the input stream.
      * 
-     * @param in
-     *            the input stream
      * @throws IOException
      *             if an IO problem occurs.
      * @since 2.1
@@ -105,8 +103,6 @@ public class DimacsReader extends Reader implements Serializable {
     }
 
     /**
-     * @param in
-     *            the input stream
      * @throws IOException
      *             iff an IO occurs
      * @throws ParseFormatException
@@ -145,8 +141,6 @@ public class DimacsReader extends Reader implements Serializable {
     protected IVecInt literals = new VecInt();
 
     /**
-     * @param in
-     *            the input stream
      * @throws IOException
      *             iff an IO problems occurs
      * @throws ParseFormatException
@@ -155,8 +149,8 @@ public class DimacsReader extends Reader implements Serializable {
      *             si le probl?me est trivialement inconsistant.
      * @since 2.1
      */
-    protected void readConstrs() throws IOException, ParseFormatException,
-            ContradictionException {
+    protected void readConstrs()
+            throws IOException, ParseFormatException, ContradictionException {
         int realNbOfConstr = 0;
 
         this.literals.clear();
@@ -181,8 +175,8 @@ public class DimacsReader extends Reader implements Serializable {
                 if (this.scanner.currentChar() == '%'
                         && this.expectedNbOfConstr == realNbOfConstr) {
                     if (this.solver.isVerbose()) {
-                        System.out
-                                .println("Ignoring the rest of the file (SATLIB format");
+                        System.out.println(
+                                "Ignoring the rest of the file (SATLIB format");
                     }
                     break;
                 }
@@ -193,9 +187,9 @@ public class DimacsReader extends Reader implements Serializable {
             }
         }
         if (this.checkConstrNb && this.expectedNbOfConstr != realNbOfConstr) {
-            throw new ParseFormatException("wrong nbclauses parameter. Found "
-                    + realNbOfConstr + ", " + this.expectedNbOfConstr
-                    + " expected");
+            throw new ParseFormatException(
+                    "wrong nbclauses parameter. Found " + realNbOfConstr + ", "
+                            + this.expectedNbOfConstr + " expected");
         }
     }
 
@@ -217,8 +211,8 @@ public class DimacsReader extends Reader implements Serializable {
     /**
      * @since 2.1
      */
-    protected boolean handleLine() throws ContradictionException, IOException,
-            ParseFormatException {
+    protected boolean handleLine()
+            throws ContradictionException, IOException, ParseFormatException {
         int lit;
         boolean added = false;
         while (!this.scanner.eof()) {
@@ -237,8 +231,8 @@ public class DimacsReader extends Reader implements Serializable {
     }
 
     @Override
-    public IProblem parseInstance(InputStream in) throws ParseFormatException,
-            ContradictionException, IOException {
+    public IProblem parseInstance(InputStream in)
+            throws ParseFormatException, ContradictionException, IOException {
         this.scanner = new EfficientScanner(in);
         return parseInstance();
     }
@@ -251,8 +245,8 @@ public class DimacsReader extends Reader implements Serializable {
      * @throws ContradictionException
      *             si le probl?me est trivialement inconsitant
      */
-    private IProblem parseInstance() throws ParseFormatException,
-            ContradictionException {
+    private IProblem parseInstance()
+            throws ParseFormatException, ContradictionException {
         this.solver.reset();
         try {
             skipComments();

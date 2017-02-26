@@ -79,6 +79,12 @@ public interface IConstr {
      * Produces a human readable representation of the constraint, using a
      * specific mapping.
      * 
+     * @param mapper
+     *            a textual (potentially partial) representation of the Dimacs
+     *            variables.
+     * 
+     * @return a textual representation of the constraint.
+     * 
      * @since 2.3.6
      */
     String toString(VarMapper mapper);

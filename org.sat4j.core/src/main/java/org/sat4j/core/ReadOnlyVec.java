@@ -35,7 +35,7 @@ import java.util.Iterator;
 import org.sat4j.specs.IVec;
 
 /**
- * Utility class to allow Read Only access to an IVec<T>.
+ * Utility class to allow Read Only access to an {@link IVec}.
  * 
  * @author daniel
  * 
@@ -45,8 +45,8 @@ import org.sat4j.specs.IVec;
 public final class ReadOnlyVec<T> implements IVec<T> {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private final IVec<T> vec;

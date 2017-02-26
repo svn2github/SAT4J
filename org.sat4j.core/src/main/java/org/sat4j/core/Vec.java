@@ -280,10 +280,12 @@ public final class Vec<T> implements IVec<T> {
     }
 
     /**
-     * Ces operations devraient se faire en temps constant. Ce n'est pas le cas
-     * ici.
+     * Copy the content of the vector to another vector.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
      * 
      * @param copy
+     *            a non null vector
      */
     public void copyTo(IVec<T> copy) {
         final Vec<T> ncopy = (Vec<T>) copy;
@@ -295,7 +297,14 @@ public final class Vec<T> implements IVec<T> {
     }
 
     /**
+     * Copy the content of the vector to an array.
+     * 
+     * THIS METHOD IS NOT SPECIALLY EFFICIENT. USE WITH CAUTION.
+     * 
      * @param dest
+     *            a non null array, containing sufficient space to copy the
+     *            content of the current vector, i.e.
+     *            <code>dest.length &gt;= this.size()</code>.
      */
     public <E> void copyTo(E[] dest) {
         // assert dest.length >= nbelem;
@@ -394,7 +403,10 @@ public final class Vec<T> implements IVec<T> {
     }
 
     /**
+     * Sort the vector according to a given order on the elements.
+     * 
      * @param comparator
+     *            a way to order the elements of the vector
      */
     public void sort(Comparator<T> comparator) {
         sort(0, this.nbelem, comparator);

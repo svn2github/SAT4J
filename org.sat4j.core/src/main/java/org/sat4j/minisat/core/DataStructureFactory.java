@@ -61,7 +61,7 @@ public interface DataStructureFactory {
     void learnConstraint(Constr constr);
 
     /**
-     * Create a cardinality constraint of the form sum li >= degree.
+     * Create a cardinality constraint of the form sum li &gt;= degree.
      * 
      * @param literals
      *            a set of literals.
@@ -73,7 +73,8 @@ public interface DataStructureFactory {
     Constr createCardinalityConstraint(IVecInt literals, int degree)
             throws ContradictionException;
 
-    Constr createUnregisteredCardinalityConstraint(IVecInt literals, int degree);
+    Constr createUnregisteredCardinalityConstraint(IVecInt literals,
+            int degree);
 
     void setUnitPropagationListener(UnitPropagationListener s);
 

@@ -42,7 +42,8 @@ import org.sat4j.specs.TimeoutException;
  * An implementation of the QuickXplain algorithm as explained by Ulrich Junker
  * in the following paper:
  * 
- * @inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
+ * <code>
+ * &#64;inproceedings{ junker01:quickxplain:inp, author={Ulrich Junker},
  *                 title={QUICKXPLAIN: Conflict Detection for Arbitrary
  *                 Constraint Propagation Algorithms}, booktitle={IJCAI'01
  *                 Workshop on Modelling and Solving problems with constraints
@@ -56,15 +57,15 @@ import org.sat4j.specs.TimeoutException;
  * 
  *                 Note that for the moment, QuickXplain does not work properly
  *                 in an optimization setting.
- * 
+ * </code>
  * 
  * @since 2.1
  */
 public class QuickXplain2001Strategy implements MinimizationStrategy {
 
     /**
-	 * 
-	 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     private boolean computationCanceled;
@@ -76,8 +77,8 @@ public class QuickXplain2001Strategy implements MinimizationStrategy {
     public IVecInt explain(ISolver solver, Map<Integer, ?> constrs,
             IVecInt assumps) throws TimeoutException {
         this.computationCanceled = false;
-        IVecInt encodingAssumptions = new VecInt(constrs.size()
-                + assumps.size());
+        IVecInt encodingAssumptions = new VecInt(
+                constrs.size() + assumps.size());
         assumps.copyTo(encodingAssumptions);
         IVecInt firstExplanation = solver.unsatExplanation();
         if (solver.isVerbose()) {
@@ -102,9 +103,8 @@ public class QuickXplain2001Strategy implements MinimizationStrategy {
         return results;
     }
 
-    private void computeExplanation(ISolver solver,
-            IVecInt encodingAssumptions, int start, int end, IVecInt result)
-            throws TimeoutException {
+    private void computeExplanation(ISolver solver, IVecInt encodingAssumptions,
+            int start, int end, IVecInt result) throws TimeoutException {
         if (!solver.isSatisfiable(encodingAssumptions)) {
             return;
         }

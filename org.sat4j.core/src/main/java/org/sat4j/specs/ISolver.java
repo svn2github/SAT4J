@@ -238,8 +238,8 @@ public interface ISolver extends IProblem, Serializable {
             throws ContradictionException;
 
     /**
-     * Create a cardinality constraint of the type
-     * "exactly n of those literals must be satisfied".
+     * Create a cardinality constraint of the type "exactly n of those literals
+     * must be satisfied".
      * 
      * @param literals
      *            a set of literals. The vector can be reused since the solver
@@ -477,7 +477,8 @@ public interface ISolver extends IProblem, Serializable {
      * 
      * Retrieve an explanation of the inconsistency in terms of assumption
      * literals. This is only application when isSatisfiable(assumps) is used.
-     * Note that !isSatisfiable(assumps)&&assumps.contains(unsatExplanation())
+     * Note that
+     * <code>!isSatisfiable(assumps)&amp;&amp;assumps.contains(unsatExplanation())</code>
      * should hold.
      * 
      * @return a subset of the assumptions used when calling
@@ -513,9 +514,9 @@ public interface ISolver extends IProblem, Serializable {
     /**
      * Retrieve the real number of variables used in the solver.
      * 
-     * In many cases, realNumberOfVariables()==nVars(). However, when working
-     * with SAT encodings or translation from MAXSAT to PMS, one can have
-     * realNumberOfVariables()>nVars().
+     * In many cases, <code>realNumberOfVariables()==nVars()</code>. However,
+     * when working with SAT encodings or translation from MAXSAT to PMS, one
+     * can have <code>realNumberOfVariables()&gt;nVars()</code>.
      * 
      * Those additional variables are supposed to be created using the
      * {@link #nextFreeVarId(boolean)} method.
